@@ -4,7 +4,7 @@ Normal brake input while steering previously entered the assisted drift state. T
 
 The lateral tire curve now builds force sooner, peaking at about 8 degrees rather than 12. Cars need less sideways motion to generate cornering force. Peak friction, braking calibration, surface differences, upgrades and rain grip loss remain in effect. This does not glue airborne cars to the ground or make every corner possible at full speed.
 
-Validation: `npm run test:traction` runs real Rapier simulation for AV–12, AMG One, ST–6 and Roadster-X in dry/damp/rain. It checks trail braking, release, recovery and intentional handbrake drift. The regression reproduced unintended drift before the fix and passes afterward.
+Validation: `npm run test:traction` runs real Rapier simulation for AV–12, AMG One, ST–6 and 911–T in dry/damp/rain. It checks trail braking, release, recovery and intentional handbrake drift. The regression reproduced unintended drift before the fix and passes afterward.
 
 Existing physics harness, Sport assist, damp road, held full steering at 120 km/h / 60% throttle for 3.5 seconds:
 

@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 const drivers=new URL('../../assets/drivers/',import.meta.url);
-const ids=['jonas-reiter','aiko-tanabe','freya-lindqvist','rosa-quintero','remy-valois','armand-beaulieu'];
+const ids=['freya-lindqvist','rosa-quintero','remy-valois','armand-beaulieu'];
 const tiles=await Promise.all(ids.map(async(id,i)=>({
  input:await sharp(readFileSync(new URL(id+'/poster-v1.png',drivers))).resize(720,405).toBuffer(),
  left:(i%2)*720,top:Math.floor(i/2)*405

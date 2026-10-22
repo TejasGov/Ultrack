@@ -110,10 +110,8 @@ Results go to `qa/<car>/`:
 | mustang | 8 / 3 / 0 | gt paint | 0.029 | - | daylight under the rear spoiler |
 | buggati (model: Divo) | 10 / 1 / 0 | its own | 0.01 | - | daylight through the open rear wing and behind the tail |
 | mp1x | 8 / 4 / 0 | blade carbon | 0.034 | wing, airbrake | waist channel end-on; daylight under the wing |
-| nuvolari | 8 / 3 / 0 | gt carbon | 0.037 | - | - |
 | jaguarxkjss | 9 / 2 / 0 | bullet paint | 0.05 | - | - |
 | bmw1 | 9 / 2 / 0 | gt paint | 0.019 | - | - |
-| tesla1 | 8 / 3 / 0 | gt paint | 0.043 | - | - |
 | bentley-gt | 8 / 3 / 0 | gt paint | 0.034 | - | - |
 | furari-488 (model) | 8 / 3 / 0 | its own | 0.02 | - | - |
 | destrier (model) | 10 / 1 / 0 | its own | 0.03 | - | rear fender ducts; daylight under the open rear wing |

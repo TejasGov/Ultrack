@@ -158,10 +158,10 @@ Reference notes and frames: `research/endurance-benchmark.md`, `research/enduran
   - Wheel jitter fixed (a spring on the suspension visual, a cap on visual spin).
   - Contact shadows are sized per car.
 - **HUD** (`game/hud*.js`): an instrument cluster (tach with a redline band, an 11-segment shift rail, digit cells, a gear cell, nitro, TCS/ABS/ESC tags, an EV power dial) and a heading-up radar minimap. `M` switches to a track overview. Test: `npm run test:hud`.
-- **Roster** (8 teams, 16 cars, 8 per race):
+- **Roster** (7 teams, 14 cars, 7 per race):
   - Toro (the Lamborghini team: AV-12 + Huracán STO) is new, with its lore in TEAMS.md. Saetta is now the Ferrari team (488 + LaFerrari).
   - New models: 918 Spyder (`porsche1`), Valkyrie, Huracán and LaFerrari. All four are game rips (Real Racing 3 and others), noted in their credits; the LaFerrari and Valkyrie are CC BY-NC-SA.
-  - The track has 12 pit boxes for 16 cars.
+  - The track has 12 pit boxes for 14 cars.
 - **Clean-up:**
   - 521.7 MB was archived, not deleted, to `_archive/2026-10-21/`, with `MANIFEST.md` and `restore.mjs`.
   - Docs moved to `docs/`, and the README has a repository map.

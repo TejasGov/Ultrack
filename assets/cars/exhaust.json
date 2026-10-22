@@ -135,20 +135,6 @@
         "turbo": 1
       }
     },
-    "nuvolari": {
-      "electric": true,
-      "tips": [],
-      "nitro": [
-        [
-          0.36,
-          -0.4
-        ],
-        [
-          0.36,
-          0.4
-        ]
-      ]
-    },
     "jaguarxkjss": {
       "tips": [
         [
@@ -209,20 +195,6 @@
         "shift": 0.3,
         "turbo": 1
       }
-    },
-    "tesla1": {
-      "electric": true,
-      "tips": [],
-      "nitro": [
-        [
-          0.34,
-          -0.3
-        ],
-        [
-          0.34,
-          0.3
-        ]
-      ]
     },
     "furari-488": {
       "tips": [

@@ -11,7 +11,7 @@ import {meshopt} from '@gltf-transform/functions';
 import sharp from 'sharp';
 const root=fileURLToPath(new URL('../../',import.meta.url)),base=resolve(root,'assets/cars');
 const args=process.argv.slice(2),keys=args.filter(a=>!a.startsWith('--'));
-if(!keys.length)keys.push('av12','furari-488','mp1x','jaguarxkjss','nuvolari');
+if(!keys.length)keys.push('av12','furari-488','mp1x','jaguarxkjss');
 const size=Number(args.find(a=>a.startsWith('--size='))?.split('=')[1]??512);
 if(![256,512,1024].includes(size))throw Error('Texture size must be 256, 512 or 1024.');
 await Promise.all([MeshoptDecoder.ready,MeshoptEncoder.ready]);

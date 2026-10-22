@@ -7,6 +7,7 @@ import './ui.css';
 import TEAMS from '../../../assets/teams/teams.json';
 import { store, ASSISTS, WEATHER, BLUR, fmtTime } from './store.js';
 import { GameAudio, Gearbox } from './audio.js';
+import { EV } from './ev.js';
 import { Session, MODES } from './session.js';
 import { InputDebug } from './input-debug.js';
 import { Hud } from './hud.js';
@@ -288,7 +289,7 @@ export class Game {
     F.input.clear();F.input.setEnabled(true);
     this.ctx.newTrails(F.cars.filter((c) => !c.hero));   // the cars ahead leave trails; your own read as stripes on the road from the chase cam
     const h0 = handling(F.hero.key);
-    const ev = ['tesla1','nuvolari'].includes(F.hero.key) || this.audio.engine?.ev;
+    const ev = EV.has(F.hero.key) || this.audio.engine?.ev;
     this.gearbox = new Gearbox(h0.top, this.audio.engine?.prof.redline ?? 8000, ev);
     this.session = new Session(F, mode, { laps: S.laps });     // last: update() runs a session only once it is complete
     this.setBusy('');

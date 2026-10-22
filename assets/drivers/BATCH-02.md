@@ -1,11 +1,9 @@
 # Driver posters — second batch
 
-Six Luna assignments requested by the user. Three concurrent workers plus the coordinator; two waves. Existing approved direction: Matteo Varrone. Each worker owns only their driver directory.
+Six Luna assignments (Jonas Reiter and Aiko Tanabe were later removed with the Kalt team; their folders are archived) requested by the user. Three concurrent workers plus the coordinator; two waves. Existing approved direction: Matteo Varrone. Each worker owns only their driver directory.
 
 | Wave | Driver | Team / number | Car | Sponsor | Font |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Jonas Reiter | Kalt / 11 | Audi e-tron GT concept (2018) | Red Bull | Michroma |
-| 1 | Aiko Tanabe | Kalt / 22 | Tesla Roadster (second generation) | Red Bull | Michroma |
 | 1 | Freya Lindqvist | Mojave / 8 | Bentley Continental GT Speed (2021) | Shell | Bungee |
 | 2 | Rosa Quintero | Mojave / 9 | BMW i8 Coupe (2018) | Shell | Bungee |
 | 2 | Remy Valois | Aurum / 1 | Bugatti Divo | Rolex | Limelight |

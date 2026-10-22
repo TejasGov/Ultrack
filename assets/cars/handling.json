@@ -71,34 +71,6 @@
    "bopGrip": 1,
    "brakeK": 1.033
   },
-  "nuvolari": {
-   "hp": 590,
-   "zeroTo100": 3.5,
-   "topKmh": 240,
-   "drive": "AWD",
-   "massKg": 2100,
-   "grip": 1.05,
-   "downforce": 0.35,
-   "cogM": 0.42,
-   "weightFront": 0.48,
-   "bop": 1.056,
-   "bopGrip": 1,
-   "brakeK": 1.033
-  },
-  "tesla1": {
-   "hp": 1341,
-   "zeroTo100": 2.1,
-   "topKmh": 400,
-   "drive": "AWD",
-   "massKg": 1850,
-   "grip": 1.1,
-   "downforce": 0.5,
-   "cogM": 0.4,
-   "weightFront": 0.47,
-   "bop": 0.93,
-   "bopGrip": 0.95,
-   "brakeK": 1.349
-  },
   "mustang": {
    "hp": 460,
    "zeroTo100": 4.5,

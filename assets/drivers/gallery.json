@@ -34,22 +34,6 @@
       "status": "approved-style"
     },
     {
-      "id": "jonas-reiter",
-      "driver": "Jonas Reiter",
-      "number": 11,
-      "team": "Kalt",
-      "sponsor": "Red Bull",
-      "status": "awaiting-review"
-    },
-    {
-      "id": "aiko-tanabe",
-      "driver": "Aiko Tanabe",
-      "number": 22,
-      "team": "Kalt",
-      "sponsor": "Red Bull",
-      "status": "awaiting-review"
-    },
-    {
       "id": "freya-lindqvist",
       "driver": "Freya Lindqvist",
       "number": 8,

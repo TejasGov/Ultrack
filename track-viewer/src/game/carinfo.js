@@ -6,6 +6,7 @@ import TEAMS from '../../../assets/teams/teams.json';
 import HANDLING from '../../../assets/cars/handling.json';
 import * as PHYSICS from '../physics/handling.js';
 import { CATS } from './economy.js';
+import { EV } from './ev.js';
 
 // optional files: import.meta.glob is empty when the file does not exist yet (a static import would fail the build)
 const first = (o) => Object.values(o)[0];
@@ -14,7 +15,6 @@ const MODELS = import.meta.glob('../../../assets/cars/*/model.json', { eager: tr
 
 export const ROSTER = TEAMS.teams.flatMap((t) => t.cars.map((c) => c.key));
 const ENTRY = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, c])));
-const EV = new Set(['tesla1', 'nuvolari']);                         // the same two the engine audio treats as electric
 const KNOWN = { destrier: 'Bugatti Destrier', blackbird: 'Hennessey Blackbird', buggati: 'Bugatti Divo' };
 const pretty = (k) => k.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 

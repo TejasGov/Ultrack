@@ -9,7 +9,7 @@ const state = () => page.evaluate(() => { const g = window.game, V = window.view
 await page.goto(base + '/'); await page.waitForFunction(() => window.game?.loaded, null, { timeout: 120000 });
 await page.evaluate(() => window.game.boot()); await page.waitForTimeout(2500);
 await page.evaluate(() => window.game.show('garage')); await page.waitForTimeout(500);
-await page.evaluate(() => window.game.previewCar('tesla1')); await page.waitForTimeout(3000);
+await page.evaluate(() => window.game.previewCar('porsche1')); await page.waitForTimeout(3000);
 await page.evaluate(() => window.game.show('menu')); await page.waitForTimeout(25000);
 console.log('menu after garage', JSON.stringify(await state()));
 for (const round of [1, 2]) {

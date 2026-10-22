@@ -13,7 +13,7 @@ FLOW = {"A": "Wx3qSx2RYwCpxjsTYJdy", "B": "uBB7DNn414WC2zS5V9Mc", "X": "4fyCMWvO
 PROFILES = {
     "v8-flatplane": ("A", 8000, "Twin-turbo flat-plane V8 supercar: raspy snarl, turbo whistle", ["furari-488", "mclaren"],
                      dict(idle=1000, low=2400, mid=4800, high=7200, decel=4000)),
-    "na-v12-screamer": ("A", 10500, "Naturally aspirated V12 hypercar: smooth metallic howl to a high shriek", ["lambo2", "aston-martin-valk", "nuvolari"],
+    "na-v12-screamer": ("A", 10500, "Naturally aspirated V12 hypercar: smooth metallic howl to a high shriek", ["lambo2", "aston-martin-valk"],
                         dict(idle=1100, low=3200, mid=6300, high=9500, decel=5000)),
     "v8-crossplane": ("A", 7000, "Big cross-plane V8 muscle car: deep lumpy burble, thunderous roar", ["mustang"],
                       dict(idle=900, low=2100, mid=4200, high=6300, decel=3500)),

@@ -25,7 +25,7 @@ try{
  assert.ok(routes.some(([name,id])=>name==='setup'&&id==='race'));assert.ok(routes.some(([name])=>name==='garage'));assert.ok(routes.some(([name])=>name==='credits'));assert.ok(routes.some(([name])=>name==='records'));
  buttons.forEach((b,i)=>b.rect={x:(i%3)*110,y:Math.floor(i/3)*110,width:100,height:100});
  nav.reset(0);nav.moveSpatial(1,0);assert.equal(nav.i,1);nav.moveSpatial(0,1);assert.equal(nav.i,4);
- const credits=UI.CreditsScreen(game);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC Attribution-NonCommercial-ShareAlike'));
+ const credits=UI.CreditsScreen(game);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));
  const records=UI.RecordsScreen(game);records.onShow();const rosterSize=JSON.parse((await import('node:fs')).readFileSync(new URL('../../assets/teams/teams.json',import.meta.url))).teams.flatMap(t=>t.cars).length;
  assert.equal(records.el.children[1].children[2].children.length,rosterSize,'the records board lists the whole roster, not only cars car-lab can assemble');
  // credits come from every assets/cars/*/model.json: one card per model, none named in code
@@ -65,7 +65,7 @@ try{
  // car info: names cover every roster key and facts exist for all of them (from specs.json or the handling fallback)
  const CI=await server.ssrLoadModule('/src/game/carinfo.js');
  for(const k of CI.ROSTER){assert.ok(CI.carName(k)&&CI.carName(k)!==k+'!','name for '+k);const f=CI.factsOf(k);assert.ok(Number.isFinite(f.powerHp)||f.estimated,'facts for '+k);}
- assert.equal(CI.factsOf('tesla1').powertrain,'EV');
+ (await server.ssrLoadModule('/src/game/ev.js')).EV.add('ev-test');assert.equal(CI.factsOf('ev-test').powertrain,'EV');assert.equal(CI.factsOf('av12').powertrain,'ICE');
  const gain=CI.gainOf('av12',{engine:3,tyres:3,brakes:3},{engine:0,tyres:0,brakes:0});
  assert.ok(gain.top>1&&gain.acc>1&&gain.grip>1,'upgrades make the car measurably faster, grippier and quicker off the line');
  // the physics side of the contract: applying levels measurably changes handling(key), and AI cars stay at level 0

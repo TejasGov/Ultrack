@@ -6,6 +6,7 @@
 // - commentary: Enzo, Alastair and Kavya lines picked by category and situation, never two at once, speakers alternating
 //   (Enzo, then Alastair answering), minimum gaps by priority and an airtime cap, no repeats until a category is used up
 import { createPA, RoadAudio } from './audio-effects.js';
+import { EV } from './ev.js';
 const A = '/assets/audio/';
 
 export class GameAudio {
@@ -94,7 +95,7 @@ export class GameAudio {
     const token=this.engineToken;
     if(this.initializing)await this.initializing;
     if (!this.ready||token!==this.engineToken) return;
-    const electric=['tesla1','nuvolari'].includes(key);
+    const electric=EV.has(key);
     if(electric){this.engine={ev:true,prof:{redline:16000},layers:{},road:new RoadAudio(this.ctx,this.bus,{electric:true})};return;}
     // Missing recordings stay quiet; never silently restore the generated V1 bank.
     const prof = this.engineBank?.profiles?.[key] ?? {redline:8000,loops:{}};

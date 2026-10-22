@@ -2,8 +2,8 @@
   {
     "base": "marina_visual",
     "cellMetres": 768,
-    "sourceBytes": 7899036,
-    "outputBytes": 7961572,
+    "sourceBytes": 7883368,
+    "outputBytes": 7945880,
     "changes": [
       {
         "name": "track_00",
@@ -15,8 +15,8 @@
   {
     "base": "marina_visual_ktx2",
     "cellMetres": 768,
-    "sourceBytes": 12807028,
-    "outputBytes": 12869692,
+    "sourceBytes": 12790188,
+    "outputBytes": 12852828,
     "changes": [
       {
         "name": "track_00",

@@ -8,7 +8,7 @@ bank=json.loads((BASE/'recorded-engine-bank.json').read_text())
 receipts=json.loads((BASE/'recordings/receipts.json').read_text())
 teams=json.loads((ROOT/'assets/teams/teams.json').read_text())
 keys={c['key'] for t in teams['teams'] for c in t['cars']}
-assert set(bank['profiles'])==keys-{'tesla1','nuvolari'}
+assert set(bank['profiles'])==keys
 total=0;own=0;shared=0
 for key,p in bank['profiles'].items():
     assert p['source']['license']=='CC BY 3.0'

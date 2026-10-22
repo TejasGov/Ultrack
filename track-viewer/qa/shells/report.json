@@ -1,11 +1,11 @@
 [
   {
     "file": "marina_visual.glb",
-    "before": 267708,
-    "after": 265179,
+    "before": 266328,
+    "after": 263799,
     "removed": 2529,
-    "sourceBytes": 7921812,
-    "outputBytes": 7899036,
+    "sourceBytes": 7907076,
+    "outputBytes": 7883368,
     "changes": [
       {
         "mesh": "hotel",
@@ -47,11 +47,11 @@
   },
   {
     "file": "marina_visual_ktx2.glb",
-    "before": 267708,
-    "after": 265179,
+    "before": 266328,
+    "after": 263799,
     "removed": 2529,
-    "sourceBytes": 12862784,
-    "outputBytes": 12807028,
+    "sourceBytes": 12845840,
+    "outputBytes": 12790188,
     "changes": [
       {
         "mesh": "hotel",

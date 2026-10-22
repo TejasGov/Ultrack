@@ -52,12 +52,12 @@ Nothing here has been checked by ear. The checks were by measurement only (decod
 | profile | cars | redline | loop rpm (idle / low / mid / high / decel) |
 |---|---|---|---|
 | v8-flatplane | furari-488, mclaren | 8000 | 1000 / 2400 / 4800 / 7200 / 4000 |
-| na-v12-screamer | lambo2, aston-martin-valk, nuvolari | 10500 | 1100 / 3200 / 6300 / 9500 / 5000 |
+| na-v12-screamer | lambo2, aston-martin-valk | 10500 | 1100 / 3200 / 6300 / 9500 / 5000 |
 | v8-crossplane | mustang | 7000 | 900 / 2100 / 4200 / 6300 / 3500 |
 | flat-six | porsche1 | 9000 | 1000 / 2700 / 5400 / 8100 / 4500 |
 | w16-quadturbo | buggati, bentley-gt | 6800 | 1000 / 2000 / 4100 / 6100 / 3500 |
 | inline-six | bmw1, jaguarxkjss | 7500 | 950 / 2250 / 4500 / 6750 / 4000 |
-| ev-performance | tesla1 | ~20000 motor rpm | 0 / 6000 / 12000 / 18000 / 10000 |
+| ev-performance | (none; the EV bank was never shipped) | ~20000 motor rpm | 0 / 6000 / 12000 / 18000 / 10000 |
 
 The rpm values are what the prompts asked for. The generator does not guarantee pitch, so tune each layer's reference rpm by ear. The EV layers barely rise from mid to high (about 1265 Hz to 1360 Hz), so the pitch shift has to carry most of the rise there.
 

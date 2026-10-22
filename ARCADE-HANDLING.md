@@ -23,12 +23,11 @@ Validation used the same fixed-step Rapier physics and actual wheel profiles as 
 | AV–12, 180km/h turn + lift, peak slide | 25° | 6° |
 | AMG One, same maneuver | 17° | 7° |
 | ST–6, same maneuver | 14° | 4° |
-| Roadster-X, same maneuver | 17° | 4° |
 | AV–12, 100–0 braking | 40.9m | 38.3m |
 | AMG One, 100–0 braking | 41.1m | 38.5m |
 
 These are controlled scenarios, not exact GTA V reproduction or guarantees against spins. Wet roads remain less grippy than dry roads. A 6% grip increase deliberately changes previous real-spec braking calibration; the tune now prioritizes approachable racing.
 
-Actual damp-circuit AI laps: AV–12 152.0s, AMG One 152.2s, ST–6 156.6s, Roadster-X 153.4s. All completed with zero spins, zero resets and zero steps beyond the harness's 8m racing-line distance threshold. These results do not establish multiplayer balance; the existing balance table was not rewritten.
+Actual damp-circuit AI laps: AV–12 152.0s, AMG One 152.2s, ST–6 156.6s. All completed with zero spins, zero resets and zero steps beyond the harness's 8m racing-line distance threshold. These results do not establish multiplayer balance; the existing balance table was not rewritten.
 
 `npm run test:arcade` checks all 14 cars in dry/damp/rain (42 scenarios), 180km/h steering/lift recovery, handbrake initiation and release, a one-sided 12cm kerb crossing and a landing. It also checks that recovery assists are off in air/loose terrain, bounded recovery force, and keyboard response independence from frame rate. The report is `track-viewer/qa/arcade/driving-report.json`. Existing pedal, traction, brake-lamp, input/lifecycle regressions and production build are also checked.

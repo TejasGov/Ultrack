@@ -140,11 +140,11 @@ def booth(M):
     return [dict(pos=G.L.to_game(CX + x, CY + yf - 1.9, Z2 - 0.1), yawRad=0.0) for x in (-2.2, 2.2)]
 
 
-BANNER_X = {"saetta": -22, "toro": -40, "corvid": -58, "kalt": -76, "mojave": 22, "aurum": 40, "sarab": 58, "liberty": 76}   # metres from the pavilion centre
+BANNER_X = {"saetta": -22, "toro": -40, "corvid": -58, "mojave": 22, "aurum": 40, "sarab": 58, "liberty": 76}   # metres from the pavilion centre
 
 
 def banners(M):
-    """Eight team banners, 5 x 8 m, hanging from the canopy in front of the south facade, four west and four east of the booth."""
+    """Seven team banners (Kalt's was removed), 5 x 8 m, hanging from the canopy in front of the south facade, three west and four east of the booth."""
     bm = bmesh.new()
     uv = bm.loops.layers.uv.new("UVMap")
     mats_ = []

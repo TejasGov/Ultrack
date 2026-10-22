@@ -21,8 +21,8 @@ Everything is local and runs from this folder. `npm --prefix track-viewer run de
 | Folder | What lives there |
 |---|---|
 | `track-viewer/` | **The game** (three.js + Rapier, Vite). `src/` runtime (`main.js` scene, `cars.js` car builder, `game/` menus, HUD, audio, garage, session; `physics/` vehicle, arcade handling, AI; `carkit/` lamps, mirrors, FX), `scripts/` build, pack and test scripts, `public/` the served copies that `npm run sync` writes (never edit; rebuild from `assets/` and `tracks/`), `qa/` and `shots/` generated QA reports and screenshots, `dist/` production build. App docs: `README.md`, `GAME.md`, `PHYSICS.md`, `CAR-QA.md`. |
-| `assets/cars/` | One folder per car key. **Complete models** (12 cars) have `car_lod0/1.glb` and packed `car_lod0/1_ktx2.glb` from `track-viewer/scripts/model-car.py`, plus `model.json` (wheels, lamps, glass, exhaust), `source.json` and `license.json` (credits). **Shell cars** (`mustang`, `bentley-gt`, `bmw1`, `tesla1`) still use the Meshy bodies `body_lod0/1.glb` (`npm run derive:cars`). Shared data: `tuning/<key>.json` (per-car QA fixes), `handling.json`, `driving.json`, `exhaust.json`, `finishes.json`, `specs.json`, `texture-variants.json`, `lods.json` (shell provenance). |
-| `assets/teams/` | `teams.json` (8 teams, 16 cars, drivers, colours, fonts), `progression.json`, team logos and fonts, `brand-guide.html` ([TEAMS.md](assets/teams/TEAMS.md)). |
+| `assets/cars/` | One folder per car key. **Complete models** (11 cars) have `car_lod0/1.glb` and packed `car_lod0/1_ktx2.glb` from `track-viewer/scripts/model-car.py`, plus `model.json` (wheels, lamps, glass, exhaust), `source.json` and `license.json` (credits). **Shell cars** (`mustang`, `bentley-gt`, `bmw1`) still use the Meshy bodies `body_lod0/1.glb` (`npm run derive:cars`). Shared data: `tuning/<key>.json` (per-car QA fixes), `handling.json`, `driving.json`, `exhaust.json`, `finishes.json`, `specs.json`, `texture-variants.json`, `lods.json` (shell provenance). |
+| `assets/teams/` | `teams.json` (7 teams, 14 cars, drivers, colours, fonts), `progression.json`, team logos and fonts, `brand-guide.html` ([TEAMS.md](assets/teams/TEAMS.md)). |
 | `assets/audio/` | Game sound. `engines/recorded/` + `recorded-engine-bank.json` (real CC BY recordings, 14 combustion cars on 9 recordings), `recordings/` (plan, credits, receipts, `src/` originals), `announcers/` (script, voiced takes per speaker, `voice_manifest.json`), `crash/`, `crowd/`, `race/`, `fireworks/`, `manifest.json`. See [assets/audio/README.md](assets/audio/README.md) and [CREDITS.md](assets/audio/CREDITS.md). |
 | `assets/drivers/` | One folder per driver: poster, hoarding and thumbnail WebPs, intro data, `source/` art direction and prompts. `gallery.html` is the review sheet. |
 | `assets/characters/` | Trackside people. `mixamo/` FBX masters, Meshy character GLBs, `web/` the compressed set the game loads ([README](assets/characters/README.md)). |
@@ -63,13 +63,13 @@ Other checks: `node scripts/test-progression.mjs`, `node scripts/test-fx.mjs <ca
 
 
 
-The following third-party models replace the McLaren concept, Jaguar XKSS,
+The following third-party models replace the McLaren concept and Jaguar XKSS
 
-and Audi Nuvolari respectively. Existing internal roster keys (`mp1x`,
+respectively. Existing internal roster keys (`mp1x`,
 
-`jaguarxkjss`, `nuvolari`) are retained for saved selections and team assignments.
+`jaguarxkjss`) are retained for saved selections and team assignments.
 
-The roster still contains 12 cars.
+The roster contains 14 cars.
 
 
 
@@ -80,8 +80,6 @@ The roster still contains 12 cars.
 | McLaren 720S | [_shobh19](https://sketchfab.com/s0h1o9b) | [2017 Mclaren 720s](https://sketchfab.com/3d-models/2017-mclaren-720s-f7bece69400f4640a4a3be746b44998b) | [CC Attribution](http://creativecommons.org/licenses/by/4.0/) |
 
 | Mercedes-AMG One | [3dblender_1](https://sketchfab.com/3dblender_1) | [Mercedes Amg One](https://sketchfab.com/3d-models/mercedes-amg-one-77b02e5a555d4819b490f67eeb348d22) | [CC Attribution](http://creativecommons.org/licenses/by/4.0/) |
-
-| Audi e-tron GT Concept | [Ddiaz Design](https://sketchfab.com/ddiaz-design) | [2018 Audi e-tron GT Concept](https://sketchfab.com/3d-models/2018-audi-e-tron-gt-concept-e35726151c9e4a169c005d54509715fa) | [CC Attribution-NonCommercial-ShareAlike](http://creativecommons.org/licenses/by-nc-sa/4.0/) |
 
 
 
@@ -94,22 +92,6 @@ Licenses above were verified against the official Sketchfab model API on
 McLaren and Mercedes are listed as **CC BY 4.0**. Attribution and a link to the
 
 license must accompany redistributed models and derivatives.
-
-
-
-**Audi e-tron GT: CC BY-NC-SA 4.0 — noncommercial use only.** Modified Audi model
-
-assets are distributed under the same CC BY-NC-SA 4.0 license. The source
-
-description credits **@VuckyZ123** and states that it is based on a **Real Racing 3
-
-3D model**; that provenance is retained here. The uploader's listed CC license
-
-does not establish clearance for underlying third-party game assets or branding.
-
-This Audi is included for the local noncommercial prototype; it is not cleared
-
-for a commercial game release.
 
 
 
@@ -127,8 +109,6 @@ their measured hubs, and derived runtime LODs. Body paint and lamp emission are
 
 controlled at runtime; original trim, cabin, tires and wheel geometry are retained.
 
-The Audi emits no combustion exhaust.
-
 
 
 Source downloads are preserved at the project root. SHA-256 source/output receipts
@@ -145,7 +125,7 @@ Prior generated-car profiles are archived under
 
 
 
-`npm --prefix car-lab run check:vehicle` checks profile hashes, the 12-car roster,
+`npm --prefix car-lab run check:vehicle` checks profile hashes, the 14-car roster,
 
 legacy procedural assemblies and the new complete-model assemblies.
 

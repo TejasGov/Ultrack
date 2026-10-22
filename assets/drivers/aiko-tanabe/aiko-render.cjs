@@ -1,6 +1,0 @@
-const sharp = require(require.resolve('sharp', { paths: ['track-viewer'] }));
-sharp('assets/drivers/aiko-tanabe/poster-v1.svg', { density: 72 })
-  .resize(1920, 1080)
-  .png({ compressionLevel: 8 })
-  .toFile('assets/drivers/aiko-tanabe/poster-v1.png')
-  .then(({ width, height }) => console.log(`${width}x${height}`));

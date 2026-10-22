@@ -1,5 +1,5 @@
 // Car FX check (carkit/fx.js, fx-nitro.js, fx-vapor.js): drives the sandbox's test drive frame by frame and saves close-ups.
-//   npm run dev (another terminal), then: node scripts/test-fx.mjs av12 [buggati mustang tesla1]
+//   npm run dev (another terminal), then: node scripts/test-fx.mjs av12 [buggati mustang porsche1]
 // Writes qa/<car>/fx-idle.png, fx-lift.png (one frame per tile through the overrun), fx-nitro.png, fx-wet.png (rain, at speed) and
 // prints particle counts and the worst per-frame cost of the FX update. Exits 1 if:
 //   an electric car pops, makes steam or crackles; a combustion car never pops / shows steam;

@@ -11,16 +11,15 @@
   },
   "cars": {
     "mustang": "D", "bmw1": "D",
-    "nuvolari": "C", "bentley-gt": "C",
+    "bentley-gt": "C",
     "porsche1": "B", "furari-488": "A", "mp1x": "A", "av12": "A", "blackbird": "A", "huracan": "A",
-    "tesla1": "S", "jaguarxkjss": "S", "buggati": "S", "laferrari": "S",
+    "jaguarxkjss": "S", "buggati": "S", "laferrari": "S",
     "aston-martin-valk": "S+", "destrier": "S+"
   },
   "teams": {
     "saetta": {"status": "Serial winners", "story": "A trophy-laden factory dynasty from Modena. Winning is the expectation, every season without a title is a reckoning, and Toro is always watching from up the road."},
     "toro": {"status": "Eternal challengers", "story": "A tractor works with a sixty-year grudge against Saetta. Naturally aspirated, over-built and loud, it has never stopped chasing the red cars up the Via Emilia."},
     "corvid": {"status": "Former champions", "story": "The old benchmark, rebuilding its claim to the front. Precision and experience meet a hungry new generation."},
-    "kalt": {"status": "New challengers", "story": "An electric newcomer betting on instant torque and a different racing philosophy. Everything still to prove."},
     "mojave": {"status": "Fallen greats", "story": "Once a fixture at the sharp end, now chasing a revival with grit, inventive engineering and an underdog garage."},
     "aurum": {"status": "Defending champions", "story": "The reigning title holders. A formidable hypercar stable and the pressure of being the team everyone wants to beat."},
     "liberty": {"status": "Rookie team", "story": "A first-season outfit with veteran drivers, American muscle and an ambitious supercar programme. No history to protect."},

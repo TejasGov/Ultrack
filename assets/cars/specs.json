@@ -134,68 +134,6 @@
         "brake100To0M"
       ]
     },
-    "nuvolari": {
-      "model": "Audi e-tron GT concept (2018)",
-      "lengthM": 4.96,
-      "widthM": 1.96,
-      "heightM": 1.38,
-      "wheelbaseM": 2.9,
-      "massKg": 2100,
-      "powertrain": "EV",
-      "engine": "Two permanent-magnet synchronous motors (one per axle), about 95 kWh battery, single-speed",
-      "powerHp": 590,
-      "torqueNm": 640,
-      "drive": "AWD",
-      "topSpeedKmh": 240,
-      "zeroTo100S": 3.5,
-      "brake100To0M": 37,
-      "brakeBasis": "estimated: heavy EV on road-car tyres",
-      "sources": [
-        "https://en.wikipedia.org/wiki/Audi_e-tron_GT",
-        "https://www.audi-mediacenter.com/en/press-releases/audi-e-tron-gt-concept-world-premiere-at-the-la-auto-show-10795"
-      ],
-      "estimated": true,
-      "estimatedFields": [
-        "brake100To0M",
-        "heightM",
-        "lengthM",
-        "massKg",
-        "torqueNm"
-      ],
-      "notes": "a 2018 show car: power (434 kW / 590 PS), 0-100 and top speed are the maker's; mass, torque and body dimensions are estimated from the 2021 production e-tron GT (4.99 x 1.96 x 1.41 m, 2,200 kg)"
-    },
-    "tesla1": {
-      "model": "Tesla Roadster (second generation)",
-      "lengthM": 4.65,
-      "widthM": 2.0,
-      "heightM": 1.2,
-      "wheelbaseM": 2.825,
-      "massKg": 1850,
-      "powertrain": "EV",
-      "engine": "Three permanent-magnet motors (one front, two rear), 200 kWh battery, single-speed",
-      "powerHp": 1341,
-      "torqueNm": 4500,
-      "drive": "AWD",
-      "topSpeedKmh": 400,
-      "zeroTo100S": 2.1,
-      "brake100To0M": 30,
-      "brakeBasis": "estimated",
-      "sources": [
-        "https://en.wikipedia.org/wiki/Tesla_Roadster_(second_generation)",
-        "https://www.tesla.com/roadster"
-      ],
-      "estimated": true,
-      "estimatedFields": [
-        "brake100To0M",
-        "heightM",
-        "lengthM",
-        "massKg",
-        "topSpeedKmh",
-        "torqueNm",
-        "zeroTo100S"
-      ],
-      "notes": "unreleased: the 2017 reveal claimed 0-60 mph 1.9 s (about 2.1 s to 100 km/h), a top speed above 250 mph and 10,000 N.m of wheel torque (4,500 N.m is a motor-shaft-equivalent estimate); target mass under 1,700 kg, 1,850 kg estimated with the 200 kWh pack; width and wheelbase from the wiki"
-    },
     "mustang": {
       "model": "Ford Mustang GT (2018)",
       "lengthM": 4.788,

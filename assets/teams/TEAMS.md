@@ -1,6 +1,6 @@
 # Ultrack teams and drivers
 
-Eight fictional race teams own the grid, each with two cars and two drivers, like F1 constructors (sixteen cars; a race runs one car per team, so eight). `teams.json` holds the data the game reads:
+Seven fictional race teams own the grid, each with two cars and two drivers, like F1 constructors (fourteen cars; a race runs one car per team, so seven). `teams.json` holds the data the game reads:
 - per team: id, name, three-letter code, colours (plus an optional text colour, `ink`, for a team whose accent is too pale to read on its primary), an optional light colour (`light`), display font, paint finish, livery brief and pit boxes;
 - per car: its key and race number;
 - per driver: name, broadcast code, nationality, age, role, a one-line bio, background, personality and rivals (driver codes).
@@ -9,7 +9,7 @@ Team and driver names are fictional. Real sponsor artwork is used in this local 
 
 ## Teams
 
-All eight teams have original emblems and outlined wordmarks, exported as SVG
+All seven teams have original emblems and outlined wordmarks, exported as SVG
 masters plus transparent PNG/WebP textures. Team, dark-background and
 light-background variants are available as horizontal lockups and standalone
 emblems. See [logo documentation](logos/README.md) and the live gallery at
@@ -21,13 +21,12 @@ cards reuse these assets. Sponsor artwork is separate from the team identities.
 | **Saetta** | SAE | Italian: a lightning bolt | Modena | Vittoria Saldani | flat-plane V8 (Furari) / V12 hybrid (La Furari) |
 | **Toro** | TOR | Italian: the bull | Sant'Agata Bolognese | Ettore Montanari | V12 (AV–12) / V10 (HU–10) |
 | **Corvid** | COR | the raven and crow family | Silverstone | Sir Hugo Ravensworth | V12 (Valkyrie) / W12 (Bentley) |
-| **Kalt** | KLT | German: cold | Stuttgart | Dr. Ingrid Falk | Electric pair |
 | **Mojave** | MOJ | the desert it was built in | Barstow, CA | Cal Beaumont | F1 hybrid V6 (AMG One) / twin-turbo V8 (AMG GT4) |
 | **Aurum** | AUR | Latin: gold | Monaco | Helene Aurelle | W16 (the two Bugattis) |
 | **Liberty** | LIB | English: freedom; the cracked bell of Philadelphia | Philadelphia, PA | Harlan Whitfield | V8 / W16 (Mustang and Blackbird) |
 | **Sarab** | SRB | Arabic: a mirage (the home team) | Corniche Marina | Rashid Al-Mansouri | V8 / flat-six |
 
-Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Eight teams, but the marina has only seven trackside sponsors besides the tyre supplier, so Toro shares Red Bull with Kalt.
+Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Seven teams and seven trackside sponsors besides the tyre supplier: one title sponsor each.
 
 ## Saetta and Toro: the two Italian houses
 
@@ -51,18 +50,16 @@ What Toro stands for: noise, honesty and over-engineering. Naturally aspirated e
 | 7 | Matteo Varrone | VAR | ITA | Toro | AV–12 | Toro's prodigal son |
 | 8 | Freya Lindqvist | LIN | SWE | Mojave | Mercedes-AMG One | rally convert |
 | 9 | Rosa Quintero | QUI | MEX | Mojave | Mercedes-AMG GT4 | rookie |
-| 11 | Jonas Reiter | REI | GER | Kalt | Audi e-tron GT Concept | engineer turned driver |
 | 16 | Armand Beaulieu | BEA | FRA | Aurum | Bugatti Destrier | the gentleman racer |
 | 17 | Sofia Calderini | CAL | SUI | Saetta | Furari 488-R | the calm one at Saetta |
 | 27 | Thiago Barreto | BAR | BRA | Saetta | La Furari | the showman |
-| 22 | Aiko Tanabe | TAN | JPN | Kalt | Roadster-X | rain master |
 | 33 | Layla Qasimi | QAS | OMN | Sarab | 911–T | the overtaker |
 | 44 | Kai Whitlow | WHI | NZL | Corvid | Continental GT | the grid's veteran |
 | 63 | Paloma Ortega | ORT | ESP | Toro | HU–10 | the matador |
 | 66 | Cole Maddox | MAD | USA | Liberty | Mustang ST–6 | the brawler |
 | 76 | Wade Hollis | HOL | USA | Liberty | Hennessey Blackbird | the Colonel |
 
-The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Sixteen drivers, fifteen nations (two Americans at Liberty).
+The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Fourteen drivers, thirteen nations (two Americans at Liberty).
 
 ## Driver profiles
 
@@ -74,13 +71,11 @@ What the commentators riff on. The data is in teams.json (age, role, background,
 - **Paloma Ortega** (ORT, ESP, 32, Toro #63), the matador. From Seville; her father fought bulls for twenty years and she grew up in the bullring's stable yard before running away to karts at twelve; European GT champion when Toro signed the one driver who would not charge. Ice-cold and patient: she lets the others charge, then steps aside at the last metre of the braking zone. Hates the headline nickname 'La Torera' and has stopped correcting it. At a team called the bull, Varrone is the bull and she is the matador, and both know it. Rivals: Sofia Calderini (the two coldest heads on the grid, on the two warmest teams).
 - **Theo Ashcombe** (ASH, GBR, 24, Corvid #4), third-generation racer. Grandfather raced at Silverstone, father ran Corvid's test team; grew up in the paddock. Writes a handwritten apology note after every collision, then does it again; a running feud with Varrone since they touched at the Corniche hairpin. Rivals: Matteo Varrone.
 - **Kai Whitlow** (WHI, NZL, 38, Corvid #44), the grid's veteran. Grew up on a sheep station in Canterbury, New Zealand; three endurance class wins before Corvid signed him. The Metronome: lap times within a tenth for hours; surfs between races; quietly mentors the rookies, even on other teams.
-- **Jonas Reiter** (REI, GER, 33, Kalt #11), engineer turned driver. From Stuttgart; designed Kalt's aero for five years, then beat their test driver in a shootout. Sets up his own car and brings printouts to every argument; dry and exact; Maddox calls him the spreadsheet. Rivals: Cole Maddox.
-- **Aiko Tanabe** (TAN, JPN, 28, Kalt #22), rain master. From Shizuoka, under Mount Fuji; learned on wet mountain hill-climbs before single-seaters. Quiet and exact; checks the weather radar obsessively and hopes for rain; draws every circuit map by hand before a race weekend. Rivals: Freya Lindqvist.
-- **Cole Maddox** (MAD, USA, 30, Liberty #66), the brawler. From Bakersfield, California; sprint cars and dirt ovals from age nine, until Liberty's Harlan Whitfield flew in to watch him win a county-fair dirt race and signed him on the spot. The most penalised driver in the paddock; cowboy boots, no filter, big heart; the stewards know number 66 by heart; he and teammate Hollis cannot agree on who is the real American. Rivals: Jonas Reiter, Wade Hollis.
+- **Cole Maddox** (MAD, USA, 30, Liberty #66), the brawler. From Bakersfield, California; sprint cars and dirt ovals from age nine, until Liberty's Harlan Whitfield flew in to watch him win a county-fair dirt race and signed him on the spot. The most penalised driver in the paddock; cowboy boots, no filter, big heart; the stewards know number 66 by heart; he and teammate Hollis cannot agree on who is the real American. Rivals: Freya Lindqvist, Wade Hollis.
 - **Rosa Quintero** (QUI, MEX, 20, Mojave #9), rookie. From Monterrey; sim-racing world champion who won her seat in Mojave's esports shootout. Frighteningly fast over one lap, still learning racecraft in traffic; the youngest driver on the grid and openly out to beat Valois. Rivals: Remy Valois.
 - **Remy Valois** (VAL, MON, 31, Aurum #1), reigning champion. Born in Monte Carlo, son of a yacht broker; two titles with Aurum. Never raises his voice on the radio; listens to old jazz on the grid; his charm is half the psychology. Rivals: Zayn Kareem, Rosa Quintero, Armand Beaulieu.
 - **Armand Beaulieu** (BEA, FRA, 36, Aurum #16), the gentleman racer. From Lyon, the son of a silk merchant; a decade of endurance prototypes and three Le Mans class podiums before Aurum gave Valois a teammate he could not charm. Dresses for the grid as if for a gala; calls Valois 'le Prince' to his face; collects vintage watches; never swears, but his sigh on the radio is worse. Rivals: Remy Valois, Zayn Kareem.
-- **Freya Lindqvist** (LIN, SWE, 29, Mojave #8), rally convert. From Värmland, Sweden; forest rallies and ice racing on frozen lakes until Cal Beaumont watched her slide a car across one and offered her a seat at Mojave. Deadpan; says grip is overrated and means it; the rain specialist Tanabe's great rival; the one person at Mojave who has never been impressed by the barn. Rivals: Aiko Tanabe.
+- **Freya Lindqvist** (LIN, SWE, 29, Mojave #8), rally convert. From Värmland, Sweden; forest rallies and ice racing on frozen lakes until Cal Beaumont watched her slide a car across one and offered her a seat at Mojave. Deadpan; says grip is overrated and means it; the brawler Maddox's great rival (she slides the car, he shoves it); the one person at Mojave who has never been impressed by the barn. Rivals: Cole Maddox.
 - **Wade Hollis** (HOL, USA, 37, Liberty #76), the Colonel. From Abilene, Texas; fourteen years as an air-force test pilot before a charity race showed he was faster on the ground. Speaks in checklists and calls corners 'waypoints'; unflappable on the radio; flies himself to every race in a vintage trainer; he and teammate Maddox cannot agree on who is the real American. Rivals: Cole Maddox.
 - **Zayn Kareem** (KAR, UAE, 27, Sarab #3), home hero. Grew up on the Corniche; powerboat racer on the marina as a teenager before Sarab put him in a car. Carries a whole city's expectations; generous with fans; wants Valois's crown, and knows his teammate is often quicker. Rivals: Remy Valois, Layla Qasimi.
 - **Layla Qasimi** (QAS, OMN, 25, Sarab #33), the overtaker. Learned to drive on graded desert roads near Oman's Wahiba Sands in her uncle's pickup; Sarab signed her after her first season in club racing. Fearless and cheerful; holds the record for passes in a single race; friendly rivalry with teammate Kareem that splits the crowd. Rivals: Zayn Kareem.
@@ -105,15 +100,15 @@ Mojave now runs both Mercedes: Lindqvist (#8) in the AMG One and Quintero (#9) i
 
 ## Pit boxes
 
-The marina pit lane has 12 boxes for 16 cars. **Aurum** (1-2), **Saetta** (3-4), **Toro** (5-6, next door to its rival) and **Sarab** (7-8, the home team, moved down two) keep two boxes each; **Corvid** has box 9, **Kalt** box 10, **Mojave** box 11 and **Liberty** box 12. So four second cars have no parked slot and stay out of the pit lane unless racing: Corvid's Continental GT (#44), Kalt's Roadster-X (#22), Mojave's AMG GT4 (#9) and Liberty's Blackbird (#76). Fixing it means four more boxes in `tracks/marina/layout.py` and a track rebuild.
+The marina pit lane has 12 boxes for 14 cars. **Aurum** (1-2), **Saetta** (3-4), **Toro** (5-6, next door to its rival) and **Sarab** (7-8, the home team, moved down two) keep two boxes each; **Corvid** has boxes 9-10 (the two freed by Kalt's departure), **Mojave** box 11 and **Liberty** box 12. So two second cars have no parked slot and stay out of the pit lane unless racing: Mojave's AMG GT4 (#9) and Liberty's Blackbird (#76). Fixing it means two more boxes in `tracks/marina/layout.py` and a track rebuild.
 
 ## Venue artwork
 
-Garage headers, box floor panels, flags, trucks, hospitality units and the eight canopy banners of the Corniche Club follow this file; the seventh and eighth teams' pieces (Liberty, Toro) were added to the built venue by `tracks/marina/apply_teams.py`, which also hands every pit box to the team that owns it. Toro's banner hangs next to Saetta's, its hospitality unit stands next to Saetta's, and its flag flies twice in the plaza.
+Garage headers, box floor panels, flags, trucks, hospitality units and the seven canopy banners of the Corniche Club follow this file; the seventh and eighth teams' pieces (Liberty, Toro) were added to the built venue by `tracks/marina/apply_teams.py`, which also hands every pit box to the team that owns it. Toro's banner hangs next to Saetta's, its hospitality unit stands next to Saetta's, and its flag flies twice in the plaza.
 
 ## Announcers
 
-The booth script is assets/audio/announcers/SCRIPT.md. Enzo's lines (v2) and Kavya Iyer's paddock reports name the teams, principals and drivers above. Nine lines are retired in script.json (`when: "retired"`): eight said twelve drivers or six teams and wait to be recorded again for the sixteen-car, eight-team grid, and one (`enzo.general_filler.01`, Varrone and "the Saetta engineers") is wrong now that he drives for Toro. Kavya's line about Varrone kissing the lightning bolt on his helmet stays true, and now has a story behind it. No line yet names Toro, Thiago Barreto or Paloma Ortega: they need new recordings. Alastair's 184 lines name nobody. Event lines are about the player's car, so they name a driver only as a comparison ("Very Varrone!"), never as the one doing the move. Calling the actual car on air ("Varrone is through!") would still need a per-driver name set.
+The booth script is assets/audio/announcers/SCRIPT.md. Enzo's lines (v2) and Kavya Iyer's paddock reports name the teams, principals and drivers above. Fourteen lines are retired in script.json (`when: "retired"`): eight said twelve drivers or six teams and wait to be recorded again for the current grid, one (`enzo.general_filler.01`, Varrone and "the Saetta engineers") is wrong now that he drives for Toro, and five (`enzo.intro_session.12`, `enzo.fastest_lap.04`, `enzo.rain_starting.02`, `enzo.general_filler.05` and `.06`) name Kalt's removed drivers Reiter and Tanabe. Kavya's line about Varrone kissing the lightning bolt on his helmet stays true, and now has a story behind it. No line yet names Toro, Thiago Barreto or Paloma Ortega: they need new recordings. Alastair's 184 lines name nobody. Event lines are about the player's car, so they name a driver only as a comparison ("Very Varrone!"), never as the one doing the move. Calling the actual car on air ("Varrone is through!") would still need a per-driver name set.
 
 ## To decide
 

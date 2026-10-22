@@ -20,7 +20,7 @@ try{
  }
  const scene=new THREE.Scene(),boards=new DriverHoardings(scene),requests=[];
  boards.loader.loadAsync=async url=>{requests.push(url);return new THREE.Texture();};
- const keys=Game.prototype.racersFor('tesla1',true);
+ const keys=Game.prototype.racersFor('porsche1',true);
  await boards.set(keys,track);assert.equal(boards.entries.length,teams.length);assert.equal(boards.root.children.length,teams.length);assert.equal(requests.length,teams.length);
  await boards.set(keys,track);assert.equal(requests.length,teams.length,'Repeat race reuses textures');
  boards.clear();assert.equal(boards.root.children.length,0);

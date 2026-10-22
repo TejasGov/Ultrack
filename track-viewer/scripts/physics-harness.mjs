@@ -1,6 +1,6 @@
 // Headless physics harness (no browser): loads src/physics through Vite's SSR loader and runs the measurements the
 // handling work is judged by. Needs the Vite dev server on :5180 only to serve the collision mesh for lap tests.
-//   node scripts/physics-harness.mjs --tests pad,brake,accel,top,lap --cars av12,tesla1 --weather dry,damp,rain --assist rookie,pro
+//   node scripts/physics-harness.mjs --tests pad,brake,accel,top,lap --cars av12,porsche1 --weather dry,damp,rain --assist rookie,pro
 //   node scripts/physics-harness.mjs --tests table            sim vs real: 0-100, top speed, 100-0 for every car
 //   node scripts/physics-harness.mjs --tests upgrades         self-check of the upgrade API
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -157,7 +157,7 @@ const ABUSE = { 'hold full lock @120 on throttle': [120, 0.6, 1, 0, 3.5], 'full 
 // ---------------------------------------------------------------------------------------------- driver
 const HJSON = join(repo, 'assets/cars/handling.json');
 const tests = (arg('tests', 'pad,brake,lap')).split(','), weathers = arg('weather', 'dry,damp,rain').split(','), assists = arg('assist', 'rookie,pro').split(',');
-const cars = arg('cars', 'bentley-gt,furari-488,tesla1').split(',');
+const cars = arg('cars', 'bentley-gt,furari-488,porsche1').split(',');
 const f2 = (x, n = 2) => (x == null ? '  -  ' : x.toFixed(n));
 if (tests.includes('abuse')) for (const as of assists) for (const k of cars) for (const wx of weathers) {
   W.setWeather(WET[wx]); const out = Object.entries(ABUSE).map(([n, a]) => { const r = abuse(k, ASSIST[as], a); return `${r.spun ? 'SPIN' : 'ok  '} ${f2(r.peakDeg, 0).padStart(3)}°`; });

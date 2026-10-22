@@ -231,7 +231,9 @@
       "text": "[excited] Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling. [chuckles] Everybody else is praying.",
       "priority": 3,
       "cooldown_s": 0,
-      "when": "rain"
+      "when": "retired",
+      "retiredFrom": "rain",
+      "retired": "names Aiko Tanabe (Kalt, removed from the grid)"
     },
     {
       "id": "enzo.intro_session.13",
@@ -1237,7 +1239,9 @@
       "speaker": "enzo",
       "text": "Fastest lap! [chuckles] Jonas Reiter will study that one on his laptop tonight.",
       "priority": 2,
-      "cooldown_s": 20
+      "cooldown_s": 20,
+      "when": "retired",
+      "retired": "names Jonas Reiter (Kalt, removed from the grid)"
     },
     {
       "id": "alastair.fastest_lap.01",
@@ -1909,7 +1913,9 @@
       "speaker": "enzo",
       "text": "Drops on the visor! It's beginning to rain! [laughs] Aiko Tanabe is smiling somewhere.",
       "priority": 2,
-      "cooldown_s": 120
+      "cooldown_s": 120,
+      "when": "retired",
+      "retired": "names Aiko Tanabe (Kalt, removed from the grid)"
     },
     {
       "id": "enzo.rain_starting.03",
@@ -2659,7 +2665,9 @@
       "speaker": "enzo",
       "text": "Jonas Reiter used to design the Kalt aerodynamics. Now he drives the car and argues with his own spreadsheets. [laughs] He always wins the argument.",
       "priority": 1,
-      "cooldown_s": 25
+      "cooldown_s": 25,
+      "when": "retired",
+      "retired": "names Jonas Reiter and Kalt (removed from the grid)"
     },
     {
       "id": "enzo.general_filler.06",
@@ -2667,7 +2675,9 @@
       "speaker": "enzo",
       "text": "Aiko Tanabe in the rain is poetry. [sighs] In the dry, she is only perfect. Only!",
       "priority": 1,
-      "cooldown_s": 25
+      "cooldown_s": 25,
+      "when": "retired",
+      "retired": "names Aiko Tanabe (Kalt, removed from the grid)"
     },
     {
       "id": "enzo.general_filler.07",

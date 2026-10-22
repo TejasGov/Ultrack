@@ -1,5 +1,5 @@
 // Brake + steer + reverse measurements (permanent checks for the driving model, research/driving-model.md).
-//   node scripts/physics-braking.mjs [--cars av12,mustang,bentley-gt,tesla1] [--tiers rookie,pro] [--wx dry,rain,damp]
+//   node scripts/physics-braking.mjs [--cars av12,mustang,bentley-gt,porsche1] [--tiers rookie,pro] [--wx dry,rain,damp]
 //        [--only table,reverse,ice,trail,slalom,assert]       `assert` turns the printed rows into pass/fail (exit 1)
 // Drives the real Vehicle on a flat world with the game's keyboard filters (player-controls.js).
 import { readFileSync, existsSync } from 'node:fs';
@@ -80,7 +80,7 @@ function slalom(key, tier, wx, pad = false) {
   const r = { offset: maxY - minY, beta: D(s.peakBeta), lat: s.peakLat, spun: s.peakBeta > 1 }; drop(s.v); return r;
 }
 
-const cars = arg('cars', 'av12,mustang,bentley-gt,tesla1').split(','), tiers = arg('tiers', 'rookie,pro').split(','), wxs = arg('wx', 'dry,rain').split(','), only = arg('only', 'unit,table,reverse,ice,trail,slalom,assert').split(',');
+const cars = arg('cars', 'av12,mustang,bentley-gt,porsche1').split(','), tiers = arg('tiers', 'rookie,pro').split(','), wxs = arg('wx', 'dry,rain').split(','), only = arg('only', 'unit,table,reverse,ice,trail,slalom,assert').split(',');
 const A = only.includes('assert'), fails = [];
 const check = (ok, msg) => { if (A && !ok) { fails.push(msg); console.log('  FAIL ' + msg); } };
 if (only.includes('table')) {

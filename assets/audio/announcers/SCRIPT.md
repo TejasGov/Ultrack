@@ -82,7 +82,7 @@ Priority 3 · cooldown 0 s
 
 **rain**
 
-- **Enzo:** [excited] Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling. [chuckles] Everybody else is praying. `enzo.intro_session.12`
+- ~~RETIRED (never played: names Aiko Tanabe (Kalt, removed from the grid))~~ **Enzo:** [excited] Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling. [chuckles] Everybody else is praying. `enzo.intro_session.12`
 - **Enzo:** Wet track, spray everywhere. Gentle hands tonight, or the car will bite. [chuckles] Ask Cole Maddox. He still has the teeth marks. `enzo.intro_session.13`
 - **Alastair:** Rain. Grip is now merely a rumour. Whoever is smoothest will look like a genius. `alastair.intro_session.12`
 - **Alastair:** [sighs] It is raining. Somewhere a set of slick tyres is weeping. So am I. `alastair.intro_session.13`
@@ -288,7 +288,7 @@ Priority 2 · cooldown 20 s
 - **Enzo:** [excited] Fastest lap of the race! Nobody has gone quicker! `enzo.fastest_lap.01`
 - **Enzo:** That's the fastest lap! [laughs] The car is singing! Opera! `enzo.fastest_lap.02`
 - **Enzo:** [shouting] Quickest of anyone tonight! Bellissimo! `enzo.fastest_lap.03`
-- **Enzo:** Fastest lap! [chuckles] Jonas Reiter will study that one on his laptop tonight. `enzo.fastest_lap.04`
+- ~~RETIRED (never played: names Jonas Reiter (Kalt, removed from the grid))~~ **Enzo:** Fastest lap! [chuckles] Jonas Reiter will study that one on his laptop tonight. `enzo.fastest_lap.04`
 - **Alastair:** The fastest lap of the race. Rather splendid. `alastair.fastest_lap.01`
 - **Alastair:** Quickest lap of anyone. The stopwatch approves. `alastair.fastest_lap.02`
 - **Alastair:** Fastest lap. I shall allow myself a small nod. `alastair.fastest_lap.03`
@@ -432,7 +432,7 @@ Priority 2 · cooldown 15 s
 Priority 2 · cooldown 120 s
 
 - **Enzo:** [excited] Rain is starting! Watch the grip now! `enzo.rain_starting.01`
-- **Enzo:** Drops on the visor! It's beginning to rain! [laughs] Aiko Tanabe is smiling somewhere. `enzo.rain_starting.02`
+- ~~RETIRED (never played: names Aiko Tanabe (Kalt, removed from the grid))~~ **Enzo:** Drops on the visor! It's beginning to rain! [laughs] Aiko Tanabe is smiling somewhere. `enzo.rain_starting.02`
 - **Enzo:** Here comes the rain! [dramatically] Mamma mia, everything changes! `enzo.rain_starting.03`
 - **Alastair:** Rain. And the order may be about to shuffle. `alastair.rain_starting.01`
 - **Alastair:** A shower arriving. The smooth will prosper. `alastair.rain_starting.02`
@@ -591,8 +591,8 @@ Priority 1 · cooldown 25 s
 - **Enzo:** You know, the bravest drivers are not the loudest. Sofia Calderini, ice in the veins. [chuckles] Her heart rate on the grid is lower than mine in this booth. `enzo.general_filler.02`
 - **Enzo:** [chuckles] Theo Ashcombe writes a handwritten apology after every crash. Beautiful handwriting. [sarcastic] Terrible apologies. Then he does it again. `enzo.general_filler.03`
 - **Enzo:** Kai Whitlow, thirty-eight years old, three endurance class wins. [warmly] He drives like a metronome. Tick, tock, tick, tock. Alastair loves him. `enzo.general_filler.04`
-- **Enzo:** Jonas Reiter used to design the Kalt aerodynamics. Now he drives the car and argues with his own spreadsheets. [laughs] He always wins the argument. `enzo.general_filler.05`
-- **Enzo:** Aiko Tanabe in the rain is poetry. [sighs] In the dry, she is only perfect. Only! `enzo.general_filler.06`
+- ~~RETIRED (never played: names Jonas Reiter and Kalt (removed from the grid))~~ **Enzo:** Jonas Reiter used to design the Kalt aerodynamics. Now he drives the car and argues with his own spreadsheets. [laughs] He always wins the argument. `enzo.general_filler.05`
+- ~~RETIRED (never played: names Aiko Tanabe (Kalt, removed from the grid))~~ **Enzo:** Aiko Tanabe in the rain is poetry. [sighs] In the dry, she is only perfect. Only! `enzo.general_filler.06`
 - **Enzo:** [sarcastic] Cole Maddox, the most penalised driver in the paddock. The stewards know his number by heart. Sixty-six. They dream about it. `enzo.general_filler.07`
 - **Enzo:** Rosa Quintero won her seat in a simulator. [laughs] I won my seat in this booth by talking. Both very modern stories. `enzo.general_filler.08`
 - **Enzo:** Remy Valois, the reigning champion. Always smiling, never sweating. [mischievously] I think he has an air conditioner in his helmet. `enzo.general_filler.09`

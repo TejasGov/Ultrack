@@ -3,7 +3,7 @@ and hospitality motorhomes, team flags (one wind direction for all), pole banner
 
 Called by build_blender.py (paddock.run(globals())) after venue.py.
 TEAMS ARE INVENTED, like the sponsors in venue.py: check the names before release and never use a real team's.
-The eight teams, their colours and their pit boxes come from assets/teams/teams.json, the file the game reads. Team-font
+The seven teams, their colours and their pit boxes come from assets/teams/teams.json, the file the game reads. Team-font
 artwork (garage headers, box floors, flags) is drawn by the viewer onto the per-team materials made here.
 """
 import json, math, os, random

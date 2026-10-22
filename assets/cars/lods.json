@@ -31,21 +31,6 @@
           "kb": 121
         }
       }
-    },
-    "tesla1": {
-      "name": "Roadster-X",
-      "sourceTriangles": 1004382,
-      "sourceSha256": "D7C57A3CE1B4AAC91B1BD5C8D3B8F05FA12A2FB1EFF872FD7B5E1AAF71A9B75E",
-      "lods": {
-        "body_lod0": {
-          "triangles": 79999,
-          "kb": 446
-        },
-        "body_lod1": {
-          "triangles": 20000,
-          "kb": 124
-        }
-      }
     }
   }
 }

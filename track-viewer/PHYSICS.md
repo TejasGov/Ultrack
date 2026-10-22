@@ -55,7 +55,7 @@ Phase B of `research/cinematic-racing.md`. The race cars drive on the track's co
 **`handling.js`, per-car parameters.**
 - **Facts from `specs.json`:** mass, body size, drive, powertrain (EV / hybrid / ICE), 0-100, top speed and power are real published figures with sources (`estimated` marks concepts and one-offs). `handling.json` keeps the car's character (grip, downforce, centre-of-mass height, weight split), the balance of performance (`bop`, `bopGrip`) and `brakeK`.
 - **Compression** so the whole field can race: top speed is 250 + (real - 240) x 0.6 km/h, 0-100 is 2.6 + (real - 2.6) x 0.75 s, 100-0 is 37 m + (real - 33) x 0.5, tyre grip lies within ±0.1 of 1.16. Power follows from mass and the 0-100 time, drag from power and top speed (all the power goes into drag at top speed, after rolling drag).
-- **Balance of performance** is bounded (power 0.93-1.07, grip 0.95-1.12) so the real differences in power and speed are not balanced away; the AI solo laps land within 147-153 s (4% apart, two groups: the cars with the most power-to-weight, and the Mustang, i8, e-tron and Continental).
+- **Balance of performance** is bounded (power 0.93-1.07, grip 0.95-1.12) so the real differences in power and speed are not balanced away; the AI solo laps land within 147-153 s (4% apart, two groups: the cars with the most power-to-weight, and the Mustang, i8 and Continental).
 - **Sim against real** (dry, flat world, Sport assists; the sim figures are the compressed targets after BoP):
 
 | Car (real model) | 0-100 s sim / real | Top km/h sim / real | 100-0 m sim / real |
@@ -65,8 +65,6 @@ Phase B of `research/cinematic-racing.md`. The race cars drive on the track's co
 | aston-martin-valk (Valkyrie) | 2.87 / 2.6 | 292 / 354 | 32.3 / 29 |
 | jaguarxkjss (AMG ONE) | 2.87 / 2.9 | 299 / 352 | 36.1 / 31 |
 | mp1x (720S) | 3.10 / 2.9 | 293 / 341 | 35.5 / 30 |
-| nuvolari (e-tron GT concept, EV) | 2.82 / 3.5 | 254 / 240 | 38.9 / 37 |
-| tesla1 (Roadster 2, EV) | 2.44 / 2.1 | 333 / 400 | 36.3 / 30 |
 | mustang (Mustang GT) | 3.64 / 4.5 | 260 / 249 | 39.0 / 37 |
 | bmw1 (i8) | 3.26 / 4.4 | 260 / 250 | 38.2 / 35 |
 | buggati (Divo) | 2.80 / 2.4 | 319 / 380 | 36.4 / 32 |
@@ -79,7 +77,7 @@ Phase B of `research/cinematic-racing.md`. The race cars drive on the track's co
 
   (2026-10-21: the Valkyrie, 918 Spyder, Huracan STO and LaFerrari rows were re-measured with `physics-harness.mjs --tests table` after adding and rebalancing them; the other rows are from the older tune and read 3-9% long in 100-0 and about 0.1 s slow in 0-100.) The four were balanced with `--tests balance --cars ... --write`, then calibrated with `--tests calibrate --cars ... --brakeScale .92 --write`: the field brakes about 8% shorter than the compressed target since the arcade grip pass, and the new cars follow it instead of recalibrating the rest. Order matters: balance first (bopGrip changes the brakes), calibrate after. All four sit at the floor of the BoP (power .93, grip .95): AI laps 144.0-144.6 s (Huracan 147.2 s), no spin, dry/damp/rain.
 
-  The ordering holds at the extremes (the e-tron, i8, Mustang and Continental are slowest off the line and in the brakes; the Roadster, Destrier and Divo are quickest and top-fastest) but the middle is squeezed: the cars are compressed and balanced on purpose. The Roadster's brakes are grip-limited at 36 m whatever the calibration (its tyre character is the weakest of the fast cars), so its brake upgrade does little.
+  The ordering holds at the extremes (the i8, Mustang and Continental are slowest off the line and in the brakes; the Destrier and Divo are quickest and top-fastest) but the middle is squeezed: the cars are compressed and balanced on purpose.
 - **Upgrades** (`setUpgrades(key, { engine, tyres, brakes })`, each 0..3; see specs.json `upgrades` for the numbers):
   - engine: power x1.05 / 1.10 / 1.16, +10 kg at level 3; top speed follows from the unchanged drag (+1.6 / 3.2 / 5%);
   - tyres: grip x1.03 / 1.06 / 1.09, and 2 / 4 / 6 points more of the dry grip kept in the wet;
@@ -135,7 +133,7 @@ What it does now (`vehicle.js`, `arcade.js`, `player-controls.js`, `assets/cars/
 - **Rotation tools:** a lifted throttle (`liftShift`, engine braking), the brakes (`brakeShift`, Casual half, halved again by 220 km/h) and power (`powerShift`) shift cornering grip between the axles (`pitchGrip`, with a quick `shiftBite` at the moment of change, and `pitchAero` making the lift and power part stronger on high-downforce cars, which would otherwise stay planted): lift-off and trail-braking rotate the tail, power puts it back. Rear brake reserve is tier-scaled (Casual all, Sport .94, Pro .85); brake bias follows the steering only on Casual. Traction control reserves tcs² of the cornering grip, so a RWD Sport car can step the tail out on throttle and Pro can spin it. The handbrake locks the rear (a long pull keeps it locked and swings the car round; a locked rear scrubs speed; letting go with the throttle off ends the drift at once).
 - **Settling:** the rear axle is stiffer (`rearStiffness` 1.06) and its curve falls off less after the peak (`rearTyreShape`), which is what makes a slide settle with the hands off. Yaw inertia is 0.85-0.98 of the box (was 1.05-1.18), body yaw damping 0.12/s (was 0.4).
 
-Numbers, same harness before -> after (AV-12 / Mustang / Roadster / Continental, Sport, dry unless noted):
+Numbers, same harness before -> after (AV-12 / Mustang / Roadster (since removed) / Continental, Sport, dry unless noted):
 
 | | before | after |
 |---|---|---|
@@ -155,7 +153,7 @@ Numbers, same harness before -> after (AV-12 / Mustang / Roadster / Continental,
 
 ## Measured
 
-**Wet handling** (physics-harness, 3 contrasting cars; heavy AWD Continental, RWD V8 Blackbird, EV Roadster; same on Pro). Skidpad = best lateral g held on a 50 m circle; AI = the AI driving a full lap with the player's assists (Pro with a human-style lift and countersteer).
+**Wet handling** (physics-harness, 3 contrasting cars; heavy AWD Continental, RWD V8 Blackbird, the since-removed EV Roadster; same on Pro). Skidpad = best lateral g held on a 50 m circle; AI = the AI driving a full lap with the player's assists (Pro with a human-style lift and countersteer).
 
 | | dry | damp | rain |
 |---|---|---|---|

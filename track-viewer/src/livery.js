@@ -62,7 +62,7 @@ function sticker(s,name,x,y,w,h,rot=0){
 
 // race-number plates: shape and plate / ring / ink roles from the team colours (p primary, s secondary, a accent)
 const NUMBER = {
-  saetta: ['roundel', 'a', 's', 'p'], corvid: ['roundel', 's', 'a', 'p'], kalt: ['box', 's', 'a', 'a'],
+  saetta: ['roundel', 'a', 's', 'p'], corvid: ['roundel', 's', 'a', 'p'],
   mojave: ['box', 'a', 's', 's'], aurum: ['roundel', 'p', 's', 's'], liberty: ['roundel', 'a', 's', 'p'], sarab: ['roundel', 'a', 's', 's'],
   toro: ['roundel', 's', 'a', 'p'],      // black plate, bone ring, yellow digits
 };
@@ -108,19 +108,6 @@ const FLANK = {
     const top = P(xr - 0.7, wy - 0.12), top2 = P(xf + 0.95, 0.31);
     g.bezierCurveTo(...top, ...top2, ...a);
     g.fillStyle = c.accent; g.fill();
-  },
-  // black lower half under a hard diagonal, a cyan edge, technical stencils and a blueprint grid on the rear quarter
-  kalt(s, P, L, c, car) {
-    const { x0, x1, xr, wy, y0 } = L, g = s.g, ya = 0.44, yb = 0.31;
-    g.fillStyle = c.secondary; g.beginPath(); [[x0 - 0.1, y0 - 0.1], [x0 - 0.1, ya], [x1 + 0.1, yb], [x1 + 0.1, y0 - 0.1]].forEach(([x, y], i) => (i ? g.lineTo : g.moveTo).call(g, ...P(x, y))); g.fill();
-    g.strokeStyle = c.accent; g.lineWidth = 0.012 * s.k; g.beginPath(); g.moveTo(...P(x0 - 0.1, ya + 0.02)); g.lineTo(...P(x1 + 0.1, yb + 0.02)); g.stroke();
-    g.strokeStyle = c.accent; g.globalAlpha = 0.45; g.lineWidth = 0.003 * s.k;
-    for (let x = xr - 0.55; x <= xr + 0.25; x += 0.05) { g.beginPath(); g.moveTo(...P(x, yb + 0.05)); g.lineTo(...P(x, wy - 0.02)); g.stroke(); }
-    for (let y = yb + 0.05; y <= wy; y += 0.05) { g.beginPath(); g.moveTo(...P(xr - 0.55, y)); g.lineTo(...P(xr + 0.25, y)); g.stroke(); }
-    g.globalAlpha = 1;
-    const st = { font: '700', family: 'Barlow Condensed', fill: c.accent, align: 'left' };
-    text(s, `KLT-${car.number}  /  TYPE ${car.number === 11 ? 'F6' : 'R6'}`, ...P(x0 + 0.45, 0.255), 0.032, st);
-    text(s, '2.4 BAR   CD 0.31   VMAX 312 KM/H', ...P(xr - 0.5, yb + 0.02), 0.026, st);
   },
   // navy sunburst rays fanning back from the front wheel
   mojave(s, P, L, c) {
@@ -200,7 +187,6 @@ const TOPS = {
     g.fillStyle = c.secondary; g.beginPath(); [[x0 - 0.1, z0 - 0.1], [nb, z0 - 0.1], [nb, z1 + 0.1], [x0 - 0.1, z1 + 0.1]].forEach(([x, z], i) => (i ? g.lineTo : g.moveTo).call(g, ...P(x, z))); g.fill();
     stripe(s, P, L, c.accent, [0], 0.012);
   },
-  kalt(s, P, L, c) { stripe(s, P, L, c.secondary, [-0.16, 0.16], 0.05); stripe(s, P, L, c.accent, [-0.13, 0.13], 0.008); },
   mojave(s, P, L, c) { stripe(s, P, L, c.secondary, [-0.13, 0.13], 0.15); stripe(s, P, L, c.accent, [-0.2, -0.055, 0.055, 0.2], 0.012); },
   aurum(s, P, L, c) {
     const { x0 } = L, g = s.g, fx = x0 + 0.35;

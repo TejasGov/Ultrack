@@ -78,15 +78,6 @@
       "caliper": "#c41e1e",
       "why": "modern muscle: punchy grainy metallic, red calipers"
     },
-    "nuvolari": {
-      "paint": "metallic",
-      "flake": 0.55,
-      "flakeMm": 0.6,
-      "carbonBelow": 0.28,
-      "rim": "#8e949c",
-      "caliper": "#2b2d31",
-      "why": "RS GT coupe: satin-deep metallic with carbon details, silver wheels"
-    },
     "porsche1": {
       "paint": "metallic",
       "flake": 0.45,
@@ -95,14 +86,6 @@
       "rim": "#2b2d31",
       "caliper": "#a8d400",
       "why": "918 Spyder (Weissach look): fine-flake metallic over a black carbon lower body and engine deck, dark forged 20-inch multi-spoke wheels (the model's own), acid-green calipers as on the Weissach package"
-    },
-    "tesla1": {
-      "paint": "pearl",
-      "pearl": 0.4,
-      "carbonBelow": 0,
-      "rim": "#3b3f45",
-      "caliper": "#b51c1c",
-      "why": "Roadster: smooth pearl, no flake, a single clean surface"
     },
     "destrier": {
       "paint": "metallic",

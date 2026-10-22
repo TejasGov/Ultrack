@@ -3,7 +3,7 @@
 // the shape comes from the car's tuning (assets/cars/tuning/<key>.json → mirrors):
 //   blade:  hypercar mirror: a slim wing-section housing on one swept arm from the door (Revuelto, P1, Valkyrie, 488)
 //   gt:     a fuller rounded housing on a short sail at the A-pillar foot, an amber indicator strip on its outer edge
-//           (Continental, 911, Mustang, i8, Roadster)
+//           (Continental, 911, Mustang, i8)
 //   bullet: a chrome bullet on a short stem, 1950s style (XKSS)
 // The glass is tinted, slightly rough glass with a reflection of the sky, not a live mirror (which would cost a
 // render pass per mirror and read as a hole at speed).

@@ -56,20 +56,6 @@
     "textures": 5
   },
   {
-    "key": "nuvolari",
-    "lod": 0,
-    "originalBytes": 3010628,
-    "compressedBytes": 1464036,
-    "textures": 21
-  },
-  {
-    "key": "nuvolari",
-    "lod": 1,
-    "originalBytes": 1359576,
-    "compressedBytes": 931576,
-    "textures": 18
-  },
-  {
     "key": "buggati",
     "lod": 0,
     "originalBytes": 9953560,

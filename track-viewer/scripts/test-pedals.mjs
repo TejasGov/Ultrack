@@ -20,7 +20,7 @@ try{
   const {handling}=await server.ssrLoadModule('/src/physics/handling.js');
   const {setWeather}=await server.ssrLoadModule('/src/physics/weather.js');
   const world=await PhysicsWorld.flat(1000),assist={counter:.35,stability:1,tcs:.6};
-  for(const key of ['av12','jaguarxkjss','mustang','tesla1'])for(const weather of [.15,.7,1]){
+  for(const key of ['av12','jaguarxkjss','mustang','porsche1'])for(const weather of [.15,.7,1]){
     setWeather(weather);
     const model=new URL(`../../assets/cars/${key}/model.json`,import.meta.url);
     const profile=JSON.parse(readFileSync(existsSync(model)?model:new URL(`../../car-lab/src/vehicle/profiles/${key}.json`,import.meta.url),'utf8'));

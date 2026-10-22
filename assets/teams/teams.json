@@ -1,6 +1,6 @@
 {
  "version": 2,
- "note": "Eight fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); there are only seven of them for eight teams, so Toro shares Red Bull with Kalt (the bull on the can, the bull on the badge). 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 16 cars, so Mojave, Liberty, Corvid and Kalt have one each; their second car is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
+ "note": "Seven fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); there are seven of them, one per team. 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 14 cars, so Mojave and Liberty have one each; their second car is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
  "teams": [
   {
    "id": "saetta",
@@ -177,7 +177,8 @@
     }
    ],
    "pitBoxes": [
-    9
+    9,
+    10
    ],
    "engine": "na-v12-screamer / w12-twin-turbo",
    "finish": "gloss",
@@ -194,70 +195,6 @@
     "carbon": false
    },
    "livery": "British racing green; cream nose band and roundels; brass pinstripe that sweeps up the door like a raven's feather; small heraldic raven crest on the bonnet"
-  },
-  {
-   "id": "kalt",
-   "name": "Kalt",
-   "short": "KLT",
-   "meaning": "German: cold",
-   "home": "Stuttgart, Germany",
-   "principal": "Dr. Ingrid Falk",
-   "line": "Two motors. One current.",
-   "cars": [
-    {
-     "key": "nuvolari",
-     "number": 11,
-     "driver": {
-      "name": "Jonas Reiter",
-      "code": "REI",
-      "nation": "GER",
-      "age": 33,
-      "role": "engineer turned driver",
-      "bio": "Kalt's former aerodynamicist who talked his way into the seat; reads telemetry for fun.",
-      "background": "From Stuttgart; designed Kalt's aero for five years, then beat their test driver in a shootout.",
-      "personality": "Sets up his own car and brings printouts to every argument; dry and exact; Maddox calls him the spreadsheet.",
-      "rivals": [
-       "MAD"
-      ]
-     }
-    },
-    {
-     "key": "tesla1",
-     "number": 22,
-     "driver": {
-      "name": "Aiko Tanabe",
-      "code": "TAN",
-      "nation": "JPN",
-      "age": 28,
-      "role": "rain master",
-      "bio": "Precise to the millimetre; unbeatable in the wet.",
-      "background": "From Shizuoka, under Mount Fuji; learned on wet mountain hill-climbs before single-seaters.",
-      "personality": "Quiet and exact; checks the weather radar obsessively and hopes for rain; draws every circuit map by hand before a race weekend.",
-      "rivals": [
-       "LIN"
-      ]
-     }
-    }
-   ],
-   "pitBoxes": [
-    10
-   ],
-   "engine": "flat-six / inline-six",
-   "finish": "metallic",
-   "sponsor": "Red Bull",
-   "font": {
-    "family": "Michroma",
-    "file": "michroma-latin-400-normal.woff2",
-    "weight": "400"
-   },
-   "colors": {
-    "primary": "#b9bec4",
-    "secondary": "#111317",
-    "accent": "#36d6e7",
-    "carbon": true
-   },
-   "livery": "bare-metal silver; black lower half split by a hard diagonal; ice-cyan technical stencils (part numbers, torque values) and a fine blueprint grid on the rear quarter",
-   "powertrain": "electric"
   },
   {
    "id": "mojave",
@@ -279,9 +216,9 @@
       "role": "rally convert",
       "bio": "Rally-bred car control; at her best when the grip goes.",
       "background": "From Värmland, Sweden; forest rallies and ice racing on frozen lakes until Cal Beaumont watched her slide a car across one and offered her a seat at Mojave.",
-      "personality": "Deadpan; says grip is overrated and means it; the rain specialist Tanabe's great rival; the one person at Mojave who has never been impressed by the barn.",
+      "personality": "Deadpan; says grip is overrated and means it; the brawler Maddox's great rival (she slides the car, he shoves it); the one person at Mojave who has never been impressed by the barn.",
       "rivals": [
-       "TAN"
+       "MAD"
       ]
      }
     },
@@ -411,7 +348,7 @@
       "background": "From Bakersfield, California; sprint cars and dirt ovals from age nine, until Liberty's Harlan Whitfield flew in to watch him win a county-fair dirt race and signed him on the spot.",
       "personality": "The most penalised driver in the paddock; cowboy boots, no filter, big heart; the stewards know number 66 by heart; he and teammate Hollis cannot agree on who is the real American.",
       "rivals": [
-       "REI",
+       "LIN",
        "HOL"
       ]
      }

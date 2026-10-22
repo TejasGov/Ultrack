@@ -127,48 +127,6 @@
       "handbrakeDrift": 0.878
     },
     {
-      "key": "nuvolari",
-      "weather": 0.15,
-      "peakSlideDeg": 0.55,
-      "minUp": 1,
-      "handbrakeDrift": 0.878
-    },
-    {
-      "key": "nuvolari",
-      "weather": 0.7,
-      "peakSlideDeg": 0.5,
-      "minUp": 1,
-      "handbrakeDrift": 0.878
-    },
-    {
-      "key": "nuvolari",
-      "weather": 1,
-      "peakSlideDeg": 0.46,
-      "minUp": 1,
-      "handbrakeDrift": 0.878
-    },
-    {
-      "key": "tesla1",
-      "weather": 0.15,
-      "peakSlideDeg": 0.53,
-      "minUp": 1,
-      "handbrakeDrift": 0.878
-    },
-    {
-      "key": "tesla1",
-      "weather": 0.7,
-      "peakSlideDeg": 0.48,
-      "minUp": 1,
-      "handbrakeDrift": 0.878
-    },
-    {
-      "key": "tesla1",
-      "weather": 1,
-      "peakSlideDeg": 0.45,
-      "minUp": 1,
-      "handbrakeDrift": 0.878
-    },
-    {
       "key": "jaguarxkjss",
       "weather": 0.15,
       "peakSlideDeg": 0.61,

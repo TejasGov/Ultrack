@@ -12,10 +12,10 @@ test('asset jobs stay within the decoder limit, including after failure',async()
  })));
  assert.equal(peak,2);assert.equal(results.filter(r=>r.status==='fulfilled').length,7);assert.equal(active,0);
 });
-test('electric cars share Kalt and Ferrari uses red Saetta; every car/number occurs once',()=>{
+test('Ferrari uses red Saetta; every car/number occurs once',()=>{
  const {teams}=JSON.parse(readFileSync(new URL('../../assets/teams/teams.json',import.meta.url)));
  const teamFor=key=>teams.find(t=>t.cars.some(c=>c.key===key));
- assert.equal(teamFor('tesla1').id,'kalt');assert.equal(teamFor('nuvolari').id,'kalt');
+ assert.ok(!teamFor('tesla1')&&!teamFor('nuvolari')&&!teams.some(t=>t.id==='kalt'),'the electric team is gone');
  assert.equal(teamFor('furari-488').id,'saetta');assert.equal(teamFor('furari-488').colors.primary,'#c8102e');
  assert.ok(teams.every(t=>t.cars.length===2));assert.equal(new Set(teams.flatMap(t=>t.cars.map(c=>c.key))).size,teams.length*2);
  assert.equal(new Set(teams.flatMap(t=>t.cars.map(c=>c.number))).size,teams.length*2);

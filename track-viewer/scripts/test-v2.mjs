@@ -7,6 +7,8 @@ import {padSteer} from '../src/physics/player-controls.js';
 import {isModelRim} from '../src/carkit/model-rims.js';
 import {summarizeFrames} from '../src/model-benchmark.js';
 import {GameAudio} from '../src/game/audio.js';
+import {EV} from '../src/game/ev.js';
+EV.add('ev-test');  // no electric car ships; the EV audio path stays covered with a synthetic one
 import {createPA,RoadAudio} from '../src/game/audio-effects.js';
 const button=value=>({value,pressed:value>.5});
 const pad=x=>({connected:true,id:'test-pad',axes:[x,0],buttons:Array.from({length:16},()=>button(0))});
@@ -56,8 +58,8 @@ test('respawn resets steering, drift/controller history, velocities and wheel mo
  assert.equal(fake.controls.steer,0);assert.equal(fake.aBody.length(),0);assert.equal(fake.wheels[0].omegaR,0);
 });
 test('wheel material selectors exclude tyres, brake discs, badges and screws',()=>{
- for(const [key,name] of [['av12','Carbon'],['furari-488','M_Rim_Main_SetPT_Max.002'],['mp1x','rims'],['jaguarxkjss','crbnfibre'],['nuvolari','gt:Vehicle_Exterior_mm_wheel_009']])assert.ok(isModelRim(key,'keep|'+name));
- for(const name of ['Tires','Brake_disk','Wheel_Screw','Rim_Badge','tyre_blk'])for(const key of ['av12','furari-488','mp1x','jaguarxkjss','nuvolari'])assert.equal(isModelRim(key,'keep|'+name),false);
+ for(const [key,name] of [['av12','Carbon'],['furari-488','M_Rim_Main_SetPT_Max.002'],['mp1x','rims'],['jaguarxkjss','crbnfibre']])assert.ok(isModelRim(key,'keep|'+name));
+ for(const name of ['Tires','Brake_disk','Wheel_Screw','Rim_Badge','tyre_blk'])for(const key of ['av12','furari-488','mp1x','jaguarxkjss'])assert.equal(isModelRim(key,'keep|'+name),false);
 });
 test('frame-time reports use percentile samples, rejecting invalid data',()=>{
  assert.deepEqual(summarizeFrames([1,2,3,4,100]),{frames:5,meanMs:22,p50Ms:3,p95Ms:100});assert.throws(()=>summarizeFrames([]));
@@ -81,17 +83,16 @@ test('PA filters speech to 300–3500Hz and has a stable quiet slapback',()=>{
 test('EV is silent at rest, quiet under power and fully stopped on car change',async()=>{
  const a=new GameAudio();a.ctx=new AudioContext();a.bus={engine:new AudioNode(),effects:new AudioNode()};a.ready=true;
  a.buffer=()=>{throw Error('EV must not load an engine recording');};
- await a.engineFor('tesla1');assert.equal(a.engine.ev,true);const e=a.engine;
+ await a.engineFor('ev-test');assert.equal(a.engine.ev,true);const e=a.engine;
  a.engineUpdate(0,0,1,0);assert.equal(e.road.motorGain.gain.value,0);
  a.engineUpdate(9000,1,1,40);assert.ok(e.road.motorGain.gain.value>0&&e.road.motorGain.gain.value<.025);
  a.engineUpdate(0,0,0);assert.equal(e.road.wind.gain.gain.value,0);a.engineOff();assert.ok(e.road.sources.every(s=>s.stopped));
- await a.engineFor('nuvolari');assert.equal(a.engine.ev,true);a.engineOff();
 });
 test('an old engine load cannot replace the new EV after a rapid car swap',async()=>{
  const a=new GameAudio();a.ctx=new AudioContext();a.bus={engine:new AudioNode(),effects:new AudioNode()};a.ready=true;
  a.engineBank={profiles:{mp1x:{loops:{idle:{file:'engines/recorded/mp1x-idle.ogg',rpm:1000}}}}};let resolve,stopped=false;
  a.loop=()=>new Promise(r=>resolve=()=>r({stop(){stopped=true;}}));
- const first=a.engineFor('mp1x');await a.engineFor('tesla1');resolve();await first;
+ const first=a.engineFor('mp1x');await a.engineFor('ev-test');resolve();await first;
  assert.equal(a.engine.ev,true);assert.ok(stopped);a.engineOff();
 });
 
@@ -121,5 +122,5 @@ test('engine selection waits for the bank and cancellation during initialization
  let finish;a.initializing=new Promise(r=>finish=r);
  const first=a.engineFor('mp1x');a.engineOff();
  a.ready=true;finish();await first;assert.ok(!a.engine);
- await a.engineFor('nuvolari');assert.equal(a.engine.ev,true);a.engineOff();
+ await a.engineFor('ev-test');assert.equal(a.engine.ev,true);a.engineOff();
 });

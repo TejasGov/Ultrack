@@ -32,7 +32,6 @@ the active venue. This change does not add or prefetch two nonexistent maps.
 | Saetta — red; the Ferrari team | Ferrari Furari 488, Ferrari La Furari (LaFerrari) |
 | Toro — giallo yellow and black; the Lamborghini team | Lamborghini AV-12, Lamborghini HU-10 (Huracán STO) |
 | Corvid | Aston Martin Valkyrie, Mercedes-AMG One |
-| Kalt — electric pair | Audi e-tron GT, Tesla Roadster |
 | Mojave | Bentley Continental GT, BMW |
 | Aurum | Bugatti Divo, Bugatti Destrier |
 | Liberty — royal blue, red, white; royal-blue lights | Ford Mustang, Hennessey Blackbird |
@@ -41,7 +40,7 @@ the active venue. This change does not add or prefetch two nonexistent maps.
 Drivers move with their cars: Maddox (#66) drives the Mustang for Liberty, Lindqvist (#8) the Bentley for
 Mojave, and Varrone (#7) went with the AV-12 when it moved from Saetta to Toro. The two new cars bring two new drivers: Armand Beaulieu (#16, Bugatti Destrier, Aurum) and Wade Hollis
 (#76, Hennessey Blackbird, Liberty). All sixteen cars and numbers are unique. The marina has 12 pit boxes for
-the 16 cars, so Corvid, Kalt, Mojave and Liberty have one box each (see assets/teams/TEAMS.md). Liberty's font (Graduate, SIL
+the 14 cars (Kalt, the electric team, was removed 2026-10-22), so Mojave and Liberty have one box each (see assets/teams/TEAMS.md). Liberty's font (Graduate, SIL
 OFL) is bundled in track-viewer/public/assets/fonts with its licence; its `light` colour is royal blue. New Ferrari paint defaults to Saetta red; custom saved paint is retained.
 
 ## Venue artwork and validation
@@ -56,14 +55,14 @@ cold-load times and an in-game visual approval were not collected in this pass.
 ## Teams: Toro, and La Furari for Saetta (2026-10-21)
 
 - **Toro** is the eighth team (`toro`, TOR, Sant'Agata Bolognese; yellow, black and bone white; Unbounded Black, SIL OFL,
-  bundled in track-viewer/public/assets/fonts; sponsor Red Bull, shared with Kalt). It takes the AV-12 (#7, Varrone) from Saetta and
+  bundled in track-viewer/public/assets/fonts; sponsor Red Bull). It takes the AV-12 (#7, Varrone) from Saetta and
   the new HU-10 (#63, Paloma Ortega). Its lore, with the rivalry and the reason Varrone moved, is in assets/teams/TEAMS.md.
 - **Saetta** is now the Ferrari team: the Furari 488 (#17, Calderini) and the new La Furari (#27, Thiago Barreto). Its line is "Lightning strikes first."
-- Eight teams, sixteen cars; a race runs one car per team (eight). Pit boxes: Aurum 1-2, Saetta 3-4, Toro 5-6, Sarab 7-8, Corvid 9, Kalt 10,
-  Mojave 11, Liberty 12; the second cars of Corvid, Kalt, Mojave and Liberty have no box.
+- Seven teams, fourteen cars; a race runs one car per team (seven). Pit boxes: Aurum 1-2, Saetta 3-4, Toro 5-6, Sarab 7-8, Corvid 9-10,
+  Mojave 11, Liberty 12; the second cars of Mojave and Liberty have no box.
 - Venue: Toro's garage headers, floor panels, transporters, flags, crew, hospitality unit and canopy banner were added by
   `tracks/marina/apply_teams.py` (which also re-assigns every box to its owner) and the venue was repacked (`npm run pack`, `npm run sync`).
 - Logos: `scripts/build-team-logos.py` needs the Toro emblem entry (see assets/teams/logos/README.md) before it can rebuild; the new
   teams use `colors.ink` (Toro) and the Toro lettering in `assets/teams/fonts/` for Blender text.
 - Team tests with hard-coded counts (`test:team-logos` expects seven teams and 28 venue surfaces, `test:progression` and
-  `test-loading` count fourteen cars) must say eight, 32 and sixteen.
+  `test-loading` count fourteen cars) must say seven, 28 and fourteen.
