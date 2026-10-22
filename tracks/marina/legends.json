@@ -1,0 +1,101 @@
+{
+  "_about": "Racing-legend tribute names and car-brand hoardings for the Corniche Marina venue, read by trackside.py. The user calls this a non-commercial fan tribute, so real names and brands are used; original logo artwork is supplied through assets/sponsors and brand_art.py. Swap anything here and rebuild. Colours are sRGB hex. mark: ring | chevron | bar | null.",
+  "stadium": "AYRTON SENNA STADIUM",
+  "stands": {
+    "grandstand": "AYRTON SENNA GRANDSTAND",
+    "stand_T1": "NIKI LAUDA TRIBUNE",
+    "stand_T6": "JIM CLARK STAND"
+  },
+  "standColours": {
+    "bg": "#c8102e",
+    "fg": "#ffffff"
+  },
+  "banks": [
+    {
+      "segment": "T1-T2",
+      "at": 0.55,
+      "side": "R",
+      "name": "MICHAEL SCHUMACHER-S"
+    },
+    {
+      "segment": "Hairpin Approach",
+      "at": 0.15,
+      "side": "R",
+      "name": "JUAN MANUEL FANGIO BANK"
+    },
+    {
+      "segment": "Back Straight B",
+      "at": 0.25,
+      "side": "L",
+      "name": "ALAIN PROST TRIBUNE"
+    },
+    {
+      "segment": "Second Straight",
+      "at": 0.45,
+      "side": "L",
+      "name": "JACKIE STEWART BANK"
+    }
+  ],
+  "hologram": {
+    "stand": "grandstand",
+    "legend": "Ayrton Senna"
+  },
+  "brands": [
+    {
+      "name": "FERRARI",
+      "tag": "",
+      "bg": "#d40000",
+      "fg": "#fff200",
+      "mark": "bar"
+    },
+    {
+      "name": "McLAREN",
+      "tag": "",
+      "bg": "#ff8000",
+      "fg": "#111111",
+      "mark": "chevron"
+    },
+    {
+      "name": "LAMBORGHINI",
+      "tag": "",
+      "bg": "#111111",
+      "fg": "#d4af37",
+      "mark": null
+    },
+    {
+      "name": "PORSCHE",
+      "tag": "",
+      "bg": "#f2f2f2",
+      "fg": "#111111",
+      "mark": null
+    },
+    {
+      "name": "ASTON MARTIN",
+      "tag": "",
+      "bg": "#00482b",
+      "fg": "#ffffff",
+      "mark": "bar"
+    },
+    {
+      "name": "BUGATTI",
+      "tag": "",
+      "bg": "#0b2d6b",
+      "fg": "#ffffff",
+      "mark": "ring"
+    },
+    {
+      "name": "MERCEDES-AMG",
+      "tag": "",
+      "bg": "#0a0a0a",
+      "fg": "#c8c8c8",
+      "mark": "ring"
+    },
+    {
+      "name": "BMW M",
+      "tag": "",
+      "bg": "#1c69d4",
+      "fg": "#ffffff",
+      "mark": "ring"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Wade Hollis",
+    "code": "HOL",
+    "nation": "USA",
+    "age": 37,
+    "role": "the Colonel",
+    "bio": "Former air-force test pilot; flies every lap like a flight plan.",
+    "background": "From Abilene, Texas; fourteen years as a test pilot before a charity race showed he was faster on the ground.",
+    "personality": "Speaks in checklists and calls corners 'waypoints'; unflappable on the radio; flies himself to every race in a vintage trainer; he and teammate Maddox cannot agree on who is the real American.",
+    "rivals": [
+      "MAD"
+    ]
+  },
+  "team": "liberty",
+  "raceNumber": 76,
+  "carKey": "blackbird",
+  "titleSponsor": "Coca-Cola",
+  "font": {
+    "family": "Graduate",
+    "file": "graduate-latin-400-normal.woff2",
+    "weight": "400",
+    "bold": 0.05
+  },
+  "manufacturer": "Hennessey",
+  "car": "Blackbird",
+  "style": "Original fictional 37-year-old American man in GTA V loading-screen-inspired bold inked, cel-shaded illustration; no real likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "172d7442e1f6b9dfed23668361747bace7481185ecc019affcfb91611d3c1e66",
+  "generationCalls": 1,
+  "composition": "1920x1080 static driver poster; team lettering is outlined and source artwork, team logo, and local sponsor mark are embedded for portability.",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "3cc7d2b255213b63d41ef0b34baf1111655f592b32f68428476f9d3c5d7c42a2"
+    },
+    "poster-v1.svg": {
+      "sha256": "ec2ebfd9034914dc4ac4e49ab432f3389dc447b2bb1c9425f641a4cf6bf94085"
+    }
+  }
+}

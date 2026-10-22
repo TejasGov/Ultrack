@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "v1_preserved": true,
+    "skyline_card_two_triangles": true,
+    "bake_source_separate_scene": true,
+    "skyline_rgba_4k": true,
+    "skyline_texture_packed": true,
+    "japanese_signs_present": true,
+    "japanese_font_assigned": true,
+    "original_landmarks_preserved": true,
+    "world_hdri_packed": true,
+    "finite_mesh_vertices": true
+  },
+  "passed": true,
+  "japanese_text_objects": 108,
+  "scope": "Blender art-direction study. Runtime parallax, performance, geographic and final-form approval remain untested."
+}

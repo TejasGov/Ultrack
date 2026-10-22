@@ -1,0 +1,100 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Mercedes-AMG GT4",
+ "source": {
+  "title": "2018 Mercedes-AMG GT4",
+  "author": "ddiaz-design",
+  "authorUrl": "https://sketchfab.com/ddiaz-design",
+  "url": "https://sketchfab.com/3d-models/2018-mercedes-amg-gt4-406f3e46c0114577b9bcdd57d2138e3f",
+  "license": "CC BY-NC-SA 4.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "modelId": "406f3e46c0114577b9bcdd57d2138e3f",
+  "replacement": true,
+  "nonCommercialOnly": true,
+  "additionalCredits": "Based on a Real Racing 3 model; credits @VuckyZ123. Non-commercial and share-alike licence: fine for this local fan project, replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3288,
+   "width": 0.2549,
+   "x": -1.3373,
+   "track": 1.6918
+  },
+  "rear": {
+   "radius": 0.3288,
+   "width": 0.2549,
+   "x": 1.2802,
+   "track": 1.728
+  }
+ },
+ "size": {
+  "length": 4.59,
+  "width": 2.067,
+  "height": 1.17
+ },
+ "lights": {
+  "front": [
+   [
+    -1.842,
+    0.574,
+    0.733
+   ],
+   [
+    -1.844,
+    0.573,
+    -0.732
+   ]
+  ],
+  "rear": [
+   [
+    2.151,
+    0.728,
+    0.489
+   ],
+   [
+    2.151,
+    0.728,
+    -0.489
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -0.405,
+    0.838,
+    0.499
+   ],
+   [
+    -0.405,
+    1.145,
+    0.499
+   ],
+   [
+    1.688,
+    1.145,
+    0.499
+   ],
+   [
+    1.688,
+    0.838,
+    0.499
+   ]
+  ]
+ },
+ "exhaust": [
+  [
+   0.307,
+   -0.523
+  ],
+  [
+   0.31,
+   0.52
+  ]
+ ],
+ "triangles": {
+  "body0": 51524,
+  "body1": 21467,
+  "wheel": 3160
+ }
+}

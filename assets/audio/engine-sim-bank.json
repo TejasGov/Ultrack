@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "profiles": {},
+  "note": "Retired experimental bank. Runtime uses recorded-engine-bank.json from real CC-licensed recordings, with no V1 fallback."
+}

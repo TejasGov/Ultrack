@@ -1,0 +1,548 @@
+[
+  {
+    "base": "marina_visual",
+    "affectedTrianglesBefore": 56604,
+    "affectedTrianglesAfter": 33458.625,
+    "affectedDrawsBefore": 5,
+    "affectedDrawsAfter": 20.375,
+    "samples": [
+      {
+        "sample": 0,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 42152,
+          "draws": 28
+        }
+      },
+      {
+        "sample": 1,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 20512,
+          "draws": 18
+        }
+      },
+      {
+        "sample": 2,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 14192,
+          "draws": 10
+        }
+      },
+      {
+        "sample": 3,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 45744,
+          "draws": 25
+        }
+      },
+      {
+        "sample": 4,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 40404,
+          "draws": 18
+        }
+      },
+      {
+        "sample": 5,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 27201,
+          "draws": 14
+        }
+      },
+      {
+        "sample": 6,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 27265,
+          "draws": 16
+        }
+      },
+      {
+        "sample": 7,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 6320,
+          "draws": 8
+        }
+      },
+      {
+        "sample": 8,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 56562,
+          "draws": 38
+        }
+      },
+      {
+        "sample": 9,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 56498,
+          "draws": 36
+        }
+      },
+      {
+        "sample": 10,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 47115,
+          "draws": 26
+        }
+      },
+      {
+        "sample": 11,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 45851,
+          "draws": 24
+        }
+      },
+      {
+        "sample": 12,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 42084,
+          "draws": 20
+        }
+      },
+      {
+        "sample": 13,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 21471,
+          "draws": 11
+        }
+      },
+      {
+        "sample": 14,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 21471,
+          "draws": 11
+        }
+      },
+      {
+        "sample": 15,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 17216,
+          "draws": 7
+        }
+      },
+      {
+        "sample": 16,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 38966,
+          "draws": 24
+        }
+      },
+      {
+        "sample": 17,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 12615,
+          "draws": 6
+        }
+      },
+      {
+        "sample": 18,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 16956,
+          "draws": 12
+        }
+      },
+      {
+        "sample": 19,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 56356,
+          "draws": 38
+        }
+      },
+      {
+        "sample": 20,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 13606,
+          "draws": 9
+        }
+      },
+      {
+        "sample": 21,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 44150,
+          "draws": 30
+        }
+      },
+      {
+        "sample": 22,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 44150,
+          "draws": 30
+        }
+      },
+      {
+        "sample": 23,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 44150,
+          "draws": 30
+        }
+      }
+    ]
+  },
+  {
+    "base": "marina_visual_ktx2",
+    "affectedTrianglesBefore": 56604,
+    "affectedTrianglesAfter": 33458.625,
+    "affectedDrawsBefore": 5,
+    "affectedDrawsAfter": 20.375,
+    "samples": [
+      {
+        "sample": 0,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 42152,
+          "draws": 28
+        }
+      },
+      {
+        "sample": 1,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 20512,
+          "draws": 18
+        }
+      },
+      {
+        "sample": 2,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 14192,
+          "draws": 10
+        }
+      },
+      {
+        "sample": 3,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 45744,
+          "draws": 25
+        }
+      },
+      {
+        "sample": 4,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 40404,
+          "draws": 18
+        }
+      },
+      {
+        "sample": 5,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 27201,
+          "draws": 14
+        }
+      },
+      {
+        "sample": 6,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 27265,
+          "draws": 16
+        }
+      },
+      {
+        "sample": 7,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 6320,
+          "draws": 8
+        }
+      },
+      {
+        "sample": 8,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 56562,
+          "draws": 38
+        }
+      },
+      {
+        "sample": 9,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 56498,
+          "draws": 36
+        }
+      },
+      {
+        "sample": 10,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 47115,
+          "draws": 26
+        }
+      },
+      {
+        "sample": 11,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 45851,
+          "draws": 24
+        }
+      },
+      {
+        "sample": 12,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 42084,
+          "draws": 20
+        }
+      },
+      {
+        "sample": 13,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 21471,
+          "draws": 11
+        }
+      },
+      {
+        "sample": 14,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 21471,
+          "draws": 11
+        }
+      },
+      {
+        "sample": 15,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 17216,
+          "draws": 7
+        }
+      },
+      {
+        "sample": 16,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 38966,
+          "draws": 24
+        }
+      },
+      {
+        "sample": 17,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 12615,
+          "draws": 6
+        }
+      },
+      {
+        "sample": 18,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 16956,
+          "draws": 12
+        }
+      },
+      {
+        "sample": 19,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 56356,
+          "draws": 38
+        }
+      },
+      {
+        "sample": 20,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 13606,
+          "draws": 9
+        }
+      },
+      {
+        "sample": 21,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 44150,
+          "draws": 30
+        }
+      },
+      {
+        "sample": 22,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 44150,
+          "draws": 30
+        }
+      },
+      {
+        "sample": 23,
+        "before": {
+          "triangles": 56604,
+          "draws": 5
+        },
+        "after": {
+          "triangles": 44150,
+          "draws": 30
+        }
+      }
+    ]
+  }
+]

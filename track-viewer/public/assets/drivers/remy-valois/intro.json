@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Remy Valois",
+    "code": "VAL",
+    "nation": "MON",
+    "age": 31,
+    "role": "reigning champion",
+    "bio": "The reigning champion; smooth, smiling, and very hard to pass.",
+    "background": "Born in Monte Carlo, son of a yacht broker; two titles with Aurum.",
+    "personality": "Never raises his voice on the radio; listens to old jazz on the grid; his charm is half the psychology.",
+    "rivals": [
+      "KAR",
+      "QUI",
+      "BEA"
+    ]
+  },
+  "team": "aurum",
+  "raceNumber": 1,
+  "carKey": "buggati",
+  "manufacturer": "Bugatti",
+  "car": "Divo",
+  "titleSponsor": "Rolex",
+  "font": {
+    "family": "Limelight",
+    "file": "limelight-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration. No real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "274dce4c3971bc115908a5a11659215cad43dd26fc19231671c5e72de301e635",
+  "generationCalls": 1,
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "93c2f80b47075fe28ca13cb341957f7252604b13e7d0ecddff2b424286c02ff2"
+    },
+    "poster-v1.svg": {
+      "sha256": "d3de9de5a9b4408d176729eb25060189c87a6fec2081f45576b0716e5c617143"
+    }
+  }
+}

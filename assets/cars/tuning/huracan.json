@@ -1,0 +1,16 @@
+{
+  "car": "huracan",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "suspension": {
+    "pitch": 0.5,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.045
+  },
+  "aero": [],
+  "log": [
+    "2026-10-21: new complete model (Sketchfab, see assets/cars/huracan/source.json); first QA run",
+    "run 1: arches tight (top gap -0.013 m, brake dive -0.03) -> ride 0.055, pitch 0.6",
+    "run 2: ride 0.045 pitch 0.5: top gap under 5 cm so the poke ray (1.15 R over the hub) still meets the fender"
+  ]
+}

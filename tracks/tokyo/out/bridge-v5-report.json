@@ -1,0 +1,53 @@
+{
+  "road_vertices_unchanged": 2880,
+  "road_half_width_m": 9,
+  "tower_clear_half_width_m": 12,
+  "tower_opening_height_m": 44,
+  "suspension_indices": [
+    704,
+    778
+  ],
+  "trimmed_bridge_fixture_faces": [
+    [
+      "Catch fence tension cable",
+      145
+    ],
+    [
+      "Catch fence tension cable.001",
+      145
+    ],
+    [
+      "Catch fence tension cable.002",
+      145
+    ],
+    [
+      "Catch fence tension cable.003",
+      145
+    ],
+    [
+      "Catch fence tension cable.004",
+      145
+    ],
+    [
+      "Catch fence tension cable.005",
+      145
+    ],
+    [
+      "Street lamp column.029",
+      6
+    ],
+    [
+      "Catch fence mesh -1",
+      48
+    ],
+    [
+      "Catch fence mesh 1",
+      49
+    ],
+    [
+      "Race lighting masts and fixture banks",
+      576
+    ]
+  ],
+  "scope": "Blender bridge art pass; runtime not exported"
+}

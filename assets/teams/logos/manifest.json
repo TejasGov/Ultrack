@@ -1,0 +1,672 @@
+{
+  "schemaVersion": 1,
+  "description": "Original team emblems; outlined lettering from bundled OFL typefaces. Transparent, self-contained SVG masters and baked textures.",
+  "teams": {
+    "saetta": {
+      "name": "Saetta",
+      "emblem": "Lightning bolt",
+      "font": {
+        "family": "Racing Sans One",
+        "file": "racing-sans-one-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#c8102e",
+        "secondary": "#f2b705",
+        "accent": "#f5f1e8",
+        "carbon": true
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "saetta-lockup-onTeam.svg",
+            "png": "saetta-lockup-onTeam.png",
+            "webp": "saetta-lockup-onTeam.webp",
+            "sourceSha256": "fb81ff5d29f44ba9261fc273ef5a4565e73f90aab86c9da16a0f93daf4478f75",
+            "pngSha256": "ff0cc0488cd1101d426f8000f2ce43b50fdd50d0fa7c4739ddda59b01f974f61",
+            "pngBytes": 28283,
+            "webpSha256": "81bbbff16dbe578f9ee2cab7132b54975eab4ab9d5ddd680a3c044dd9c5d4ad9",
+            "webpBytes": 14230
+          },
+          "icon": {
+            "svg": "saetta-icon-onTeam.svg",
+            "png": "saetta-icon-onTeam.png",
+            "webp": "saetta-icon-onTeam.webp",
+            "sourceSha256": "45780cdb0a903f07be85a09a46cda130819d771bf62d29ccdf26bcf7c7afa331",
+            "pngSha256": "5961dc2e47838346e9206e59317b481f86e89e2f3f74407af69cdbdfc0818b64",
+            "pngBytes": 5463,
+            "webpSha256": "49d2714a1c6e5435e0114b909403a2775b2bde0b15e2bc11f456b9bbba2c33bb",
+            "webpBytes": 2416
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "saetta-lockup-onDark.svg",
+            "png": "saetta-lockup-onDark.png",
+            "webp": "saetta-lockup-onDark.webp",
+            "sourceSha256": "64ef50023a45939aff16c0386270461c75c0c18fc16af6d5e6328133249e7d6f",
+            "pngSha256": "0317aec6cce25ec4c780cb201570e0f73b6e2d44f3c16f3f7f2a0cfb927bd7f3",
+            "pngBytes": 16459,
+            "webpSha256": "b8c249f64e4908a71c518b062aeb727d49c263231bfb796e68c41ab1a2c20d68",
+            "webpBytes": 8022
+          },
+          "icon": {
+            "svg": "saetta-icon-onDark.svg",
+            "png": "saetta-icon-onDark.png",
+            "webp": "saetta-icon-onDark.webp",
+            "sourceSha256": "fcec9fa0e1beb0135a79bea3baa4c5d092c867b7db14f782a5f6995061a21460",
+            "pngSha256": "37f73014feee44b8f8908191545f01f391c639787cbc1db4f730b4789231b09a",
+            "pngBytes": 3239,
+            "webpSha256": "d39f4e566dde96798985dd12001ab98ddb7dcb2d5b6ff8ec8a4429e89dc9b275",
+            "webpBytes": 1438
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "saetta-lockup-onLight.svg",
+            "png": "saetta-lockup-onLight.png",
+            "webp": "saetta-lockup-onLight.webp",
+            "sourceSha256": "7015b98ca3056270367fbdbfd771f203efd473141c1c5f82d0034e27b0eeec4f",
+            "pngSha256": "b0f770a073379a5ee02c858de18412847b0d1edcaf1896a7f6a9f7cde41be40f",
+            "pngBytes": 15750,
+            "webpSha256": "d43ecd472384b9e20a50c3ea63cc6f94a8bc315ec134a576835fdd157b61d248",
+            "webpBytes": 6906
+          },
+          "icon": {
+            "svg": "saetta-icon-onLight.svg",
+            "png": "saetta-icon-onLight.png",
+            "webp": "saetta-icon-onLight.webp",
+            "sourceSha256": "2e01d1877504d5829a3cfbe3999ad94822de938e4912545d83d1fff94b852735",
+            "pngSha256": "e7c4e8d113bc2e50116d8afb3a5373876df857f9f656ee9d6e78bb7673e5b89b",
+            "pngBytes": 3251,
+            "webpSha256": "b0d2e9404f7b4992c8f0f99c627a3b22055a01610872b640a1ff8fb78457bf01",
+            "webpBytes": 1474
+          }
+        }
+      }
+    },
+    "toro": {
+      "name": "Toro",
+      "emblem": "Bull head",
+      "font": {
+        "family": "Unbounded",
+        "file": "unbounded-latin-900-normal.woff2",
+        "weight": "900"
+      },
+      "colors": {
+        "primary": "#ffd60a",
+        "secondary": "#0d0e10",
+        "accent": "#f4f1e8",
+        "carbon": true,
+        "ink": "#0d0e10"
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "toro-lockup-onTeam.svg",
+            "png": "toro-lockup-onTeam.png",
+            "webp": "toro-lockup-onTeam.webp",
+            "sourceSha256": "fb2ee6a3493161a8ead81fea016e3e92df9ebe29d623c7d2642a1243a220897a",
+            "pngSha256": "7b6080d789231ca8bcac9a771ab03a94ca7e8d580fcb642baeae2ca99de61060",
+            "pngBytes": 21960,
+            "webpSha256": "2c8b3457c4b69464de18c942e24f7eefd86ee19a743bc31a4b66107e67cf3aec",
+            "webpBytes": 11420
+          },
+          "icon": {
+            "svg": "toro-icon-onTeam.svg",
+            "png": "toro-icon-onTeam.png",
+            "webp": "toro-icon-onTeam.webp",
+            "sourceSha256": "b5a2cd1fd3ad48cf1f540678ed356593ec1ebd853ba6e403941953fd56cfe3c7",
+            "pngSha256": "f94b23bf7a263289a9f9e4c1d9c53953fff9f4f30508c7ca70c1c2ff3f3f0482",
+            "pngBytes": 5905,
+            "webpSha256": "49b60f28db92b8cecf7d0d072936ccb39fd4b2b10ac901f7fe9eb2a6daad015f",
+            "webpBytes": 3672
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "toro-lockup-onDark.svg",
+            "png": "toro-lockup-onDark.png",
+            "webp": "toro-lockup-onDark.webp",
+            "sourceSha256": "9aa32a64b31b2f0d7110ec2f7988a0ea60407821e799aa89b4a0a77e11c0fa2b",
+            "pngSha256": "2e9d60ad000f51f080d42c807714759ffeddd4276ea968e7a1a9f5162539e737",
+            "pngBytes": 13758,
+            "webpSha256": "c149509f9b67d4dda3ce3b7ddff440bccc839fb7ff4f3bc9fb9211105a55dd5b",
+            "webpBytes": 6430
+          },
+          "icon": {
+            "svg": "toro-icon-onDark.svg",
+            "png": "toro-icon-onDark.png",
+            "webp": "toro-icon-onDark.webp",
+            "sourceSha256": "dd925cd07c8dba73a90474cbe4835c67789713f33df167310cfc27100e9085b8",
+            "pngSha256": "065fd54aa5432f3733f8bf7537350ace3a8c55e0b142e34329a82c240005e02c",
+            "pngBytes": 3814,
+            "webpSha256": "1189778fba0039e33bf53f4419ab1cf98825797976d0bbd7c5ecdbe34661e0d6",
+            "webpBytes": 2088
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "toro-lockup-onLight.svg",
+            "png": "toro-lockup-onLight.png",
+            "webp": "toro-lockup-onLight.webp",
+            "sourceSha256": "976595a9271a977a354b087a1523581f296f512dfd181d4886a5b50336ebde21",
+            "pngSha256": "c5239bc26d9d59c5215b98e5fca40cfa94ab6b9c9913d9e25e2274899fb43678",
+            "pngBytes": 13115,
+            "webpSha256": "914ea99aed022c943582b731a177b20d3a6361f91a1ab175b93bb8bb3066d8d4",
+            "webpBytes": 6176
+          },
+          "icon": {
+            "svg": "toro-icon-onLight.svg",
+            "png": "toro-icon-onLight.png",
+            "webp": "toro-icon-onLight.webp",
+            "sourceSha256": "86cca27b6e5fc2555fda6ac75b73bd4a8b672cf0304b545b89077d69df889eba",
+            "pngSha256": "5111a51f0b2b10020ba39391bad25d2da8360dbce90fb009f4342fdd63f9ec44",
+            "pngBytes": 3719,
+            "webpSha256": "b252e77be41b82da6e113a8b3c442c73a3bbc810946034b61f2f71d8a3518fb2",
+            "webpBytes": 2088
+          }
+        }
+      }
+    },
+    "corvid": {
+      "name": "Corvid",
+      "emblem": "Raven",
+      "font": {
+        "family": "Cinzel",
+        "file": "cinzel-latin-900-normal.woff2",
+        "weight": "900"
+      },
+      "colors": {
+        "primary": "#0e3b2e",
+        "secondary": "#efe6cf",
+        "accent": "#b08d57",
+        "carbon": false
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "corvid-lockup-onTeam.svg",
+            "png": "corvid-lockup-onTeam.png",
+            "webp": "corvid-lockup-onTeam.webp",
+            "sourceSha256": "9c62465068c6a35cac5b6e99eceb2ae2c9d051a78b0fb6f7449df192eeea89d8",
+            "pngSha256": "fbbd559554d215d9bd6d6f8d2db9d0c5cfdaf7925700fd63de6c29c0578a8d15",
+            "pngBytes": 30547,
+            "webpSha256": "700ce3eeaa134b1ae5e3f35f97139b7c4c4073e413fdf1eb326bf9615ced54bc",
+            "webpBytes": 16938
+          },
+          "icon": {
+            "svg": "corvid-icon-onTeam.svg",
+            "png": "corvid-icon-onTeam.png",
+            "webp": "corvid-icon-onTeam.webp",
+            "sourceSha256": "907d15dbccda22f670c723e8e075489e132ab7a7035f4d97ab8f615bf240841e",
+            "pngSha256": "46eedf589cc3d463533cb976e77d31a66f1f7cb1084c8bd2c5c9c9efde91afa2",
+            "pngBytes": 4591,
+            "webpSha256": "d07e95ef2af4a981427b20e667a0912e3d196c0088455d4de139d01bb7d23889",
+            "webpBytes": 3040
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "corvid-lockup-onDark.svg",
+            "png": "corvid-lockup-onDark.png",
+            "webp": "corvid-lockup-onDark.webp",
+            "sourceSha256": "820417af3f9e4b6e9b8324bba37329d97dbec12ab8b37cc7110c1464b33ce7d4",
+            "pngSha256": "66e24e3c791a97811d727b190c68557622e92e73baf972ffbe2a47350f24d428",
+            "pngBytes": 18306,
+            "webpSha256": "0250f6469549265a2e74bb1b693641fe45b37ef0138f8a0b54f3a5e68eb00f72",
+            "webpBytes": 9216
+          },
+          "icon": {
+            "svg": "corvid-icon-onDark.svg",
+            "png": "corvid-icon-onDark.png",
+            "webp": "corvid-icon-onDark.webp",
+            "sourceSha256": "23da18f10160c171f61b45477565729259ad59dbc22eaef411115cb843e8d147",
+            "pngSha256": "b8ab03a163c63fbd7e6bf50e420743e120279879915ba2e9edb0297645c223ca",
+            "pngBytes": 2937,
+            "webpSha256": "7320562c38c83a21e84b7fcaf58c37780b07e7e95c5315d23824517fcc4d5b97",
+            "webpBytes": 1650
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "corvid-lockup-onLight.svg",
+            "png": "corvid-lockup-onLight.png",
+            "webp": "corvid-lockup-onLight.webp",
+            "sourceSha256": "4fe6cf29f8a0101ad349846fbafec0fc18cbdf658cfa7d048762106211fd60b4",
+            "pngSha256": "05fd49a21c79aac091254a54a2ebf279ab01c10b1fbb280a3e20724c404a2e8c",
+            "pngBytes": 17341,
+            "webpSha256": "13be58d5a838eb0dfbc6a0ba044cff7b5f73662f20c077f08b1840703cb041d8",
+            "webpBytes": 8378
+          },
+          "icon": {
+            "svg": "corvid-icon-onLight.svg",
+            "png": "corvid-icon-onLight.png",
+            "webp": "corvid-icon-onLight.webp",
+            "sourceSha256": "57da396e5e872bdebe9bdce424bd76710c8d83d5e1323915089a72c017bc7bef",
+            "pngSha256": "6b05e4d7b335822437e1440e81c60b148d3c3c6b22af098b176e05dcc7a93e31",
+            "pngBytes": 2923,
+            "webpSha256": "67a6e3ef7b2e43876ac62f71669570de7d6ef5bca86e36805ca572a95b786d00",
+            "webpBytes": 1646
+          }
+        }
+      }
+    },
+    "kalt": {
+      "name": "Kalt",
+      "emblem": "Technical K monogram",
+      "font": {
+        "family": "Michroma",
+        "file": "michroma-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#b9bec4",
+        "secondary": "#111317",
+        "accent": "#36d6e7",
+        "carbon": true
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "kalt-lockup-onTeam.svg",
+            "png": "kalt-lockup-onTeam.png",
+            "webp": "kalt-lockup-onTeam.webp",
+            "sourceSha256": "7795fb650ca04656a07d40e6a313b88071bdcc995e5ca8af9698b205171b3158",
+            "pngSha256": "7d44d27bbeacbd76a9e108088630df6721615de4ad4913db042c41a6364e5521",
+            "pngBytes": 17340,
+            "webpSha256": "aa6f94c4dba32388dbf1e512abb3506377a6ef559475ba6f2ac8c93119c08e95",
+            "webpBytes": 5498
+          },
+          "icon": {
+            "svg": "kalt-icon-onTeam.svg",
+            "png": "kalt-icon-onTeam.png",
+            "webp": "kalt-icon-onTeam.webp",
+            "sourceSha256": "cd0009df0c9f74d154d8ae527235c5b9bb86dab4ee1834db93b4f260af67bcbd",
+            "pngSha256": "39775ba2ef0c12c0befa28774f0164bcce7fd1a40e01c56904c345e6b3660eb2",
+            "pngBytes": 2456,
+            "webpSha256": "b0fb2f41e99659858f5d174ea2d0ea647a1d6a9b86629331de79f224b0f512c4",
+            "webpBytes": 1292
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "kalt-lockup-onDark.svg",
+            "png": "kalt-lockup-onDark.png",
+            "webp": "kalt-lockup-onDark.webp",
+            "sourceSha256": "cc7c3bd823f655352d1ad0080fe66d886fc6784f16a46b9c6807ec0640adc844",
+            "pngSha256": "dc340e5638cd64c2af8760d0b46c46b470eec9ba52e6b73e6a00a77fd1f2c8b4",
+            "pngBytes": 11055,
+            "webpSha256": "bdbe57d293d2b13c6175273b1f032e0f3fb7882577daa9a96b49ce05c7a5a1ba",
+            "webpBytes": 3688
+          },
+          "icon": {
+            "svg": "kalt-icon-onDark.svg",
+            "png": "kalt-icon-onDark.png",
+            "webp": "kalt-icon-onDark.webp",
+            "sourceSha256": "c42e512641a84cdd4403a7f10148f02704c4e6a15d134d3fe6bd87dd1a48f023",
+            "pngSha256": "d07ecf2ff3d29057557cf8bf188d5cc9d320c4f285aa47cbd3cffbc20fc4a8c5",
+            "pngBytes": 2093,
+            "webpSha256": "15223e00404cdb9493d846fb3f84b642cb401943d44dbab53c6e9e2d2f55d266",
+            "webpBytes": 1028
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "kalt-lockup-onLight.svg",
+            "png": "kalt-lockup-onLight.png",
+            "webp": "kalt-lockup-onLight.webp",
+            "sourceSha256": "e2ac41c0c2f26d8bc7fdc5fd875c8de09238b13e089b02e77a6acff5f0093fe9",
+            "pngSha256": "d31faee0bc610e4213e79d385be665cb70d5791c1a5e79c79d057c95d24fb737",
+            "pngBytes": 10437,
+            "webpSha256": "43d243cc366db76348c7cd303f03d3a4c9804d658343fb5f9f9d55dc4ed84523",
+            "webpBytes": 3530
+          },
+          "icon": {
+            "svg": "kalt-icon-onLight.svg",
+            "png": "kalt-icon-onLight.png",
+            "webp": "kalt-icon-onLight.webp",
+            "sourceSha256": "4146e138603af1e81a6dadccbe70dc290bda662b3fbf05afac89c8600fb2d284",
+            "pngSha256": "f7cf7f79ee4aa0aa2777e942f2991b45741fa4dcbc073d12579f9ce9580e4313",
+            "pngBytes": 2056,
+            "webpSha256": "1397ce8e19bf8d41f6497c6d79812623ddf88e722e450d6b04b295697f99a30e",
+            "webpBytes": 1002
+          }
+        }
+      }
+    },
+    "mojave": {
+      "name": "Mojave",
+      "emblem": "Desert sunrise",
+      "font": {
+        "family": "Bungee",
+        "file": "bungee-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#e2581b",
+        "secondary": "#142338",
+        "accent": "#f4f4f2",
+        "carbon": false
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "mojave-lockup-onTeam.svg",
+            "png": "mojave-lockup-onTeam.png",
+            "webp": "mojave-lockup-onTeam.webp",
+            "sourceSha256": "7c5982659eeaa563bad237fb8eac63e486c078e2e0c9fc939927b0897bc3344a",
+            "pngSha256": "a5a53d936c3ddc25f5cec6d1d6eafb5f1ace5677ba93678eb52c2b9b5260981b",
+            "pngBytes": 22573,
+            "webpSha256": "fc1ffb13b4102e02a8ff0aad3e942f86875bbef5cd1b54bc5f1dc40762d02926",
+            "webpBytes": 11032
+          },
+          "icon": {
+            "svg": "mojave-icon-onTeam.svg",
+            "png": "mojave-icon-onTeam.png",
+            "webp": "mojave-icon-onTeam.webp",
+            "sourceSha256": "c11d81b8e2b5cf5f043689dae44ca73d4e05c13cfb11070b90d1b837426a889b",
+            "pngSha256": "a427fe5fe8ab437a9161fad948c842391e1fbfbd73695273b8999dd3fc2fa977",
+            "pngBytes": 4133,
+            "webpSha256": "a89f40fd6b17f1939919bfeec2cd38cd92ff1c0e9a5062891e71f62aee48ece9",
+            "webpBytes": 2520
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "mojave-lockup-onDark.svg",
+            "png": "mojave-lockup-onDark.png",
+            "webp": "mojave-lockup-onDark.webp",
+            "sourceSha256": "582d3ccec5789662410970903c1a4ebef6a215d9cadb3d23bef931f96c66b026",
+            "pngSha256": "e2eae5c8938d8dc137e37d0161f919d8d22480496b3d4e9cc95548957a492b64",
+            "pngBytes": 13786,
+            "webpSha256": "63088187c2a464ad8ce11dcdbac9c27941c3d1ae76620dcba7dace689b47e4b7",
+            "webpBytes": 5942
+          },
+          "icon": {
+            "svg": "mojave-icon-onDark.svg",
+            "png": "mojave-icon-onDark.png",
+            "webp": "mojave-icon-onDark.webp",
+            "sourceSha256": "634e12dda0ed295a7591234a528f9c7f3ef15de3515c54fc25f2980f14f0b90f",
+            "pngSha256": "8b3c22c3b10929970b7c7f14a22b0c57dc5bbcb7ae54f9cc3ac9ca4c854af13f",
+            "pngBytes": 2531,
+            "webpSha256": "89a4887bc7eb6471f4248c3475f2d9fd089887a62676656f1842d97da7d81376",
+            "webpBytes": 1278
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "mojave-lockup-onLight.svg",
+            "png": "mojave-lockup-onLight.png",
+            "webp": "mojave-lockup-onLight.webp",
+            "sourceSha256": "862fa6054d30f56dca7a15234595cf8861966bbd1b0764ee4b909402ad37cd44",
+            "pngSha256": "8227e998ebfbc2e457589181772a5e0a75e9ce0e50ed7b14dc6e6a0bcaa94292",
+            "pngBytes": 13697,
+            "webpSha256": "15df63ef7223d83babb2ca4faebecf9cf1346c4ea2d7f8baa3a449b5a5836c94",
+            "webpBytes": 5092
+          },
+          "icon": {
+            "svg": "mojave-icon-onLight.svg",
+            "png": "mojave-icon-onLight.png",
+            "webp": "mojave-icon-onLight.webp",
+            "sourceSha256": "1e794bfc4b285f7fc4dbfc7eb5f5a30fada738ce2d8287b9cd6c28277ac1532f",
+            "pngSha256": "52d8b91f651cbc2786d6c88ab8773f7c899d00c0cf1c3172c5a76962cb3cc56f",
+            "pngBytes": 2648,
+            "webpSha256": "4d301af12ce67efefb1cd1d6352187ba16e4803fefb864aad94ea400e141b5bf",
+            "webpBytes": 1364
+          }
+        }
+      }
+    },
+    "aurum": {
+      "name": "Aurum",
+      "emblem": "Art Deco A in a lozenge",
+      "font": {
+        "family": "Limelight",
+        "file": "limelight-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#121a3a",
+        "secondary": "#d9c08c",
+        "accent": "#f3efe6",
+        "carbon": true
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "aurum-lockup-onTeam.svg",
+            "png": "aurum-lockup-onTeam.png",
+            "webp": "aurum-lockup-onTeam.webp",
+            "sourceSha256": "f07c170d040f81d731070834b7878b03918a0e0bbb73552aad0beec158e90526",
+            "pngSha256": "48edf98d1ac61b720e2cca4b984cedfcc40063cd8728e5401687c7477e650375",
+            "pngBytes": 39390,
+            "webpSha256": "ccc2545c95fd50aa9d96cddf7759febdaffebba5c526d26d8e9fe6772f7212bc",
+            "webpBytes": 16972
+          },
+          "icon": {
+            "svg": "aurum-icon-onTeam.svg",
+            "png": "aurum-icon-onTeam.png",
+            "webp": "aurum-icon-onTeam.webp",
+            "sourceSha256": "f03b5f6a2dccf91a71d5fb1d1bca3de8d82a4d228b069e62c406d0091d8bf343",
+            "pngSha256": "b653038e522d16c51528a5020d037a41978adb3a6d2f5a6c7659331c0e9e68cc",
+            "pngBytes": 7036,
+            "webpSha256": "08475a218bafb5ba2ef39a1bc9a99dbc63ed61940dbbccd9ccfcaa14b72d21ee",
+            "webpBytes": 4716
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "aurum-lockup-onDark.svg",
+            "png": "aurum-lockup-onDark.png",
+            "webp": "aurum-lockup-onDark.webp",
+            "sourceSha256": "599419b2e5338f9d55421c3b7f198d0499ec44c4d4d33bff8430fd804b7eb30f",
+            "pngSha256": "bbd3b72d53c8da90906dc7022a6ed9ecf3a09015928246a72930e94a5a3003dc",
+            "pngBytes": 23216,
+            "webpSha256": "5ea9641ee6fff9bf53f2758c8a3a8bdbd93452ca9acb352efb820a573a3ad351",
+            "webpBytes": 9788
+          },
+          "icon": {
+            "svg": "aurum-icon-onDark.svg",
+            "png": "aurum-icon-onDark.png",
+            "webp": "aurum-icon-onDark.webp",
+            "sourceSha256": "e7c4b705e4aaac47610761c70356912e911346132150e5bc711d97a2aebe1377",
+            "pngSha256": "2c9c7df87bd80d76dab63a2213cc44b94bcfafe8788507c6143f693dfd13dba8",
+            "pngBytes": 4806,
+            "webpSha256": "ce81bb36b182c8d3889cf245b138128748cbfd8e061f144d3b1b579e3f1209a2",
+            "webpBytes": 3110
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "aurum-lockup-onLight.svg",
+            "png": "aurum-lockup-onLight.png",
+            "webp": "aurum-lockup-onLight.webp",
+            "sourceSha256": "315d943bb7660b1d65c11987b48596e5ac0e233d243b9c373f5759c07d2a5c7a",
+            "pngSha256": "867756b2bfea24718d841b268452b8e432718634d72e9b74b57649642f3f1e3d",
+            "pngBytes": 21570,
+            "webpSha256": "65a44ef2220b48a7730b2cf2d4999907dd2d09441ae67c1ea6655ee4f9753fb5",
+            "webpBytes": 9094
+          },
+          "icon": {
+            "svg": "aurum-icon-onLight.svg",
+            "png": "aurum-icon-onLight.png",
+            "webp": "aurum-icon-onLight.webp",
+            "sourceSha256": "c2a1b635c8b8edf6d9299f8ca764914de46bc6e17fd73a3ac26d9622f4378f81",
+            "pngSha256": "0c1a4c3157c189ec3881ca3ec94ac95bd0ca192d71639bcdb2fa3d29a28a4f29",
+            "pngBytes": 4760,
+            "webpSha256": "ddc7989976bb0c5d7795e00120d9e1fa7a8c1ac9762265048ce7ce0f8e16fda9",
+            "webpBytes": 3088
+          }
+        }
+      }
+    },
+    "liberty": {
+      "name": "Liberty",
+      "emblem": "Winged star",
+      "font": {
+        "family": "Graduate",
+        "file": "graduate-latin-400-normal.woff2",
+        "weight": "400",
+        "bold": 0.05
+      },
+      "colors": {
+        "primary": "#1f46b8",
+        "secondary": "#bf0a30",
+        "accent": "#ffffff",
+        "carbon": true
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "liberty-lockup-onTeam.svg",
+            "png": "liberty-lockup-onTeam.png",
+            "webp": "liberty-lockup-onTeam.webp",
+            "sourceSha256": "ab835dda65136ab38086bc22c85f9b1ed235eed69b2c436dc7814bc17f809c37",
+            "pngSha256": "410a75261f3ccdcae7f5ed2fd9a2fb54c0fb75560f8dc4274096b6645c3b042c",
+            "pngBytes": 17737,
+            "webpSha256": "99a516dd0703fe512b24af64f8557077d098c13be9cd8023c864075be2ad76a4",
+            "webpBytes": 7872
+          },
+          "icon": {
+            "svg": "liberty-icon-onTeam.svg",
+            "png": "liberty-icon-onTeam.png",
+            "webp": "liberty-icon-onTeam.webp",
+            "sourceSha256": "2cfbdca9f4e45f43d0b54b9b7fd42cd5b985901ad27b4a43954e462e5d52bc24",
+            "pngSha256": "33265452b98d8092dcfea18e1e4ed5ffcfc2ea83cc5fb172b64eb082b62950f9",
+            "pngBytes": 4253,
+            "webpSha256": "d03f51dafac704ae69d2c764e2f44744119ff750814bab21e9c3b9bd9c4dd0a2",
+            "webpBytes": 2868
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "liberty-lockup-onDark.svg",
+            "png": "liberty-lockup-onDark.png",
+            "webp": "liberty-lockup-onDark.webp",
+            "sourceSha256": "3dbc8dbdf805b599a6dcc17f165e2ee0051077179e06b9b1d3c4924fa050ee5f",
+            "pngSha256": "04b6a3b4411a9d0a222fa1f8dbe1bcc8438cbc7dfb822cc7a4aa596eed635333",
+            "pngBytes": 11902,
+            "webpSha256": "d52235630d179973da698f08fc56a5d46920d8289c8d852de8c54cfb6a026a7a",
+            "webpBytes": 4874
+          },
+          "icon": {
+            "svg": "liberty-icon-onDark.svg",
+            "png": "liberty-icon-onDark.png",
+            "webp": "liberty-icon-onDark.webp",
+            "sourceSha256": "9441c28a388a814006b78dda3321e86bd8157241de998e659af1640edb8714da",
+            "pngSha256": "1d0e0e83a7fc1014b21180a93d6667d6f973d4190382fea14991d86b27455c69",
+            "pngBytes": 2937,
+            "webpSha256": "91649d6e983e7838f080f490f7718b8f1ad792533f188d445b920cae0aa4b30d",
+            "webpBytes": 1638
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "liberty-lockup-onLight.svg",
+            "png": "liberty-lockup-onLight.png",
+            "webp": "liberty-lockup-onLight.webp",
+            "sourceSha256": "e69499d9ebef0e0736ffebddadb6bf9ace1a965ae10ebf16c79afd27e7326be3",
+            "pngSha256": "b183aa392346b09e27ad556782265de9dc71c0bfafe937899c98718fe7f08b10",
+            "pngBytes": 11643,
+            "webpSha256": "2547c979f841cc373c5482f7a575e2b5489a150809382eb0b81eb1c93c029ce4",
+            "webpBytes": 4274
+          },
+          "icon": {
+            "svg": "liberty-icon-onLight.svg",
+            "png": "liberty-icon-onLight.png",
+            "webp": "liberty-icon-onLight.webp",
+            "sourceSha256": "bb322d253924bfff55de1e07c1ca2d9f142f9f7779473bd0b61c574bc2a73c00",
+            "pngSha256": "034ecc185f69eff415db0af086cc4f361a7956fa98c3747d26b155bf1e254dc9",
+            "pngBytes": 2909,
+            "webpSha256": "c79298727bb95f31231b4d991514387e6fef6d471ff9b02684bfbca0f6d93cf2",
+            "webpBytes": 1640
+          }
+        }
+      }
+    },
+    "sarab": {
+      "name": "Sarab",
+      "emblem": "Falcon above a dune",
+      "font": {
+        "family": "Lalezar",
+        "file": "lalezar-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#f1efe8",
+        "secondary": "#0f8f8a",
+        "accent": "#c9a45c",
+        "carbon": true
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "sarab-lockup-onTeam.svg",
+            "png": "sarab-lockup-onTeam.png",
+            "webp": "sarab-lockup-onTeam.webp",
+            "sourceSha256": "cb124e1d25a93c73b1fd23f861c9a1c90c7c56df3978033ef93add4f0bef8a99",
+            "pngSha256": "b82045c50c0d019c34cf62d8afeffecf7d400b97ca95e17f0c14bbf138b0f110",
+            "pngBytes": 28361,
+            "webpSha256": "761ba5764b208d24b164a4cf43157ca5343868c44f9adde9d292099a42b93ae8",
+            "webpBytes": 14210
+          },
+          "icon": {
+            "svg": "sarab-icon-onTeam.svg",
+            "png": "sarab-icon-onTeam.png",
+            "webp": "sarab-icon-onTeam.webp",
+            "sourceSha256": "3038f01ca7a9f69fae1c8c815e97dc3993c4681fd69adbfc8a513336b82d3072",
+            "pngSha256": "cad21b217223fee3cb69d2245cb6cf22b62eeff1ee729d3d828d30f4d5b7dbf9",
+            "pngBytes": 6829,
+            "webpSha256": "efaa50ee2dee40a7788a891bd51dba309a2cfadfcff07f12d078ad5e918e341f",
+            "webpBytes": 4400
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "sarab-lockup-onDark.svg",
+            "png": "sarab-lockup-onDark.png",
+            "webp": "sarab-lockup-onDark.webp",
+            "sourceSha256": "b01d5485eaf8605ee86c388a42373d6751002a9630ceef53b9d91054efd046b7",
+            "pngSha256": "499f7785552a4de6577ed2309ca6416dbcc42d647091a705c760b8f351b28212",
+            "pngBytes": 17656,
+            "webpSha256": "1467b5b3f095163e2a88e04ea921139c9f57232474ad1e246954d8cdde1dde25",
+            "webpBytes": 8510
+          },
+          "icon": {
+            "svg": "sarab-icon-onDark.svg",
+            "png": "sarab-icon-onDark.png",
+            "webp": "sarab-icon-onDark.webp",
+            "sourceSha256": "abb95449e6ee50f645e81982b3829c44eb4616e469598fb9d0a504d0a077a689",
+            "pngSha256": "1608cc18a37934ca660e827101dc96fbd1bc2a06114bed7a37580d9a6bf05aa0",
+            "pngBytes": 4181,
+            "webpSha256": "216c81aada548665f60a137f1752ed7b8e9b0d24aa9c19d177f40c40096c06a9",
+            "webpBytes": 2402
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "sarab-lockup-onLight.svg",
+            "png": "sarab-lockup-onLight.png",
+            "webp": "sarab-lockup-onLight.webp",
+            "sourceSha256": "9a9629fb2c90b611613066a3b13494ab2607f18674e641e92dfd05fd37fadfc0",
+            "pngSha256": "836f660843c8d69945954be27e634bf5792122e4d85e843b51e15988d19ddada",
+            "pngBytes": 16641,
+            "webpSha256": "9065977eb7491db2ed349b8ff3e3aabf2d381318b36d5659e0753b3500c2721d",
+            "webpBytes": 8076
+          },
+          "icon": {
+            "svg": "sarab-icon-onLight.svg",
+            "png": "sarab-icon-onLight.png",
+            "webp": "sarab-icon-onLight.webp",
+            "sourceSha256": "abb95449e6ee50f645e81982b3829c44eb4616e469598fb9d0a504d0a077a689",
+            "pngSha256": "1608cc18a37934ca660e827101dc96fbd1bc2a06114bed7a37580d9a6bf05aa0",
+            "pngBytes": 4181,
+            "webpSha256": "216c81aada548665f60a137f1752ed7b8e9b0d24aa9c19d177f40c40096c06a9",
+            "webpBytes": 2402
+          }
+        }
+      }
+    }
+  }
+}

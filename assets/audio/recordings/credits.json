@@ -1,0 +1,101 @@
+[
+  {
+    "car": "av12",
+    "name": "Lamborghini Aventador SV V12",
+    "author": "FiExhaust",
+    "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+    "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "furari-488",
+    "name": "Ferrari 488 GTB V8",
+    "author": "FiExhaust",
+    "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+    "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "mp1x",
+    "name": "McLaren 720S V8",
+    "author": "FiExhaust",
+    "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+    "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "aston-martin-valk",
+    "name": "Aston Martin Valkyrie V12",
+    "author": "Car and Driver España",
+    "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+    "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "mustang",
+    "name": "Ford Mustang GT V8",
+    "author": "Next-Gen Speed",
+    "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+    "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "bmw1",
+    "name": "BMW i8 turbo three-cylinder",
+    "author": "Sahan Chethiya",
+    "title": "BMW i8 Revs & Exhaust Sound",
+    "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "buggati",
+    "name": "Bugatti Chiron W16",
+    "author": "TvdL Films",
+    "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+    "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "bentley-gt",
+    "name": "Bentley Continental GT Speed W12",
+    "author": "QuickSilver Sound Architects",
+    "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+    "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "jaguarxkjss",
+    "name": "Mercedes-AMG ONE V6 hybrid",
+    "author": "Dan Outside",
+    "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+    "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+  }
+]

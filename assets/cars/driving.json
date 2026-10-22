@@ -1,0 +1,24 @@
+{
+ "version": 1,
+ "note": "Ultrack arcade tune for SI-unit Rapier physics. Inspired by handling.meta parameter separation; not Rockstar values or an importable GTA file.",
+ "defaults": {
+  "gripScale":1.06,"slidingGrip":0.9,"slideFloor":0.72,"rearGripScale":1.00,
+  "steeringLockDeg":35,"steeringMargin":1.0,"steeringResponse":40,
+  "yawInertia":0.9,"rollInertia":1.9,"pitchInertia":1.6,"cogScale":0.94,
+  "compressionDamping":0.5,"reboundDamping":0.68,"suspensionLoadLimit":3,
+  "antiRoll":0.6,"antiRollLimit":0.6,"driveBiasFront":0.4,"throttleResponseScale":0.8,
+  "slideRecovery":1.2,"slideRecoveryMaxG":0.12,"catchGain":4,"rearStiffness":1.00,"pitchGrip":0.16,"pitchAero":0.25,"brakeShift":0.45,"engineBrake":0.05,"liftShift":0.08,"shiftBite":1,"powerShift":0.10,"tyreShape":1.52,"rearTyreShape":1.42,"steeringUnder":0
+ },
+ "archetypes": {
+  "supercar":{},
+  "muscle":{"steeringResponse":35,"yawInertia":0.95,"rearGripScale":1.00,"slidingGrip":0.91},
+  "tourer":{"steeringResponse":35,"yawInertia":0.98,"rearGripScale":1.00,"rollInertia":2.1},
+  "electric":{"driveBiasFront":0.45,"rearGripScale":1.00,"engineBrake":0.05,"liftShift":0.1},
+  "track":{"steeringResponse":45,"yawInertia":0.85}
+ },
+ "cars": {
+  "av12":"supercar","mp1x":"supercar","furari-488":"supercar","blackbird":"supercar","porsche1":"supercar","huracan":"supercar","laferrari":"supercar",
+  "aston-martin-valk":"track","jaguarxkjss":"track","buggati":"tourer","destrier":"track",
+  "tesla1":"electric","nuvolari":"electric","mustang":"muscle","bentley-gt":"tourer","bmw1":"tourer"
+ }
+}

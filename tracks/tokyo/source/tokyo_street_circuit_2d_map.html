@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokyo Hiragana 「と」 Topological Circuit - 2D Racing Map</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&family=Noto+Serif+JP:wght@900&family=Noto+Sans+JP:wght@700;900&display=swap');
+
+    body {
+      margin: 0;
+      background-color: #05060b;
+      color: #f0f4f8;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .kanji-serif {
+      font-family: 'Noto Serif JP', serif;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    .density-btn.active {
+      background-color: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #a7f3d0;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-[#05060b]">
+
+  <!-- Top Telemetry & Browser Optimization Bar (Exclusively Hiragana 「と」) -->
+  <header class="w-full bg-[#090c15]/95 border-b border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-20 backdrop-blur-md">
+    
+    <!-- Brand & Exclusive Hiragana 「と」 Title -->
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2.5 pr-3 border-r border-slate-800">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 via-amber-500 to-cyan-500 flex items-center justify-center font-black text-xl text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] kanji-serif">
+          と
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xs md:text-sm font-extrabold tracking-wider text-white uppercase">
+              Tokyo Hiragana 「と」 Topological Circuit
+            </h1>
+            <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">
+              とおきょう // 2 STROKES
+            </span>
+            <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              +28.5M RIDGE SPINE // 14 TURNS
+            </span>
+            <span id="perfBadge" class="text-[10px] mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hidden xl:inline">
+              OFFSCREEN CACHED (60 FPS)
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-400 mono">
+            STROKE 1: TOME (止め) +28.5M ROPPONGI RIDGE SPINE &bull; STROKE 2: HARAI (払い) SHIBUYA VALLEY KNOT &amp; BAY LOOP
+          </p>
+        </div>
+      </div>
+
+      <!-- Browser City Density Selector -->
+      <div class="flex items-center gap-1 bg-[#05070d] p-1 rounded-xl border border-slate-800">
+        <span class="text-[10px] mono text-slate-400 px-1.5 hidden md:inline">BROWSER CITY DENSITY:</span>
+        <button data-density="sparse" class="density-btn active text-[11px] font-semibold px-2.5 py-0.5 rounded-md border border-transparent text-slate-300 transition">
+          Sparse (12 Landmarks)
+        </button>
+        <button data-density="minimal" class="density-btn text-[11px] font-semibold px-2.5 py-0.5 rounded-md border border-transparent text-slate-300 transition">
+          Minimal (6 Core)
+        </button>
+      </div>
+    </div>
+
+    <!-- Interactive Layer Toggles & Export -->
+    <div class="flex flex-wrap items-center gap-1.5">
+      <button data-layer="topoContours" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-amber-500/20 border-amber-400 text-amber-200">
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span> Topo Hill (+28.5m)
+      </button>
+      <button data-layer="kanjiGhost" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-rose-500/20 border-rose-400 text-rose-200">
+        <span class="w-2 h-2 rounded-full bg-rose-400"></span> 「と」 Calligraphy
+      </button>
+      <button data-layer="buildings" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-cyan-500/20 border-cyan-400 text-cyan-200">
+        <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Landmarks
+      </button>
+      <button data-layer="skyline" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-indigo-500/20 border-indigo-400 text-indigo-200">
+        <span class="w-2 h-2 rounded-full bg-indigo-400"></span> Skyline
+      </button>
+      <button data-layer="stadiums" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-purple-500/20 border-purple-400 text-purple-200">
+        <span class="w-2 h-2 rounded-full bg-purple-400"></span> Stadiums (4)
+      </button>
+      <button data-layer="hoardings" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-emerald-500/20 border-emerald-400 text-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Adverts
+      </button>
+      <button data-layer="turnSigns" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-yellow-500/20 border-yellow-400 text-yellow-200">
+        <span class="w-2 h-2 rounded-full bg-yellow-400"></span> Turn Signs
+      </button>
+      <button data-layer="cars" class="layer-btn active text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all flex items-center gap-1.5 bg-lime-500/20 border-lime-400 text-lime-200">
+        <span class="w-2 h-2 rounded-full bg-lime-400"></span> AI Cars
+      </button>
+
+      <button id="exportJsonBtn" class="text-[11px] font-bold px-2.5 py-1 rounded-lg border border-cyan-400/60 bg-cyan-500/20 text-cyan-200 hover:bg-cyan-500/30 transition ml-1">
+        Export Hiragana 「と」 JSON
+      </button>
+      <button id="resetCamBtn" class="text-[11px] font-semibold px-2 py-1 rounded-lg border border-slate-600 bg-slate-800/90 text-slate-200 hover:bg-slate-700 transition">
+        Reset View
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Interactive Viewport -->
+  <div class="relative flex-1 w-full overflow-hidden" id="canvasContainer">
+    <canvas id="trackCanvas"></canvas>
+
+    <!-- Top-Left Hiragana 「と」 Two-Stroke Breakdown & Live Telemetry Card -->
+    <div class="absolute top-3 left-3 bg-[#090c15]/92 border border-slate-700/80 rounded-xl p-3 max-w-xs backdrop-blur-md shadow-2xl pointer-events-auto">
+      <div class="flex items-center justify-between gap-2 mb-1.5">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-lg bg-rose-500/15 border border-rose-500/40 flex items-center justify-center text-2xl font-black text-rose-400 kanji-serif shrink-0">
+            と
+          </div>
+          <div>
+            <div class="text-[10px] mono uppercase tracking-wider text-amber-400 font-bold">Hiragana Origin: とおきょう</div>
+            <div class="text-xs font-extrabold text-white">2-Stroke Topological Layout</div>
+          </div>
+        </div>
+        <span id="buildingCountBadge" class="text-[10px] mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          12 BLDGS + 3 PARKS
+        </span>
+      </div>
+
+      <div class="space-y-1.5 text-[10.5px] text-slate-300 leading-snug mb-2">
+        <div class="bg-slate-900/75 p-1.5 rounded border-l-2 border-amber-400">
+          <strong class="text-amber-300">Stroke 1 (Tome / 止め — Ridge Spine):</strong> Climbs the natural northern Roppongi hill (<span class="mono text-amber-200">+28.5m</span> crest) and descends along a stone hillside viaduct (<span class="mono text-amber-200">+24.0m</span>) over the valley road.
+        </div>
+        <div class="bg-slate-900/75 p-1.5 rounded border-l-2 border-cyan-400">
+          <strong class="text-cyan-300">Stroke 2 (Harai / 払い — Valley &amp; Bay Loop):</strong> Carves around the central apex knot, passes underneath the viaduct at <span class="mono text-cyan-200">+3.0m</span>, and sweeps into the wide Shibuya C-curve and Tokyo Bay straight.
+        </div>
+      </div>
+
+      <!-- Live Hover Elevation & Grade Readout -->
+      <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-800/90 text-[10px] mono">
+        <div class="bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
+          <div class="text-slate-500 text-[9px]">ELEVATION</div>
+          <div id="elevReadout" class="text-amber-300 font-bold">+24.0 m</div>
+        </div>
+        <div class="bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
+          <div class="text-slate-500 text-[9px]">SLOPE GRADE</div>
+          <div id="gradeReadout" class="text-cyan-300 font-bold">-4.2 %</div>
+        </div>
+        <div class="bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
+          <div class="text-slate-500 text-[9px]">TERRAIN</div>
+          <div id="zoneReadout" class="text-amber-300 font-bold">VIADUCT</div>
+        </div>
+      </div>
+      <div class="mt-1.5 text-[10px] mono text-slate-300 truncate" id="strokeSectorReadout">
+        STROKE 1 (止め): Hillside Viaduct Overpass (+24.0m)
+      </div>
+    </div>
+
+    <!-- Bottom-Right Interactive Topological Elevation Profile Chart -->
+    <div class="absolute bottom-3 right-3 bg-[#090c15]/92 border border-slate-700/80 rounded-xl p-2.5 w-80 sm:w-96 backdrop-blur-md shadow-2xl pointer-events-auto">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 mono flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          「と」 Elevation Profile (0m → +28.5m Ridge)
+        </span>
+        <span class="text-[9px] mono text-slate-400">Live Cars + Hover Sync</span>
+      </div>
+      <canvas id="elevChartCanvas" width="360" height="78" class="w-full h-[78px] bg-[#05070c] rounded-lg border border-slate-800/80"></canvas>
+      <div class="flex justify-between text-[9px] mono text-slate-400 mt-1 px-1">
+        <span>S/F Bay (1m)</span>
+        <span class="text-amber-300">▲ Stroke 1 Crest (+28.5m)</span>
+        <span class="text-rose-300">Viaduct (+24m)</span>
+        <span class="text-cyan-300">Valley (3m)</span>
+      </div>
+    </div>
+
+    <!-- Bottom-Left Map Legend & Render Performance Metrics -->
+    <div class="absolute bottom-3 left-3 bg-[#090c15]/90 border border-slate-700/80 rounded-xl p-3 max-w-xs backdrop-blur-md shadow-2xl pointer-events-auto hidden sm:block">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 mono">2D Topological Legend</span>
+        <span class="text-[10px] mono text-slate-400" id="zoomReadout">ZOOM: 100%</span>
+      </div>
+      <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[10.5px] text-slate-300">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-1.5 bg-amber-500/40 border border-amber-400 inline-block rounded-sm"></span>
+          <span>Topo Contours (+5m–28m)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-2 bg-stone-700 border-y border-amber-300 inline-block rounded-sm"></span>
+          <span>Viaduct &amp; Embankment</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-1.5 bg-gradient-to-r from-red-600 to-white inline-block rounded-sm"></span>
+          <span>FIA Red/White Curbs</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-2 bg-amber-400 text-black font-bold text-[7px] flex items-center justify-center rounded-sm">&gt;</span>
+          <span>Outer Turn Chevrons</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-1.5 bg-emerald-400 inline-block rounded-sm"></span>
+          <span>Hoardings &amp; Gantries</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-2 bg-purple-500/60 border border-cyan-400 inline-block rounded-sm"></span>
+          <span>Stadium Seating (4)</span>
+        </div>
+      </div>
+      <div class="mt-2 pt-1.5 border-t border-slate-800 text-[10px] text-slate-400 flex justify-between items-center">
+        <span id="fpsReadout" class="mono text-emerald-400">60 FPS // 1 STATIC BLIT</span>
+        <span id="hoverCoord" class="mono text-cyan-300">X: 0, Y: 0</span>
+      </div>
+    </div>
+
+    <!-- Toast Notification Modal for JSON Export -->
+    <div id="toastNotification" class="fixed top-16 right-4 bg-slate-900/95 border border-cyan-400 text-cyan-200 px-4 py-2.5 rounded-xl shadow-2xl text-xs mono transition-all duration-300 opacity-0 pointer-events-none z-50">
+      ✓ Copied Hiragana 「と」 topological track + sparse city JSON to clipboard!
+    </div>
+  </div>
+
+<script>
+// ============================================================================
+// 1. WORLD CONSTANTS, STATE & OFFSCREEN CACHING (FOR 60FPS BROWSER PERF)
+// ============================================================================
+const canvas = document.getElementById('trackCanvas');
+const ctx = canvas.getContext('2d');
+const elevCanvas = document.getElementById('elevChartCanvas');
+const elevCtx = elevCanvas.getContext('2d');
+const container = document.getElementById('canvasContainer');
+
+const zoomReadout = document.getElementById('zoomReadout');
+const hoverCoord = document.getElementById('hoverCoord');
+const elevReadout = document.getElementById('elevReadout');
+const gradeReadout = document.getElementById('gradeReadout');
+const zoneReadout = document.getElementById('zoneReadout');
+const strokeSectorReadout = document.getElementById('strokeSectorReadout');
+const buildingCountBadge = document.getElementById('buildingCountBadge');
+const fpsReadout = document.getElementById('fpsReadout');
+const perfBadge = document.getElementById('perfBadge');
+
+const WORLD_WIDTH = 1480;
+const WORLD_HEIGHT = 940;
+const TRACK_WIDTH = 56;
+const CURB_WIDTH = 68;
+const SUBDIVISIONS = 34;
+
+// Primary Offscreen Static Buffer (Background, Topography, Landmarks, Lower Valley Track)
+const staticCacheCanvas = document.createElement('canvas');
+staticCacheCanvas.width = WORLD_WIDTH;
+staticCacheCanvas.height = WORLD_HEIGHT;
+const staticCtx = staticCacheCanvas.getContext('2d');
+
+// Secondary Offscreen Viaduct & Overhead Bridge Deck Buffer
+// Ensures valley AI cars drive UNDERNEATH the +24m Stroke-1 Viaduct and Advert Gantries!
+const viaductDeckCanvas = document.createElement('canvas');
+viaductDeckCanvas.width = WORLD_WIDTH;
+viaductDeckCanvas.height = WORLD_HEIGHT;
+const viaductCtx = viaductDeckCanvas.getContext('2d');
+
+let staticCacheDirty = true;
+let cityDensity = 'sparse'; // 'sparse' (12 landmarks) or 'minimal' (6 core landmarks)
+let hoveredSplineIndex = 315; // Default highlight on the Stroke-1 Ridge Viaduct
+
+const layers = {
+  topoContours: true,
+  kanjiGhost: true,
+  buildings: true,
+  skyline: true,
+  stadiums: true,
+  hoardings: true,
+  turnSigns: true,
+  cars: true
+};
+
+const camera = {
+  x: 0,
+  y: 0,
+  zoom: 1,
+  isDragging: false,
+  dragStartX: 0,
+  dragStartY: 0
+};
+
+// ============================================================================
+// 2. EXCLUSIVE HIRAGANA 「と」 (TO - とおきょう) TRACK DATA & TOPOGRAPHY
+//    - Stroke 1 (Tome / 止め): Climbs the northwestern Roppongi Ridge to +28.5m
+//      and descends down the spine where it crosses on a hillside stone viaduct
+//      (+24.0m) over the lower valley road (+3.0m).
+//    - Stroke 2 (Harai / 払い): Sweeps around the central valley knot, passes
+//      underneath the Stroke-1 viaduct, and opens into the wide C-curve along
+//      Shibuya Basin and the Tokyo Bayfront straight.
+// ============================================================================
+const HIRAGANA_TO_CIRCUIT = {
+  char: 'と',
+  title: 'Tokyo Hiragana 「と」 Topological Circuit',
+  stats: '5.18 KM // +28.5M RIDGE SPINE // 14 TURNS',
+  ghostFont: '900 790px "Noto Sans JP", sans-serif',
+  ghostX: 590,
+  ghostY: 505,
+  sfNodeIndex: 14,
+  drsZones: [
+    { start: 5, end: 48, name: 'BAYFRONT MAIN DRS' },
+    { start: 465, end: 525, name: 'SHIBUYA C-LOOP DRS' }
+  ],
+  // Natural Topographical Hill Contours (+5m to +28m) around the Northwestern/Central Ridge
+  topoHills: [
+    {
+      cx: 535, cy: 255, rx: 395, ry: 230, angle: -0.26, maxElev: 28.5,
+      name: 'ROPPONGI RIDGE // STROKE-1 TOPOGRAPHICAL CREST (+28.5m)',
+      levels: [
+        { elev: '5m',  scale: 1.00, color: 'rgba(16, 185, 129, 0.11)', stroke: 'rgba(52, 211, 153, 0.30)' },
+        { elev: '10m', scale: 0.83, color: 'rgba(132, 204, 22, 0.12)', stroke: 'rgba(163, 230, 53, 0.35)' },
+        { elev: '15m', scale: 0.66, color: 'rgba(234, 179, 8, 0.14)',  stroke: 'rgba(250, 204, 21, 0.42)' },
+        { elev: '20m', scale: 0.50, color: 'rgba(245, 158, 11, 0.16)', stroke: 'rgba(251, 191, 36, 0.50)' },
+        { elev: '25m', scale: 0.33, color: 'rgba(249, 115, 22, 0.18)', stroke: 'rgba(251, 146, 60, 0.60)' },
+        { elev: '28m', scale: 0.17, color: 'rgba(244, 63, 94, 0.22)',  stroke: 'rgba(251, 113, 133, 0.72)' }
+      ]
+    }
+  ],
+  // 18 Precision Waypoints tracing the exact 2-stroke calligraphy of Hiragana 「と」
+  waypoints: [
+    // Stroke 2 Exit (Harai / 払い): Southern Tokyo Bayfront Main Straight & Pit Complex (1.0m)
+    { x: 455, y: 825, elev: 1.0,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Tokyo Bayfront Main Straight (S/F)' },
+    { x: 845, y: 825, elev: 1.0,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Odaiba Flat Straight (1.0m)' },
+    { x: 1045, y: 735, elev: 2.5, viaduct: false, strokeNum: 2, stroke: 'Stroke 2 Tail: Bayfront Turn 1 Braking Zone (+2.5m)' },
+    { x: 970, y: 625, elev: 5.5,  viaduct: false, strokeNum: 1, stroke: 'Foothill Ascent: Beginning Grade toward Northern Ridge (+5.5m)' },
+    // Eastern Foothill Climb up to the Northern Entry of Stroke 1
+    { x: 925, y: 420, elev: 12.0, viaduct: false, strokeNum: 1, stroke: 'East Foothill Climb: Mid-Slope Ascent (+12.0m)' },
+    { x: 865, y: 215, elev: 20.0, viaduct: false, strokeNum: 1, stroke: 'Asakusa Escarpment Climb (+20.0m)' },
+    { x: 645, y: 112, elev: 26.2, viaduct: false, strokeNum: 1, stroke: 'Stroke 1 (Tome / 止め): Northern High Ground Entry (+26.2m)' },
+    // STROKE 1 (TOME / 止め): Roppongi Ridge Crest (+28.5m) & Spine Descent over Hillside Viaduct (+24.0m)
+    { x: 420, y: 104, elev: 28.5, viaduct: false, strokeNum: 1, stroke: 'Stroke 1 (Tome / 止め): Roppongi Ridge Summit Crest (+28.5m Peak)' },
+    { x: 352, y: 192, elev: 27.0, viaduct: false, strokeNum: 1, stroke: 'Stroke 1 (Tome / 止め): Upper Spine Turn-In (+27.0m)' },
+    { x: 478, y: 348, elev: 24.0, viaduct: true,  strokeNum: 1, stroke: 'Stroke 1 (Tome / 止め): Hillside Viaduct Overpass (+24.0m over +3m Valley)' },
+    { x: 615, y: 502, elev: 16.5, viaduct: true,  strokeNum: 1, stroke: 'Stroke 1 (Tome / 止め): Viaduct South Abutment Descent (+16.5m)' },
+    // STROKE 2 (HARAI / 払い): Central Apex Knot & Valley Underpass (+3.0m)
+    { x: 762, y: 595, elev: 8.5,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Central Ridge-Base Knot Apex (+8.5m)' },
+    { x: 815, y: 465, elev: 4.5,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Valley Knot North Hairpin (+4.5m)' },
+    { x: 655, y: 375, elev: 3.0,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Valley Underpass Beneath Viaduct (+3.0m)' },
+    // Wide High-Speed Sweeping C-Loop of 「と」 through Shibuya Basin back to Bayfront
+    { x: 410, y: 442, elev: 3.8,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Shibuya Valley C-Curve Entry (+3.8m)' },
+    { x: 220, y: 565, elev: 3.0,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Shibuya Sweeping C-Loop Apex 1 (+3.0m)' },
+    { x: 210, y: 725, elev: 2.0,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Shibuya Sweeping C-Loop Apex 2 (+2.0m)' },
+    { x: 315, y: 810, elev: 1.2,  viaduct: false, strokeNum: 2, stroke: 'Stroke 2 (Harai / 払い): Bayfront Coastal Exit (+1.2m)' }
+  ],
+  // 12 Curated Landmark Buildings (6 Core + 6 Sparse) for clutter-free 60FPS browser rendering
+  landmarks: [
+    // Core 6 Iconic Landmarks (Shown in both Sparse & Minimal modes)
+    { x: 72,  y: 118, w: 125, h: 95,  color: '#00f0ff', jp: '六本木ヒルズ', name: 'ROPPONGI HILLS ARENA', helipad: true,  core: true },
+    { x: 58,  y: 360, w: 115, h: 110, color: '#ff0055', jp: '渋谷スクランブル', name: 'SHIBUYA SCRAMBLE TOWER', helipad: true, core: true },
+    { x: 980, y: 85,  w: 110, h: 95,  color: '#ffee00', jp: '秋葉原電脳館', name: 'AKIHABARA CYBER PLAZA', helipad: false, core: true },
+    { x: 1015, y: 455, w: 95, h: 110, color: '#00ff88', jp: '築地市場', name: 'TSUKIJI MARKET HALL', helipad: false, core: true },
+    { x: 542, y: 225, w: 94,  h: 72,  color: '#ff8800', jp: '山頂展望台', name: 'RIDGE SUMMIT OBSERVATORY', helipad: true, core: true },
+    { x: 325, y: 585, w: 115, h: 95,  color: '#b400ff', jp: '代々木パビリオン', name: 'YOYOGI PARK PAVILION', helipad: false, core: true },
+    // Additional 6 Sparse District Landmarks (Only in Sparse 12-Landmark mode)
+    { x: 215, y: 42,  w: 95,  h: 68,  color: '#00f0ff', jp: '新宿北', name: 'SHINJUKU NORTH GATE', helipad: false, core: false },
+    { x: 760, y: 36,  w: 105, h: 64,  color: '#ff0055', jp: '浅草ゲート', name: 'ASAKUSA RIDGE GATE', helipad: false, core: false },
+    { x: 72,  y: 785, w: 110, h: 85,  color: '#00ff88', jp: '品川埠頭', name: 'SHINAGAWA BAY PIER', helipad: true,  core: false },
+    { x: 1015, y: 280, w: 88, h: 95,  color: '#b400ff', jp: '銀座タワー', name: 'GINZA NEON TOWER', helipad: false, core: false },
+    { x: 525, y: 635, w: 98,  h: 74,  color: '#ffee00', jp: '芝公園ドーム', name: 'SHIBA VALLEY DOME', helipad: false, core: false },
+    { x: 995, y: 825, w: 105, h: 72,  color: '#00f0ff', jp: '豊洲ドック', name: 'TOYOSU TECH DOCK', helipad: false, core: false }
+  ],
+  // 3 Low-Poly Botanical Park Polygons (Zero performance overhead, rich topographic contrast)
+  parks: [
+    { x: 385, y: 625, rx: 135, ry: 82, angle: -0.15, name: 'YOYOGI CENTRAL GROVE (+3m)' },
+    { x: 242, y: 278, rx: 86,  ry: 64, angle: 0.25,  name: 'ROPPONGI PINE SLOPE (+18m)' },
+    { x: 845, y: 715, rx: 92,  ry: 44, angle: -0.08, name: 'ODAIBA BAYSIDE LAWN (+1.5m)' }
+  ],
+  // 4 Grandstand Stadiums
+  grandstands: [
+    { x: 650, y: 888, w: 360, d: 44, angle: 0, label: 'MAIN GRANDSTAND // 「と」 BAYFRONT ARENA (1.0m)' },
+    { x: 650, y: 764, w: 270, d: 38, angle: Math.PI, label: 'VIP PADDOCK CLUB SEATING' },
+    { x: 525, y: 52,  w: 235, d: 38, angle: 0.05, label: 'ROPPONGI RIDGE SUMMIT STAND (+28.5m)' },
+    { x: 146, y: 645, w: 215, d: 40, angle: -Math.PI / 2 + 0.08, label: 'SHIBUYA C-LOOP ARENA STAND (+2.5m)' }
+  ],
+  // Corner Telemetry Markers
+  corners: [
+    { nodeRatio: 0.11, num: 'T1',  name: 'Bayfront Turn 1 (+2.5m)' },
+    { nodeRatio: 0.29, num: 'T4',  name: 'Asakusa Escarpment (+20m)' },
+    { nodeRatio: 0.43, num: 'T6',  name: 'Stroke 1 Ridge Crest (+28.5m)' },
+    { nodeRatio: 0.54, num: 'T8',  name: 'Hillside Viaduct (+24m)' },
+    { nodeRatio: 0.66, num: 'T10', name: 'Stroke 2 Valley Knot (+8.5m)' },
+    { nodeRatio: 0.74, num: 'T11', name: 'Valley Underpass (+3.0m)' },
+    { nodeRatio: 0.86, num: 'T13', name: 'Shibuya C-Sweep (+2.5m)' }
+  ]
+};
+
+let trackSpline = [];
+
+// ============================================================================
+// 3. SPLINE & CONTINUOUS TOPOLOGICAL ELEVATION ENGINE
+// ============================================================================
+function getCatmullRomPoint(p0, p1, p2, p3, t) {
+  const t2 = t * t;
+  const t3 = t2 * t;
+  const f0 = -0.5 * t3 + t2 - 0.5 * t;
+  const f1 =  1.5 * t3 - 2.5 * t2 + 1.0;
+  const f2 = -1.5 * t3 + 2.0 * t2 + 0.5 * t;
+  const f3 =  0.5 * t3 - 0.5 * t2;
+
+  const elev = Math.max(0, p0.elev * f0 + p1.elev * f1 + p2.elev * f2 + p3.elev * f3);
+  const vScore = (p0.viaduct ? 1 : 0) * f0 + (p1.viaduct ? 1 : 0) * f1 + (p2.viaduct ? 1 : 0) * f2 + (p3.viaduct ? 1 : 0) * f3;
+
+  return {
+    x: p0.x * f0 + p1.x * f1 + p2.x * f2 + p3.x * f3,
+    y: p0.y * f0 + p1.y * f1 + p2.y * f2 + p3.y * f3,
+    elev: elev,
+    viaduct: vScore > 0.42,
+    strokeNum: t < 0.5 ? p1.strokeNum : p2.strokeNum,
+    stroke: t < 0.5 ? p1.stroke : p2.stroke
+  };
+}
+
+function generateSplineMetadata(points, subdivisions = SUBDIVISIONS) {
+  const spline = [];
+  const len = points.length;
+
+  for (let i = 0; i < len; i++) {
+    const p0 = points[(i - 1 + len) % len];
+    const p1 = points[i];
+    const p2 = points[(i + 1) % len];
+    const p3 = points[(i + 2) % len];
+
+    for (let j = 0; j < subdivisions; j++) {
+      const t = j / subdivisions;
+      spline.push(getCatmullRomPoint(p0, p1, p2, p3, t));
+    }
+  }
+
+  for (let i = 0; i < spline.length; i++) {
+    const prev = spline[(i - 1 + spline.length) % spline.length];
+    const curr = spline[i];
+    const next = spline[(i + 1) % spline.length];
+
+    const dx = next.x - prev.x;
+    const dy = next.y - prev.y;
+    const dist = Math.hypot(dx, dy) || 1;
+
+    curr.tx = dx / dist;
+    curr.ty = dy / dist;
+    curr.nx = -curr.ty;
+    curr.ny = curr.tx;
+    curr.angle = Math.atan2(curr.ty, curr.tx);
+    curr.index = i;
+
+    // Continuous slope grade percentage (dElev / dHorizontal)
+    const dElev = next.elev - prev.elev;
+    curr.grade = (dElev / (dist * 0.35)) * 100;
+  }
+
+  const window = 6;
+  for (let i = 0; i < spline.length; i++) {
+    const prev = spline[(i - window + spline.length) % spline.length];
+    const next = spline[(i + window) % spline.length];
+    let dAngle = next.angle - prev.angle;
+    while (dAngle > Math.PI) dAngle -= Math.PI * 2;
+    while (dAngle < -Math.PI) dAngle += Math.PI * 2;
+    spline[i].curvature = dAngle;
+  }
+
+  return spline;
+}
+
+// Simulated Race Cars (Speed responds to both corners AND uphill/downhill grade!)
+const raceCars = [
+  { pos: 18,  speed: 0.78, laneOffset: -10, color: '#00f0ff', name: '01 // 首都高 APEX' },
+  { pos: 185, speed: 0.75, laneOffset: 10,  color: '#ff0055', name: '07 // 雷電 TURBO' },
+  { pos: 318, speed: 0.74, laneOffset: -8,  color: '#ffee00', name: '23 // ROPPONGI GT' },
+  { pos: 438, speed: 0.72, laneOffset: 9,   color: '#00ff88', name: '88 // SHIBUYA RZ' },
+  { pos: 540, speed: 0.76, laneOffset: 0,   color: '#b400ff', name: '12 // ODAIBA DRIFT' }
+];
+
+function getActiveLandmarks() {
+  return cityDensity === 'minimal'
+    ? HIRAGANA_TO_CIRCUIT.landmarks.filter(b => b.core)
+    : HIRAGANA_TO_CIRCUIT.landmarks;
+}
+
+function initHiraganaToCircuit() {
+  trackSpline = generateSplineMetadata(HIRAGANA_TO_CIRCUIT.waypoints, SUBDIVISIONS);
+  staticCacheDirty = true;
+
+  const activeBldgs = getActiveLandmarks();
+  buildingCountBadge.textContent = `${activeBldgs.length} BLDGS + ${HIRAGANA_TO_CIRCUIT.parks.length} PARKS`;
+}
+
+// ============================================================================
+// 4. OFFSCREEN STATIC MAP COMPILER (1 BASE BLIT + 1 VIADUCT OVERPASS BLIT)
+// ============================================================================
+function rebuildStaticEnvironmentCache() {
+  const sCtx = staticCtx;
+  const vCtx = viaductCtx;
+  const circuit = HIRAGANA_TO_CIRCUIT;
+
+  sCtx.clearRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+  vCtx.clearRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+  // 1. Base Midnight Asphalt & Engineering Grid
+  sCtx.fillStyle = '#07080e';
+  sCtx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+  sCtx.strokeStyle = 'rgba(255, 255, 255, 0.022)';
+  sCtx.lineWidth = 1;
+  for (let x = 0; x <= WORLD_WIDTH; x += 40) {
+    sCtx.beginPath(); sCtx.moveTo(x, 0); sCtx.lineTo(x, WORLD_HEIGHT); sCtx.stroke();
+  }
+  for (let y = 0; y <= WORLD_HEIGHT; y += 40) {
+    sCtx.beginPath(); sCtx.moveTo(0, y); sCtx.lineTo(WORLD_WIDTH, y); sCtx.stroke();
+  }
+
+  // 2. Low-Poly Botanical Park Polygons (3 Green Zones)
+  circuit.parks.forEach(pk => {
+    sCtx.save();
+    sCtx.translate(pk.x, pk.y);
+    sCtx.rotate(pk.angle);
+    sCtx.fillStyle = 'rgba(16, 185, 129, 0.065)';
+    sCtx.strokeStyle = 'rgba(16, 185, 129, 0.25)';
+    sCtx.lineWidth = 1.5;
+    sCtx.setLineDash([6, 6]);
+    sCtx.beginPath();
+    sCtx.ellipse(0, 0, pk.rx, pk.ry, 0, 0, Math.PI * 2);
+    sCtx.fill();
+    sCtx.stroke();
+    sCtx.setLineDash([]);
+
+    // Minimalist pine tree dots inside park polygon
+    sCtx.fillStyle = 'rgba(52, 211, 153, 0.22)';
+    [-pk.rx * 0.45, 0, pk.rx * 0.45].forEach(ox => {
+      sCtx.beginPath();
+      sCtx.arc(ox, -pk.ry * 0.3, 5, 0, Math.PI * 2);
+      sCtx.fill();
+    });
+
+    sCtx.fillStyle = 'rgba(52, 211, 153, 0.55)';
+    sCtx.font = 'bold 9px "JetBrains Mono", monospace';
+    sCtx.textAlign = 'center';
+    sCtx.fillText(`▲ ${pk.name}`, 0, 6);
+    sCtx.restore();
+  });
+
+  // 3. TOPOLOGICAL HILL CONTOUR LINES & ELEVATION RINGS (+5m to +28m)
+  if (layers.topoContours) {
+    circuit.topoHills.forEach(hill => {
+      hill.levels.forEach((lvl) => {
+        sCtx.save();
+        sCtx.translate(hill.cx, hill.cy);
+        sCtx.rotate(hill.angle);
+
+        const rx = hill.rx * lvl.scale;
+        const ry = hill.ry * lvl.scale;
+
+        sCtx.fillStyle = lvl.color;
+        sCtx.strokeStyle = lvl.stroke;
+        sCtx.lineWidth = 1.6;
+        sCtx.beginPath();
+        sCtx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+        sCtx.fill();
+        sCtx.stroke();
+
+        // Topographical Elevation Contour Tag (+5m, +10m, +15m, +20m, +25m, +28m)
+        sCtx.fillStyle = '#090c15';
+        sCtx.fillRect(-20, -ry - 7, 40, 14);
+        sCtx.fillStyle = lvl.stroke;
+        sCtx.font = 'bold 9.5px "JetBrains Mono", monospace';
+        sCtx.textAlign = 'center';
+        sCtx.textBaseline = 'middle';
+        sCtx.fillText(`+${lvl.elev}`, 0, -ry);
+
+        sCtx.restore();
+      });
+
+      // Summit Survey Marker
+      sCtx.save();
+      sCtx.fillStyle = 'rgba(251, 191, 36, 0.88)';
+      sCtx.font = 'bold 10px "JetBrains Mono", monospace';
+      sCtx.textAlign = 'center';
+      sCtx.fillText(`▲ ${hill.name}`, hill.cx, hill.cy - 14);
+      sCtx.restore();
+    });
+  }
+
+  // 4. Calligraphic Hiragana 「と」 Ghost Overlay & Stroke Order Guides
+  if (layers.kanjiGhost) {
+    sCtx.save();
+    sCtx.font = circuit.ghostFont;
+    sCtx.textAlign = 'center';
+    sCtx.textBaseline = 'middle';
+    sCtx.fillStyle = 'rgba(244, 63, 94, 0.065)';
+    sCtx.strokeStyle = 'rgba(251, 113, 133, 0.22)';
+    sCtx.lineWidth = 3;
+    sCtx.fillText(circuit.char, circuit.ghostX, circuit.ghostY);
+    sCtx.strokeText(circuit.char, circuit.ghostX, circuit.ghostY);
+
+    // Calligraphic Stroke-1 & Stroke-2 Origin Callouts
+    sCtx.fillStyle = 'rgba(251, 191, 36, 0.82)';
+    sCtx.font = 'bold 11px "JetBrains Mono", monospace';
+    sCtx.fillText('① 一画目 (STROKE 1: 止め ROPPONGI RIDGE SPINE)', 430, 78);
+
+    sCtx.fillStyle = 'rgba(56, 189, 248, 0.82)';
+    sCtx.fillText('② 二画目 (STROKE 2: 払い SHIBUYA VALLEY & BAY LOOP)', 335, 495);
+
+    // Traditional Red Hanko Stamp Seal for 「と」
+    sCtx.translate(1085, 85);
+    sCtx.strokeStyle = 'rgba(244, 63, 94, 0.6)';
+    sCtx.fillStyle = 'rgba(244, 63, 94, 0.14)';
+    sCtx.lineWidth = 2.5;
+    sCtx.strokeRect(-30, -30, 60, 60);
+    sCtx.fillRect(-30, -30, 60, 60);
+    sCtx.fillStyle = 'rgba(251, 113, 133, 0.85)';
+    sCtx.font = '900 32px "Noto Serif JP", serif';
+    sCtx.fillText('と', 0, 2);
+    sCtx.restore();
+  }
+
+  // 5. Eastern Tokyo Bay & Tokyo Tower Skyline Area
+  if (layers.skyline) {
+    const bayX = 1145;
+    const waterGrad = sCtx.createLinearGradient(bayX, 0, WORLD_WIDTH, 0);
+    waterGrad.addColorStop(0, '#071426');
+    waterGrad.addColorStop(1, '#030812');
+    sCtx.fillStyle = waterGrad;
+    sCtx.fillRect(bayX, 0, WORLD_WIDTH - bayX, WORLD_HEIGHT);
+
+    // Seawall Edge
+    sCtx.strokeStyle = '#2a3b52';
+    sCtx.lineWidth = 6;
+    sCtx.beginPath();
+    sCtx.moveTo(bayX, 0);
+    sCtx.lineTo(bayX, WORLD_HEIGHT);
+    sCtx.stroke();
+
+    // Rainbow Bridge Suspension Structure
+    sCtx.save();
+    sCtx.strokeStyle = 'rgba(210, 235, 255, 0.28)';
+    sCtx.lineWidth = 12;
+    sCtx.beginPath();
+    sCtx.moveTo(bayX - 12, 75);
+    sCtx.lineTo(WORLD_WIDTH, 225);
+    sCtx.stroke();
+
+    [{ x: 1225, y: 115 }, { x: 1365, y: 188 }].forEach(t => {
+      sCtx.fillStyle = '#ffffff';
+      sCtx.fillRect(t.x - 6, t.y - 18, 12, 36);
+    });
+    sCtx.restore();
+
+    // Tokyo Tower Top-Down Lattice Landmark
+    const ttX = 1295, ttY = 470;
+    sCtx.save();
+    sCtx.translate(ttX, ttY);
+    sCtx.strokeStyle = '#ff3300';
+    sCtx.lineWidth = 4;
+    sCtx.strokeRect(-45, -45, 90, 90);
+    sCtx.beginPath();
+    sCtx.moveTo(-45, -45); sCtx.lineTo(45, 45);
+    sCtx.moveTo(45, -45); sCtx.lineTo(-45, 45);
+    sCtx.stroke();
+    sCtx.fillStyle = '#f8fafc';
+    sCtx.fillRect(-20, -20, 40, 40);
+    sCtx.fillStyle = '#ff2a00';
+    sCtx.beginPath(); sCtx.arc(0, 0, 10, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = '#ff9e80';
+    sCtx.font = 'bold 10px "JetBrains Mono", monospace';
+    sCtx.textAlign = 'center';
+    sCtx.fillText('東京タワー // TOKYO TOWER', 0, 64);
+    sCtx.restore();
+
+    // Waterfront Skyline Towers
+    const skylineTowers = [
+      { x: 1185, y: 265, w: 72, h: 95,  color: '#00f0ff', jp: 'お台場', name: 'ODAIBA HQ' },
+      { x: 1295, y: 285, w: 92, h: 80,  color: '#ff007f', jp: '未来館', name: 'MIRAI TOWER' },
+      { x: 1185, y: 590, w: 80, h: 110, color: '#00ff88', jp: '湾岸',   name: 'BAYFRONT' },
+      { x: 1295, y: 635, w: 95, h: 125, color: '#ffaa00', jp: '芝浦',   name: 'SHIBAURA PIER' }
+    ];
+    skylineTowers.forEach(b => {
+      sCtx.fillStyle = b.color;
+      sCtx.globalAlpha = 0.08;
+      sCtx.fillRect(b.x - 24, b.y, b.w + 24, b.h);
+      sCtx.globalAlpha = 1.0;
+      drawLandmarkBuilding(sCtx, b.x, b.y, b.w, b.h, b.color, true, b.jp, b.name);
+    });
+  }
+
+  // 6. Sparse, Curated Architectural Landmarks (12 or 6 Landmarks)
+  if (layers.buildings) {
+    const activeLandmarks = getActiveLandmarks();
+    activeLandmarks.forEach(b => {
+      drawLandmarkBuilding(sCtx, b.x, b.y, b.w, b.h, b.color, b.helipad, b.jp, b.name);
+    });
+  }
+
+  // 7. Render Lower/Hillside Track Pass & Barrier Hoardings onto Primary Static Buffer
+  drawTopologicalTrackPass(sCtx, false);
+  drawBarrierHoardings(sCtx, false);
+
+  // 8. Render Elevated Hillside Viaduct (+24m) & Overhead Gantries onto Secondary Overpass Buffer
+  //    so valley AI cars drive smoothly underneath the Stroke-1 Viaduct and Advert Bridges!
+  drawTopologicalTrackPass(vCtx, true);
+  drawBarrierHoardings(vCtx, true);
+  drawOverheadAdvertGantries(vCtx);
+
+  // 9. Stadium Grandstands, Turn Chevron Signs & Corner Telemetry Badges
+  if (layers.stadiums) {
+    circuit.grandstands.forEach(g => {
+      drawGrandstand(sCtx, g.x, g.y, g.w, g.d, g.angle, g.label);
+    });
+  }
+  drawTurnSigns(sCtx);
+  drawCornerLabels(vCtx);
+
+  staticCacheDirty = false;
+}
+
+// Helper: Draw a Clean, Distinct 2D Architectural Landmark Building
+function drawLandmarkBuilding(tCtx, x, y, w, h, neonColor, hasHelipad, jpLabel, engName) {
+  tCtx.save();
+
+  tCtx.fillStyle = 'rgba(0, 0, 0, 0.72)';
+  tCtx.fillRect(x + 9, y + 9, w, h);
+
+  tCtx.fillStyle = '#121624';
+  tCtx.strokeStyle = neonColor;
+  tCtx.lineWidth = 2;
+  tCtx.fillRect(x, y, w, h);
+  tCtx.strokeRect(x, y, w, h);
+
+  tCtx.fillStyle = '#191f32';
+  tCtx.fillRect(x + 7, y + 7, w - 14, h - 14);
+  tCtx.strokeStyle = 'rgba(255,255,255,0.12)';
+  tCtx.lineWidth = 1;
+  tCtx.strokeRect(x + 7, y + 7, w - 14, h - 14);
+
+  if (hasHelipad) {
+    const hx = x + w - 24;
+    const hy = y + 24;
+    tCtx.strokeStyle = 'rgba(255, 255, 255, 0.42)';
+    tCtx.lineWidth = 1.5;
+    tCtx.beginPath();
+    tCtx.arc(hx, hy, 12, 0, Math.PI * 2);
+    tCtx.stroke();
+    tCtx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    tCtx.font = 'bold 10px Inter, sans-serif';
+    tCtx.textAlign = 'center';
+    tCtx.textBaseline = 'middle';
+    tCtx.fillText('H', hx, hy);
+  }
+
+  tCtx.fillStyle = neonColor;
+  tCtx.font = '900 13px "Noto Sans JP", sans-serif';
+  tCtx.textAlign = 'left';
+  tCtx.fillText(jpLabel || '東京', x + 12, y + h - 22);
+
+  if (engName) {
+    tCtx.fillStyle = '#94a3b8';
+    tCtx.font = 'bold 8px "JetBrains Mono", monospace';
+    tCtx.fillText(engName, x + 12, y + h - 10);
+  }
+
+  tCtx.restore();
+}
+
+// ============================================================================
+// 5. TOPOLOGICAL HILL & HILLSIDE VIADUCT TRACK RENDERER
+// ============================================================================
+function drawTopologicalTrackPass(tCtx, isViaductPass) {
+  tCtx.save();
+  tCtx.lineJoin = 'round';
+  tCtx.lineCap = 'round';
+
+  const circuit = HIRAGANA_TO_CIRCUIT;
+
+  // Collect contiguous spline segments belonging to either the Ground/Hillside Grade or the Viaduct Overpass
+  const segments = [];
+  let currentSeg = [];
+
+  for (let i = 0; i <= trackSpline.length; i++) {
+    const p = trackSpline[i % trackSpline.length];
+    if (isViaductPass ? p.viaduct : !p.viaduct) {
+      currentSeg.push(p);
+    } else if (currentSeg.length > 0) {
+      currentSeg.push(p);
+      segments.push(currentSeg);
+      currentSeg = [];
+    }
+  }
+  if (currentSeg.length > 0) segments.push(currentSeg);
+
+  // A. TOPOLOGICAL RETAINING WALLS, SLOPED EMBANKMENTS & VIADUCT BRIDGE ABUTMENTS
+  for (let i = 0; i < trackSpline.length; i++) {
+    const p1 = trackSpline[i];
+    const p2 = trackSpline[(i + 1) % trackSpline.length];
+    if (p1.viaduct !== isViaductPass) continue;
+
+    // Cast realistic drop shadow underneath the +24m Hillside Viaduct onto the +3m Valley Road
+    if (isViaductPass) {
+      tCtx.save();
+      tCtx.beginPath();
+      tCtx.moveTo(p1.x + 14, p1.y + 14);
+      tCtx.lineTo(p2.x + 14, p2.y + 14);
+      tCtx.strokeStyle = 'rgba(0, 0, 0, 0.65)';
+      tCtx.lineWidth = CURB_WIDTH + 24;
+      tCtx.stroke();
+      tCtx.restore();
+    }
+
+    if (p1.elev > 6.5) {
+      const embankmentWidth = CURB_WIDTH + 14 + (p1.elev / 28.5) * 26;
+      tCtx.beginPath();
+      tCtx.moveTo(p1.x, p1.y);
+      tCtx.lineTo(p2.x, p2.y);
+      tCtx.strokeStyle = isViaductPass ? 'rgba(15, 23, 42, 0.92)' : 'rgba(120, 113, 108, 0.28)';
+      tCtx.lineWidth = embankmentWidth;
+      tCtx.stroke();
+
+      // Civil-Engineering Retaining Wall Slope Ticks
+      if (i % 3 === 0) {
+        const outerDist = CURB_WIDTH / 2 + 4;
+        const slopeLen = 6 + (p1.elev / 28.5) * 11;
+        tCtx.strokeStyle = isViaductPass ? 'rgba(251, 191, 36, 0.6)' : 'rgba(251, 191, 36, 0.35)';
+        tCtx.lineWidth = 1.3;
+        [-1, 1].forEach(side => {
+          const sx = p1.x + p1.nx * outerDist * side;
+          const sy = p1.y + p1.ny * outerDist * side;
+          const ex = p1.x + p1.nx * (outerDist + slopeLen) * side;
+          const ey = p1.y + p1.ny * (outerDist + slopeLen) * side;
+          tCtx.beginPath();
+          tCtx.moveTo(sx, sy);
+          tCtx.lineTo(ex, ey);
+          tCtx.stroke();
+        });
+      }
+    }
+
+    // Civil-Engineering Concrete Viaduct Abutments & Support Piers at the Transition Points
+    const prevNode = trackSpline[(i - 1 + trackSpline.length) % trackSpline.length];
+    if (isViaductPass && (prevNode.viaduct !== p1.viaduct || p2.viaduct !== p1.viaduct)) {
+      tCtx.save();
+      tCtx.translate(p1.x, p1.y);
+      tCtx.rotate(p1.angle);
+      tCtx.fillStyle = '#334155';
+      tCtx.strokeStyle = '#fbbf24';
+      tCtx.lineWidth = 2;
+      tCtx.fillRect(-10, -CURB_WIDTH / 2 - 14, 20, CURB_WIDTH + 28);
+      tCtx.strokeRect(-10, -CURB_WIDTH / 2 - 14, 20, CURB_WIDTH + 28);
+      tCtx.restore();
+    }
+  }
+
+  // B. Outer Guardrail / Stone Viaduct Parapet
+  segments.forEach(seg => {
+    if (seg.length < 2) return;
+    tCtx.beginPath();
+    seg.forEach((p, idx) => idx === 0 ? tCtx.moveTo(p.x, p.y) : tCtx.lineTo(p.x, p.y));
+    tCtx.strokeStyle = isViaductPass ? '#f59e0b' : '#181b22';
+    tCtx.lineWidth = CURB_WIDTH + 14;
+    tCtx.stroke();
+  });
+
+  // C. Red & White FIA Curbs (Amber/White on High-Altitude Ridge Crest >= 18m)
+  for (let i = 0; i < trackSpline.length; i++) {
+    const p1 = trackSpline[i];
+    const p2 = trackSpline[(i + 1) % trackSpline.length];
+    if (p1.viaduct !== isViaductPass) continue;
+
+    tCtx.beginPath();
+    tCtx.moveTo(p1.x, p1.y);
+    tCtx.lineTo(p2.x, p2.y);
+
+    const isHighAltitude = p1.elev >= 18.0;
+    if (isHighAltitude) {
+      tCtx.strokeStyle = (Math.floor(i / 3) % 2 === 0) ? '#f59e0b' : '#f8fafc';
+    } else {
+      tCtx.strokeStyle = (Math.floor(i / 3) % 2 === 0) ? '#e6192e' : '#f1f5f9';
+    }
+    tCtx.lineWidth = CURB_WIDTH;
+    tCtx.stroke();
+  }
+
+  // D. Main Asphalt Surface (Subtle sunlit terrain warmth at higher topological elevation)
+  for (let i = 0; i < trackSpline.length; i++) {
+    const p1 = trackSpline[i];
+    const p2 = trackSpline[(i + 1) % trackSpline.length];
+    if (p1.viaduct !== isViaductPass) continue;
+
+    const elevRatio = Math.min(1, p1.elev / 28.5);
+    const r = Math.round(34 + elevRatio * 20);
+    const g = Math.round(38 + elevRatio * 17);
+    const b = Math.round(48 + elevRatio * 14);
+
+    tCtx.beginPath();
+    tCtx.moveTo(p1.x, p1.y);
+    tCtx.lineTo(p2.x, p2.y);
+    tCtx.strokeStyle = `rgb(${r},${g},${b})`;
+    tCtx.lineWidth = TRACK_WIDTH;
+    tCtx.stroke();
+  }
+
+  // E. On-Track Elevation & Grade Callouts (+m)
+  for (let i = 0; i < trackSpline.length; i += 16) {
+    const p = trackSpline[i];
+    if (p.viaduct !== isViaductPass) continue;
+
+    if (Math.abs(p.grade) > 2.2 || p.elev > 14.0) {
+      tCtx.save();
+      tCtx.translate(p.x, p.y);
+      tCtx.rotate(p.angle);
+
+      tCtx.fillStyle = isViaductPass ? 'rgba(251, 191, 36, 0.55)' : 'rgba(251, 191, 36, 0.30)';
+      tCtx.font = 'bold 8px "JetBrains Mono", monospace';
+      tCtx.textAlign = 'center';
+      tCtx.textBaseline = 'middle';
+      tCtx.fillText(`+${Math.round(p.elev)}m`, 0, -TRACK_WIDTH / 2 + 9);
+      tCtx.restore();
+    }
+  }
+
+  // F. Racing Groove Centerline Dashes
+  segments.forEach(seg => {
+    if (seg.length < 2) return;
+    tCtx.beginPath();
+    seg.forEach((p, idx) => idx === 0 ? tCtx.moveTo(p.x, p.y) : tCtx.lineTo(p.x, p.y));
+    tCtx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+    tCtx.setLineDash([14, 20]);
+    tCtx.lineWidth = 2;
+    tCtx.stroke();
+    tCtx.setLineDash([]);
+  });
+
+  // G. Start/Finish Line, Staggered Starting Grid & Pit Lane (Base Level Pass)
+  if (!isViaductPass) {
+    const sfIdx = circuit.sfNodeIndex;
+    const sf = trackSpline[sfIdx];
+
+    // Pit Lane Bypass
+    tCtx.save();
+    tCtx.beginPath();
+    for (let offset = -14; offset <= 18; offset++) {
+      const p = trackSpline[(sfIdx + offset + trackSpline.length) % trackSpline.length];
+      const pitDepth = (offset > -10 && offset < 14) ? -48 : -20;
+      const px = p.x + p.nx * pitDepth;
+      const py = p.y + p.ny * pitDepth;
+      if (offset === -14) tCtx.moveTo(px, py);
+      else tCtx.lineTo(px, py);
+    }
+    tCtx.strokeStyle = '#1e222d';
+    tCtx.lineWidth = 15;
+    tCtx.stroke();
+    tCtx.strokeStyle = '#00f0ff';
+    tCtx.setLineDash([6, 6]);
+    tCtx.lineWidth = 1.5;
+    tCtx.stroke();
+    tCtx.setLineDash([]);
+    tCtx.restore();
+
+    // Start/Finish Checkerboard & Staggered Grid Boxes
+    tCtx.save();
+    tCtx.translate(sf.x, sf.y);
+    tCtx.rotate(sf.angle);
+    const rows = 2, cols = 8;
+    const cellH = TRACK_WIDTH / cols;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        tCtx.fillStyle = (r + c) % 2 === 0 ? '#ffffff' : '#0f172a';
+        tCtx.fillRect(r * 6 - 6, -TRACK_WIDTH / 2 + c * cellH, 6, cellH);
+      }
+    }
+
+    // 6 Starting Grid Slots behind S/F line
+    tCtx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+    tCtx.lineWidth = 1.8;
+    for (let g = 1; g <= 6; g++) {
+      const gx = -g * 28;
+      const gy = (g % 2 === 0) ? -15 : 5;
+      tCtx.beginPath();
+      tCtx.moveTo(gx, gy);
+      tCtx.lineTo(gx + 12, gy);
+      tCtx.lineTo(gx + 12, gy + 9);
+      tCtx.stroke();
+    }
+    tCtx.restore();
+  }
+
+  tCtx.restore();
+}
+
+// ============================================================================
+// 6. STADIUMS, HOARDINGS, TURN SIGNS & TELEMETRY CALLOUTS
+// ============================================================================
+function drawGrandstand(tCtx, x, y, width, depth, angle, label) {
+  tCtx.save();
+  tCtx.translate(x, y);
+  tCtx.rotate(angle);
+
+  tCtx.fillStyle = 'rgba(0,0,0,0.68)';
+  tCtx.fillRect(-width / 2 + 6, -depth / 2 + 6, width, depth);
+
+  tCtx.fillStyle = '#1b1f2b';
+  tCtx.strokeStyle = '#3e475e';
+  tCtx.lineWidth = 2;
+  tCtx.fillRect(-width / 2, -depth / 2, width, depth);
+  tCtx.strokeRect(-width / 2, -depth / 2, width, depth);
+
+  const tiers = 4;
+  const tierDepth = (depth - 13) / tiers;
+  const crowdColors = ['#ff2a6d', '#05d9e8', '#f9f002', '#ffffff', '#ff7700'];
+
+  for (let t = 0; t < tiers; t++) {
+    const ty = -depth / 2 + 3.5 + t * tierDepth;
+    tCtx.fillStyle = t % 2 === 0 ? '#262b3b' : '#1f2330';
+    tCtx.fillRect(-width / 2 + 4, ty, width - 8, tierDepth - 1);
+
+    for (let sx = -width / 2 + 10; sx < width / 2 - 10; sx += 9) {
+      tCtx.fillStyle = crowdColors[Math.abs(sx + t) % crowdColors.length];
+      tCtx.fillRect(sx, ty + 2, 3, 3);
+    }
+  }
+
+  tCtx.fillStyle = 'rgba(220, 238, 255, 0.15)';
+  tCtx.fillRect(-width / 2, depth / 2 - 13, width, 13);
+  tCtx.strokeStyle = '#00f0ff';
+  tCtx.lineWidth = 1.4;
+  tCtx.strokeRect(-width / 2, depth / 2 - 13, width, 13);
+
+  tCtx.fillStyle = '#ffffff';
+  tCtx.font = 'bold 8.5px "JetBrains Mono", monospace';
+  tCtx.textAlign = 'center';
+  tCtx.fillText(label, 0, depth / 2 - 3.5);
+
+  tCtx.restore();
+}
+
+const sponsors = [
+  { name: '首都高 SPIRIT', bg: '#e60026', fg: '#ffffff' },
+  { name: 'NEO TIRES 東京', bg: '#ffd000', fg: '#111111' },
+  { name: 'CYBER DRIVE', bg: '#00f0ff', fg: '#0a0a12' },
+  { name: '雷電 TURBO-X', bg: '#7900ff', fg: '#ffffff' },
+  { name: 'SHIBUYA OIL', bg: '#00b84c', fg: '#ffffff' }
+];
+
+function drawBarrierHoardings(tCtx, isViaductPass) {
+  if (!layers.hoardings) return;
+  const offset = CURB_WIDTH / 2 + 7;
+  let sponsorIdx = 0;
+
+  for (let i = 0; i < trackSpline.length; i += 16) {
+    const p = trackSpline[i];
+    if (p.viaduct !== isViaductPass) {
+      sponsorIdx++;
+      continue;
+    }
+    const side = (i % 32 === 0) ? 1 : -1;
+    const hx = p.x + p.nx * offset * side;
+    const hy = p.y + p.ny * offset * side;
+    const sp = sponsors[sponsorIdx++ % sponsors.length];
+
+    tCtx.save();
+    tCtx.translate(hx, hy);
+    tCtx.rotate(p.angle);
+    tCtx.fillStyle = sp.bg;
+    tCtx.strokeStyle = '#ffffff';
+    tCtx.lineWidth = 0.8;
+    tCtx.fillRect(-19, -3.5, 38, 7);
+    tCtx.strokeRect(-19, -3.5, 38, 7);
+    tCtx.fillStyle = sp.fg;
+    tCtx.font = 'bold 5px "Noto Sans JP", sans-serif';
+    tCtx.textAlign = 'center';
+    tCtx.textBaseline = 'middle';
+    tCtx.fillText(sp.name, 0, 0);
+    tCtx.restore();
+  }
+}
+
+function drawOverheadAdvertGantries(tCtx) {
+  if (!layers.hoardings) return;
+  const total = trackSpline.length;
+  const gantryRatios = [0.03, 0.38, 0.82];
+
+  gantryRatios.forEach((ratio, gNum) => {
+    const idx = Math.floor(ratio * total) % total;
+    const p = trackSpline[idx];
+    const sp = sponsors[gNum % sponsors.length];
+    const span = TRACK_WIDTH + 26;
+
+    tCtx.save();
+    tCtx.translate(p.x, p.y);
+    tCtx.rotate(p.angle + Math.PI / 2);
+
+    tCtx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+    tCtx.fillRect(-span / 2 + 5, -3, span, 15);
+
+    tCtx.fillStyle = sp.bg;
+    tCtx.strokeStyle = '#ffffff';
+    tCtx.lineWidth = 1.6;
+    tCtx.fillRect(-span / 2, -7.5, span, 15);
+    tCtx.strokeRect(-span / 2, -7.5, span, 15);
+
+    tCtx.fillStyle = sp.fg;
+    tCtx.font = 'bold 8.5px "Noto Sans JP", "JetBrains Mono", sans-serif';
+    tCtx.textAlign = 'center';
+    tCtx.textBaseline = 'middle';
+    tCtx.fillText(sp.name, 0, 0);
+    tCtx.restore();
+  });
+}
+
+function drawTurnSigns(tCtx) {
+  if (!layers.turnSigns) return;
+  const offset = CURB_WIDTH / 2 + 19;
+
+  for (let i = 0; i < trackSpline.length; i += 7) {
+    const p = trackSpline[i];
+    if (Math.abs(p.curvature) > 0.22) {
+      const outsideSide = p.curvature > 0 ? -1 : 1;
+      const sx = p.x + p.nx * offset * outsideSide;
+      const sy = p.y + p.ny * offset * outsideSide;
+
+      tCtx.save();
+      tCtx.translate(sx, sy);
+      tCtx.rotate(p.angle);
+      tCtx.fillStyle = '#0f1117';
+      tCtx.strokeStyle = '#ffdd00';
+      tCtx.lineWidth = 1.4;
+      tCtx.fillRect(-9, -4.5, 18, 9);
+      tCtx.strokeRect(-9, -4.5, 18, 9);
+
+      tCtx.strokeStyle = '#ffdd00';
+      tCtx.lineWidth = 1.8;
+      tCtx.beginPath();
+      tCtx.moveTo(-3.5, -2.8);
+      tCtx.lineTo(3, 0);
+      tCtx.lineTo(-3.5, 2.8);
+      tCtx.stroke();
+      tCtx.restore();
+    }
+  }
+}
+
+function drawCornerLabels(tCtx) {
+  const total = trackSpline.length;
+
+  HIRAGANA_TO_CIRCUIT.corners.forEach(c => {
+    const idx = Math.floor(c.nodeRatio * total) % total;
+    const p = trackSpline[idx];
+    tCtx.save();
+
+    const isHill = p.elev >= 12.0;
+    const badgeColor = isHill ? '#f59e0b' : '#00f0ff';
+
+    tCtx.fillStyle = badgeColor;
+    tCtx.beginPath();
+    tCtx.arc(p.x, p.y, 10.5, 0, Math.PI * 2);
+    tCtx.fill();
+
+    tCtx.fillStyle = '#05060b';
+    tCtx.font = 'bold 9.5px "JetBrains Mono", monospace';
+    tCtx.textAlign = 'center';
+    tCtx.textBaseline = 'middle';
+    tCtx.fillText(c.num, p.x, p.y);
+
+    tCtx.font = '600 9.5px Inter, sans-serif';
+    const textW = tCtx.measureText(c.name).width + 12;
+    tCtx.fillStyle = 'rgba(9, 12, 21, 0.92)';
+    tCtx.strokeStyle = badgeColor;
+    tCtx.lineWidth = 1;
+    tCtx.beginPath();
+    tCtx.roundRect(p.x + 14, p.y - 8.5, textW, 17, 4);
+    tCtx.fill();
+    tCtx.stroke();
+
+    tCtx.fillStyle = '#f1f5f9';
+    tCtx.textAlign = 'left';
+    tCtx.fillText(c.name, p.x + 20, p.y + 0.5);
+    tCtx.restore();
+  });
+}
+
+// ============================================================================
+// 7. Z-ORDERED AI RACE CARS & LIVE ELEVATION PROFILE GRAPH
+// ============================================================================
+function stepRaceCarsPhysics() {
+  if (!layers.cars) return;
+  const len = trackSpline.length;
+
+  raceCars.forEach(car => {
+    const currentIdx = Math.floor(car.pos) % len;
+    const node = trackSpline[currentIdx];
+
+    // Physics realism: cars slow down on steep uphill grades and sharp corners
+    const cornerFactor = Math.max(0.42, 1 - Math.abs(node.curvature) * 1.05);
+    const gradeFactor = 1 - (node.grade * 0.012);
+    car.pos = (car.pos + car.speed * cornerFactor * gradeFactor) % len;
+  });
+}
+
+function drawRaceCarsByElevationPass(isViaductPass) {
+  if (!layers.cars) return;
+  const len = trackSpline.length;
+
+  raceCars.forEach(car => {
+    const idxA = Math.floor(car.pos) % len;
+    const pA = trackSpline[idxA];
+    if (pA.viaduct !== isViaductPass) return;
+
+    const idxB = (idxA + 1) % len;
+    const t = car.pos - Math.floor(car.pos);
+    const pB = trackSpline[idxB];
+
+    const cx = pA.x + (pB.x - pA.x) * t + pA.nx * car.laneOffset;
+    const cy = pA.y + (pB.y - pA.y) * t + pA.ny * car.laneOffset;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(pA.angle);
+
+    // Headlight Cones
+    const beamGrad = ctx.createLinearGradient(7, 0, 52, 0);
+    beamGrad.addColorStop(0, 'rgba(255, 255, 240, 0.35)');
+    beamGrad.addColorStop(1, 'rgba(255, 255, 240, 0)');
+    ctx.fillStyle = beamGrad;
+    ctx.beginPath();
+    ctx.moveTo(7, -4);
+    ctx.lineTo(52, -14);
+    ctx.lineTo(52, 14);
+    ctx.lineTo(7, 4);
+    ctx.closePath();
+    ctx.fill();
+
+    // Car Body
+    ctx.fillStyle = car.color;
+    ctx.beginPath();
+    ctx.roundRect(-9.5, -5, 19, 10, 3);
+    ctx.fill();
+
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(-2.5, -3.5, 6.5, 7);
+    ctx.restore();
+  });
+}
+
+// Draw the Bottom-Right Interactive Topological Elevation Profile Chart (Synced with Hover & Live Cars)
+function drawElevationProfileChart() {
+  const w = elevCanvas.width;
+  const h = elevCanvas.height;
+  elevCtx.clearRect(0, 0, w, h);
+
+  // Horizontal Elevation Reference Lines (+10m, +20m, +28.5m)
+  elevCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+  elevCtx.lineWidth = 1;
+  [18, 38, 58].forEach(gy => {
+    elevCtx.beginPath(); elevCtx.moveTo(0, gy); elevCtx.lineTo(w, gy); elevCtx.stroke();
+  });
+
+  if (trackSpline.length === 0) return;
+
+  const maxElev = 32;
+  elevCtx.beginPath();
+  elevCtx.moveTo(0, h - 7);
+
+  for (let i = 0; i < trackSpline.length; i++) {
+    const x = (i / (trackSpline.length - 1)) * w;
+    const y = h - 7 - (trackSpline[i].elev / maxElev) * (h - 18);
+    elevCtx.lineTo(x, y);
+  }
+  elevCtx.lineTo(w, h - 7);
+  elevCtx.closePath();
+
+  const grad = elevCtx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, 'rgba(245, 158, 11, 0.55)');
+  grad.addColorStop(0.6, 'rgba(16, 185, 129, 0.25)');
+  grad.addColorStop(1, 'rgba(6, 182, 212, 0.05)');
+  elevCtx.fillStyle = grad;
+  elevCtx.fill();
+
+  // Stroke Top Ridge Line (Color-coded: Amber on Viaduct, Gold on Hill, Cyan in Valley)
+  elevCtx.beginPath();
+  for (let i = 0; i < trackSpline.length; i++) {
+    const x = (i / (trackSpline.length - 1)) * w;
+    const y = h - 7 - (trackSpline[i].elev / maxElev) * (h - 18);
+    if (i === 0) elevCtx.moveTo(x, y);
+    else elevCtx.lineTo(x, y);
+  }
+  elevCtx.strokeStyle = '#fbbf24';
+  elevCtx.lineWidth = 2;
+  elevCtx.stroke();
+
+  // Live Race Car Dots along the Elevation Profile Curve
+  if (layers.cars) {
+    raceCars.forEach(car => {
+      const idx = Math.floor(car.pos) % trackSpline.length;
+      const node = trackSpline[idx];
+      const cx = (idx / (trackSpline.length - 1)) * w;
+      const cy = h - 7 - (node.elev / maxElev) * (h - 18);
+
+      elevCtx.fillStyle = car.color;
+      elevCtx.beginPath();
+      elevCtx.arc(cx, cy, 3.2, 0, Math.PI * 2);
+      elevCtx.fill();
+    });
+  }
+
+  // Highlighted Hovered Node Marker on the Elevation Chart
+  if (hoveredSplineIndex !== null && trackSpline[hoveredSplineIndex]) {
+    const node = trackSpline[hoveredSplineIndex];
+    const hx = (hoveredSplineIndex / (trackSpline.length - 1)) * w;
+    const hy = h - 7 - (node.elev / maxElev) * (h - 18);
+
+    elevCtx.strokeStyle = '#00f0ff';
+    elevCtx.lineWidth = 1.2;
+    elevCtx.beginPath();
+    elevCtx.moveTo(hx, 0);
+    elevCtx.lineTo(hx, h);
+    elevCtx.stroke();
+
+    elevCtx.fillStyle = '#00f0ff';
+    elevCtx.beginPath();
+    elevCtx.arc(hx, hy, 4.2, 0, Math.PI * 2);
+    elevCtx.fill();
+  }
+}
+
+// ============================================================================
+// 8. CAMERA CONTROLS, HOVER TELEMETRY & JSON EXPORT
+// ============================================================================
+function fitCameraToViewport() {
+  const rect = container.getBoundingClientRect();
+  canvas.width = rect.width * window.devicePixelRatio;
+  canvas.height = rect.height * window.devicePixelRatio;
+
+  const scaleX = rect.width / WORLD_WIDTH;
+  const scaleY = rect.height / WORLD_HEIGHT;
+  camera.zoom = Math.min(scaleX, scaleY) * 0.95;
+
+  camera.x = (rect.width - WORLD_WIDTH * camera.zoom) / 2;
+  camera.y = (rect.height - WORLD_HEIGHT * camera.zoom) / 2;
+  zoomReadout.textContent = `ZOOM: ${Math.round(camera.zoom * 100)}%`;
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  camera.isDragging = true;
+  camera.dragStartX = e.clientX - camera.x;
+  camera.dragStartY = e.clientY - camera.y;
+});
+
+window.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const worldX = Math.round((e.clientX - rect.left - camera.x) / camera.zoom);
+  const worldY = Math.round((e.clientY - rect.top - camera.y) / camera.zoom);
+  hoverCoord.textContent = `X: ${worldX}, Y: ${worldY}`;
+
+  // Inspect nearest track spline point for live topological telemetry
+  let nearestNode = null;
+  let minDist = Infinity;
+  for (let i = 0; i < trackSpline.length; i += 2) {
+    const d = Math.hypot(worldX - trackSpline[i].x, worldY - trackSpline[i].y);
+    if (d < minDist) {
+      minDist = d;
+      nearestNode = trackSpline[i];
+    }
+  }
+
+  if (nearestNode && minDist < 150) {
+    hoveredSplineIndex = nearestNode.index;
+    elevReadout.textContent = `+${nearestNode.elev.toFixed(1)} m`;
+    const sign = nearestNode.grade >= 0 ? '+' : '';
+    gradeReadout.textContent = `${sign}${nearestNode.grade.toFixed(1)} %`;
+    strokeSectorReadout.textContent = nearestNode.stroke;
+
+    if (nearestNode.viaduct) {
+      zoneReadout.textContent = 'VIADUCT';
+      zoneReadout.className = 'text-amber-300 font-bold';
+    } else if (nearestNode.elev >= 15) {
+      zoneReadout.textContent = 'HILL CREST';
+      zoneReadout.className = 'text-rose-300 font-bold';
+    } else if (nearestNode.elev >= 5) {
+      zoneReadout.textContent = 'SLOPE GRADE';
+      zoneReadout.className = 'text-emerald-300 font-bold';
+    } else {
+      zoneReadout.textContent = 'BAY BASIN';
+      zoneReadout.className = 'text-cyan-300 font-bold';
+    }
+  }
+
+  if (!camera.isDragging) return;
+  camera.x = e.clientX - camera.dragStartX;
+  camera.y = e.clientY - camera.dragStartY;
+});
+
+window.addEventListener('mouseup', () => {
+  camera.isDragging = false;
+});
+
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+
+  const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+  const newZoom = Math.min(2.8, Math.max(0.35, camera.zoom * zoomFactor));
+
+  camera.x = mouseX - (mouseX - camera.x) * (newZoom / camera.zoom);
+  camera.y = mouseY - (mouseY - camera.y) * (newZoom / camera.zoom);
+  camera.zoom = newZoom;
+  zoomReadout.textContent = `ZOOM: ${Math.round(camera.zoom * 100)}%`;
+}, { passive: false });
+
+// City Density Buttons (Sparse 12 vs Minimal 6 for Browser Perf)
+document.querySelectorAll('.density-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.density-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    cityDensity = btn.getAttribute('data-density');
+    buildingCountBadge.textContent = `${getActiveLandmarks().length} BLDGS + ${HIRAGANA_TO_CIRCUIT.parks.length} PARKS`;
+    staticCacheDirty = true;
+  });
+});
+
+// Layer Toggles
+document.querySelectorAll('.layer-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.getAttribute('data-layer');
+    layers[key] = !layers[key];
+    btn.style.opacity = layers[key] ? '1' : '0.38';
+    staticCacheDirty = true;
+  });
+});
+
+// Export Exclusive Hiragana 「と」 Game JSON to Clipboard
+document.getElementById('exportJsonBtn').addEventListener('click', () => {
+  const exportData = {
+    circuitName: HIRAGANA_TO_CIRCUIT.title,
+    hiraganaCharacter: HIRAGANA_TO_CIRCUIT.char,
+    originWord: 'とおきょう (Tokyo)',
+    trackWidth: TRACK_WIDTH,
+    curbWidth: CURB_WIDTH,
+    controlPoints: HIRAGANA_TO_CIRCUIT.waypoints,
+    topoHills: HIRAGANA_TO_CIRCUIT.topoHills,
+    sparseLandmarks: getActiveLandmarks(),
+    botanicalParks: HIRAGANA_TO_CIRCUIT.parks,
+    grandstands: HIRAGANA_TO_CIRCUIT.grandstands
+  };
+
+  const tempInput = document.createElement('textarea');
+  tempInput.value = JSON.stringify(exportData, null, 2);
+  document.body.appendChild(tempInput);
+  tempInput.select();
+  document.execCommand('copy');
+  document.body.removeChild(tempInput);
+
+  const toast = document.getElementById('toastNotification');
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 2600);
+});
+
+document.getElementById('resetCamBtn').addEventListener('click', fitCameraToViewport);
+window.addEventListener('resize', fitCameraToViewport);
+
+// ============================================================================
+// 9. ULTRA-FAST BROWSER RENDER LOOP WITH MULTI-LEVEL CAR Z-ORDERING
+// ============================================================================
+let lastFrameTime = performance.now();
+let frameCount = 0;
+
+function animate(now) {
+  frameCount++;
+  if (now - lastFrameTime >= 500) {
+    const fps = Math.min(60, Math.round((frameCount * 1000) / (now - lastFrameTime)));
+    fpsReadout.textContent = `${fps} FPS // OFFSCREEN CACHED`;
+    if (perfBadge) perfBadge.textContent = `${fps} FPS // 1 STATIC CACHE`;
+    frameCount = 0;
+    lastFrameTime = now;
+  }
+
+  if (staticCacheDirty) {
+    rebuildStaticEnvironmentCache();
+  }
+
+  stepRaceCarsPhysics();
+  drawElevationProfileChart();
+
+  const dpr = window.devicePixelRatio || 1;
+  ctx.save();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  ctx.fillStyle = '#05060b';
+  ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+  ctx.translate(camera.x, camera.y);
+  ctx.scale(camera.zoom, camera.zoom);
+
+  // PASS 1: Single Blit for Base Environment, Topography, Sparse City & Lower Valley Track
+  ctx.drawImage(staticCacheCanvas, 0, 0);
+
+  // PASS 2: Lower Valley & Hillside Race Cars (Drive UNDERNEATH the +24m Viaduct & Advert Gantries)
+  drawRaceCarsByElevationPass(false);
+
+  // PASS 3: Single Blit for Elevated Stroke-1 Hillside Viaduct (+24m) & Overhead Advert Bridges
+  ctx.drawImage(viaductDeckCanvas, 0, 0);
+
+  // PASS 4: Elevated Viaduct Race Cars (Drive ON TOP OF the +24m Stroke-1 Viaduct)
+  drawRaceCarsByElevationPass(true);
+
+  // Highlight Hovered Node Ring on the 2D Map
+  if (hoveredSplineIndex !== null && trackSpline[hoveredSplineIndex]) {
+    const hp = trackSpline[hoveredSplineIndex];
+    ctx.save();
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.arc(hp.x, hp.y, 14, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.restore();
+  requestAnimationFrame(animate);
+}
+
+window.onload = () => {
+  initHiraganaToCircuit();
+  fitCameraToViewport();
+  requestAnimationFrame(animate);
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+{
+  "note": "Real published specs for the 14 racing cars, with sources. Mass is road-ready (curb) weight; width is without mirrors where known. estimated: true marks a concept, show car or one-off whose figures are not all published; estimatedFields lists the figures that are estimates on any car (brake100To0M on all: makers rarely publish 100-0 km/h, so it comes from claims and road tests). src/physics/handling.js turns these into game physics, compressed so the field can race; the simulated figures next to the real ones are in PHYSICS.md. Gathered 2026-10-20.",
+  "cars": {
+    "av12": {
+      "model": "Lamborghini Aventador SVJ (LP 770-4)",
+      "lengthM": 4.943,
+      "widthM": 2.098,
+      "heightM": 1.136,
+      "wheelbaseM": 2.7,
+      "massKg": 1770,
+      "powertrain": "ICE",
+      "engine": "6.5 L V12, naturally aspirated, mid-mounted",
+      "powerHp": 759,
+      "torqueNm": 720,
+      "drive": "AWD",
+      "topSpeedKmh": 350,
+      "zeroTo100S": 2.8,
+      "brake100To0M": 31,
+      "brakeBasis": "estimated from the maker's 30 m claim (97-0 km/h) and road tests",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lamborghini_Aventador",
+        "https://www.lamborghini.com/en-en/models/aventador/aventador-svj"
+      ],
+      "notes": "mass is curb weight with fluids (1,525 kg dry); width 2.098 m is the maker's figure (2.03 m without mirrors on the wiki infobox)",
+      "estimated": false,
+      "estimatedFields": [
+        "brake100To0M"
+      ]
+    },
+    "furari-488": {
+      "model": "Ferrari 488 Pista",
+      "lengthM": 4.605,
+      "widthM": 1.975,
+      "heightM": 1.206,
+      "wheelbaseM": 2.65,
+      "massKg": 1385,
+      "powertrain": "ICE",
+      "engine": "3.9 L V8 twin-turbo, mid-mounted",
+      "powerHp": 710,
+      "torqueNm": 770,
+      "drive": "RWD",
+      "topSpeedKmh": 340,
+      "zeroTo100S": 2.85,
+      "brake100To0M": 30,
+      "brakeBasis": "estimated from road tests (488 family 100-0 about 31-32 m, Pista sharper)",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ferrari_488",
+        "https://www.ferrari.com/en-EN/auto/488-pista"
+      ],
+      "notes": "mass is the maker's lightweight running order (1,280 kg dry); the wiki lists 1,500 kg curb",
+      "estimated": false,
+      "estimatedFields": [
+        "brake100To0M"
+      ]
+    },
+    "aston-martin-valk": {
+      "model": "Aston Martin Valkyrie",
+      "lengthM": 4.5,
+      "widthM": 1.965,
+      "heightM": 1.07,
+      "wheelbaseM": 2.77,
+      "massKg": 1140,
+      "powertrain": "hybrid",
+      "engine": "6.5 L Cosworth V12, naturally aspirated + Rimac 160 hp electric motor",
+      "powerHp": 1160,
+      "torqueNm": 900,
+      "drive": "RWD",
+      "topSpeedKmh": 354,
+      "zeroTo100S": 2.6,
+      "brake100To0M": 29,
+      "brakeBasis": "estimated: carbon-ceramic Alcon/Surface Transforms brakes, Michelin Cup 2 tyres",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aston_Martin_Valkyrie",
+        "https://www.astonmartin.com/en/models/valkyrie"
+      ],
+      "estimatedFields": [
+        "brake100To0M",
+        "massKg",
+        "topSpeedKmh"
+      ],
+      "notes": "mass is an estimate of road-ready weight (the maker quotes 1,030 kg dry); the 402 km/h figure belongs to the AMR Pro track car, 354 km/h (220 mph) is the road car; the game's model is a Real Racing 3 Valkyrie from Sketchfab, scaled to the 4.5 m length",
+      "estimated": false
+    },
+    "jaguarxkjss": {
+      "model": "Mercedes-AMG ONE",
+      "lengthM": 4.756,
+      "widthM": 2.01,
+      "heightM": 1.261,
+      "wheelbaseM": 2.72,
+      "massKg": 1695,
+      "powertrain": "hybrid",
+      "engine": "1.6 L V6 turbo (F1 PU106B) + MGU-K, MGU-H and two front electric motors",
+      "powerHp": 1049,
+      "torqueNm": 750,
+      "drive": "AWD",
+      "topSpeedKmh": 352,
+      "zeroTo100S": 2.9,
+      "brake100To0M": 31,
+      "brakeBasis": "estimated: carbon-ceramic brakes 398/380 mm, Michelin Pilot Sport Cup 2 R",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mercedes-AMG_One",
+        "https://www.mercedes-amg.com/en/vehicles/amg-one.html"
+      ],
+      "estimatedFields": [
+        "brake100To0M",
+        "torqueNm"
+      ],
+      "notes": "the 3D model replaced the Jaguar XKSS under this key; torque is not published (the maker calls it unmeasurable), 750 Nm is an estimate",
+      "estimated": false
+    },
+    "mp1x": {
+      "model": "McLaren 720S",
+      "lengthM": 4.544,
+      "widthM": 1.93,
+      "heightM": 1.196,
+      "wheelbaseM": 2.67,
+      "massKg": 1419,
+      "powertrain": "ICE",
+      "engine": "4.0 L V8 twin-turbo, mid-mounted",
+      "powerHp": 710,
+      "torqueNm": 770,
+      "drive": "RWD",
+      "topSpeedKmh": 341,
+      "zeroTo100S": 2.9,
+      "brake100To0M": 30,
+      "brakeBasis": "estimated from the maker's 100-0 claim (about 30 m) and road tests",
+      "sources": [
+        "https://en.wikipedia.org/wiki/McLaren_720S",
+        "https://cars.mclaren.com/en/super-series/720s"
+      ],
+      "notes": "width 1.930 m without mirrors (2.161 m with)",
+      "estimated": false,
+      "estimatedFields": [
+        "brake100To0M"
+      ]
+    },
+    "nuvolari": {
+      "model": "Audi e-tron GT concept (2018)",
+      "lengthM": 4.96,
+      "widthM": 1.96,
+      "heightM": 1.38,
+      "wheelbaseM": 2.9,
+      "massKg": 2100,
+      "powertrain": "EV",
+      "engine": "Two permanent-magnet synchronous motors (one per axle), about 95 kWh battery, single-speed",
+      "powerHp": 590,
+      "torqueNm": 640,
+      "drive": "AWD",
+      "topSpeedKmh": 240,
+      "zeroTo100S": 3.5,
+      "brake100To0M": 37,
+      "brakeBasis": "estimated: heavy EV on road-car tyres",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Audi_e-tron_GT",
+        "https://www.audi-mediacenter.com/en/press-releases/audi-e-tron-gt-concept-world-premiere-at-the-la-auto-show-10795"
+      ],
+      "estimated": true,
+      "estimatedFields": [
+        "brake100To0M",
+        "heightM",
+        "lengthM",
+        "massKg",
+        "torqueNm"
+      ],
+      "notes": "a 2018 show car: power (434 kW / 590 PS), 0-100 and top speed are the maker's; mass, torque and body dimensions are estimated from the 2021 production e-tron GT (4.99 x 1.96 x 1.41 m, 2,200 kg)"
+    },
+    "tesla1": {
+      "model": "Tesla Roadster (second generation)",
+      "lengthM": 4.65,
+      "widthM": 2.0,
+      "heightM": 1.2,
+      "wheelbaseM": 2.825,
+      "massKg": 1850,
+      "powertrain": "EV",
+      "engine": "Three permanent-magnet motors (one front, two rear), 200 kWh battery, single-speed",
+      "powerHp": 1341,
+      "torqueNm": 4500,
+      "drive": "AWD",
+      "topSpeedKmh": 400,
+      "zeroTo100S": 2.1,
+      "brake100To0M": 30,
+      "brakeBasis": "estimated",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tesla_Roadster_(second_generation)",
+        "https://www.tesla.com/roadster"
+      ],
+      "estimated": true,
+      "estimatedFields": [
+        "brake100To0M",
+        "heightM",
+        "lengthM",
+        "massKg",
+        "topSpeedKmh",
+        "torqueNm",
+        "zeroTo100S"
+      ],
+      "notes": "unreleased: the 2017 reveal claimed 0-60 mph 1.9 s (about 2.1 s to 100 km/h), a top speed above 250 mph and 10,000 N.m of wheel torque (4,500 N.m is a motor-shaft-equivalent estimate); target mass under 1,700 kg, 1,850 kg estimated with the 200 kWh pack; width and wheelbase from the wiki"
+    },
+    "mustang": {
+      "model": "Ford Mustang GT (2018)",
+      "lengthM": 4.788,
+      "widthM": 1.915,
+      "heightM": 1.39,
+      "wheelbaseM": 2.72,
+      "massKg": 1720,
+      "powertrain": "ICE",
+      "engine": "5.0 L Coyote V8, naturally aspirated, front-mounted",
+      "powerHp": 460,
+      "torqueNm": 569,
+      "drive": "RWD",
+      "topSpeedKmh": 249,
+      "zeroTo100S": 4.5,
+      "brake100To0M": 37,
+      "brakeBasis": "estimated from 60-0 mph road tests (about 105-110 ft)",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ford_Mustang_(sixth_generation)",
+        "https://www.ford.com/cars/mustang/"
+      ],
+      "estimatedFields": [
+        "brake100To0M",
+        "massKg"
+      ],
+      "notes": "420 lb-ft = 569 N.m; top speed is the electronic limiter (155 mph); 0-60 mph 4.4 s per the wiki; mass is an estimate of the GT with Performance Pack",
+      "estimated": false
+    },
+    "bmw1": {
+      "model": "Mercedes-AMG GT4 (2018)",
+      "lengthM": 4.59,
+      "widthM": 1.95,
+      "heightM": 1.27,
+      "wheelbaseM": 2.63,
+      "massKg": 1450,
+      "powertrain": "ICE",
+      "engine": "4.0 L M178 twin-turbo V8, front-mounted, 7-speed dual-clutch transaxle",
+      "powerHp": 503,
+      "torqueNm": 600,
+      "drive": "RWD",
+      "topSpeedKmh": 285,
+      "zeroTo100S": 3.6,
+      "brake100To0M": 33,
+      "brakeBasis": "estimated: GT4 race brakes (steel discs, ABS) on semi-slick tyres",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mercedes-AMG_GT4",
+        "https://www.mercedes-amg.com/"
+      ],
+      "estimatedFields": [
+        "massKg",
+        "topSpeedKmh",
+        "brake100To0M",
+        "widthM",
+        "heightM"
+      ],
+      "notes": "the 3D model replaced the Veloce Aero shell under this key. Up to 510 PS (503 hp) and 600 N.m per Wikipedia, and the output is balance-of-performance dependent in series use; 0-100 in 3.6 s is Wikipedia's figure. The mass (the user's ~1,450 kg), top speed (gearing-limited), width, height and the length/wheelbase (4.59 m / 2.63 m, matching the model) are estimates, not maker-published GT4 figures",
+      "estimated": false
+    },
+    "buggati": {
+      "model": "Bugatti Divo",
+      "lengthM": 4.641,
+      "widthM": 2.018,
+      "heightM": 1.212,
+      "wheelbaseM": 2.711,
+      "massKg": 1961,
+      "powertrain": "ICE",
+      "engine": "8.0 L W16 quad-turbo, mid-mounted",
+      "powerHp": 1479,
+      "torqueNm": 1600,
+      "drive": "AWD",
+      "topSpeedKmh": 380,
+      "zeroTo100S": 2.4,
+      "brake100To0M": 32,
+      "brakeBasis": "estimated: Chiron-family carbon-ceramic brakes, about 31-33 m",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Bugatti_Divo",
+        "https://www.bugatti.com/models/divo/"
+      ],
+      "notes": "curb weight is the wiki's estimate; top speed is limited to 380 km/h",
+      "estimated": false,
+      "estimatedFields": [
+        "brake100To0M"
+      ]
+    },
+    "destrier": {
+      "model": "Bugatti Destrier (one-off, 2026)",
+      "lengthM": 5.07,
+      "widthM": 2.1,
+      "heightM": 1.0,
+      "wheelbaseM": 3.16,
+      "massKg": 1450,
+      "powertrain": "ICE",
+      "engine": "8.0 L W16 quad-turbo, mid-mounted (the Bolide's engine)",
+      "powerHp": 1578,
+      "torqueNm": 1850,
+      "drive": "AWD",
+      "topSpeedKmh": 400,
+      "zeroTo100S": 2.3,
+      "brake100To0M": 29,
+      "brakeBasis": "estimated",
+      "sources": [
+        "https://www.cityam.com/?p=2450347",
+        "https://www.timesdrive.in/news/bugatti-destrier-revealed-globally-one-off-hypercar-gets-1578bhp-w16-engine-article-155464497",
+        "https://www.autocarindia.com/car-news-amp/bugatti-reveals-one-off-destrier-hypercar-440434",
+        "https://en.wikipedia.org/wiki/Bugatti_Bolide"
+      ],
+      "estimated": true,
+      "estimatedFields": [
+        "brake100To0M",
+        "lengthM",
+        "massKg",
+        "topSpeedKmh",
+        "wheelbaseM",
+        "widthM",
+        "zeroTo100S"
+      ],
+      "notes": "a one-off on the Bolide's carbon monocoque: power (1,578 hp / 1,600 PS) and torque (1,850 N.m) are reported; Bugatti published no mass or performance, so mass follows the Bolide (1,450 kg), length and wheelbase follow the game model (5.07 m, 3.16 m; the Bolide is 4.835 m, 2.75 m), and the Destrier is about 1.0 m tall; performance is estimated"
+    },
+    "bentley-gt": {
+      "model": "Bentley Continental GT Speed (2021)",
+      "lengthM": 4.85,
+      "widthM": 1.954,
+      "heightM": 1.405,
+      "wheelbaseM": 2.851,
+      "massKg": 2244,
+      "powertrain": "ICE",
+      "engine": "6.0 L W12 twin-turbo, front-mounted",
+      "powerHp": 650,
+      "torqueNm": 900,
+      "drive": "AWD",
+      "topSpeedKmh": 335,
+      "zeroTo100S": 3.6,
+      "brake100To0M": 35,
+      "brakeBasis": "estimated: 2.2 t on road tyres",
+      "sources": [
+        "https://crankandpiston.com/?p=148742",
+        "https://www.parkers.co.uk/bentley/continental-gt/coupe-2018/60-w12-speed-2dr-auto/specs/",
+        "https://www.bentleymedia.com/fr/heritage-collection/2021-continental-gt-speed-y44bml"
+      ],
+      "estimatedFields": [
+        "brake100To0M",
+        "massKg"
+      ],
+      "notes": "power, torque, 0-100 and top speed are Bentley's; sources disagree on weight (2,198-2,250 kg), 2,244 kg kept; width is without mirrors (2.187 m with)",
+      "estimated": false
+    },
+    "blackbird": {
+      "model": "Hennessey Blackbird (announced 2026)",
+      "lengthM": 4.9,
+      "widthM": 1.95,
+      "heightM": 1.15,
+      "wheelbaseM": 2.95,
+      "massKg": 1360,
+      "powertrain": "ICE",
+      "engine": "6.2 L V8, naturally aspirated, front-mid, 6-speed manual",
+      "powerHp": 825,
+      "torqueNm": 830,
+      "drive": "RWD",
+      "topSpeedKmh": 354,
+      "zeroTo100S": 2.7,
+      "brake100To0M": 31,
+      "brakeBasis": "estimated",
+      "sources": [
+        "https://news.dupontregistry.com/blogs/hennessey/hennessey-unveils-the-new-manual-blackbird-hypercar",
+        "https://de.motor1.com/news/803573/hennessey-blackbird-leistung-gewicht-preis/",
+        "https://motorsactu.com/hennessey-blackbird-lhypercar-a-v8-atmospherique-et-boite-manuelle-qui-tourne-le-dos-aux-turbos/"
+      ],
+      "estimated": true,
+      "estimatedFields": [
+        "brake100To0M",
+        "heightM",
+        "lengthM",
+        "torqueNm",
+        "wheelbaseM",
+        "widthM"
+      ],
+      "notes": "Hennessey's targets: 800-850 hp (825 used), 0-60 mph 2.5 s, 220 mph (354 km/h), under 3,000 lb (1,360 kg); length and wheelbase follow the game model; the dimensions and torque are not published"
+    },
+    "porsche1": {
+      "model": "Porsche 918 Spyder",
+      "lengthM": 4.643,
+      "widthM": 1.94,
+      "heightM": 1.167,
+      "wheelbaseM": 2.73,
+      "massKg": 1675,
+      "powertrain": "hybrid",
+      "engine": "4.6 L V8, naturally aspirated, mid-mounted + two electric motors (one per axle)",
+      "powerHp": 875,
+      "torqueNm": 1280,
+      "drive": "AWD",
+      "topSpeedKmh": 345,
+      "zeroTo100S": 2.6,
+      "brake100To0M": 31,
+      "brakeBasis": "estimated from road tests (60-0 mph in about 97 ft, carbon-ceramic brakes)",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Porsche_918_Spyder"
+      ],
+      "notes": "system figures: 652 kW (887 PS) and 1,280 N.m with both motors; the V8 alone makes 608 PS. Wikipedia lists a curb weight of 1,634-1,720 kg by build (the Weissach package is the light end), so 1,675 kg is a mid estimate. The game's model is a Sketchfab 918 Spyder with the Weissach rear wing",
+      "estimated": false,
+      "estimatedFields": [
+        "massKg",
+        "brake100To0M"
+      ]
+    },
+    "huracan": {
+      "model": "Lamborghini Huracan STO",
+      "lengthM": 4.547,
+      "widthM": 1.945,
+      "heightM": 1.22,
+      "wheelbaseM": 2.62,
+      "massKg": 1430,
+      "powertrain": "ICE",
+      "engine": "5.2 L V10, naturally aspirated, mid-mounted",
+      "powerHp": 631,
+      "torqueNm": 565,
+      "drive": "RWD",
+      "topSpeedKmh": 310,
+      "zeroTo100S": 3.0,
+      "brake100To0M": 30,
+      "brakeBasis": "the maker's claim (100-0 km/h in 30 m); a road-test figure would be 31-32 m",
+      "sources": [
+        "https://www.lamborghini.com/en-en/models/huracan/huracan-sto",
+        "https://en.wikipedia.org/wiki/Lamborghini_Hurac%C3%A1n"
+      ],
+      "notes": "640 PS (471 kW) at 8,000 rpm and 565 N.m at 6,500 rpm, rear-wheel drive with rear-wheel steering. Mass is the maker's 1,339 kg dry plus about 90 kg of fluids (road-ready); width is without mirrors (2.236 m with); the maker's press sheet gives 4,549 mm for the length, other listings 4,547 mm",
+      "estimated": false,
+      "estimatedFields": [
+        "massKg"
+      ]
+    },
+    "laferrari": {
+      "model": "Ferrari LaFerrari",
+      "lengthM": 4.702,
+      "widthM": 1.992,
+      "heightM": 1.116,
+      "wheelbaseM": 2.65,
+      "massKg": 1585,
+      "powertrain": "hybrid",
+      "engine": "6.3 L V12, naturally aspirated, mid-mounted + HY-KERS electric motor",
+      "powerHp": 950,
+      "torqueNm": 900,
+      "drive": "RWD",
+      "topSpeedKmh": 350,
+      "zeroTo100S": 2.6,
+      "brake100To0M": 30,
+      "brakeBasis": "estimated from the maker's claims and road tests (about 30 m)",
+      "sources": [
+        "https://en.wikipedia.org/wiki/LaFerrari"
+      ],
+      "notes": "963 PS combined: 800 PS from the V12 (700 N.m) plus 163 PS from the 120 kW motor, 900 N.m combined; the maker claims about 1,255 kg dry, the wiki lists a 1,585 kg kerb weight, so the mass is the listed kerb figure and an estimate; top speed is 'in excess of 350 km/h'",
+      "estimated": false,
+      "estimatedFields": [
+        "massKg",
+        "brake100To0M"
+      ]
+    }
+  },
+  "upgrades": {
+    "levels": 3,
+    "note": "Physical effects only; costs and currency belong to the UI. Applied by physics/handling.js setUpgrades(key, {engine, tyres, brakes}) on top of the base car; level 0 is stock. Arrays are the effect at levels 1, 2, 3.",
+    "categories": {
+      "engine": {
+        "label": "Engine / motors",
+        "applies": "ICE and hybrid: engine tune, turbos, ECU, intake; EV: inverter and motor tune, cooling",
+        "powerMul": [
+          1.05,
+          1.1,
+          1.16
+        ],
+        "massKg": [
+          0,
+          0,
+          10
+        ],
+        "effect": "more power at every speed; top speed follows from the unchanged drag (about +1.6%, +3.2%, +5%)"
+      },
+      "tyres": {
+        "label": "Tyres",
+        "applies": "compound and width, all cars",
+        "gripMul": [
+          1.03,
+          1.06,
+          1.09
+        ],
+        "wetRetentionPlus": [
+          0.02,
+          0.04,
+          0.06
+        ],
+        "effect": "more peak cornering, traction and braking grip, and more of it kept on a wet road (added to the fraction of dry grip kept)"
+      },
+      "brakes": {
+        "label": "Brakes",
+        "applies": "discs, pads and cooling, all cars",
+        "brakeMul": [
+          1.05,
+          1.1,
+          1.16
+        ],
+        "effect": "more brake torque, which lifts the rear brakes toward the tyre limit"
+      }
+    }
+  }
+}

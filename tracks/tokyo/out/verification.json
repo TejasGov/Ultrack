@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "road_surface_normals_up": true,
+    "road_surface_no_nonmanifold_junctions": true,
+    "evaluated_road_slab_closed": true,
+    "length_within_1m_of_5180": true,
+    "all_12_landmarks_present": true,
+    "four_grandstand_canopies": true,
+    "crossing_present": true,
+    "crossing_clearance_above_6m": true,
+    "four_review_cameras": true,
+    "file_textures_packed": true,
+    "collision_separated_and_hidden": true,
+    "all_review_renders_exist": true,
+    "finite_mesh_coordinates": true
+  },
+  "passed": true,
+  "scope": "Initial source geometry study only. Not final-art, structural, collision-driving or runtime approval."
+}

@@ -1,0 +1,20 @@
+{
+  "texture": "../textures/mount_fuji_night_cutout_v1.png",
+  "generator": "Built-in image_gen",
+  "placement": [
+    6500,
+    800,
+    -260
+  ],
+  "width_m": 6800,
+  "height_m": 2275.034610059991,
+  "triangles": 2,
+  "maximum_opacity": 0.3,
+  "foot_fade_uv": [
+    0.1,
+    0.42
+  ],
+  "behind_existing_skyline": true,
+  "geography": "Fictional art-directed arrangement",
+  "runtime_exported": false
+}

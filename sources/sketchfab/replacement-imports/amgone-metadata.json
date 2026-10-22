@@ -1,0 +1,237 @@
+{
+  "animationCount": 0,
+  "categories": [
+    {
+      "uid": "22a2f677efad4d7bbca5ad45f9b5868e",
+      "name": "Cars & Vehicles",
+      "slug": "cars-vehicles",
+      "uri": "https://api.sketchfab.com/v3/categories/22a2f677efad4d7bbca5ad45f9b5868e",
+      "icon": "https://static.sketchfab.com/static/builds/web/dist/static/assets/images/icons/categories/45dd0cc0860ac57fcd63bde1cc3f2b7c-v2.svg",
+      "thumbnails": [
+        {
+          "width": "512",
+          "height": "288",
+          "url": "https://static.sketchfab.com/categories/22a2f677efad4d7bbca5ad45f9b5868e/512x288.png"
+        },
+        {
+          "width": "800",
+          "height": "450",
+          "url": "https://static.sketchfab.com/categories/22a2f677efad4d7bbca5ad45f9b5868e/800x450.png"
+        }
+      ]
+    }
+  ],
+  "commentCount": 2,
+  "createdAt": "2025-04-11T17:55:36.806819",
+  "embedUrl": "https://sketchfab.com/models/77b02e5a555d4819b490f67eeb348d22/embed",
+  "faceCount": 28877,
+  "isAgeRestricted": false,
+  "license": {
+    "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution",
+    "fullName": "Creative Commons Attribution",
+    "requirements": "Author must be credited. Commercial use is allowed.",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "slug": "by"
+  },
+  "likeCount": 54,
+  "name": "Mercedes Amg One",
+  "publishedAt": "2025-04-11T18:37:05.963510",
+  "soundCount": 0,
+  "staffpickedAt": null,
+  "tags": [
+    {
+      "name": "one",
+      "slug": "one",
+      "uri": "https://api.sketchfab.com/v3/tags/one"
+    },
+    {
+      "name": "f1",
+      "slug": "f1",
+      "uri": "https://api.sketchfab.com/v3/tags/f1"
+    },
+    {
+      "name": "gt",
+      "slug": "gt",
+      "uri": "https://api.sketchfab.com/v3/tags/gt"
+    },
+    {
+      "name": "supercar",
+      "slug": "supercar",
+      "uri": "https://api.sketchfab.com/v3/tags/supercar"
+    },
+    {
+      "name": "MERCEDES",
+      "slug": "mercedes",
+      "uri": "https://api.sketchfab.com/v3/tags/mercedes"
+    },
+    {
+      "name": "amg",
+      "slug": "amg",
+      "uri": "https://api.sketchfab.com/v3/tags/amg"
+    },
+    {
+      "name": "racecar",
+      "slug": "racecar",
+      "uri": "https://api.sketchfab.com/v3/tags/racecar"
+    },
+    {
+      "name": "hypercar",
+      "slug": "hypercar",
+      "uri": "https://api.sketchfab.com/v3/tags/hypercar"
+    },
+    {
+      "name": "3d",
+      "slug": "3d",
+      "uri": "https://api.sketchfab.com/v3/tags/3d"
+    },
+    {
+      "name": "blender",
+      "slug": "blender",
+      "uri": "https://api.sketchfab.com/v3/tags/blender"
+    },
+    {
+      "name": "lowpoly",
+      "slug": "lowpoly",
+      "uri": "https://api.sketchfab.com/v3/tags/lowpoly"
+    },
+    {
+      "name": "low",
+      "slug": "low",
+      "uri": "https://api.sketchfab.com/v3/tags/low"
+    },
+    {
+      "name": "poly",
+      "slug": "poly",
+      "uri": "https://api.sketchfab.com/v3/tags/poly"
+    },
+    {
+      "name": "car",
+      "slug": "car",
+      "uri": "https://api.sketchfab.com/v3/tags/car"
+    },
+    {
+      "name": "free",
+      "slug": "free",
+      "uri": "https://api.sketchfab.com/v3/tags/free"
+    },
+    {
+      "name": "1",
+      "slug": "1",
+      "uri": "https://api.sketchfab.com/v3/tags/1"
+    },
+    {
+      "name": "interior",
+      "slug": "interior",
+      "uri": "https://api.sketchfab.com/v3/tags/interior"
+    },
+    {
+      "name": "race",
+      "slug": "race",
+      "uri": "https://api.sketchfab.com/v3/tags/race"
+    },
+    {
+      "name": "amg-one",
+      "slug": "amg-one",
+      "uri": "https://api.sketchfab.com/v3/tags/amg-one"
+    }
+  ],
+  "thumbnails": {
+    "images": [
+      {
+        "uid": "8ef99f33b4884b8e894782a36af672b5",
+        "width": 1920,
+        "height": 1080,
+        "size": 100392,
+        "url": "https://media.sketchfab.com/models/77b02e5a555d4819b490f67eeb348d22/thumbnails/413c2b9661d6413aa6edb817edf7e073/9baa3bcc21864489b88ed9604cfd9547.jpeg"
+      },
+      {
+        "uid": "0eb7dfcf7c7b41dfb3fad5c8da6f8253",
+        "width": 1024,
+        "height": 576,
+        "size": 33216,
+        "url": "https://media.sketchfab.com/models/77b02e5a555d4819b490f67eeb348d22/thumbnails/413c2b9661d6413aa6edb817edf7e073/33f9f7d84c0d4afda43b67bb5a78e494.jpeg"
+      },
+      {
+        "uid": "be3c762136824574a673afc4f40cc69a",
+        "width": 720,
+        "height": 405,
+        "size": 19893,
+        "url": "https://media.sketchfab.com/models/77b02e5a555d4819b490f67eeb348d22/thumbnails/413c2b9661d6413aa6edb817edf7e073/de86e3114636461c9db1ff764babfb2e.jpeg"
+      },
+      {
+        "uid": "5d09ab809b764903abdcbd241a0d946d",
+        "width": 256,
+        "height": 144,
+        "size": 4616,
+        "url": "https://media.sketchfab.com/models/77b02e5a555d4819b490f67eeb348d22/thumbnails/413c2b9661d6413aa6edb817edf7e073/fe69677456ba44efadf2577cb2f5db64.jpeg"
+      },
+      {
+        "uid": "54fd020166794b08a419896e314566e1",
+        "width": 64,
+        "height": 36,
+        "size": 1133,
+        "url": "https://media.sketchfab.com/models/77b02e5a555d4819b490f67eeb348d22/thumbnails/413c2b9661d6413aa6edb817edf7e073/e909d32e9be04d44bab2078dbfabdc11.jpeg"
+      }
+    ]
+  },
+  "uid": "77b02e5a555d4819b490f67eeb348d22",
+  "uri": "https://api.sketchfab.com/v3/models/77b02e5a555d4819b490f67eeb348d22",
+  "user": {
+    "uid": "126bfe4b4fb74df2a0d6fd1aefd7655b",
+    "username": "3dblender_1",
+    "displayName": "3dblender_1",
+    "account": "basic",
+    "profileUrl": "https://sketchfab.com/3dblender_1",
+    "avatar": {
+      "uid": "8998240ae18b452f9d11ff5102d24f21",
+      "uri": "https://api.sketchfab.com/v3/avatars/8998240ae18b452f9d11ff5102d24f21",
+      "images": [
+        {
+          "width": 32,
+          "height": 32,
+          "size": 1191,
+          "url": "https://media.sketchfab.com/avatars/8998240ae18b452f9d11ff5102d24f21/fb97880b21224c50b9003c874e190f49.png"
+        },
+        {
+          "width": 48,
+          "height": 48,
+          "size": 2106,
+          "url": "https://media.sketchfab.com/avatars/8998240ae18b452f9d11ff5102d24f21/4d1c09d04a5446368fd0116ff8283321.png"
+        },
+        {
+          "width": 90,
+          "height": 90,
+          "size": 5691,
+          "url": "https://media.sketchfab.com/avatars/8998240ae18b452f9d11ff5102d24f21/028465686afd4cba833ecda52f39b3a6.png"
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "size": 6750,
+          "url": "https://media.sketchfab.com/avatars/8998240ae18b452f9d11ff5102d24f21/99290f9ce0b640219a99c4ea2d04444c.png"
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/126bfe4b4fb74df2a0d6fd1aefd7655b"
+  },
+  "vertexCount": 18543,
+  "viewCount": 4428,
+  "viewerUrl": "https://sketchfab.com/3d-models/mercedes-amg-one-77b02e5a555d4819b490f67eeb348d22",
+  "isDownloadable": true,
+  "isProtected": false,
+  "description": "Mercedes AMG one hypercar\n\nModel with basic interior and carbon fibre :)\n\nlow poly, optimised for games, 30k tris.\n\nmake sure to give credit if used elsewhere.",
+  "price": null,
+  "downloadCount": 668,
+  "editorUrl": "https://sketchfab.com/models/77b02e5a555d4819b490f67eeb348d22/edit",
+  "status": {
+    "warning": {},
+    "processing": "SUCCEEDED"
+  },
+  "source": "website",
+  "hasCommentsDisabled": false,
+  "updatedAt": "2026-01-02T06:57:15.569364",
+  "pbrType": "metalness",
+  "textureCount": 12,
+  "materialCount": 23
+}

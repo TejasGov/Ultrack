@@ -1,0 +1,17 @@
+# Race preparation presentation
+
+Starting any driving mode opens a full-screen loading presentation before expensive work begins. Five eight-second story panels crossfade with a subtle camera drift: a joint broadcast desk, the start straight, Enzo's history, the Jim Clark Stand and Finch's history. Track images are captures from this game's actual 3D circuit; broadcast artwork is a newly generated illustration, not a photograph. Circuit neighbourhood vignettes are fictional Ultrack lore. Announcer details follow `assets/audio/announcers/script.json`.
+
+The three runtime WebP files total 863,766 bytes. Typography remains live and sharp. The first illustration is warmed after the player's initial menu gesture. All graphics are local. The source PNG, exact generation prompt (`assets/loading/prompt-used.txt`) and preparation script remain in the project. The illustration used the built-in imagegen tool, one generation; it was copied from the generated-images folder into `assets/loading` and encoded locally. Rebuild with `node scripts/prepare-loading-art.mjs` from `track-viewer`.
+
+Progress segments reflect actual completed jobs: circuit, grid, static track physics, engine audio, graphics. No fake percentage or mandatory slideshow wait. The screen paints before preparation; the main loop suspends the hidden 3D room/world. CSS opacity/transform animations handle the slideshow independently of simulation updates. Reduced motion shows the first still. Escape or Back returns to the menu, and pending jobs clean up their unused physics world before another start is accepted.
+
+Circuit, cars, collision world and audio prepare concurrently. Graphics and the current lineup's trackside hoardings finish before the starting grid appears. Full-screen driver introductions have been removed; see `HOARDINGS-AND-SHELLS.md`. Static collision loading never starts vehicles or a session clock. Audio is stopped before preparation, not after its new engine has loaded.
+
+The first instrumented live run took 35,264 ms: grid 3,575 ms and graphics 31,677 ms dominated. The old `compileAsync(scene)` traversed even hidden objects; the initial cube capture also forced synchronous first-use shader work. Warm-up now compiles visible drawables in batches of 32, limits chase shaders to its frustum, uses asynchronous compilation for reflection shaders, and yields between six cube faces. Background room rendering stays suspended. The next page-load test reached readiness in 7,777 ms (grid 3,133 ms; graphics 4,635 ms), with seven cars and working engine audio after introductions. Browser/GPU caches were reused between those runs: these are diagnostic samples, not a controlled cold-cache speedup claim. Future loads expose `game.lastLoad` and console `Graphics preparation` / `Race preparation` timings.
+
+Deprecated `THREE.Clock` and `PCFSoftShadowMap` uses were replaced. Driver precision warnings are left visible; they are not reported load failures.
+
+Validation: `npm run test:race-loading`, `npm run test:v2`, brake-light regression and production build. Loading tests cover artwork budget, five slides, completion stages, Escape cleanup, reduced motion and direct loading-to-grid startup. Hoarding tests cover current lineup selection and late-load cancellation. A live race was verified reaching the seven-car grid with engine audio available.
+
+Screenshots: `track-viewer/shots/race-loading-broadcast.png` and `race-loading-live.png`.

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Cole Maddox",
+    "code": "MAD",
+    "nation": "USA",
+    "age": 30,
+    "role": "the brawler",
+    "bio": "Dirt-track brawler; drives every lap like the last one.",
+    "background": "From Bakersfield, California; sprint cars and dirt ovals from age nine, until Liberty's Harlan Whitfield flew in to watch him win a county-fair dirt race and signed him on the spot.",
+    "personality": "The most penalised driver in the paddock; cowboy boots, no filter, big heart; the stewards know number 66 by heart; he and teammate Hollis cannot agree on who is the real American.",
+    "rivals": [
+      "REI",
+      "HOL"
+    ]
+  },
+  "team": "liberty",
+  "raceNumber": 66,
+  "carKey": "mustang",
+  "titleSponsor": "Coca-Cola",
+  "font": {
+    "family": "Graduate",
+    "file": "graduate-latin-400-normal.woff2",
+    "weight": "400",
+    "bold": 0.05
+  },
+  "manufacturer": "Ford",
+  "car": "Mustang GT (2018)",
+  "style": "Original fictional adult driver in inked, cel-shaded GTA V loading-screen-inspired illustration; no real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "1225d8f00bc8506f59c86e0d1a660dba328490a9f0a390a572ec6408a28da3e3",
+  "generationCalls": 1,
+  "composition": "1920x1080 static driver poster; team lettering uses the canonical outlined Graduate font and source artwork and logo assets are embedded for portability.",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "66ec06e0b124f15902b493010fd1953210faea54414d51ecfd8868260df14963"
+    },
+    "poster-v1.svg": {
+      "sha256": "889ddae50d4c9386b713a8c32568539190693d96cb53ee3964f718e935bbcb32"
+    }
+  }
+}

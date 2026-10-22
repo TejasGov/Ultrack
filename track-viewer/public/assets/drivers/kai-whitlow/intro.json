@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "status": "ready-for-review",
+  "driver": {
+    "name": "Kai Whitlow",
+    "code": "WHI",
+    "nation": "NZL",
+    "age": 38,
+    "role": "the grid's veteran",
+    "bio": "The oldest driver on the grid, endurance-bred; never hurries, never fades.",
+    "background": "Grew up on a sheep station in Canterbury, New Zealand; three endurance class wins before Corvid signed him.",
+    "personality": "The Metronome: lap times within a tenth for hours; surfs between races; quietly mentors the rookies, even on other teams.",
+    "rivals": []
+  },
+  "team": "corvid",
+  "raceNumber": 44,
+  "carKey": "bentley-gt",
+  "manufacturer": "Mercedes-Benz",
+  "car": "Mercedes-AMG ONE",
+  "titleSponsor": "HSBC",
+  "font": {
+    "family": "Cinzel",
+    "file": "cinzel-latin-900-normal.woff2",
+    "weight": "900"
+  },
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration. No real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "e84e27d8d66404866a73390797f6f049087672974fe51aba70d8ec014dcc4f7b",
+  "motion": "Static driver poster composition.",
+  "scope": "One driver concept only; not installed as an automatic race intro pending style approval."
+}

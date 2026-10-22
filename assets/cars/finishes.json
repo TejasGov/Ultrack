@@ -1,0 +1,139 @@
+{
+  "note": "Each car's real-world surface character, read off its concept sheet (D:/RaceUltimate/concept-*.{jpg,png}) and the car it is modelled on. Colour stays the team's (teams.json); this is what the paint is made of. paint: 'solid' (deep wet gloss, no flake), 'metallic' (flake: 0..1 how grainy, flakeMm: flake size in mm, coarser reads more 'grainy'), 'pearl' (pearl: 0..1 iridescent shift). carbonBelow: exposed carbon weave below this fraction of the body's height (sills, splitter, diffuser; 0 = none). rim / caliper: wheel colours.",
+  "cars": {
+    "av12": {
+      "paint": "metallic",
+      "flake": 0.9,
+      "flakeMm": 1.1,
+      "carbonBelow": 0.3,
+      "rim": "#23262b",
+      "caliper": "#e3a80c",
+      "why": "V12 flagship: coarse grainy graphite metallic over hard creases, exposed carbon aero, yellow calipers, black forged wheels"
+    },
+    "mp1x": {
+      "paint": "metallic",
+      "flake": 0.8,
+      "flakeMm": 0.9,
+      "carbonBelow": 0.24,
+      "rim": "#23262b",
+      "caliper": "#d9821c",
+      "why": "P1-style hypercar: deep sparkling metallic, carbon sills and diffuser, orange calipers"
+    },
+    "aston-martin-valk": {
+      "paint": "metallic",
+      "flake": 0.35,
+      "flakeMm": 0.5,
+      "carbonBelow": 0.42,
+      "rim": "#2a2d31",
+      "caliper": "#9aa0a6",
+      "why": "Valkyrie: a carbon tub with bare weave across the lower body, fine-flake metallic above; the Real Racing 3 model's own black parts stay carbon, rims are its dark forged centre-lock wheels"
+    },
+    "bentley-gt": {
+      "paint": "metallic",
+      "flake": 0.3,
+      "flakeMm": 0.4,
+      "carbonBelow": 0,
+      "rim": "#a9afb6",
+      "caliper": "#1c1e21",
+      "why": "Continental GT: a deep, mirror-smooth fine metallic, bright silver multi-spoke wheels"
+    },
+    "bmw1": {
+      "paint": "metallic",
+      "flake": 0.5,
+      "flakeMm": 0.6,
+      "carbonBelow": 0,
+      "rim": "#23262b",
+      "caliper": "#3fae2a",
+      "why": "AMG GT4: fine-flake metallic over the model's own carbon and livery trim, black race wheels, green calipers as on the GT4 race car"
+    },
+    "buggati": {
+      "paint": "metallic",
+      "flake": 0.55,
+      "flakeMm": 0.7,
+      "carbonBelow": 0,
+      "rim": "#23262b",
+      "caliper": "#1f4fa8",
+      "why": "Divo: deep metallic over hand-laid exposed carbon aero (the model's own carbon parts), forged wheels, Bugatti-blue calipers; the Chiron-style yellow calipers dropped with the Meshy shell"
+    },
+    "furari-488": {
+      "paint": "solid",
+      "carbonBelow": 0.22,
+      "rim": "#23262b",
+      "caliper": "#e3a80c",
+      "why": "488 track car: deep solid gloss like rosso corsa, carbon splitter and sills, yellow calipers"
+    },
+    "jaguarxkjss": {
+      "paint": "solid",
+      "carbonBelow": 0,
+      "rim": "#b9bfc6",
+      "caliper": "#2a2c2f",
+      "why": "XKSS: 1950s deep solid enamel gloss, silver wire wheels, no carbon"
+    },
+    "mustang": {
+      "paint": "metallic",
+      "flake": 0.75,
+      "flakeMm": 0.9,
+      "carbonBelow": 0,
+      "rim": "#23262b",
+      "caliper": "#c41e1e",
+      "why": "modern muscle: punchy grainy metallic, red calipers"
+    },
+    "nuvolari": {
+      "paint": "metallic",
+      "flake": 0.55,
+      "flakeMm": 0.6,
+      "carbonBelow": 0.28,
+      "rim": "#8e949c",
+      "caliper": "#2b2d31",
+      "why": "RS GT coupe: satin-deep metallic with carbon details, silver wheels"
+    },
+    "porsche1": {
+      "paint": "metallic",
+      "flake": 0.45,
+      "flakeMm": 0.6,
+      "carbonBelow": 0.16,
+      "rim": "#2b2d31",
+      "caliper": "#a8d400",
+      "why": "918 Spyder (Weissach look): fine-flake metallic over a black carbon lower body and engine deck, dark forged 20-inch multi-spoke wheels (the model's own), acid-green calipers as on the Weissach package"
+    },
+    "tesla1": {
+      "paint": "pearl",
+      "pearl": 0.4,
+      "carbonBelow": 0,
+      "rim": "#3b3f45",
+      "caliper": "#b51c1c",
+      "why": "Roadster: smooth pearl, no flake, a single clean surface"
+    },
+    "destrier": {
+      "paint": "metallic",
+      "flake": 0.35,
+      "flakeMm": 0.5,
+      "carbonBelow": 0,
+      "rim": "#23262b",
+      "caliper": "#c8a44a",
+      "why": "Destrier: a one-off Solitaire hypercar on the Bolide's carbon monocoque, near-black deep metallic with polished brightwork trim along the arches, black wheels with bright edges, gold-bronze calipers"
+    },
+    "blackbird": {
+      "paint": "solid",
+      "carbonBelow": 0,
+      "rim": "#23262b",
+      "caliper": "#b5191c",
+      "why": "Blackbird: named for the SR-71, a naturally aspirated 6.2 V8 hypercar in deep solid gloss over exposed carbon aero (the model's own carbon parts), black five-spoke forged wheels, red calipers"
+    },
+    "laferrari": {
+      "paint": "solid",
+      "carbonBelow": 0.18,
+      "rim": "#b9bdc4",
+      "caliper": "#c8102e",
+      "why": "LaFerrari: Rosso Corsa-style deep solid gloss with a black roof and carbon lower aero (the model's own black parts), silver forged five-spoke wheels (the model's own), red calipers"
+    },
+    "huracan": {
+      "paint": "pearl",
+      "pearl": 0.4,
+      "carbonBelow": 0.2,
+      "rim": "#1d1f23",
+      "caliper": "#d12a1e",
+      "why": "Huracan STO: pearlescent gloss (Blu Laufey on the model) with a carbon bonnet centre and roof (the model's own black parts), carbon sills and aero, black forged 20-inch wheels; the model has no separate calipers (the disc is baked into the wheel), so the caliper colour waits for a model that has them"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "car": "jaguarxkjss",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "mirrors": {
+    "style": "bullet",
+    "housing": "paint"
+  },
+  "suspension": {
+    "pitch": 0.6,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.05
+  },
+  "aero": [],
+  "log": [
+    "run 1 (all cars): mirrors -> bullet/paint (XKSS: chrome bullet on the wing); ride 0.05 m from the measured arch gaps (front top gap >= 3 cm for the brake dive); pitch 0.6",
+    "run 1: brake lamps only reached 96 at dusk (small round lamps) -> brake 7",
+    "run 2: brake lamps under 110 at dusk -> brake 9.0"
+  ],
+  "replacement": {
+    "note": "tuning for the replacement model (cars.js reads only this block for it)",
+    "suspension": {
+      "pitch": 0.6,
+      "roll": 0.85,
+      "freq": 1.6,
+      "ride": 0
+    }
+  }
+}

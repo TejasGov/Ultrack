@@ -1,0 +1,299 @@
+{
+ "label": "before-prod-cold",
+ "base": "http://127.0.0.1:5182",
+ "bootMs": 912,
+ "menuT": 10014,
+ "clickRel": 10016,
+ "raceMs": 36013,
+ "gridT": 46030,
+ "marksMenu": [
+  [
+   "ultrack:car-ready",
+   897
+  ]
+ ],
+ "marksEnd": [
+  [
+   "ultrack:car-ready",
+   897
+  ],
+  [
+   "ultrack:venue-ready",
+   11655
+  ]
+ ],
+ "logs": [
+  [
+   11676,
+   "team artwork: 33 materials"
+  ],
+  [
+   45860,
+   "Graphics preparation: {reflectionsMs: 13759, shadersMs: 17922, firstFrameMs: 586}"
+  ],
+  [
+   45860,
+   "Race preparation: {totalMs: 35840, stages: Object}"
+  ]
+ ],
+ "errors": [],
+ "byCat": {
+  "other": {
+   "n": 319,
+   "bytes": 10930,
+   "beforeClick": 33,
+   "afterClick": 286
+  },
+  "js": {
+   "n": 15,
+   "bytes": 2377245,
+   "beforeClick": 6,
+   "afterClick": 9
+  },
+  "json": {
+   "n": 5,
+   "bytes": 42212,
+   "beforeClick": 4,
+   "afterClick": 1
+  },
+  "image": {
+   "n": 30,
+   "bytes": 2298163,
+   "beforeClick": 20,
+   "afterClick": 10
+  },
+  "font": {
+   "n": 5,
+   "bytes": 89507,
+   "beforeClick": 5,
+   "afterClick": 0
+  },
+  "car glb": {
+   "n": 16,
+   "bytes": 22041050,
+   "beforeClick": 2,
+   "afterClick": 14
+  },
+  "wasm": {
+   "n": 1,
+   "bytes": 527609,
+   "beforeClick": 1,
+   "afterClick": 0
+  },
+  "other audio": {
+   "n": 3,
+   "bytes": 414220,
+   "beforeClick": 2,
+   "afterClick": 1
+  },
+  "venue glb": {
+   "n": 1,
+   "bytes": 12807309,
+   "beforeClick": 0,
+   "afterClick": 1
+  },
+  "hdri": {
+   "n": 1,
+   "bytes": 2768714,
+   "beforeClick": 0,
+   "afterClick": 1
+  },
+  "engine audio": {
+   "n": 5,
+   "bytes": 23852,
+   "beforeClick": 0,
+   "afterClick": 5
+  },
+  "collision glb": {
+   "n": 1,
+   "bytes": 256893,
+   "beforeClick": 0,
+   "afterClick": 1
+  },
+  "commentary audio": {
+   "n": 1,
+   "bytes": 97401,
+   "beforeClick": 0,
+   "afterClick": 1
+  }
+ },
+ "big": [
+  [
+   "/assets/game-D4qJc1lP.js",
+   340008,
+   16,
+   48,
+   "menu"
+  ],
+  [
+   "/assets/cars/av12/car_lod0_ktx2.glb",
+   3971871,
+   641,
+   657,
+   "menu"
+  ],
+  [
+   "/basis/basis_transcoder.wasm",
+   527609,
+   686,
+   689,
+   "menu"
+  ],
+  [
+   "/assets/loading/broadcast.webp",
+   320974,
+   4003,
+   4015,
+   "menu"
+  ],
+  [
+   "/assets/cars/av12/car_lod1_ktx2.glb",
+   1217711,
+   4016,
+   4031,
+   "menu"
+  ],
+  [
+   "/assets/audio/crowd/ambience-loop.ogg",
+   385975,
+   4029,
+   4056,
+   "menu"
+  ],
+  [
+   "/assets/loading/starting-line.webp",
+   280018,
+   10032,
+   10041,
+   "race"
+  ],
+  [
+   "/assets/loading/hairpin.webp",
+   263584,
+   10032,
+   10042,
+   "race"
+  ],
+  [
+   "/assets/marina_visual_ktx2.glb",
+   12807309,
+   10037,
+   10186,
+   "race"
+  ],
+  [
+   "/assets/hdri/belfast_sunset_puresky_2k.hdr",
+   2768714,
+   10039,
+   10304,
+   "race"
+  ],
+  [
+   "/assets/rapier-Ct8Isipz.js",
+   1645877,
+   10039,
+   10320,
+   "race"
+  ],
+  [
+   "/assets/cars/furari-488/car_lod0_ktx2.glb",
+   4150583,
+   10063,
+   10107,
+   "race"
+  ],
+  [
+   "/assets/cars/aston-martin-valk/car_lod0_ktx2.glb",
+   840621,
+   10066,
+   10076,
+   "race"
+  ],
+  [
+   "/assets/marina_collision.glb",
+   256893,
+   10999,
+   11005,
+   "race"
+  ],
+  [
+   "/assets/cars/nuvolari/car_lod0_ktx2.glb",
+   1464315,
+   11156,
+   11168,
+   "race"
+  ],
+  [
+   "/assets/cars/jaguarxkjss/car_lod0_ktx2.glb",
+   1328035,
+   11343,
+   11352,
+   "race"
+  ],
+  [
+   "/assets/cars/buggati/car_lod0_ktx2.glb",
+   2863431,
+   11577,
+   11593,
+   "race"
+  ],
+  [
+   "/assets/cars/mustang/body_lod0.glb",
+   456133,
+   11699,
+   11893,
+   "race"
+  ],
+  [
+   "/assets/cars/mp1x/car_lod0_ktx2.glb",
+   378461,
+   13499,
+   13504,
+   "race"
+  ],
+  [
+   "/assets/cars/aston-martin-valk/car_lod1_ktx2.glb",
+   571041,
+   13500,
+   13511,
+   "race"
+  ],
+  [
+   "/assets/cars/furari-488/car_lod1_ktx2.glb",
+   1811003,
+   13542,
+   13568,
+   "race"
+  ],
+  [
+   "/assets/cars/nuvolari/car_lod1_ktx2.glb",
+   931853,
+   13563,
+   13595,
+   "race"
+  ],
+  [
+   "/assets/cars/jaguarxkjss/car_lod1_ktx2.glb",
+   757693,
+   13676,
+   13682,
+   "race"
+  ],
+  [
+   "/assets/cars/buggati/car_lod1_ktx2.glb",
+   816021,
+   13715,
+   13721,
+   "race"
+  ],
+  [
+   "/assets/cars/mp1x/car_lod1_ktx2.glb",
+   357645,
+   15345,
+   15349,
+   "race"
+  ]
+ ],
+ "totalBytes": 43755105,
+ "beforeClickBytes": 7655427
+}

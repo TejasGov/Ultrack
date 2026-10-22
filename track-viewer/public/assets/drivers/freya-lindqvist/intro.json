@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Freya Lindqvist",
+    "code": "LIN",
+    "nation": "SWE",
+    "age": 29,
+    "role": "rally convert",
+    "bio": "Rally-bred car control; at her best when the grip goes.",
+    "background": "From Värmland, Sweden; forest rallies and ice racing on frozen lakes until Cal Beaumont watched her slide a car across one and offered her a seat at Mojave.",
+    "personality": "Deadpan; says grip is overrated and means it; the rain specialist Tanabe's great rival; the one person at Mojave who has never been impressed by the barn.",
+    "rivals": [
+      "TAN"
+    ]
+  },
+  "team": "mojave",
+  "raceNumber": 8,
+  "carKey": "jaguarxkjss",
+  "titleSponsor": "Shell",
+  "font": {
+    "family": "Bungee",
+    "file": "bungee-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "manufacturer": "Bentley",
+  "car": "Continental GT Speed",
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration; no real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "5affb6d3a97fe457393e0a490677063d37b3e82c68d77ea5e4004ff9fd23bd13",
+  "generationCalls": 1,
+  "composition": "1920x1080 static driver poster; team lettering is outlined and source artwork is embedded for portability.",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "314874803e1eb0fd3c3768b8d39839cdaaeb21d68e875b40f041171152d153ed"
+    },
+    "poster-v1.svg": {
+      "sha256": "357e231804b3a9453cfb541d3b167b9bc223abe3efb40ece886dd2d7de0509d2"
+    }
+  }
+}

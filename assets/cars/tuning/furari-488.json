@@ -1,0 +1,18 @@
+{
+  "car": "furari-488",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "model": "assets/cars/furari-488/source.json (scripts/model-car.py): its own glass, cabin, mirrors and wheels; mirrors/interior/glass tuning does not apply",
+  "suspension": {
+    "pitch": 0.6,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.02
+  },
+  "aero": [],
+  "log": [
+    "2026-10-19: replaced the Meshy shell with the Sketchfab model (F1, LSxSEPTIC 488 Pista); earlier shell fixes dropped with it",
+    "run 1: the whole front lamp buckets glow (no separate DRL mesh) -> head 0.1",
+    "run 2: front tyres 0.8 cm into the arch lip, -3.1 cm in the brake dive (the rip's arches are tight) -> front tyre 0.68 -> 0.66 m, ride 0.02",
+    "run 3: the glowing buckets read as white panels -> the model keeps its own lamp look (headkeep); head level back to default"
+  ]
+}

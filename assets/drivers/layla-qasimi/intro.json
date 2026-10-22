@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Layla Qasimi",
+    "code": "QAS",
+    "nation": "OMN",
+    "age": 25,
+    "role": "the overtaker",
+    "bio": "Omani, self-taught on desert roads; the grid's best overtaker.",
+    "background": "Learned to drive on graded desert roads near Oman's Wahiba Sands in her uncle's pickup; Sarab signed her after her first season in club racing.",
+    "personality": "Fearless and cheerful; holds the record for passes in a single race; friendly rivalry with teammate Kareem that splits the crowd.",
+    "rivals": [
+      "KAR"
+    ]
+  },
+  "team": "sarab",
+  "raceNumber": 33,
+  "carKey": "porsche1",
+  "titleSponsor": "Emirates",
+  "font": {
+    "family": "Lalezar",
+    "file": "lalezar-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "manufacturer": "Porsche",
+  "car": "911 Turbo S (992)",
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration; no real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "2bdc218898a3b9a1ecc9241b824720f7c8215241c308c397139295fea5f32637",
+  "generationCalls": 1,
+  "composition": "1920x1080 static driver poster; team lettering is outlined and source artwork is embedded for portability.",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "cd218fbda3ae84d6cf4a995912298ec1a50c6fb13a81fde76f7a1a45b472eca8"
+    },
+    "poster-v1.svg": {
+      "sha256": "b24eabdb7671c9e43b6fa923cc47ec5957a7f0e2c8cefcd37aef66da00d58438"
+    }
+  }
+}

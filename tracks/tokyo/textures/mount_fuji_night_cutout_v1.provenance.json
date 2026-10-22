@@ -1,0 +1,6 @@
+{
+  "generator": "Built-in image_gen",
+  "prompt": "Create a game environment matte-painting texture: Mount Fuji viewed from distant Tokyo, isolated on a genuinely transparent background. A broad realistically shaped solitary volcanic cone with gently concave long flanks, subtle irregular flat summit crater, recognizable white snow cap with irregular gullies extending down its upper slopes. Photoreal natural geology, soft low-contrast blue-grey night atmosphere, faint cool moonlit snow, dark slate-blue lower slopes. Mountain fills a wide landscape canvas with generous horizontal foothill extensions tapering to a low baseline. No sky, no clouds, no stars, no buildings, no city, no water, no text, no frame. Feather the lowest foothill edge softly into transparency, preserve the fine natural outer mountain silhouette. This is a distant understated night backdrop to go BEHIND an existing city skyline, not a dramatic bright hero poster. Entire mountain and foothills visible, no cropping.",
+  "asset": "mount_fuji_night_cutout_v1.png",
+  "purpose": "Original transparent matte painting for distant in-scene backdrop"
+}

@@ -1,0 +1,93 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "source": {
+  "title": "Lamborghini Aventador with Interior",
+  "author": "blackcube4",
+  "url": "https://sketchfab.com/3d-models/36eb1fa54a0d4be695d4cd90c30f4ff1",
+  "license": "CC-BY-NC (exterior: Lambo_SC04, Aventador SVJ Black-Ghost, CC-BY-NC)"
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.308,
+   "width": 0.2974,
+   "x": -1.2712,
+   "track": 1.7758
+  },
+  "rear": {
+   "radius": 0.3311,
+   "width": 0.3197,
+   "x": 1.415,
+   "track": 1.8136
+  }
+ },
+ "size": {
+  "length": 4.943,
+  "width": 2.238,
+  "height": 1.059
+ },
+ "lights": {
+  "front": [
+   [
+    -1.975,
+    0.479,
+    0.688
+   ],
+   [
+    -1.975,
+    0.479,
+    -0.688
+   ]
+  ],
+  "rear": [
+   [
+    2.112,
+    0.759,
+    0.672
+   ],
+   [
+    2.112,
+    0.759,
+    -0.672
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.424,
+    0.672,
+    0.706
+   ],
+   [
+    -1.424,
+    1.031,
+    0.706
+   ],
+   [
+    0.59,
+    1.031,
+    0.706
+   ],
+   [
+    0.59,
+    0.672,
+    0.706
+   ]
+  ]
+ },
+ "exhaust": [
+  [
+   0.587,
+   -0.287
+  ],
+  [
+   0.587,
+   0.287
+  ]
+ ],
+ "triangles": {
+  "body0": 136025,
+  "body1": 25980,
+  "wheel": 10249
+ }
+}

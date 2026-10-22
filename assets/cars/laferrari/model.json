@@ -1,0 +1,100 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "La Furari",
+ "source": {
+  "title": "2013 Ferrari La Ferrari",
+  "author": "OUTPISTON",
+  "authorUrl": "https://sketchfab.com/outpiston",
+  "url": "https://sketchfab.com/3d-models/2013-ferrari-la-ferrari-042d874f36464d27be3598c39cc73164",
+  "license": "CC BY-NC-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "modelId": "042d874f36464d27be3598c39cc73164",
+  "replacement": false,
+  "nonCommercialOnly": true,
+  "additionalCredits": "Rip from a mobile racing game: the part names (LOD_A_..._mm_..., *.etc, Vehicle_Exterior_mm_*) are Real Racing 3's, the same as the Valkyrie from the same uploader, whose page says \"source: Real Racing 3\". Non-commercial and share-alike licence: fine for this local fan project, replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3216,
+   "width": 0.2657,
+   "x": -1.1515,
+   "track": 1.6771
+  },
+  "rear": {
+   "radius": 0.3506,
+   "width": 0.2896,
+   "x": 1.4796,
+   "track": 1.6533
+  }
+ },
+ "size": {
+  "length": 4.702,
+  "width": 2.1,
+  "height": 1.009
+ },
+ "lights": {
+  "front": [
+   [
+    -1.704,
+    0.578,
+    0.769
+   ],
+   [
+    -1.712,
+    0.575,
+    -0.765
+   ]
+  ],
+  "rear": [
+   [
+    2.097,
+    0.705,
+    0.746
+   ],
+   [
+    2.105,
+    0.703,
+    -0.751
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.039,
+    0.712,
+    0.538
+   ],
+   [
+    -1.039,
+    1.023,
+    0.538
+   ],
+   [
+    0.381,
+    1.023,
+    0.538
+   ],
+   [
+    0.381,
+    0.712,
+    0.538
+   ]
+  ]
+ },
+ "exhaust": [
+  [
+   0.318,
+   -0.694
+  ],
+  [
+   0.318,
+   0.694
+  ]
+ ],
+ "triangles": {
+  "body0": 19630,
+  "body1": 19630,
+  "wheel": 1649
+ }
+}

@@ -1,0 +1,41 @@
+{
+  "src": "../../../sources/sketchfab/replacement-imports/mclaren720s-prepared.glb",
+  "credit": {
+    "title": "2017 Mclaren 720s",
+    "author": "_shobh19",
+    "authorUrl": "https://sketchfab.com/s0h1o9b",
+    "url": "https://sketchfab.com/3d-models/2017-mclaren-720s-f7bece69400f4640a4a3be746b44998b",
+    "license": "CC Attribution",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "f7bece69400f4640a4a3be746b44998b",
+    "replacement": true,
+    "nonCommercialOnly": false,
+    "additionalCredits": ""
+  },
+  "rotateZ": 0,
+  "length": 4.543,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Tyre_",
+      "Spin_"
+    ],
+    "caliper": [
+      "Caliper_"
+    ],
+    "tyre": [
+      "Tyre_"
+    ]
+  },
+  "roles": {},
+  "interior": [
+    "interior",
+    "INT:"
+  ],
+  "exhaust": [],
+  "budget": {
+    "body0": 90000,
+    "body1": 22000,
+    "wheel": 7000
+  }
+}

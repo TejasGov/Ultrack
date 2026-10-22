@@ -1,0 +1,82 @@
+{
+  "schema": "game-room.room-brief.v1",
+  "roomId": "tokyo",
+  "family": "custom",
+  "purpose": "Initial construction of the supplied Tokyo hiragana racing circuit",
+  "runtimeSurface": "Planned RaceUltimate Three.js/Rapier; not integrated",
+  "boundsMeters": [
+    2110,
+    1340,
+    190
+  ],
+  "hero": {
+    "id": "racing-car",
+    "role": "Player-controlled race car; reserve roadway and crossing envelope",
+    "reservedBoundsMeters": [
+      5.5,
+      2.4,
+      2.1
+    ]
+  },
+  "symmetry": {
+    "mode": "none",
+    "order": 1,
+    "appliesTo": [
+      "architecture",
+      "barriers",
+      "circulation",
+      "repeatedProps"
+    ],
+    "exceptions": [
+      "Source-authored asymmetric hiragana course; no artificial symmetry imposed"
+    ]
+  },
+  "circulation": {
+    "description": "Closed 5180 m route, 18 m working road width. Pit/service access remains to design.",
+    "minimumClearanceMeters": 18
+  },
+  "productionCamera": {
+    "viewport": [
+      1600,
+      1100
+    ],
+    "location": [
+      1400,
+      -2050,
+      2200
+    ],
+    "target": [
+      -30,
+      20,
+      0
+    ],
+    "verticalFovDegrees": 31,
+    "note": "Overview study; game racing camera and performance contract pending"
+  },
+  "performanceBudget": {
+    "maxSceneTriangles": 2000000,
+    "maxVLowBytes": 25000000,
+    "maxHighTextureBytes": 268435456,
+    "status": "Provisional planning ceilings, not measured targets or final quality limits"
+  },
+  "creditBudget": {
+    "maximumCredits": 0,
+    "approvalRequired": true
+  },
+  "environment": {
+    "type": "procedural",
+    "identity": "tokyo-study-world",
+    "source": "Local Blender world and sun",
+    "assignmentKey": "tokyo-study"
+  },
+  "artifacts": {
+    "floorPlan": "../out/plan.png",
+    "reflectedCeilingPlan": "",
+    "planMetadata": "plan-metadata.json",
+    "wallElevations": [],
+    "visualTarget": "../out/overview.png",
+    "openingContactSheet": "",
+    "studyBlend": "../out/tokyo_study.blend"
+  },
+  "stage": "Pre-Function initial study authorized by user; approvals pending"
+}

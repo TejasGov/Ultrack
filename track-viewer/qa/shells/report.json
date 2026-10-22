@@ -1,0 +1,94 @@
+[
+  {
+    "file": "marina_visual.glb",
+    "before": 267708,
+    "after": 265179,
+    "removed": 2529,
+    "sourceBytes": 7921812,
+    "outputBytes": 7899036,
+    "changes": [
+      {
+        "mesh": "hotel",
+        "removed": 44
+      },
+      {
+        "mesh": "paddock_hotel_east",
+        "removed": 110
+      },
+      {
+        "mesh": "vip_booth",
+        "removed": 459
+      },
+      {
+        "mesh": "yacht_y20_white",
+        "removed": 216
+      },
+      {
+        "mesh": "yacht_y45_graphite",
+        "removed": 303
+      },
+      {
+        "mesh": "yacht_y27_navy",
+        "removed": 218
+      },
+      {
+        "mesh": "yacht_y56_silver",
+        "removed": 366
+      },
+      {
+        "mesh": "yacht_y34_white",
+        "removed": 321
+      },
+      {
+        "mesh": "transporter_aurum",
+        "removed": 492
+      }
+    ]
+  },
+  {
+    "file": "marina_visual_ktx2.glb",
+    "before": 267708,
+    "after": 265179,
+    "removed": 2529,
+    "sourceBytes": 12862784,
+    "outputBytes": 12807028,
+    "changes": [
+      {
+        "mesh": "hotel",
+        "removed": 44
+      },
+      {
+        "mesh": "paddock_hotel_east",
+        "removed": 110
+      },
+      {
+        "mesh": "vip_booth",
+        "removed": 459
+      },
+      {
+        "mesh": "yacht_y20_white",
+        "removed": 216
+      },
+      {
+        "mesh": "yacht_y45_graphite",
+        "removed": 303
+      },
+      {
+        "mesh": "yacht_y27_navy",
+        "removed": 218
+      },
+      {
+        "mesh": "yacht_y56_silver",
+        "removed": 366
+      },
+      {
+        "mesh": "yacht_y34_white",
+        "removed": 321
+      },
+      {
+        "mesh": "transporter_aurum",
+        "removed": 492
+      }
+    ]
+  }
+]

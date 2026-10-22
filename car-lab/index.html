@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101215" />
+    <title>RaceUltimate — Car & Paint Lab</title>
+    <meta name="description" content="Inspect the first RaceUltimate cars under track lighting and test body paint, finishes and liveries." />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="RaceUltimate car lab"><span class="brand-mark">R<span>U</span></span><span>RACE<span>ULTIMATE</span></span></a>
+        <div class="project-label"><i></i> CAR & PAINT LAB <span>01 / ASSET VALIDATION</span></div>
+        <span class="build-label">LOCAL BUILD <b>0.1</b></span>
+      </header>
+      <main>
+        <section class="stage" aria-label="Interactive car render">
+          <div id="viewport"></div>
+          <div class="scene-heading"><span class="eyebrow">THE FIRST COLLECTION</span><h1 id="car-title">TR–8</h1><p id="car-subtitle">Furari concept / 60,245 triangles</p></div>
+          <div class="scene-badges"><span id="weather-badge">WET CIRCUIT</span><span id="mode-badge">BODY PAINT</span></div>
+          <div id="loading" role="status"><div class="spinner"></div><strong id="loading-title">Preparing the circuit</strong><span id="loading-detail">Loading the actual GLB asset</span><div class="loading-track"><i id="loading-progress"></i></div></div>
+          <div id="error" role="alert" hidden><strong>Couldn't load this car</strong><p id="error-message"></p><button id="retry">Try again</button></div>
+          <div id="brush-cursor" hidden></div>
+          <div class="view-controls" aria-label="Camera presets">
+            <button data-camera="hero" class="active">¾ VIEW</button><button data-camera="front">FRONT</button><button data-camera="side">SIDE</button><button data-camera="rear">REAR</button><button id="turntable" aria-pressed="false">↻ ROTATE</button>
+          </div>
+          <div class="stage-footer"><span id="interaction-hint">DRAG TO ORBIT <b>·</b> SCROLL TO ZOOM</span><span><i class="live-dot"></i> <span id="fps">—</span> FPS <b>·</b> <span id="drawcalls">—</span> CALLS</span></div>
+        </section>
+        <aside class="panel" aria-label="Paint and render controls">
+          <div class="panel-title"><span class="eyebrow">MAKE IT YOURS</span><h2>Paint studio<span>↗</span></h2><p>Same car. Your signature.</p><p><a href="/assembly-lab.html" style="color:#d4ee67">Open the vehicle assembly lab ↗</a></p><p id="body-test-link" hidden><a href="/surface-review.html?experiment=body-only" style="color:#d4ee67">View the body-only experiment ↗</a></p></div>
+          <section class="control-section">
+            <div class="section-label"><h3>01 <span>SELECT A CAR</span></h3><span class="count">03</span></div>
+            <div class="car-selector" role="group" aria-label="Select a car">
+              <button data-car="furari-488" class="car-card active" aria-pressed="true"><span class="car-line">01 <b>TR–8</b></span><span>FURARI</span><i>↗</i></button>
+              <button data-car="lambo2" class="car-card" aria-pressed="false"><span class="car-line">02 <b>AV–12</b></span><span>LAMBO</span><i>↗</i></button>
+              <button data-car="mclaren" class="car-card" aria-pressed="false"><span class="car-line">03 <b>MP1–X</b></span><span>MCLAREN</span><i>↗</i></button>
+            </div>
+          </section>
+          <section class="control-section">
+            <div class="section-label"><h3>02 <span>BODY COLOR</span></h3><output id="color-name">Rosso corsa</output></div>
+            <div id="swatches" class="swatches" role="group" aria-label="Body paint colors"></div>
+            <div class="custom-color"><label for="custom-color">CUSTOM COLOR</label><div><input id="custom-color" type="color" value="#d71928" aria-label="Custom body paint color" /><output id="hex-value">#D71928</output></div></div>
+            <div class="field-row"><label for="finish">FINISH</label><select id="finish"><option value="gloss">Gloss</option><option value="metallic">Metallic</option><option value="satin">Satin</option><option value="matte">Matte</option></select></div>
+            <div class="field-row"><label for="livery">LIVERY</label><select id="livery"><option value="solid">Solid color</option><option value="twin">Twin racing stripes</option><option value="center">Center stripe</option></select></div>
+            <p class="saved-label" id="save-status">Paint settings save on this device.</p>
+          </section>
+          <section class="control-section">
+            <div class="section-label"><h3>03 <span>RENDER CHECK</span></h3></div>
+            <div class="segmented" role="group" aria-label="Material comparison"><button data-mode="paint" class="active" aria-pressed="true">Paint</button><button data-mode="original" aria-pressed="false">Original</button><button data-mode="clay" aria-pressed="false">Clay</button></div>
+            <div class="toggle-row"><label for="clean-materials">Clean materials</label><input id="clean-materials" type="checkbox" checked /></div>
+            <p class="saved-label">Fresh paint, neutral trim and live reflections.</p>
+            <div class="field-row"><label for="lighting">LIGHTING</label><select id="lighting"><option value="sunset">Golden hour</option><option value="overcast">Overcast</option><option value="studio">Studio lights</option></select></div>
+            <div class="toggle-row"><label for="wet">Wet asphalt</label><input id="wet" type="checkbox" checked /></div>
+            <div class="toggle-row"><label for="moving-light">Move reflection lights</label><input id="moving-light" type="checkbox" /></div>
+            <div class="toggle-row"><label for="smooth-normals">Smooth surface normals</label><input id="smooth-normals" type="checkbox" checked /></div>
+            <label class="slider-label" for="normal-strength">Generated surface detail <output id="normal-value">Off</output></label><input id="normal-strength" type="range" min="0" max="100" value="15" disabled />
+          </section>
+          <details class="control-section mask-section">
+            <summary><span>04 <b>REFINE BODY MASK</b></span><span>+</span></summary>
+            <p>The initial body selection is approximate. Add or remove paint on the car to protect glass, tires, lights and trim.</p>
+            <div class="toggle-row"><label for="mask-view">Show selected body</label><input id="mask-view" type="checkbox" /></div>
+            <div class="segmented" role="group" aria-label="Mask editing tool"><button data-tool="orbit" class="active">Orbit</button><button data-tool="add">+ Paint</button><button data-tool="erase">− Protect</button></div>
+            <label class="slider-label" for="brush-size">Brush size <output id="brush-value">16</output></label><input id="brush-size" type="range" min="2" max="60" value="16" />
+            <div class="button-row"><button id="undo-mask">Undo stroke</button><button id="reset-mask">Reset selection</button></div>
+            <div class="button-row"><button id="restore-previous-mask">Restore earlier saved mask</button></div>
+            <div class="button-row"><button id="export-mask">Export mask</button><label class="file-button" for="import-mask">Import mask<input id="import-mask" type="file" accept="image/png" /></label></div>
+            <p id="mask-status" class="mask-status">DRAFT BODY MASK · LOCAL EDITS</p>
+          </details>
+          <details class="control-section diagnostics"><summary><span>05 <b>ASSET NOTES</b></span><span>+</span></summary><p id="asset-notes">One mesh / one material. Wheel separation and final paint masks remain asset-preparation work.</p><p>Clean materials discard generated color, roughness, metalness and normal detail. Body, trim, glass and wheel selections are approximate; lamps and decals need separate masks. Original shows the imported material. This is a render test; driving physics are not included.</p><button id="export-settings">Export paint settings</button></details>
+          <div class="panel-bottom"><span class="status-square"></span> REAL-TIME THREE.JS <span>WEBGL2</span></div>
+        </aside>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

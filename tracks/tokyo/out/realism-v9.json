@@ -1,0 +1,167 @@
+{
+  "text_objects": 221,
+  "corner_pads": [
+    {
+      "name": "V9 run-off 150-188 flow",
+      "indices": [
+        138,
+        200
+      ],
+      "side": -1,
+      "max_width_m": 30,
+      "segments_painted": 63,
+      "metres_painted": 227,
+      "runs": 1
+    },
+    {
+      "name": "V9 run-off 228-240 ichimatsu",
+      "indices": [
+        216,
+        252
+      ],
+      "side": 1,
+      "max_width_m": 22,
+      "segments_painted": 37,
+      "metres_painted": 133,
+      "runs": 1
+    },
+    {
+      "name": "V9 run-off 389-402 chevron",
+      "indices": [
+        377,
+        414
+      ],
+      "side": -1,
+      "max_width_m": 24,
+      "segments_painted": 38,
+      "metres_painted": 137,
+      "runs": 1
+    },
+    {
+      "name": "V9 run-off 589-650 seigaiha",
+      "indices": [
+        577,
+        662
+      ],
+      "side": -1,
+      "max_width_m": 34,
+      "segments_painted": 86,
+      "metres_painted": 309,
+      "runs": 1
+    },
+    {
+      "name": "V9 run-off 862-902 chevron",
+      "indices": [
+        850,
+        914
+      ],
+      "side": -1,
+      "max_width_m": 26,
+      "segments_painted": 65,
+      "metres_painted": 234,
+      "runs": 1
+    },
+    {
+      "name": "V9 run-off 940-970 flow",
+      "indices": [
+        928,
+        982
+      ],
+      "side": -1,
+      "max_width_m": 28,
+      "segments_painted": 55,
+      "metres_painted": 198,
+      "runs": 1
+    },
+    {
+      "name": "V9 run-off 1198-1210 ichimatsu",
+      "indices": [
+        1186,
+        1222
+      ],
+      "side": -1,
+      "max_width_m": 24,
+      "segments_painted": 37,
+      "metres_painted": 133,
+      "runs": 1
+    },
+    {
+      "name": "V9 run-off 1283-1288 seigaiha",
+      "indices": [
+        1271,
+        1300
+      ],
+      "side": -1,
+      "max_width_m": 20,
+      "segments_painted": 30,
+      "metres_painted": 108,
+      "runs": 1
+    },
+    {
+      "name": "V9 paddock apron south",
+      "indices": [
+        -6,
+        100
+      ],
+      "side": -1,
+      "max_width_m": 20.5,
+      "segments_painted": 107,
+      "metres_painted": 385,
+      "runs": 1
+    },
+    {
+      "name": "V9 paddock apron north",
+      "indices": [
+        -6,
+        100
+      ],
+      "side": 1,
+      "max_width_m": 24,
+      "segments_painted": 107,
+      "metres_painted": 385,
+      "runs": 1
+    }
+  ],
+  "sunburst_discs": 0,
+  "buildings": {
+    "glass crown tower": 6,
+    "danchi apartment block": 5,
+    "timber louvre museum": 3,
+    "machiya townhouse row": 6,
+    "pachinko parlour": 3,
+    "konbini": 5,
+    "pencil tower": 12
+  },
+  "shrine": {
+    "centre": [
+      -260,
+      -190
+    ],
+    "approach_bearing_deg": 51
+  },
+  "castle": {
+    "centre": [
+      -60,
+      250
+    ],
+    "base_z": 9.7,
+    "keep_height_m": 57.0
+  },
+  "vending_machines": 162,
+  "utility_poles": 52,
+  "wire_spans": 300,
+  "run_off_floodlights": 6,
+  "cameras": [
+    "V9 | painted paddock and sponsor boards",
+    "V9 | painted corner run-off overlook",
+    "V9 | machiya timber street",
+    "V9 | pachinko neon frontage",
+    "V9 | castle keep on hill",
+    "V9 | shrine torii approach",
+    "V9 | floating torii in the bay",
+    "V9 | night aerial of the circuit"
+  ],
+  "road_geometry_changed": false,
+  "runtime_exported": false,
+  "buildings_total": 40
+}

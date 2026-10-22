@@ -1,0 +1,28 @@
+{
+  "name": "Mercedes-AMG GT4",
+  "src": "../../../sources/sketchfab/Mamg-gt4/prepared.glb",
+  "credit": {
+    "title": "2018 Mercedes-AMG GT4",
+    "author": "ddiaz-design",
+    "authorUrl": "https://sketchfab.com/ddiaz-design",
+    "url": "https://sketchfab.com/3d-models/2018-mercedes-amg-gt4-406f3e46c0114577b9bcdd57d2138e3f",
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "modelId": "406f3e46c0114577b9bcdd57d2138e3f",
+    "replacement": true,
+    "nonCommercialOnly": true,
+    "additionalCredits": "Based on a Real Racing 3 model; credits @VuckyZ123. Non-commercial and share-alike licence: fine for this local fan project, replace before any public release."
+  },
+  "rotateZ": -90,
+  "length": 4.59,
+  "wheels": {
+    "mode": "loose",
+    "spin": ["Tyre_", "Spin_"],
+    "tyre": ["Tyre_"],
+    "caliper": ["Caliper_"]
+  },
+  "roles": {},
+  "interior": ["INT:"],
+  "exhaust": ["EXHAUST_mm"],
+  "budget": { "body0": 70000, "body1": 20000, "wheel": 5000 }
+}

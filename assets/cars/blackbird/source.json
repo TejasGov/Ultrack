@@ -1,0 +1,53 @@
+{
+  "name": "Blackbird-X",
+  "src": "../../../sources/sketchfab/Hblackbird/model.glb",
+  "credit": {
+    "title": "Hennessey Blackbird",
+    "author": "let's not care abt it (Pie-The-destroyer-of-the-World)",
+    "url": "https://sketchfab.com/3d-models/1559fb3696d14ebfa21f516a3de40c07",
+    "license": "CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/); the wheels, brake discs and calipers carry Forza-style asset names (Hennessey Venom F5, 2020/2023) and are probably ripped from a game: replace before any public release"
+  },
+  "drop": [
+    "Plane.002"
+  ],
+  "rotateZ": -90,
+  "length": 4.9,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Circle.006",
+      "Circle.008",
+      "Circle.009",
+      "Circle.011",
+      "Circle.010",
+      "Circle.012",
+      "Object_194",
+      "Object_2408",
+      "polySurface71"
+    ],
+    "tyre": [
+      "polySurface71"
+    ],
+    "caliper": [
+      "Callipers"
+    ]
+  },
+  "roles": {
+    "material_0": "paint",
+    "Material.002": "glass",
+    "Material.020": "mirror",
+    "Material.008": "tail",
+    "Material.009": "tail",
+    "Material.012": "headkeep",
+    "Material.013": "headkeep",
+    "Hennessey_VenomF5RoadsterReward_2023_CallipersCalliperA_Zone_Ma": "caliper",
+    "Material.001": "paint"
+  },
+  "interior": [],
+  "exhaust": [],
+  "budget": {
+    "body0": 130000,
+    "body1": 25000,
+    "wheel": 10000
+  }
+}

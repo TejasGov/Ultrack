@@ -1,0 +1,524 @@
+{
+ "version": 2,
+ "note": "Eight fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); there are only seven of them for eight teams, so Toro shares Red Bull with Kalt (the bull on the can, the bull on the badge). 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 16 cars, so Mojave, Liberty, Corvid and Kalt have one each; their second car is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
+ "teams": [
+  {
+   "id": "saetta",
+   "name": "Saetta",
+   "short": "SAE",
+   "meaning": "Italian: a lightning bolt",
+   "home": "Modena, Italy",
+   "principal": "Vittoria Saldani",
+   "line": "Lightning strikes first.",
+   "cars": [
+    {
+     "key": "furari-488",
+     "number": 17,
+     "driver": {
+      "name": "Sofia Calderini",
+      "code": "CAL",
+      "nation": "SUI",
+      "age": 27,
+      "role": "the calm one at Saetta",
+      "bio": "Swiss-Italian former karting world champion; the coolest head on the grid.",
+      "background": "From Lugano, in Italian-speaking Switzerland; karting world champion at seventeen, then studied architecture before Saetta called.",
+      "personality": "Plays chess with her engineers between sessions; her heart rate on the grid is famously low; out-qualified Varrone when he was her teammate and has never mentioned it.",
+      "rivals": [
+       "VAR",
+       "ORT"
+      ]
+     }
+    },
+    {
+     "key": "laferrari",
+     "number": 27,
+     "driver": {
+      "name": "Thiago Barreto",
+      "code": "BAR",
+      "nation": "BRA",
+      "age": 34,
+      "role": "the showman",
+      "bio": "Three-time Stock Car Brasil champion with a smile for every camera; Saetta's loudest answer to losing Varrone.",
+      "background": "From Curitiba, Brazil; swept the kart track his uncle ran before winning three Stock Car Brasil titles; Vittoria Saldani signed him on a restaurant napkin the week Varrone left.",
+      "personality": "Dances on the grid and sings opera arias, badly, over the team radio on the formation lap (Saldani adores it); signs every autograph with a lightning bolt; determined to prove Saetta never needed Varrone.",
+      "rivals": [
+       "VAR"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    3,
+    4
+   ],
+   "engine": "v8-flatplane / na-v12-screamer",
+   "finish": "gloss",
+   "sponsor": "Ray-Ban",
+   "font": {
+    "family": "Racing Sans One",
+    "file": "racing-sans-one-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#c8102e",
+    "secondary": "#f2b705",
+    "accent": "#f5f1e8",
+    "carbon": true
+   },
+   "livery": "deep rosso body; a single gold lightning bolt fractures along each flank from the front wheel to the rear haunch; tricolore tab on the mirror caps; gold numbers in a white roundel"
+  },
+  {
+   "id": "toro",
+   "name": "Toro",
+   "short": "TOR",
+   "meaning": "Italian: the bull",
+   "home": "Sant'Agata Bolognese, Italy",
+   "principal": "Ettore Montanari",
+   "line": "Nobody herds the bull.",
+   "cars": [
+    {
+     "key": "av12",
+     "number": 7,
+     "driver": {
+      "name": "Matteo Varrone",
+      "code": "VAR",
+      "nation": "ITA",
+      "age": 26,
+      "role": "Toro's prodigal son",
+      "bio": "Saetta's golden boy until the AV-12 went home to Toro and he went with it; brakes later than anyone and apologises to no one.",
+      "background": "Born in Modena, son of a Saetta machinist; in the Saetta academy from fourteen. Drove the AV-12 Toro lent Saetta for a season under the Via Emilia truce; when the loan ended and the car went back to Sant'Agata, he went with it.",
+      "personality": "Hot-blooded on the radio, adored by Toro's faithful and whistled by Saetta's tifosi; kisses the lightning bolt on his helmet before every start, and nobody at Toro dares ask him to peel it off.",
+      "rivals": [
+       "ASH",
+       "CAL",
+       "BAR"
+      ]
+     }
+    },
+    {
+     "key": "huracan",
+     "number": 63,
+     "driver": {
+      "name": "Paloma Ortega",
+      "code": "ORT",
+      "nation": "ESP",
+      "age": 32,
+      "role": "the matador",
+      "bio": "A retired matador's daughter who lets the others charge, then steps aside at the last metre of the braking zone.",
+      "background": "From Seville; her father fought bulls for twenty years, and she grew up in the bullring's stable yard before running away to karts at twelve; European GT champion when Toro signed the one driver who would not charge.",
+      "personality": "Ice-cold and patient; hates the headline nickname 'La Torera' and has stopped correcting it. At a team called the bull, teammate Varrone is the bull and she is the matador, and both know it.",
+      "rivals": [
+       "CAL"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    5,
+    6
+   ],
+   "engine": "na-v12-screamer",
+   "finish": "gloss",
+   "sponsor": "Red Bull",
+   "font": {
+    "family": "Unbounded",
+    "file": "unbounded-latin-900-normal.woff2",
+    "weight": "900"
+   },
+   "colors": {
+    "primary": "#ffd60a",
+    "secondary": "#0d0e10",
+    "accent": "#f4f1e8",
+    "carbon": true,
+    "ink": "#0d0e10"
+   },
+   "livery": "giallo yellow body; two black horn blades sweep up and back from the front wheel along each flank, edged in bone white; a broad matte-black stripe over the roof between two white pinstripes; numbers in a black roundel with a bone ring and yellow digits"
+  },
+  {
+   "id": "corvid",
+   "name": "Corvid",
+   "short": "COR",
+   "meaning": "the raven and crow family: clever, black-eyed, everywhere",
+   "home": "Silverstone, England",
+   "principal": "Sir Hugo Ravensworth",
+   "line": "Old money, sharp elbows.",
+   "cars": [
+    {
+     "key": "aston-martin-valk",
+     "number": 4,
+     "driver": {
+      "name": "Theo Ashcombe",
+      "code": "ASH",
+      "nation": "GBR",
+      "age": 24,
+      "role": "third-generation racer",
+      "bio": "Third-generation racer with impeccable manners and none on track.",
+      "background": "Grandfather raced at Silverstone, father ran Corvid's test team; grew up in the paddock.",
+      "personality": "Writes a handwritten apology note after every collision, then does it again; a running feud with Varrone since they touched at the Corniche hairpin.",
+      "rivals": [
+       "VAR"
+      ]
+     }
+    },
+    {
+     "key": "bentley-gt",
+     "number": 44,
+     "driver": {
+      "name": "Kai Whitlow",
+      "code": "WHI",
+      "nation": "NZL",
+      "age": 38,
+      "role": "the grid's veteran",
+      "bio": "The oldest driver on the grid, endurance-bred; never hurries, never fades.",
+      "background": "Grew up on a sheep station in Canterbury, New Zealand; three endurance class wins before Corvid signed him.",
+      "personality": "The Metronome: lap times within a tenth for hours; surfs between races; quietly mentors the rookies, even on other teams.",
+      "rivals": []
+     }
+    }
+   ],
+   "pitBoxes": [
+    9
+   ],
+   "engine": "na-v12-screamer / w12-twin-turbo",
+   "finish": "gloss",
+   "sponsor": "HSBC",
+   "font": {
+    "family": "Cinzel",
+    "file": "cinzel-latin-900-normal.woff2",
+    "weight": "900"
+   },
+   "colors": {
+    "primary": "#0e3b2e",
+    "secondary": "#efe6cf",
+    "accent": "#b08d57",
+    "carbon": false
+   },
+   "livery": "British racing green; cream nose band and roundels; brass pinstripe that sweeps up the door like a raven's feather; small heraldic raven crest on the bonnet"
+  },
+  {
+   "id": "kalt",
+   "name": "Kalt",
+   "short": "KLT",
+   "meaning": "German: cold",
+   "home": "Stuttgart, Germany",
+   "principal": "Dr. Ingrid Falk",
+   "line": "Two motors. One current.",
+   "cars": [
+    {
+     "key": "nuvolari",
+     "number": 11,
+     "driver": {
+      "name": "Jonas Reiter",
+      "code": "REI",
+      "nation": "GER",
+      "age": 33,
+      "role": "engineer turned driver",
+      "bio": "Kalt's former aerodynamicist who talked his way into the seat; reads telemetry for fun.",
+      "background": "From Stuttgart; designed Kalt's aero for five years, then beat their test driver in a shootout.",
+      "personality": "Sets up his own car and brings printouts to every argument; dry and exact; Maddox calls him the spreadsheet.",
+      "rivals": [
+       "MAD"
+      ]
+     }
+    },
+    {
+     "key": "tesla1",
+     "number": 22,
+     "driver": {
+      "name": "Aiko Tanabe",
+      "code": "TAN",
+      "nation": "JPN",
+      "age": 28,
+      "role": "rain master",
+      "bio": "Precise to the millimetre; unbeatable in the wet.",
+      "background": "From Shizuoka, under Mount Fuji; learned on wet mountain hill-climbs before single-seaters.",
+      "personality": "Quiet and exact; checks the weather radar obsessively and hopes for rain; draws every circuit map by hand before a race weekend.",
+      "rivals": [
+       "LIN"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    10
+   ],
+   "engine": "flat-six / inline-six",
+   "finish": "metallic",
+   "sponsor": "Red Bull",
+   "font": {
+    "family": "Michroma",
+    "file": "michroma-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#b9bec4",
+    "secondary": "#111317",
+    "accent": "#36d6e7",
+    "carbon": true
+   },
+   "livery": "bare-metal silver; black lower half split by a hard diagonal; ice-cyan technical stencils (part numbers, torque values) and a fine blueprint grid on the rear quarter",
+   "powertrain": "electric"
+  },
+  {
+   "id": "mojave",
+   "name": "Mojave",
+   "short": "MOJ",
+   "meaning": "the California desert the team was built in",
+   "home": "Barstow, California",
+   "principal": "Cal Beaumont",
+   "line": "Built in a barn. Feared in the paddock.",
+   "cars": [
+    {
+     "key": "jaguarxkjss",
+     "number": 8,
+     "driver": {
+      "name": "Freya Lindqvist",
+      "code": "LIN",
+      "nation": "SWE",
+      "age": 29,
+      "role": "rally convert",
+      "bio": "Rally-bred car control; at her best when the grip goes.",
+      "background": "From Värmland, Sweden; forest rallies and ice racing on frozen lakes until Cal Beaumont watched her slide a car across one and offered her a seat at Mojave.",
+      "personality": "Deadpan; says grip is overrated and means it; the rain specialist Tanabe's great rival; the one person at Mojave who has never been impressed by the barn.",
+      "rivals": [
+       "TAN"
+      ]
+     }
+    },
+    {
+     "key": "bmw1",
+     "number": 9,
+     "driver": {
+      "name": "Rosa Quintero",
+      "code": "QUI",
+      "nation": "MEX",
+      "age": 20,
+      "role": "rookie",
+      "bio": "Rookie of the year; the fastest qualifier Mojave has ever had.",
+      "background": "From Monterrey; sim-racing world champion who won her seat in Mojave's esports shootout.",
+      "personality": "Frighteningly fast over one lap, still learning racecraft in traffic; the youngest driver on the grid and openly out to beat Valois.",
+      "rivals": [
+       "VAL"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    11
+   ],
+   "engine": "hybrid-v6-f1 / twin-turbo-v8",
+   "finish": "gloss",
+   "sponsor": "Shell",
+   "font": {
+    "family": "Bungee",
+    "file": "bungee-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#e2581b",
+    "secondary": "#142338",
+    "accent": "#f4f4f2",
+    "carbon": false
+   },
+   "livery": "desert orange; navy sunburst stripes fanning back from the front wheel arches; a white star in the number box; scuffed rivet graphics along the sills"
+  },
+  {
+   "id": "aurum",
+   "name": "Aurum",
+   "short": "AUR",
+   "meaning": "Latin: gold",
+   "home": "Monaco",
+   "principal": "Helene Aurelle",
+   "line": "Luxury, at three hundred an hour.",
+   "cars": [
+    {
+     "key": "buggati",
+     "number": 1,
+     "driver": {
+      "name": "Remy Valois",
+      "code": "VAL",
+      "nation": "MON",
+      "age": 31,
+      "role": "reigning champion",
+      "bio": "The reigning champion; smooth, smiling, and very hard to pass.",
+      "background": "Born in Monte Carlo, son of a yacht broker; two titles with Aurum.",
+      "personality": "Never raises his voice on the radio; listens to old jazz on the grid; his charm is half the psychology.",
+      "rivals": [
+       "KAR",
+       "QUI",
+       "BEA"
+      ]
+     }
+    },
+    {
+     "key": "destrier",
+     "number": 16,
+     "driver": {
+      "name": "Armand Beaulieu",
+      "code": "BEA",
+      "nation": "FRA",
+      "age": 36,
+      "role": "the gentleman racer",
+      "bio": "Endurance-bred Frenchman in a tailored suit; never hurries, never scuffs a tyre.",
+      "background": "From Lyon, the son of a silk merchant; a decade of endurance prototypes and three Le Mans class podiums before Aurum gave Valois a teammate he could not charm.",
+      "personality": "Dresses for the grid as if for a gala; calls Valois 'le Prince' to his face; collects vintage watches; never swears, but his sigh on the radio is worse.",
+      "rivals": [
+       "VAL",
+       "KAR"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    1,
+    2
+   ],
+   "engine": "w16-quadturbo",
+   "finish": "metallic",
+   "sponsor": "Rolex",
+   "font": {
+    "family": "Limelight",
+    "file": "limelight-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#121a3a",
+    "secondary": "#d9c08c",
+    "accent": "#f3efe6",
+    "carbon": true
+   },
+   "livery": "midnight blue; champagne-gold art-deco fan pinstripes on the bonnet and rear deck; an 'A' monogram in a gold lozenge; numbers in a thin gold serif"
+  },
+  {
+   "id": "liberty",
+   "name": "Liberty",
+   "short": "LIB",
+   "meaning": "English: freedom; the cracked bell of Philadelphia",
+   "home": "Philadelphia, Pennsylvania",
+   "principal": "Harlan Whitfield",
+   "line": "Stars. Stripes. Full throttle.",
+   "cars": [
+    {
+     "key": "mustang",
+     "number": 66,
+     "driver": {
+      "name": "Cole Maddox",
+      "code": "MAD",
+      "nation": "USA",
+      "age": 30,
+      "role": "the brawler",
+      "bio": "Dirt-track brawler; drives every lap like the last one.",
+      "background": "From Bakersfield, California; sprint cars and dirt ovals from age nine, until Liberty's Harlan Whitfield flew in to watch him win a county-fair dirt race and signed him on the spot.",
+      "personality": "The most penalised driver in the paddock; cowboy boots, no filter, big heart; the stewards know number 66 by heart; he and teammate Hollis cannot agree on who is the real American.",
+      "rivals": [
+       "REI",
+       "HOL"
+      ]
+     }
+    },
+    {
+     "key": "blackbird",
+     "number": 76,
+     "driver": {
+      "name": "Wade Hollis",
+      "code": "HOL",
+      "nation": "USA",
+      "age": 37,
+      "role": "the Colonel",
+      "bio": "Former air-force test pilot; flies every lap like a flight plan.",
+      "background": "From Abilene, Texas; fourteen years as a test pilot before a charity race showed he was faster on the ground.",
+      "personality": "Speaks in checklists and calls corners 'waypoints'; unflappable on the radio; flies himself to every race in a vintage trainer; he and teammate Maddox cannot agree on who is the real American.",
+      "rivals": [
+       "MAD"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    12
+   ],
+   "engine": "v8-crossplane / w16-quadturbo",
+   "finish": "metallic",
+   "sponsor": "Coca-Cola",
+   "font": {
+    "family": "Graduate",
+    "file": "graduate-latin-400-normal.woff2",
+    "weight": "400",
+    "bold": 0.05
+   },
+   "colors": {
+    "primary": "#1f46b8",
+    "secondary": "#bf0a30",
+    "accent": "#ffffff",
+    "carbon": true
+   },
+   "livery": "royal-blue body; a red-and-white stripe pair streams back from the front wheel along each flank like a flag in wind; a field of white stars on the front fender; red and white racing stripes over the roof; royal-blue light strips (the team's lighting colour) edge the number roundel, banners and garage; numbers in a white roundel with a red ring",
+   "light": "#3d6bff"
+  },
+  {
+   "id": "sarab",
+   "name": "Sarab",
+   "short": "SRB",
+   "meaning": "Arabic: a mirage",
+   "home": "Corniche Marina (home team)",
+   "principal": "Rashid Al-Mansouri",
+   "line": "The mirage you never catch.",
+   "cars": [
+    {
+     "key": "mp1x",
+     "number": 3,
+     "driver": {
+      "name": "Zayn Kareem",
+      "code": "KAR",
+      "nation": "UAE",
+      "age": 27,
+      "role": "home hero",
+      "bio": "The home hero; the crowd stands up every time he pits.",
+      "background": "Grew up on the Corniche; powerboat racer on the marina as a teenager before Sarab put him in a car.",
+      "personality": "Carries a whole city's expectations; generous with fans; wants Valois's crown, and knows his teammate is often quicker.",
+      "rivals": [
+       "VAL",
+       "QAS"
+      ]
+     }
+    },
+    {
+     "key": "porsche1",
+     "number": 33,
+     "driver": {
+      "name": "Layla Qasimi",
+      "code": "QAS",
+      "nation": "OMN",
+      "age": 25,
+      "role": "the overtaker",
+      "bio": "Omani, self-taught on desert roads; the grid's best overtaker.",
+      "background": "Learned to drive on graded desert roads near Oman's Wahiba Sands in her uncle's pickup; Sarab signed her after her first season in club racing.",
+      "personality": "Fearless and cheerful; holds the record for passes in a single race; friendly rivalry with teammate Kareem that splits the crowd.",
+      "rivals": [
+       "KAR"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    7,
+    8
+   ],
+   "engine": "v8-flatplane",
+   "finish": "gloss",
+   "sponsor": "Emirates",
+   "font": {
+    "family": "Lalezar",
+    "file": "lalezar-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#f1efe8",
+    "secondary": "#0f8f8a",
+    "accent": "#c9a45c",
+    "carbon": true
+   },
+   "livery": "pearl white; teal dune contour lines that flow from nose to tail like a topographic map; a sand-gold falcon on the roof; numbers in teal with a gold drop shadow"
+  }
+ ]
+}

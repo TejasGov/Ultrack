@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Sofia Calderini",
+    "code": "CAL",
+    "nation": "SUI",
+    "age": 27,
+    "role": "the calm one at Saetta",
+    "bio": "Swiss-Italian former karting world champion; the coolest head on the grid.",
+    "background": "From Lugano, in Italian-speaking Switzerland; karting world champion at seventeen, then studied architecture before Saetta called.",
+    "personality": "Plays chess with her engineers between sessions; her heart rate on the grid is famously low; has out-qualified her teammate Varrone and never mentions it.",
+    "rivals": [
+      "VAR"
+    ]
+  },
+  "team": "saetta",
+  "raceNumber": 17,
+  "carKey": "furari-488",
+  "manufacturer": "Ferrari",
+  "car": "488 Pista / Furari 488-R",
+  "titleSponsor": "Ray-Ban",
+  "font": {
+    "family": "Racing Sans One",
+    "file": "racing-sans-one-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration. No real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "809fbed381cf2484b4e35589fa7704d39e11717f83707c929024e8748455c1cb",
+  "motion": "8-second camera settle, staggered team/sponsor reveal, name slide and metadata reveal. Reduced-motion support. Driver is a still illustration, not a skeletal character animation.",
+  "scope": "One driver concept only; not installed as an automatic race intro pending style approval.",
+  "outputs": {
+    "illustration-v1.webp": {
+      "bytes": 298750,
+      "sha256": "0a90d1342f6aeca0de95aa48089204f956a2dc670c81903981c9ccf524962cb9"
+    },
+    "poster-v1.svg": {
+      "bytes": 3604532,
+      "sha256": "a66889a0b7db74c0690edc056b27e0c73840012e4a12dcb29ff36dfc204c9ee4"
+    },
+    "poster-v1.png": {
+      "bytes": 4076893,
+      "sha256": "7ea35fb2c848e9a803b99bb546b8cbcb0300342100ee39f1548372a72309d6af"
+    },
+    "intro-v1.html": {
+      "bytes": 272901,
+      "sha256": "4441ddff1c542f7109344976bc4d64f7745c64ca44ab3530ee567f51b37eed86"
+    }
+  }
+}

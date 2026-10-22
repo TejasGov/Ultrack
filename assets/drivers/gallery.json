@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "posters": [
+    {
+      "id": "matteo-varrone",
+      "driver": "Matteo Varrone",
+      "number": 7,
+      "team": "Saetta",
+      "sponsor": "Ray-Ban",
+      "status": "approved-style"
+    },
+    {
+      "id": "sofia-calderini",
+      "driver": "Sofia Calderini",
+      "number": 17,
+      "team": "Saetta",
+      "sponsor": "Ray-Ban",
+      "status": "approved-style"
+    },
+    {
+      "id": "theo-ashcombe",
+      "driver": "Theo Ashcombe",
+      "number": 4,
+      "team": "Corvid",
+      "sponsor": "HSBC",
+      "status": "approved-style"
+    },
+    {
+      "id": "kai-whitlow",
+      "driver": "Kai Whitlow",
+      "number": 44,
+      "team": "Corvid",
+      "sponsor": "HSBC",
+      "status": "approved-style"
+    },
+    {
+      "id": "jonas-reiter",
+      "driver": "Jonas Reiter",
+      "number": 11,
+      "team": "Kalt",
+      "sponsor": "Red Bull",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "aiko-tanabe",
+      "driver": "Aiko Tanabe",
+      "number": 22,
+      "team": "Kalt",
+      "sponsor": "Red Bull",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "freya-lindqvist",
+      "driver": "Freya Lindqvist",
+      "number": 8,
+      "team": "Mojave",
+      "sponsor": "Shell",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "rosa-quintero",
+      "driver": "Rosa Quintero",
+      "number": 9,
+      "team": "Mojave",
+      "sponsor": "Shell",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "remy-valois",
+      "driver": "Remy Valois",
+      "number": 1,
+      "team": "Aurum",
+      "sponsor": "Rolex",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "armand-beaulieu",
+      "driver": "Armand Beaulieu",
+      "number": 16,
+      "team": "Aurum",
+      "sponsor": "Rolex",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "cole-maddox",
+      "driver": "Cole Maddox",
+      "number": 66,
+      "team": "Liberty",
+      "sponsor": "Coca-Cola",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "wade-hollis",
+      "driver": "Wade Hollis",
+      "number": 76,
+      "team": "Liberty",
+      "sponsor": "Coca-Cola",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "zayn-kareem",
+      "driver": "Zayn Kareem",
+      "number": 3,
+      "team": "Sarab",
+      "sponsor": "Emirates",
+      "status": "awaiting-review"
+    },
+    {
+      "id": "layla-qasimi",
+      "driver": "Layla Qasimi",
+      "number": 33,
+      "team": "Sarab",
+      "sponsor": "Emirates",
+      "status": "awaiting-review"
+    }
+  ]
+}

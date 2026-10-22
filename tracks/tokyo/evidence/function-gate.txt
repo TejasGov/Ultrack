@@ -1,0 +1,37 @@
+FAIL: plan-metadata.json: complete reviewed-space coverage is required
+FAIL: Function: missing artifact reflectedCeilingPlan
+FAIL: Function: missing artifact openingContactSheet
+FAIL: Function: at least one existing wall elevation is required
+FAIL: props.json: current official Meshy pricing verification is required
+FAIL: props.json: positive creditsPerTexturedTask is required
+FAIL: props.json: hardCreditCeiling must be positive and no greater than the room credit budget
+FAIL: prop street-kit: semanticFront is invalid
+FAIL: prop street-kit: targetPolycount must be 100-300000
+FAIL: prop street-kit: image prompt and generator are required
+FAIL: prop street-kit: approved reference image is missing
+FAIL: prop street-kit: reference image requires explicit approval
+FAIL: prop landmark-family: three positive dimensions are required
+FAIL: prop landmark-family: semanticFront is invalid
+FAIL: prop landmark-family: targetPolycount must be 100-300000
+FAIL: prop landmark-family: image prompt and generator are required
+FAIL: prop landmark-family: approved reference image is missing
+FAIL: prop landmark-family: reference image requires explicit approval
+FAIL: room-layout.json: instance IDs must be unique and non-empty
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance references unknown asset None
+FAIL: room-layout.json: instance count for street-kit does not match intendedInstances
+FAIL: room-layout.json: instance count for landmark-family does not match intendedInstances
+FAIL: room-brief.json: environment.type must be none or equirectangular
+FAIL: openings.json: primary arrival opening or functional exception is required
+FAIL: Function gate: explicit approval is required
+FAIL: final-report.json: gates.function must be true

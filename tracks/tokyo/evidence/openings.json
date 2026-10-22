@@ -1,0 +1,26 @@
+{
+  "schema": "game-room.opening-schedule.v1",
+  "roomId": "tokyo",
+  "primaryArrival": {
+    "openingId": "",
+    "exception": ""
+  },
+  "openings": [],
+  "scope": "Open-air exterior study; detailed building apertures not authored yet. Glazing bands are surface studies, not modeled building interiors.",
+  "crossing": [
+    {
+      "segments": [
+        745,
+        1084
+      ],
+      "position": [
+        -312.53814697265625,
+        100.45154571533203,
+        21.95286750793457
+      ],
+      "road_surface_separation_m": 18.529056544065103,
+      "approx_clearance_below_girder_m": 17.329056544065104
+    }
+  ],
+  "note": "Viaduct is an open post-and-deck arrangement. No decorative arch is substituted for an aperture."
+}

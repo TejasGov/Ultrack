@@ -1,0 +1,55 @@
+{
+  "baseline": {
+    "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "tier": "high",
+    "textures": "ktx2",
+    "frames": 24,
+    "avgMs": 113.36,
+    "p95Ms": 207.3,
+    "estFps": 9,
+    "drawCalls": 328,
+    "trisK": 576,
+    "renderScale": 0.5,
+    "size": "640x360"
+  },
+  "baselineRepeat": {
+    "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "tier": "high",
+    "textures": "ktx2",
+    "frames": 24,
+    "avgMs": 177.81,
+    "p95Ms": 431.3,
+    "estFps": 6,
+    "drawCalls": 328,
+    "trisK": 576,
+    "renderScale": 0.5,
+    "size": "640x360"
+  },
+  "sixMesh384": {
+    "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "tier": "high",
+    "textures": "ktx2",
+    "frames": 24,
+    "avgMs": 140.83,
+    "p95Ms": 282.1,
+    "estFps": 7,
+    "drawCalls": 444,
+    "trisK": 403,
+    "renderScale": 0.5,
+    "size": "640x360"
+  },
+  "roadOnly768": {
+    "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "tier": "high",
+    "textures": "ktx2",
+    "frames": 24,
+    "avgMs": 141.96,
+    "p95Ms": 273.5,
+    "estFps": 7,
+    "drawCalls": 359,
+    "trisK": 530,
+    "renderScale": 0.5,
+    "size": "640x360"
+  },
+  "decision": "Keep existing shell geometry as the default; sector variants remain developer experiments."
+}

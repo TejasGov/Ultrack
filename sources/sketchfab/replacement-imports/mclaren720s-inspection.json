@@ -1,0 +1,737 @@
+{
+  "objects": [
+    {
+      "name": "body",
+      "parent": null,
+      "vertices": 2001,
+      "triangles": 3536,
+      "bounds": [
+        [
+          -1.53531014919281,
+          -0.6522349715232849,
+          0.06322142481803894
+        ],
+        [
+          1.5352425575256348,
+          0.6522350907325745,
+          0.805416464805603
+        ]
+      ],
+      "materials": [
+        "body",
+        "black metallic",
+        "glass",
+        "carbon fibre",
+        "silver",
+        "lights",
+        "mesh",
+        "badges"
+      ]
+    },
+    {
+      "name": "spoiler",
+      "parent": null,
+      "vertices": 111,
+      "triangles": 198,
+      "bounds": [
+        [
+          1.1535457372665405,
+          -0.5690357089042664,
+          0.3450096845626831
+        ],
+        [
+          1.4886195659637451,
+          0.5699701309204102,
+          0.5854158401489258
+        ]
+      ],
+      "materials": [
+        "body",
+        "silver",
+        "lights"
+      ]
+    },
+    {
+      "name": "side mirrors",
+      "parent": null,
+      "vertices": 112,
+      "triangles": 204,
+      "bounds": [
+        [
+          -0.5303589105606079,
+          -0.7261850237846375,
+          0.4920511841773987
+        ],
+        [
+          -0.34474003314971924,
+          0.7261852025985718,
+          0.6395870447158813
+        ]
+      ],
+      "materials": [
+        "body",
+        "carbon fibre",
+        "mirror"
+      ]
+    },
+    {
+      "name": "windows",
+      "parent": null,
+      "vertices": 116,
+      "triangles": 126,
+      "bounds": [
+        [
+          -0.8627288937568665,
+          -0.5070250034332275,
+          0.5028668642044067
+        ],
+        [
+          0.825348436832428,
+          0.5070251822471619,
+          0.8006277084350586
+        ]
+      ],
+      "materials": [
+        "black metallic",
+        "glass"
+      ]
+    },
+    {
+      "name": "tyres",
+      "parent": null,
+      "vertices": 144,
+      "triangles": 280,
+      "bounds": [
+        [
+          -1.0366652011871338,
+          -0.6529528498649597,
+          0.0015605369117110968
+        ],
+        [
+          -0.5990617871284485,
+          0.6529529094696045,
+          0.4459148645401001
+        ]
+      ],
+      "materials": [
+        "tyres",
+        "rims"
+      ]
+    },
+    {
+      "name": "tyres.001",
+      "parent": null,
+      "vertices": 144,
+      "triangles": 280,
+      "bounds": [
+        [
+          0.7593166828155518,
+          -0.654253363609314,
+          0.0010149753652513027
+        ],
+        [
+          1.2070082426071167,
+          0.6542533040046692,
+          0.4556131362915039
+        ]
+      ],
+      "materials": [
+        "tyres",
+        "rims"
+      ]
+    },
+    {
+      "name": "interior.001",
+      "parent": null,
+      "vertices": 1258,
+      "triangles": 2160,
+      "bounds": [
+        [
+          -0.7996691465377808,
+          -0.5070088505744934,
+          0.10214489698410034
+        ],
+        [
+          0.8318931460380554,
+          0.5071958899497986,
+          0.8000845313072205
+        ]
+      ],
+      "materials": [
+        "mirror",
+        "interior",
+        "interior A"
+      ]
+    },
+    {
+      "name": "badges",
+      "parent": null,
+      "vertices": 16,
+      "triangles": 8,
+      "bounds": [
+        [
+          -1.4735419750213623,
+          -0.6478163599967957,
+          0.30349448323249817
+        ],
+        [
+          1.4634348154067993,
+          0.6478167176246643,
+          0.5022628903388977
+        ]
+      ],
+      "materials": [
+        "badges"
+      ]
+    },
+    {
+      "name": "brake dics and caps",
+      "parent": null,
+      "vertices": 56,
+      "triangles": 40,
+      "bounds": [
+        [
+          -0.959023654460907,
+          -0.6119349598884583,
+          0.07697706669569016
+        ],
+        [
+          1.1227076053619385,
+          0.611935019493103,
+          0.3699242174625397
+        ]
+      ],
+      "materials": [
+        "brake dics and caps"
+      ]
+    },
+    {
+      "name": "wipers",
+      "parent": null,
+      "vertices": 50,
+      "triangles": 77,
+      "bounds": [
+        [
+          -0.889597475528717,
+          -0.4592978060245514,
+          0.4854433834552765
+        ],
+        [
+          -0.6923937797546387,
+          0.3183009922504425,
+          0.5476796627044678
+        ]
+      ],
+      "materials": [
+        "black metallic"
+      ]
+    },
+    {
+      "name": "interior",
+      "parent": null,
+      "vertices": 16,
+      "triangles": 8,
+      "bounds": [
+        [
+          -0.6898866295814514,
+          -0.3983701467514038,
+          0.11770038306713104
+        ],
+        [
+          -0.4175924062728882,
+          -0.1378675401210785,
+          0.42205169796943665
+        ]
+      ],
+      "materials": [
+        "interior A"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "badges",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s A.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.002",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    },
+    {
+      "name": "black metallic",
+      "diffuse": [
+        0.007924932055175304,
+        0.007924932055175304,
+        0.007924932055175304,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    },
+    {
+      "name": "body",
+      "diffuse": [
+        0.5457149147987366,
+        0.06012852489948273,
+        0.004240579437464476,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    },
+    {
+      "name": "brake dics and caps",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s A.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.002",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    },
+    {
+      "name": "carbon fibre",
+      "diffuse": [
+        0.008668145164847374,
+        0.008668145164847374,
+        0.008668145164847374,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    },
+    {
+      "name": "glass",
+      "diffuse": [
+        0.07564205676317215,
+        0.07564205676317215,
+        0.07564205676317215,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "interior",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Interior 720s.png"
+        }
+      ]
+    },
+    {
+      "name": "interior A",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Interior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Interior 720s A.png"
+        }
+      ]
+    },
+    {
+      "name": "lights",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        }
+      ]
+    },
+    {
+      "name": "mesh",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s A.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.002",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    },
+    {
+      "name": "mirror",
+      "diffuse": [
+        0.10548217594623566,
+        0.10548217594623566,
+        0.10548217594623566,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "rims",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s A.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.002",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    },
+    {
+      "name": "silver",
+      "diffuse": [
+        0.2929481565952301,
+        0.2929481565952301,
+        0.2929481565952301,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "tyres",
+      "diffuse": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\mclaren720s\\source\\Exterior 720s N.png"
+        }
+      ]
+    }
+  ]
+}

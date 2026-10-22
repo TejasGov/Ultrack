@@ -1,0 +1,28 @@
+{
+  "car": "bmw1",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "mirrors": {
+    "style": "gt",
+    "housing": "paint"
+  },
+  "suspension": {
+    "pitch": 0.6,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.019
+  },
+  "aero": [],
+  "log": [
+    "run 1 (all cars): mirrors -> gt/paint (i8: body-colour housings); ride 0.019 m from the measured arch gaps (front top gap >= 3 cm for the brake dive); pitch 0.6",
+    "replacement (Mercedes-AMG GT4): own suspension block; ride recalibrated from the measured arch gaps"
+  ],
+  "replacement": {
+    "note": "tuning for the replacement model (cars.js reads only this block for it)",
+    "suspension": {
+      "pitch": 0.5,
+      "roll": 0.85,
+      "freq": 1.6,
+      "ride": 0.05
+    }
+  }
+}

@@ -1,0 +1,286 @@
+/* Ultrack V1 interface: menus, garage, settings, HUD. Brand from the logo: white and race red on near-black; type is
+   Barlow Condensed (labels, italic for motion) and Anton (numbers). Panels are dark glass with a slanted edge. */
+@font-face { font-family: 'Anton'; src: url('/assets/fonts/anton-latin-400-normal.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 700; src: url('/assets/fonts/barlow-condensed-latin-700-normal.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 800; font-style: italic; src: url('/assets/fonts/barlow-condensed-latin-800-italic.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 900; font-style: italic; src: url('/assets/fonts/barlow-condensed-latin-900-italic.woff2') format('woff2'); font-display: swap; }
+
+:root {
+  --red: #e3141b; --red-deep: #9e0a10; --ink: #f4f2ee; --ink-2: rgba(244, 242, 238, 0.72); --ink-3: rgba(244, 242, 238, 0.45);
+  --glass: rgba(10, 11, 14, 0.62); --glass-2: rgba(18, 19, 24, 0.82); --line: rgba(255, 255, 255, 0.12); --line-2: rgba(255, 255, 255, 0.22);
+  --good: #3ddc84; --bad: #ff4d4f; --gold: #f2c14e; --nitro: #8f7bff; --nitro-2: #5ad1ff;
+  --slant: 14px; --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --label: 'Barlow Condensed', system-ui, sans-serif; --num: 'Anton', 'Barlow Condensed', sans-serif;
+}
+
+#ui { position: fixed; inset: 0; pointer-events: none; color: var(--ink); font-family: var(--label); font-weight: 700; user-select: none; z-index: 10; }
+:where(#ui) * { box-sizing: border-box; }
+#ui .screen { position: absolute; inset: 0; pointer-events: auto; opacity: 0; transition: opacity 0.45s var(--ease); }
+#ui .screen.on { opacity: 1; }
+#ui .screen.hidden { display: none; }
+:where(#ui) :where(button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; text-align: left; }   /* :where: no specificity, so every component style wins */
+:where(#ui) :focus { outline: none; }
+:where(#ui) :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+/* the scene behind every menu: darkened toward the menu side, a film edge at the bottom */
+.scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4, 5, 8, 0.86) 0%, rgba(4, 5, 8, 0.55) 34%, rgba(4, 5, 8, 0) 62%),
+  linear-gradient(0deg, rgba(4, 5, 8, 0.7) 0%, rgba(4, 5, 8, 0) 26%); }
+.scrim.full { background: rgba(4, 5, 8, 0.6); backdrop-filter: blur(6px); }
+
+.logo { display: block; background: url('/assets/brand/ultrack-alpha.webp') center / contain no-repeat; aspect-ratio: 1149 / 223; filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.55)); }
+.title-screen .logo { position: absolute; left: 50%; top: 44%; width: min(70vw, 860px); transform: translate(-50%, -50%); }
+.title-screen .press { position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%); font-size: 22px; letter-spacing: 0.32em; color: var(--ink-2); animation: pulse 2.4s ease-in-out infinite; }
+.title-screen .ver { position: absolute; right: 28px; bottom: 22px; font-size: 13px; letter-spacing: 0.2em; color: var(--ink-3); }
+.title-screen .loadbar { position: absolute; left: 50%; bottom: calc(14% - 26px); width: 220px; height: 2px; transform: translateX(-50%); background: var(--line); overflow: hidden; }
+.title-screen .loadbar i { position: absolute; inset: 0; background: var(--red); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform 0.4s var(--ease); }
+@keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+/* ---------------------------------------------------------------- main menu */
+.menu .brand { position: absolute; left: 70px; top: 48px; width: 230px; }
+.menu .list { position: absolute; left: 64px; top: 50%; transform: translateY(-46%); display: flex; flex-direction: column; gap: 2px; }
+.menu .item { position: relative; display: flex; align-items: baseline; gap: 18px; padding: 8px 40px 8px 22px; font-style: italic; font-weight: 900; font-size: 52px;
+  line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink-3); transition: color 0.25s var(--ease), transform 0.35s var(--ease); }
+.menu .item small { font-size: 15px; letter-spacing: 0.24em; font-weight: 800; color: var(--ink-3); opacity: 0; transition: opacity 0.25s; }
+.menu .item::before { content: ''; position: absolute; left: 0; top: 10%; bottom: 10%; width: 5px; background: var(--red); transform: skewX(-14deg) scaleY(0); transition: transform 0.35s var(--ease); }
+.menu .item.sel, .menu .item:hover { color: var(--ink); transform: translateX(10px); }
+.menu .item.sel::before, .menu .item:hover::before { transform: skewX(-14deg) scaleY(1); }
+.menu .item.sel small { opacity: 1; }
+.menu .item.minor { font-size: 34px; margin-top: 2px; }
+.menu .item.minor:first-of-type { margin-top: 18px; }
+.menu .blurb { position: absolute; left: 86px; bottom: 98px; max-width: 460px; font-size: 20px; color: var(--ink-2); font-weight: 700; line-height: 1.3; min-height: 54px; }
+
+.carcard { position: absolute; right: 56px; bottom: 82px; width: 360px; padding: 18px 22px 18px 26px; background: var(--glass); backdrop-filter: blur(10px);
+  clip-path: polygon(var(--slant) 0, 100% 0, 100% 100%, 0 100%, 0 var(--slant)); border-left: 4px solid var(--team, var(--red)); }
+.carcard .k { font-size: 13px; letter-spacing: 0.28em; color: var(--ink-3); }
+.carcard .name { font-family: var(--num); font-size: 40px; line-height: 1.05; letter-spacing: 0.01em; margin: 4px 0 2px; }
+.carcard .team { font-size: 22px; line-height: 1.1; }
+.team-logo { display:block; width:200px; max-width:100%; height:50px; object-fit:contain; object-position:left center; }
+.garage .cars h3 .team-logo { width:156px; height:39px; }
+.garage .title .team-logo { width:220px; height:55px; }
+.current-car .team-logo { width:160px; height:40px; }
+.carcard .drv { font-size: 16px; color: var(--ink-2); margin-top: 6px; letter-spacing: 0.04em; }
+.carcard .num { position: absolute; right: 20px; top: 14px; font-family: var(--num); font-size: 54px; color: var(--team, var(--red)); opacity: 0.9; }
+
+.footer { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; display: flex; align-items: center; gap: 28px; padding: 0 64px; font-size: 15px;
+  letter-spacing: 0.18em; color: var(--ink-3); background: linear-gradient(0deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0)); }
+.footer b { color: var(--ink); border: 1px solid var(--line-2); padding: 2px 7px; margin-right: 8px; letter-spacing: 0.06em; font-weight: 800; }
+.footer .sp { flex: 1; }
+
+/* ---------------------------------------------------------------- panels (setup, settings, garage, pause, results) */
+.panel { position: absolute; background: var(--glass-2); backdrop-filter: blur(14px); clip-path: polygon(var(--slant) 0, 100% 0, 100% calc(100% - var(--slant)), calc(100% - var(--slant)) 100%, 0 100%, 0 var(--slant));
+  border-top: 2px solid var(--red); padding: 26px 30px 28px; }
+.panel h2 { margin: 0 0 4px; font-style: italic; font-weight: 900; font-size: 44px; text-transform: uppercase; line-height: 1; letter-spacing: 0.01em; }
+.panel .sub { font-size: 17px; color: var(--ink-2); margin-bottom: 18px; line-height: 1.35; }
+.setup { left: 64px; top: 50%; width: 560px; transform: translateY(-50%); }
+
+.row { display: grid; grid-template-columns: 170px 1fr; align-items: center; gap: 14px; padding: 9px 10px; border-bottom: 1px solid var(--line); transition: background 0.2s; }
+.row.sel { background: rgba(227, 20, 27, 0.12); box-shadow: inset 3px 0 0 var(--red); }
+.row > label { font-size: 15px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-2); }
+.row .note { grid-column: 2; font-size: 14px; color: var(--ink-3); margin-top: -4px; letter-spacing: 0.02em; }
+.seg { display: flex; gap: 4px; flex-wrap: wrap; }
+.seg button { padding: 6px 14px; font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(255, 255, 255, 0.05); color: var(--ink-2);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); transition: background 0.2s, color 0.2s; }
+.seg button:hover { background: rgba(255, 255, 255, 0.12); color: var(--ink); }
+.seg button.on { background: var(--red); color: #fff; }
+.slider { display: flex; align-items: center; gap: 12px; }
+.slider input { flex: 1; appearance: none; height: 4px; background: linear-gradient(90deg, var(--red) var(--v, 50%), rgba(255, 255, 255, 0.15) var(--v, 50%)); outline: none; cursor: pointer; }
+.slider input::-webkit-slider-thumb { appearance: none; width: 12px; height: 20px; background: #fff; transform: skewX(-12deg); }
+.slider output { width: 44px; text-align: right; font-family: var(--num); font-size: 18px; }
+.toggle { width: 54px; height: 24px; background: rgba(255, 255, 255, 0.12); position: relative; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.toggle::after { content: ''; position: absolute; top: 3px; left: 6px; width: 20px; height: 18px; background: var(--ink-2); transition: left 0.25s var(--ease), background 0.25s; }
+.toggle.on { background: var(--red-deep); }
+.toggle.on::after { left: 28px; background: #fff; }
+
+.cta { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; padding: 12px 34px 12px 26px; font-style: italic; font-weight: 900; font-size: 30px;
+  text-transform: uppercase; background: var(--red); color: #fff; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); transition: transform 0.25s var(--ease), background 0.2s; }
+.cta:hover, .cta.sel { transform: translateX(6px); background: #ff2129; }
+.cta.ghost { background: rgba(255, 255, 255, 0.08); color: var(--ink); font-size: 22px; padding: 10px 26px 10px 20px; }
+.cta.ghost:hover, .cta.ghost.sel { background: rgba(255, 255, 255, 0.18); }
+
+.tabs { display: flex; gap: 22px; margin: 0 0 16px; border-bottom: 1px solid var(--line); }
+.tabs button { padding: 8px 2px 10px; font-size: 18px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-3); border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tabs button.on { color: var(--ink); border-color: var(--red); }
+
+.settings { left: 64px; top: 50%; width: 720px; max-height: 84vh; transform: translateY(-50%); display: flex; flex-direction: column; }
+.settings .body { overflow: auto; padding-right: 6px; }
+.keys { display: grid; grid-template-columns: 1fr auto auto; gap: 8px 22px; font-size: 18px; }
+.keys span { color: var(--ink-2); letter-spacing: 0.06em; }
+.keys b { font-weight: 800; color: var(--ink); border: 1px solid var(--line-2); padding: 1px 8px; font-size: 15px; letter-spacing: 0.08em; justify-self: start; }
+
+/* ---------------------------------------------------------------- garage */
+#ui .screen.garage { pointer-events: none; }                 /* drags reach the canvas: the orbit camera turns the car */
+.garage .panel, .garage button, .garage input, .garage .footer { pointer-events: auto; }
+.garage .cars { left: 40px; top: 96px; bottom: 74px; width: 330px; padding: 16px 14px; overflow: auto; }
+.garage .cars h3 { margin: 12px 8px 6px; font-size: 14px; letter-spacing: 0.3em; color: var(--ink-3); font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.garage .cars h3 i { width: 18px; height: 10px; background: var(--team); clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.garage .car { display: grid; grid-template-columns: 1fr auto; align-items: baseline; width: 100%; padding: 7px 12px; font-size: 22px; color: var(--ink-2); border-left: 3px solid transparent; transition: background 0.2s, color 0.2s; }
+.garage .car small { font-size: 14px; color: var(--ink-3); letter-spacing: 0.12em; }
+.garage .car:hover { background: rgba(255, 255, 255, 0.06); color: var(--ink); }
+.garage .car.sel { background: rgba(255, 255, 255, 0.1); color: var(--ink); border-color: var(--team); }
+.garage .car .mine { color: var(--red); font-size: 13px; letter-spacing: 0.2em; margin-left: 8px; }
+.garage .detail { right: 40px; top: 96px; bottom: 74px; width: 440px; overflow: auto; }
+.garage .title { position: absolute; left: 400px; top: 26px; right: 520px; pointer-events: none; }
+.garage .title .team { font-size: 34px; line-height: 1; }
+.garage .title .name { font-family: var(--num); font-size: 64px; line-height: 1; margin-top: 2px; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.6); }
+.stat { display: grid; grid-template-columns: 120px 1fr 64px; align-items: center; gap: 12px; margin: 10px 0; font-size: 15px; letter-spacing: 0.18em; color: var(--ink-2); }
+.stat .bar { height: 6px; background: rgba(255, 255, 255, 0.1); clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.stat .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--red-deep), var(--red)); width: var(--w); transition: width 0.6s var(--ease); }
+.stat b { font-family: var(--num); font-weight: 400; font-size: 20px; color: var(--ink); text-align: right; letter-spacing: 0.02em; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 18px; margin: 16px 0 6px; }
+.facts div { font-size: 13px; letter-spacing: 0.22em; color: var(--ink-3); }
+.facts b { display: block; font-family: var(--num); font-weight: 400; font-size: 26px; letter-spacing: 0.01em; color: var(--ink); }
+.bio { font-size: 17px; line-height: 1.35; color: var(--ink-2); margin-top: 12px; font-weight: 700; }
+.swatches { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 8px 0 4px; }
+.swatches button { aspect-ratio: 1; background: var(--c); border: 2px solid transparent; clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%); transition: transform 0.2s var(--ease); }
+.swatches button:hover { transform: translateY(-2px); }
+.swatches button.on { border-color: #fff; box-shadow: 0 0 0 2px var(--red) inset; }
+.swatches.small { grid-template-columns: repeat(8, 1fr); }
+.picker { display: flex; align-items: center; gap: 10px; margin: 6px 0 14px; font-size: 14px; letter-spacing: 0.18em; color: var(--ink-3); }
+.picker input[type=color] { width: 44px; height: 26px; border: 0; padding: 0; background: none; cursor: pointer; }
+.sec { font-size: 14px; letter-spacing: 0.28em; color: var(--ink-3); margin: 16px 0 4px; }
+
+/* ---------------------------------------------------------------- pause, results */
+.pause .panel { left: 50%; top: 50%; transform: translate(-50%, -50%); width: 420px; text-align: left; }
+.pause .opt { display: block; width: 100%; padding: 10px 14px; font-style: italic; font-weight: 900; font-size: 32px; text-transform: uppercase; color: var(--ink-3); transition: color 0.2s, transform 0.25s var(--ease); }
+.pause .opt.sel, .pause .opt:hover { color: var(--ink); transform: translateX(8px); box-shadow: inset 4px 0 0 var(--red); }
+.results .panel { left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(980px, 92vw); }
+.results table { width: 100%; border-collapse: collapse; font-size: 22px; }
+.results th { text-align: left; font-size: 13px; letter-spacing: 0.24em; color: var(--ink-3); padding: 6px 10px; font-weight: 800; }
+.results td { padding: 9px 10px; border-top: 1px solid var(--line); }
+.results td.p { font-family: var(--num); font-size: 30px; width: 54px; }
+.results tr.me td { background: rgba(227, 20, 27, 0.14); }
+.results tr.me td.p { color: var(--red); }
+.results td .tm { display: inline-block; width: 10px; height: 22px; background: var(--team); margin-right: 12px; vertical-align: -4px; clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.results td.num { font-family: var(--num); font-size: 22px; letter-spacing: 0.02em; text-align: right; }
+.results .big { font-family: var(--num); font-size: 120px; line-height: 0.9; margin: 6px 0 10px; }
+.results .big small { font-size: 40px; color: var(--ink-3); margin-left: 8px; }
+.results .rec { color: var(--gold); font-size: 22px; letter-spacing: 0.2em; }
+.results .acts { display: flex; gap: 14px; }
+
+@media (max-width: 900px) {
+  .menu .item { font-size: 38px; } .menu .item.minor { font-size: 26px; } .menu .brand { left: 24px; width: 220px; } .menu .list { left: 24px; }
+  .carcard { display: none; } .setup, .settings { left: 16px; right: 16px; width: auto; }
+}
+
+.garage .row { grid-template-columns: 96px 1fr; padding: 8px 4px; }
+.garage .seg button { padding: 5px 10px; font-size: 15px; }
+:where(#ui) ::-webkit-scrollbar { width: 6px; }
+:where(#ui) ::-webkit-scrollbar-track { background: transparent; }
+:where(#ui) ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); }
+
+
+/* V2: shared tile language for the home screen and race telemetry. */
+.home .scrim { background: linear-gradient(90deg,rgba(5,9,15,.9),rgba(5,9,15,.55)),linear-gradient(0deg,rgba(5,9,15,.9),transparent); }
+.home .brand { left:5vw;top:4vh;width:210px; }
+.home-heading { position:absolute;right:5vw;top:4vh;text-align:right;font-size:12px;letter-spacing:.24em;color:var(--ink-3); }
+.home-heading span { display:block;margin-top:8px;color:var(--ink);font-size:20px; }
+.bento-grid { position:absolute;left:5vw;right:5vw;top:17vh;bottom:86px;display:grid;grid-template-columns:1.45fr 1fr 1fr 1fr;grid-template-rows:1fr 1fr .72fr;gap:12px; }
+.bento-grid .bento-tile { position:relative;min-width:0;padding:clamp(14px,2vw,28px);display:flex;flex-direction:column;justify-content:flex-end;gap:9px;background:rgba(19,27,38,.9);border:1px solid rgba(255,255,255,.13);border-radius:12px;text-align:left;overflow:hidden;transition:background .2s,border-color .2s,transform .2s; }
+.bento-grid .bento-tile.sel,.bento-grid .bento-tile:hover,.bento-grid .bento-tile:focus-visible { background:rgba(38,47,61,.97);border-color:var(--ink);transform:translateY(-2px);outline:0; }
+.bento-tile strong { font-size:clamp(22px,2.6vw,40px);line-height:1;text-transform:uppercase;font-style:italic; }
+.tile-kicker { font-size:11px;letter-spacing:.16em;color:var(--ink-2); }
+.tile-desc { font-size:clamp(13px,1.25vw,18px);font-weight:500;color:var(--ink-2);line-height:1.25;max-width:90%; }
+.tile-arrow { position:absolute;right:18px;top:16px;font-size:25px;color:var(--ink-3); }
+.bento-grid .race-tile { grid-row:span 2;background:linear-gradient(145deg,#a50c19,#400e1d 60%,#141c29);justify-content:flex-end; }
+.race-tile::before { content:'01';position:absolute;top:-12px;left:10px;font:clamp(100px,15vw,220px)/1 var(--num);opacity:.1; }
+.race-tile strong { font-size:clamp(45px,6vw,88px); }
+.bento-grid .current-car { grid-column:span 2;background:linear-gradient(115deg,rgba(19,27,38,.96),rgba(28,40,55,.88));padding-right:76px; }
+.current-car .k { font-size:11px;color:var(--ink-3);letter-spacing:.16em; }
+.current-car .name { font:clamp(20px,2.5vw,38px)/1.1 var(--num); }
+.current-car .num { position:absolute;right:22px;top:16px;font:48px var(--num);color:var(--team); }
+.current-car .team { font-size:18px; }.current-car .drv { font-size:13px;color:var(--ink-3); }
+.bento-grid .records-tile { grid-column:span 2; }
+.records .panel,.credits .panel { position:absolute;left:8vw;right:8vw;top:7vh;bottom:7vh;max-width:none;display:flex;flex-direction:column;padding:28px;background:var(--glass);border:1px solid var(--line);border-radius:14px; }
+.credit-list,.records-list { overflow-y:auto;min-height:0;margin:12px 0 20px;flex:1; }
+.credit-card { padding:16px 0;border-bottom:1px solid var(--line);font-weight:500; }
+.credit-card h3 { margin:0 0 8px;font-size:24px; }.credit-card p { margin:5px 0;color:var(--ink-2);font-size:17px; }
+.credit-card a { color:#98d6ee;text-decoration:underline;text-underline-offset:3px; }
+.credit-notice { font-size:16px;line-height:1.5;color:var(--ink-2); }
+.record-row { display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;padding:16px;border-bottom:1px solid var(--line);font-size:22px; }
+.input-debug { position:fixed;left:16px;bottom:58px;z-index:100;pointer-events:none;padding:14px;border:1px solid #748797;border-radius:10px;background:rgba(5,9,15,.9);color:#d3f7e1;font:12px/1.55 monospace;white-space:pre-wrap; }
+@media(max-width:900px) {
+  .home .brand { left:4vw;top:3vh;width:170px; }.home-heading { right:4vw;top:3vh; }
+  .home-heading span { font-size:15px; }.bento-grid { left:4vw;right:4vw;top:15vh;bottom:70px;gap:8px;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr .8fr .8fr; }
+  .bento-grid .race-tile { grid-row:span 2; }.bento-grid .current-car { grid-column:span 2; }.bento-grid .records-tile { grid-column:span 1; }
+  .tile-desc { font-size:13px; }.tile-kicker { font-size:9px; }.home .footer { padding:0 4vw;gap:15px; }
+  .record-row { font-size:17px; }
+}
+@media(max-width:540px) {
+  .home-heading { display:none; }.bento-grid { overflow:auto;grid-template-columns:1fr 1fr;grid-template-rows:repeat(6,minmax(100px,1fr)); }
+  .bento-grid .race-tile { grid-row:span 1;grid-column:span 2;min-height:140px; }.race-tile strong { font-size:45px; }
+  .bento-grid .bento-tile { padding:16px; }.bento-grid .current-car { padding-right:70px; }.bento-grid .records-tile { grid-column:span 2; }
+}
+@media(prefers-reduced-motion:reduce) { #ui * { animation:none!important;transition:none!important; } }
+
+.asset-loading { position:absolute;left:50%;bottom:64px;transform:translateX(-50%);padding:12px 24px;background:rgba(8,14,22,.96);border:1px solid #758495;border-radius:10px;z-index:80;font-size:18px;color:#fff;pointer-events:none; }
+.asset-loading[hidden] {display:none;}
+
+/* ---------------------------------------------------------------- U-coins, specs and upgrades (garage.js) */
+.coinchip { margin-top: 10px; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); }
+.garage .detail { width: 470px; }
+.garage .progression { display: grid; gap: 4px; margin: 12px 0 18px; padding: 10px 12px; border-left: 3px solid var(--team); background: rgba(255,255,255,.045); }
+.garage .progression strong { font-size: 23px; letter-spacing: .06em; }
+.garage .progression span { font-size: 13px; color: var(--ink-3); letter-spacing: .08em; }
+.garage .progression small { font-size: 12px; color: var(--gold); letter-spacing: .08em; }
+.garage .cta:disabled { opacity: .5; cursor: default; }
+.garage .tabs { gap: 16px; }
+.garage .tabs button { font-size: 16px; letter-spacing: 0.16em; }
+.garage .coinbar b { color: var(--gold); border: 0; padding: 0; margin: 0 0 0 6px; font-family: var(--num); font-weight: 400; letter-spacing: 0.04em; font-size: 18px; }
+.specname { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--num); font-size: 26px; line-height: 1.1; }
+.badge { flex: none; padding: 3px 10px; border-radius: 6px; font-family: var(--label); font-weight: 800; font-size: 13px; letter-spacing: 0.18em; background: rgba(255, 255, 255, 0.1); color: var(--ink-2); }
+.badge.EV { background: rgba(90, 209, 255, 0.18); color: var(--nitro-2); }
+.badge.hybrid { background: rgba(61, 220, 132, 0.16); color: var(--good); }
+.engine { margin-top: 4px; font-size: 16px; color: var(--ink-2); letter-spacing: 0.04em; }
+.legend { margin-left: 10px; letter-spacing: 0.12em; color: var(--ink-3); }
+.legend.up { color: var(--good); }
+.sil { margin-top: 6px; }
+.silsvg { display: block; width: 100%; height: auto; overflow: visible; }
+.dims { margin-top: 4px; font-size: 14px; letter-spacing: 0.1em; color: var(--ink-2); }
+.cmp { display: grid; grid-template-columns: 88px 1fr 112px; align-items: center; gap: 10px; margin: 9px 0; font-size: 14px; letter-spacing: 0.16em; color: var(--ink-2); position: relative; }
+.cmp .cbar { position: relative; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.09); }
+.cmp .cbar i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; transition: width 0.5s var(--ease), left 0.5s var(--ease); }
+.cmp .cbar .base { background: linear-gradient(90deg, var(--red-deep), var(--red)); }
+.cmp .cbar .up { background: var(--good); border-radius: 0 4px 4px 0; }
+.cmp .cbar u { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: #fff; opacity: 0.85; }
+.cmp b { text-align: right; font-family: var(--num); font-weight: 400; font-size: 19px; color: var(--ink); letter-spacing: 0.02em; white-space: nowrap; }
+.cmp b small { font-family: var(--label); font-size: 12px; color: var(--ink-3); letter-spacing: 0.06em; margin-left: 3px; }
+.cmp em { position: absolute; right: 0; top: 17px; font-style: normal; font-family: var(--num); font-size: 12px; color: var(--good); }
+.src { margin-top: 12px; font-size: 13px; color: var(--ink-3); line-height: 1.3; letter-spacing: 0.02em; }
+.balance { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; font-size: 14px; letter-spacing: 0.22em; color: var(--ink-3); }
+.balance b { font-family: var(--num); font-weight: 400; font-size: 34px; letter-spacing: 0.02em; color: var(--gold); }
+.up { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.03); }
+.uphead { display: flex; align-items: center; gap: 14px; }
+.uphead strong { flex: none; width: 74px; font-size: 22px; font-style: italic; text-transform: uppercase; }
+.pips { display: flex; gap: 5px; flex: 1; }
+.pips i { width: 22px; height: 8px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); transition: background 0.3s; }
+.pips i.on { background: var(--gold); }
+.buy { flex: none; padding: 7px 14px; border-radius: 8px; font-size: 15px; letter-spacing: 0.1em; font-weight: 800; background: var(--red); color: #fff; transition: background 0.2s, transform 0.2s var(--ease); }
+.buy:hover, .buy.sel { background: #ff2129; transform: translateY(-1px); }
+.buy.no { background: rgba(255, 255, 255, 0.1); color: var(--ink-3); }
+.buy.no.sel, .buy.no:hover { background: rgba(255, 255, 255, 0.16); }
+.effect { margin-top: 8px; font-size: 14px; letter-spacing: 0.1em; color: var(--ink-2); font-family: var(--label); }
+.earn { margin: 18px 0 2px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.04); }
+.earn .etotal { display: flex; align-items: baseline; justify-content: space-between; font-size: 14px; letter-spacing: 0.22em; color: var(--ink-3); }
+.earn .etotal b { font-family: var(--num); font-weight: 400; font-size: 40px; color: var(--gold); letter-spacing: 0.02em; }
+.earn .elines { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-top: 4px; font-size: 16px; color: var(--ink-2); letter-spacing: 0.06em; }
+.earn .elines b { margin-left: 8px; font-family: var(--num); font-weight: 400; color: var(--ink); }
+.earn .ebal { margin-top: 6px; font-size: 13px; letter-spacing: 0.2em; color: var(--ink-3); }
+.earn .ebal b { font-family: var(--num); font-weight: 400; color: var(--ink); }
+
+.driver-intro { position: fixed; inset: 0; z-index: 1000; background: #080b10; color: #f5f1e8; pointer-events: auto; }
+.driver-intro-frame { position: absolute; inset: 0 0 52px; overflow: hidden; display: grid; place-items: center; }
+.driver-intro-frame img { width: 100%; height: 100%; object-fit: contain; animation: intro-reveal .3s ease-out; }
+.driver-intro-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 52px; display: flex; align-items: center; gap: 24px; padding: 0 24px; font: 13px var(--label); letter-spacing: .06em; }
+.driver-intro-footer > span { flex: 1; }
+.driver-intro-footer button { color: #fff; border: 1px solid #677082; border-radius: 5px; padding: 7px 12px; background: #19202c; white-space: nowrap; }
+.driver-intro-footer button:focus-visible { outline: 2px solid #f2b705; outline-offset: 2px; }
+.driver-intro-progress { display: flex; gap: 5px; width: min(24vw, 280px); }
+.driver-intro-progress i { height: 3px; flex: 1; background: #354052; }
+.driver-intro-progress i.done { background: #f2b705; }
+.driver-intro-progress i.current { background: linear-gradient(to right, #f2b705 var(--progress), #354052 var(--progress)); }
+.driver-intro-fallback { width: 100%; height: 100%; padding: 10%; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(at top right, var(--intro-team), #080b10 80%); }
+.driver-intro-fallback h1 { font: 700 clamp(32px, 6vw, 90px) var(--label); margin: 20px 0; }
+.driver-intro.still img { animation: none; }
+@keyframes intro-reveal { from { opacity: .4; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) { .driver-intro-frame img { animation: none; } }
+@media (max-width: 650px) { .driver-intro-footer { gap: 10px; padding: 0 12px; font-size: 11px; } .driver-intro-progress { display: none; } }

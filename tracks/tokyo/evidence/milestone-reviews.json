@@ -1,0 +1,33 @@
+{
+  "schema": "game-room.milestone-reviews.v1",
+  "roomId": "tokyo",
+  "function": {
+    "status": "pending",
+    "approvedBy": "",
+    "approvedAt": "",
+    "evidence": [
+      "../source/map.json",
+      "../out/tokyo_study.blend",
+      "../out/plan.png",
+      "../out/study-audit.json"
+    ],
+    "strangestElement": "Source crossing captions differ from the actual interpolated crossing; measured separation recorded in audit.",
+    "notes": "User requested initial Blender construction from supplied map. This is not explicit approval of the generated layout or reference assets."
+  },
+  "form": {
+    "status": "pending",
+    "approvedBy": "",
+    "approvedAt": "",
+    "evidence": [],
+    "strangestElement": "",
+    "notes": "Pending bespoke architecture, structural review, detailed opening schedule and driving-height detail review."
+  },
+  "runtime": {
+    "status": "pending",
+    "approvedBy": "",
+    "approvedAt": "",
+    "evidence": [],
+    "strangestElement": "",
+    "notes": "No exports, deployment or runtime integration."
+  }
+}

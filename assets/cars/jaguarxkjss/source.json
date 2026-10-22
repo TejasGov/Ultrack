@@ -1,0 +1,41 @@
+{
+  "src": "../../../sources/sketchfab/replacement-imports/amgone-prepared.glb",
+  "credit": {
+    "title": "Mercedes Amg One",
+    "author": "3dblender_1",
+    "authorUrl": "https://sketchfab.com/3dblender_1",
+    "url": "https://sketchfab.com/3d-models/mercedes-amg-one-77b02e5a555d4819b490f67eeb348d22",
+    "license": "CC Attribution",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "77b02e5a555d4819b490f67eeb348d22",
+    "replacement": true,
+    "nonCommercialOnly": false,
+    "additionalCredits": ""
+  },
+  "rotateZ": -90,
+  "length": 4.756,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Tyre_",
+      "Spin_"
+    ],
+    "caliper": [
+      "Caliper_"
+    ],
+    "tyre": [
+      "Tyre_"
+    ]
+  },
+  "roles": {},
+  "interior": [
+    "interior",
+    "INT:"
+  ],
+  "exhaust": [],
+  "budget": {
+    "body0": 90000,
+    "body1": 22000,
+    "wheel": 7000
+  }
+}

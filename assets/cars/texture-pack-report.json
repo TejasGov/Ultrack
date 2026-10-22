@@ -1,0 +1,184 @@
+[
+  {
+    "key": "av12",
+    "lod": 0,
+    "originalBytes": 12649196,
+    "compressedBytes": 3971592,
+    "textures": 16
+  },
+  {
+    "key": "av12",
+    "lod": 1,
+    "originalBytes": 2290216,
+    "compressedBytes": 1217432,
+    "textures": 13
+  },
+  {
+    "key": "furari-488",
+    "lod": 0,
+    "originalBytes": 10107012,
+    "compressedBytes": 4150304,
+    "textures": 47
+  },
+  {
+    "key": "furari-488",
+    "lod": 1,
+    "originalBytes": 3339784,
+    "compressedBytes": 1810724,
+    "textures": 31
+  },
+  {
+    "key": "mp1x",
+    "lod": 0,
+    "originalBytes": 690456,
+    "compressedBytes": 378184,
+    "textures": 5
+  },
+  {
+    "key": "mp1x",
+    "lod": 1,
+    "originalBytes": 655380,
+    "compressedBytes": 357368,
+    "textures": 5
+  },
+  {
+    "key": "jaguarxkjss",
+    "lod": 0,
+    "originalBytes": 2349848,
+    "compressedBytes": 1327756,
+    "textures": 10
+  },
+  {
+    "key": "jaguarxkjss",
+    "lod": 1,
+    "originalBytes": 1317668,
+    "compressedBytes": 757416,
+    "textures": 5
+  },
+  {
+    "key": "nuvolari",
+    "lod": 0,
+    "originalBytes": 3010628,
+    "compressedBytes": 1464036,
+    "textures": 21
+  },
+  {
+    "key": "nuvolari",
+    "lod": 1,
+    "originalBytes": 1359576,
+    "compressedBytes": 931576,
+    "textures": 18
+  },
+  {
+    "key": "buggati",
+    "lod": 0,
+    "originalBytes": 9953560,
+    "compressedBytes": 2863152,
+    "textures": 6
+  },
+  {
+    "key": "buggati",
+    "lod": 1,
+    "originalBytes": 2463624,
+    "compressedBytes": 815744,
+    "textures": 6
+  },
+  {
+    "key": "destrier",
+    "lod": 0,
+    "originalBytes": 4323888,
+    "compressedBytes": 1149576,
+    "textures": 5
+  },
+  {
+    "key": "destrier",
+    "lod": 1,
+    "originalBytes": 790236,
+    "compressedBytes": 294492,
+    "textures": 5
+  },
+  {
+    "key": "blackbird",
+    "lod": 0,
+    "originalBytes": 4142724,
+    "compressedBytes": 1205788,
+    "textures": 6
+  },
+  {
+    "key": "blackbird",
+    "lod": 1,
+    "originalBytes": 955456,
+    "compressedBytes": 275268,
+    "textures": 3
+  },
+  {
+    "key": "porsche1",
+    "lod": 0,
+    "originalBytes": 1163520,
+    "compressedBytes": 441908,
+    "textures": 5
+  },
+  {
+    "key": "porsche1",
+    "lod": 1,
+    "originalBytes": 936384,
+    "compressedBytes": 324536,
+    "textures": 2
+  },
+  {
+    "key": "huracan",
+    "lod": 0,
+    "originalBytes": 2021752,
+    "compressedBytes": 832060,
+    "textures": 10
+  },
+  {
+    "key": "huracan",
+    "lod": 1,
+    "originalBytes": 1209120,
+    "compressedBytes": 567956,
+    "textures": 8
+  },
+  {
+    "key": "laferrari",
+    "lod": 0,
+    "originalBytes": 1279212,
+    "compressedBytes": 653692,
+    "textures": 11
+  },
+  {
+    "key": "laferrari",
+    "lod": 1,
+    "originalBytes": 1014780,
+    "compressedBytes": 517064,
+    "textures": 8
+  },
+  {
+    "key": "aston-martin-valk",
+    "lod": 0,
+    "originalBytes": 1968492,
+    "compressedBytes": 840344,
+    "textures": 11
+  },
+  {
+    "key": "aston-martin-valk",
+    "lod": 1,
+    "originalBytes": 1179692,
+    "compressedBytes": 570764,
+    "textures": 8
+  },
+  {
+    "key": "bmw1",
+    "lod": 0,
+    "originalBytes": 2842308,
+    "compressedBytes": 1384272,
+    "textures": 21
+  },
+  {
+    "key": "bmw1",
+    "lod": 1,
+    "originalBytes": 1372640,
+    "compressedBytes": 992888,
+    "textures": 18
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Zayn Kareem",
+    "code": "KAR",
+    "nation": "UAE",
+    "age": 27,
+    "role": "home hero",
+    "bio": "The home hero; the crowd stands up every time he pits.",
+    "background": "Grew up on the Corniche; powerboat racer on the marina as a teenager before Sarab put him in a car.",
+    "personality": "Carries a whole city's expectations; generous with fans; wants Valois's crown, and knows his teammate is often quicker.",
+    "rivals": [
+      "VAL",
+      "QAS"
+    ]
+  },
+  "team": "sarab",
+  "raceNumber": 3,
+  "carKey": "mp1x",
+  "manufacturer": "McLaren",
+  "car": "720S",
+  "titleSponsor": "Emirates",
+  "font": {
+    "family": "Lalezar",
+    "file": "lalezar-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "style": "Original fictional 27-year-old Emirati driver in GTA V loading-screen-inspired inked, cel-shaded illustration; no real-person likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "4b51a7a430dc2373d858379296efedd9ac9d272be6f0a1c30d5b21733251659e",
+  "generationCalls": 1,
+  "composition": "1920x1080 static driver poster; team lettering is outlined and artwork is embedded in the SVG for portability.",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "116eb3c31b1a34773b235a28eabb8646d2a0d0add029f38af579a2d53b63aee7"
+    },
+    "poster-v1.svg": {
+      "sha256": "82de953ec9b3bba9acc84fc0d41196d60cebae6440326d57759f537f143ee57e"
+    }
+  }
+}

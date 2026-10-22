@@ -1,0 +1,1815 @@
+{
+  "version": 2,
+  "format": "ogg/opus 48k",
+  "assets": [
+    {
+      "id": "crash/glass-tinkle-1",
+      "file": "crash/glass-tinkle-1.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 1.48,
+      "lufs": -16,
+      "peak_dbtp": -2.9,
+      "channels": 2,
+      "desc": "Glass fragments crackling and settling, layer for hard crashes",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/glass-tinkle-2",
+      "file": "crash/glass-tinkle-2.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 1.722,
+      "lufs": -16.3,
+      "peak_dbtp": -1.4,
+      "channels": 2,
+      "desc": "Windscreen pieces falling and sliding, layer for hard crashes",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/hard-1",
+      "file": "crash/hard-1.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 2.432,
+      "lufs": -16,
+      "peak_dbtp": -2.7,
+      "channels": 2,
+      "desc": "Hard crash into a tyre wall: crunch, debris, glass shatter",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/hard-2",
+      "file": "crash/hard-2.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 2.76,
+      "lufs": -16,
+      "peak_dbtp": -9,
+      "channels": 2,
+      "desc": "Hard crash into concrete: violent crunch, parts, glass shatter (source was hot: audition for clipping)",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/hard-3",
+      "file": "crash/hard-3.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 2.4,
+      "lufs": -16,
+      "peak_dbtp": -8,
+      "channels": 2,
+      "desc": "Hard crash car into car: metal-on-metal, panels, glass (source was hot: audition for clipping)",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/scrape-loop",
+      "file": "crash/scrape-loop.ogg",
+      "category": "crash",
+      "loop": true,
+      "seconds": 6,
+      "lufs": -16,
+      "peak_dbtp": -5.4,
+      "channels": 2,
+      "desc": "Loop: body grinding along a concrete wall, spark hiss",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/soft-1",
+      "file": "crash/soft-1.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 1,
+      "lufs": -18.4,
+      "peak_dbtp": -1.8,
+      "channels": 2,
+      "desc": "Soft crash: low-speed bump into a plastic barrier",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/soft-2",
+      "file": "crash/soft-2.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 1.36,
+      "lufs": -16.9,
+      "peak_dbtp": -1.8,
+      "channels": 2,
+      "desc": "Soft crash: two cars rubbing, carbon panel scrape and knock",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/soft-3",
+      "file": "crash/soft-3.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 0.747,
+      "lufs": -17.6,
+      "peak_dbtp": -1.6,
+      "channels": 2,
+      "desc": "Soft crash: nudge into a foam barrier, muffled thump",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crash/tyre-wall-hit",
+      "file": "crash/tyre-wall-hit.ogg",
+      "category": "crash",
+      "loop": false,
+      "seconds": 1,
+      "lufs": -16.2,
+      "peak_dbtp": -2.1,
+      "channels": 2,
+      "desc": "Car thumping into a tyre stack, rubbery bounce thud",
+      "source": "ElevenLabs Sound Effects v2 (flow jBXwc4f540OcA5MQrdlp)",
+      "license": "ElevenLabs output, owned by the account holder; commercial use per the ElevenLabs plan terms"
+    },
+    {
+      "id": "crowd/ambience-loop",
+      "file": "crowd/ambience-loop.ogg",
+      "category": "crowd",
+      "loop": true,
+      "seconds": 26,
+      "lufs": -20,
+      "peak_dbtp": -5.9,
+      "channels": 2,
+      "desc": "Loop: grandstand crowd murmur bed (-20 LUFS on purpose)",
+      "source": "Soccer Stadium 10.wav by Sandermotions, https://freesound.org/people/Sandermotions/sounds/494360",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "crowd/applause",
+      "file": "crowd/applause.ogg",
+      "category": "crowd",
+      "loop": false,
+      "seconds": 8.5,
+      "lufs": -16,
+      "peak_dbtp": -3.3,
+      "channels": 2,
+      "desc": "Sustained applause (theatre perspective, not open-air)",
+      "source": "Applause Crowd Theater.wav by Jedo, https://freesound.org/people/Jedo/sounds/396549",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "crowd/cheer-big",
+      "file": "crowd/cheer-big.ogg",
+      "category": "crowd",
+      "loop": false,
+      "seconds": 9,
+      "lufs": -15.9,
+      "peak_dbtp": -4.8,
+      "channels": 2,
+      "desc": "Winner roar: goal roar layered with whistles and whoops",
+      "source": "19 Football Crowd - Reaction To Goal.flac by D.jones, https://freesound.org/people/D.jones/sounds/528799 + crowd ext large cheering parade +whistling loud close Montreal, Canada.flac by kyles, https://freesound.org/people/kyles/sounds/637438",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "crowd/cheer-medium",
+      "file": "crowd/cheer-medium.ogg",
+      "category": "crowd",
+      "loop": false,
+      "seconds": 4.6,
+      "lufs": -15.9,
+      "peak_dbtp": -6.1,
+      "channels": 2,
+      "desc": "Overtake/podium cheer swell",
+      "source": "College Football Game.wav by timmyg62, https://freesound.org/people/timmyg62/sounds/328623",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "crowd/gasp",
+      "file": "crowd/gasp.ogg",
+      "category": "crowd",
+      "loop": false,
+      "seconds": 1.7,
+      "lufs": -15.9,
+      "peak_dbtp": -3.5,
+      "channels": 2,
+      "desc": "Sharp collective gasp for a near miss (small crowd)",
+      "source": "R27-20-Small Crowd Gasps.wav by craigsmith, https://freesound.org/people/craigsmith/sounds/480774",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "crowd/groan",
+      "file": "crowd/groan.ogg",
+      "category": "crowd",
+      "loop": false,
+      "seconds": 2.828,
+      "lufs": -16,
+      "peak_dbtp": -4.6,
+      "channels": 2,
+      "desc": "Disappointed 'ohhh' for crash or spin (small group)",
+      "source": "crowd `oh - - disappointed.mp3 by mrrap4food, https://freesound.org/people/mrrap4food/sounds/619007",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "crowd/hoots",
+      "file": "crowd/hoots.ogg",
+      "category": "crowd",
+      "loop": false,
+      "seconds": 5.5,
+      "lufs": -16,
+      "peak_dbtp": -3.5,
+      "channels": 2,
+      "desc": "Scattered whistles, whoops and hoots over cheering",
+      "source": "crowd ext cheering whistling crazy.flac by kyles, https://freesound.org/people/kyles/sounds/453863",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "fireworks/big-finale",
+      "file": "fireworks/big-finale.ogg",
+      "category": "fireworks",
+      "loop": false,
+      "seconds": 19.5,
+      "lufs": -16.6,
+      "peak_dbtp": -1.6,
+      "channels": 2,
+      "desc": "Winner finale: barrage into three big salutes (faint motorbikes underneath)",
+      "source": "finale.aif by Heigh-hoo, https://freesound.org/people/Heigh-hoo/sounds/21411",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "fireworks/crackle",
+      "file": "fireworks/crackle.ogg",
+      "category": "fireworks",
+      "loop": false,
+      "seconds": 5,
+      "lufs": -16,
+      "peak_dbtp": -1.8,
+      "channels": 2,
+      "desc": "Dense crackling-star tail, layer",
+      "source": "MrSensibleFireworks.mp3 by Mr Sensible, https://freesound.org/people/Mr%20Sensible/sounds/27757",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "fireworks/single-boom-1",
+      "file": "fireworks/single-boom-1.ogg",
+      "category": "fireworks",
+      "loop": false,
+      "seconds": 3,
+      "lufs": -17.6,
+      "peak_dbtp": -1.4,
+      "channels": 2,
+      "desc": "Single loud aerial shell boom with far echo",
+      "source": "NYE Single Boom.wav by LOVEBURD, https://freesound.org/people/LOVEBURD/sounds/376660",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "fireworks/single-boom-2",
+      "file": "fireworks/single-boom-2.ogg",
+      "category": "fireworks",
+      "loop": false,
+      "seconds": 4,
+      "lufs": -17.2,
+      "peak_dbtp": -1.8,
+      "channels": 2,
+      "desc": "Single shell boom with long building reflections",
+      "source": "Fireworks single.wav by pethr, https://freesound.org/people/pethr/sounds/552403",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "fireworks/small-1",
+      "file": "fireworks/small-1.ogg",
+      "category": "fireworks",
+      "loop": false,
+      "seconds": 6.4,
+      "lufs": -23.5,
+      "peak_dbtp": -1.7,
+      "channels": 2,
+      "desc": "Opening show A: medium-distance bursts with fizz (sparse: add ~6 dB)",
+      "source": "Fireworks - explode and fizz.wav by soundmary, https://freesound.org/people/soundmary/sounds/117615",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "fireworks/small-2",
+      "file": "fireworks/small-2.ogg",
+      "category": "fireworks",
+      "loop": false,
+      "seconds": 4.6,
+      "lufs": -16,
+      "peak_dbtp": -5.1,
+      "channels": 2,
+      "desc": "Opening show B: two large shell bursts with crackling tails",
+      "source": "Shells1.mp3 by Mr Sensible, https://freesound.org/people/Mr%20Sensible/sounds/14742",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "fireworks/whistle-rockets",
+      "file": "fireworks/whistle-rockets.ogg",
+      "category": "fireworks",
+      "loop": false,
+      "seconds": 4.5,
+      "lufs": -16,
+      "peak_dbtp": -7.7,
+      "channels": 2,
+      "desc": "Whistling rockets with pops",
+      "source": "S18-18 Whistling rockets.wav by craigsmith, https://freesound.org/people/craigsmith/sounds/675779",
+      "license": "Creative Commons 0"
+    },
+    {
+      "id": "race/best-lap",
+      "file": "race/best-lap.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 1.976,
+      "lufs": -16,
+      "peak_dbtp": -6.5,
+      "channels": 2,
+      "desc": "Best lap, brighter four-note rise",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/checkpoint",
+      "file": "race/checkpoint.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 0.674,
+      "lufs": -16,
+      "peak_dbtp": -7,
+      "channels": 2,
+      "desc": "HUD checkpoint cue, two rising bell notes",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/count-1",
+      "file": "race/count-1.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 1.747,
+      "lufs": -16,
+      "peak_dbtp": -5.6,
+      "channels": 2,
+      "desc": "Countdown beep 1 (identical to count-3)",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/count-2",
+      "file": "race/count-2.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 1.747,
+      "lufs": -16,
+      "peak_dbtp": -5.6,
+      "channels": 2,
+      "desc": "Countdown beep 2 (identical to count-3)",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/count-3",
+      "file": "race/count-3.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 1.747,
+      "lufs": -16,
+      "peak_dbtp": -5.6,
+      "channels": 2,
+      "desc": "Countdown beep 3 (880 Hz, stadium PA)",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/count-go",
+      "file": "race/count-go.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 2.005,
+      "lufs": -16,
+      "peak_dbtp": -11.4,
+      "channels": 2,
+      "desc": "GO tone, octave up at 1760 Hz",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/count-tick",
+      "file": "race/count-tick.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 0.07,
+      "lufs": null,
+      "peak_dbtp": -1.5,
+      "channels": 1,
+      "desc": "Soft dry 70 ms tick for menus and lap counters (too short for integrated LUFS; ~-21.8 by BS.1770 estimate)",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/final-lap-bell",
+      "file": "race/final-lap-bell.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 4.364,
+      "lufs": -16,
+      "peak_dbtp": -5.6,
+      "channels": 2,
+      "desc": "Final-lap bell, one strike with stadium reverb",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/horn-long",
+      "file": "race/horn-long.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 4.535,
+      "lufs": -16,
+      "peak_dbtp": -7.6,
+      "channels": 2,
+      "desc": "Air horn held 3 s, endurance start or finish",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/horn-start",
+      "file": "race/horn-start.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 2.924,
+      "lufs": -16,
+      "peak_dbtp": -7.2,
+      "channels": 2,
+      "desc": "Race-start stadium air horn, 1.4 s blast",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/lap-complete",
+      "file": "race/lap-complete.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 1.099,
+      "lufs": -16,
+      "peak_dbtp": -8,
+      "channels": 2,
+      "desc": "Lap complete, rising three-note arpeggio",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/lights-on",
+      "file": "race/lights-on.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 1.048,
+      "lufs": -16,
+      "peak_dbtp": -2.9,
+      "channels": 2,
+      "desc": "Start-light clack with ballast hum, once per red light",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/lights-out",
+      "file": "race/lights-out.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 0.54,
+      "lufs": -16,
+      "peak_dbtp": -2.1,
+      "channels": 2,
+      "desc": "Lights out: relay snap and low thunk",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/pit-limiter-beep",
+      "file": "race/pit-limiter-beep.ogg",
+      "category": "race",
+      "loop": true,
+      "seconds": 1,
+      "lufs": -18,
+      "peak_dbtp": -10.1,
+      "channels": 1,
+      "desc": "Loop: pit-limiter nag, two beeps per second (-18 LUFS)",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/position-down",
+      "file": "race/position-down.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 0.696,
+      "lufs": -16,
+      "peak_dbtp": -5.2,
+      "channels": 2,
+      "desc": "Position lost, two falling notes",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "race/position-up",
+      "file": "race/position-up.ogg",
+      "category": "race",
+      "loop": false,
+      "seconds": 0.69,
+      "lufs": -16,
+      "peak_dbtp": -6.8,
+      "channels": 2,
+      "desc": "Position gained, upward sweep into a blip",
+      "source": "Synthesized locally (tools/synth_race_sfx.py)",
+      "license": "Original work for Ultrack"
+    },
+    {
+      "id": "engines/recorded/av12-idle",
+      "file": "engines/recorded/av12-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.70248,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.34495,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 950
+    },
+    {
+      "id": "engines/recorded/av12-low",
+      "file": "engines/recorded/av12-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.27031,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.35072,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2000
+    },
+    {
+      "id": "engines/recorded/av12-mid",
+      "file": "engines/recorded/av12-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.20575,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.28633,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 4200
+    },
+    {
+      "id": "engines/recorded/av12-high",
+      "file": "engines/recorded/av12-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.17162,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.37911,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 7200
+    },
+    {
+      "id": "engines/recorded/av12-decel",
+      "file": "engines/recorded/av12-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.27456,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.22474,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 4100
+    },
+    {
+      "id": "engines/recorded/furari-488-idle",
+      "file": "engines/recorded/furari-488-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.55029,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.3892,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 950
+    },
+    {
+      "id": "engines/recorded/furari-488-low",
+      "file": "engines/recorded/furari-488-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.24306,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.37005,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2100
+    },
+    {
+      "id": "engines/recorded/furari-488-mid",
+      "file": "engines/recorded/furari-488-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.20254,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.3418,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 4000
+    },
+    {
+      "id": "engines/recorded/furari-488-high",
+      "file": "engines/recorded/furari-488-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.20287,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.37238,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 6800
+    },
+    {
+      "id": "engines/recorded/furari-488-decel",
+      "file": "engines/recorded/furari-488-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.25256,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.36138,
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 3000
+    },
+    {
+      "id": "engines/recorded/mp1x-idle",
+      "file": "engines/recorded/mp1x-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.42829,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.33742,
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 1000
+    },
+    {
+      "id": "engines/recorded/mp1x-low",
+      "file": "engines/recorded/mp1x-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.23404,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.33119,
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2200
+    },
+    {
+      "id": "engines/recorded/mp1x-mid",
+      "file": "engines/recorded/mp1x-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.20596,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.36798,
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 4200
+    },
+    {
+      "id": "engines/recorded/mp1x-high",
+      "file": "engines/recorded/mp1x-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.19692,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.22934,
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 6600
+    },
+    {
+      "id": "engines/recorded/mp1x-decel",
+      "file": "engines/recorded/mp1x-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.20415,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.33749,
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2800
+    },
+    {
+      "id": "engines/recorded/aston-martin-valk-idle",
+      "file": "engines/recorded/aston-martin-valk-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.12571,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.39962,
+      "source": {
+        "author": "Car and Driver España",
+        "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 1100
+    },
+    {
+      "id": "engines/recorded/aston-martin-valk-low",
+      "file": "engines/recorded/aston-martin-valk-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.26267,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.5721,
+      "source": {
+        "author": "Car and Driver España",
+        "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2400
+    },
+    {
+      "id": "engines/recorded/aston-martin-valk-mid",
+      "file": "engines/recorded/aston-martin-valk-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.22202,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.39839,
+      "source": {
+        "author": "Car and Driver España",
+        "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 5200
+    },
+    {
+      "id": "engines/recorded/aston-martin-valk-high",
+      "file": "engines/recorded/aston-martin-valk-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.26269,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.46764,
+      "source": {
+        "author": "Car and Driver España",
+        "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 9500
+    },
+    {
+      "id": "engines/recorded/aston-martin-valk-decel",
+      "file": "engines/recorded/aston-martin-valk-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.23294,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.43743,
+      "source": {
+        "author": "Car and Driver España",
+        "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 4500
+    },
+    {
+      "id": "engines/recorded/mustang-idle",
+      "file": "engines/recorded/mustang-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.34585,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.63005,
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 850
+    },
+    {
+      "id": "engines/recorded/mustang-low",
+      "file": "engines/recorded/mustang-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.26017,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.32128,
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2000
+    },
+    {
+      "id": "engines/recorded/mustang-mid",
+      "file": "engines/recorded/mustang-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.21221,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.5062,
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 3800
+    },
+    {
+      "id": "engines/recorded/mustang-high",
+      "file": "engines/recorded/mustang-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.19552,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.36123,
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 6100
+    },
+    {
+      "id": "engines/recorded/mustang-decel",
+      "file": "engines/recorded/mustang-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.26067,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.36576,
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2800
+    },
+    {
+      "id": "engines/recorded/bmw1-idle",
+      "file": "engines/recorded/bmw1-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.55208,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.47744,
+      "source": {
+        "author": "Sahan Chethiya",
+        "title": "BMW i8 Revs & Exhaust Sound",
+        "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 950
+    },
+    {
+      "id": "engines/recorded/bmw1-low",
+      "file": "engines/recorded/bmw1-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.25081,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.23247,
+      "source": {
+        "author": "Sahan Chethiya",
+        "title": "BMW i8 Revs & Exhaust Sound",
+        "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2000
+    },
+    {
+      "id": "engines/recorded/bmw1-mid",
+      "file": "engines/recorded/bmw1-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.21325,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.67077,
+      "source": {
+        "author": "Sahan Chethiya",
+        "title": "BMW i8 Revs & Exhaust Sound",
+        "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 3600
+    },
+    {
+      "id": "engines/recorded/bmw1-high",
+      "file": "engines/recorded/bmw1-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.20998,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.23942,
+      "source": {
+        "author": "Sahan Chethiya",
+        "title": "BMW i8 Revs & Exhaust Sound",
+        "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 5200
+    },
+    {
+      "id": "engines/recorded/bmw1-decel",
+      "file": "engines/recorded/bmw1-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.22423,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.32393,
+      "source": {
+        "author": "Sahan Chethiya",
+        "title": "BMW i8 Revs & Exhaust Sound",
+        "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2800
+    },
+    {
+      "id": "engines/recorded/buggati-idle",
+      "file": "engines/recorded/buggati-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.44954,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.46894,
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 950
+    },
+    {
+      "id": "engines/recorded/buggati-low",
+      "file": "engines/recorded/buggati-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.27054,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.4191,
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 1900
+    },
+    {
+      "id": "engines/recorded/buggati-mid",
+      "file": "engines/recorded/buggati-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.18908,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.35508,
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 3600
+    },
+    {
+      "id": "engines/recorded/buggati-high",
+      "file": "engines/recorded/buggati-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.19987,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.37252,
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 5600
+    },
+    {
+      "id": "engines/recorded/buggati-decel",
+      "file": "engines/recorded/buggati-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.28465,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.32651,
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2200
+    },
+    {
+      "id": "engines/recorded/bentley-gt-idle",
+      "file": "engines/recorded/bentley-gt-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.24958,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.2766,
+      "source": {
+        "author": "QuickSilver Sound Architects",
+        "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+        "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 850
+    },
+    {
+      "id": "engines/recorded/bentley-gt-low",
+      "file": "engines/recorded/bentley-gt-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.2474,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.25804,
+      "source": {
+        "author": "QuickSilver Sound Architects",
+        "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+        "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 1800
+    },
+    {
+      "id": "engines/recorded/bentley-gt-mid",
+      "file": "engines/recorded/bentley-gt-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.20788,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.36025,
+      "source": {
+        "author": "QuickSilver Sound Architects",
+        "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+        "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 3300
+    },
+    {
+      "id": "engines/recorded/bentley-gt-high",
+      "file": "engines/recorded/bentley-gt-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.2015,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.3832,
+      "source": {
+        "author": "QuickSilver Sound Architects",
+        "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+        "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 5100
+    },
+    {
+      "id": "engines/recorded/bentley-gt-decel",
+      "file": "engines/recorded/bentley-gt-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.23794,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.29652,
+      "source": {
+        "author": "QuickSilver Sound Architects",
+        "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+        "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2600
+    },
+    {
+      "id": "engines/recorded/jaguarxkjss-idle",
+      "file": "engines/recorded/jaguarxkjss-idle.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 1.17375,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.45909,
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 1300
+    },
+    {
+      "id": "engines/recorded/jaguarxkjss-low",
+      "file": "engines/recorded/jaguarxkjss-low.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.38915,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.39066,
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 1800
+    },
+    {
+      "id": "engines/recorded/jaguarxkjss-mid",
+      "file": "engines/recorded/jaguarxkjss-mid.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.29329,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.28612,
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 2500
+    },
+    {
+      "id": "engines/recorded/jaguarxkjss-high",
+      "file": "engines/recorded/jaguarxkjss-high.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.25694,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.3759,
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 3200
+    },
+    {
+      "id": "engines/recorded/jaguarxkjss-decel",
+      "file": "engines/recorded/jaguarxkjss-decel.ogg",
+      "category": "engine",
+      "loop": true,
+      "seconds": 0.36829,
+      "channels": 1,
+      "rms": 0.115,
+      "samplePeak": 0.31432,
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "referenceRpmEstimate": 1800
+    }
+  ],
+  "engineProfiles": {
+    "av12": {
+      "name": "Lamborghini Aventador SV V12",
+      "redline": 8500,
+      "cars": [
+        "av12"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/av12-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/av12-low.ogg",
+          "rpm": 2000
+        },
+        "mid": {
+          "file": "engines/recorded/av12-mid.ogg",
+          "rpm": 4200
+        },
+        "high": {
+          "file": "engines/recorded/av12-high.ogg",
+          "rpm": 7200
+        },
+        "decel": {
+          "file": "engines/recorded/av12-decel.ogg",
+          "rpm": 4100
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Aventador SV with aftermarket Fi exhaust",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/av12-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "furari-488": {
+      "name": "Ferrari 488 GTB V8",
+      "redline": 8000,
+      "cars": [
+        "furari-488"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/furari-488-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/furari-488-low.ogg",
+          "rpm": 2100
+        },
+        "mid": {
+          "file": "engines/recorded/furari-488-mid.ogg",
+          "rpm": 4000
+        },
+        "high": {
+          "file": "engines/recorded/furari-488-high.ogg",
+          "rpm": 6800
+        },
+        "decel": {
+          "file": "engines/recorded/furari-488-decel.ogg",
+          "rpm": 3000
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "488 GTB with Fi catback; game body is 488 Pista",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/furari-488-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "mp1x": {
+      "name": "McLaren 720S V8",
+      "redline": 8500,
+      "cars": [
+        "mp1x"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/mp1x-idle.ogg",
+          "rpm": 1000
+        },
+        "low": {
+          "file": "engines/recorded/mp1x-low.ogg",
+          "rpm": 2200
+        },
+        "mid": {
+          "file": "engines/recorded/mp1x-mid.ogg",
+          "rpm": 4200
+        },
+        "high": {
+          "file": "engines/recorded/mp1x-high.ogg",
+          "rpm": 6600
+        },
+        "decel": {
+          "file": "engines/recorded/mp1x-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "720S with Fi exhaust",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/mp1x-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "aston-martin-valk": {
+      "name": "Aston Martin Valkyrie V12",
+      "redline": 11000,
+      "cars": [
+        "aston-martin-valk"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/aston-martin-valk-idle.ogg",
+          "rpm": 1100
+        },
+        "low": {
+          "file": "engines/recorded/aston-martin-valk-low.ogg",
+          "rpm": 2400
+        },
+        "mid": {
+          "file": "engines/recorded/aston-martin-valk-mid.ogg",
+          "rpm": 5200
+        },
+        "high": {
+          "file": "engines/recorded/aston-martin-valk-high.ogg",
+          "rpm": 9500
+        },
+        "decel": {
+          "file": "engines/recorded/aston-martin-valk-decel.ogg",
+          "rpm": 4500
+        }
+      },
+      "source": {
+        "author": "Car and Driver España",
+        "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Valkyrie V12 engine demonstration published by Car and Driver Espana",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/aston-martin-valk-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "mustang": {
+      "name": "Ford Mustang GT V8",
+      "redline": 7400,
+      "cars": [
+        "mustang"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/mustang-idle.ogg",
+          "rpm": 850
+        },
+        "low": {
+          "file": "engines/recorded/mustang-low.ogg",
+          "rpm": 2000
+        },
+        "mid": {
+          "file": "engines/recorded/mustang-mid.ogg",
+          "rpm": 3800
+        },
+        "high": {
+          "file": "engines/recorded/mustang-high.ogg",
+          "rpm": 6100
+        },
+        "decel": {
+          "file": "engines/recorded/mustang-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "2018 Mustang GT, active exhaust Track mode",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/mustang-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "bmw1": {
+      "name": "BMW i8 turbo three-cylinder",
+      "redline": 6500,
+      "cars": [
+        "bmw1"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/bmw1-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/bmw1-low.ogg",
+          "rpm": 2000
+        },
+        "mid": {
+          "file": "engines/recorded/bmw1-mid.ogg",
+          "rpm": 3600
+        },
+        "high": {
+          "file": "engines/recorded/bmw1-high.ogg",
+          "rpm": 5200
+        },
+        "decel": {
+          "file": "engines/recorded/bmw1-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "Sahan Chethiya",
+        "title": "BMW i8 Revs & Exhaust Sound",
+        "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "BMW i8, including its factory exterior sound character",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/bmw1-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "buggati": {
+      "name": "Bugatti Chiron W16",
+      "redline": 6800,
+      "cars": [
+        "buggati"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/buggati-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/buggati-low.ogg",
+          "rpm": 1900
+        },
+        "mid": {
+          "file": "engines/recorded/buggati-mid.ogg",
+          "rpm": 3600
+        },
+        "high": {
+          "file": "engines/recorded/buggati-high.ogg",
+          "rpm": 5600
+        },
+        "decel": {
+          "file": "engines/recorded/buggati-decel.ogg",
+          "rpm": 2200
+        }
+      },
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "2017 Chiron recorded at Bugatti Wolfsburg",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/buggati-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "bentley-gt": {
+      "name": "Bentley Continental GT Speed W12",
+      "redline": 6500,
+      "cars": [
+        "bentley-gt"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/bentley-gt-idle.ogg",
+          "rpm": 850
+        },
+        "low": {
+          "file": "engines/recorded/bentley-gt-low.ogg",
+          "rpm": 1800
+        },
+        "mid": {
+          "file": "engines/recorded/bentley-gt-mid.ogg",
+          "rpm": 3300
+        },
+        "high": {
+          "file": "engines/recorded/bentley-gt-high.ogg",
+          "rpm": 5100
+        },
+        "decel": {
+          "file": "engines/recorded/bentley-gt-decel.ogg",
+          "rpm": 2600
+        }
+      },
+      "source": {
+        "author": "QuickSilver Sound Architects",
+        "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+        "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Continental GT Speed W12 with QuickSilver Sport exhaust",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/bentley-gt-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "jaguarxkjss": {
+      "name": "Mercedes-AMG ONE V6 hybrid",
+      "redline": 11000,
+      "cars": [
+        "jaguarxkjss"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/jaguarxkjss-idle.ogg",
+          "rpm": 1300
+        },
+        "low": {
+          "file": "engines/recorded/jaguarxkjss-low.ogg",
+          "rpm": 1800
+        },
+        "mid": {
+          "file": "engines/recorded/jaguarxkjss-mid.ogg",
+          "rpm": 2500
+        },
+        "high": {
+          "file": "engines/recorded/jaguarxkjss-high.ogg",
+          "rpm": 3200
+        },
+        "decel": {
+          "file": "engines/recorded/jaguarxkjss-decel.ogg",
+          "rpm": 1800
+        }
+      },
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Actual AMG ONE at Goodwood. Low-speed recording; high-RPM anchors are pitch-transposed from this take and need a better full-load recording.",
+      "quality": "limited-rpm-source",
+      "preview": "engines/recorded/jaguarxkjss-source.ogg",
+      "pops": [],
+      "shifts": []
+    }
+  }
+}

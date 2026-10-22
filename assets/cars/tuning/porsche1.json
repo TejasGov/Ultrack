@@ -1,0 +1,55 @@
+{
+  "car": "porsche1",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "mirrors": {
+    "style": "gt",
+    "housing": "paint"
+  },
+  "suspension": {
+    "pitch": 0.6,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.0
+  },
+  "aero": [
+    {
+      "name": "spoiler",
+      "min": [
+        1.8,
+        0.885,
+        -1.2
+      ],
+      "max": [
+        2.35,
+        1.0,
+        1.2
+      ],
+      "hinge": [
+        1.84,
+        0.92
+      ],
+      "mode": "speed",
+      "deg": 7,
+      "rise": 0.07,
+      "vOn": 22
+    }
+  ],
+  "log": [
+    "run 1 (all cars): mirrors -> gt/paint (911: body-colour housings); ride 0.0 m from the measured arch gaps (front top gap >= 3 cm for the brake dive); pitch 0.6",
+    "run 5: tail scan: spoiler band 0.89-0.96 m clear of the deck from x 1.8 -> rises 7 cm and tilts 7 deg above 80 km/h (Turbo S active spoiler)"
+  ],
+  "replacement": {
+    "note": "tuning for the replacement model (cars.js reads only this block for it): 918 Spyder from Sketchfab (adrianaflak09), see assets/cars/porsche1/source.json",
+    "suspension": {
+      "pitch": 0.5,
+      "roll": 0.85,
+      "freq": 1.6,
+      "ride": 0.01
+    },
+    "aero": [],
+    "log": [
+      "2026-10-21: model swapped from the Meshy 911 shell to the Sketchfab 918 Spyder; the fixes above (911 speed spoiler, gt mirrors) no longer apply",
+      "run 2: ride 0.01 (front top gap 5 cm at 0.03 is more than the brake dive needs)"
+    ]
+  }
+}

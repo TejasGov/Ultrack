@@ -1,0 +1,22 @@
+{
+  "park": "YOYOGI CENTRAL GROVE (+3m)",
+  "center_world": [
+    -505.77142333984375,
+    -220.82977294921875,
+    -6.103515625e-05
+  ],
+  "diameter_m": 120,
+  "top_above_ground_m": 129.4,
+  "gondolas": 32,
+  "shared_gondola_meshes": 1,
+  "nearest_road_center_m": 217.62217054978805,
+  "plaza_radius_m": 39,
+  "trees_relocated_by_removal": [
+    "Green canopy 72"
+  ],
+  "runtime_exported": false,
+  "park_pavilion_shifted_to_edge": [
+    "YOYOGI PARK PAVILION",
+    "YOYOGI PARK PAVILION deep eaves"
+  ]
+}

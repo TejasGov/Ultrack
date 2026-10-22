@@ -1,0 +1,16 @@
+{
+  "car": "blackbird",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "model": "assets/cars/blackbird/source.json (scripts/model-car.py): its own canopy, mirrors and wheels; mirrors/interior/glass tuning does not apply",
+  "suspension": {
+    "pitch": 0.6,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.065
+  },
+  "aero": [],
+  "log": [
+    "2026-10-20: new car from the Sketchfab Hennessey Blackbird model (let's not care abt it, CC-BY); no car-lab profile, everything from model.json",
+    "run 1: the tyres were 3 cm into the arches and 5.8 cm in the dive (the model's arches are tight) -> ride 0.065; rear tyre face sits 0.5 m outside the tub (open rear fenders by design): the poke warning stays; mirror glass is the model's Material.020; Material.001 (rear wing sails) wears the paint"
+  ]
+}

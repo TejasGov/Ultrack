@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "verifiedOn": "2026-10-19",
+  "models": [
+    {
+      "slot": "mp1x",
+      "credit": {
+        "title": "2017 Mclaren 720s",
+        "author": "_shobh19",
+        "authorUrl": "https://sketchfab.com/s0h1o9b",
+        "url": "https://sketchfab.com/3d-models/2017-mclaren-720s-f7bece69400f4640a4a3be746b44998b",
+        "license": "CC Attribution",
+        "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+        "modelId": "f7bece69400f4640a4a3be746b44998b",
+        "replacement": true,
+        "nonCommercialOnly": false,
+        "additionalCredits": ""
+      },
+      "files": [
+        {
+          "path": "2017-mclaren-720s.zip",
+          "bytes": 897029,
+          "sha256": "ec5474f46e455d40acf5e91edcb03a44f6309b543fb3d01de708ae500b34be16"
+        },
+        {
+          "path": "sources/sketchfab/replacement-imports/mclaren720s-metadata.json",
+          "bytes": 7411,
+          "sha256": "0740f876e1e4c95aa411f14e0352f0ab48f240860c0fadf661fae3465e104c30"
+        },
+        {
+          "path": "sources/sketchfab/replacement-imports/mclaren720s-prepared.glb",
+          "bytes": 1413312,
+          "sha256": "83ca178ebc9ca5e732d56b4859df0c1d2a4d20f5dabbe4187fabb52506c219dc"
+        },
+        {
+          "path": "assets/cars/mp1x/source.json",
+          "bytes": 945,
+          "sha256": "bdef314aa16408a1aeef3cb8c39d5bf766cb60bbdb6fe8f551deb8b4ca8d05f9"
+        },
+        {
+          "path": "assets/cars/mp1x/model.json",
+          "bytes": 1408,
+          "sha256": "54ec19b47a9043a96e473148d8f5bce260311d5f3ed4ef537f48eaf5810c3ed4"
+        },
+        {
+          "path": "assets/cars/mp1x/car_lod0.glb",
+          "bytes": 690456,
+          "sha256": "c1d465d7e4b970e7e07bd02ec922c4d234ae7806bab9b0a4749acb83022acd88"
+        },
+        {
+          "path": "assets/cars/mp1x/car_lod1.glb",
+          "bytes": 655380,
+          "sha256": "180ce8acb6a4d64c5d3c884fc673ced3844587738dd92910b56342611fd9f676"
+        },
+        {
+          "path": "car-lab/src/vehicle/profiles/mp1x.json",
+          "bytes": 2352,
+          "sha256": "c4bd9f20fd2644c9feea1348ff4bd033d1d67dc83cd0310f6890950cc2ad247a"
+        }
+      ],
+      "admission": "User requested local integration on 2026-10-19",
+      "commercialUseAllowedByListedLicense": true
+    },
+    {
+      "slot": "jaguarxkjss",
+      "credit": {
+        "title": "Mercedes Amg One",
+        "author": "3dblender_1",
+        "authorUrl": "https://sketchfab.com/3dblender_1",
+        "url": "https://sketchfab.com/3d-models/mercedes-amg-one-77b02e5a555d4819b490f67eeb348d22",
+        "license": "CC Attribution",
+        "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+        "modelId": "77b02e5a555d4819b490f67eeb348d22",
+        "replacement": true,
+        "nonCommercialOnly": false,
+        "additionalCredits": ""
+      },
+      "files": [
+        {
+          "path": "mercedes_amg_one.glb",
+          "bytes": 11709528,
+          "sha256": "3f5fc9a4206d901310d958bb4f633f790cc699902f4499fdf626a10a5a4f21ee"
+        },
+        {
+          "path": "sources/sketchfab/replacement-imports/amgone-metadata.json",
+          "bytes": 7648,
+          "sha256": "20e2bd558eb469772092e0d01c6be30276c10294bbb437c5473855047b1112db"
+        },
+        {
+          "path": "sources/sketchfab/replacement-imports/amgone-prepared.glb",
+          "bytes": 11331500,
+          "sha256": "cc15f78dd33e2e26d67912de19df656daeef59db91dab365a6926bb7f94b5f55"
+        },
+        {
+          "path": "assets/cars/jaguarxkjss/source.json",
+          "bytes": 947,
+          "sha256": "0126cf1c69294cc1ec3427833c30b69c126c56c0f0eafa47962c38e671c8f234"
+        },
+        {
+          "path": "assets/cars/jaguarxkjss/model.json",
+          "bytes": 1415,
+          "sha256": "6e5430fdc59f4a69c48a15b7c946d6c75e6b4956148900f303d9bd09344da103"
+        },
+        {
+          "path": "assets/cars/jaguarxkjss/car_lod0.glb",
+          "bytes": 2349848,
+          "sha256": "f63d0974b0a8a2996c07b9987a2439c739b4f3d0185cbd124a826bff6c36780c"
+        },
+        {
+          "path": "assets/cars/jaguarxkjss/car_lod1.glb",
+          "bytes": 1317668,
+          "sha256": "bb010140e7da2b64f7e7cd3b8e24f33faca2d66154deacf2291d60711b5433dc"
+        },
+        {
+          "path": "car-lab/src/vehicle/profiles/jaguarxkjss.json",
+          "bytes": 2376,
+          "sha256": "5738af36c1eabe6e62595592f437c32d48eb1f2dd639758fc7d73075ba06fcc5"
+        }
+      ],
+      "admission": "User requested local integration on 2026-10-19",
+      "commercialUseAllowedByListedLicense": true
+    },
+    {
+      "slot": "nuvolari",
+      "credit": {
+        "title": "2018 Audi e-tron GT Concept",
+        "author": "Ddiaz Design",
+        "authorUrl": "https://sketchfab.com/ddiaz-design",
+        "url": "https://sketchfab.com/3d-models/2018-audi-e-tron-gt-concept-e35726151c9e4a169c005d54509715fa",
+        "license": "CC Attribution-NonCommercial-ShareAlike",
+        "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "modelId": "e35726151c9e4a169c005d54509715fa",
+        "replacement": true,
+        "nonCommercialOnly": true,
+        "additionalCredits": "Based on a Real Racing 3 3d model; credits @VuckyZ123"
+      },
+      "files": [
+        {
+          "path": "2018-audi-e-tron-gt-concept.zip",
+          "bytes": 9120978,
+          "sha256": "1e86593665efb8c28f05b412be5f31985e715f403b64f13b0410c110db07140a"
+        },
+        {
+          "path": "sources/sketchfab/replacement-imports/etron-metadata.json",
+          "bytes": 7320,
+          "sha256": "050a3d8403e9de7d7359f6bbf739f665fa43ed0f87906c95f13554c1c7bf19a0"
+        },
+        {
+          "path": "sources/sketchfab/replacement-imports/etron-prepared.glb",
+          "bytes": 4674132,
+          "sha256": "bfe5728d73bb9597e03ca7000186f9a384b5452f94cc0e6c1c0bec48530cff00"
+        },
+        {
+          "path": "assets/cars/nuvolari/source.json",
+          "bytes": 1052,
+          "sha256": "c7b1110552a8fc127d8362f3565b79d010e52a1c5f9899895467bd6a21555381"
+        },
+        {
+          "path": "assets/cars/nuvolari/model.json",
+          "bytes": 1524,
+          "sha256": "01eaf420ab2753e36ce3d647395f381060df8d5840442dd8177d619c302a327c"
+        },
+        {
+          "path": "assets/cars/nuvolari/car_lod0.glb",
+          "bytes": 3010628,
+          "sha256": "e33b6037f6791cbd544e3f3d525c386c5ba8da5e32627d5243fb0b9e0d53590a"
+        },
+        {
+          "path": "assets/cars/nuvolari/car_lod1.glb",
+          "bytes": 1359576,
+          "sha256": "2440b8df585a589cdf0b0478ac1179498de5c963ad8c4896fbe77be575597858"
+        },
+        {
+          "path": "car-lab/src/vehicle/profiles/nuvolari.json",
+          "bytes": 2488,
+          "sha256": "26977e86d42faefdaec116c11eae9aae7435e281ffa7d463bf0823fca1365100"
+        }
+      ],
+      "admission": "User requested local integration on 2026-10-19",
+      "commercialUseAllowedByListedLicense": false
+    }
+  ]
+}

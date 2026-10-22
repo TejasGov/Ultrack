@@ -1,0 +1,70 @@
+{
+  "src": "../../../sources/sketchfab/F1-488pista-LSxSEPTIC/model.glb",
+  "credit": {
+    "title": "Ferrari 488 Pista",
+    "author": "LSxSEPTIC",
+    "url": "https://sketchfab.com/3d-models/7f2f15ee7e224dbc94d40bf2481bb65f",
+    "license": "CC-BY as labelled; very likely a Forza Horizon rip: replace before any public release (V2-BACKLOG.md)"
+  },
+  "rotateZ": -90,
+  "length": 4.605,
+  "wheels": {
+    "mode": "groups",
+    "groups": [
+      "wheelfl",
+      "wheelrl"
+    ],
+    "caliper": [
+      "caliper"
+    ],
+    "tyre": [
+      "Tire"
+    ],
+    "diameter": {
+      "front": 0.66,
+      "rear": 0.69
+    }
+  },
+  "roles": {
+    "M_CarPaint_Max": "paint",
+    "Material.002": "glass",
+    "Material.003": "glass"
+  },
+  "splitFrontRear": {
+    "Red_LG": [
+      "keep",
+      "tail"
+    ],
+    "Light": [
+      "headkeep",
+      "keep"
+    ]
+  },
+  "interior": [
+    "Interior",
+    "Engine"
+  ],
+  "exhaust": [],
+  "budget": {
+    "body0": 130000,
+    "body1": 25000,
+    "wheel": 10000
+  },
+  "mirrorGlass": {
+    "materials": [
+      "Swatch"
+    ],
+    "box": [
+      [
+        -0.62,
+        0.72,
+        0.9
+      ],
+      [
+        -0.3,
+        0.92,
+        1.16
+      ]
+    ]
+  }
+}

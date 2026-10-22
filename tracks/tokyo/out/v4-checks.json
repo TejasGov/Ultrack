@@ -1,0 +1,11 @@
+{
+  "road_samples_unchanged": true,
+  "bridge_clear_width_m": 24,
+  "tower_indices": [
+    704,
+    778
+  ],
+  "runtime_exported": false,
+  "reference_images": 7,
+  "preview_lights_require_baking": true
+}

@@ -1,0 +1,31 @@
+{
+  "car": "aston-martin-valk",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "mirrors": {
+    "style": "blade",
+    "housing": "carbon"
+  },
+  "suspension": {
+    "pitch": 0.8,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.0
+  },
+  "aero": [],
+  "log": [
+    "run 1 (all cars): mirrors -> blade/carbon (Valkyrie: small carbon pods on stalks); ride 0.0 m from the measured arch gaps (front top gap >= 3 cm for the brake dive); pitch 0.6"
+  ],
+  "replacement": {
+    "note": "tuning for the replacement model (cars.js reads only this block for it): Real Racing 3 Valkyrie from Sketchfab (OUTPISTON), see assets/cars/aston-martin-valk/source.json",
+    "suspension": {
+      "pitch": 0.8,
+      "roll": 0.85,
+      "freq": 1.6,
+      "ride": 0.03
+    },
+    "aero": [],
+    "log": [
+      "2026-10-21: model swapped to the Sketchfab Valkyrie; the Meshy-shell fixes above no longer apply"
+    ]
+  }
+}

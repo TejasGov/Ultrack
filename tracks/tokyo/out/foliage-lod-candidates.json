@@ -1,0 +1,50 @@
+[
+  {
+    "source": "Sakura master 0",
+    "candidate": "Sakura master 0 LOD1",
+    "level": 1,
+    "triangles": 13044,
+    "method": "Whole-cluster thinning; branches preserved; small foliage expansion",
+    "status": "Candidate only, screen-space transition checks pending"
+  },
+  {
+    "source": "Sakura master 0",
+    "candidate": "Sakura master 0 LOD2",
+    "level": 2,
+    "triangles": 5044,
+    "method": "Whole-cluster thinning; branches preserved; small foliage expansion",
+    "status": "Candidate only, screen-space transition checks pending"
+  },
+  {
+    "source": "Sakura master 1",
+    "candidate": "Sakura master 1 LOD1",
+    "level": 1,
+    "triangles": 13044,
+    "method": "Whole-cluster thinning; branches preserved; small foliage expansion",
+    "status": "Candidate only, screen-space transition checks pending"
+  },
+  {
+    "source": "Sakura master 1",
+    "candidate": "Sakura master 1 LOD2",
+    "level": 2,
+    "triangles": 5044,
+    "method": "Whole-cluster thinning; branches preserved; small foliage expansion",
+    "status": "Candidate only, screen-space transition checks pending"
+  },
+  {
+    "source": "Sakura master 2",
+    "candidate": "Sakura master 2 LOD1",
+    "level": 1,
+    "triangles": 3444,
+    "method": "Whole-cluster thinning; branches preserved; small foliage expansion",
+    "status": "Candidate only, screen-space transition checks pending"
+  },
+  {
+    "source": "Sakura master 2",
+    "candidate": "Sakura master 2 LOD2",
+    "level": 2,
+    "triangles": 1844,
+    "method": "Whole-cluster thinning; branches preserved; small foliage expansion",
+    "status": "Candidate only, screen-space transition checks pending"
+  }
+]

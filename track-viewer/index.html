@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ultrack</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%230b0c0f'/%3E%3Cpath d='M14 14h12l-7 26h14l7-26h12l-8 30c-1 4-4 6-8 6H17c-5 0-8-3-6-8z' fill='%23f4f2ee'/%3E%3Cpath d='M8 56l40-4-2 4z' fill='%23e3141b'/%3E%3C/svg%3E">
+  <!-- The normal game boots into the small garage. Only the developer viewer preloads the circuit. -->
+  <script>
+    (function () {
+      var q = new URLSearchParams(location.search), look = 'dusk';
+      try { look = (JSON.parse(localStorage.getItem('ultrack.v1')).settings || {}).look || 'dusk'; } catch (e) {}
+      var hdri = { dusk: 'belfast_sunset_puresky_2k.hdr', bluehour: 'qwantani_dusk_1_puresky_2k.hdr', night: 'qwantani_night_puresky_2k.hdr' }[look] || 'belfast_sunset_puresky_2k.hdr';
+      var files = q.get('dev') === '1' ? [q.get('tex') === 'webp' ? 'marina_visual.glb' : 'marina_visual_ktx2.glb', 'track.json', 'lights.json', 'hdri/' + hdri] : ['track.json'];
+      files.forEach(function (f) {
+        var l = document.createElement('link'); l.rel = 'preload'; l.as = 'fetch'; l.crossOrigin = 'anonymous'; l.href = '/assets/' + f; document.head.appendChild(l);
+      });
+    })();
+  </script>
+  <style>
+    html, body { margin: 0; height: 100%; background: #05070b; overflow: hidden; font-family: system-ui, sans-serif; }
+    #app { position: fixed; inset: 0; }
+    #hud { position: fixed; left: 12px; bottom: 12px; color: #cfe; font: 12px/1.4 ui-monospace, monospace;
+           background: rgba(0, 0, 0, 0.45); padding: 6px 10px; border-radius: 4px; pointer-events: none; white-space: pre; }
+    #loading { position: fixed; inset: 0; display: grid; place-items: center; color: #9cf; font: 14px ui-monospace, monospace; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hud"></div>
+  <div id="loading">loading track…</div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+{
+  "stage": "v2-study",
+  "signs": [
+    {
+      "text": "電気街",
+      "meaning": "Electric Town",
+      "district": "ROPPONGI HILLS ARENA",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ゲーム",
+      "meaning": "Games",
+      "district": "ROPPONGI HILLS ARENA",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "カラオケ",
+      "meaning": "Karaoke",
+      "district": "SHIBUYA SCRAMBLE TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "居酒屋",
+      "meaning": "Izakaya",
+      "district": "SHIBUYA SCRAMBLE TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ラーメン",
+      "meaning": "Ramen",
+      "district": "SHIBUYA SCRAMBLE TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "薬局",
+      "meaning": "Pharmacy",
+      "district": "SHIBUYA SCRAMBLE TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "喫茶店",
+      "meaning": "Cafe",
+      "district": "SHIBUYA SCRAMBLE TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ラーメン",
+      "meaning": "Ramen",
+      "district": "AKIHABARA CYBER PLAZA",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "薬局",
+      "meaning": "Pharmacy",
+      "district": "AKIHABARA CYBER PLAZA",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "喫茶店",
+      "meaning": "Cafe",
+      "district": "AKIHABARA CYBER PLAZA",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "寿司",
+      "meaning": "Sushi",
+      "district": "AKIHABARA CYBER PLAZA",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "東京",
+      "meaning": "Tokyo",
+      "district": "AKIHABARA CYBER PLAZA",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "喫茶店",
+      "meaning": "Cafe",
+      "district": "TSUKIJI MARKET HALL",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "寿司",
+      "meaning": "Sushi",
+      "district": "TSUKIJI MARKET HALL",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "東京",
+      "meaning": "Tokyo",
+      "district": "RIDGE SUMMIT OBSERVATORY",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "食堂",
+      "meaning": "Restaurant",
+      "district": "RIDGE SUMMIT OBSERVATORY",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "電気街",
+      "meaning": "Electric Town",
+      "district": "YOYOGI PARK PAVILION",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ゲーム",
+      "meaning": "Games",
+      "district": "YOYOGI PARK PAVILION",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "カラオケ",
+      "meaning": "Karaoke",
+      "district": "SHINJUKU NORTH GATE",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "居酒屋",
+      "meaning": "Izakaya",
+      "district": "SHINJUKU NORTH GATE",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ラーメン",
+      "meaning": "Ramen",
+      "district": "SHINJUKU NORTH GATE",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "薬局",
+      "meaning": "Pharmacy",
+      "district": "SHINJUKU NORTH GATE",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "喫茶店",
+      "meaning": "Cafe",
+      "district": "SHINJUKU NORTH GATE",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ラーメン",
+      "meaning": "Ramen",
+      "district": "ASAKUSA RIDGE GATE",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "薬局",
+      "meaning": "Pharmacy",
+      "district": "ASAKUSA RIDGE GATE",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "喫茶店",
+      "meaning": "Cafe",
+      "district": "SHINAGAWA BAY PIER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "寿司",
+      "meaning": "Sushi",
+      "district": "SHINAGAWA BAY PIER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "東京",
+      "meaning": "Tokyo",
+      "district": "GINZA NEON TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "食堂",
+      "meaning": "Restaurant",
+      "district": "GINZA NEON TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "電気街",
+      "meaning": "Electric Town",
+      "district": "GINZA NEON TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ゲーム",
+      "meaning": "Games",
+      "district": "GINZA NEON TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "カラオケ",
+      "meaning": "Karaoke",
+      "district": "GINZA NEON TOWER",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "電気街",
+      "meaning": "Electric Town",
+      "district": "SHIBA VALLEY DOME",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "ゲーム",
+      "meaning": "Games",
+      "district": "SHIBA VALLEY DOME",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "カラオケ",
+      "meaning": "Karaoke",
+      "district": "TOYOSU TECH DOCK",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    },
+    {
+      "text": "居酒屋",
+      "meaning": "Izakaya",
+      "district": "TOYOSU TECH DOCK",
+      "orientation": "stacked horizontal glyphs; no punctuation requiring vertical typesetting"
+    }
+  ],
+  "references": [
+    "https://www.gotokyo.org/en/destinations/central-tokyo/akihabara/",
+    "https://www.gotokyo.org/en/see-and-do/nightlife/index.html",
+    "https://www.gotokyo.org/en/see-and-do/attractions/landmarks/"
+  ],
+  "skyline": {
+    "file": "../textures/tokyo_skyline_original_bake.png",
+    "method": "Original Blender orthographic render from authored source geometry; not scraped photography",
+    "resolution": [
+      4096,
+      1024
+    ],
+    "source_scene_triangles": 72492,
+    "visible_main_scene_triangles": 2,
+    "source_scene_separate": true,
+    "geographic_accuracy": "Fictional arrangement of reference-inspired recognizable landmark silhouettes",
+    "parallax_limit": "Distant-only card, needs racing-camera and seam review in runtime"
+  },
+  "polyhaven": [
+    "asphalt_track",
+    "brushed_concrete",
+    "leafy_grass",
+    "qwantani_dusk_1_puresky"
+  ],
+  "font": {
+    "source": "C:/Windows/Fonts/msgothic.ttc",
+    "usage": "Local authoring font; export lettering as approved baked sign atlas before distribution; no font file copied into project"
+  },
+  "runtime_exported": false
+}

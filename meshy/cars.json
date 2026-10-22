@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "concurrency": 3,
+  "defaultBatchSize": 3,
+  "outputRoot": "meshy_output/cars",
+  "estimatedCreditsPerCar": 30,
+  "pricingChecked": "2026-10-18",
+  "pricingSource": "https://docs.meshy.ai/en/api/pricing",
+  "generation": {
+    "ai_model": "meshy-7.1",
+    "geometry_resolution": "standard",
+    "should_texture": true,
+    "enable_pbr": true,
+    "texture_resolution": "4k",
+    "remove_lighting": true,
+    "image_enhancement": false,
+    "should_remesh": true,
+    "topology": "triangle",
+    "target_polycount": 60000,
+    "save_pre_remeshed_model": true,
+    "target_formats": ["glb"],
+    "multi_view_thumbnails": true,
+    "texture_prompt": "Preserve the reference car's primary body color and design. Realistic automotive PBR: smooth painted body panels, dark glass, rubber tires, metal wheels and carbon aero. No studio floor, background graphics, captions or extra cars painted onto the vehicle. Avoid baked reflections and shadows."
+  },
+  "cropBoxes": {
+    "wide": {
+      "front": [0.725, 0.523, 0.970, 0.695],
+      "side": [0.015, 0.525, 0.360, 0.695],
+      "rear": [0.392, 0.525, 0.675, 0.705]
+    },
+    "standard": {
+      "front": [0.755, 0.525, 0.975, 0.692],
+      "side": [0.015, 0.525, 0.365, 0.687],
+      "rear": [0.405, 0.525, 0.695, 0.692]
+    }
+  },
+  "cars": [
+    {"id": "furari-488", "source": "concept-furari-488.png", "batch": 1,
+      "cropPixels": {"front": [1220,490,1600,656], "side": [25,492,600,652], "rear": [660,496,1120,663]}},
+    {"id": "lambo2", "source": "concept-lambo2.png", "batch": 1,
+      "cropPixels": {"front": [1225,505,1600,676], "side": [22,516,602,668], "rear": [660,507,1130,677]}},
+    {"id": "mclaren", "source": "concept-mclaren.png", "batch": 1,
+      "cropPixels": {"front": [1300,603,1660,790], "side": [35,628,640,785], "rear": [708,610,1186,799]}},
+    {"id": "mustang", "source": "concept-mustang.png", "batch": 2,
+      "cropPixels": {"front": [1220,490,1590,670], "side": [23,497,590,656], "rear": [649,495,1110,671]}},
+    {"id": "porsche1", "source": "concept-porsche1.jpg", "batch": 2,
+      "cropPixels": {"front": [1185,565,1705,775], "side": [10,582,620,760], "rear": [697,559,1117,779]}},
+    {"id": "aston-martin-valk", "source": "concept-aston-martin-valk.jpg", "batch": 2,
+      "cropPixels": {"front": [1200,603,1708,798], "side": [8,618,642,784], "rear": [732,597,1140,802]}},
+    {"id": "buggati", "source": "concept-buggati.jpg", "batch": 3,
+      "cropPixels": {"front": [1270,596,1655,794], "side": [38,616,641,777], "rear": [730,598,1145,795]}},
+    {"id": "bentley-gt", "source": "concept-bentley-gt.jpg", "batch": 3,
+      "cropPixels": {"front": [1275,596,1639,806], "side": [32,602,651,795], "rear": [765,594,1129,806]}},
+    {"id": "bmw1", "source": "concept-bmw1.jpg", "batch": 3,
+      "cropPixels": {"front": [1274,601,1640,800], "side": [40,615,641,786], "rear": [748,594,1124,807]}},
+    {"id": "jaguarxkjss", "source": "concept-jaguarxkjss.jpg", "batch": 4,
+      "cropPixels": {"front": [1265,597,1637,807], "side": [24,604,658,791], "rear": [769,592,1133,807]}},
+    {"id": "nuvolari", "source": "concept-nuvolari.jpg", "batch": 4,
+      "cropPixels": {"front": [1277,598,1646,795], "side": [38,615,643,777], "rear": [750,596,1130,800]}},
+    {"id": "tesla1", "source": "concept-tesla1.jpg", "batch": 4,
+      "cropPixels": {"front": [1190,564,1700,780], "side": [19,590,620,761], "rear": [697,560,1120,784]}}
+  ]
+}

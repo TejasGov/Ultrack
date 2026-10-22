@@ -1,0 +1,465 @@
+{
+ "lastLoad": {
+  "totalMs": 1891,
+  "stages": {
+   "Circuit": 0,
+   "Track physics": 0,
+   "Grid": 1,
+   "Audio": 3,
+   "Graphics": 1875
+  }
+ },
+ "menuLong": [
+  [
+   4119,
+   524
+  ],
+  [
+   4757,
+   94
+  ],
+  [
+   4877,
+   107
+  ],
+  [
+   5087,
+   89
+  ],
+  [
+   5426,
+   51
+  ],
+  [
+   5605,
+   103
+  ],
+  [
+   5719,
+   1238
+  ],
+  [
+   8717,
+   62
+  ],
+  [
+   13330,
+   55
+  ],
+  [
+   18828,
+   174
+  ],
+  [
+   19038,
+   59
+  ],
+  [
+   19097,
+   395
+  ]
+ ],
+ "label": "final-dev-30000",
+ "base": "http://localhost:5180",
+ "bootMs": 1010,
+ "menuT": 33970,
+ "clickRel": 33971,
+ "raceMs": 1905,
+ "gridT": 35876,
+ "marksMenu": [
+  [
+   "ultrack:car-ready",
+   963
+  ],
+  [
+   "ultrack:venue-ready",
+   5543
+  ]
+ ],
+ "marksEnd": [
+  [
+   "ultrack:car-ready",
+   963
+  ],
+  [
+   "ultrack:venue-ready",
+   5543
+  ]
+ ],
+ "logs": [
+  [
+   5595,
+   "team artwork: 33 materials"
+  ],
+  [
+   19528,
+   "Race shaders warmed: 12492 ms, 271 programs"
+  ],
+  [
+   35863,
+   "Graphics preparation: {shadersMs: 1035, reflectionsMs: 497, firstFrameMs: 298, programs: 278}"
+  ],
+  [
+   35863,
+   "Race preparation: {totalMs: 1891, stages: Object}"
+  ]
+ ],
+ "errors": [],
+ "byCat": {
+  "other": {
+   "n": 319,
+   "bytes": 224845,
+   "beforeClick": 319,
+   "afterClick": 0
+  },
+  "js": {
+   "n": 97,
+   "bytes": 26490904,
+   "beforeClick": 97,
+   "afterClick": 0
+  },
+  "json": {
+   "n": 47,
+   "bytes": 947350,
+   "beforeClick": 47,
+   "afterClick": 0
+  },
+  "image": {
+   "n": 31,
+   "bytes": 2298968,
+   "beforeClick": 21,
+   "afterClick": 10
+  },
+  "font": {
+   "n": 5,
+   "bytes": 89507,
+   "beforeClick": 5,
+   "afterClick": 0
+  },
+  "car glb": {
+   "n": 16,
+   "bytes": 22041050,
+   "beforeClick": 16,
+   "afterClick": 0
+  },
+  "wasm": {
+   "n": 1,
+   "bytes": 527609,
+   "beforeClick": 1,
+   "afterClick": 0
+  },
+  "other audio": {
+   "n": 6,
+   "bytes": 521347,
+   "beforeClick": 5,
+   "afterClick": 1
+  },
+  "engine audio": {
+   "n": 5,
+   "bytes": 23852,
+   "beforeClick": 5,
+   "afterClick": 0
+  },
+  "venue glb": {
+   "n": 1,
+   "bytes": 12807309,
+   "beforeClick": 1,
+   "afterClick": 0
+  },
+  "hdri": {
+   "n": 1,
+   "bytes": 4563466,
+   "beforeClick": 1,
+   "afterClick": 0
+  },
+  "collision glb": {
+   "n": 1,
+   "bytes": 256893,
+   "beforeClick": 1,
+   "afterClick": 0
+  },
+  "commentary audio": {
+   "n": 3,
+   "bytes": 136446,
+   "beforeClick": 0,
+   "afterClick": 3
+  }
+ },
+ "big": [
+  [
+   "/@vite/client",
+   222411,
+   46,
+   61,
+   "menu"
+  ],
+  [
+   "/src/main.js?t=1792635212998",
+   373707,
+   48,
+   62,
+   "menu"
+  ],
+  [
+   "/node_modules/.vite/deps/three_examples_jsm_loaders_GLTFLoader__js.js?v=d351e754",
+   344440,
+   66,
+   88,
+   "menu"
+  ],
+  [
+   "/node_modules/.vite/deps/three_examples_jsm_loaders_KTX2Loader__js.js?v=e9fafe5f",
+   249438,
+   66,
+   84,
+   "menu"
+  ],
+  [
+   "/node_modules/.vite/deps/three_examples_jsm_postprocessing_SMAAPass__js.js?v=31332e35",
+   160068,
+   66,
+   87,
+   "menu"
+  ],
+  [
+   "/node_modules/.vite/deps/three_examples_jsm_postprocessing_GTAOPass__js.js?v=3de21e49",
+   160126,
+   66,
+   88,
+   "menu"
+  ],
+  [
+   "/src/cars.js?t=1792635212993",
+   343411,
+   67,
+   98,
+   "menu"
+  ],
+  [
+   "/src/game/game.js?t=1792635212998",
+   170392,
+   67,
+   101,
+   "menu"
+  ],
+  [
+   "/node_modules/.vite/deps/three.module-Bj7iJlUn.js?v=627c0ade",
+   5965949,
+   85,
+   188,
+   "menu"
+  ],
+  [
+   "/src/physics/vehicle.js?t=1792625550639",
+   195500,
+   99,
+   176,
+   "menu"
+  ],
+  [
+   "/src/game/ui.js?t=1792635212993",
+   150466,
+   101,
+   179,
+   "menu"
+  ],
+  [
+   "/assets/cars/av12/car_lod0_ktx2.glb",
+   3971871,
+   740,
+   753,
+   "menu"
+  ],
+  [
+   "/basis/basis_transcoder.wasm",
+   527609,
+   782,
+   783,
+   "menu"
+  ],
+  [
+   "/assets/loading/broadcast.webp",
+   320974,
+   3959,
+   3968,
+   "menu"
+  ],
+  [
+   "/assets/cars/av12/car_lod1_ktx2.glb",
+   1217711,
+   3969,
+   3981,
+   "menu"
+  ],
+  [
+   "/assets/audio/crowd/ambience-loop.ogg",
+   385975,
+   3978,
+   4002,
+   "menu"
+  ],
+  [
+   "/node_modules/.vite/deps/@dimforge_rapier3d-compat.js?v=d6c8bc62",
+   10471185,
+   4035,
+   4151,
+   "menu"
+  ],
+  [
+   "/assets/marina_visual_ktx2.glb",
+   12807309,
+   4035,
+   4778,
+   "menu"
+  ],
+  [
+   "/assets/hdri/belfast_sunset_puresky_2k.hdr",
+   4563466,
+   4035,
+   4142,
+   "menu"
+  ],
+  [
+   "/@fs/D:/RaceUltimate/car-lab/src/vehicle/profiles/furari-488.json?import",
+   1226067,
+   4035,
+   4094,
+   "menu"
+  ],
+  [
+   "/@fs/D:/RaceUltimate/car-lab/src/vehicle/profiles/aston-martin-valk.json?import",
+   1016316,
+   4046,
+   4108,
+   "menu"
+  ],
+  [
+   "/assets/cars/furari-488/car_lod0_ktx2.glb",
+   4150583,
+   4095,
+   4150,
+   "menu"
+  ],
+  [
+   "/assets/cars/aston-martin-valk/car_lod0_ktx2.glb",
+   840621,
+   4114,
+   4686,
+   "menu"
+  ],
+  [
+   "/assets/marina_collision.glb",
+   256893,
+   4764,
+   4896,
+   "menu"
+  ],
+  [
+   "/assets/cars/nuvolari/car_lod0_ktx2.glb",
+   1464315,
+   5221,
+   5257,
+   "menu"
+  ],
+  [
+   "/assets/cars/jaguarxkjss/car_lod0_ktx2.glb",
+   1328035,
+   5276,
+   5289,
+   "menu"
+  ],
+  [
+   "/@fs/D:/RaceUltimate/car-lab/src/vehicle/profiles/buggati.json?import",
+   783148,
+   5512,
+   5525,
+   "menu"
+  ],
+  [
+   "/assets/cars/buggati/car_lod0_ktx2.glb",
+   2863431,
+   5526,
+   5539,
+   "menu"
+  ],
+  [
+   "/@fs/D:/RaceUltimate/car-lab/src/vehicle/profiles/mustang.json?import",
+   1749417,
+   5634,
+   5745,
+   "menu"
+  ],
+  [
+   "/assets/cars/mustang/body_lod0.glb",
+   456133,
+   5749,
+   5753,
+   "menu"
+  ],
+  [
+   "/assets/cars/mp1x/car_lod0_ktx2.glb",
+   378461,
+   5749,
+   5754,
+   "menu"
+  ],
+  [
+   "/assets/cars/furari-488/car_lod1_ktx2.glb",
+   1811003,
+   7015,
+   7022,
+   "menu"
+  ],
+  [
+   "/assets/cars/aston-martin-valk/car_lod1_ktx2.glb",
+   571041,
+   7060,
+   7072,
+   "menu"
+  ],
+  [
+   "/assets/cars/nuvolari/car_lod1_ktx2.glb",
+   931853,
+   7580,
+   7967,
+   "menu"
+  ],
+  [
+   "/assets/cars/jaguarxkjss/car_lod1_ktx2.glb",
+   757693,
+   7580,
+   7955,
+   "menu"
+  ],
+  [
+   "/assets/cars/buggati/car_lod1_ktx2.glb",
+   816021,
+   8117,
+   8635,
+   "menu"
+  ],
+  [
+   "/assets/cars/mp1x/car_lod1_ktx2.glb",
+   357645,
+   8876,
+   9121,
+   "menu"
+  ],
+  [
+   "/assets/loading/starting-line.webp",
+   280018,
+   33984,
+   33994,
+   "race"
+  ],
+  [
+   "/assets/loading/hairpin.webp",
+   263584,
+   33984,
+   33998,
+   "race"
+  ]
+ ],
+ "totalBytes": 70929546,
+ "beforeClickBytes": 69390025
+}

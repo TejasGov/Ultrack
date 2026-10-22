@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "id": "mclaren720s-sketchfab-v1",
+  "name": "McLaren 720S",
+  "concept": "McLaren 720S",
+  "description": "Authored full-car model; original geometry, fitted wheels and independent body paint.",
+  "body": {
+    "kind": "complete-car",
+    "file": "assets/cars/mp1x/car_lod0.glb",
+    "url": "/models/mp1x-complete.glb?v=c1d465d7e4b9",
+    "sha256": "C1D465D7E4B970E7E07BD02EC922C4D234AE7806BAB9B0A4749ACB83022ACD88",
+    "displayLength": 4.543,
+    "lift": 0,
+    "forward": "-X",
+    "triangles": 6917
+  },
+  "wheels": {
+    "front": {
+      "radius": 0.3287,
+      "width": 0.2848,
+      "x": -1.21,
+      "track": 1.6473
+    },
+    "rear": {
+      "radius": 0.3363,
+      "width": 0.2914,
+      "x": 1.4547,
+      "track": 1.6446
+    }
+  },
+  "glass": {
+    "side": [
+      [
+        -1.112,
+        0.79,
+        0.518
+      ],
+      [
+        -1.112,
+        1.164,
+        0.518
+      ],
+      [
+        1.159,
+        1.164,
+        0.518
+      ],
+      [
+        1.159,
+        0.79,
+        0.518
+      ]
+    ]
+  },
+  "mirrors": {},
+  "lights": {
+    "front": [
+      [
+        -1.744,
+        0.558,
+        0.76
+      ],
+      [
+        -1.744,
+        0.558,
+        -0.76
+      ]
+    ],
+    "rear": [
+      [
+        1.906,
+        0.669,
+        0.554
+      ],
+      [
+        1.915,
+        0.668,
+        -0.515
+      ]
+    ],
+    "headlamp": {
+      "type": "native",
+      "design": "Original author-modeled lamps"
+    }
+  },
+  "defaults": {
+    "color": "#e46116",
+    "finish": "metallic",
+    "rimColor": "silver",
+    "carbon": false
+  },
+  "glassMaterial": {
+    "roughness": 0.11,
+    "opacity": 0.86
+  },
+  "license": {
+    "title": "2017 Mclaren 720s",
+    "author": "_shobh19",
+    "authorUrl": "https://sketchfab.com/s0h1o9b",
+    "url": "https://sketchfab.com/3d-models/2017-mclaren-720s-f7bece69400f4640a4a3be746b44998b",
+    "license": "CC Attribution",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "f7bece69400f4640a4a3be746b44998b",
+    "replacement": true,
+    "nonCommercialOnly": false,
+    "additionalCredits": ""
+  },
+  "fitStatus": "Original complete model with source wheels and materials. Driving integration uses derived model metadata."
+}

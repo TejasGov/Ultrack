@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Jonas Reiter",
+    "code": "REI",
+    "nation": "GER",
+    "age": 33,
+    "role": "engineer turned driver",
+    "bio": "Kalt's former aerodynamicist who talked his way into the seat; reads telemetry for fun.",
+    "background": "From Stuttgart; designed Kalt's aero for five years, then beat their test driver in a shootout.",
+    "personality": "Sets up his own car and brings printouts to every argument; dry and exact; Maddox calls him the spreadsheet.",
+    "rivals": [
+      "MAD"
+    ]
+  },
+  "team": "kalt",
+  "raceNumber": 11,
+  "carKey": "nuvolari",
+  "manufacturer": "Audi",
+  "car": "Audi e-tron GT concept (2018)",
+  "titleSponsor": "Red Bull",
+  "font": {
+    "family": "Michroma",
+    "file": "michroma-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration; no real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "e629d91b823af7e3d47d93e9dfb494347d072251556ff7ae92c447dfaac4e097",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "8372018f4b7f04e4beafe17dc4c9a0de81c83a95141c9106b3a237ec72ad2885"
+    },
+    "poster-v1.svg": {
+      "sha256": "589743ee863674070d2b2bd7e9564b879c600e7d2c7c016b1de01c3a866568d2"
+    }
+  },
+  "composition": "1920x1080 static driver poster; Kalt Michroma lettering is outlined, sponsor and logo are embedded, and the source illustration is embedded for portability."
+}

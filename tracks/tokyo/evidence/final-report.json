@@ -1,0 +1,69 @@
+{
+  "schema": "game-room.room-final-report.v1",
+  "roomId": "tokyo",
+  "gates": {
+    "function": false,
+    "form": false,
+    "runtime": false
+  },
+  "formChecks": {
+    "floorPlanParity": false,
+    "primaryArrival": false,
+    "symmetry": false,
+    "shell": false,
+    "manifold": false,
+    "booleans": false,
+    "collisions": false,
+    "support": false,
+    "attachmentOrientation": false,
+    "ceilingAttachmentOrientation": false,
+    "seatingOrientation": false,
+    "focalDistribution": false,
+    "heroClearance": false,
+    "colonnades": false,
+    "screenClearance": false,
+    "scale": false,
+    "camera": false,
+    "ceilingCoverage": false,
+    "environmentCoverage": false,
+    "provenance": false
+  },
+  "reviewRenders": {
+    "corners": [],
+    "ceiling": [],
+    "environment": {}
+  },
+  "runtimeChecks": {
+    "vlow": false,
+    "textureTiers": false,
+    "lightmap": false,
+    "lightingManifest": false,
+    "performance": false,
+    "browserCapture": "",
+    "errors": []
+  },
+  "postmortem": {
+    "observations": [],
+    "corrections": [],
+    "remainingRisks": []
+  },
+  "proposedLessons": [],
+  "stage": "initial-study",
+  "audit": "../out/study-audit.json",
+  "remaining": [
+    "Manual form/layout review",
+    "Street-level bespoke landmark detailing",
+    "Road camber, drainage, racing lines and pit lane design",
+    "UV/atlas and measured runtime budget",
+    "Collision and drive testing",
+    "Vegetation silhouette refinement",
+    "Facade opening schedule for detailed buildings"
+  ],
+  "runtimeExported": false,
+  "approvalStatus": "Pending",
+  "observations": [
+    "Corrected road ribbon winding after the initial driving render exposed hidden markings.",
+    "Corrected grandstand local facing direction.",
+    "Widened overview framing to include the site."
+  ]
+}

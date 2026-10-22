@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "id": "amgone-sketchfab-v1",
+  "name": "Mercedes-AMG One",
+  "concept": "Mercedes-AMG One",
+  "description": "Authored full-car model; original geometry, fitted wheels and independent body paint.",
+  "body": {
+    "kind": "complete-car",
+    "file": "assets/cars/jaguarxkjss/car_lod0.glb",
+    "url": "/models/jaguarxkjss-complete.glb?v=f63d0974b0a8",
+    "sha256": "F63D0974B0A8A2996C07B9987A2439C739B4F3D0185CBD124A826BFF6C36780C",
+    "displayLength": 4.756,
+    "lift": 0,
+    "forward": "-X",
+    "triangles": 28749
+  },
+  "wheels": {
+    "front": {
+      "radius": 0.3206,
+      "width": 0.3452,
+      "x": -1.3715,
+      "track": 1.6255
+    },
+    "rear": {
+      "radius": 0.3285,
+      "width": 0.3537,
+      "x": 1.2938,
+      "track": 1.6509
+    }
+  },
+  "glass": {
+    "side": [
+      [
+        -1.122,
+        0.691,
+        0.593
+      ],
+      [
+        -1.122,
+        1.0,
+        0.593
+      ],
+      [
+        0.287,
+        1.0,
+        0.593
+      ],
+      [
+        0.287,
+        0.691,
+        0.593
+      ]
+    ]
+  },
+  "mirrors": {},
+  "lights": {
+    "front": [
+      [
+        -1.794,
+        0.574,
+        0.693
+      ],
+      [
+        -1.795,
+        0.574,
+        -0.692
+      ]
+    ],
+    "rear": [
+      [
+        2.126,
+        0.608,
+        0.58
+      ],
+      [
+        2.125,
+        0.609,
+        -0.588
+      ]
+    ],
+    "headlamp": {
+      "type": "native",
+      "design": "Original author-modeled lamps"
+    }
+  },
+  "defaults": {
+    "color": "#adb7c4",
+    "finish": "metallic",
+    "rimColor": "silver",
+    "carbon": false
+  },
+  "glassMaterial": {
+    "roughness": 0.11,
+    "opacity": 0.86
+  },
+  "license": {
+    "title": "Mercedes Amg One",
+    "author": "3dblender_1",
+    "authorUrl": "https://sketchfab.com/3dblender_1",
+    "url": "https://sketchfab.com/3d-models/mercedes-amg-one-77b02e5a555d4819b490f67eeb348d22",
+    "license": "CC Attribution",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "77b02e5a555d4819b490f67eeb348d22",
+    "replacement": true,
+    "nonCommercialOnly": false,
+    "additionalCredits": ""
+  },
+  "fitStatus": "Original complete model with source wheels and materials. Driving integration uses derived model metadata."
+}

@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "id": "av12-shell-v1",
+  "name": "AV–12",
+  "body": {
+    "file": "meshy_output/body-shell-test/model.glb",
+    "url": "/models/lambo-body-shell.glb",
+    "sha256": "21FDDBC5AD6F69C117CDA7CE3496B6D8616545CAE4C5C30527007CC3D7358CDF",
+    "taskId": "01a150a9-e6e0-7555-8d3d-50163498bf9a",
+    "displayLength": 4.6,
+    "lift": 0.08,
+    "forward": "-X",
+    "triangles": 2458390
+  },
+  "wheels": {
+    "front": {
+      "x": -1.22,
+      "radius": 0.345,
+      "width": 0.265,
+      "track": 1.7
+    },
+    "rear": {
+      "x": 1.43,
+      "radius": 0.36,
+      "width": 0.3,
+      "track": 1.75
+    }
+  },
+  "glass": {
+    "windshield": [
+      [
+        -0.91,
+        0.652,
+        0.612
+      ],
+      [
+        -0.235,
+        0.958,
+        0.444
+      ],
+      [
+        -0.235,
+        0.958,
+        -0.444
+      ],
+      [
+        -0.91,
+        0.652,
+        -0.612
+      ]
+    ],
+    "side": [
+      [
+        -0.745,
+        0.658,
+        0.651
+      ],
+      [
+        -0.16,
+        0.947,
+        0.478
+      ],
+      [
+        0.31,
+        0.947,
+        0.491
+      ],
+      [
+        0.447,
+        0.694,
+        0.688
+      ]
+    ],
+    "quarter": [
+      [
+        0.421,
+        0.924,
+        0.519
+      ],
+      [
+        0.538,
+        0.718,
+        0.691
+      ],
+      [
+        0.793,
+        0.778,
+        0.613
+      ]
+    ],
+    "rear": [
+      [
+        0.603,
+        0.929,
+        -0.385
+      ],
+      [
+        0.603,
+        0.929,
+        0.385
+      ],
+      [
+        1.247,
+        0.79,
+        0.438
+      ],
+      [
+        1.247,
+        0.79,
+        -0.438
+      ]
+    ]
+  },
+  "mirrors": {
+    "mount": [
+      -0.735,
+      0.699,
+      0.694
+    ],
+    "stalkEnd": [
+      -0.641,
+      0.759,
+      0.941
+    ],
+    "center": [
+      -0.625,
+      0.79,
+      1.017
+    ],
+    "mounts": {
+      "1": [
+        -0.735,
+        0.699,
+        0.678418
+      ],
+      "-1": [
+        -0.735,
+        0.699,
+        -0.670316
+      ]
+    },
+    "surfaceMounts": {
+      "1": [
+        -0.735,
+        0.699,
+        0.696418
+      ],
+      "-1": [
+        -0.735,
+        0.699,
+        -0.688316
+      ]
+    },
+    "sourceSha256": "21FDDBC5AD6F69C117CDA7CE3496B6D8616545CAE4C5C30527007CC3D7358CDF",
+    "penetration": 0.018
+  },
+  "lights": {
+    "front": [
+      [
+        -2.025,
+        0.309,
+        0.661
+      ],
+      [
+        -1.875,
+        0.378,
+        0.77
+      ],
+      [
+        -1.61,
+        0.478,
+        0.811
+      ]
+    ],
+    "frontBranch": [
+      [
+        -1.875,
+        0.378,
+        0.77
+      ],
+      [
+        -1.835,
+        0.313,
+        0.81
+      ]
+    ],
+    "rear": [
+      [
+        2.167,
+        0.567,
+        0.8
+      ],
+      [
+        2.212,
+        0.563,
+        0.586
+      ],
+      [
+        2.215,
+        0.552,
+        0.322
+      ]
+    ],
+    "headlamp": {
+      "type": "signature",
+      "design": "Y-signature integrated into the shallow Lamborghini slots"
+    }
+  },
+  "fitStatus": "Prototype fit. Review side/front/rear and under changing reflections before locking anchors.",
+  "units": "Preview metres after length normalization; not verified real vehicle dimensions."
+}

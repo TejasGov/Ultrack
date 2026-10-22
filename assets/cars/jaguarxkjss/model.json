@@ -1,0 +1,90 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "source": {
+  "title": "Mercedes Amg One",
+  "author": "3dblender_1",
+  "authorUrl": "https://sketchfab.com/3dblender_1",
+  "url": "https://sketchfab.com/3d-models/mercedes-amg-one-77b02e5a555d4819b490f67eeb348d22",
+  "license": "CC Attribution",
+  "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "modelId": "77b02e5a555d4819b490f67eeb348d22",
+  "replacement": true,
+  "nonCommercialOnly": false,
+  "additionalCredits": ""
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3206,
+   "width": 0.3452,
+   "x": -1.3715,
+   "track": 1.6255
+  },
+  "rear": {
+   "radius": 0.3285,
+   "width": 0.3537,
+   "x": 1.2938,
+   "track": 1.6509
+  }
+ },
+ "size": {
+  "length": 4.756,
+  "width": 1.998,
+  "height": 1.1
+ },
+ "lights": {
+  "front": [
+   [
+    -1.794,
+    0.574,
+    0.693
+   ],
+   [
+    -1.795,
+    0.574,
+    -0.692
+   ]
+  ],
+  "rear": [
+   [
+    2.126,
+    0.608,
+    0.58
+   ],
+   [
+    2.125,
+    0.609,
+    -0.588
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.122,
+    0.691,
+    0.593
+   ],
+   [
+    -1.122,
+    1.0,
+    0.593
+   ],
+   [
+    0.287,
+    1.0,
+    0.593
+   ],
+   [
+    0.287,
+    0.691,
+    0.593
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 15873,
+  "body1": 15873,
+  "wheel": 3219
+ }
+}

@@ -1,0 +1,77 @@
+{
+  "car": "destrier",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "model": "assets/cars/destrier/source.json (scripts/model-car.py): its own canopy, mirrors and wheels; mirrors/interior/glass tuning does not apply",
+  "suspension": {
+    "pitch": 0.6,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.03
+  },
+  "aero": [],
+  "log": [
+    "2026-10-20: new car from the Sketchfab Bugatti Destrier model (let's not care abt it, CC-BY); no car-lab profile, everything from model.json",
+    "run 1: 7 see-through rays: the rear fender ducts and the gap under the open rear wing, all real openings of the model (qa/destrier/trace-*.png) -> waived; front tyres 1.7 cm into the arch in the brake dive -> ride 0.03",
+    "run 1: tail lamps off 0.3 / brake 14 (the check needs red off the brake, 2x on it); mirror glass found as rear-facing faces of the paint in a box (source.json mirrorGlass); headlamp emission 10 -> 1.2 (the blue DRL blew out in bloom)"
+  ],
+  "qa": {
+    "waive": [
+      {
+        "view": "left",
+        "at": [
+          0.66,
+          0.47
+        ],
+        "why": "the open duct through the rear fender above the rear wheel (traced: trace-left-0.png)"
+      },
+      {
+        "view": "right",
+        "at": [
+          0.34,
+          0.47
+        ],
+        "why": "the open duct through the rear fender above the rear wheel (traced: trace-right-1.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.8,
+          0.6
+        ],
+        "why": "daylight under the open rear wing (traced: trace-front-left-2.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.7,
+          0.64
+        ],
+        "why": "daylight under the open rear wing, beside the engine cover (traced: trace-front-left-3.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.2,
+          0.6
+        ],
+        "why": "daylight under the open rear wing (traced: trace-front-right-4.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.3,
+          0.64
+        ],
+        "why": "daylight under the open rear wing, beside the engine cover (traced: trace-front-right-5.png)"
+      },
+      {
+        "view": "low-left",
+        "at": [
+          0.83,
+          0.54
+        ],
+        "why": "the open rear fender duct seen low (traced: trace-low-left-6.png)"
+      }
+    ]
+  }
+}

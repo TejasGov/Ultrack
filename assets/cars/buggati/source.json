@@ -1,0 +1,98 @@
+{
+  "name": "Divo-X",
+  "src": "../../../sources/sketchfab/Bdivo/model.glb",
+  "credit": {
+    "title": "Bugatti Divo",
+    "author": "Sloftm_Carz",
+    "url": "https://sketchfab.com/3d-models/77c0448b1f68438a826ad1c0594d49a1",
+    "license": "CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+  },
+  "rotateZ": -90,
+  "length": 4.97,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Material.014",
+      "Material.015",
+      "Material.004",
+      "Material.011",
+      "Material.018",
+      "Material.019"
+    ],
+    "tyre": [
+      "Material.014"
+    ],
+    "caliper": [
+      "Material.012"
+    ],
+    "region": [
+      "Material.015",
+      "Material.004",
+      "Material.011",
+      "Material.012"
+    ],
+    "maxR": 0.97
+  },
+  "roles": {
+    "Material.007": "paint",
+    "Material.002": "glass",
+    "Material.003": "tail",
+    "Material.010": "headkeep"
+  },
+  "roleByObject": [
+    [
+      "WHL_model_8",
+      "caliper"
+    ]
+  ],
+  "interior": [
+    "Material.020",
+    "Material.021",
+    "Material.022",
+    "model_12",
+    "model_17"
+  ],
+  "exhaust": [],
+  "budget": {
+    "body0": 130000,
+    "body1": 25000,
+    "wheel": 10000
+  },
+  "mirrorGlass": {
+    "materials": [
+      "Material.005"
+    ],
+    "box": [
+      [
+        -0.8,
+        0.8,
+        0.95
+      ],
+      [
+        -0.5,
+        1.05,
+        1.2
+      ]
+    ]
+  },
+  "materials": {
+    "Material.008": {
+      "color": [
+        0.02,
+        0.02,
+        0.022
+      ],
+      "metallic": 0.3,
+      "roughness": 0.45
+    },
+    "Material.004": {
+      "color": [
+        0.04,
+        0.04,
+        0.045
+      ],
+      "metallic": 0.5,
+      "roughness": 0.35
+    }
+  }
+}

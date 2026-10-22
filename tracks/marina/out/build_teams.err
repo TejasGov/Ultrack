@@ -1,0 +1,26 @@
+D:\RaceUltimate\tracks\marina\build_blender.py:52: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+D:\RaceUltimate\tracks\marina\build_blender.py:52: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+Traceback (most recent call last):
+  File "D:\RaceUltimate\tracks\marina\build_blender.py", line 868, in <module>
+    venue.run(globals())
+    ~~~~~~~~~^^^^^^^^^^^
+  File "D:\RaceUltimate\tracks\marina\venue.py", line 816, in run
+    advertising(taken)
+    ~~~~~~~~~~~^^^^^^^
+  File "D:\RaceUltimate\tracks\marina\venue.py", line 214, in advertising
+    big = boards(12.0, 4.0)
+  File "D:\RaceUltimate\tracks\marina\venue.py", line 157, in boards
+    return [sponsor_board(f"{k}_{w:g}x{h:g}{'_led' if emissive else ''}", s, w, h, emissive) for k, s in enumerate(SPONSORS)]
+            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\RaceUltimate\tracks\marina\venue.py", line 107, in sponsor_board
+    if brand:return brand_art.board_mesh('ad_'+str(key)+'_'+str(w)+'x'+str(h),brand,w,h,emissive=bool(emissive))
+                    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\RaceUltimate\tracks\marina\brand_art.py", line 27, in board_mesh
+    m=bpy.data.meshes.new(name);m.from_pydata(vertices,[],[(0,1,2,3)]);m.materials.append(material(brand,w,h,flat,emissive))
+                                                                                          ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\RaceUltimate\tracks\marina\brand_art.py", line 14, in material
+    if not path.exists():raise FileNotFoundError('Prepare board texture: '+str(path))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: Prepare board texture: D:\RaceUltimate\assets\sponsors\boards\redbull-3000.png

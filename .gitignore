@@ -1,0 +1,37 @@
+# Ultrack: the repo holds the game-ready project (code, data, runtime assets). Working files, raw downloads and
+# generated output stay local; most of them can be regenerated with the pipeline scripts.
+
+# dependencies and builds
+node_modules/
+dist/
+*.log
+
+# local archive of retired files (restorable, see _archive/*/MANIFEST.md)
+_archive/
+
+# Meshy generations and car-lab verification renders
+meshy_output/
+car-lab/verification/
+
+# raw sources: Blender working files, downloads, Mixamo FBX sources (runtime GLBs are kept)
+*.blend
+*.blend1
+*.zip
+*.fbx
+sources/**/*.glb
+sources/**/*.blend
+/La_furari.glb
+/mercedes_amg_one.glb
+
+# QA and research capture frames (sheets and notes are kept)
+research/endurance/cmp/*/
+track-viewer/qa/**/*.png
+track-viewer/qa/**/*.jpg
+track-viewer/qa/**/*.webm
+
+# tools and OS
+.playwright-mcp/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

@@ -1,0 +1,65 @@
+[
+  {
+    "id": "enzo.booth_exchanges.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.4,
+    "peak_db": -2.0,
+    "heard": "You say that about everything, even about my parking.",
+    "script": "[laughs] You say that about everything! Even about my parking!"
+  },
+  {
+    "id": "enzo.intro_track.02",
+    "match": 0.861,
+    "flag": true,
+    "skipped": [
+      "sahyadri",
+      "mamma",
+      "mia",
+      "place",
+      "demands",
+      "varrone"
+    ],
+    "added": [
+      "sayadri",
+      "plays",
+      "the",
+      "man's",
+      "varone"
+    ],
+    "tag_read": [],
+    "mean_db": -24.0,
+    "peak_db": -4.7,
+    "heard": "Tonight we are in the Western Ghats of India for the Sayadri Ghat circuit, hairpins cut into the mountain, mist in the valleys and a long drop beside the road. This plays the man's respect, even from Mateo Varone.",
+    "script": "Tonight we are in the Western Ghats of India, for the Sahyadri Ghat Circuit. Hairpins cut into the mountain, mist in the valleys, and a long drop beside the road. [sighs] Mamma mia. This place demands respect, even from Matteo Varrone."
+  },
+  {
+    "id": "enzo.photo_finish.03",
+    "match": 0.941,
+    "flag": true,
+    "skipped": [
+      "a"
+    ],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.7,
+    "peak_db": -1.2,
+    "heard": "Mamma mia, photo finish! I can't separate them!",
+    "script": "[excited] Mamma mia, a photo finish! I can't separate them!"
+  },
+  {
+    "id": "enzo.race_start_bad.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.2,
+    "peak_db": -0.8,
+    "heard": "Mamma Mia, the start is gone. Now we fight back!",
+    "script": "Mamma mia, the start is gone! [determined] Now we fight back!"
+  }
+]

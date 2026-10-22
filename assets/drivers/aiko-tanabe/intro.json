@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "status": "ready",
+  "driver": {
+    "name": "Aiko Tanabe",
+    "code": "TAN",
+    "nation": "JPN",
+    "age": 28,
+    "role": "rain master",
+    "bio": "Precise to the millimetre; unbeatable in the wet.",
+    "background": "From Shizuoka, under Mount Fuji; learned on wet mountain hill-climbs before single-seaters.",
+    "personality": "Quiet and exact; checks the weather radar obsessively and hopes for rain; draws every circuit map by hand before a race weekend.",
+    "rivals": [
+      "LIN"
+    ]
+  },
+  "team": "kalt",
+  "raceNumber": 22,
+  "carKey": "tesla1",
+  "titleSponsor": "Red Bull",
+  "font": {
+    "family": "Michroma",
+    "file": "michroma-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "sourceSha256": "b04ff6e5d09ef340fd8be3d5f91bb08b3dbb9b7d4d01a194fbae888b1765fca7",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "dcac844d309909fdb994926f4ba94592e404a5cfe70b3f080a57b222efdb844a"
+    },
+    "poster-v1.svg": {
+      "sha256": "5d2b19e180df9d3880d191a529bbe204e27eac28b2a80b1a84921215ecc0725a"
+    }
+  }
+}

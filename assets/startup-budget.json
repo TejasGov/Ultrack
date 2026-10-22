@@ -1,0 +1,26 @@
+{
+  "measuredOn": "2026-10-20",
+  "kind": "production-asset-budget-not-browser-timing",
+  "initialJavaScriptBytes": 2739204,
+  "previousInitialJavaScriptBytes": 7059100,
+  "deferredPhysicsBytes": 4332821,
+  "initialCarsBefore": 12,
+  "initialCarsAfter": 1,
+  "previousEagerCarGLBBytes": 20478884,
+  "currentLOD0Bytes": {
+    "av12": 3971592,
+    "furari-488": 4150304,
+    "aston-martin-valk": 476104,
+    "jaguarxkjss": 1327756,
+    "nuvolari": 1464036,
+    "tesla1": 456464,
+    "mustang": 455856,
+    "bmw1": 1384272,
+    "buggati": 470000,
+    "bentley-gt": 452616,
+    "mp1x": 378184,
+    "porsche1": 465940
+  },
+  "uiLogoBytes": 107624,
+  "note": "Each selected car is loaded on demand; far LOD, rivals and spectators are deferred. Full browser/network/parse/GPU latency is not measured here."
+}

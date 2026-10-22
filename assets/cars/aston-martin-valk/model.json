@@ -1,0 +1,100 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Valkyrie-X",
+ "source": {
+  "title": "2020 Aston Martin Valkyrie",
+  "author": "OUTPISTON",
+  "authorUrl": "https://sketchfab.com/outpiston",
+  "url": "https://sketchfab.com/3d-models/2020-aston-martin-valkyrie-e9b0e16ec2174ea9b1a7fdcc9e0d200a",
+  "license": "CC BY-NC-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "modelId": "e9b0e16ec2174ea9b1a7fdcc9e0d200a",
+  "replacement": true,
+  "nonCommercialOnly": true,
+  "additionalCredits": "Rip from a mobile racing game: the page says \"source: Real Racing 3\" and the parts carry its names (LOD_A_..._mm_..., *.etc.png). Non-commercial and share-alike licence: fine for this local fan project, replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3496,
+   "width": 0.2169,
+   "x": -1.3198,
+   "track": 1.689
+  },
+  "rear": {
+   "radius": 0.3585,
+   "width": 0.3479,
+   "x": 1.4467,
+   "track": 1.5628
+  }
+ },
+ "size": {
+  "length": 4.5,
+  "width": 1.963,
+  "height": 1.001
+ },
+ "lights": {
+  "front": [
+   [
+    -1.841,
+    0.53,
+    0.802
+   ],
+   [
+    -1.841,
+    0.53,
+    -0.802
+   ]
+  ],
+  "rear": [
+   [
+    2.085,
+    0.604,
+    0.732
+   ],
+   [
+    2.082,
+    0.604,
+    -0.732
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.224,
+    0.67,
+    0.454
+   ],
+   [
+    -1.224,
+    0.95,
+    0.454
+   ],
+   [
+    0.315,
+    0.95,
+    0.454
+   ],
+   [
+    0.315,
+    0.67,
+    0.454
+   ]
+  ]
+ },
+ "exhaust": [
+  [
+   0.651,
+   -0.09
+  ],
+  [
+   0.651,
+   0.081
+  ]
+ ],
+ "triangles": {
+  "body0": 36264,
+  "body1": 25165,
+  "wheel": 2837
+ }
+}

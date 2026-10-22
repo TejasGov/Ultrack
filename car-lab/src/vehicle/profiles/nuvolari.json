@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "id": "etron-sketchfab-v1",
+  "name": "Audi e-tron GT Concept",
+  "concept": "Audi e-tron GT Concept",
+  "description": "Authored full-car model; original geometry, fitted wheels and independent body paint.",
+  "body": {
+    "kind": "complete-car",
+    "file": "assets/cars/nuvolari/car_lod0.glb",
+    "url": "/models/nuvolari-complete.glb?v=e33b6037f679",
+    "sha256": "E33B6037F6791CBD544E3F3D525C386C5BA8DA5E32627D5243FB0B9E0D53590A",
+    "displayLength": 4.99,
+    "lift": 0,
+    "forward": "-X",
+    "triangles": 68454
+  },
+  "wheels": {
+    "front": {
+      "radius": 0.3635,
+      "width": 0.2811,
+      "x": -1.4811,
+      "track": 1.6779
+    },
+    "rear": {
+      "radius": 0.3762,
+      "width": 0.2909,
+      "x": 1.4369,
+      "track": 1.6783
+    }
+  },
+  "glass": {
+    "side": [
+      [
+        -0.987,
+        0.924,
+        0.64
+      ],
+      [
+        -0.987,
+        1.368,
+        0.64
+      ],
+      [
+        1.788,
+        1.368,
+        0.64
+      ],
+      [
+        1.788,
+        0.924,
+        0.64
+      ]
+    ]
+  },
+  "mirrors": {},
+  "lights": {
+    "front": [
+      [
+        -2.134,
+        0.676,
+        0.713
+      ],
+      [
+        -2.146,
+        0.674,
+        -0.698
+      ]
+    ],
+    "rear": [
+      [
+        2.288,
+        0.779,
+        0.573
+      ],
+      [
+        2.286,
+        0.779,
+        -0.584
+      ]
+    ],
+    "headlamp": {
+      "type": "native",
+      "design": "Original author-modeled lamps"
+    }
+  },
+  "defaults": {
+    "color": "#d5d8df",
+    "finish": "metallic",
+    "rimColor": "silver",
+    "carbon": false
+  },
+  "glassMaterial": {
+    "roughness": 0.11,
+    "opacity": 0.86
+  },
+  "license": {
+    "title": "2018 Audi e-tron GT Concept",
+    "author": "Ddiaz Design",
+    "authorUrl": "https://sketchfab.com/ddiaz-design",
+    "url": "https://sketchfab.com/3d-models/2018-audi-e-tron-gt-concept-e35726151c9e4a169c005d54509715fa",
+    "license": "CC Attribution-NonCommercial-ShareAlike",
+    "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "modelId": "e35726151c9e4a169c005d54509715fa",
+    "replacement": true,
+    "nonCommercialOnly": true,
+    "additionalCredits": "Based on a Real Racing 3 3d model; credits @VuckyZ123"
+  },
+  "fitStatus": "Original complete model with source wheels and materials. Driving integration uses derived model metadata."
+}

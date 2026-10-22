@@ -1,0 +1,13 @@
+import sharp from 'sharp';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+const root=new URL('../../',import.meta.url),dir=new URL('assets/drivers/matteo-varrone/',root);
+await sharp(readFileSync(new URL('source/illustration-v1.png',dir))).webp({quality:92,effort:6}).toFile(fileURLToPath(new URL('illustration-v1.webp',dir)));
+execFileSync('python',[fileURLToPath(new URL('scripts/build-driver-intro.py',root))],{cwd:fileURLToPath(root),stdio:'inherit'});
+await sharp(readFileSync(new URL('poster-v1.svg',dir))).png().toFile(fileURLToPath(new URL('poster-v1.png',dir)));
+const metadata=JSON.parse(readFileSync(new URL('intro.json',dir)));
+metadata.outputs=Object.fromEntries(['illustration-v1.webp','poster-v1.svg','poster-v1.png','intro-v1.html'].map(file=>{const data=readFileSync(new URL(file,dir));return [file,{bytes:data.length,sha256:createHash('sha256').update(data).digest('hex')}];}));
+writeFileSync(new URL('intro.json',dir),JSON.stringify(metadata,null,2)+'\n');
+console.log('Prepared one driver concept: 1920×1080 poster and animated preview.');

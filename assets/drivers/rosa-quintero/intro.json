@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Rosa Quintero",
+    "code": "QUI",
+    "nation": "MEX",
+    "age": 20,
+    "role": "rookie",
+    "bio": "Rookie of the year; the fastest qualifier Mojave has ever had.",
+    "background": "From Monterrey; sim-racing world champion who won her seat in Mojave's esports shootout.",
+    "personality": "Frighteningly fast over one lap, still learning racecraft in traffic; the youngest driver on the grid and openly out to beat Valois.",
+    "rivals": [
+      "VAL"
+    ]
+  },
+  "team": "mojave",
+  "raceNumber": 9,
+  "carKey": "bmw1",
+  "titleSponsor": "Shell",
+  "font": {
+    "family": "Bungee",
+    "file": "bungee-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "manufacturer": "BMW",
+  "car": "i8 Coupe",
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration; no real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "74e3077befd1a25d18856a39199a9969dc806c1a6679852e2765a6623d781e25",
+  "generationCalls": 2,
+  "composition": "1920x1080 static driver poster; team lettering is outlined and source artwork is embedded for portability.",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "0fcb4d30a61e5247fe238b07c58e9312cac6101dad86958693b117b35805bd5b"
+    },
+    "poster-v1.svg": {
+      "sha256": "27afc58a541835b41cbeea64e5077f80c9a64b0840227c75e5cb0834921ae282"
+    }
+  },
+  "discardedGeneration": "The second built-in call was accidental and unrelated; prompt: \"Discarded? This would be a second call forbidden!\". Its output was discarded and is not used."
+}

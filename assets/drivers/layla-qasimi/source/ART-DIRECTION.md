@@ -1,0 +1,21 @@
+# Layla Qasimi — art direction
+
+Generation count: 1 built-in image_gen call (made centrally by the root agent).
+generationCalls: 1.
+
+Use case: stylized-concept. Asset type: wide 16:9 background illustration for an original racing-game driver introduction poster; all type and logos are composited separately in deterministic code. Exact generation prompt:
+
+Create ONE premium original illustrated 16:9 landscape background for a racing-game driver introduction poster, in bold-ink, cel-shaded GTA V loading-screen character-art style. The subject is Layla Qasimi, a fictional Omani woman, age 25; do not depict or imitate any real person. Use a hand-painted graphic-novel finish with confident thick ink contours, angular cel shadows, warm painted highlights, graphic color blocks, and subtle print grain. Not photorealistic or 3D.
+
+Scene: fictional Corniche Marina paddock at warm late afternoon, with marina structures and palm silhouettes kept subtle and sandy dunes on the far horizon. No other people or vehicles. Layla is a fearless, cheerful overtaker with a relaxed confident smile and calm, naturally balanced stance: one boot rests on a low pit step, one hand rests naturally on her raised knee, and the other holds an unlettered full-face helmet at her side. Show her from head to boots with hands and face unobstructed. She has long dark hair in a practical braid and wears a modest, practical fitted pearl-white racing suit with Sarab teal (#0f8f8a) dune-line accents and restrained sand-gold (#c9a45c) trim; no writing, badges, or sponsor patches.
+
+A clearly recognizable pearl-white Porsche 911 Turbo S (992) is beside and slightly behind her, in a coherent front three-quarter view. Preserve the 992’s rounded oval headlights, low sloping nose, wide rear haunches, and plausible proportions. Add flowing teal dune contour lines and restrained gold trim to the livery; dark wheels. Keep the car visually distinct from Layla and show its front end clearly. 
+
+Composition: wide 16:9. Keep the LEFT 43 percent clean and quiet with pale warm negative space, faint paper grain, and understated paddock geometry for later title and driver information. Place Layla and the car on the RIGHT, with Layla’s face near 72 percent across and 25 percent down. Reserve a clear uncluttered badge area at the top right, away from her face. Strong readable silhouette and balanced negative space.
+
+Palette: pearl white (#f1efe8), Sarab teal (#0f8f8a), sand gold (#c9a45c), warm sand, charcoal. Warm late-afternoon rim light, mature polished graphic-novel art.
+
+No text, letters, numbers, logos, sponsor marks, flags, watermarks, UI, extra people, or extra cars. Do not render Sarab or Emirates marks; these are composited separately from canonical local assets. Avoid anime, childish cartoon style, photorealism, action pose, exaggerated proportions, cropped head/hands/feet/car, or any face/car overlap.
+Reference image1 is only illustration style and layout guidance, not the male driver, his pose, red palette or Lamborghini. Create Layla as a distinct adult woman with the specified braid, one boot on low pitstep and a Porsche911TurboS, not the reference character or car. Single scene only.
+
+Approved canonical data: Layla Qasimi / QAS / OMN / age 25 / Sarab #33 / Porsche 911 Turbo S (992) / sponsor Emirates. Sarab font: Lalezar (`lalezar-latin-400-normal.woff2`); palette pearl white #f1efe8, teal #0f8f8a, sand gold #c9a45c. No flags anywhere. The title-sponsor mark is the local white Emirates logo on a Sarab teal badge for contrast.

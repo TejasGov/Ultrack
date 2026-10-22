@@ -1,0 +1,16 @@
+# Image-generation prompt — concept 01
+
+Generation Calls: 1 (performed by the root agent via its centrally managed image-generation call).
+
+Use case: stylized concept art for an original racing game driver introduction. Create one wide 16:9 painted background illustration only; typography and official local team and sponsor marks will be composited separately.
+
+Create a premium hand-painted, inked cel-shaded editorial illustration with the confident graphic character-art feel of a GTA V loading screen: bold confident ink contours, angular shadow shapes, clean graphic color blocks, painted highlights, subtle print grain. It must read clearly as illustration, never photography or realistic 3D, and depict no real person or racing-driver likeness.
+
+Subject: Zayn Kareem, an original fictional 27-year-old Emirati male racing driver. Warm medium olive complexion, short neat dark hair, tidy close beard, expressive dark eyes, athletic build, friendly confident smile. He stands on the RIGHT half, turned slightly toward camera and waving with one raised hand, fingers clearly formed and anatomically plausible. His other arm tucks a full-face helmet at his side. Keep his face wholly visible and the wave clearly legible. Suit is pearl white (#f1efe8) with teal (#0f8f8a) flowing dune-contour lines and restrained sand-gold (#c9a45c) seams and trim. No text, fake marks, badges or numbers on clothing or helmet.
+
+Place a pearl-white McLaren 720S in the lower-right quadrant behind him, front three-quarter view, recognizable low mid-engine supercar proportions, black wheels, narrow teal topographic dune lines flowing along its body, and a small sand-gold falcon silhouette without lettering. Keep the car separate enough to read clearly; do not cover its nose or merge it into the driver's body.
+
+Setting: the Corniche Marina paddock at warm late afternoon, with a restrained marina and waterfront skyline, palm silhouettes and racing paddock architecture. Graphic diagonal shapes suggest speed and the mirage motif without clutter. The LEFT 43% stays quiet and bright pearl ivory with subtle paper texture and faint architectural outlines, reserved for large title and driver information. Place the driver and car on the right, head around 70% across and 22% down, shown to upper thighs. Leave the TOP RIGHT clean and unobstructed for a sponsor badge. Keep the bottom-left visually calm for a car information panel. Palette led by pearl white, Sarab teal, sand gold, deep charcoal; polished editorial motorsport poster lighting and subtle warm rim light. No flags anywhere.
+
+Text: none. No letters, typography, numbers, fake logos, watermarks, UI, frame or poster lettering. Only the character, car and painted setting.
+Reference image1: illustration style only, not its driver, pose, Lamborghini or red palette. Actual car must be the McLaren 720S with black teardrop-shaped headlight eye sockets wrapping into intake hollows, low rounded roof and mid-engine coupe silhouette. Do not substitute P1 or a wedge Lamborghini. Single scene only, one driver and one car.

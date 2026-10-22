@@ -1,0 +1,123 @@
+{
+ "label": "before-prod-warm",
+ "base": "http://127.0.0.1:5182",
+ "bootMs": 447,
+ "menuT": 6821,
+ "clickRel": 6825,
+ "raceMs": 31026,
+ "gridT": 37851,
+ "marksMenu": [
+  [
+   "ultrack:car-ready",
+   429
+  ]
+ ],
+ "marksEnd": [
+  [
+   "ultrack:car-ready",
+   429
+  ],
+  [
+   "ultrack:venue-ready",
+   7697
+  ]
+ ],
+ "logs": [
+  [
+   7717,
+   "team artwork: 33 materials"
+  ],
+  [
+   37836,
+   "Graphics preparation: {reflectionsMs: 11047, shadersMs: 16903, firstFrameMs: 359}"
+  ],
+  [
+   37836,
+   "Race preparation: {totalMs: 31010, stages: Object}"
+  ]
+ ],
+ "errors": [],
+ "byCat": {
+  "other": {
+   "n": 319,
+   "bytes": 304,
+   "beforeClick": 33,
+   "afterClick": 286
+  },
+  "js": {
+   "n": 15,
+   "bytes": 2633,
+   "beforeClick": 6,
+   "afterClick": 9
+  },
+  "json": {
+   "n": 5,
+   "bytes": 687,
+   "beforeClick": 4,
+   "afterClick": 1
+  },
+  "image": {
+   "n": 30,
+   "bytes": 4226,
+   "beforeClick": 20,
+   "afterClick": 10
+  },
+  "font": {
+   "n": 5,
+   "bytes": 895,
+   "beforeClick": 5,
+   "afterClick": 0
+  },
+  "car glb": {
+   "n": 16,
+   "bytes": 2032,
+   "beforeClick": 2,
+   "afterClick": 14
+  },
+  "wasm": {
+   "n": 1,
+   "bytes": 127,
+   "beforeClick": 1,
+   "afterClick": 0
+  },
+  "other audio": {
+   "n": 3,
+   "bytes": 381,
+   "beforeClick": 2,
+   "afterClick": 1
+  },
+  "venue glb": {
+   "n": 1,
+   "bytes": 127,
+   "beforeClick": 0,
+   "afterClick": 1
+  },
+  "hdri": {
+   "n": 1,
+   "bytes": 127,
+   "beforeClick": 0,
+   "afterClick": 1
+  },
+  "engine audio": {
+   "n": 5,
+   "bytes": 635,
+   "beforeClick": 0,
+   "afterClick": 5
+  },
+  "collision glb": {
+   "n": 1,
+   "bytes": 127,
+   "beforeClick": 0,
+   "afterClick": 1
+  },
+  "commentary audio": {
+   "n": 1,
+   "bytes": 64190,
+   "beforeClick": 0,
+   "afterClick": 1
+  }
+ },
+ "big": [],
+ "totalBytes": 76491,
+ "beforeClickBytes": 5956
+}

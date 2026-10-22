@@ -1,0 +1,18 @@
+{
+  "name": "raceultimate-car-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "build": "node ../scripts/vehicle-pipeline.mjs check && vite build",
+    "check:vehicle": "node ../scripts/vehicle-pipeline.mjs check && node ../scripts/check-vehicle-roster.mjs && node --test src/vehicle/parts.test.js src/vehicle/complete-car.test.js",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "vite": "8.3.4"
+  }
+}

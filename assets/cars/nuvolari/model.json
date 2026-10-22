@@ -1,0 +1,90 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "source": {
+  "title": "2018 Audi e-tron GT Concept",
+  "author": "Ddiaz Design",
+  "authorUrl": "https://sketchfab.com/ddiaz-design",
+  "url": "https://sketchfab.com/3d-models/2018-audi-e-tron-gt-concept-e35726151c9e4a169c005d54509715fa",
+  "license": "CC Attribution-NonCommercial-ShareAlike",
+  "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "modelId": "e35726151c9e4a169c005d54509715fa",
+  "replacement": true,
+  "nonCommercialOnly": true,
+  "additionalCredits": "Based on a Real Racing 3 3d model; credits @VuckyZ123"
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3635,
+   "width": 0.2811,
+   "x": -1.4811,
+   "track": 1.6779
+  },
+  "rear": {
+   "radius": 0.3762,
+   "width": 0.2909,
+   "x": 1.4369,
+   "track": 1.6783
+  }
+ },
+ "size": {
+  "length": 4.99,
+  "width": 2.168,
+  "height": 1.263
+ },
+ "lights": {
+  "front": [
+   [
+    -2.134,
+    0.676,
+    0.713
+   ],
+   [
+    -2.146,
+    0.674,
+    -0.698
+   ]
+  ],
+  "rear": [
+   [
+    2.288,
+    0.779,
+    0.573
+   ],
+   [
+    2.286,
+    0.779,
+    -0.584
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -0.987,
+    0.924,
+    0.64
+   ],
+   [
+    -0.987,
+    1.368,
+    0.64
+   ],
+   [
+    1.788,
+    1.368,
+    0.64
+   ],
+   [
+    1.788,
+    0.924,
+    0.64
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 58216,
+  "body1": 23199,
+  "wheel": 2560
+ }
+}

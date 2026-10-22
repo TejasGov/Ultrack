@@ -1,0 +1,22 @@
+{
+  "meshDefinitions": 67,
+  "placedInstances": 349,
+  "brands": [
+    "aston-martin",
+    "bmw-m",
+    "bugatti",
+    "cocacola",
+    "emirates",
+    "ferrari",
+    "hsbc",
+    "lamborghini",
+    "mclaren",
+    "mercedes-amg",
+    "pirelli",
+    "porsche",
+    "redbull",
+    "rolex",
+    "shell"
+  ],
+  "collisionChanged": false
+}

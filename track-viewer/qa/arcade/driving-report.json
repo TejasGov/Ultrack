@@ -1,0 +1,352 @@
+{
+  "scenarios": [
+    {
+      "key": "furari-488",
+      "weather": 0.15,
+      "peakSlideDeg": 0.62,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "furari-488",
+      "weather": 0.7,
+      "peakSlideDeg": 0.56,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "furari-488",
+      "weather": 1,
+      "peakSlideDeg": 0.52,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "laferrari",
+      "weather": 0.15,
+      "peakSlideDeg": 0.6,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "laferrari",
+      "weather": 0.7,
+      "peakSlideDeg": 0.54,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "laferrari",
+      "weather": 1,
+      "peakSlideDeg": 0.51,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "av12",
+      "weather": 0.15,
+      "peakSlideDeg": 0.6,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "av12",
+      "weather": 0.7,
+      "peakSlideDeg": 0.54,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "av12",
+      "weather": 1,
+      "peakSlideDeg": 0.5,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "huracan",
+      "weather": 0.15,
+      "peakSlideDeg": 0.6,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "huracan",
+      "weather": 0.7,
+      "peakSlideDeg": 0.54,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "huracan",
+      "weather": 1,
+      "peakSlideDeg": 0.51,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "aston-martin-valk",
+      "weather": 0.15,
+      "peakSlideDeg": 0.63,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "aston-martin-valk",
+      "weather": 0.7,
+      "peakSlideDeg": 0.58,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "aston-martin-valk",
+      "weather": 1,
+      "peakSlideDeg": 0.54,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "bentley-gt",
+      "weather": 0.15,
+      "peakSlideDeg": 0.53,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "bentley-gt",
+      "weather": 0.7,
+      "peakSlideDeg": 0.48,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "bentley-gt",
+      "weather": 1,
+      "peakSlideDeg": 0.45,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "nuvolari",
+      "weather": 0.15,
+      "peakSlideDeg": 0.55,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "nuvolari",
+      "weather": 0.7,
+      "peakSlideDeg": 0.5,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "nuvolari",
+      "weather": 1,
+      "peakSlideDeg": 0.46,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "tesla1",
+      "weather": 0.15,
+      "peakSlideDeg": 0.53,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "tesla1",
+      "weather": 0.7,
+      "peakSlideDeg": 0.48,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "tesla1",
+      "weather": 1,
+      "peakSlideDeg": 0.45,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "jaguarxkjss",
+      "weather": 0.15,
+      "peakSlideDeg": 0.61,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "jaguarxkjss",
+      "weather": 0.7,
+      "peakSlideDeg": 0.55,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "jaguarxkjss",
+      "weather": 1,
+      "peakSlideDeg": 0.51,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "bmw1",
+      "weather": 0.15,
+      "peakSlideDeg": 0.58,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "bmw1",
+      "weather": 0.7,
+      "peakSlideDeg": 0.52,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "bmw1",
+      "weather": 1,
+      "peakSlideDeg": 0.49,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "buggati",
+      "weather": 0.15,
+      "peakSlideDeg": 0.55,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "buggati",
+      "weather": 0.7,
+      "peakSlideDeg": 0.5,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "buggati",
+      "weather": 1,
+      "peakSlideDeg": 0.46,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "destrier",
+      "weather": 0.15,
+      "peakSlideDeg": 0.57,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "destrier",
+      "weather": 0.7,
+      "peakSlideDeg": 0.52,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "destrier",
+      "weather": 1,
+      "peakSlideDeg": 0.49,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "mustang",
+      "weather": 0.15,
+      "peakSlideDeg": 0.58,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "mustang",
+      "weather": 0.7,
+      "peakSlideDeg": 0.53,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "mustang",
+      "weather": 1,
+      "peakSlideDeg": 0.49,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "blackbird",
+      "weather": 0.15,
+      "peakSlideDeg": 0.59,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "blackbird",
+      "weather": 0.7,
+      "peakSlideDeg": 0.53,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "blackbird",
+      "weather": 1,
+      "peakSlideDeg": 0.5,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "mp1x",
+      "weather": 0.15,
+      "peakSlideDeg": 0.62,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "mp1x",
+      "weather": 0.7,
+      "peakSlideDeg": 0.56,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "mp1x",
+      "weather": 1,
+      "peakSlideDeg": 0.53,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "porsche1",
+      "weather": 0.15,
+      "peakSlideDeg": 0.58,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "porsche1",
+      "weather": 0.7,
+      "peakSlideDeg": 0.52,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    },
+    {
+      "key": "porsche1",
+      "weather": 1,
+      "peakSlideDeg": 0.49,
+      "minUp": 1,
+      "handbrakeDrift": 0.878
+    }
+  ],
+  "kerb": {
+    "maxHeight": 0.06591317057609558,
+    "minUp": 0.9969848753589753
+  },
+  "checks": [
+    "air/off-road recovery disabled",
+    "speed-dependent steering",
+    "14-car turn/lift",
+    "handbrake initiation and release",
+    "kerb crossing",
+    "landing settle"
+  ]
+}

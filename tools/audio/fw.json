@@ -1,0 +1,109 @@
+[
+ {
+  "root": "D:/RaceUltimate/assets/audio/fireworks",
+  "out": "small-1",
+  "inputs": [
+   {
+    "src": "dl/fw/117615.mp3",
+    "ss": 6,
+    "t": 6.6
+   }
+  ],
+  "trimDb": -30,
+  "length": 6.4,
+  "fadeOut": 1,
+  "maxLimit": 6
+ },
+ {
+  "root": "D:/RaceUltimate/assets/audio/fireworks",
+  "out": "small-2",
+  "inputs": [
+   {
+    "src": "dl/fw/14742.mp3",
+    "ss": 4.7,
+    "t": 4.8
+   }
+  ],
+  "trimDb": -30,
+  "length": 4.6,
+  "fadeOut": 1.2
+ },
+ {
+  "root": "D:/RaceUltimate/assets/audio/fireworks",
+  "out": "big-finale",
+  "inputs": [
+   {
+    "src": "dl/fw/21411.mp3",
+    "ss": 17,
+    "t": 19.6
+   }
+  ],
+  "trim": false,
+  "fadeIn": 0.05,
+  "length": 19.5,
+  "fadeOut": 2,
+  "maxLimit": 6
+ },
+ {
+  "root": "D:/RaceUltimate/assets/audio/fireworks",
+  "out": "crackle",
+  "inputs": [
+   {
+    "src": "dl/fw/27757.mp3",
+    "ss": 108.4,
+    "t": 5.1
+   }
+  ],
+  "trimDb": -35,
+  "length": 5,
+  "fadeOut": 1,
+  "maxLimit": 6,
+  "trim": false,
+  "fadeIn": 0.03
+ },
+ {
+  "root": "D:/RaceUltimate/assets/audio/fireworks",
+  "out": "whistle-rockets",
+  "inputs": [
+   {
+    "src": "dl/fw/675779.mp3",
+    "ss": 1.9,
+    "t": 4.6
+   }
+  ],
+  "fadeIn": 0.05,
+  "length": 4.5,
+  "fadeOut": 0.8,
+  "trimDb": -40
+ },
+ {
+  "root": "D:/RaceUltimate/assets/audio/fireworks",
+  "out": "single-boom-1",
+  "inputs": [
+   {
+    "src": "dl/fw/376660.mp3",
+    "ss": 0,
+    "t": 3.19
+   }
+  ],
+  "trimDb": -30,
+  "length": 3,
+  "fadeOut": 0.8,
+  "maxLimit": 6
+ },
+ {
+  "root": "D:/RaceUltimate/assets/audio/fireworks",
+  "out": "single-boom-2",
+  "inputs": [
+   {
+    "src": "dl/fw/552403.mp3",
+    "ss": 24.6,
+    "t": 4.4
+   }
+  ],
+  "trimDb": -30,
+  "length": 4,
+  "fadeOut": 1.5,
+  "maxLimit": 6
+ }
+]

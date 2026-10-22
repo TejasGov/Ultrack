@@ -1,0 +1,28 @@
+[
+  {
+    "base": "marina_visual",
+    "cellMetres": 768,
+    "sourceBytes": 7899036,
+    "outputBytes": 7961572,
+    "changes": [
+      {
+        "name": "track_00",
+        "triangles": 56604,
+        "sections": 9
+      }
+    ]
+  },
+  {
+    "base": "marina_visual_ktx2",
+    "cellMetres": 768,
+    "sourceBytes": 12807028,
+    "outputBytes": 12869692,
+    "changes": [
+      {
+        "name": "track_00",
+        "triangles": 56604,
+        "sections": 9
+      }
+    ]
+  }
+]

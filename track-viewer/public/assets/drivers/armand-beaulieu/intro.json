@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "driver": {
+    "name": "Armand Beaulieu",
+    "code": "BEA",
+    "nation": "FRA",
+    "age": 36,
+    "role": "the gentleman racer",
+    "bio": "Endurance-bred Frenchman in a tailored suit; never hurries, never scuffs a tyre.",
+    "background": "From Lyon, the son of a silk merchant; a decade of endurance prototypes and three Le Mans class podiums before Aurum gave Valois a teammate he could not charm.",
+    "personality": "Dresses for the grid as if for a gala; calls Valois 'le Prince' to his face; collects vintage watches; never swears, but his sigh on the radio is worse.",
+    "rivals": [
+      "VAL",
+      "KAR"
+    ]
+  },
+  "team": "aurum",
+  "raceNumber": 16,
+  "carKey": "destrier",
+  "manufacturer": "Bugatti",
+  "car": "Destrier",
+  "titleSponsor": "Rolex",
+  "font": {
+    "family": "Limelight",
+    "file": "limelight-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration; no real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "cb381ee164e78ca4c2467bc44b18d74b95b5196523e16633d95d1104d4d2b5ed",
+  "outputs": {
+    "poster-v1.png": {
+      "sha256": "d24407ae3b2e6f39129a204aeeb1c210bb432fbbf7b8c8d959ac9322c01e4b9c"
+    },
+    "poster-v1.svg": {
+      "sha256": "ad13adaae0c9bd0db38cec732dd7873aedb6a786e800bec94bcd0e37fe828692"
+    },
+    "poster-v1.webp": {
+      "sha256": "6b81677865fbd55588d3348d59e6895a3287087cfe1c7e409369e56156cbee58"
+    }
+  },
+  "composition": "1920x1080 static driver poster; Aurum display lettering is outlined and the artwork and marks are embedded for portability."
+}

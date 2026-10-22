@@ -1,0 +1,3243 @@
+{
+  "objects": [
+    {
+      "name": "INT:LOD_A_INT_STEERING_WHEEL_mm_sw_Mesh_046_VehicleInte_7f10ce0",
+      "parent": "group1",
+      "vertices": 1367,
+      "triangles": 1392,
+      "bounds": [
+        [
+          0.0020123133435845375,
+          -0.005229923874139786,
+          0.006864788476377726
+        ],
+        [
+          0.005320313386619091,
+          -0.003047059988602996,
+          0.010196060873568058
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_sw1"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_STEERING_WHEEL_mm_mat04_Mesh_045_VehicleI_8cc4fe3",
+      "parent": "group1",
+      "vertices": 1525,
+      "triangles": 2242,
+      "bounds": [
+        [
+          0.0017923132982105017,
+          -0.0052725947462022305,
+          0.006682427134364843
+        ],
+        [
+          0.005540313199162483,
+          -0.0029780042823404074,
+          0.01030072569847107
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat11"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_STEERING_WHEEL_mm_mat02_Mesh_044_VehicleI_a2a2bd2",
+      "parent": "group1",
+      "vertices": 116,
+      "triangles": 104,
+      "bounds": [
+        [
+          0.0021363135892897844,
+          -0.004456385038793087,
+          0.008758723735809326
+        ],
+        [
+          0.005210313480347395,
+          -0.003834014991298318,
+          0.009992036037147045
+        ]
+      ],
+      "materials": [
+        "cross"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_STEERING_WHEEL_mm_mat01_Mesh_043_VehicleI_a4e16ab",
+      "parent": "group1",
+      "vertices": 253,
+      "triangles": 364,
+      "bounds": [
+        [
+          0.002724313409999013,
+          -0.004178614821285009,
+          0.007864453829824924
+        ],
+        [
+          0.004608313553035259,
+          -0.003317764028906822,
+          0.009096729569137096
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat15"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_STEERING_WHEEL_LED_mm_sw_Mesh_042_Vehicle_1187440",
+      "parent": "group1",
+      "vertices": 76,
+      "triangles": 38,
+      "bounds": [
+        [
+          0.0022483132779598236,
+          -0.004362933337688446,
+          0.00808091089129448
+        ],
+        [
+          0.005084313452243805,
+          -0.003524098079651594,
+          0.009077110327780247
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_sw1"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_MIRROR_GLASS_mm_int_Mesh_038_VehicleInter_3a85ec3",
+      "parent": "group1",
+      "vertices": 98,
+      "triangles": 154,
+      "bounds": [
+        [
+          -0.0011439992813393474,
+          -0.004745999816805124,
+          0.011482000350952148
+        ],
+        [
+          0.0009230007417500019,
+          -0.004172000102698803,
+          0.012052999809384346
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_int1"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_LED_mm_int_Mesh_035_VehicleInterior_mm_int",
+      "parent": "group1",
+      "vertices": 68,
+      "triangles": 64,
+      "bounds": [
+        [
+          -0.0014179993886500597,
+          -0.006346999667584896,
+          0.0073339990340173244
+        ],
+        [
+          0.005419000517576933,
+          -0.004836999345570803,
+          0.009672999382019043
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_int1"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_LED_EMISSIVE_mm_int_Mesh_034_VehicleInter_2e7314b",
+      "parent": "group1",
+      "vertices": 176,
+      "triangles": 118,
+      "bounds": [
+        [
+          -0.006621999200433493,
+          -0.006347000133246183,
+          0.0065279994159936905
+        ],
+        [
+          0.006759000476449728,
+          -0.0028429997619241476,
+          0.009672999382019043
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_int1"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_INTERIOR_mm_mat07_Mesh_033_VehicleInterio_4064d41",
+      "parent": "group1",
+      "vertices": 1262,
+      "triangles": 1253,
+      "bounds": [
+        [
+          -0.007123999763280153,
+          -0.006562000140547752,
+          0.0062759993597865105
+        ],
+        [
+          0.007143000140786171,
+          -0.00012799969408661127,
+          0.009358000010251999
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat09"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_INTERIOR_mm_mat06_Mesh_032_VehicleInterio_f49b6f5",
+      "parent": "group1",
+      "vertices": 268,
+      "triangles": 400,
+      "bounds": [
+        [
+          -0.005398999899625778,
+          -0.0029180001001805067,
+          0.00305899977684021
+        ],
+        [
+          0.0053990003652870655,
+          0.003874000161886215,
+          0.00824899971485138
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat13"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_INTERIOR_mm_mat04_Mesh_031_VehicleInterio_f629127",
+      "parent": "group1",
+      "vertices": 754,
+      "triangles": 1182,
+      "bounds": [
+        [
+          -0.006725999526679516,
+          -0.011254999786615372,
+          0.002452999586239457
+        ],
+        [
+          0.006754001136869192,
+          0.0049250004813075066,
+          0.011751999147236347
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat11"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_INTERIOR_mm_mat03_Mesh_030_VehicleInterio_18ccb03",
+      "parent": "group1",
+      "vertices": 3535,
+      "triangles": 5908,
+      "bounds": [
+        [
+          -0.008214999921619892,
+          -0.011254999786615372,
+          0.002619999460875988
+        ],
+        [
+          0.008215000852942467,
+          0.005152999889105558,
+          0.013509000651538372
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat05"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_INTERIOR_mm_mat02_Mesh_029_VehicleInterio_83bdf00",
+      "parent": "group1",
+      "vertices": 70,
+      "triangles": 58,
+      "bounds": [
+        [
+          -0.006431999150663614,
+          -0.009415999986231327,
+          0.009084999561309814
+        ],
+        [
+          0.006747000850737095,
+          -0.0056759994477033615,
+          0.009549999609589577
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat03"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_INTERIOR_mm_mat00_Mesh_028_VehicleInterio_d82f58c",
+      "parent": "group1",
+      "vertices": 1331,
+      "triangles": 2222,
+      "bounds": [
+        [
+          -0.006166999693959951,
+          -0.008741999976336956,
+          0.00305899977684021
+        ],
+        [
+          0.006167000625282526,
+          0.004882000386714935,
+          0.012022999115288258
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat01"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_INTERIOR_mm_int_Mesh_027_VehicleInterior_mm_int",
+      "parent": "group1",
+      "vertices": 4815,
+      "triangles": 4601,
+      "bounds": [
+        [
+          -0.009713999927043915,
+          -0.01080700010061264,
+          0.0019849995151162148
+        ],
+        [
+          0.00971400085836649,
+          0.004639000166207552,
+          0.01260400004684925
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_int1"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_RIGHT_mm_mat07_Mesh_016_VehicleInter_58dde15",
+      "parent": "group1",
+      "vertices": 79,
+      "triangles": 88,
+      "bounds": [
+        [
+          -0.007654999382793903,
+          -0.004321000538766384,
+          0.008280999958515167
+        ],
+        [
+          -0.007131998892873526,
+          -0.0005980002461001277,
+          0.008603000082075596
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat09"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_RIGHT_mm_mat05_Mesh_015_VehicleInter_b8c55af",
+      "parent": "group1",
+      "vertices": 34,
+      "triangles": 32,
+      "bounds": [
+        [
+          -0.007480998989194632,
+          -0.0066200001165270805,
+          0.004837000276893377
+        ],
+        [
+          -0.006869999226182699,
+          -0.003732000244781375,
+          0.005738000385463238
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat07"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_RIGHT_mm_mat03_Mesh_014_VehicleInter_d8e6b11",
+      "parent": "group1",
+      "vertices": 611,
+      "triangles": 788,
+      "bounds": [
+        [
+          -0.008751999586820602,
+          -0.007619000505656004,
+          0.003425000235438347
+        ],
+        [
+          -0.00654999865218997,
+          0.0020029996521770954,
+          0.009587000124156475
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat05"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_RIGHT_mm_mat02_Mesh_013_VehicleInter_a89dff5",
+      "parent": "group1",
+      "vertices": 26,
+      "triangles": 22,
+      "bounds": [
+        [
+          -0.007336999289691448,
+          -0.005766000598669052,
+          0.009003999643027782
+        ],
+        [
+          -0.006723999511450529,
+          0.001555999624542892,
+          0.009358999319374561
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat03"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_RIGHT_mm_mat00_Mesh_012_VehicleInter_40a1ffd",
+      "parent": "group1",
+      "vertices": 211,
+      "triangles": 307,
+      "bounds": [
+        [
+          -0.007753999438136816,
+          -0.0059930006973445415,
+          0.005640000570565462
+        ],
+        [
+          -0.00666199903935194,
+          0.0008249997044913471,
+          0.006607000716030598
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat01"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_RIGHT_mm_int_Mesh_011_VehicleInterior_mm_int",
+      "parent": "group1",
+      "vertices": 507,
+      "triangles": 513,
+      "bounds": [
+        [
+          -0.009713999927043915,
+          -0.009247000329196453,
+          0.0019850002136081457
+        ],
+        [
+          -0.006659999024122953,
+          0.0027469994965940714,
+          0.009549000300467014
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_int1"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_LEFT_mm_mat07_Mesh_009_VehicleInteri_49d7483",
+      "parent": "group1",
+      "vertices": 79,
+      "triangles": 88,
+      "bounds": [
+        [
+          0.0071319998241961,
+          -0.0043209996074438095,
+          0.008280999958515167
+        ],
+        [
+          0.007655000314116478,
+          -0.0005979996058158576,
+          0.008603000082075596
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat09"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_LEFT_mm_mat05_Mesh_008_VehicleInteri_5d1e73f",
+      "parent": "group1",
+      "vertices": 35,
+      "triangles": 33,
+      "bounds": [
+        [
+          0.006870000157505274,
+          -0.006619999185204506,
+          0.004836999345570803
+        ],
+        [
+          0.007480999920517206,
+          -0.0037319997791200876,
+          0.005737999454140663
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat07"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_LEFT_mm_mat03_Mesh_007_VehicleInteri_858570c",
+      "parent": "group1",
+      "vertices": 633,
+      "triangles": 831,
+      "bounds": [
+        [
+          0.006548999808728695,
+          -0.007618999574333429,
+          0.003424999536946416
+        ],
+        [
+          0.008752000518143177,
+          0.0020030003506690264,
+          0.009588000364601612
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat05"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_LEFT_mm_mat02_Mesh_006_VehicleInteri_ad8c1f9",
+      "parent": "group1",
+      "vertices": 26,
+      "triangles": 22,
+      "bounds": [
+        [
+          0.00672000041231513,
+          -0.0057579996064305305,
+          0.009003999643027782
+        ],
+        [
+          0.007337000221014023,
+          0.001556000323034823,
+          0.009358999319374561
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat03"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_LEFT_mm_mat00_Mesh_005_VehicleInteri_a6f2725",
+      "parent": "group1",
+      "vertices": 211,
+      "triangles": 307,
+      "bounds": [
+        [
+          0.0066619995050132275,
+          -0.005992999766021967,
+          0.0056399996392428875
+        ],
+        [
+          0.007753999903798103,
+          0.0008250003447756171,
+          0.006606999784708023
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_mat01"
+      ]
+    },
+    {
+      "name": "INT:LOD_A_INT_DOOR_LEFT_mm_int_Mesh_004_VehicleInterior_mm_int",
+      "parent": "group1",
+      "vertices": 846,
+      "triangles": 801,
+      "bounds": [
+        [
+          0.006683999672532082,
+          -0.009247000329196453,
+          0.0019849995151162148
+        ],
+        [
+          0.00971400085836649,
+          0.0027470001950860023,
+          0.009549000300467014
+        ]
+      ],
+      "materials": [
+        "INT:Vehicle_Interior_mm_int1"
+      ]
+    },
+    {
+      "name": "LOD_A_ROTOR_REAR_mm_rotor_Mesh_330_VehicleExterior_mm_rotor_008",
+      "parent": "group1",
+      "vertices": 80,
+      "triangles": 142,
+      "bounds": [
+        [
+          -0.00855400413274765,
+          0.01254340447485447,
+          0.0019177794456481934
+        ],
+        [
+          -0.007945388555526733,
+          0.015989717096090317,
+          0.005364092532545328
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_rotor_009"
+      ]
+    },
+    {
+      "name": "LOD_A_WHEEL_REAR_mm_wheel_Mesh_337_VehicleExterior_mm_wheel_008",
+      "parent": "group1",
+      "vertices": 1169,
+      "triangles": 1848,
+      "bounds": [
+        [
+          -0.009785009548068047,
+          0.01141508761793375,
+          0.0007882100762799382
+        ],
+        [
+          -0.006857145112007856,
+          0.01711803488433361,
+          0.006492409855127335
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_wheel_009"
+      ]
+    },
+    {
+      "name": "LOD_A_TYRE_mm_tyre_Mesh_332_VehicleExterior_mm_tyre_010",
+      "parent": "group1",
+      "vertices": 288,
+      "triangles": 504,
+      "bounds": [
+        [
+          -0.009780000895261765,
+          0.010537228547036648,
+          -0.00010217109957011417
+        ],
+        [
+          -0.006889704614877701,
+          0.018010921776294708,
+          0.00737152062356472
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_tyre_009"
+      ]
+    },
+    {
+      "name": "LOD_A_ROTOR_mm_rotor_Mesh_331_VehicleExterior_mm_rotor_008",
+      "parent": "group1",
+      "vertices": 80,
+      "triangles": 142,
+      "bounds": [
+        [
+          -0.00846070982515812,
+          -0.016530610620975494,
+          0.0016926736570894718
+        ],
+        [
+          -0.007821829058229923,
+          -0.012911500409245491,
+          0.005311783868819475
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_rotor_009"
+      ]
+    },
+    {
+      "name": "LOD_A_WHEEL_mm_wheel_Mesh_338_VehicleExterior_mm_wheel_008",
+      "parent": "group1",
+      "vertices": 1154,
+      "triangles": 1848,
+      "bounds": [
+        [
+          -0.009734840132296085,
+          -0.017475619912147522,
+          0.0007464535301551223
+        ],
+        [
+          -0.006905858404934406,
+          -0.011965279467403889,
+          0.006258003879338503
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_wheel_009"
+      ]
+    },
+    {
+      "name": "LOD_A_TYRE_mm_tyre_Mesh_332_VehicleExterior_mm_tyre_009",
+      "parent": "group1",
+      "vertices": 288,
+      "triangles": 504,
+      "bounds": [
+        [
+          -0.009730000048875809,
+          -0.018323831260204315,
+          -0.00011385640391381457
+        ],
+        [
+          -0.006937318481504917,
+          -0.011102549731731415,
+          0.007107424084097147
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_tyre_009"
+      ]
+    },
+    {
+      "name": "LOD_A_TYRE_mm_tyre_Mesh_332_VehicleExterior_mm_tyre_008",
+      "parent": "group1",
+      "vertices": 288,
+      "triangles": 504,
+      "bounds": [
+        [
+          0.006892226170748472,
+          0.010537228547036648,
+          -0.00010217190720140934
+        ],
+        [
+          0.009782521054148674,
+          0.01801091991364956,
+          0.0073715196922421455
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_tyre_009"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_WHEEL_mm_wheel_Mesh_338_VehicleExterior_mm_wheel_008",
+      "parent": "group1",
+      "vertices": 1154,
+      "triangles": 1848,
+      "bounds": [
+        [
+          0.006907329428941011,
+          -0.017461100593209267,
+          0.0007464527152478695
+        ],
+        [
+          0.009736309759318829,
+          -0.011950760148465633,
+          0.006258002948015928
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_wheel_009"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_WHEEL_REAR_mm_wheel_Mesh_337_VehicleExterior_m_8e51938",
+      "parent": "group1",
+      "vertices": 1169,
+      "triangles": 1848,
+      "bounds": [
+        [
+          0.0068596662022173405,
+          0.011430114507675171,
+          0.0007882092613726854
+        ],
+        [
+          0.00978753063827753,
+          0.017133062705397606,
+          0.00649240892380476
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_wheel_009"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_TYRE_mm_tyre_Mesh_332_VehicleExterior_mm_tyre_008",
+      "parent": "group1",
+      "vertices": 288,
+      "triangles": 504,
+      "bounds": [
+        [
+          0.006938789505511522,
+          -0.018323831260204315,
+          -0.00011385721154510975
+        ],
+        [
+          0.009731469675898552,
+          -0.01110255066305399,
+          0.007107423152774572
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_tyre_009"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_ROTOR_mm_rotor_Mesh_331_VehicleExterior_mm_rotor_008",
+      "parent": "group1",
+      "vertices": 80,
+      "triangles": 142,
+      "bounds": [
+        [
+          0.007823299616575241,
+          -0.01651488058269024,
+          0.001692672842182219
+        ],
+        [
+          0.008462179452180862,
+          -0.012895770370960236,
+          0.0053117829374969006
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_rotor_009"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_ROTOR_REAR_mm_rotor_Mesh_330_VehicleExterior_m_00be3a9",
+      "parent": "group1",
+      "vertices": 80,
+      "triangles": 142,
+      "bounds": [
+        [
+          0.007947909645736217,
+          0.012558432295918465,
+          0.0019177786307409406
+        ],
+        [
+          0.008556525222957134,
+          0.016004744917154312,
+          0.005364092066884041
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_rotor_009"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BRAKE_CALIPER_REAR_RIGHT_mm_misc_Mesh_325_Vehi_4736e50",
+      "parent": "group1",
+      "vertices": 52,
+      "triangles": 76,
+      "bounds": [
+        [
+          -0.008450375869870186,
+          0.012202948331832886,
+          0.002694756491109729
+        ],
+        [
+          -0.007773044053465128,
+          0.013263392262160778,
+          0.004540204536169767
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BRAKE_CALIPER_REAR_LEFT_mm_misc_Mesh_324_Vehic_0c76c0d",
+      "parent": "group1",
+      "vertices": 52,
+      "triangles": 76,
+      "bounds": [
+        [
+          0.007775093894451857,
+          0.01220653671771288,
+          0.00269921007566154
+        ],
+        [
+          0.008452584967017174,
+          0.013267230242490768,
+          0.004545091651380062
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BRAKE_CALIPER_FRONT_RIGHT_mm_misc_Mesh_323_Veh_90fb49a",
+      "parent": "group1",
+      "vertices": 38,
+      "triangles": 55,
+      "bounds": [
+        [
+          -0.008534519001841545,
+          -0.014021508395671844,
+          0.0022815302945673466
+        ],
+        [
+          -0.0075471592135727406,
+          -0.012749798595905304,
+          0.005197630263864994
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BRAKE_CALIPER_FRONT_LEFT_mm_misc_Mesh_322_Vehi_36bce4b",
+      "parent": "group1",
+      "vertices": 38,
+      "triangles": 55,
+      "bounds": [
+        [
+          0.007548629771918058,
+          -0.014024700969457626,
+          0.0022783130407333374
+        ],
+        [
+          0.008535989560186863,
+          -0.012752990238368511,
+          0.005194413010030985
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_WING_REAR_mm_misc_Mesh_111_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 362,
+      "triangles": 562,
+      "bounds": [
+        [
+          -0.00607700040563941,
+          0.020051168277859688,
+          0.008525168523192406
+        ],
+        [
+          0.006076999474316835,
+          0.023476168513298035,
+          0.009847169741988182
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_WING_REAR_mm_ext_Mesh_110_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 191,
+      "triangles": 326,
+      "bounds": [
+        [
+          -0.00607700040563941,
+          0.020056169480085373,
+          0.00907616876065731
+        ],
+        [
+          0.006076999474316835,
+          0.023476168513298035,
+          0.009847169741988182
+        ]
+      ],
+      "materials": [
+        "CarPaint"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_TAILLIGHT_LENS_RIGHT_mm_windows_Mesh_109_Vehic_42c5460",
+      "parent": "group1",
+      "vertices": 99,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.008661000989377499,
+          0.019466999918222427,
+          0.0067010000348091125
+        ],
+        [
+          -0.0057410006411373615,
+          0.023380998522043228,
+          0.008755999617278576
+        ]
+      ],
+      "materials": [
+        "Glass_light"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_TAILLIGHT_LENS_RIGHT_mm_lights_Mesh_108_Vehicl_fd6ab52",
+      "parent": "group1",
+      "vertices": 136,
+      "triangles": 186,
+      "bounds": [
+        [
+          -0.008608001284301281,
+          0.019569000229239464,
+          0.006703000050038099
+        ],
+        [
+          -0.005262000486254692,
+          0.023387998342514038,
+          0.008689000271260738
+        ]
+      ],
+      "materials": [
+        "TL"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_TAILLIGHT_LENS_LEFT_mm_windows_Mesh_107_Vehicl_2323702",
+      "parent": "group1",
+      "vertices": 99,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.0057409992441535,
+          0.019466999918222427,
+          0.006700999103486538
+        ],
+        [
+          0.00866099912673235,
+          0.023380998522043228,
+          0.008755999617278576
+        ]
+      ],
+      "materials": [
+        "Glass_light"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_TAILLIGHT_LENS_LEFT_mm_lights_Mesh_106_Vehicle_f6cb95a",
+      "parent": "group1",
+      "vertices": 136,
+      "triangles": 186,
+      "bounds": [
+        [
+          0.00526199908927083,
+          0.019569000229239464,
+          0.006702999584376812
+        ],
+        [
+          0.008607999421656132,
+          0.023387998342514038,
+          0.008689000271260738
+        ]
+      ],
+      "materials": [
+        "TL"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_TAILLIGHT_LENS_BOOT_mm_windows_Mesh_097_Vehicl_a402e3d",
+      "parent": "group1",
+      "vertices": 153,
+      "triangles": 256,
+      "bounds": [
+        [
+          -0.005900000687688589,
+          0.02270199917256832,
+          0.007845999673008919
+        ],
+        [
+          0.005899999290704727,
+          0.024275997653603554,
+          0.00851100031286478
+        ]
+      ],
+      "materials": [
+        "Glass_light"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_TAILLIGHT_LENS_BOOT_mm_lights_Mesh_096_Vehicle_f763955",
+      "parent": "group1",
+      "vertices": 179,
+      "triangles": 214,
+      "bounds": [
+        [
+          -0.005741001106798649,
+          0.022810999304056168,
+          0.006896999664604664
+        ],
+        [
+          0.005740999709814787,
+          0.02423899807035923,
+          0.008471999317407608
+        ]
+      ],
+      "materials": [
+        "TL"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_REARBUMPER_mm_misc_Mesh_092_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 881,
+      "triangles": 1479,
+      "bounds": [
+        [
+          -0.006746000610291958,
+          0.018557999283075333,
+          0.0013039996847510338
+        ],
+        [
+          0.006745999213308096,
+          0.024778999388217926,
+          0.004830000456422567
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_REARBUMPER_mm_lights_Mesh_091_VehicleExterior__599307d",
+      "parent": "group1",
+      "vertices": 696,
+      "triangles": 952,
+      "bounds": [
+        [
+          -0.001760000828653574,
+          0.024486998096108437,
+          0.003971999976783991
+        ],
+        [
+          0.0017489989986643195,
+          0.024646999314427376,
+          0.004427999723702669
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_lights1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_REARBUMPER_mm_ext_Mesh_090_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 1066,
+      "triangles": 1924,
+      "bounds": [
+        [
+          -0.0097210006788373,
+          0.01765899918973446,
+          0.001190999522805214
+        ],
+        [
+          0.00972099881619215,
+          0.024785999208688736,
+          0.0068970005959272385
+        ]
+      ],
+      "materials": [
+        "CarPaint",
+        "gt:Vehicle_Exterior_mm_ext1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_REARBUMPER_mm_chassis_Mesh_089_VehicleExterior_14e3966",
+      "parent": "group1",
+      "vertices": 96,
+      "triangles": 116,
+      "bounds": [
+        [
+          -0.006678001489490271,
+          0.021740002557635307,
+          0.0026559997349977493
+        ],
+        [
+          0.006677999626845121,
+          0.024549998342990875,
+          0.0045020002871751785
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_chassis1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_REARBUMPER_mm_badges_Mesh_088_VehicleExterior__7ab9793",
+      "parent": "group1",
+      "vertices": 74,
+      "triangles": 72,
+      "bounds": [
+        [
+          -0.006678001023828983,
+          0.022640999406576157,
+          0.0026559997349977493
+        ],
+        [
+          0.006677999161183834,
+          0.024549998342990875,
+          0.0045020002871751785
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_badges1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_RIGHT_mm_misc_Mesh_081_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 45,
+      "triangles": 67,
+      "bounds": [
+        [
+          -0.00864699948579073,
+          -0.006176000460982323,
+          0.008321000263094902
+        ],
+        [
+          -0.008360998705029488,
+          -0.005321000702679157,
+          0.008940000087022781
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_RIGHT_mm_lights_Mesh_080_VehicleExterio_5e6d334",
+      "parent": "group1",
+      "vertices": 43,
+      "triangles": 62,
+      "bounds": [
+        [
+          -0.010748999193310738,
+          -0.0064580002799630165,
+          0.00940299965441227
+        ],
+        [
+          -0.009203999303281307,
+          -0.0046640001237392426,
+          0.009642001241445541
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_lights1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_RIGHT_mm_ext_Mesh_079_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 538,
+      "triangles": 1017,
+      "bounds": [
+        [
+          -0.010766998864710331,
+          -0.006670000497251749,
+          0.008655999787151814
+        ],
+        [
+          -0.008360998705029488,
+          -0.004441000521183014,
+          0.010255999863147736
+        ]
+      ],
+      "materials": [
+        "CarPaint_2"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_LEFT_mm_misc_Mesh_078_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 47,
+      "triangles": 69,
+      "bounds": [
+        [
+          0.008354000747203827,
+          -0.006179999094456434,
+          0.008321000263094902
+        ],
+        [
+          0.008647001348435879,
+          -0.005320999771356583,
+          0.008940000087022781
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_LEFT_mm_lights_Mesh_077_VehicleExterior_2a74773",
+      "parent": "group1",
+      "vertices": 43,
+      "triangles": 62,
+      "bounds": [
+        [
+          0.009204001165926456,
+          -0.006457999348640442,
+          0.009402998723089695
+        ],
+        [
+          0.010749001055955887,
+          -0.004663999192416668,
+          0.009642000310122967
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_lights1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_LEFT_mm_ext_Mesh_076_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 542,
+      "triangles": 1023,
+      "bounds": [
+        [
+          0.008354000747203827,
+          -0.006669999565929174,
+          0.008655998855829239
+        ],
+        [
+          0.01076700072735548,
+          -0.004440999589860439,
+          0.010255998931825161
+        ]
+      ],
+      "materials": [
+        "CarPaint_2"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_GLASS_RIGHT_mm_misc_Mesh_075_VehicleExt_1f96773",
+      "parent": "group1",
+      "vertices": 27,
+      "triangles": 25,
+      "bounds": [
+        [
+          -0.010556998662650585,
+          -0.005213000345975161,
+          0.009265999309718609
+        ],
+        [
+          -0.008775998838245869,
+          -0.004641000181436539,
+          0.010142999701201916
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_MIRROR_GLASS_LEFT_mm_misc_Mesh_074_VehicleExte_b2e32e4",
+      "parent": "group1",
+      "vertices": 27,
+      "triangles": 25,
+      "bounds": [
+        [
+          0.008776000700891018,
+          -0.005212999414652586,
+          0.009265999309718609
+        ],
+        [
+          0.010557000525295734,
+          -0.004640999250113964,
+          0.010142999701201916
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_INTERIOR_mm_cab_Mesh_073_VehicleExterior_mm_cab",
+      "parent": "group1",
+      "vertices": 370,
+      "triangles": 530,
+      "bounds": [
+        [
+          -0.007812000811100006,
+          -0.010477001778781414,
+          0.0022269997280091047
+        ],
+        [
+          0.007851000875234604,
+          0.018567999824881554,
+          0.01348199974745512
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_cab1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_HOOD_mm_misc_Mesh_072_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 80,
+      "triangles": 87,
+      "bounds": [
+        [
+          -0.007521999068558216,
+          -0.023600999265909195,
+          0.006424999330192804
+        ],
+        [
+          0.007522001396864653,
+          -0.009559999220073223,
+          0.009351999498903751
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_HOOD_mm_ext_Mesh_071_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 352,
+      "triangles": 620,
+      "bounds": [
+        [
+          -0.007519998587667942,
+          -0.02366899885237217,
+          0.006424999330192804
+        ],
+        [
+          0.007520000915974379,
+          -0.009559999220073223,
+          0.009367000311613083
+        ]
+      ],
+      "materials": [
+        "CarPaint"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_HOOD_mm_chassis_Mesh_070_VehicleExterior_mm_chassis",
+      "parent": "group1",
+      "vertices": 16,
+      "triangles": 14,
+      "bounds": [
+        [
+          -0.004394998773932457,
+          -0.02253599837422371,
+          0.006883000023663044
+        ],
+        [
+          0.004395001567900181,
+          -0.022000998258590698,
+          0.007085999473929405
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_chassis1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_HEADLIGHT_LENS_RIGHT_mm_windows_Mesh_065_Vehic_979fd70",
+      "parent": "group1",
+      "vertices": 162,
+      "triangles": 276,
+      "bounds": [
+        [
+          -0.009015998803079128,
+          -0.022885000333189964,
+          0.005867999512702227
+        ],
+        [
+          -0.00478599825873971,
+          -0.018741998821496964,
+          0.007418000604957342
+        ]
+      ],
+      "materials": [
+        "Glass_light"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_HEADLIGHT_LENS_RIGHT_mm_lights_Mesh_064_Vehicl_d1d0727",
+      "parent": "group1",
+      "vertices": 69,
+      "triangles": 47,
+      "bounds": [
+        [
+          -0.008843999356031418,
+          -0.022790998220443726,
+          0.005946999881416559
+        ],
+        [
+          -0.004880998283624649,
+          -0.018832998350262642,
+          0.007376000750809908
+        ]
+      ],
+      "materials": [
+        "TL"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_HEADLIGHT_LENS_LEFT_mm_windows_Mesh_063_Vehicl_482da20",
+      "parent": "group1",
+      "vertices": 162,
+      "triangles": 276,
+      "bounds": [
+        [
+          0.004786000587046146,
+          -0.022885000333189964,
+          0.005867999047040939
+        ],
+        [
+          0.009016000665724277,
+          -0.018741998821496964,
+          0.007418000139296055
+        ]
+      ],
+      "materials": [
+        "Glass_light"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_HEADLIGHT_LENS_LEFT_mm_lights_Mesh_062_Vehicle_9b010ee",
+      "parent": "group1",
+      "vertices": 69,
+      "triangles": 47,
+      "bounds": [
+        [
+          0.004881000611931086,
+          -0.022790998220443726,
+          0.005946999415755272
+        ],
+        [
+          0.008844001218676567,
+          -0.018832998350262642,
+          0.007376000285148621
+        ]
+      ],
+      "materials": [
+        "TL"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_mm_windows_Mesh_057_VehicleExterior_mm_windows",
+      "parent": "group1",
+      "vertices": 81,
+      "triangles": 114,
+      "bounds": [
+        [
+          -0.004346000030636787,
+          -0.0005530001944862306,
+          0.012690999545156956
+        ],
+        [
+          0.004346000496298075,
+          0.011114999651908875,
+          0.013693999499082565
+        ]
+      ],
+      "materials": [
+        "D_glass"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_RIGHT_mm_windows_Mesh_056_VehicleExterio_a833717",
+      "parent": "group1",
+      "vertices": 55,
+      "triangles": 66,
+      "bounds": [
+        [
+          -0.00803999975323677,
+          -0.007024000398814678,
+          0.009070999920368195
+        ],
+        [
+          -0.006446999032050371,
+          0.011012999340891838,
+          0.012570999562740326
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_windows1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_RIGHT_QUARTER_mm_windows_Mesh_055_Vehicl_b90edf1",
+      "parent": "group1",
+      "vertices": 37,
+      "triangles": 55,
+      "bounds": [
+        [
+          -0.007149999495595694,
+          0.010536999441683292,
+          0.009837999939918518
+        ],
+        [
+          -0.006486999802291393,
+          0.013716000132262707,
+          0.011524000205099583
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_windows1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_REAR_mm_windows_Mesh_054_VehicleExterior_d6a2858",
+      "parent": "group1",
+      "vertices": 83,
+      "triangles": 98,
+      "bounds": [
+        [
+          -0.005097000394016504,
+          0.013205000199377537,
+          0.010760999284684658
+        ],
+        [
+          0.005096999928355217,
+          0.018184000626206398,
+          0.01224799919873476
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_windows1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_LEFT_mm_windows_Mesh_053_VehicleExterior_f290d83",
+      "parent": "group1",
+      "vertices": 28,
+      "triangles": 32,
+      "bounds": [
+        [
+          0.0065030003897845745,
+          -0.007023999467492104,
+          0.009070999920368195
+        ],
+        [
+          0.008040000684559345,
+          0.003217000514268875,
+          0.012570999562740326
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_windows1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_LEFT_REAR_mm_windows_Mesh_052_VehicleExt_3542f23",
+      "parent": "group1",
+      "vertices": 27,
+      "triangles": 34,
+      "bounds": [
+        [
+          0.006446999963372946,
+          0.0036520003341138363,
+          0.009584000334143639
+        ],
+        [
+          0.00785099994391203,
+          0.011012999340891838,
+          0.012528999708592892
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_windows1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_LEFT_QUARTER_mm_windows_Mesh_051_Vehicle_b8a3600",
+      "parent": "group1",
+      "vertices": 37,
+      "triangles": 55,
+      "bounds": [
+        [
+          0.006486999802291393,
+          0.010536999441683292,
+          0.009837999939918518
+        ],
+        [
+          0.007149999495595694,
+          0.013716000132262707,
+          0.011524000205099583
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_windows1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_GLASS_FRONT_mm_windows_Mesh_050_VehicleExterio_e9b794f",
+      "parent": "group1",
+      "vertices": 80,
+      "triangles": 98,
+      "bounds": [
+        [
+          -0.007253998890519142,
+          -0.010420999489724636,
+          0.009336000308394432
+        ],
+        [
+          0.007254000287503004,
+          -0.003202999709174037,
+          0.012738999910652637
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_windows1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_FRONTBUMPER_mm_misc_Mesh_048_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 1436,
+      "triangles": 2049,
+      "bounds": [
+        [
+          -0.009645999409258366,
+          -0.024588000029325485,
+          0.0012929994845762849
+        ],
+        [
+          0.009646001271903515,
+          -0.018545998260378838,
+          0.006144999992102385
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_FRONTBUMPER_mm_lights_Mesh_047_VehicleExterior_0a559f4",
+      "parent": "group1",
+      "vertices": 1428,
+      "triangles": 2562,
+      "bounds": [
+        [
+          -0.005505999084562063,
+          -0.024616999551653862,
+          0.0023039996158331633
+        ],
+        [
+          0.0055060014128685,
+          -0.023080000653862953,
+          0.006074000149965286
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_lights1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_FRONTBUMPER_mm_ext_Mesh_046_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 2166,
+      "triangles": 3855,
+      "bounds": [
+        [
+          -0.00979599915444851,
+          -0.024785999208688736,
+          0.0011589995119720697
+        ],
+        [
+          0.009796001017093658,
+          -0.016325000673532486,
+          0.007153000682592392
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_ext1",
+        "CarPaint",
+        "gt:Vehicle_Exterior_mm_lights1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_FRONTBUMPER_mm_chassis_Mesh_045_VehicleExterio_9cca272",
+      "parent": "group1",
+      "vertices": 257,
+      "triangles": 282,
+      "bounds": [
+        [
+          -0.008045999333262444,
+          -0.02416199818253517,
+          0.0020029994193464518
+        ],
+        [
+          0.008046001195907593,
+          -0.021300001069903374,
+          0.006111000664532185
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_chassis1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_FRONTBUMPER_mm_cab_Mesh_044_VehicleExterior_mm_cab",
+      "parent": "group1",
+      "vertices": 490,
+      "triangles": 735,
+      "bounds": [
+        [
+          -0.002176998881623149,
+          -0.024244001135230064,
+          0.0028039999306201935
+        ],
+        [
+          0.002183001022785902,
+          -0.02411700040102005,
+          0.003350999904796481
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_cab1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_FRONTBUMPER_mm_badges_Mesh_043_VehicleExterior_865a48c",
+      "parent": "group1",
+      "vertices": 182,
+      "triangles": 164,
+      "bounds": [
+        [
+          -0.008045999333262444,
+          -0.02416199818253517,
+          0.0020029994193464518
+        ],
+        [
+          0.008046001195907593,
+          -0.021300001069903374,
+          0.004455000162124634
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_badges1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_DOOR_RIGHT_mm_misc_Mesh_036_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 32,
+      "triangles": 42,
+      "bounds": [
+        [
+          -0.008264999836683273,
+          -0.007473000790923834,
+          0.008944000117480755
+        ],
+        [
+          -0.007892998866736889,
+          0.0027469994965940714,
+          0.009549000300467014
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_DOOR_RIGHT_mm_ext_Mesh_035_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 269,
+      "triangles": 474,
+      "bounds": [
+        [
+          -0.009750999510288239,
+          -0.009247000329196453,
+          0.0019850004464387894
+        ],
+        [
+          -0.008089998736977577,
+          0.0027039994020015,
+          0.009448000229895115
+        ]
+      ],
+      "materials": [
+        "CarPaint",
+        "gt:Vehicle_Exterior_mm_ext1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_DOOR_LEFT_mm_misc_Mesh_029_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 32,
+      "triangles": 42,
+      "bounds": [
+        [
+          0.007892999798059464,
+          -0.007472999859601259,
+          0.008944000117480755
+        ],
+        [
+          0.008265000768005848,
+          0.0027470001950860023,
+          0.009549000300467014
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_DOOR_LEFT_mm_ext_Mesh_028_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 269,
+      "triangles": 474,
+      "bounds": [
+        [
+          0.008089999668300152,
+          -0.009247000329196453,
+          0.0019849995151162148
+        ],
+        [
+          0.009751000441610813,
+          0.0027040003333240747,
+          0.009448000229895115
+        ]
+      ],
+      "materials": [
+        "CarPaint",
+        "gt:Vehicle_Exterior_mm_ext1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_DOOR_LEFT_REAR_mm_ext_Mesh_026_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 511,
+      "triangles": 688,
+      "bounds": [
+        [
+          -0.007933000102639198,
+          -0.011434999294579029,
+          0.008790000341832638
+        ],
+        [
+          0.007933000102639198,
+          0.02154099941253662,
+          0.013509000651538372
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_ext1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_CHASSIS_mm_misc_Mesh_021_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 264,
+      "triangles": 334,
+      "bounds": [
+        [
+          -0.009013000875711441,
+          -0.02286600135266781,
+          0.004732999484986067
+        ],
+        [
+          0.009013001807034016,
+          0.023462997749447823,
+          0.010572999715805054
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_CHASSIS_mm_lights_Mesh_020_VehicleExterior_mm_lights",
+      "parent": "group1",
+      "vertices": 1035,
+      "triangles": 1460,
+      "bounds": [
+        [
+          -0.009013000875711441,
+          -0.02286600135266781,
+          0.005867999047040939
+        ],
+        [
+          0.009013001807034016,
+          0.024240998551249504,
+          0.01219599973410368
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_lights1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_CHASSIS_mm_chassis_Mesh_019_VehicleExterior_mm_chassis",
+      "parent": "group1",
+      "vertices": 695,
+      "triangles": 1021,
+      "bounds": [
+        [
+          -0.009798000566661358,
+          -0.023600999265909195,
+          0.0011449995217844844
+        ],
+        [
+          0.009798001497983932,
+          0.023462997749447823,
+          0.009351999498903751
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_chassis1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BRAKES_mm_lights_Mesh_018_VehicleExterior_mm_lights",
+      "parent": "group1",
+      "vertices": 16,
+      "triangles": 14,
+      "bounds": [
+        [
+          -0.0023799999617040157,
+          0.013417999260127544,
+          0.011952999979257584
+        ],
+        [
+          0.0023799999617040157,
+          0.013423998840153217,
+          0.01219599973410368
+        ]
+      ],
+      "materials": [
+        "Emiss"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BRAKES_RIGHT_mm_lights_Mesh_017_VehicleExterio_d8d4c07",
+      "parent": "group1",
+      "vertices": 138,
+      "triangles": 190,
+      "bounds": [
+        [
+          -0.008667000569403172,
+          0.01951099932193756,
+          0.006713999900966883
+        ],
+        [
+          -0.003177000442519784,
+          0.024091998115181923,
+          0.00874600000679493
+        ]
+      ],
+      "materials": [
+        "Emiss"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BRAKES_LEFT_mm_lights_Mesh_016_VehicleExterior_bfe5bd2",
+      "parent": "group1",
+      "vertices": 138,
+      "triangles": 190,
+      "bounds": [
+        [
+          0.0031769992783665657,
+          0.01951099932193756,
+          0.006713999435305595
+        ],
+        [
+          0.008666998706758022,
+          0.024091998115181923,
+          0.00874600000679493
+        ]
+      ],
+      "materials": [
+        "Emiss"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BOOT_mm_misc_Mesh_015_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 593,
+      "triangles": 802,
+      "bounds": [
+        [
+          -0.006112000439316034,
+          0.01795799843966961,
+          0.0059189992025494576
+        ],
+        [
+          0.006111999042332172,
+          0.024015000090003014,
+          0.010572999715805054
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BOOT_mm_ext_Mesh_014_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 350,
+      "triangles": 558,
+      "bounds": [
+        [
+          -0.006112000439316034,
+          0.01795799843966961,
+          0.005968999117612839
+        ],
+        [
+          0.006111999042332172,
+          0.024105999618768692,
+          0.010445000603795052
+        ]
+      ],
+      "materials": [
+        "CarPaint"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BOOT_mm_chassis_Mesh_013_VehicleExterior_mm_chassis",
+      "parent": "group1",
+      "vertices": 73,
+      "triangles": 90,
+      "bounds": [
+        [
+          -0.006017000414431095,
+          0.020118998363614082,
+          0.009021000005304813
+        ],
+        [
+          0.0060169994831085205,
+          0.023394998162984848,
+          0.009754999540746212
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_chassis1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BODY_mm_misc_Mesh_003_VehicleExterior_mm_misc",
+      "parent": "group1",
+      "vertices": 907,
+      "triangles": 1302,
+      "bounds": [
+        [
+          -0.009534000419080257,
+          -0.012794999405741692,
+          0.003441999200731516
+        ],
+        [
+          0.009534000419080257,
+          0.014278000220656395,
+          0.01333600003272295
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_misc1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BODY_mm_lights_Mesh_002_VehicleExterior_mm_lights",
+      "parent": "group1",
+      "vertices": 213,
+      "triangles": 198,
+      "bounds": [
+        [
+          -0.008843999356031418,
+          -0.02278199791908264,
+          0.005946999415755272
+        ],
+        [
+          0.008844001218676567,
+          -0.01791200041770935,
+          0.007376000750809908
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_lights1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BODY_mm_ext_Mesh_001_VehicleExterior_mm_ext",
+      "parent": "group1",
+      "vertices": 3072,
+      "triangles": 5370,
+      "bounds": [
+        [
+          -0.009798000566661358,
+          -0.023027999326586723,
+          0.0011449995217844844
+        ],
+        [
+          0.009798001497983932,
+          0.02270199917256832,
+          0.013324999250471592
+        ]
+      ],
+      "materials": [
+        "CarPaint",
+        "gt:Vehicle_Exterior_mm_ext1"
+      ]
+    },
+    {
+      "name": "gt:LOD_A_BODY_mm_badges_Mesh_VehicleExterior_mm_badges",
+      "parent": "group1",
+      "vertices": 8,
+      "triangles": 4,
+      "bounds": [
+        [
+          -0.009411999955773354,
+          0.004474999383091927,
+          0.002375999465584755
+        ],
+        [
+          0.009411999955773354,
+          0.006955999881029129,
+          0.002794000320136547
+        ]
+      ],
+      "materials": [
+        "gt:Vehicle_Exterior_mm_badges1"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "CarPaint",
+      "diffuse": [
+        0.014925000257790089,
+        0.07500000298023224,
+        0.028788302093744278,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "CarPaint_2",
+      "diffuse": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "cross",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\stitching_white_cross_stitch_b_mat02.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\stitching_white_cross_stitch_b_mat02.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "D_glass",
+      "diffuse": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "Emiss",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_lights.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_lights.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "Glass_light",
+      "diffuse": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_badges1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_badges.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_badges.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_cab1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_cab.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_cab.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_chassis1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\car_chassis.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_ext1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_ext_white.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_ext_white.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_lights1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_lights.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_lights.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_misc1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_misc.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_misc.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_rotor_009",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\car_rotor_00.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\car_rotor_00.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_tyre_009",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\car_tyre_tread.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\car_tyre_tread.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_wheel_009",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_wheel.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_wheel.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "gt:Vehicle_Exterior_mm_windows1",
+      "diffuse": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_int1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_int.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_int.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat01",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\suede_dark_grey_mat04.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\suede_dark_grey_mat04.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat03",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\stitching_white_a_mat02.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\stitching_white_a_mat02.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat05",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\plastic_leather_white_mat03.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\plastic_leather_grey_mat03_nm.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat07",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\speaker_mesh_silver_mat05.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat09",
+      "diffuse": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat11",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\suede_black_mat04.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat13",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\suede_grey_mat04.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\suede_grey_mat04.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_mat15",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\leather_dark_grey_mat01.etc.png"
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\leather_grey_mat01_nm.etc.png"
+        }
+      ]
+    },
+    {
+      "name": "INT:Vehicle_Interior_mm_sw1",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_sw.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_sw.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    },
+    {
+      "name": "TL",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "nodes": [
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "image": null
+        },
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output",
+          "image": null
+        },
+        {
+          "type": "NORMAL_MAP",
+          "name": "Normal Map",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_lights.png"
+        },
+        {
+          "type": "TEX_COORD",
+          "name": "Texture Coordinate",
+          "image": null
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping",
+          "image": null
+        },
+        {
+          "type": "TEX_IMAGE",
+          "name": "Image Texture.001",
+          "image": "D:\\RaceUltimate\\sources\\sketchfab\\replacement-imports\\etron\\expanded\\2018_audi_etron_gt_lights.png"
+        },
+        {
+          "type": "MAPPING",
+          "name": "Mapping.001",
+          "image": null
+        }
+      ]
+    }
+  ]
+}

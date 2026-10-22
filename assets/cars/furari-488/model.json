@@ -1,0 +1,84 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "source": {
+  "title": "Ferrari 488 Pista",
+  "author": "LSxSEPTIC",
+  "url": "https://sketchfab.com/3d-models/7f2f15ee7e224dbc94d40bf2481bb65f",
+  "license": "CC-BY as labelled; very likely a Forza Horizon rip: replace before any public release (V2-BACKLOG.md)"
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3294,
+   "width": 0.236,
+   "x": -1.1528,
+   "track": 1.6363
+  },
+  "rear": {
+   "radius": 0.3444,
+   "width": 0.2973,
+   "x": 1.4999,
+   "track": 1.6658
+  }
+ },
+ "size": {
+  "length": 4.605,
+  "width": 2.261,
+  "height": 1.114
+ },
+ "lights": {
+  "front": [
+   [
+    -1.766,
+    0.614,
+    0.741
+   ],
+   [
+    -1.767,
+    0.614,
+    -0.741
+   ]
+  ],
+  "rear": [
+   [
+    2.084,
+    0.758,
+    0.641
+   ],
+   [
+    2.085,
+    0.755,
+    -0.641
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.15,
+    0.747,
+    0.549
+   ],
+   [
+    -1.15,
+    1.135,
+    0.549
+   ],
+   [
+    1.815,
+    1.135,
+    0.549
+   ],
+   [
+    1.815,
+    0.747,
+    0.549
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 90512,
+  "body1": 25389,
+  "wheel": 10014
+ }
+}

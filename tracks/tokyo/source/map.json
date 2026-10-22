@@ -1,0 +1,491 @@
+{
+  "char": "と",
+  "title": "Tokyo Hiragana 「と」 Topological Circuit",
+  "stats": "5.18 KM // +28.5M RIDGE SPINE // 14 TURNS",
+  "ghostFont": "900 790px \"Noto Sans JP\", sans-serif",
+  "ghostX": 590,
+  "ghostY": 505,
+  "sfNodeIndex": 14,
+  "drsZones": [
+    {
+      "start": 5,
+      "end": 48,
+      "name": "BAYFRONT MAIN DRS"
+    },
+    {
+      "start": 465,
+      "end": 525,
+      "name": "SHIBUYA C-LOOP DRS"
+    }
+  ],
+  "topoHills": [
+    {
+      "cx": 535,
+      "cy": 255,
+      "rx": 395,
+      "ry": 230,
+      "angle": -0.26,
+      "maxElev": 28.5,
+      "name": "ROPPONGI RIDGE // STROKE-1 TOPOGRAPHICAL CREST (+28.5m)",
+      "levels": [
+        {
+          "elev": "5m",
+          "scale": 1,
+          "color": "rgba(16, 185, 129, 0.11)",
+          "stroke": "rgba(52, 211, 153, 0.30)"
+        },
+        {
+          "elev": "10m",
+          "scale": 0.83,
+          "color": "rgba(132, 204, 22, 0.12)",
+          "stroke": "rgba(163, 230, 53, 0.35)"
+        },
+        {
+          "elev": "15m",
+          "scale": 0.66,
+          "color": "rgba(234, 179, 8, 0.14)",
+          "stroke": "rgba(250, 204, 21, 0.42)"
+        },
+        {
+          "elev": "20m",
+          "scale": 0.5,
+          "color": "rgba(245, 158, 11, 0.16)",
+          "stroke": "rgba(251, 191, 36, 0.50)"
+        },
+        {
+          "elev": "25m",
+          "scale": 0.33,
+          "color": "rgba(249, 115, 22, 0.18)",
+          "stroke": "rgba(251, 146, 60, 0.60)"
+        },
+        {
+          "elev": "28m",
+          "scale": 0.17,
+          "color": "rgba(244, 63, 94, 0.22)",
+          "stroke": "rgba(251, 113, 133, 0.72)"
+        }
+      ]
+    }
+  ],
+  "waypoints": [
+    {
+      "x": 455,
+      "y": 825,
+      "elev": 1,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Tokyo Bayfront Main Straight (S/F)"
+    },
+    {
+      "x": 845,
+      "y": 825,
+      "elev": 1,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Odaiba Flat Straight (1.0m)"
+    },
+    {
+      "x": 1045,
+      "y": 735,
+      "elev": 2.5,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 Tail: Bayfront Turn 1 Braking Zone (+2.5m)"
+    },
+    {
+      "x": 970,
+      "y": 625,
+      "elev": 5.5,
+      "viaduct": false,
+      "strokeNum": 1,
+      "stroke": "Foothill Ascent: Beginning Grade toward Northern Ridge (+5.5m)"
+    },
+    {
+      "x": 925,
+      "y": 420,
+      "elev": 12,
+      "viaduct": false,
+      "strokeNum": 1,
+      "stroke": "East Foothill Climb: Mid-Slope Ascent (+12.0m)"
+    },
+    {
+      "x": 865,
+      "y": 215,
+      "elev": 20,
+      "viaduct": false,
+      "strokeNum": 1,
+      "stroke": "Asakusa Escarpment Climb (+20.0m)"
+    },
+    {
+      "x": 645,
+      "y": 112,
+      "elev": 26.2,
+      "viaduct": false,
+      "strokeNum": 1,
+      "stroke": "Stroke 1 (Tome / 止め): Northern High Ground Entry (+26.2m)"
+    },
+    {
+      "x": 420,
+      "y": 104,
+      "elev": 28.5,
+      "viaduct": false,
+      "strokeNum": 1,
+      "stroke": "Stroke 1 (Tome / 止め): Roppongi Ridge Summit Crest (+28.5m Peak)"
+    },
+    {
+      "x": 352,
+      "y": 192,
+      "elev": 27,
+      "viaduct": false,
+      "strokeNum": 1,
+      "stroke": "Stroke 1 (Tome / 止め): Upper Spine Turn-In (+27.0m)"
+    },
+    {
+      "x": 478,
+      "y": 348,
+      "elev": 24,
+      "viaduct": true,
+      "strokeNum": 1,
+      "stroke": "Stroke 1 (Tome / 止め): Hillside Viaduct Overpass (+24.0m over +3m Valley)"
+    },
+    {
+      "x": 615,
+      "y": 502,
+      "elev": 16.5,
+      "viaduct": true,
+      "strokeNum": 1,
+      "stroke": "Stroke 1 (Tome / 止め): Viaduct South Abutment Descent (+16.5m)"
+    },
+    {
+      "x": 762,
+      "y": 595,
+      "elev": 8.5,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Central Ridge-Base Knot Apex (+8.5m)"
+    },
+    {
+      "x": 815,
+      "y": 465,
+      "elev": 4.5,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Valley Knot North Hairpin (+4.5m)"
+    },
+    {
+      "x": 655,
+      "y": 375,
+      "elev": 3,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Valley Underpass Beneath Viaduct (+3.0m)"
+    },
+    {
+      "x": 410,
+      "y": 442,
+      "elev": 3.8,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Shibuya Valley C-Curve Entry (+3.8m)"
+    },
+    {
+      "x": 220,
+      "y": 565,
+      "elev": 3,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Shibuya Sweeping C-Loop Apex 1 (+3.0m)"
+    },
+    {
+      "x": 210,
+      "y": 725,
+      "elev": 2,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Shibuya Sweeping C-Loop Apex 2 (+2.0m)"
+    },
+    {
+      "x": 315,
+      "y": 810,
+      "elev": 1.2,
+      "viaduct": false,
+      "strokeNum": 2,
+      "stroke": "Stroke 2 (Harai / 払い): Bayfront Coastal Exit (+1.2m)"
+    }
+  ],
+  "landmarks": [
+    {
+      "x": 72,
+      "y": 118,
+      "w": 125,
+      "h": 95,
+      "color": "#00f0ff",
+      "jp": "六本木ヒルズ",
+      "name": "ROPPONGI HILLS ARENA",
+      "helipad": true,
+      "core": true
+    },
+    {
+      "x": 58,
+      "y": 360,
+      "w": 115,
+      "h": 110,
+      "color": "#ff0055",
+      "jp": "渋谷スクランブル",
+      "name": "SHIBUYA SCRAMBLE TOWER",
+      "helipad": true,
+      "core": true
+    },
+    {
+      "x": 980,
+      "y": 85,
+      "w": 110,
+      "h": 95,
+      "color": "#ffee00",
+      "jp": "秋葉原電脳館",
+      "name": "AKIHABARA CYBER PLAZA",
+      "helipad": false,
+      "core": true
+    },
+    {
+      "x": 1015,
+      "y": 455,
+      "w": 95,
+      "h": 110,
+      "color": "#00ff88",
+      "jp": "築地市場",
+      "name": "TSUKIJI MARKET HALL",
+      "helipad": false,
+      "core": true
+    },
+    {
+      "x": 542,
+      "y": 225,
+      "w": 94,
+      "h": 72,
+      "color": "#ff8800",
+      "jp": "山頂展望台",
+      "name": "RIDGE SUMMIT OBSERVATORY",
+      "helipad": true,
+      "core": true
+    },
+    {
+      "x": 325,
+      "y": 585,
+      "w": 115,
+      "h": 95,
+      "color": "#b400ff",
+      "jp": "代々木パビリオン",
+      "name": "YOYOGI PARK PAVILION",
+      "helipad": false,
+      "core": true
+    },
+    {
+      "x": 215,
+      "y": 42,
+      "w": 95,
+      "h": 68,
+      "color": "#00f0ff",
+      "jp": "新宿北",
+      "name": "SHINJUKU NORTH GATE",
+      "helipad": false,
+      "core": false
+    },
+    {
+      "x": 760,
+      "y": 36,
+      "w": 105,
+      "h": 64,
+      "color": "#ff0055",
+      "jp": "浅草ゲート",
+      "name": "ASAKUSA RIDGE GATE",
+      "helipad": false,
+      "core": false
+    },
+    {
+      "x": 72,
+      "y": 785,
+      "w": 110,
+      "h": 85,
+      "color": "#00ff88",
+      "jp": "品川埠頭",
+      "name": "SHINAGAWA BAY PIER",
+      "helipad": true,
+      "core": false
+    },
+    {
+      "x": 1015,
+      "y": 280,
+      "w": 88,
+      "h": 95,
+      "color": "#b400ff",
+      "jp": "銀座タワー",
+      "name": "GINZA NEON TOWER",
+      "helipad": false,
+      "core": false
+    },
+    {
+      "x": 525,
+      "y": 635,
+      "w": 98,
+      "h": 74,
+      "color": "#ffee00",
+      "jp": "芝公園ドーム",
+      "name": "SHIBA VALLEY DOME",
+      "helipad": false,
+      "core": false
+    },
+    {
+      "x": 995,
+      "y": 825,
+      "w": 105,
+      "h": 72,
+      "color": "#00f0ff",
+      "jp": "豊洲ドック",
+      "name": "TOYOSU TECH DOCK",
+      "helipad": false,
+      "core": false
+    }
+  ],
+  "parks": [
+    {
+      "x": 385,
+      "y": 625,
+      "rx": 135,
+      "ry": 82,
+      "angle": -0.15,
+      "name": "YOYOGI CENTRAL GROVE (+3m)"
+    },
+    {
+      "x": 242,
+      "y": 278,
+      "rx": 86,
+      "ry": 64,
+      "angle": 0.25,
+      "name": "ROPPONGI PINE SLOPE (+18m)"
+    },
+    {
+      "x": 845,
+      "y": 715,
+      "rx": 92,
+      "ry": 44,
+      "angle": -0.08,
+      "name": "ODAIBA BAYSIDE LAWN (+1.5m)"
+    }
+  ],
+  "grandstands": [
+    {
+      "x": 650,
+      "y": 888,
+      "w": 360,
+      "d": 44,
+      "angle": 0,
+      "label": "MAIN GRANDSTAND // 「と」 BAYFRONT ARENA (1.0m)"
+    },
+    {
+      "x": 650,
+      "y": 764,
+      "w": 270,
+      "d": 38,
+      "angle": 3.141592653589793,
+      "label": "VIP PADDOCK CLUB SEATING"
+    },
+    {
+      "x": 525,
+      "y": 52,
+      "w": 235,
+      "d": 38,
+      "angle": 0.05,
+      "label": "ROPPONGI RIDGE SUMMIT STAND (+28.5m)"
+    },
+    {
+      "x": 146,
+      "y": 645,
+      "w": 215,
+      "d": 40,
+      "angle": -1.4907963267948965,
+      "label": "SHIBUYA C-LOOP ARENA STAND (+2.5m)"
+    }
+  ],
+  "corners": [
+    {
+      "nodeRatio": 0.11,
+      "num": "T1",
+      "name": "Bayfront Turn 1 (+2.5m)"
+    },
+    {
+      "nodeRatio": 0.29,
+      "num": "T4",
+      "name": "Asakusa Escarpment (+20m)"
+    },
+    {
+      "nodeRatio": 0.43,
+      "num": "T6",
+      "name": "Stroke 1 Ridge Crest (+28.5m)"
+    },
+    {
+      "nodeRatio": 0.54,
+      "num": "T8",
+      "name": "Hillside Viaduct (+24m)"
+    },
+    {
+      "nodeRatio": 0.66,
+      "num": "T10",
+      "name": "Stroke 2 Valley Knot (+8.5m)"
+    },
+    {
+      "nodeRatio": 0.74,
+      "num": "T11",
+      "name": "Valley Underpass (+3.0m)"
+    },
+    {
+      "nodeRatio": 0.86,
+      "num": "T13",
+      "name": "Shibuya C-Sweep (+2.5m)"
+    }
+  ],
+  "skyline": [
+    {
+      "x": 1185,
+      "y": 265,
+      "w": 72,
+      "h": 95,
+      "color": "#00f0ff",
+      "jp": "お台場",
+      "name": "ODAIBA HQ"
+    },
+    {
+      "x": 1295,
+      "y": 285,
+      "w": 92,
+      "h": 80,
+      "color": "#ff007f",
+      "jp": "未来館",
+      "name": "MIRAI TOWER"
+    },
+    {
+      "x": 1185,
+      "y": 590,
+      "w": 80,
+      "h": 110,
+      "color": "#00ff88",
+      "jp": "湾岸",
+      "name": "BAYFRONT"
+    },
+    {
+      "x": 1295,
+      "y": 635,
+      "w": 95,
+      "h": 125,
+      "color": "#ffaa00",
+      "jp": "芝浦",
+      "name": "SHIBAURA PIER"
+    }
+  ],
+  "source": {
+    "file": "source/tokyo_street_circuit_2d_map.html",
+    "width": 1480,
+    "height": 940,
+    "trackGraphicWidth": 56
+  }
+}

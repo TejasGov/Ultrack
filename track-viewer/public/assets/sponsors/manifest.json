@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "downloadedOn": "2026-10-20",
+  "brands": [
+    {
+      "id": "redbull",
+      "name": "Red Bull",
+      "aliases": [
+        "VOLTRAVA"
+      ],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/redbull.svg",
+      "sourceFile": "assets/sponsors/sources/redbull.svg",
+      "sourceSha256": "731284f4a061e181bb50987ba0d880c04ba8155fee168f4716f258275731ad49",
+      "file": "logos/redbull.png",
+      "background": "#061e42",
+      "ink": "#ffffff"
+    },
+    {
+      "id": "pirelli",
+      "name": "Pirelli",
+      "aliases": [
+        "KESTROVA"
+      ],
+      "source": "https://www.pirelli.com/global/en-ww/assets/images/pirelli-logo.png",
+      "sourceFile": "assets/sponsors/sources/pirelli.png",
+      "sourceSha256": "3bf71089ec64a711c4867eeaca7cfd74532029f874d9b3df93f50d2dffcdb738",
+      "file": "logos/pirelli.png",
+      "background": "#fff200",
+      "ink": null
+    },
+    {
+      "id": "emirates",
+      "name": "Emirates",
+      "aliases": [
+        "AZURINE"
+      ],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/emirates.svg",
+      "sourceFile": "assets/sponsors/sources/emirates.svg",
+      "sourceSha256": "a4218d6b46a22e9f5e175b72d5908a676ab6b134e92fa3af366009abe47af19c",
+      "file": "logos/emirates.png",
+      "background": "#d71920",
+      "ink": "#ffffff"
+    },
+    {
+      "id": "hsbc",
+      "name": "HSBC",
+      "aliases": [
+        "MERIDAX"
+      ],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/hsbc.svg",
+      "sourceFile": "assets/sponsors/sources/hsbc.svg",
+      "sourceSha256": "d0c04fb9e0cba69e3ad9ac896241200aa8beb8a16f3271715860c27c558006bf",
+      "file": "logos/hsbc.png",
+      "background": "#ffffff",
+      "ink": "#db0011"
+    },
+    {
+      "id": "cocacola",
+      "name": "Coca-Cola",
+      "aliases": [
+        "DUNEFIZZ"
+      ],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/cocacola.svg",
+      "sourceFile": "assets/sponsors/sources/cocacola.svg",
+      "sourceSha256": "3c73054978b99314e6c4cb3aa9ffeebe4becf0f66739a3c2771878756cf402ac",
+      "file": "logos/cocacola.png",
+      "background": "#d00013",
+      "ink": "#ffffff"
+    },
+    {
+      "id": "rolex",
+      "name": "Rolex",
+      "aliases": [
+        "HALCYRA"
+      ],
+      "source": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Rolex_wordmark_logo.svg",
+      "sourceFile": "assets/sponsors/sources/rolex.svg",
+      "sourceSha256": "d01431fe9a0fc6b0f5a4cc85138f8b9410e851e1313dfd766d489e8a918e3b7a",
+      "file": "logos/rolex.png",
+      "background": "#ffffff",
+      "ink": null
+    },
+    {
+      "id": "shell",
+      "name": "Shell",
+      "aliases": [
+        "ORVANE"
+      ],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/shell.svg",
+      "sourceFile": "assets/sponsors/sources/shell.svg",
+      "sourceSha256": "d3a4b69b3437e4e94ac7a974c2d3b9780a57cdbf82ff57e2f2558fb38d03d7cf",
+      "file": "logos/shell.png",
+      "background": "#fbd600",
+      "ink": "#dd1d21"
+    },
+    {
+      "id": "ferrari",
+      "name": "FERRARI",
+      "aliases": [
+        "FERRARI"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/ferrari.png",
+      "sourceFile": "assets/sponsors/sources/ferrari.png",
+      "sourceSha256": "0fb044da5203fd7a00d2104666077e714e38417c4034f37a5bbc313d48ef5cff",
+      "file": "logos/ferrari.png",
+      "background": "#d40000",
+      "ink": null
+    },
+    {
+      "id": "mclaren",
+      "name": "McLAREN",
+      "aliases": [
+        "McLAREN"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mclaren.png",
+      "sourceFile": "assets/sponsors/sources/mclaren.png",
+      "sourceSha256": "07fb81fa8570e947557f5b591a8efd6582ecd95ae18a2b6927abd5757186cd67",
+      "file": "logos/mclaren.png",
+      "background": "#ff8000",
+      "ink": null
+    },
+    {
+      "id": "lamborghini",
+      "name": "LAMBORGHINI",
+      "aliases": [
+        "LAMBORGHINI"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/lamborghini.png",
+      "sourceFile": "assets/sponsors/sources/lamborghini.png",
+      "sourceSha256": "8a4e840e79ee4134e76cf8991a2273a13a184ad5267b8a45c0d9cce9d933a2bc",
+      "file": "logos/lamborghini.png",
+      "background": "#111111",
+      "ink": null
+    },
+    {
+      "id": "porsche",
+      "name": "PORSCHE",
+      "aliases": [
+        "PORSCHE"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/porsche.png",
+      "sourceFile": "assets/sponsors/sources/porsche.png",
+      "sourceSha256": "0435bf0ad58432089b5484df1578ac3c5f9a28f79ad62693cdf3c93e8dfb8485",
+      "file": "logos/porsche.png",
+      "background": "#f2f2f2",
+      "ink": null
+    },
+    {
+      "id": "aston-martin",
+      "name": "ASTON MARTIN",
+      "aliases": [
+        "ASTON MARTIN"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/aston-martin.png",
+      "sourceFile": "assets/sponsors/sources/aston-martin.png",
+      "sourceSha256": "e1414c7bc3132465b18e2dd5d02a4eac8dba25cc037d05f1e7b5555d421d095c",
+      "file": "logos/aston-martin.png",
+      "background": "#ffffff",
+      "ink": null
+    },
+    {
+      "id": "bugatti",
+      "name": "BUGATTI",
+      "aliases": [
+        "BUGATTI"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/bugatti.png",
+      "sourceFile": "assets/sponsors/sources/bugatti.png",
+      "sourceSha256": "940ddcb7ae296ba32f8b999e9d407fef1719390ddb1e76ffdebba6f1276809f8",
+      "file": "logos/bugatti.png",
+      "background": "#0b2d6b",
+      "ink": null
+    },
+    {
+      "id": "mercedes-amg",
+      "name": "MERCEDES-AMG",
+      "aliases": [
+        "MERCEDES-AMG"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mercedes-amg.png",
+      "sourceFile": "assets/sponsors/sources/mercedes-amg.png",
+      "sourceSha256": "ffefbb67b55396602a4feb8f3d00bb37adcc1570fa66f595cb1bb79243a3e1b2",
+      "file": "logos/mercedes-amg.png",
+      "background": "#ffffff",
+      "ink": null
+    },
+    {
+      "id": "bmw-m",
+      "name": "BMW M",
+      "aliases": [
+        "BMW M"
+      ],
+      "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/bmw-m.png",
+      "sourceFile": "assets/sponsors/sources/bmw-m.png",
+      "sourceSha256": "a5b5a3fc39725471280b1acad92eb1debc95b1ffbb61d88fd56e3dc9c8837f28",
+      "file": "logos/bmw-m.png",
+      "background": "#ffffff",
+      "ink": null
+    },
+    {
+      "id": "rayban",
+      "name": "Ray-Ban",
+      "aliases": [
+        "RayBan"
+      ],
+      "source": "https://visionsourceshowcase.luxottica.com/wp-content/uploads/Ray-Ban-Logo-1200-1024x695.jpg",
+      "sourceFile": "assets/sponsors/sources/rayban.jpg",
+      "sourceSha256": "7fc3fc9ca59203b89daf2fc1e69a4e7a7c7490e5f5ca59b4338d70b8011af9c5",
+      "file": "logos/rayban.png",
+      "background": "#ed1c24",
+      "ink": null,
+      "usage": "team-sponsor",
+      "venue": false,
+      "sourceCrop": {
+        "left": 0,
+        "top": 0,
+        "width": 1024,
+        "height": 609
+      }
+    }
+  ]
+}

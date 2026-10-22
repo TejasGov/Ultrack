@@ -1,0 +1,13 @@
+# Race hoardings and static scenery shells
+
+Driver introductions no longer run during session startup. Loading goes directly to the grid. `src/driver-hoardings.js` selects the actual race lineup, including the player's chosen second-team car, and places seven framed 8m × 4.5m boards at intervals around the circuit, facing approaching drivers. Only race participants appear; other driving modes show no driver hoardings. Quitting/cancelling clears them, including late texture completions. Poster textures are 1024 × 576 WebP, about 100KB each; non-current lineup textures are evicted. The review gallery still contains all driver artwork.
+
+The scenery audit found no detailed yacht cabin interiors. Deck prisms and assembled buildings did contain enclosed faces. `scripts/shell-venue.mjs` derives `_shell.glb` siblings from both WebP and KTX2 venue builds, using Blender's BVH to test three inset probes per triangle in fourteen directions. An exterior depth guard samples 24 × 24 rays from fourteen viewpoints and restores candidates that expose visible surfaces. Transparent/masked primitives are excluded from occlusion assumptions. This is a conservative sampled test, not a mathematical proof of invisibility from every possible camera.
+
+The source models and collision GLB remain unchanged. Node transforms, unmodified mesh position data and texture payloads are checked against the originals. Modified primitives compact unused vertices; unused accessors are pruned. Rebuilding the normal web pack now also derives shell variants. Sync selects a shell only when it is newer than its source, otherwise it falls back to the original.
+
+Measured unique geometry: **265,135 → 262,606 triangles**, a reduction of **2,529 (0.95%)**. Yacht reductions range from 15.6% to 19.8%, VIP booth 23.7%, hotel structures 7.0–13.7%, transporter 13.0%. Instanced copies reuse these lighter meshes. These are geometry counts, not a measured FPS improvement. Most scenery was already lightweight shells; larger performance gains require work on other geometry or render passes.
+
+WebP venue: 7,902,460 → 7,877,772 bytes. KTX2 venue: 12,841,656 → 12,785,752 bytes. Generated audit files and report: `track-viewer/qa/shells/`. Original `.blend` and GLB sources remain available for rebuilding.
+
+Run from `track-viewer`: `node scripts/prepare-hoardings.mjs`, `npm run pack:shells`, `npm run sync`, `npm run test:hoardings`, `node scripts/test-shells.mjs`. Set `BLENDER_EXE` when Blender isn't installed at the default local path. Existing loading/input/lifecycle checks and production build also pass. Live verification confirmed all seven board keys exactly matched the running race lineup with no intro overlay. Screenshot: `track-viewer/shots/driver-hoardings.png`.

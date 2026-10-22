@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Matteo Varrone",
+    "code": "VAR",
+    "nation": "ITA",
+    "age": 26,
+    "role": "Saetta's golden boy",
+    "bio": "Saetta's golden boy; brakes later than anyone and apologises to no one.",
+    "background": "Born in Modena, son of a Saetta machinist; in the team academy from fourteen.",
+    "personality": "Hot-blooded on the radio, adored by the home fans; kisses the lightning bolt on his helmet before every start.",
+    "rivals": [
+      "ASH",
+      "CAL"
+    ]
+  },
+  "team": "saetta",
+  "raceNumber": 7,
+  "carKey": "av12",
+  "manufacturer": "Lamborghini",
+  "car": "Aventador / AV–12",
+  "titleSponsor": "Ray-Ban",
+  "font": {
+    "family": "Racing Sans One",
+    "file": "racing-sans-one-latin-400-normal.woff2",
+    "weight": "400"
+  },
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration. No real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "b9fea3f89dd47b326ec501387a560a5002faf325fcedc202d6af1623435e1a84",
+  "motion": "8-second camera settle, staggered team/sponsor reveal, name slide and metadata reveal. Reduced-motion support. Driver is a still illustration, not a skeletal character animation.",
+  "scope": "One driver concept only; not installed as an automatic race intro pending style approval.",
+  "outputs": {
+    "illustration-v1.webp": {
+      "bytes": 363150,
+      "sha256": "e24cc4566b115ac9096efe89e5fd0e57fffd2e338f8767ac3baf71be200bacc0"
+    },
+    "poster-v1.svg": {
+      "bytes": 3758976,
+      "sha256": "a5770f23b31f3216d4ee9d900c5e190830ffa98d9b6782af6d623f622c0154a7"
+    },
+    "poster-v1.png": {
+      "bytes": 4233313,
+      "sha256": "1d908d7da7cefd0fd35a8caab2a427bc02976b24a389ad0af08f1e5437387f81"
+    },
+    "intro-v1.html": {
+      "bytes": 235316,
+      "sha256": "166c5c1d5b135afb5e4660df02c5082ac2fb57c952f00d3ec21640eaf526ef18"
+    }
+  }
+}

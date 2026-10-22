@@ -1,0 +1,229 @@
+{
+  "schema": "game-room.layout.v1",
+  "roomId": "tokyo",
+  "units": "meters",
+  "surfaces": [
+    {
+      "id": "track",
+      "widthMeters": 18,
+      "lengthMeters": 5180.0
+    },
+    {
+      "id": "terrain",
+      "type": "valley-carved grid"
+    },
+    {
+      "id": "bay",
+      "type": "water study"
+    }
+  ],
+  "instances": [
+    {
+      "name": "ROPPONGI HILLS ARENA",
+      "sourceRect": [
+        72,
+        118,
+        125,
+        95
+      ],
+      "center": [
+        -862.6608133787184,
+        433.8236460343844,
+        0.0
+      ],
+      "height": 105,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "SHIBUYA SCRAMBLE TOWER",
+      "sourceRect": [
+        58,
+        360,
+        115,
+        110
+      ],
+      "center": [
+        -889.7302691247063,
+        78.35895084364908,
+        0.0
+      ],
+      "height": 145,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "AKIHABARA CYBER PLAZA",
+      "sourceRect": [
+        980,
+        85,
+        110,
+        95
+      ],
+      "center": [
+        420.2889181613905,
+        480.8390165405739,
+        0.0
+      ],
+      "height": 64,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "TSUKIJI MARKET HALL",
+      "sourceRect": [
+        1015,
+        455,
+        95,
+        110
+      ],
+      "center": [
+        459.46839358321506,
+        -56.988327886290236,
+        0.0
+      ],
+      "height": 24,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "RIDGE SUMMIT OBSERVATORY",
+      "sourceRect": [
+        542,
+        225,
+        94,
+        72
+      ],
+      "center": [
+        -215.13093777074565,
+        297.7640132058665,
+        22.926204195207795
+      ],
+      "height": 52,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "YOYOGI PARK PAVILION",
+      "sourceRect": [
+        325,
+        585,
+        115,
+        95
+      ],
+      "center": [
+        -509.333180483719,
+        -231.5150820380541,
+        0.0
+      ],
+      "height": 32,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "SHINJUKU NORTH GATE",
+      "sourceRect": [
+        215,
+        42,
+        95,
+        68
+      ],
+      "center": [
+        -680.2981641425897,
+        561.3350296799589,
+        0.0
+      ],
+      "height": 85,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "ASAKUSA RIDGE GATE",
+      "sourceRect": [
+        760,
+        36,
+        105,
+        64
+      ],
+      "center": [
+        103.29134429390106,
+        572.7326952572168,
+        0.8783418083103626
+      ],
+      "height": 35,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "SHINAGAWA BAY PIER",
+      "sourceRect": [
+        72,
+        785,
+        110,
+        85
+      ],
+      "center": [
+        -873.3461248573979,
+        -509.333180483719,
+        0.0
+      ],
+      "height": 30,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "GINZA NEON TOWER",
+      "sourceRect": [
+        1015,
+        280,
+        88,
+        95
+      ],
+      "center": [
+        454.4819148931646,
+        203.02091809490898,
+        0.0
+      ],
+      "height": 118,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "SHIBA VALLEY DOME",
+      "sourceRect": [
+        525,
+        635,
+        98,
+        74
+      ],
+      "center": [
+        -236.5015607281045,
+        -287.7910558257657,
+        0.0
+      ],
+      "height": 28,
+      "status": "architectural study; detailed asset pending"
+    },
+    {
+      "name": "TOYOSU TECH DOCK",
+      "sourceRect": [
+        995,
+        825,
+        105,
+        72
+      ],
+      "center": [
+        438.0977706258562,
+        -557.0609050884871,
+        0.0
+      ],
+      "height": 38,
+      "status": "architectural study; detailed asset pending"
+    }
+  ],
+  "productionCamera": {
+    "location": [
+      1400,
+      -2050,
+      2200
+    ],
+    "target": [
+      -30,
+      20,
+      0
+    ],
+    "verticalFovDegrees": 31
+  },
+  "centerline": "../out/centerline.json",
+  "source": "../source/map.json"
+}

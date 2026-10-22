@@ -1,0 +1,7 @@
+{
+  "road_geometry_matches_v4": true,
+  "tower_openings_clear_across_18m_road": true,
+  "clearance_rays": 70,
+  "packed_textures": true,
+  "runtime_performance_tested": false
+}

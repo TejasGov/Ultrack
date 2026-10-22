@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "profiles": {
+    "v12": {
+      "cars": ["av12", "aston-martin-valk"],
+      "redline": 9000,
+      "source": {
+        "author": "Fill in recording and engine-script authors",
+        "url": "https://github.com/ange-yaghi/engine-sim",
+        "license": "Verify the chosen script and recording license before import"
+      },
+      "loops": {
+        "idle": { "file": "v12-idle.wav", "rpm": 1000, "start": 2, "seconds": 5 },
+        "low": { "file": "v12-low.wav", "rpm": 2500, "start": 2, "seconds": 5 },
+        "mid": { "file": "v12-mid.wav", "rpm": 5000, "start": 2, "seconds": 5 },
+        "high": { "file": "v12-high.wav", "rpm": 8000, "start": 2, "seconds": 5 },
+        "decel": { "file": "v12-decel.wav", "rpm": 5000, "start": 2, "seconds": 5 }
+      }
+    }
+  }
+}

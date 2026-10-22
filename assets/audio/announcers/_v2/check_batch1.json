@@ -1,0 +1,317 @@
+[
+  {
+    "id": "enzo.booth_backstory.01",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -21.2,
+    "peak_db": -1.1,
+    "heard": "I am Enzo Moretti, 25 years in this booth, and before that a skinny kid from Parma in the Italian Junior formulas, breaking much later than was sensible.",
+    "script": "I am Enzo Moretti! Twenty-five years in this booth, and before that, a skinny kid from Parma in the Italian junior formulas, [laughs] braking much later than was sensible."
+  },
+  {
+    "id": "enzo.booth_exchanges.06",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -13.6,
+    "peak_db": -0.2,
+    "heard": "No, no, no! It was invented to make it beautiful! Shame on you!",
+    "script": "[outraged] No, no, no! It was invented to make it beautiful! Shame on you!"
+  },
+  {
+    "id": "enzo.booth_exchanges.11",
+    "match": 0.917,
+    "flag": false,
+    "skipped": [
+      "mamma",
+      "mia"
+    ],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.7,
+    "peak_db": -1.4,
+    "heard": "Cucumber, again! Next time I bring real food, prosciutto, parmigiano, life!",
+    "script": "[disgusted] Cucumber? Again? Mamma mia. Next time, I bring real food. Prosciutto. Parmigiano. Life!"
+  },
+  {
+    "id": "enzo.general_filler.07",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.2,
+    "peak_db": -4.9,
+    "heard": "Cole Maddox, the most penalized driver in the paddock. The stewards know his number by heart. 66. They dream about it.",
+    "script": "[sarcastic] Cole Maddox, the most penalised driver in the paddock. The stewards know his number by heart. Sixty-six. They dream about it."
+  },
+  {
+    "id": "enzo.general_filler.13",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.6,
+    "peak_db": -5.5,
+    "heard": "Mojave built their first car in a barn in Barstow, Aurum built theirs in a palace in Monaco. On track, the barn is not so far behind.",
+    "script": "Mojave built their first car in a barn in Barstow. Aurum built theirs in a palace in Monaco. [chuckles] On track, the barn is not so far behind."
+  },
+  {
+    "id": "enzo.grid_and_lights.06",
+    "match": 1,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -34.2,
+    "peak_db": -11.7,
+    "heard": "Lights on, everybody still, nobody breathe.",
+    "script": "[whispers] Lights on. Everybody still. Nobody breathe..."
+  },
+  {
+    "id": "enzo.grid_and_lights.07",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.8,
+    "peak_db": -1,
+    "heard": "Lights out! Andi amo!",
+    "script": "[shouting] Lights out! Andiamo!"
+  },
+  {
+    "id": "enzo.hard_crash.04",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16,
+    "peak_db": -1.2,
+    "heard": "Oh no! A heavy crash! That car is destroyed!",
+    "script": "[shocked] Oh no, a heavy crash! That car is destroyed!"
+  },
+  {
+    "id": "enzo.intro_session.03",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.2,
+    "peak_db": -4.3,
+    "heard": "Buona sera and welcome. 6 teams, 12 cars and not one of them came here to lose. Especially not my Saetta, I mean THE Saetta team. I am completely neutral.",
+    "script": "Buonasera and welcome! Six teams, twelve cars, and not one of them came here to lose. Especially not my Saetta. [clears throat] I mean, the Saetta team. I am completely neutral."
+  },
+  {
+    "id": "enzo.intro_session.06",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.3,
+    "peak_db": -3.8,
+    "heard": "Welcome to the endurance. Hours, not minutes. Kai Whitlow is very happy tonight. For him, this is a short race.",
+    "script": "Welcome to the Endurance! Hours, not minutes. [chuckles] Kai Whitlow is very happy tonight. For him, this is a short race."
+  },
+  {
+    "id": "enzo.intro_session.12",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -1.1,
+    "heard": "Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling! Everybody else is praying!",
+    "script": "[excited] Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling. [chuckles] Everybody else is praying."
+  },
+  {
+    "id": "enzo.intro_track.01",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -20.7,
+    "peak_db": -1.6,
+    "heard": "Welcome to the Cornish Marina circuit. Street racing along the seafront, yachts in the harbour, concrete walls on every side. This is Sarab's home, and the crowd will be loud for Zayn Kareem. But touch a barrier here and your race is finished.",
+    "script": "Welcome to the Corniche Marina Circuit! Street racing along the seafront, yachts in the harbour, concrete walls on every side. This is Sarab's home, and the crowd will be loud for Zayn Kareem. [dramatically] But touch a barrier here, and your race is finished."
+  },
+  {
+    "id": "enzo.lead_lost.02",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.3,
+    "peak_db": -6.4,
+    "heard": "Past for first place, Mamma Mia so close.",
+    "script": "[frustrated sigh] Passed for first place! Mamma mia, so close."
+  },
+  {
+    "id": "enzo.overtake_player.02",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.2,
+    "peak_db": -2.9,
+    "heard": "Late on the breaks, and the place is taken. Very Varrone.",
+    "script": "[laughs] Late on the brakes, and the place is taken! Very Varrone!"
+  },
+  {
+    "id": "enzo.overtaken_player.04",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.8,
+    "peak_db": -0.4,
+    "heard": "Overtaken! No, no, no, this is not acceptable! Fight back!",
+    "script": "[outraged] Overtaken! No, no, no, this is not acceptable! Fight back!"
+  },
+  {
+    "id": "enzo.pit_stop_slow.03",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.5,
+    "peak_db": -6.4,
+    "heard": "A delay in the pits. Maybe they stopped for an espresso.",
+    "script": "[sarcastic] A delay in the pits. Maybe they stopped for an espresso."
+  },
+  {
+    "id": "enzo.player_wins.03",
+    "match": 0.909,
+    "flag": false,
+    "skipped": [],
+    "added": [
+      "ha",
+      "ha"
+    ],
+    "tag_read": [],
+    "mean_db": -16,
+    "peak_db": -1.3,
+    "heard": "Victory! Mamma mia, they did it! Ha ha, Alistair, I am crying!",
+    "script": "[shouting] Victory! Mamma mia, they did it! [laughs] Alastair, I am crying!"
+  },
+  {
+    "id": "enzo.race_start_bad.03",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.1,
+    "peak_db": -8.1,
+    "heard": "A relaxed start, very relaxed, like a Sunday drive to the beach.",
+    "script": "[sarcastic] A relaxed start. Very relaxed. Like a Sunday drive to the beach."
+  },
+  {
+    "id": "enzo.side_by_side.04",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.3,
+    "peak_db": -2.1,
+    "heard": "Together, through the turn, the stewards are reaching for their pens.",
+    "script": "[laughs] Together through the turn! The stewards are reaching for their pens!"
+  },
+  {
+    "id": "enzo.spin.04",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -2,
+    "heard": "Round and round, very pretty, very slow.",
+    "script": "[laughs] Round and round! Very pretty, very slow!"
+  },
+  {
+    "id": "kavya.paddock_report.01",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19,
+    "peak_db": -0.4,
+    "heard": "Hello from the paddock, Kavya Iyer here with 12 drivers, 6 teams and far too many secrets for one notebook.",
+    "script": "[warmly] Hello from the paddock! Kavya Iyer here, with twelve drivers, six teams, and far too many secrets for one notebook."
+  },
+  {
+    "id": "kavya.paddock_report.02",
+    "match": 0.939,
+    "flag": false,
+    "skipped": [
+      "hot",
+      "brakes"
+    ],
+    "added": [
+      "heartbreaks"
+    ],
+    "tag_read": [],
+    "mean_db": -19.9,
+    "peak_db": -1,
+    "heard": "Saetta's garage smells of espresso and heartbreaks. Vittoria Saldani runs it like an opera house. Lots of shouting and somehow it always ends beautifully.",
+    "script": "Saetta's garage smells of espresso and hot brakes. Vittoria Saldani runs it like an opera house. [laughs] Lots of shouting, and somehow it always ends beautifully."
+  },
+  {
+    "id": "kavya.paddock_report.03",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.2,
+    "peak_db": -0.4,
+    "heard": "Mateo Varrone kisses the lightning bolt on his helmet before every start, then he breaks about 10 meters later than physics recommends.",
+    "script": "Matteo Varrone kisses the lightning bolt on his helmet before every start. [chuckles] Then he brakes about ten metres later than physics recommends."
+  },
+  {
+    "id": "kavya.paddock_report.04",
+    "match": 1,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.1,
+    "peak_db": -0.6,
+    "heard": "Freya Lindqvist learned car control on the frozen lakes of Sweden. She told me, grip is overrated, she meant it.",
+    "script": "Freya Lindqvist learned car control on the frozen lakes of Sweden. She told me grip is overrated. [laughs] She meant it."
+  },
+  {
+    "id": "kavya.paddock_report.05",
+    "match": 0.963,
+    "flag": false,
+    "skipped": [
+      "holds"
+    ],
+    "added": [
+      "hosts"
+    ],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -0.3,
+    "heard": "Leyla Qasimi learned to race on the desert roads of Oman in her uncle's pickup truck. Now she hosts the record for passes in a single race.",
+    "script": "Layla Qasimi learned to race on the desert roads of Oman, in her uncle's pickup truck. [laughs] Now she holds the record for passes in a single race."
+  }
+]

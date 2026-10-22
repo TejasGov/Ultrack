@@ -1,0 +1,61 @@
+{
+  "note": "Render-only route samples; timings depend on this browser/GPU. Compare repeated pairs, not estimated FPS alone.",
+  "samples": [
+    {
+      "variant": "original",
+      "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "tier": "medium",
+      "textures": "ktx2",
+      "frames": 24,
+      "avgMs": 117.43,
+      "p95Ms": 149.4,
+      "estFps": 9,
+      "drawCalls": 307,
+      "trisK": 569,
+      "renderScale": 0.85,
+      "size": "816x459"
+    },
+    {
+      "variant": "adaptive",
+      "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "tier": "medium",
+      "textures": "ktx2",
+      "frames": 24,
+      "avgMs": 113.1,
+      "p95Ms": 138.3,
+      "estFps": 9,
+      "drawCalls": 293,
+      "trisK": 557,
+      "renderScale": 0.85,
+      "size": "816x459"
+    },
+    {
+      "variant": "adaptive",
+      "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "tier": "medium",
+      "textures": "ktx2",
+      "frames": 24,
+      "avgMs": 112.4,
+      "p95Ms": 139,
+      "estFps": 9,
+      "drawCalls": 293,
+      "trisK": 557,
+      "renderScale": 0.85,
+      "size": "816x459"
+    },
+    {
+      "variant": "original",
+      "gpu": "ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "tier": "medium",
+      "textures": "ktx2",
+      "frames": 24,
+      "avgMs": 108.77,
+      "p95Ms": 127.1,
+      "estFps": 9,
+      "drawCalls": 307,
+      "trisK": 569,
+      "renderScale": 0.85,
+      "size": "816x459"
+    }
+  ]
+}

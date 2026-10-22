@@ -1,0 +1,6 @@
+D:\RaceUltimate\tracks\marina\build_blender.py:52: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+D:\RaceUltimate\tracks\marina\build_blender.py:52: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+D:\RaceUltimate\tracks\marina\build_blender.py:927: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  world.use_nodes = True

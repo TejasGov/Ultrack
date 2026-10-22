@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "closed_road_sample_count": true,
+    "road_normals_up": true,
+    "old_blue_box_collection_removed": true,
+    "old_stand_collection_removed": true,
+    "illustrated_skyline_card_removed": true,
+    "four_detailed_grandstands": true,
+    "tree_meshes_shared": true,
+    "japanese_labels_present": true,
+    "textures_packed": true,
+    "finite_geometry": true,
+    "trees_clear_of_stand_seating": true
+  },
+  "passed": true,
+  "scope": "Authoring geometry and placement checks. Does not certify runtime performance or final visual approval."
+}

@@ -1,0 +1,16 @@
+{
+  "stage": "v3 architecture overhaul",
+  "trees": 219,
+  "buildings": 206,
+  "triangles_instanced": 7243740,
+  "unique_meshes": 718,
+  "road_source": "v1 unchanged geometry",
+  "stand_design": "14-row cedar soffit / structural bay / individual seat / stair aisle system",
+  "runtime_exported": false,
+  "reference": "Marina authored mesh/material density benchmark; National Stadium timber eaves and Nakameguro sakura as design references",
+  "remaining": [
+    "Runtime culling/LOD and memory measurements",
+    "Traffic / crowd pass",
+    "Final bespoke landmark detailing and lighting bake"
+  ]
+}

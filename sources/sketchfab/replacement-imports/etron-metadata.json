@@ -1,0 +1,192 @@
+{
+  "animationCount": 0,
+  "categories": [
+    {
+      "uid": "22a2f677efad4d7bbca5ad45f9b5868e",
+      "name": "Cars & Vehicles",
+      "slug": "cars-vehicles",
+      "uri": "https://api.sketchfab.com/v3/categories/22a2f677efad4d7bbca5ad45f9b5868e",
+      "icon": "https://static.sketchfab.com/static/builds/web/dist/static/assets/images/icons/categories/45dd0cc0860ac57fcd63bde1cc3f2b7c-v2.svg",
+      "thumbnails": [
+        {
+          "width": "512",
+          "height": "288",
+          "url": "https://static.sketchfab.com/categories/22a2f677efad4d7bbca5ad45f9b5868e/512x288.png"
+        },
+        {
+          "width": "800",
+          "height": "450",
+          "url": "https://static.sketchfab.com/categories/22a2f677efad4d7bbca5ad45f9b5868e/800x450.png"
+        }
+      ]
+    }
+  ],
+  "commentCount": 2,
+  "createdAt": "2026-08-11T01:09:32.028550",
+  "embedUrl": "https://sketchfab.com/models/e35726151c9e4a169c005d54509715fa/embed",
+  "faceCount": 68455,
+  "isAgeRestricted": false,
+  "license": {
+    "uri": "https://api.sketchfab.com/v3/licenses/2628dbe5140a4e9592126c8df566c0b7",
+    "label": "CC Attribution-NonCommercial-ShareAlike",
+    "fullName": "CC Attribution-NonCommercial-ShareAlike",
+    "requirements": "Author must be credited. No commercial use. Modified versions must have the same license.",
+    "url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "slug": "by-nc-sa"
+  },
+  "likeCount": 106,
+  "name": "2018 Audi e-tron GT Concept",
+  "publishedAt": "2026-08-11T01:32:06.331108",
+  "soundCount": 0,
+  "staffpickedAt": null,
+  "tags": [
+    {
+      "name": "audi",
+      "slug": "audi",
+      "uri": "https://api.sketchfab.com/v3/tags/audi"
+    },
+    {
+      "name": "2018",
+      "slug": "2018",
+      "uri": "https://api.sketchfab.com/v3/tags/2018"
+    },
+    {
+      "name": "e-tron",
+      "slug": "e-tron",
+      "uri": "https://api.sketchfab.com/v3/tags/e-tron"
+    },
+    {
+      "name": "concept",
+      "slug": "concept",
+      "uri": "https://api.sketchfab.com/v3/tags/concept"
+    },
+    {
+      "name": "e-tron-gt",
+      "slug": "e-tron-gt",
+      "uri": "https://api.sketchfab.com/v3/tags/e-tron-gt"
+    },
+    {
+      "name": "audi-e-tron",
+      "slug": "audi-e-tron",
+      "uri": "https://api.sketchfab.com/v3/tags/audi-e-tron"
+    },
+    {
+      "name": "audi-e-tron-gt",
+      "slug": "audi-e-tron-gt",
+      "uri": "https://api.sketchfab.com/v3/tags/audi-e-tron-gt"
+    },
+    {
+      "name": "real-racing-3",
+      "slug": "real-racing-3",
+      "uri": "https://api.sketchfab.com/v3/tags/real-racing-3"
+    },
+    {
+      "name": "e-tron-gt-concept",
+      "slug": "e-tron-gt-concept",
+      "uri": "https://api.sketchfab.com/v3/tags/e-tron-gt-concept"
+    },
+    {
+      "name": "audi-e-tron-gt-concept",
+      "slug": "audi-e-tron-gt-concept",
+      "uri": "https://api.sketchfab.com/v3/tags/audi-e-tron-gt-concept"
+    }
+  ],
+  "thumbnails": {
+    "images": [
+      {
+        "uid": "b4b2bf4a9da842ed8a5a149b49af358c",
+        "width": 1920,
+        "height": 1080,
+        "size": 342019,
+        "url": "https://media.sketchfab.com/models/e35726151c9e4a169c005d54509715fa/thumbnails/a4180e697d8c47d3a2c81621518e9625/0dca9514325a436cb0d7512834ab6690.jpeg"
+      },
+      {
+        "uid": "09de60ba89e744faabeea891e2a55fc1",
+        "width": 1024,
+        "height": 576,
+        "size": 60447,
+        "url": "https://media.sketchfab.com/models/e35726151c9e4a169c005d54509715fa/thumbnails/a4180e697d8c47d3a2c81621518e9625/dc7811d96fb94df18b68399a4946cb2c.jpeg"
+      },
+      {
+        "uid": "4d8751e141354dffb9577fe74bcc0db9",
+        "width": 720,
+        "height": 405,
+        "size": 35277,
+        "url": "https://media.sketchfab.com/models/e35726151c9e4a169c005d54509715fa/thumbnails/a4180e697d8c47d3a2c81621518e9625/271c4a3312c84163a66d2efbeecaf478.jpeg"
+      },
+      {
+        "uid": "6d9d7139584b40eba7baa889d5a6d787",
+        "width": 256,
+        "height": 144,
+        "size": 7384,
+        "url": "https://media.sketchfab.com/models/e35726151c9e4a169c005d54509715fa/thumbnails/a4180e697d8c47d3a2c81621518e9625/1dd25b4afc844008ba8aa8119815c532.jpeg"
+      },
+      {
+        "uid": "754d481d47c24412953363b5fb389129",
+        "width": 64,
+        "height": 36,
+        "size": 1390,
+        "url": "https://media.sketchfab.com/models/e35726151c9e4a169c005d54509715fa/thumbnails/a4180e697d8c47d3a2c81621518e9625/13f7528939f2444b82badb512fb8d680.jpeg"
+      }
+    ]
+  },
+  "uid": "e35726151c9e4a169c005d54509715fa",
+  "uri": "https://api.sketchfab.com/v3/models/e35726151c9e4a169c005d54509715fa",
+  "user": {
+    "uid": "f55cf43a9e4c446d813b75376e41cdab",
+    "username": "ddiaz-design",
+    "displayName": "Ddiaz Design",
+    "account": "basic",
+    "profileUrl": "https://sketchfab.com/ddiaz-design",
+    "avatar": {
+      "uid": "21b60b92b1aa4fcd9833347044399b57",
+      "uri": "https://api.sketchfab.com/v3/avatars/21b60b92b1aa4fcd9833347044399b57",
+      "images": [
+        {
+          "width": 32,
+          "height": 32,
+          "size": 549,
+          "url": "https://media.sketchfab.com/avatars/21b60b92b1aa4fcd9833347044399b57/b685fa4f0397486099d29f7189ff7d3f.png"
+        },
+        {
+          "width": 48,
+          "height": 48,
+          "size": 883,
+          "url": "https://media.sketchfab.com/avatars/21b60b92b1aa4fcd9833347044399b57/1a148a5faecf4f7eb5374a9903829faa.png"
+        },
+        {
+          "width": 90,
+          "height": 90,
+          "size": 1781,
+          "url": "https://media.sketchfab.com/avatars/21b60b92b1aa4fcd9833347044399b57/36c28e85d64147bebdd9815f78a833d6.png"
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "size": 1813,
+          "url": "https://media.sketchfab.com/avatars/21b60b92b1aa4fcd9833347044399b57/e5bce64685f440cca1731df11d8a3633.png"
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/f55cf43a9e4c446d813b75376e41cdab"
+  },
+  "vertexCount": 43390,
+  "viewCount": 4905,
+  "viewerUrl": "https://sketchfab.com/3d-models/2018-audi-e-tron-gt-concept-e35726151c9e4a169c005d54509715fa",
+  "isDownloadable": true,
+  "isProtected": false,
+  "description": "Ddiaz Design 3D Model Repository\n\n![](https://www.electrive.com/media/2018/11/audi-e-tron-gt-concept-car-la-auto-show-2018-10-1400x700.png.webp)\n\nWith the electric powered Audi e-tron GT concept a four-door coupe is making its debut as a show car. The volume-production counterpart is set to follow in approximately two years, and the concept will make its film debut in Marvel Studios' Avengers 4, set to be released in theaters summer 2019.\n\nInstagram del proyecto: https://www.instagram.com/ddiaz.design/\n\nPaypal Donations: https://paypal.me/sergiodd\n\nBased on a Real Racing 3 3d model\n\nCredits: @VuckyZ123",
+  "price": null,
+  "downloadCount": 1558,
+  "editorUrl": "https://sketchfab.com/models/e35726151c9e4a169c005d54509715fa/edit",
+  "status": {
+    "warning": {},
+    "processing": "SUCCEEDED"
+  },
+  "source": "website",
+  "hasCommentsDisabled": false,
+  "updatedAt": "2026-08-11T01:32:06.432237",
+  "pbrType": null,
+  "textureCount": 21,
+  "materialCount": 27
+}

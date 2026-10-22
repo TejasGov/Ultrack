@@ -1,0 +1,211 @@
+{
+  "animationCount": 3,
+  "categories": [
+    {
+      "uid": "e56c5de1e9344241909de76c5886f551",
+      "name": "Art & Abstract",
+      "slug": "art-abstract",
+      "uri": "https://api.sketchfab.com/v3/categories/e56c5de1e9344241909de76c5886f551",
+      "icon": "https://static.sketchfab.com/static/builds/web/dist/static/assets/images/icons/categories/876106eddb2a54aa1391eb2f4db0acb2-v2.svg",
+      "thumbnails": [
+        {
+          "width": "512",
+          "height": "288",
+          "url": "https://static.sketchfab.com/categories/e56c5de1e9344241909de76c5886f551/512x288.png"
+        },
+        {
+          "width": "800",
+          "height": "450",
+          "url": "https://static.sketchfab.com/categories/e56c5de1e9344241909de76c5886f551/800x450.png"
+        }
+      ]
+    },
+    {
+      "uid": "22a2f677efad4d7bbca5ad45f9b5868e",
+      "name": "Cars & Vehicles",
+      "slug": "cars-vehicles",
+      "uri": "https://api.sketchfab.com/v3/categories/22a2f677efad4d7bbca5ad45f9b5868e",
+      "icon": "https://static.sketchfab.com/static/builds/web/dist/static/assets/images/icons/categories/45dd0cc0860ac57fcd63bde1cc3f2b7c-v2.svg",
+      "thumbnails": [
+        {
+          "width": "512",
+          "height": "288",
+          "url": "https://static.sketchfab.com/categories/22a2f677efad4d7bbca5ad45f9b5868e/512x288.png"
+        },
+        {
+          "width": "800",
+          "height": "450",
+          "url": "https://static.sketchfab.com/categories/22a2f677efad4d7bbca5ad45f9b5868e/800x450.png"
+        }
+      ]
+    }
+  ],
+  "commentCount": 5,
+  "createdAt": "2022-11-06T13:08:38.909647",
+  "embedUrl": "https://sketchfab.com/models/f7bece69400f4640a4a3be746b44998b/embed",
+  "faceCount": 6917,
+  "isAgeRestricted": false,
+  "license": {
+    "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution",
+    "fullName": "Creative Commons Attribution",
+    "requirements": "Author must be credited. Commercial use is allowed.",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "slug": "by"
+  },
+  "likeCount": 362,
+  "name": "2017 Mclaren 720s",
+  "publishedAt": "2022-11-06T14:05:36.683822",
+  "soundCount": 0,
+  "staffpickedAt": null,
+  "tags": [
+    {
+      "name": "supercar",
+      "slug": "supercar",
+      "uri": "https://api.sketchfab.com/v3/tags/supercar"
+    },
+    {
+      "name": "mclaren",
+      "slug": "mclaren",
+      "uri": "https://api.sketchfab.com/v3/tags/mclaren"
+    },
+    {
+      "name": "lowpolycar",
+      "slug": "lowpolycar",
+      "uri": "https://api.sketchfab.com/v3/tags/lowpolycar"
+    },
+    {
+      "name": "720s",
+      "slug": "720s",
+      "uri": "https://api.sketchfab.com/v3/tags/720s"
+    },
+    {
+      "name": "vehicle",
+      "slug": "vehicle",
+      "uri": "https://api.sketchfab.com/v3/tags/vehicle"
+    },
+    {
+      "name": "lowpoly",
+      "slug": "lowpoly",
+      "uri": "https://api.sketchfab.com/v3/tags/lowpoly"
+    },
+    {
+      "name": "gameasset",
+      "slug": "gameasset",
+      "uri": "https://api.sketchfab.com/v3/tags/gameasset"
+    },
+    {
+      "name": "car",
+      "slug": "car",
+      "uri": "https://api.sketchfab.com/v3/tags/car"
+    },
+    {
+      "name": "gameready",
+      "slug": "gameready",
+      "uri": "https://api.sketchfab.com/v3/tags/gameready"
+    },
+    {
+      "name": "mclaren-720s",
+      "slug": "mclaren-720s",
+      "uri": "https://api.sketchfab.com/v3/tags/mclaren-720s"
+    }
+  ],
+  "thumbnails": {
+    "images": [
+      {
+        "uid": "1ea5a3588efc4fa49baee0a0de056dc5",
+        "width": 1920,
+        "height": 1080,
+        "size": 343052,
+        "url": "https://media.sketchfab.com/models/f7bece69400f4640a4a3be746b44998b/thumbnails/1fb8ee07fcb342e79eed209c706f6d83/187cef06bbdd496080c6aa82ab1ccdf5.jpeg"
+      },
+      {
+        "uid": "906c004f4aeb41d99abbcac25f55e15a",
+        "width": 1024,
+        "height": 576,
+        "size": 49486,
+        "url": "https://media.sketchfab.com/models/f7bece69400f4640a4a3be746b44998b/thumbnails/1fb8ee07fcb342e79eed209c706f6d83/d0c16a1c07e444719a12a7dc3dfee262.jpeg"
+      },
+      {
+        "uid": "f49c7b96a0284b0596710704101d0135",
+        "width": 720,
+        "height": 405,
+        "size": 28543,
+        "url": "https://media.sketchfab.com/models/f7bece69400f4640a4a3be746b44998b/thumbnails/1fb8ee07fcb342e79eed209c706f6d83/6038476b98e94ad38d4dd442096b77b0.jpeg"
+      },
+      {
+        "uid": "97cb37442e8d4e9aae6366191e6e0f81",
+        "width": 256,
+        "height": 144,
+        "size": 6031,
+        "url": "https://media.sketchfab.com/models/f7bece69400f4640a4a3be746b44998b/thumbnails/1fb8ee07fcb342e79eed209c706f6d83/311aa5cfed33460aaf202053c8c9144b.jpeg"
+      },
+      {
+        "uid": "a0679feec2f641929f10cefcaad9c437",
+        "width": 64,
+        "height": 36,
+        "size": 1335,
+        "url": "https://media.sketchfab.com/models/f7bece69400f4640a4a3be746b44998b/thumbnails/1fb8ee07fcb342e79eed209c706f6d83/98561e72316544519144b1c782e56174.jpeg"
+      }
+    ]
+  },
+  "uid": "f7bece69400f4640a4a3be746b44998b",
+  "uri": "https://api.sketchfab.com/v3/models/f7bece69400f4640a4a3be746b44998b",
+  "user": {
+    "uid": "3efa378bb2864876927fb8aa4da6b1be",
+    "username": "s0h1o9b",
+    "displayName": "_shobh19",
+    "account": "basic",
+    "profileUrl": "https://sketchfab.com/s0h1o9b",
+    "avatar": {
+      "uid": "504c694676d3488fa5ad669d837460f1",
+      "uri": "https://api.sketchfab.com/v3/avatars/504c694676d3488fa5ad669d837460f1",
+      "images": [
+        {
+          "width": 32,
+          "height": 32,
+          "size": 1072,
+          "url": "https://media.sketchfab.com/avatars/504c694676d3488fa5ad669d837460f1/2887db30c59841be9f8cdeaf9ab1f707.jpeg"
+        },
+        {
+          "width": 48,
+          "height": 48,
+          "size": 1384,
+          "url": "https://media.sketchfab.com/avatars/504c694676d3488fa5ad669d837460f1/2e0f5c3d5fd543e1844c0629afbad491.jpeg"
+        },
+        {
+          "width": 90,
+          "height": 90,
+          "size": 2721,
+          "url": "https://media.sketchfab.com/avatars/504c694676d3488fa5ad669d837460f1/cb559ea94c674796961548bad0acf79b.jpeg"
+        },
+        {
+          "width": 100,
+          "height": 100,
+          "size": 3048,
+          "url": "https://media.sketchfab.com/avatars/504c694676d3488fa5ad669d837460f1/3f62b99a35a74fc4b2114920032d5443.jpeg"
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/3efa378bb2864876927fb8aa4da6b1be"
+  },
+  "vertexCount": 4957,
+  "viewCount": 25729,
+  "viewerUrl": "https://sketchfab.com/3d-models/2017-mclaren-720s-f7bece69400f4640a4a3be746b44998b",
+  "isDownloadable": true,
+  "isProtected": false,
+  "description": "I decided to remodel my earlier mclaren model and made it even more lowpoly.\n\n - Modelled in Blender\n - Textures made in Photoshop \n \n Hope you like it!",
+  "price": null,
+  "downloadCount": 7151,
+  "editorUrl": "https://sketchfab.com/models/f7bece69400f4640a4a3be746b44998b/edit",
+  "status": {
+    "warning": {},
+    "processing": "SUCCEEDED"
+  },
+  "source": "website",
+  "hasCommentsDisabled": false,
+  "updatedAt": "2023-12-05T13:43:14.997930",
+  "pbrType": null,
+  "textureCount": 5,
+  "materialCount": 14
+}

@@ -1,0 +1,114 @@
+{
+  "car": "mp1x",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "mirrors": {
+    "style": "blade",
+    "housing": "carbon"
+  },
+  "suspension": {
+    "pitch": 0.45,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.034
+  },
+  "aero": [
+    {
+      "name": "wing",
+      "min": [
+        1.78,
+        0.86,
+        -1.2
+      ],
+      "max": [
+        2.35,
+        1.08,
+        1.2
+      ],
+      "hinge": [
+        1.82,
+        0.95
+      ],
+      "mode": "airbrake",
+      "deg": 25,
+      "rise": 0.05,
+      "vOn": 18
+    }
+  ],
+  "log": [
+    "run 1 (all cars): mirrors -> blade/carbon (P1: carbon pod on a stalk); ride 0.014 m from the measured arch gaps (front top gap >= 3 cm for the brake dive); pitch 0.6",
+    "run 2: front arch lip -2.4 cm, -3.3 cm under braking -> ride 0.034",
+    "run 4: see-through traced to real openings (the waist channel between cabin and front fenders, open only exactly end-on) -> waived in qa.waive",
+    "run 4: front tyres 2.5 cm into the arch under braking -> pitch 0.45",
+    "run 5: tail scan: wing band 0.88-1.02 m clear of the deck (0.78) from x 1.8 -> airbrake 25 deg, rises 5 cm (P1 DRS/airbrake)",
+    "run 5: with the wing cut out, the rays read the deck under it (the rear bay had been reaching up to the wing) and the daylight under the wing shows -> waived"
+  ],
+  "qa": {
+    "waive": [
+      {
+        "view": "front",
+        "at": [
+          0.38,
+          0.57
+        ],
+        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
+      },
+      {
+        "view": "front",
+        "at": [
+          0.62,
+          0.57
+        ],
+        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.62,
+          0.57
+        ],
+        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.38,
+          0.57
+        ],
+        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.74,
+          0.65
+        ],
+        "why": "daylight under the rear wing (traced: trace-front-left-0.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.26,
+          0.65
+        ],
+        "why": "daylight under the rear wing (traced: trace-front-left-0.png)"
+      },
+      {
+        "view": "low-left",
+        "at": [
+          0.84,
+          0.56
+        ],
+        "why": "daylight under the rear wing (traced: trace-front-left-0.png)"
+      }
+    ]
+  },
+  "replacement": {
+    "note": "tuning for the replacement model (cars.js reads only this block for it)",
+    "suspension": {
+      "pitch": 0.6,
+      "roll": 0.85,
+      "freq": 1.6,
+      "ride": 0
+    }
+  }
+}

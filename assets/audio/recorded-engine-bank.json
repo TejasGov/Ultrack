@@ -1,0 +1,614 @@
+{
+  "schemaVersion": 1,
+  "kind": "real-recordings",
+  "profiles": {
+    "av12": {
+      "name": "Lamborghini Aventador SV V12",
+      "redline": 8500,
+      "cars": [
+        "av12"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/av12-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/av12-low.ogg",
+          "rpm": 2000
+        },
+        "mid": {
+          "file": "engines/recorded/av12-mid.ogg",
+          "rpm": 4200
+        },
+        "high": {
+          "file": "engines/recorded/av12-high.ogg",
+          "rpm": 7200
+        },
+        "decel": {
+          "file": "engines/recorded/av12-decel.ogg",
+          "rpm": 4100
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Aventador SV with aftermarket Fi exhaust",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/av12-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "furari-488": {
+      "name": "Ferrari 488 GTB V8",
+      "redline": 8000,
+      "cars": [
+        "furari-488"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/furari-488-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/furari-488-low.ogg",
+          "rpm": 2100
+        },
+        "mid": {
+          "file": "engines/recorded/furari-488-mid.ogg",
+          "rpm": 4000
+        },
+        "high": {
+          "file": "engines/recorded/furari-488-high.ogg",
+          "rpm": 6800
+        },
+        "decel": {
+          "file": "engines/recorded/furari-488-decel.ogg",
+          "rpm": 3000
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "488 GTB with Fi catback; game body is 488 Pista",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/furari-488-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "mp1x": {
+      "name": "McLaren 720S V8",
+      "redline": 8500,
+      "cars": [
+        "mp1x"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/mp1x-idle.ogg",
+          "rpm": 1000
+        },
+        "low": {
+          "file": "engines/recorded/mp1x-low.ogg",
+          "rpm": 2200
+        },
+        "mid": {
+          "file": "engines/recorded/mp1x-mid.ogg",
+          "rpm": 4200
+        },
+        "high": {
+          "file": "engines/recorded/mp1x-high.ogg",
+          "rpm": 6600
+        },
+        "decel": {
+          "file": "engines/recorded/mp1x-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "720S with Fi exhaust",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/mp1x-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "aston-martin-valk": {
+      "name": "Aston Martin Valkyrie V12",
+      "redline": 11000,
+      "cars": [
+        "aston-martin-valk"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/aston-martin-valk-idle.ogg",
+          "rpm": 1100
+        },
+        "low": {
+          "file": "engines/recorded/aston-martin-valk-low.ogg",
+          "rpm": 2400
+        },
+        "mid": {
+          "file": "engines/recorded/aston-martin-valk-mid.ogg",
+          "rpm": 5200
+        },
+        "high": {
+          "file": "engines/recorded/aston-martin-valk-high.ogg",
+          "rpm": 9500
+        },
+        "decel": {
+          "file": "engines/recorded/aston-martin-valk-decel.ogg",
+          "rpm": 4500
+        }
+      },
+      "source": {
+        "author": "Car and Driver Espa\u00f1a",
+        "title": "As\u00ed suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Valkyrie V12 engine demonstration published by Car and Driver Espana",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/aston-martin-valk-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "mustang": {
+      "name": "Ford Mustang GT V8",
+      "redline": 7400,
+      "cars": [
+        "mustang"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/mustang-idle.ogg",
+          "rpm": 850
+        },
+        "low": {
+          "file": "engines/recorded/mustang-low.ogg",
+          "rpm": 2000
+        },
+        "mid": {
+          "file": "engines/recorded/mustang-mid.ogg",
+          "rpm": 3800
+        },
+        "high": {
+          "file": "engines/recorded/mustang-high.ogg",
+          "rpm": 6100
+        },
+        "decel": {
+          "file": "engines/recorded/mustang-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "2018 Mustang GT, active exhaust Track mode",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/mustang-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "bmw1": {
+      "name": "Mercedes-AMG GT4 twin-turbo V8 (the Ferrari 488 GTB twin-turbo V8 recording)",
+      "redline": 7000,
+      "cars": [
+        "bmw1"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/furari-488-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/furari-488-low.ogg",
+          "rpm": 2100
+        },
+        "mid": {
+          "file": "engines/recorded/furari-488-mid.ogg",
+          "rpm": 4000
+        },
+        "high": {
+          "file": "engines/recorded/furari-488-high.ogg",
+          "rpm": 6800
+        },
+        "decel": {
+          "file": "engines/recorded/furari-488-decel.ogg",
+          "rpm": 3000
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a twin-turbo V8 (no M178 4.0 L recording yet); the GT4 revs to about 7,000 rpm",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/furari-488-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "furari-488"
+    },
+    "buggati": {
+      "name": "Bugatti Chiron W16",
+      "redline": 6800,
+      "cars": [
+        "buggati"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/buggati-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/buggati-low.ogg",
+          "rpm": 1900
+        },
+        "mid": {
+          "file": "engines/recorded/buggati-mid.ogg",
+          "rpm": 3600
+        },
+        "high": {
+          "file": "engines/recorded/buggati-high.ogg",
+          "rpm": 5600
+        },
+        "decel": {
+          "file": "engines/recorded/buggati-decel.ogg",
+          "rpm": 2200
+        }
+      },
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "2017 Chiron recorded at Bugatti Wolfsburg",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/buggati-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "bentley-gt": {
+      "name": "Bentley Continental GT Speed W12",
+      "redline": 6500,
+      "cars": [
+        "bentley-gt"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/bentley-gt-idle.ogg",
+          "rpm": 850
+        },
+        "low": {
+          "file": "engines/recorded/bentley-gt-low.ogg",
+          "rpm": 1800
+        },
+        "mid": {
+          "file": "engines/recorded/bentley-gt-mid.ogg",
+          "rpm": 3300
+        },
+        "high": {
+          "file": "engines/recorded/bentley-gt-high.ogg",
+          "rpm": 5100
+        },
+        "decel": {
+          "file": "engines/recorded/bentley-gt-decel.ogg",
+          "rpm": 2600
+        }
+      },
+      "source": {
+        "author": "QuickSilver Sound Architects",
+        "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+        "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Continental GT Speed W12 with QuickSilver Sport exhaust",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/bentley-gt-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "porsche1": {
+      "name": "Porsche 918 Spyder V8 hybrid (the Ferrari 488 GTB V8 recording)",
+      "redline": 8000,
+      "cars": [
+        "porsche1"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/furari-488-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/furari-488-low.ogg",
+          "rpm": 2100
+        },
+        "mid": {
+          "file": "engines/recorded/furari-488-mid.ogg",
+          "rpm": 4000
+        },
+        "high": {
+          "file": "engines/recorded/furari-488-high.ogg",
+          "rpm": 6800
+        },
+        "decel": {
+          "file": "engines/recorded/furari-488-decel.ogg",
+          "rpm": 3000
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a high-revving flat-plane V8 (no 4.6 L V8 recording yet); the 918 revs to 9,150 rpm",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/furari-488-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "furari-488"
+    },
+    "jaguarxkjss": {
+      "name": "Mercedes-AMG ONE V6 hybrid",
+      "redline": 11000,
+      "cars": [
+        "jaguarxkjss"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/jaguarxkjss-idle.ogg",
+          "rpm": 1300
+        },
+        "low": {
+          "file": "engines/recorded/jaguarxkjss-low.ogg",
+          "rpm": 1800
+        },
+        "mid": {
+          "file": "engines/recorded/jaguarxkjss-mid.ogg",
+          "rpm": 2500
+        },
+        "high": {
+          "file": "engines/recorded/jaguarxkjss-high.ogg",
+          "rpm": 3200
+        },
+        "decel": {
+          "file": "engines/recorded/jaguarxkjss-decel.ogg",
+          "rpm": 1800
+        }
+      },
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Actual AMG ONE at Goodwood. Low-speed recording; high-RPM anchors are pitch-transposed from this take and need a better full-load recording.",
+      "quality": "limited-rpm-source",
+      "preview": "engines/recorded/jaguarxkjss-source.ogg",
+      "pops": [],
+      "shifts": []
+    },
+    "destrier": {
+      "name": "Bugatti Destrier W16 (the Chiron W16 recording)",
+      "redline": 6800,
+      "cars": [
+        "destrier"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/buggati-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/buggati-low.ogg",
+          "rpm": 1900
+        },
+        "mid": {
+          "file": "engines/recorded/buggati-mid.ogg",
+          "rpm": 3600
+        },
+        "high": {
+          "file": "engines/recorded/buggati-high.ogg",
+          "rpm": 5600
+        },
+        "decel": {
+          "file": "engines/recorded/buggati-decel.ogg",
+          "rpm": 2200
+        }
+      },
+      "source": {
+        "author": "TvdL Films",
+        "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+        "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "2017 Chiron recorded at Bugatti Wolfsburg",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/buggati-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "buggati"
+    },
+    "blackbird": {
+      "name": "Hennessey Blackbird NA V8 (the Mustang GT V8 recording)",
+      "redline": 7400,
+      "cars": [
+        "blackbird"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/mustang-idle.ogg",
+          "rpm": 850
+        },
+        "low": {
+          "file": "engines/recorded/mustang-low.ogg",
+          "rpm": 2000
+        },
+        "mid": {
+          "file": "engines/recorded/mustang-mid.ogg",
+          "rpm": 3800
+        },
+        "high": {
+          "file": "engines/recorded/mustang-high.ogg",
+          "rpm": 6100
+        },
+        "decel": {
+          "file": "engines/recorded/mustang-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "Next-Gen Speed",
+        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "2018 Mustang GT, active exhaust Track mode",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/mustang-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "mustang"
+    },
+    "huracan": {
+      "name": "Lamborghini Huracan STO V10 (the Aventador SV V12 recording)",
+      "redline": 8500,
+      "cars": [
+        "huracan"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/av12-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/av12-low.ogg",
+          "rpm": 2000
+        },
+        "mid": {
+          "file": "engines/recorded/av12-mid.ogg",
+          "rpm": 4200
+        },
+        "high": {
+          "file": "engines/recorded/av12-high.ogg",
+          "rpm": 7200
+        },
+        "decel": {
+          "file": "engines/recorded/av12-decel.ogg",
+          "rpm": 4100
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+        "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a Lamborghini naturally aspirated screamer (no V10 recording yet)",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/av12-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "av12"
+    },
+    "laferrari": {
+      "name": "Ferrari LaFerrari V12 hybrid (the Aston Martin Valkyrie V12 recording)",
+      "redline": 11000,
+      "cars": [
+        "laferrari"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/aston-martin-valk-idle.ogg",
+          "rpm": 1100
+        },
+        "low": {
+          "file": "engines/recorded/aston-martin-valk-low.ogg",
+          "rpm": 2400
+        },
+        "mid": {
+          "file": "engines/recorded/aston-martin-valk-mid.ogg",
+          "rpm": 5200
+        },
+        "high": {
+          "file": "engines/recorded/aston-martin-valk-high.ogg",
+          "rpm": 9500
+        },
+        "decel": {
+          "file": "engines/recorded/aston-martin-valk-decel.ogg",
+          "rpm": 4500
+        }
+      },
+      "source": {
+        "author": "Car and Driver Espa\u00f1a",
+        "title": "As\u00ed suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+        "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a naturally aspirated V12 hybrid hypercar revving past 9,000 rpm",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/aston-martin-valk-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "aston-martin-valk"
+    }
+  }
+}

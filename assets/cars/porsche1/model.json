@@ -1,0 +1,91 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "918\u2013S",
+ "source": {
+  "title": "2015 Porsche 918 Spyder",
+  "author": "Galaxy Car Showroom (adrianaflak09)",
+  "authorUrl": "https://sketchfab.com/adrianaflak09",
+  "url": "https://sketchfab.com/3d-models/2015-porsche-918-spyder-978e63a40905482b84e49609471839f5",
+  "license": "CC BY 4.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "modelId": "978e63a40905482b84e49609471839f5",
+  "replacement": true,
+  "nonCommercialOnly": false,
+  "additionalCredits": "Probably a rip from a mobile game: Unity-style prefab part names (Bodyrefunblend..., Puncheffnuminnernalpha...), baked atlas textures, and the same uploader's Huracan STO carries Real Racing 3 names. The licence is CC BY, but the provenance is unclear: replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3421,
+   "width": 0.2965,
+   "x": -1.2805,
+   "track": 1.6729
+  },
+  "rear": {
+   "radius": 0.3442,
+   "width": 0.365,
+   "x": 1.4563,
+   "track": 1.6168
+  }
+ },
+ "size": {
+  "length": 4.643,
+  "width": 2.061,
+  "height": 1.076
+ },
+ "lights": {
+  "front": [
+   [
+    -1.903,
+    0.587,
+    0.685
+   ],
+   [
+    -1.903,
+    0.587,
+    -0.685
+   ]
+  ],
+  "rear": [
+   [
+    2.03,
+    0.731,
+    0.603
+   ],
+   [
+    2.03,
+    0.731,
+    -0.603
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -0.964,
+    0.768,
+    0.582
+   ],
+   [
+    -0.964,
+    1.12,
+    0.582
+   ],
+   [
+    0.405,
+    1.12,
+    0.582
+   ],
+   [
+    0.405,
+    0.768,
+    0.582
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 26208,
+  "body1": 25041,
+  "wheel": 1142
+ }
+}

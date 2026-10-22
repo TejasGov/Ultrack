@@ -1,0 +1,9 @@
+[
+ {"root":"D:/RaceUltimate/assets/audio/crowd","out":"ambience-loop","loop":true,"src":"dl/crowd/494360.mp3","ss":20,"L":26,"X":2,"lufs":-20},
+ {"root":"D:/RaceUltimate/assets/audio/crowd","out":"cheer-big","inputs":[{"src":"dl/crowd/528799.mp3","ss":3.2,"t":9.5},{"src":"dl/crowd/637438.mp3","ss":9.0,"t":9.5,"gain":-5,"delay":1.1}],"length":9,"fadeOut":2.2},
+ {"root":"D:/RaceUltimate/assets/audio/crowd","out":"cheer-medium","inputs":[{"src":"dl/crowd/328623.mp3","ss":1.6,"t":5}],"length":4.6,"fadeOut":1.2},
+ {"root":"D:/RaceUltimate/assets/audio/crowd","out":"hoots","inputs":[{"src":"dl/crowd/453863.mp3","ss":0,"t":5.6}],"length":5.5,"fadeOut":0.9},
+ {"root":"D:/RaceUltimate/assets/audio/crowd","out":"applause","inputs":[{"src":"dl/crowd/396549.mp3","ss":2.6,"t":8.6}],"length":8.5,"fadeIn":0.12,"fadeOut":1.6},
+ {"root":"D:/RaceUltimate/assets/audio/crowd","out":"groan","inputs":[{"src":"dl/crowd/619007.mp3","ss":0.2,"t":3.0}],"fadeOut":0.6},
+ {"root":"D:/RaceUltimate/assets/audio/crowd","out":"gasp","inputs":[{"src":"dl/crowd/480774.mp3","ss":23.5,"t":2.0}],"length":1.7,"fadeOut":0.5}
+]

@@ -1,0 +1,3118 @@
+{
+  "version": 1,
+  "speakers": {
+    "enzo": {
+      "name": "Enzo Moretti",
+      "bio": "Lead play-by-play. Grew up above his father's tyre shop near Parma and learned to drive delivering tyres too fast. Raced the Italian junior formulas in his teens; his best result was a soaking-wet second place, which he still describes lap by lap. A broken wrist at 22 ended the career, and he has spent the 25 years since in the commentary box. Loves bravery, late braking and night racing.",
+      "voice_notes": "Italian man from Parma, early 50s, warm bright baritone. Speaks fluent English with an unmistakable Italian accent (open vowels, tapped r, Italian rhythm and melody), never British or American; the accent comes from the voice, not the spelling. Very expressive: laughs, chuckles, sighs, sarcasm and mock outrage, quick and energetic, rising to a full shout on big moments. Openly biased towards Saetta and pretends not to be. Italian words (allora, andiamo, bellissimo, mamma mia) are sparing and said naturally."
+    },
+    "alastair": {
+      "name": "Alastair Finch",
+      "bio": "Colour commentator. Eleven years on the pit wall as a race engineer for privateer endurance teams, where he counted fuel loads and was ignored by drivers. Now an amateur historian writing a very long history of forgotten circuits, and a restorer of old clocks (forty-one at last count) in a cottage full of ticking. Dry, withering and eloquent, theatrically appalled by clumsy driving, secretly devoted to the sport and to Enzo.",
+      "voice_notes": "British man, early 60s, crisp received-pronunciation English, precise and unhurried, a long dry delivery with the occasional theatrical sigh. Grumpy rather than cruel; the warmth shows on wins and in the exchanges. Rarely raises his voice, so when he does it lands."
+    },
+    "kavya": {
+      "name": "Kavya Iyer",
+      "bio": "Paddock reporter. Grew up in Coimbatore, India's racing town, above her mother's motorcycle workshop, and won a national karting title at fifteen. Studied mechanical engineering in Chennai, then spent six years as a tyre engineer for junior teams in Europe, where she learned that drivers lie about tyres and engineers lie about everything else. Now she walks the paddock with a notebook of every driver's habits and superstitions. Quick, warm and teasing: the only person on the broadcast who can make Alastair laugh and Enzo stop talking.",
+      "voice_notes": "Indian woman, early 30s, speaks fluent English with a clear, natural Indian accent (Indian English, South Indian lilt), never British RP and never American. Bright, quick and confident broadcast delivery with a smile in the voice; teasing and warm about the drivers, crisp rather than breathy."
+    }
+  },
+  "lines": [
+    {
+      "id": "enzo.intro_session.01",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "[warmly] Free Drive tonight. No grid, no rivals, no Alastair complaining about the start. [chuckles] Well, maybe a little.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "free"
+    },
+    {
+      "id": "enzo.intro_session.02",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "[excited] Good evening! The whole circuit belongs to you tonight. No Varrone, no Valois, nobody in the mirrors. Go and find the limit, my friend.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "free"
+    },
+    {
+      "id": "alastair.intro_session.01",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Free Drive. No points, no podium, and mercifully no excuses. Do learn the braking markers.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "free"
+    },
+    {
+      "id": "alastair.intro_session.02",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "[dryly] An empty circuit. The ideal place to make mistakes nobody will remember. Except me.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "free"
+    },
+    {
+      "id": "enzo.intro_session.03",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "Buonasera and welcome! Six teams, twelve cars, and not one of them came here to lose. Especially not my Saetta. [clears throat] I mean, the Saetta team. I am completely neutral.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "retired",
+      "retiredFrom": "race",
+      "retired": "names six teams and twelve cars; the grid is now eight teams and sixteen cars (a race runs eight)"
+    },
+    {
+      "id": "enzo.intro_session.04",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "[excited] Good evening, everybody! Race night! The engines are warm, Remy Valois is smiling like he already won, and already I can smell the brakes.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "race"
+    },
+    {
+      "id": "enzo.intro_session.05",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "Welcome to the broadcast! Allora, the grid is set: Saetta, Corvid, Kalt, Mojave, Aurum and Sarab. Six teams, one trophy, and tonight somebody becomes a hero.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "retired",
+      "retiredFrom": "race",
+      "retired": "lists six teams (no Liberty, no Toro)"
+    },
+    {
+      "id": "alastair.intro_session.03",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Good evening. A full field, a short fuse, and a great deal of expensive carbon at risk.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "race"
+    },
+    {
+      "id": "alastair.intro_session.04",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Welcome. I am told this will be a clean race. I have heard that before. Frequently.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "race"
+    },
+    {
+      "id": "alastair.intro_session.05",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Good evening. Twelve drivers, and at least three of them believe brakes are optional.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "retired",
+      "retiredFrom": "race",
+      "retired": "twelve drivers; the grid is now sixteen"
+    },
+    {
+      "id": "enzo.intro_session.06",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "Welcome to the Endurance! Hours, not minutes. [chuckles] Kai Whitlow is very happy tonight. For him, this is a short race.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "endurance"
+    },
+    {
+      "id": "enzo.intro_session.07",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "Endurance tonight, my friends. Fast is good, but the car must finish. [sighs] Somebody please explain this to Cole Maddox.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "endurance"
+    },
+    {
+      "id": "alastair.intro_session.06",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Endurance. My natural habitat. Fuel, tyres, pit windows and the slow, exquisite agony of strategy.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "endurance"
+    },
+    {
+      "id": "alastair.intro_session.07",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Good evening. Tonight we discover who can be quick for a very long time. Rarely the same person.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "endurance"
+    },
+    {
+      "id": "enzo.intro_session.08",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "Look at that sky, orange over the barriers. Bellissimo. [laughs softly] Even the Mojave cars match the sunset tonight.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "dusk"
+    },
+    {
+      "id": "enzo.intro_session.09",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "The sun goes down, the lights come on. [warmly] For me, the perfect hour to race. [chuckles] For Alastair, the perfect hour to complain.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "dusk"
+    },
+    {
+      "id": "alastair.intro_session.08",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Dusk. The light is gorgeous and utterly useless. Braking markers vanish straight into the glare.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "dusk"
+    },
+    {
+      "id": "alastair.intro_session.09",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Low sun, long shadows. Every apex looks a yard further away than it really is.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "dusk"
+    },
+    {
+      "id": "enzo.intro_session.10",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "Blue hour turning into night, the city lights are on, and the cars look like comets. [whispers] Look at the Aurum gold under the lights. Magnifico.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "night"
+    },
+    {
+      "id": "enzo.intro_session.11",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "[excited] Night racing! Headlights, sparks, and the noise bouncing off every wall! [laughs] Twelve engines and one very happy Italian.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "retired",
+      "retiredFrom": "night",
+      "retired": "twelve engines; the grid is now sixteen cars (a race runs eight)"
+    },
+    {
+      "id": "alastair.intro_session.10",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Night. Depth perception leaves the building, and the barriers take full advantage.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "night"
+    },
+    {
+      "id": "alastair.intro_session.11",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Blue hour. A painter would call it sublime. An engineer calls it reduced visibility.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "night"
+    },
+    {
+      "id": "enzo.intro_session.12",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "[excited] Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling. [chuckles] Everybody else is praying.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "rain"
+    },
+    {
+      "id": "enzo.intro_session.13",
+      "category": "intro_session",
+      "speaker": "enzo",
+      "text": "Wet track, spray everywhere. Gentle hands tonight, or the car will bite. [chuckles] Ask Cole Maddox. He still has the teeth marks.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "rain"
+    },
+    {
+      "id": "alastair.intro_session.12",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "Rain. Grip is now merely a rumour. Whoever is smoothest will look like a genius.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "rain"
+    },
+    {
+      "id": "alastair.intro_session.13",
+      "category": "intro_session",
+      "speaker": "alastair",
+      "text": "[sighs] It is raining. Somewhere a set of slick tyres is weeping. So am I.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "rain"
+    },
+    {
+      "id": "enzo.intro_track.01",
+      "category": "intro_track",
+      "speaker": "enzo",
+      "text": "Welcome to the Corniche Marina Circuit! Street racing along the seafront, yachts in the harbour, concrete walls on every side. This is Sarab's home, and the crowd will be loud for Zayn Kareem. [dramatically] But touch a barrier here, and your race is finished.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "corniche",
+      "pair": "alastair.intro_track.01"
+    },
+    {
+      "id": "alastair.intro_track.01",
+      "category": "intro_track",
+      "speaker": "alastair",
+      "text": "Narrow, bumpy, and lined with walls that have ended more promising evenings than I care to count. The marina section is the trick: brake by the water, not by your nerve. And do ignore the yachts. They are not looking at you.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "corniche"
+    },
+    {
+      "id": "enzo.intro_track.02",
+      "category": "intro_track",
+      "speaker": "enzo",
+      "text": "Tonight we are in the Western Ghats of India, for the Sahyadri Ghat Circuit. Hairpins cut into the mountain, mist in the valleys, and a long drop beside the road. [sighs] Mamma mia. This place demands respect, even from Matteo Varrone.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "sahyadri",
+      "pair": "alastair.intro_track.02"
+    },
+    {
+      "id": "alastair.intro_track.02",
+      "category": "intro_track",
+      "speaker": "alastair",
+      "text": "A proper mountain road, built for lorries and monsoons rather than racing cars. The hairpins arrive in clusters, the camber changes its mind halfway round, and the guardrail is the only friend you will have up there. Splendid.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "sahyadri"
+    },
+    {
+      "id": "enzo.booth_backstory.01",
+      "category": "booth_backstory",
+      "speaker": "enzo",
+      "text": "I am Enzo Moretti! Twenty-five years in this booth, and before that, a skinny kid from Parma in the Italian junior formulas, [laughs] braking much later than was sensible.",
+      "priority": 1,
+      "cooldown_s": 900,
+      "pair": "alastair.booth_backstory.01"
+    },
+    {
+      "id": "alastair.booth_backstory.01",
+      "category": "booth_backstory",
+      "speaker": "alastair",
+      "text": "Much later. I have seen the footage. Alastair Finch, by the way: former race engineer, and the current conscience of this commentary box.",
+      "priority": 1,
+      "cooldown_s": 900
+    },
+    {
+      "id": "enzo.booth_backstory.02",
+      "category": "booth_backstory",
+      "speaker": "enzo",
+      "text": "Beside me, Alastair Finch. Eleven years on the pit wall for endurance teams, and still he counts fuel in his sleep. [chuckles] I have heard him. Litres, litres, litres.",
+      "priority": 1,
+      "cooldown_s": 900,
+      "pair": "alastair.booth_backstory.02"
+    },
+    {
+      "id": "alastair.booth_backstory.02",
+      "category": "booth_backstory",
+      "speaker": "alastair",
+      "text": "[dryly] And beside me, Enzo Moretti, who finished second in a rainstorm twenty-eight years ago and has described every lap of it to me personally.",
+      "priority": 1,
+      "cooldown_s": 900,
+      "pair": "enzo.booth_backstory.03"
+    },
+    {
+      "id": "enzo.booth_backstory.03",
+      "category": "booth_backstory",
+      "speaker": "enzo",
+      "text": "[laughs] Every lap was worth describing! And lap fourteen, I will describe again later.",
+      "priority": 1,
+      "cooldown_s": 900
+    },
+    {
+      "id": "alastair.booth_backstory.03",
+      "category": "booth_backstory",
+      "speaker": "alastair",
+      "text": "When I am not here, I am writing a history of forgotten racing circuits. Volume one runs to eight hundred pages.",
+      "priority": 1,
+      "cooldown_s": 900,
+      "pair": "enzo.booth_backstory.04"
+    },
+    {
+      "id": "enzo.booth_backstory.04",
+      "category": "booth_backstory",
+      "speaker": "enzo",
+      "text": "[laughs] Eight hundred pages, and he says I talk too much! Allora, he also restores old clocks. [sarcastic] A very patient man. With clocks.",
+      "priority": 1,
+      "cooldown_s": 900,
+      "pair": "alastair.booth_backstory.04"
+    },
+    {
+      "id": "alastair.booth_backstory.04",
+      "category": "booth_backstory",
+      "speaker": "alastair",
+      "text": "Clocks do not lunge up the inside at the hairpin, Enzo.",
+      "priority": 1,
+      "cooldown_s": 900
+    },
+    {
+      "id": "enzo.grid_and_lights.01",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "[excited] Cars rolling to the grid! Twelve drivers, six teams, zero friends.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "retired",
+      "retiredFrom": "formation",
+      "retired": "twelve drivers, six teams"
+    },
+    {
+      "id": "enzo.grid_and_lights.02",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "Formation lap, warming the tyres. [chuckles] Cole Maddox weaves like he is already racing.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "formation"
+    },
+    {
+      "id": "enzo.grid_and_lights.03",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "Everybody finding their slot. [whispers] You can feel the tension from here.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "formation"
+    },
+    {
+      "id": "alastair.grid_and_lights.01",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "The formation lap. Twelve drivers pretending to be calm.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "retired",
+      "retiredFrom": "formation",
+      "retired": "twelve drivers; the grid is now sixteen"
+    },
+    {
+      "id": "alastair.grid_and_lights.02",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "Weaving to warm the tyres. Also, I suspect, to settle the stomach.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "formation"
+    },
+    {
+      "id": "alastair.grid_and_lights.03",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "Grid slots found. Now the only question is who flinches first.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "formation"
+    },
+    {
+      "id": "enzo.grid_and_lights.04",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "[whispers] The lights are coming on...",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_on"
+    },
+    {
+      "id": "enzo.grid_and_lights.05",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "First light... second... [excited] here we go, here we go!",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_on"
+    },
+    {
+      "id": "enzo.grid_and_lights.06",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "[whispers] Lights on. Everybody still. Nobody breathe...",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_on"
+    },
+    {
+      "id": "alastair.grid_and_lights.04",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "Red lights. The longest seconds in motorsport.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_on"
+    },
+    {
+      "id": "alastair.grid_and_lights.05",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "[dryly] Lights on. Clutches trembling. Nerves rather more so.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_on"
+    },
+    {
+      "id": "alastair.grid_and_lights.06",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "Hold it... hold it... hold it...",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_on"
+    },
+    {
+      "id": "enzo.grid_and_lights.07",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "[shouting] Lights out! Andiamo!",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_out"
+    },
+    {
+      "id": "enzo.grid_and_lights.08",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "[shouting] And they're gone! The race is on!",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_out"
+    },
+    {
+      "id": "enzo.grid_and_lights.09",
+      "category": "grid_and_lights",
+      "speaker": "enzo",
+      "text": "[shouting] Go, go, go! Twelve cars charging for turn one!",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "retired",
+      "retiredFrom": "lights_out",
+      "retired": "twelve cars; the grid is now sixteen cars (a race runs eight)"
+    },
+    {
+      "id": "alastair.grid_and_lights.07",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "And they are released. Mind the first corner, everyone.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_out"
+    },
+    {
+      "id": "alastair.grid_and_lights.08",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "Away they go. Turn one awaits its victims.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_out"
+    },
+    {
+      "id": "alastair.grid_and_lights.09",
+      "category": "grid_and_lights",
+      "speaker": "alastair",
+      "text": "Lights out. Now let's see who has been practising.",
+      "priority": 3,
+      "cooldown_s": 0,
+      "when": "lights_out"
+    },
+    {
+      "id": "enzo.race_start_good.01",
+      "category": "race_start_good",
+      "speaker": "enzo",
+      "text": "[excited] What a launch! Clean off the line and gaining places!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.race_start_good.02",
+      "category": "race_start_good",
+      "speaker": "enzo",
+      "text": "[shouting] Perfect reaction! Remy Valois himself could not start better!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.race_start_good.03",
+      "category": "race_start_good",
+      "speaker": "enzo",
+      "text": "[excited] Great start! Into turn one with all the momentum!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.race_start_good.04",
+      "category": "race_start_good",
+      "speaker": "enzo",
+      "text": "[laughs] Like a rocket off the grid! That is how you begin!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_good.01",
+      "category": "race_start_good",
+      "speaker": "alastair",
+      "text": "A textbook getaway. The clutch work of a surgeon.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_good.02",
+      "category": "race_start_good",
+      "speaker": "alastair",
+      "text": "Superb reaction time. Somebody was actually concentrating.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_good.03",
+      "category": "race_start_good",
+      "speaker": "alastair",
+      "text": "Places gained before the first braking zone. Very tidy indeed.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_good.04",
+      "category": "race_start_good",
+      "speaker": "alastair",
+      "text": "Now that is a start worth watching twice.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.race_start_bad.01",
+      "category": "race_start_bad",
+      "speaker": "enzo",
+      "text": "[gasps] Oh no, bogged down! Cars streaming past on both sides!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.race_start_bad.02",
+      "category": "race_start_bad",
+      "speaker": "enzo",
+      "text": "[frustrated sigh] Slow away. Far too much wheelspin there.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.race_start_bad.03",
+      "category": "race_start_bad",
+      "speaker": "enzo",
+      "text": "[sarcastic] A relaxed start. Very relaxed. Like a Sunday drive to the beach.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.race_start_bad.04",
+      "category": "race_start_bad",
+      "speaker": "enzo",
+      "text": "Mamma mia, the start is gone! [determined] Now we fight back!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_bad.01",
+      "category": "race_start_bad",
+      "speaker": "alastair",
+      "text": "[sighs] That getaway was more of a gentle departure.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_bad.02",
+      "category": "race_start_bad",
+      "speaker": "alastair",
+      "text": "Wheelspin, then hesitation. A start to forget.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_bad.03",
+      "category": "race_start_bad",
+      "speaker": "alastair",
+      "text": "Swamped. The field went past like commuters past a busker.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.race_start_bad.04",
+      "category": "race_start_bad",
+      "speaker": "alastair",
+      "text": "Well. That is several places to win back, then.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.overtake_player.01",
+      "category": "overtake_player",
+      "speaker": "enzo",
+      "text": "[excited] Through! Up the inside, beautiful move!",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtake_player.02",
+      "category": "overtake_player",
+      "speaker": "enzo",
+      "text": "[laughs] Late on the brakes, and the place is taken! Very Varrone!",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtake_player.03",
+      "category": "overtake_player",
+      "speaker": "enzo",
+      "text": "[shouting] Around the outside! Mamma mia, what courage!",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtake_player.04",
+      "category": "overtake_player",
+      "speaker": "enzo",
+      "text": "[chuckles] Another one picked off. Layla Qasimi would approve of that.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtake_player.05",
+      "category": "overtake_player",
+      "speaker": "enzo",
+      "text": "Clean pass. No contact, no drama. [sarcastic] Alastair has nothing to complain about.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtake_player.01",
+      "category": "overtake_player",
+      "speaker": "alastair",
+      "text": "Neatly done. Not a coat of paint exchanged.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtake_player.02",
+      "category": "overtake_player",
+      "speaker": "alastair",
+      "text": "Committed, decisive, and frankly rather elegant.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtake_player.03",
+      "category": "overtake_player",
+      "speaker": "alastair",
+      "text": "Dispatched. The victim never saw it coming.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtake_player.04",
+      "category": "overtake_player",
+      "speaker": "alastair",
+      "text": "[dryly] That driver will be reviewing the mirrors tonight.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtake_player.05",
+      "category": "overtake_player",
+      "speaker": "alastair",
+      "text": "One place gained. Do keep going.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtaken_player.01",
+      "category": "overtaken_player",
+      "speaker": "enzo",
+      "text": "[gasps] Oh, passed! The door was left wide open there!",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtaken_player.02",
+      "category": "overtaken_player",
+      "speaker": "enzo",
+      "text": "[sighs] Lost a place. Too polite into that corner. Too polite!",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtaken_player.03",
+      "category": "overtaken_player",
+      "speaker": "enzo",
+      "text": "[urgently] They come through on the inside! Respond now, respond now!",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtaken_player.04",
+      "category": "overtaken_player",
+      "speaker": "enzo",
+      "text": "[outraged] Overtaken! No, no, no, this is not acceptable! Fight back!",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.overtaken_player.05",
+      "category": "overtaken_player",
+      "speaker": "enzo",
+      "text": "[sighs] A place gone. Head down, there is still time.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtaken_player.01",
+      "category": "overtaken_player",
+      "speaker": "alastair",
+      "text": "[sighs] Mugged at the apex. Tragic, and entirely avoidable.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtaken_player.02",
+      "category": "overtaken_player",
+      "speaker": "alastair",
+      "text": "The door was open, and someone walked straight through it.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtaken_player.03",
+      "category": "overtaken_player",
+      "speaker": "alastair",
+      "text": "A position surrendered rather too politely, I thought.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtaken_player.04",
+      "category": "overtaken_player",
+      "speaker": "alastair",
+      "text": "Overtaken. One hopes this is a temporary arrangement.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "alastair.overtaken_player.05",
+      "category": "overtaken_player",
+      "speaker": "alastair",
+      "text": "A lesson in defending, delivered by the other driver.",
+      "priority": 2,
+      "cooldown_s": 6
+    },
+    {
+      "id": "enzo.lead_taken.01",
+      "category": "lead_taken",
+      "speaker": "enzo",
+      "text": "[shouting] Into the lead! P1! Bellissimo!",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.lead_taken.02",
+      "category": "lead_taken",
+      "speaker": "enzo",
+      "text": "[excited] Front of the field! Nobody ahead now, only clear air!",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.lead_taken.03",
+      "category": "lead_taken",
+      "speaker": "enzo",
+      "text": "[shouting] The lead is taken! [laughs] Now, can they keep it?",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.lead_taken.04",
+      "category": "lead_taken",
+      "speaker": "enzo",
+      "text": "[excited] Leading the race! The champion's view, nothing but empty road!",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_taken.01",
+      "category": "lead_taken",
+      "speaker": "alastair",
+      "text": "In the lead. Now comes the difficult part.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_taken.02",
+      "category": "lead_taken",
+      "speaker": "alastair",
+      "text": "P1. Clear air, and nobody to blame but oneself.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_taken.03",
+      "category": "lead_taken",
+      "speaker": "alastair",
+      "text": "The lead, taken with genuine authority.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_taken.04",
+      "category": "lead_taken",
+      "speaker": "alastair",
+      "text": "[dryly] Leading. I may have to revise my predictions.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.lead_lost.01",
+      "category": "lead_lost",
+      "speaker": "enzo",
+      "text": "[outraged] No! No! The lead is gone!",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.lead_lost.02",
+      "category": "lead_lost",
+      "speaker": "enzo",
+      "text": "[frustrated sigh] Passed for first place! Mamma mia, so close.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.lead_lost.03",
+      "category": "lead_lost",
+      "speaker": "enzo",
+      "text": "[urgently] Lost P1! Stay in the slipstream, it is not finished!",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.lead_lost.04",
+      "category": "lead_lost",
+      "speaker": "enzo",
+      "text": "[sighs] Second now. But the fight is still on, my friends!",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_lost.01",
+      "category": "lead_lost",
+      "speaker": "alastair",
+      "text": "And the lead slips away. Momentarily, one hopes.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_lost.02",
+      "category": "lead_lost",
+      "speaker": "alastair",
+      "text": "Leadership is a lease, not a freehold.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_lost.03",
+      "category": "lead_lost",
+      "speaker": "alastair",
+      "text": "P1 surrendered. That will sting for a while.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.lead_lost.04",
+      "category": "lead_lost",
+      "speaker": "alastair",
+      "text": "Demoted. Now we learn something about their character.",
+      "priority": 3,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.defending.01",
+      "category": "defending",
+      "speaker": "enzo",
+      "text": "Defending well! Covering the inside line, very clever!",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "enzo.defending.02",
+      "category": "defending",
+      "speaker": "enzo",
+      "text": "[excited] Holding them off! Mirrors, mirrors, mirrors!",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "enzo.defending.03",
+      "category": "defending",
+      "speaker": "enzo",
+      "text": "Under pressure, but not giving an inch! [laughs] Theo Ashcombe would be proud.",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "enzo.defending.04",
+      "category": "defending",
+      "speaker": "enzo",
+      "text": "[mischievously] They want the place, but the door is shut. Locked. Bolted.",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "alastair.defending.01",
+      "category": "defending",
+      "speaker": "alastair",
+      "text": "Firm defending. Within the rules, just about.",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "alastair.defending.02",
+      "category": "defending",
+      "speaker": "alastair",
+      "text": "The inside is covered. Clever positioning.",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "alastair.defending.03",
+      "category": "defending",
+      "speaker": "alastair",
+      "text": "One move only, mind. We are not barbarians.",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "alastair.defending.04",
+      "category": "defending",
+      "speaker": "alastair",
+      "text": "Calm under pressure. I am almost impressed.",
+      "priority": 2,
+      "cooldown_s": 12
+    },
+    {
+      "id": "enzo.side_by_side.01",
+      "category": "side_by_side",
+      "speaker": "enzo",
+      "text": "[excited] Side by side! Nobody is lifting!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.side_by_side.02",
+      "category": "side_by_side",
+      "speaker": "enzo",
+      "text": "Wheel to wheel into the corner! [dramatically] Who blinks first?",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.side_by_side.03",
+      "category": "side_by_side",
+      "speaker": "enzo",
+      "text": "[shouting] Door to door! This is racing, my friends!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.side_by_side.04",
+      "category": "side_by_side",
+      "speaker": "enzo",
+      "text": "[laughs] Together through the turn! The stewards are reaching for their pens!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.side_by_side.01",
+      "category": "side_by_side",
+      "speaker": "alastair",
+      "text": "Side by side. One of them will have to be sensible.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.side_by_side.02",
+      "category": "side_by_side",
+      "speaker": "alastair",
+      "text": "Wheel to wheel. My heart rate disapproves.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.side_by_side.03",
+      "category": "side_by_side",
+      "speaker": "alastair",
+      "text": "Neither yielding. Admirable, and slightly mad.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.side_by_side.04",
+      "category": "side_by_side",
+      "speaker": "alastair",
+      "text": "Inches apart. Somebody's insurer is watching through their fingers.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.slipstream.01",
+      "category": "slipstream",
+      "speaker": "enzo",
+      "text": "In the slipstream now, getting the tow!",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.slipstream.02",
+      "category": "slipstream",
+      "speaker": "enzo",
+      "text": "Tucked in behind, pulled along. [whispers] Get ready...",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.slipstream.03",
+      "category": "slipstream",
+      "speaker": "enzo",
+      "text": "[mischievously] Using the draft. Free speed, and the car ahead pays for it.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.slipstream.04",
+      "category": "slipstream",
+      "speaker": "enzo",
+      "text": "Right under the rear wing. [chuckles] Close enough to read the sponsor stickers.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.slipstream.01",
+      "category": "slipstream",
+      "speaker": "alastair",
+      "text": "The tow. Physics, kindly lending a hand.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.slipstream.02",
+      "category": "slipstream",
+      "speaker": "alastair",
+      "text": "Sheltering in the wake. A move is being planned.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.slipstream.03",
+      "category": "slipstream",
+      "speaker": "alastair",
+      "text": "Free speed from the car ahead. It would be rude not to.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.slipstream.04",
+      "category": "slipstream",
+      "speaker": "alastair",
+      "text": "Close enough to read their tyre pressures.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.nitro_used.01",
+      "category": "nitro_used",
+      "speaker": "enzo",
+      "text": "[excited] Nitro! Look at it fly!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.nitro_used.02",
+      "category": "nitro_used",
+      "speaker": "enzo",
+      "text": "[shouting] Boost engaged! Andiamo, andiamo!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.nitro_used.03",
+      "category": "nitro_used",
+      "speaker": "enzo",
+      "text": "[laughs] Like a missile down the straight! Even an Aurum would be jealous!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.nitro_used.04",
+      "category": "nitro_used",
+      "speaker": "enzo",
+      "text": "There goes the nitro. [chuckles] The engine is screaming, and so am I!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.nitro_used.01",
+      "category": "nitro_used",
+      "speaker": "alastair",
+      "text": "Nitrous. Subtlety departs with a very loud bang.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.nitro_used.02",
+      "category": "nitro_used",
+      "speaker": "alastair",
+      "text": "Boost deployed. On a straight, at least. Good.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.nitro_used.03",
+      "category": "nitro_used",
+      "speaker": "alastair",
+      "text": "[dryly] The engine will be filing a formal complaint.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.nitro_used.04",
+      "category": "nitro_used",
+      "speaker": "alastair",
+      "text": "Nitro used. Let's hope the brakes were informed.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.fastest_lap.01",
+      "category": "fastest_lap",
+      "speaker": "enzo",
+      "text": "[excited] Fastest lap of the race! Nobody has gone quicker!",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "enzo.fastest_lap.02",
+      "category": "fastest_lap",
+      "speaker": "enzo",
+      "text": "That's the fastest lap! [laughs] The car is singing! Opera!",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "enzo.fastest_lap.03",
+      "category": "fastest_lap",
+      "speaker": "enzo",
+      "text": "[shouting] Quickest of anyone tonight! Bellissimo!",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "enzo.fastest_lap.04",
+      "category": "fastest_lap",
+      "speaker": "enzo",
+      "text": "Fastest lap! [chuckles] Jonas Reiter will study that one on his laptop tonight.",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "alastair.fastest_lap.01",
+      "category": "fastest_lap",
+      "speaker": "alastair",
+      "text": "The fastest lap of the race. Rather splendid.",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "alastair.fastest_lap.02",
+      "category": "fastest_lap",
+      "speaker": "alastair",
+      "text": "Quickest lap of anyone. The stopwatch approves.",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "alastair.fastest_lap.03",
+      "category": "fastest_lap",
+      "speaker": "alastair",
+      "text": "Fastest lap. I shall allow myself a small nod.",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "alastair.fastest_lap.04",
+      "category": "fastest_lap",
+      "speaker": "alastair",
+      "text": "A lap of real precision. Fastest of the night.",
+      "priority": 2,
+      "cooldown_s": 20
+    },
+    {
+      "id": "enzo.personal_best.01",
+      "category": "personal_best",
+      "speaker": "enzo",
+      "text": "A personal best! Getting faster every lap!",
+      "priority": 1,
+      "cooldown_s": 30
+    },
+    {
+      "id": "enzo.personal_best.02",
+      "category": "personal_best",
+      "speaker": "enzo",
+      "text": "[warmly] New best lap! The rhythm is coming now, I can hear it.",
+      "priority": 1,
+      "cooldown_s": 30
+    },
+    {
+      "id": "enzo.personal_best.03",
+      "category": "personal_best",
+      "speaker": "enzo",
+      "text": "[warmly] Personal best! This is how rookies become champions, step by step.",
+      "priority": 1,
+      "cooldown_s": 30
+    },
+    {
+      "id": "alastair.personal_best.01",
+      "category": "personal_best",
+      "speaker": "alastair",
+      "text": "A personal best. Improvement, at last measurable.",
+      "priority": 1,
+      "cooldown_s": 30
+    },
+    {
+      "id": "alastair.personal_best.02",
+      "category": "personal_best",
+      "speaker": "alastair",
+      "text": "Their quickest lap yet. Progress, of a sort.",
+      "priority": 1,
+      "cooldown_s": 30
+    },
+    {
+      "id": "alastair.personal_best.03",
+      "category": "personal_best",
+      "speaker": "alastair",
+      "text": "Personal best. The braking points are being found.",
+      "priority": 1,
+      "cooldown_s": 30
+    },
+    {
+      "id": "enzo.lap_one_complete.01",
+      "category": "lap_one_complete",
+      "speaker": "enzo",
+      "text": "[laughs] First lap done! Everybody still in one piece? Incredible!",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.lap_one_complete.02",
+      "category": "lap_one_complete",
+      "speaker": "enzo",
+      "text": "Lap one complete. Now the race starts to settle.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.lap_one_complete.03",
+      "category": "lap_one_complete",
+      "speaker": "enzo",
+      "text": "[sarcastic] One lap gone, and Cole Maddox has not hit anybody. Yet.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.lap_one_complete.01",
+      "category": "lap_one_complete",
+      "speaker": "alastair",
+      "text": "Lap one survived. Statistically, the hardest one.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.lap_one_complete.02",
+      "category": "lap_one_complete",
+      "speaker": "alastair",
+      "text": "One lap down. The nervous part is over.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.lap_one_complete.03",
+      "category": "lap_one_complete",
+      "speaker": "alastair",
+      "text": "The opening lap complete. Now the strategy begins.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.halfway.01",
+      "category": "halfway",
+      "speaker": "enzo",
+      "text": "[excited] Halfway! Plenty still to happen tonight!",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.halfway.02",
+      "category": "halfway",
+      "speaker": "enzo",
+      "text": "Half distance. [dramatically] Now the real race begins.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.halfway.03",
+      "category": "halfway",
+      "speaker": "enzo",
+      "text": "[mischievously] Half the race gone. Who has saved something? Kai Whitlow, always.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.halfway.01",
+      "category": "halfway",
+      "speaker": "alastair",
+      "text": "Half distance. The tyres are no longer young.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.halfway.02",
+      "category": "halfway",
+      "speaker": "alastair",
+      "text": "Halfway. The race begins to show its true shape.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.halfway.03",
+      "category": "halfway",
+      "speaker": "alastair",
+      "text": "Fifty per cent complete. My optimism, considerably less.",
+      "priority": 1,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.final_lap.01",
+      "category": "final_lap",
+      "speaker": "enzo",
+      "text": "[shouting] Final lap! Everything on the line!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.final_lap.02",
+      "category": "final_lap",
+      "speaker": "enzo",
+      "text": "[excited] Last lap! No more saving, all or nothing!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.final_lap.03",
+      "category": "final_lap",
+      "speaker": "enzo",
+      "text": "[shouting] Final lap, my friends! Give it everything!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.final_lap.04",
+      "category": "final_lap",
+      "speaker": "enzo",
+      "text": "[dramatically] One more lap. The finish is calling!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.final_lap.01",
+      "category": "final_lap",
+      "speaker": "alastair",
+      "text": "The final lap. Nerve, not horsepower, decides it now.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.final_lap.02",
+      "category": "final_lap",
+      "speaker": "alastair",
+      "text": "Last lap. Please, nobody do anything silly.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.final_lap.03",
+      "category": "final_lap",
+      "speaker": "alastair",
+      "text": "Final lap. Every mistake from here is permanent.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.final_lap.04",
+      "category": "final_lap",
+      "speaker": "alastair",
+      "text": "The last lap. This is where legends and fools are made.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.last_corner_battle.01",
+      "category": "last_corner_battle",
+      "speaker": "enzo",
+      "text": "[shouting] Last corner! Side by side for the line!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.last_corner_battle.02",
+      "category": "last_corner_battle",
+      "speaker": "enzo",
+      "text": "Final turn, and they are together! [shouting] Who wants it more?",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.last_corner_battle.03",
+      "category": "last_corner_battle",
+      "speaker": "enzo",
+      "text": "[shouting] Into the last corner, still fighting! Incredible!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.last_corner_battle.01",
+      "category": "last_corner_battle",
+      "speaker": "alastair",
+      "text": "The final corner. Somebody's about to be very brave.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.last_corner_battle.02",
+      "category": "last_corner_battle",
+      "speaker": "alastair",
+      "text": "Last bend, nose to tail. Exquisite tension.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.last_corner_battle.03",
+      "category": "last_corner_battle",
+      "speaker": "alastair",
+      "text": "One corner left. Choose the line, and pray.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.off_track.01",
+      "category": "off_track",
+      "speaker": "enzo",
+      "text": "[gasps] Off the track! Into the run-off!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.off_track.02",
+      "category": "off_track",
+      "speaker": "enzo",
+      "text": "Wide! Off the road, losing time!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.off_track.03",
+      "category": "off_track",
+      "speaker": "enzo",
+      "text": "[sarcastic] Ran out of road. The track is that way, my friend.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.off_track.04",
+      "category": "off_track",
+      "speaker": "enzo",
+      "text": "Too much speed, and straight on! [sighs] Mamma mia.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.off_track.01",
+      "category": "off_track",
+      "speaker": "alastair",
+      "text": "[dryly] The track, for reference, is the grey bit.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.off_track.02",
+      "category": "off_track",
+      "speaker": "alastair",
+      "text": "Off. An unscheduled excursion.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.off_track.03",
+      "category": "off_track",
+      "speaker": "alastair",
+      "text": "Exploring the scenery. Not what we came for.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.off_track.04",
+      "category": "off_track",
+      "speaker": "alastair",
+      "text": "Ran wide. Optimism exceeded grip.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.spin.01",
+      "category": "spin",
+      "speaker": "enzo",
+      "text": "[gasps] Spin! Around it goes!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.spin.02",
+      "category": "spin",
+      "speaker": "enzo",
+      "text": "[shouting] Lost the rear! Spinning!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.spin.03",
+      "category": "spin",
+      "speaker": "enzo",
+      "text": "Mamma mia, a full spin! Keep it off the wall!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.spin.04",
+      "category": "spin",
+      "speaker": "enzo",
+      "text": "[laughs] Round and round! Very pretty, very slow!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.spin.01",
+      "category": "spin",
+      "speaker": "alastair",
+      "text": "A pirouette. The judges are unimpressed.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.spin.02",
+      "category": "spin",
+      "speaker": "alastair",
+      "text": "Spun. Too much throttle, too little patience.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.spin.03",
+      "category": "spin",
+      "speaker": "alastair",
+      "text": "Facing the wrong way. Always disorienting.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.spin.04",
+      "category": "spin",
+      "speaker": "alastair",
+      "text": "[sighs] And the rear overtakes the front.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.soft_crash.01",
+      "category": "soft_crash",
+      "speaker": "enzo",
+      "text": "Contact! A little bump there.",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "enzo.soft_crash.02",
+      "category": "soft_crash",
+      "speaker": "enzo",
+      "text": "[gasps] Ooh, touched the barrier! Some damage?",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "enzo.soft_crash.03",
+      "category": "soft_crash",
+      "speaker": "enzo",
+      "text": "A tap on the wall. [chuckles] The paint shop will be busy tonight.",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "enzo.soft_crash.04",
+      "category": "soft_crash",
+      "speaker": "enzo",
+      "text": "Bumping cars! [sarcastic] This is not the funfair, my friends!",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "alastair.soft_crash.01",
+      "category": "soft_crash",
+      "speaker": "alastair",
+      "text": "A gentle kiss of the barrier. Paintwork only.",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "alastair.soft_crash.02",
+      "category": "soft_crash",
+      "speaker": "alastair",
+      "text": "Contact. Minor, but entirely unnecessary.",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "alastair.soft_crash.03",
+      "category": "soft_crash",
+      "speaker": "alastair",
+      "text": "A nudge. The bodyshop will send a card.",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "alastair.soft_crash.04",
+      "category": "soft_crash",
+      "speaker": "alastair",
+      "text": "Bumped. Nothing broken except one's pride.",
+      "priority": 2,
+      "cooldown_s": 8
+    },
+    {
+      "id": "enzo.hard_crash.01",
+      "category": "hard_crash",
+      "speaker": "enzo",
+      "text": "[shouting] Huge crash! Into the wall!",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "enzo.hard_crash.02",
+      "category": "hard_crash",
+      "speaker": "enzo",
+      "text": "[gasps] Mamma mia! A massive impact there!",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "enzo.hard_crash.03",
+      "category": "hard_crash",
+      "speaker": "enzo",
+      "text": "[shouting] Big hit! Carbon fibre everywhere!",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "enzo.hard_crash.04",
+      "category": "hard_crash",
+      "speaker": "enzo",
+      "text": "[shocked] Oh no, a heavy crash! That car is destroyed!",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "alastair.hard_crash.01",
+      "category": "hard_crash",
+      "speaker": "alastair",
+      "text": "[gasps] Oh, that's a big one. Very big.",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "alastair.hard_crash.02",
+      "category": "hard_crash",
+      "speaker": "alastair",
+      "text": "A heavy impact. That will need more than tape.",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "alastair.hard_crash.03",
+      "category": "hard_crash",
+      "speaker": "alastair",
+      "text": "Destroyed. The barrier won that argument decisively.",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "alastair.hard_crash.04",
+      "category": "hard_crash",
+      "speaker": "alastair",
+      "text": "Expensive. Spectacularly, eye-wateringly expensive.",
+      "priority": 3,
+      "cooldown_s": 5
+    },
+    {
+      "id": "enzo.wall_scrape.01",
+      "category": "wall_scrape",
+      "speaker": "enzo",
+      "text": "Scraping the wall! Sparks flying!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.wall_scrape.02",
+      "category": "wall_scrape",
+      "speaker": "enzo",
+      "text": "[gasps] Kissing the barrier all the way along there!",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.wall_scrape.03",
+      "category": "wall_scrape",
+      "speaker": "enzo",
+      "text": "Grinding along the wall! [sarcastic] Very romantic. Very expensive.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.wall_scrape.01",
+      "category": "wall_scrape",
+      "speaker": "alastair",
+      "text": "Grinding the barrier. The sound of money leaving.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.wall_scrape.02",
+      "category": "wall_scrape",
+      "speaker": "alastair",
+      "text": "Brushed the wall. Close is good. That was closer.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "alastair.wall_scrape.03",
+      "category": "wall_scrape",
+      "speaker": "alastair",
+      "text": "Sparks. Pretty, but deeply inadvisable.",
+      "priority": 2,
+      "cooldown_s": 10
+    },
+    {
+      "id": "enzo.recovery_after_incident.01",
+      "category": "recovery_after_incident",
+      "speaker": "enzo",
+      "text": "Back on track! Now chase them down!",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.recovery_after_incident.02",
+      "category": "recovery_after_incident",
+      "speaker": "enzo",
+      "text": "[excited] Going again! Never give up, never!",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.recovery_after_incident.03",
+      "category": "recovery_after_incident",
+      "speaker": "enzo",
+      "text": "Rejoined the race. [warmly] Breathe, focus, forget it.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.recovery_after_incident.04",
+      "category": "recovery_after_incident",
+      "speaker": "enzo",
+      "text": "[chuckles] Recovering well. Cole Maddox does this every week. The fight continues!",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.recovery_after_incident.01",
+      "category": "recovery_after_incident",
+      "speaker": "alastair",
+      "text": "Back in the race. Composure regained, more or less.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.recovery_after_incident.02",
+      "category": "recovery_after_incident",
+      "speaker": "alastair",
+      "text": "Rejoining. A little humbler, I'd hope.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.recovery_after_incident.03",
+      "category": "recovery_after_incident",
+      "speaker": "alastair",
+      "text": "Under way again. Lessons, one trusts, absorbed.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "alastair.recovery_after_incident.04",
+      "category": "recovery_after_incident",
+      "speaker": "alastair",
+      "text": "Recovered. Now, the long walk back up the order.",
+      "priority": 2,
+      "cooldown_s": 15
+    },
+    {
+      "id": "enzo.rain_starting.01",
+      "category": "rain_starting",
+      "speaker": "enzo",
+      "text": "[excited] Rain is starting! Watch the grip now!",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "enzo.rain_starting.02",
+      "category": "rain_starting",
+      "speaker": "enzo",
+      "text": "Drops on the visor! It's beginning to rain! [laughs] Aiko Tanabe is smiling somewhere.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "enzo.rain_starting.03",
+      "category": "rain_starting",
+      "speaker": "enzo",
+      "text": "Here comes the rain! [dramatically] Mamma mia, everything changes!",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "alastair.rain_starting.01",
+      "category": "rain_starting",
+      "speaker": "alastair",
+      "text": "Rain. And the order may be about to shuffle.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "alastair.rain_starting.02",
+      "category": "rain_starting",
+      "speaker": "alastair",
+      "text": "A shower arriving. The smooth will prosper.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "alastair.rain_starting.03",
+      "category": "rain_starting",
+      "speaker": "alastair",
+      "text": "Raindrops. My favourite variable, and my least.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "enzo.track_drying.01",
+      "category": "track_drying",
+      "speaker": "enzo",
+      "text": "The track is drying! A dry line is appearing!",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "enzo.track_drying.02",
+      "category": "track_drying",
+      "speaker": "enzo",
+      "text": "[chuckles] The rain has stopped. Bad news for Freya Lindqvist, good news for everybody else.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "enzo.track_drying.03",
+      "category": "track_drying",
+      "speaker": "enzo",
+      "text": "Drying out now. [excited] Time to push again!",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "alastair.track_drying.01",
+      "category": "track_drying",
+      "speaker": "alastair",
+      "text": "A dry line emerging. Find it, and follow it.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "alastair.track_drying.02",
+      "category": "track_drying",
+      "speaker": "alastair",
+      "text": "The circuit is drying. Brave pace returns.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "alastair.track_drying.03",
+      "category": "track_drying",
+      "speaker": "alastair",
+      "text": "Drying. Puddles still lurk off-line, mind.",
+      "priority": 2,
+      "cooldown_s": 120
+    },
+    {
+      "id": "enzo.pit_entry.01",
+      "category": "pit_entry",
+      "speaker": "enzo",
+      "text": "Into the pits! The crew is ready!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_entry.02",
+      "category": "pit_entry",
+      "speaker": "enzo",
+      "text": "[excited] Boxing this lap! Let's see the stop!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_entry.03",
+      "category": "pit_entry",
+      "speaker": "enzo",
+      "text": "[urgently] Pit entry now. Watch the speed limit!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_entry.01",
+      "category": "pit_entry",
+      "speaker": "alastair",
+      "text": "In for service. Fuel, tyres, and a moment of reflection.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_entry.02",
+      "category": "pit_entry",
+      "speaker": "alastair",
+      "text": "Pitting. The crew will now earn their wages.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_entry.03",
+      "category": "pit_entry",
+      "speaker": "alastair",
+      "text": "Pit lane entry. The strategy reveals itself.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_stop_fast.01",
+      "category": "pit_stop_fast",
+      "speaker": "enzo",
+      "text": "[excited] What a stop! Lightning fast!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_stop_fast.02",
+      "category": "pit_stop_fast",
+      "speaker": "enzo",
+      "text": "[shouting] Bellissimo! The crew was perfect!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_stop_fast.03",
+      "category": "pit_stop_fast",
+      "speaker": "enzo",
+      "text": "[laughs] Super quick! Even the Saetta crew would applaud that one!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_stop_fast.01",
+      "category": "pit_stop_fast",
+      "speaker": "alastair",
+      "text": "A splendid stop. The mechanics deserve a raise.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_stop_fast.02",
+      "category": "pit_stop_fast",
+      "speaker": "alastair",
+      "text": "Choreographed beautifully. Not a wasted second.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_stop_fast.03",
+      "category": "pit_stop_fast",
+      "speaker": "alastair",
+      "text": "A fast stop. The strategy is vindicated.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_stop_slow.01",
+      "category": "pit_stop_slow",
+      "speaker": "enzo",
+      "text": "[gasps] Slow stop! Something went wrong!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_stop_slow.02",
+      "category": "pit_stop_slow",
+      "speaker": "enzo",
+      "text": "Taking too long! [frustrated] Come on, come on, come on!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_stop_slow.03",
+      "category": "pit_stop_slow",
+      "speaker": "enzo",
+      "text": "[sarcastic] A delay in the pits. Maybe they stopped for an espresso.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_stop_slow.01",
+      "category": "pit_stop_slow",
+      "speaker": "alastair",
+      "text": "[sighs] A sluggish stop. Somebody fumbled.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_stop_slow.02",
+      "category": "pit_stop_slow",
+      "speaker": "alastair",
+      "text": "Still stationary. I could have changed that tyre myself.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_stop_slow.03",
+      "category": "pit_stop_slow",
+      "speaker": "alastair",
+      "text": "A slow stop. That will be discussed. Loudly.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_exit.01",
+      "category": "pit_exit",
+      "speaker": "enzo",
+      "text": "Out of the pits! Back into the fight!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_exit.02",
+      "category": "pit_exit",
+      "speaker": "enzo",
+      "text": "Rejoining now. [excited] Fresh tyres, full attack!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_exit.03",
+      "category": "pit_exit",
+      "speaker": "enzo",
+      "text": "Pit exit! [curious] Where do they come out?",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_exit.01",
+      "category": "pit_exit",
+      "speaker": "alastair",
+      "text": "Out of the pit lane. Watch the traffic.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_exit.02",
+      "category": "pit_exit",
+      "speaker": "alastair",
+      "text": "Back on track, on cold tyres. Gently, please.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_exit.03",
+      "category": "pit_exit",
+      "speaker": "alastair",
+      "text": "Rejoined. Now we see if the stop has paid.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_limiter_warning.01",
+      "category": "pit_limiter_warning",
+      "speaker": "enzo",
+      "text": "[urgently] Careful! Speeding in the pit lane!",
+      "priority": 2,
+      "cooldown_s": 5,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_limiter_warning.02",
+      "category": "pit_limiter_warning",
+      "speaker": "enzo",
+      "text": "Too fast in the pits! [shouting] Limiter, limiter!",
+      "priority": 2,
+      "cooldown_s": 5,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.pit_limiter_warning.03",
+      "category": "pit_limiter_warning",
+      "speaker": "enzo",
+      "text": "[sighs] Watch the pit speed. A penalty is coming, I promise you.",
+      "priority": 2,
+      "cooldown_s": 5,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_limiter_warning.01",
+      "category": "pit_limiter_warning",
+      "speaker": "alastair",
+      "text": "Pit lane speeding. The stewards adore that.",
+      "priority": 2,
+      "cooldown_s": 5,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_limiter_warning.02",
+      "category": "pit_limiter_warning",
+      "speaker": "alastair",
+      "text": "The limiter, please. It's the button for exactly this.",
+      "priority": 2,
+      "cooldown_s": 5,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.pit_limiter_warning.03",
+      "category": "pit_limiter_warning",
+      "speaker": "alastair",
+      "text": "Too quick in the pit lane. That's a penalty.",
+      "priority": 2,
+      "cooldown_s": 5,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.stint_change_dusk_to_night.01",
+      "category": "stint_change_dusk_to_night",
+      "speaker": "enzo",
+      "text": "The sun has gone. [warmly] Now we race into the night!",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.stint_change_dusk_to_night.02",
+      "category": "stint_change_dusk_to_night",
+      "speaker": "enzo",
+      "text": "Dusk becomes night. Headlights on, and a new race begins.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.stint_change_dusk_to_night.03",
+      "category": "stint_change_dusk_to_night",
+      "speaker": "enzo",
+      "text": "The sky turns dark blue. [whispers] Bellissimo. The night stint.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.stint_change_dusk_to_night.01",
+      "category": "stint_change_dusk_to_night",
+      "speaker": "alastair",
+      "text": "Night falls. The track cools, and so, one hopes, do tempers.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.stint_change_dusk_to_night.02",
+      "category": "stint_change_dusk_to_night",
+      "speaker": "alastair",
+      "text": "Into the dark. Braking markers become educated guesswork.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "alastair.stint_change_dusk_to_night.03",
+      "category": "stint_change_dusk_to_night",
+      "speaker": "alastair",
+      "text": "The blue hour passes. Endurance racing at its most beautiful.",
+      "priority": 2,
+      "cooldown_s": 0,
+      "mode": "endurance"
+    },
+    {
+      "id": "enzo.player_wins.01",
+      "category": "player_wins",
+      "speaker": "enzo",
+      "text": "[shouting] Winner! What a drive! Bellissimo!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_wins.02",
+      "category": "player_wins",
+      "speaker": "enzo",
+      "text": "[excited] Across the line first! A champion's performance!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_wins.03",
+      "category": "player_wins",
+      "speaker": "enzo",
+      "text": "[shouting] Victory! Mamma mia, they did it! [laughs] Alastair, I am crying!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_wins.04",
+      "category": "player_wins",
+      "speaker": "enzo",
+      "text": "[excited] First place! Nobody could stop them tonight! Nobody!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_wins.01",
+      "category": "player_wins",
+      "speaker": "alastair",
+      "text": "The win. Genuinely deserved. I don't say that lightly.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_wins.02",
+      "category": "player_wins",
+      "speaker": "alastair",
+      "text": "Victory, achieved with real style. Bravo.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_wins.03",
+      "category": "player_wins",
+      "speaker": "alastair",
+      "text": "A win. Even I shall applaud. Briefly.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_wins.04",
+      "category": "player_wins",
+      "speaker": "alastair",
+      "text": "First across the line. Faultless, or very nearly.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_podium.01",
+      "category": "player_podium",
+      "speaker": "enzo",
+      "text": "[excited] A podium! A great result!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_podium.02",
+      "category": "player_podium",
+      "speaker": "enzo",
+      "text": "Onto the podium! [laughs] Champagne tonight!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_podium.03",
+      "category": "player_podium",
+      "speaker": "enzo",
+      "text": "Top three! [warmly] A very, very good drive.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_podium.01",
+      "category": "player_podium",
+      "speaker": "alastair",
+      "text": "A podium. Respectable, and then some.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_podium.02",
+      "category": "player_podium",
+      "speaker": "alastair",
+      "text": "Top three. Not the win, but a fine evening.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_podium.03",
+      "category": "player_podium",
+      "speaker": "alastair",
+      "text": "A podium finish. The trophy cabinet grows.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_midfield.01",
+      "category": "player_midfield",
+      "speaker": "enzo",
+      "text": "A midfield finish. Experience gained, and next time, more.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_midfield.02",
+      "category": "player_midfield",
+      "speaker": "enzo",
+      "text": "[sighs] Not the result we wanted, but a solid race.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_midfield.03",
+      "category": "player_midfield",
+      "speaker": "enzo",
+      "text": "Across the line in the pack. [warmly] We go again!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_midfield.01",
+      "category": "player_midfield",
+      "speaker": "alastair",
+      "text": "A midfield finish. Competent, if unremarkable.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_midfield.02",
+      "category": "player_midfield",
+      "speaker": "alastair",
+      "text": "Neither glory nor disgrace. The respectable middle.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_midfield.03",
+      "category": "player_midfield",
+      "speaker": "alastair",
+      "text": "Mid-pack. There is speed in there, waiting to be unlocked.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_last.01",
+      "category": "player_last",
+      "speaker": "enzo",
+      "text": "[sighs] Last place. A tough night, but we learn.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_last.02",
+      "category": "player_last",
+      "speaker": "enzo",
+      "text": "[chuckles] At the back. Never mind, even Varrone was last once. Once.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.player_last.03",
+      "category": "player_last",
+      "speaker": "enzo",
+      "text": "[warmly] Last across the line. Head up, my friend.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_last.01",
+      "category": "player_last",
+      "speaker": "alastair",
+      "text": "[dryly] Last. But they did finish, which is something.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_last.02",
+      "category": "player_last",
+      "speaker": "alastair",
+      "text": "Bringing up the rear. Somebody must.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.player_last.03",
+      "category": "player_last",
+      "speaker": "alastair",
+      "text": "Last place. A character-building evening.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.photo_finish.01",
+      "category": "photo_finish",
+      "speaker": "enzo",
+      "text": "[shouting] Photo finish! Who got it?",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.photo_finish.02",
+      "category": "photo_finish",
+      "speaker": "enzo",
+      "text": "Together on the line! [gasps] Too close to call!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.photo_finish.03",
+      "category": "photo_finish",
+      "speaker": "enzo",
+      "text": "[excited] Mamma mia, a photo finish! I can't separate them!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.photo_finish.01",
+      "category": "photo_finish",
+      "speaker": "alastair",
+      "text": "A photo finish. The camera must arbitrate.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.photo_finish.02",
+      "category": "photo_finish",
+      "speaker": "alastair",
+      "text": "Separated by a whisker, if that.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.photo_finish.03",
+      "category": "photo_finish",
+      "speaker": "alastair",
+      "text": "A dead heat to the naked eye. Thrilling.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.winner_fireworks.01",
+      "category": "winner_fireworks",
+      "speaker": "enzo",
+      "text": "[excited] Fireworks! Look at the sky! What a celebration!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.winner_fireworks.02",
+      "category": "winner_fireworks",
+      "speaker": "enzo",
+      "text": "The fireworks go up for the winner! [laughs] Bellissimo!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.winner_fireworks.03",
+      "category": "winner_fireworks",
+      "speaker": "enzo",
+      "text": "Listen to that! [warmly] The whole circuit is celebrating!",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.winner_fireworks.01",
+      "category": "winner_fireworks",
+      "speaker": "alastair",
+      "text": "Fireworks. Loud, extravagant, and for once entirely appropriate.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.winner_fireworks.02",
+      "category": "winner_fireworks",
+      "speaker": "alastair",
+      "text": "The sky lit up for the winner. Rather lovely, actually.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "alastair.winner_fireworks.03",
+      "category": "winner_fireworks",
+      "speaker": "alastair",
+      "text": "Pyrotechnics. Usually a touch vulgar. Tonight, I shall allow it.",
+      "priority": 3,
+      "cooldown_s": 0
+    },
+    {
+      "id": "enzo.general_filler.01",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Matteo Varrone brakes so late, the Saetta engineers had to move the brake markers. [laughs] Joking. Mostly joking.",
+      "priority": 1,
+      "cooldown_s": 25,
+      "when": "retired",
+      "retired": "ties Varrone to the Saetta engineers; he now drives for Toro (assets/teams/TEAMS.md)"
+    },
+    {
+      "id": "enzo.general_filler.02",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "You know, the bravest drivers are not the loudest. Sofia Calderini, ice in the veins. [chuckles] Her heart rate on the grid is lower than mine in this booth.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.03",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "[chuckles] Theo Ashcombe writes a handwritten apology after every crash. Beautiful handwriting. [sarcastic] Terrible apologies. Then he does it again.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.04",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Kai Whitlow, thirty-eight years old, three endurance class wins. [warmly] He drives like a metronome. Tick, tock, tick, tock. Alastair loves him.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.05",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Jonas Reiter used to design the Kalt aerodynamics. Now he drives the car and argues with his own spreadsheets. [laughs] He always wins the argument.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.06",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Aiko Tanabe in the rain is poetry. [sighs] In the dry, she is only perfect. Only!",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.07",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "[sarcastic] Cole Maddox, the most penalised driver in the paddock. The stewards know his number by heart. Sixty-six. They dream about it.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.08",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Rosa Quintero won her seat in a simulator. [laughs] I won my seat in this booth by talking. Both very modern stories.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.09",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Remy Valois, the reigning champion. Always smiling, never sweating. [mischievously] I think he has an air conditioner in his helmet.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.10",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Freya Lindqvist learned to drive on frozen lakes in Sweden. [laughs] For her, a wet track is a holiday.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.11",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Zayn Kareem, the hero of Sarab. Every time he pits, the crowd stands up. [chuckles] And his teammate Layla Qasimi? She just overtakes everybody.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.12",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "My father ran a tyre shop near Parma. I learned to drive delivering tyres, [laughs] much too fast. He was very proud. And very angry.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.13",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Mojave built their first car in a barn in Barstow. Aurum built theirs in a palace in Monaco. [chuckles] On track, the barn is not so far behind.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.general_filler.14",
+      "category": "general_filler",
+      "speaker": "enzo",
+      "text": "Tyres are like coffee. Too cold, terrible. Too hot, also terrible. [laughs] And Alastair drinks tea, so what does he know?",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.01",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "The early night races were lit by lamps, I am told. Visibility was largely theoretical.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.02",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "A racing car is ten thousand compromises, holding hands.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.03",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "I once spent a whole night calculating fuel loads. The driver ignored every one.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.04",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "Grip is a finite resource. Spend it like a miser.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.05",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "The finest drivers make it look slow. That is the whole trick.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.06",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "The clocks in my cottage keep better time than most pit crews.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.07",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "Patience is the cheapest upgrade in motorsport.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.08",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "I have seen more laps lost to impatience than to engines.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.09",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "The camber here is doing a great deal of quiet work.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.10",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "Every barrier on this circuit has a story. Few of them happy.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.11",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "Brakes, not bravery, win races. Bravery merely ends them.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.12",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "Chapter nine of my book is entirely about kerbs. Riveting stuff.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.13",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "In the dark, sound tells you more than sight. Listen to the engine.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "alastair.general_filler.14",
+      "category": "general_filler",
+      "speaker": "alastair",
+      "text": "[sighs] I do miss the smell of a pit lane at three in the morning.",
+      "priority": 1,
+      "cooldown_s": 25
+    },
+    {
+      "id": "enzo.booth_exchanges.01",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[mischievously] Alastair, tell me the truth. Would you ever get back in a race car?",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.01"
+    },
+    {
+      "id": "alastair.booth_exchanges.01",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "I would sooner juggle the fire extinguishers, Enzo.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "alastair.booth_exchanges.02",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "That was a remarkably clumsy piece of driving.",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "enzo.booth_exchanges.02"
+    },
+    {
+      "id": "enzo.booth_exchanges.02",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[laughs] You say that about everything! Even about my parking!",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.03"
+    },
+    {
+      "id": "alastair.booth_exchanges.03",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "Because it is usually true.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "enzo.booth_exchanges.03",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[excited] Bellissimo! Now THAT is what I call racing!",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.04"
+    },
+    {
+      "id": "alastair.booth_exchanges.04",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "You would call a car park queue racing if it had headlights.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "alastair.booth_exchanges.05",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "Did you brake that late in your day, Enzo?",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "enzo.booth_exchanges.04"
+    },
+    {
+      "id": "enzo.booth_exchanges.04",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[laughs] Later! Much later! I was famous for it!",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.06"
+    },
+    {
+      "id": "alastair.booth_exchanges.06",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "Hence the wrist.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "enzo.booth_exchanges.05",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[mischievously] Tell me, Alastair, how many clocks do you own now?",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.07"
+    },
+    {
+      "id": "alastair.booth_exchanges.07",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "Forty-one. Every one of them more punctual than you.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "alastair.booth_exchanges.08",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "Night racing was invented to hide poor driving.",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "enzo.booth_exchanges.06"
+    },
+    {
+      "id": "enzo.booth_exchanges.06",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[outraged] No, no, no! It was invented to make it beautiful! Shame on you!",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "enzo.booth_exchanges.07",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[laughs] Alastair, you are smiling! I saw it! Everybody, he is smiling!",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.09"
+    },
+    {
+      "id": "alastair.booth_exchanges.09",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "[dryly] Indigestion, Enzo. Nothing more.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "alastair.booth_exchanges.10",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "Those tyres must be screaming by now.",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "enzo.booth_exchanges.08"
+    },
+    {
+      "id": "enzo.booth_exchanges.08",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[chuckles] Like me in this booth. We understand each other, the tyres and me.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "enzo.booth_exchanges.09",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[proudly] In Italy, we say the brave ones go first.",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.11"
+    },
+    {
+      "id": "alastair.booth_exchanges.11",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "In Britain we say the brave ones go first into the barrier.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "enzo.booth_exchanges.10",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "Rain or dry, Alastair? [curious] Which do you prefer?",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.12"
+    },
+    {
+      "id": "alastair.booth_exchanges.12",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "Dry. Rain makes you shout, and I have only the one pair of ears.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "alastair.booth_exchanges.13",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "I brought sandwiches. Cucumber.",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "enzo.booth_exchanges.11"
+    },
+    {
+      "id": "enzo.booth_exchanges.11",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[disgusted] Cucumber? Again? Mamma mia. Next time, I bring real food. Prosciutto. Parmigiano. Life!",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "enzo.booth_exchanges.12",
+      "category": "booth_exchanges",
+      "speaker": "enzo",
+      "text": "[warmly] You know, Alastair, you are my favourite grumpy Englishman.",
+      "priority": 1,
+      "cooldown_s": 45,
+      "pair": "alastair.booth_exchanges.14"
+    },
+    {
+      "id": "alastair.booth_exchanges.14",
+      "category": "booth_exchanges",
+      "speaker": "alastair",
+      "text": "I am your only grumpy Englishman. The competition is thin.",
+      "priority": 1,
+      "cooldown_s": 45
+    },
+    {
+      "id": "kavya.paddock_report.01",
+      "category": "paddock_report",
+      "speaker": "kavya",
+      "text": "[warmly] Hello from the paddock! Kavya Iyer here, with twelve drivers, six teams, and far too many secrets for one notebook.",
+      "priority": 1,
+      "cooldown_s": 120,
+      "when": "retired",
+      "retiredFrom": "pre_race",
+      "retired": "twelve drivers, six teams"
+    },
+    {
+      "id": "kavya.paddock_report.02",
+      "category": "paddock_report",
+      "speaker": "kavya",
+      "text": "Saetta's garage smells of espresso and hot brakes. Vittoria Saldani runs it like an opera house. [laughs] Lots of shouting, and somehow it always ends beautifully.",
+      "priority": 1,
+      "cooldown_s": 120,
+      "subject": "saetta"
+    },
+    {
+      "id": "kavya.paddock_report.03",
+      "category": "paddock_report",
+      "speaker": "kavya",
+      "text": "Matteo Varrone kisses the lightning bolt on his helmet before every start. [chuckles] Then he brakes about ten metres later than physics recommends.",
+      "priority": 1,
+      "cooldown_s": 120,
+      "subject": "VAR"
+    },
+    {
+      "id": "kavya.paddock_report.04",
+      "category": "paddock_report",
+      "speaker": "kavya",
+      "text": "Freya Lindqvist learned car control on the frozen lakes of Sweden. She told me grip is overrated. [laughs] She meant it.",
+      "priority": 1,
+      "cooldown_s": 120,
+      "subject": "LIN"
+    },
+    {
+      "id": "kavya.paddock_report.05",
+      "category": "paddock_report",
+      "speaker": "kavya",
+      "text": "Layla Qasimi learned to race on the desert roads of Oman, in her uncle's pickup truck. [laughs] Now she holds the record for passes in a single race.",
+      "priority": 1,
+      "cooldown_s": 120,
+      "subject": "QAS"
+    }
+  ]
+}

@@ -1,0 +1,346 @@
+{
+  "note": "Exhaust and nitro emitters per car, in body metres (the derived shell's frame: y up from the bottom, z across, the tail at +x). Each tip is [y, z]; the viewer casts a ray forward from behind the car at that height and offset and puts the emitter on the body's rear surface, 2 cm proud. 'up' tilts the jet upward (0 = straight back, 1 = straight up) for top-exit pipes. 'electric' cars have no exhaust smoke, pops or backfire; their nitro comes from the 'nitro' points. Nitro plasma (carkit/fx-nitro.js) streams from the OUTERMOST TWO nitro points (the tips when 'nitro' is absent; a lone pipe gets a pair either side of it), flattened to run low behind the car even for 'up' pipes; steam (fx-vapor.js) comes from every tip. Positions were read off rear views with a 10 cm grid; nudge them by eye. 'fx' sets the engine's character for carkit/fx.js: crackle (overrun pops, 0 = none), size (flame scale), gap (pop spacing; W16 = slow, deep), shift (chance of a pop on an upshift: turbo and performance cars), top (top speed m/s for the virtual gearbox rpm).",
+  "cars": {
+    "av12": {
+      "tips": [
+        [
+          0.44,
+          -0.1
+        ],
+        [
+          0.44,
+          0.1
+        ]
+      ],
+      "fx": {
+        "crackle": 1.3,
+        "size": 0.9,
+        "gap": 0.8,
+        "shift": 0.2
+      }
+    },
+    "aston-martin-valk": {
+      "tips": [
+        [
+          0.651,
+          -0.09
+        ],
+        [
+          0.651,
+          0.081
+        ]
+      ],
+      "up": 0.25,
+      "fx": {
+        "crackle": 1.4,
+        "size": 0.85,
+        "gap": 0.75,
+        "shift": 0.15,
+        "top": 95
+      }
+    },
+    "porsche1": {
+      "tips": [
+        [
+          0.91,
+          -0.32,
+          0.975
+        ],
+        [
+          0.91,
+          0.32,
+          0.975
+        ]
+      ],
+      "fx": {
+        "crackle": 0.8,
+        "size": 0.85,
+        "gap": 0.9,
+        "shift": 0.4,
+        "turbo": 1
+      },
+      "up": 0.6
+    },
+    "mustang": {
+      "tips": [
+        [
+          0.24,
+          -0.74
+        ],
+        [
+          0.24,
+          -0.62
+        ],
+        [
+          0.24,
+          0.62
+        ],
+        [
+          0.24,
+          0.74
+        ]
+      ],
+      "fx": {
+        "crackle": 1.1,
+        "size": 1.1,
+        "gap": 1,
+        "shift": 0.25
+      }
+    },
+    "buggati": {
+      "tips": [
+        [
+          0.35,
+          -0.175
+        ],
+        [
+          0.35,
+          -0.06
+        ],
+        [
+          0.35,
+          0.06
+        ],
+        [
+          0.35,
+          0.175
+        ]
+      ],
+      "fx": {
+        "crackle": 0.45,
+        "size": 1.3,
+        "gap": 1.6,
+        "shift": 0.3,
+        "top": 120,
+        "turbo": 1
+      }
+    },
+    "mp1x": {
+      "tips": [
+        [
+          0.6,
+          -0.43
+        ],
+        [
+          0.6,
+          0.43
+        ]
+      ],
+      "fx": {
+        "crackle": 0.8,
+        "size": 1,
+        "gap": 0.9,
+        "shift": 0.6,
+        "top": 100,
+        "turbo": 1
+      }
+    },
+    "nuvolari": {
+      "electric": true,
+      "tips": [],
+      "nitro": [
+        [
+          0.36,
+          -0.4
+        ],
+        [
+          0.36,
+          0.4
+        ]
+      ]
+    },
+    "jaguarxkjss": {
+      "tips": [
+        [
+          0.58,
+          0
+        ]
+      ],
+      "fx": {
+        "crackle": 1,
+        "size": 1,
+        "gap": 1,
+        "shift": 0.2,
+        "turbo": 1
+      }
+    },
+    "bmw1": {
+      "tips": [
+        [
+          0.31,
+          -0.52
+        ],
+        [
+          0.31,
+          0.52
+        ]
+      ],
+      "fx": {
+        "crackle": 1.1,
+        "size": 0.9,
+        "gap": 0.8,
+        "shift": 0.3,
+        "turbo": 1
+      }
+    },
+    "bentley-gt": {
+      "tips": [
+        [
+          0.24,
+          -0.66
+        ],
+        [
+          0.24,
+          -0.54
+        ],
+        [
+          0.24,
+          0.54
+        ],
+        [
+          0.24,
+          0.66
+        ]
+      ],
+      "fx": {
+        "crackle": 0.5,
+        "size": 1.1,
+        "gap": 1.4,
+        "shift": 0.3,
+        "turbo": 1
+      }
+    },
+    "tesla1": {
+      "electric": true,
+      "tips": [],
+      "nitro": [
+        [
+          0.34,
+          -0.3
+        ],
+        [
+          0.34,
+          0.3
+        ]
+      ]
+    },
+    "furari-488": {
+      "tips": [
+        [
+          0.3,
+          -0.36
+        ],
+        [
+          0.3,
+          -0.26
+        ],
+        [
+          0.3,
+          0.26
+        ],
+        [
+          0.3,
+          0.36
+        ]
+      ],
+      "fx": {
+        "crackle": 0.9,
+        "size": 0.95,
+        "gap": 0.9,
+        "shift": 0.5,
+        "turbo": 1
+      }
+    },
+    "destrier": {
+      "tips": [
+        [
+          0.68,
+          -0.12
+        ],
+        [
+          0.68,
+          0.12
+        ],
+        [
+          0.53,
+          -0.12
+        ],
+        [
+          0.53,
+          0.12
+        ]
+      ],
+      "fx": {
+        "crackle": 0.45,
+        "size": 1.3,
+        "gap": 1.6,
+        "shift": 0.3,
+        "top": 120,
+        "turbo": 1
+      }
+    },
+    "blackbird": {
+      "tips": [
+        [
+          0.48,
+          0
+        ],
+        [
+          0.57,
+          -0.05
+        ],
+        [
+          0.57,
+          0.05
+        ],
+        [
+          0.67,
+          0
+        ]
+      ],
+      "fx": {
+        "crackle": 1.1,
+        "size": 1.1,
+        "gap": 1,
+        "shift": 0.4,
+        "top": 110
+      }
+    },
+    "huracan": {
+      "tips": [
+        [
+          0.566,
+          -0.355
+        ],
+        [
+          0.566,
+          0.355
+        ]
+      ],
+      "fx": {
+        "crackle": 1.3,
+        "size": 0.9,
+        "gap": 0.7,
+        "shift": 0.2
+      }
+    },
+    "laferrari": {
+      "tips": [
+        [
+          0.318,
+          -0.694
+        ],
+        [
+          0.318,
+          0.694
+        ]
+      ],
+      "fx": {
+        "crackle": 1.2,
+        "size": 0.85,
+        "gap": 0.75,
+        "shift": 0.25
+      }
+    }
+  }
+}

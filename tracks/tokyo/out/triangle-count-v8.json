@@ -1,0 +1,82 @@
+{
+  "file": "tokyo_neon_depth_v8.blend",
+  "visible_evaluated_triangles": 8699496,
+  "visible_evaluated_objects": 2472,
+  "unique_geometry_triangles_approx": 2008228,
+  "by_object_type": {
+    "MESH": 7726520,
+    "FONT": 972976
+  },
+  "by_group": {
+    "Foliage (name classification)": 7382596,
+    "V3 | cedar stadiums": 455712,
+    "V3 | Japanese identity": 236284,
+    "V8 | layered tenant signs": 186852,
+    "V5 | sculpted bridge structure": 88016,
+    "V3 | district architecture": 64208,
+    "V4 | illuminated street signs": 60172,
+    "V6 | Yoyogi observation wheel": 49748,
+    "V3 | streets and furniture": 48326,
+    "01_TRACK": 46904,
+    "02_TERRAIN": 35864,
+    "V8 | neon depth architecture": 19468,
+    "07_STREET_KIT": 16428,
+    "V3 | layered distant Tokyo": 3784,
+    "V4 | event infrastructure": 2496,
+    "V8 | avenue distant city": 1572,
+    "03_VIADUCT": 1016,
+    "V5 | local bridge atmosphere": 48,
+    "V7 | distant Mount Fuji matte": 2
+  },
+  "largest_objects": [
+    [
+      "Bayfront cedar grandstand",
+      155208
+    ],
+    [
+      "Roppongi ridge gallery",
+      116628
+    ],
+    [
+      "Paddock club terraces",
+      101548
+    ],
+    [
+      "Shibuya garden stand",
+      82328
+    ],
+    [
+      "Sakura 0",
+      37044
+    ],
+    [
+      "Sakura 1",
+      37044
+    ],
+    [
+      "Sakura 3",
+      37044
+    ],
+    [
+      "Sakura 4",
+      37044
+    ],
+    [
+      "Sakura 5",
+      37044
+    ],
+    [
+      "Sakura 6",
+      37044
+    ],
+    [
+      "Sakura 7",
+      37044
+    ],
+    [
+      "Sakura 9",
+      37044
+    ]
+  ],
+  "scope": "Full scene render-visible geometry including modifiers, text and repeated object instances; no camera/frustum culling; hidden LODs and superseded hidden bridge excluded."
+}

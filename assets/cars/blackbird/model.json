@@ -1,0 +1,105 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Blackbird-X",
+ "source": {
+  "title": "Hennessey Blackbird",
+  "author": "let's not care abt it (Pie-The-destroyer-of-the-World)",
+  "url": "https://sketchfab.com/3d-models/1559fb3696d14ebfa21f516a3de40c07",
+  "license": "CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/); the wheels, brake discs and calipers carry Forza-style asset names (Hennessey Venom F5, 2020/2023) and are probably ripped from a game: replace before any public release"
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3385,
+   "width": 0.2866,
+   "x": -1.4187,
+   "track": 1.8734
+  },
+  "rear": {
+   "radius": 0.3563,
+   "width": 0.4206,
+   "x": 1.531,
+   "track": 1.7549
+  }
+ },
+ "size": {
+  "length": 4.9,
+  "width": 2.26,
+  "height": 1.104
+ },
+ "lights": {
+  "front": [
+   [
+    -1.769,
+    0.613,
+    0.9
+   ],
+   [
+    -1.769,
+    0.613,
+    -0.9
+   ],
+   [
+    -1.768,
+    0.613,
+    0.9
+   ],
+   [
+    -1.768,
+    0.613,
+    -0.9
+   ]
+  ],
+  "rear": [
+   [
+    2.336,
+    0.67,
+    0.656
+   ],
+   [
+    2.336,
+    0.67,
+    -0.656
+   ],
+   [
+    2.345,
+    0.666,
+    0.657
+   ],
+   [
+    2.345,
+    0.666,
+    -0.657
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.116,
+    0.638,
+    0.529
+   ],
+   [
+    -1.116,
+    1.079,
+    0.529
+   ],
+   [
+    1.083,
+    1.079,
+    0.529
+   ],
+   [
+    1.083,
+    0.638,
+    0.529
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 80920,
+  "body1": 25818,
+  "wheel": 9997
+ }
+}

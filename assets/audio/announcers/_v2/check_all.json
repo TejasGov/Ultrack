@@ -1,0 +1,2498 @@
+[
+  {
+    "id": "enzo.booth_backstory.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -21.2,
+    "peak_db": -1.1,
+    "heard": "I am Enzo Moretti, 25 years in this booth, and before that a skinny kid from Parma in the Italian Junior formulas, breaking much later than was sensible.",
+    "script": "I am Enzo Moretti! Twenty-five years in this booth, and before that, a skinny kid from Parma in the Italian junior formulas, [laughs] braking much later than was sensible."
+  },
+  {
+    "id": "enzo.booth_backstory.02",
+    "match": 0.893,
+    "flag": true,
+    "skipped": [
+      "litres",
+      "litres",
+      "litres"
+    ],
+    "added": [
+      "liters",
+      "liters",
+      "liters"
+    ],
+    "tag_read": [],
+    "mean_db": -24.6,
+    "peak_db": -4.3,
+    "heard": "Beside me, Alastair Finch. 11 years on the pit wall for endurance teams and still he counts fuel in his sleep. I have heard him. Liters, liters, liters.",
+    "script": "Beside me, Alastair Finch. Eleven years on the pit wall for endurance teams, and still he counts fuel in his sleep. [chuckles] I have heard him. Litres, litres, litres."
+  },
+  {
+    "id": "enzo.booth_backstory.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.2,
+    "peak_db": -2.4,
+    "heard": "Every lap was worth describing, and lap 14 I will describe again later.",
+    "script": "[laughs] Every lap was worth describing! And lap fourteen, I will describe again later."
+  },
+  {
+    "id": "enzo.booth_backstory.04",
+    "match": 0.884,
+    "flag": true,
+    "skipped": [
+      "eight",
+      "hundred",
+      "allora"
+    ],
+    "added": [
+      "800",
+      "alora"
+    ],
+    "tag_read": [],
+    "mean_db": -21.7,
+    "peak_db": -1.9,
+    "heard": "800 pages! And he says I talk too much! Alora, he also restores old clocks. A very patient man... with clocks.",
+    "script": "[laughs] Eight hundred pages, and he says I talk too much! Allora, he also restores old clocks. [sarcastic] A very patient man. With clocks."
+  },
+  {
+    "id": "enzo.booth_exchanges.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -27.6,
+    "peak_db": -10.3,
+    "heard": "Alastair, tell me the truth. Would you ever get back in a race car?",
+    "script": "[mischievously] Alastair, tell me the truth. Would you ever get back in a race car?"
+  },
+  {
+    "id": "enzo.booth_exchanges.02",
+    "match": 0.615,
+    "flag": true,
+    "skipped": [
+      "you",
+      "say",
+      "that",
+      "about",
+      "everything"
+    ],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.2,
+    "peak_db": -0.9,
+    "heard": "Even about my parking!",
+    "script": "[laughs] You say that about everything! Even about my parking!"
+  },
+  {
+    "id": "enzo.booth_exchanges.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.8,
+    "peak_db": -2.3,
+    "heard": "Bellissimo, now that is what I call racing.",
+    "script": "[excited] Bellissimo! Now THAT is what I call racing!"
+  },
+  {
+    "id": "enzo.booth_exchanges.04",
+    "match": 0.933,
+    "flag": true,
+    "skipped": [
+      "later"
+    ],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -20.3,
+    "peak_db": -1.3,
+    "heard": "Much later, I was famous for it.",
+    "script": "[laughs] Later! Much later! I was famous for it!"
+  },
+  {
+    "id": "enzo.booth_exchanges.05",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.6,
+    "peak_db": -7.0,
+    "heard": "Tell me Alastair, how many clocks do you own now?",
+    "script": "[mischievously] Tell me, Alastair, how many clocks do you own now?"
+  },
+  {
+    "id": "enzo.booth_exchanges.06",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -13.6,
+    "peak_db": -0.2,
+    "heard": "No, no, no! It was invented to make it beautiful! Shame on you!",
+    "script": "[outraged] No, no, no! It was invented to make it beautiful! Shame on you!"
+  },
+  {
+    "id": "enzo.booth_exchanges.07",
+    "match": 0.762,
+    "flag": true,
+    "skipped": [
+      "alastair",
+      "he",
+      "is"
+    ],
+    "added": [
+      "halaster",
+      "he's"
+    ],
+    "tag_read": [],
+    "mean_db": -17.0,
+    "peak_db": -3.3,
+    "heard": "Halaster, you are smiling! I saw it! Everybody, he's smiling!",
+    "script": "[laughs] Alastair, you are smiling! I saw it! Everybody, he is smiling!"
+  },
+  {
+    "id": "enzo.booth_exchanges.08",
+    "match": 0.923,
+    "flag": true,
+    "skipped": [
+      "and"
+    ],
+    "added": [
+      "on"
+    ],
+    "tag_read": [],
+    "mean_db": -21.4,
+    "peak_db": -1.2,
+    "heard": "Like me in this booth, we understand each other, the tires on me.",
+    "script": "[chuckles] Like me in this booth. We understand each other, the tyres and me."
+  },
+  {
+    "id": "enzo.booth_exchanges.09",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.3,
+    "peak_db": -1.5,
+    "heard": "In Italy we say the brave ones go first.",
+    "script": "[proudly] In Italy, we say the brave ones go first."
+  },
+  {
+    "id": "enzo.booth_exchanges.10",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.7,
+    "peak_db": -6.4,
+    "heard": "Rain or dry, Alistair? Which do you prefer?",
+    "script": "Rain or dry, Alastair? [curious] Which do you prefer?"
+  },
+  {
+    "id": "enzo.booth_exchanges.11",
+    "match": 0.923,
+    "flag": true,
+    "skipped": [
+      "life"
+    ],
+    "added": [
+      "live"
+    ],
+    "tag_read": [],
+    "mean_db": -20.0,
+    "peak_db": -1.3,
+    "heard": "Cucumber, again? Mamma mia. Next time I bring real food. Prosciutto, parmigiano, live!",
+    "script": "[disgusted] Cucumber? Again? Mamma mia. Next time, I bring real food. Prosciutto. Parmigiano. Life!"
+  },
+  {
+    "id": "enzo.booth_exchanges.12",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.1,
+    "peak_db": -4.2,
+    "heard": "You know, Alistair, you are my favourite grumpy Englishman.",
+    "script": "[warmly] You know, Alastair, you are my favourite grumpy Englishman."
+  },
+  {
+    "id": "enzo.defending.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.2,
+    "peak_db": -4.2,
+    "heard": "Defending well, covering the inside line, very clever.",
+    "script": "Defending well! Covering the inside line, very clever!"
+  },
+  {
+    "id": "enzo.defending.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.0,
+    "peak_db": -2.4,
+    "heard": "Holding them off! Mirrors! Mirrors! Mirrors!",
+    "script": "[excited] Holding them off! Mirrors, mirrors, mirrors!"
+  },
+  {
+    "id": "enzo.defending.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.5,
+    "peak_db": -3.1,
+    "heard": "Under pressure but not giving an inch, Theo Ashcombe would be proud.",
+    "script": "Under pressure, but not giving an inch! [laughs] Theo Ashcombe would be proud."
+  },
+  {
+    "id": "enzo.defending.04",
+    "match": 0.818,
+    "flag": true,
+    "skipped": [
+      "want",
+      "place"
+    ],
+    "added": [
+      "won",
+      "plays"
+    ],
+    "tag_read": [],
+    "mean_db": -32.6,
+    "peak_db": -14.1,
+    "heard": "They won the plays, but the door is shut, locked, bolted.",
+    "script": "[mischievously] They want the place, but the door is shut. Locked. Bolted."
+  },
+  {
+    "id": "enzo.fastest_lap.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -1.4,
+    "heard": "Fastest lap of the race! Nobody has gone quicker!",
+    "script": "[excited] Fastest lap of the race! Nobody has gone quicker!"
+  },
+  {
+    "id": "enzo.fastest_lap.02",
+    "match": 0.824,
+    "flag": true,
+    "skipped": [
+      "car",
+      "is"
+    ],
+    "added": [
+      "kari"
+    ],
+    "tag_read": [],
+    "mean_db": -18.5,
+    "peak_db": -2.7,
+    "heard": "That's the fastest lap, the Kari Singing Opera.",
+    "script": "That's the fastest lap! [laughs] The car is singing! Opera!"
+  },
+  {
+    "id": "enzo.fastest_lap.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.0,
+    "peak_db": -1.0,
+    "heard": "Quickest of anyone tonight, Bellissimo!",
+    "script": "[shouting] Quickest of anyone tonight! Bellissimo!"
+  },
+  {
+    "id": "enzo.fastest_lap.04",
+    "match": 0.833,
+    "flag": true,
+    "skipped": [
+      "jonas",
+      "reiter"
+    ],
+    "added": [
+      "jonah's",
+      "writer"
+    ],
+    "tag_read": [],
+    "mean_db": -19.7,
+    "peak_db": -2.3,
+    "heard": "Fastest lap! Jonah's writer will study that one on his laptop tonight.",
+    "script": "Fastest lap! [chuckles] Jonas Reiter will study that one on his laptop tonight."
+  },
+  {
+    "id": "enzo.final_lap.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.8,
+    "peak_db": -2.4,
+    "heard": "Final lap! Everything on the line!",
+    "script": "[shouting] Final lap! Everything on the line!"
+  },
+  {
+    "id": "enzo.final_lap.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.4,
+    "peak_db": -2.5,
+    "heard": "Last lap, no more saving, all or nothing.",
+    "script": "[excited] Last lap! No more saving, all or nothing!"
+  },
+  {
+    "id": "enzo.final_lap.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.9,
+    "peak_db": -1.3,
+    "heard": "Final lap, my friends! Give it everything!",
+    "script": "[shouting] Final lap, my friends! Give it everything!"
+  },
+  {
+    "id": "enzo.final_lap.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.3,
+    "peak_db": -3.4,
+    "heard": "One more lap. The finish is calling.",
+    "script": "[dramatically] One more lap. The finish is calling!"
+  },
+  {
+    "id": "enzo.general_filler.01",
+    "match": 0.941,
+    "flag": true,
+    "skipped": [
+      "brake"
+    ],
+    "added": [
+      "break"
+    ],
+    "tag_read": [],
+    "mean_db": -25.6,
+    "peak_db": -4.6,
+    "heard": "Matteo Varrone breaks so late, the Saetta engineers had to move the break markers. Joking, mostly joking.",
+    "script": "Matteo Varrone brakes so late, the Saetta engineers had to move the brake markers. [laughs] Joking. Mostly joking."
+  },
+  {
+    "id": "enzo.general_filler.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.7,
+    "peak_db": -5.0,
+    "heard": "You know, the bravest drivers are not the loudest. Sofia Calderini, ice in the veins. Her heart rate on the grid is lower than mine in this booth.",
+    "script": "You know, the bravest drivers are not the loudest. Sofia Calderini, ice in the veins. [chuckles] Her heart rate on the grid is lower than mine in this booth."
+  },
+  {
+    "id": "enzo.general_filler.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -25.4,
+    "peak_db": -5.1,
+    "heard": "Theo Ashcombe writes a handwritten apology after every crash. Beautiful handwriting. Terrible apologies. Then he does it again.",
+    "script": "[chuckles] Theo Ashcombe writes a handwritten apology after every crash. Beautiful handwriting. [sarcastic] Terrible apologies. Then he does it again."
+  },
+  {
+    "id": "enzo.general_filler.04",
+    "match": 0.933,
+    "flag": true,
+    "skipped": [
+      "endurance"
+    ],
+    "added": [
+      "and",
+      "euron's"
+    ],
+    "tag_read": [],
+    "mean_db": -25.1,
+    "peak_db": -4.8,
+    "heard": "Kai Whitlow, 38 years old, 3 and Euron's class wins. He drives like a metronome. Tick tock, tick tock. Alastair loves him.",
+    "script": "Kai Whitlow, thirty-eight years old, three endurance class wins. [warmly] He drives like a metronome. Tick, tock, tick, tock. Alastair loves him."
+  },
+  {
+    "id": "enzo.general_filler.05",
+    "match": 0.917,
+    "flag": true,
+    "skipped": [
+      "jonas",
+      "reiter"
+    ],
+    "added": [
+      "juna's",
+      "writer"
+    ],
+    "tag_read": [],
+    "mean_db": -23.8,
+    "peak_db": -5.1,
+    "heard": "Juna's writer used to design the Kalt aerodynamics. Now he drives the car and argues with his own spreadsheets. He always wins the argument.",
+    "script": "Jonas Reiter used to design the Kalt aerodynamics. Now he drives the car and argues with his own spreadsheets. [laughs] He always wins the argument."
+  },
+  {
+    "id": "enzo.general_filler.06",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -25.1,
+    "peak_db": -6.4,
+    "heard": "Aiko Tanabe in the rain is poetry. In the dry, she is only perfect. Only.",
+    "script": "Aiko Tanabe in the rain is poetry. [sighs] In the dry, she is only perfect. Only!"
+  },
+  {
+    "id": "enzo.general_filler.07",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.2,
+    "peak_db": -4.9,
+    "heard": "Cole Maddox, the most penalized driver in the paddock. The stewards know his number by heart. 66. They dream about it.",
+    "script": "[sarcastic] Cole Maddox, the most penalised driver in the paddock. The stewards know his number by heart. Sixty-six. They dream about it."
+  },
+  {
+    "id": "enzo.general_filler.08",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.8,
+    "peak_db": -5.0,
+    "heard": "Rosa Quintero won her seat in a simulator. I won my seat in this booth by talking. Both very modern stories.",
+    "script": "Rosa Quintero won her seat in a simulator. [laughs] I won my seat in this booth by talking. Both very modern stories."
+  },
+  {
+    "id": "enzo.general_filler.09",
+    "match": 0.842,
+    "flag": true,
+    "skipped": [
+      "remy",
+      "never",
+      "sweating"
+    ],
+    "added": [
+      "remi",
+      "nervous",
+      "wetting"
+    ],
+    "tag_read": [],
+    "mean_db": -24.6,
+    "peak_db": -4.9,
+    "heard": "Remi Valois, the reigning champion, always smiling, nervous wetting. I think he has an air conditioner in his helmet.",
+    "script": "Remy Valois, the reigning champion. Always smiling, never sweating. [mischievously] I think he has an air conditioner in his helmet."
+  },
+  {
+    "id": "enzo.general_filler.10",
+    "match": 0.944,
+    "flag": true,
+    "skipped": [
+      "freya"
+    ],
+    "added": [
+      "freja"
+    ],
+    "tag_read": [],
+    "mean_db": -22.0,
+    "peak_db": -4.8,
+    "heard": "Freja Lindqvist learned to drive on frozen lakes in Sweden. For her, a wet track is a holiday.",
+    "script": "Freya Lindqvist learned to drive on frozen lakes in Sweden. [laughs] For her, a wet track is a holiday."
+  },
+  {
+    "id": "enzo.general_filler.11",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.0,
+    "peak_db": -7.0,
+    "heard": "Zayn Kareem, the hero of Sarab. Every time he pits, the crowd stands up. And his teammate Laila Qasimi? She just overtakes everybody.",
+    "script": "Zayn Kareem, the hero of Sarab. Every time he pits, the crowd stands up. [chuckles] And his teammate Layla Qasimi? She just overtakes everybody."
+  },
+  {
+    "id": "enzo.general_filler.12",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -28.2,
+    "peak_db": -6.7,
+    "heard": "My father ran a tire shop near Parma. I learned to drive delivering tires much too fast. He was very proud and very angry.",
+    "script": "My father ran a tyre shop near Parma. I learned to drive delivering tyres, [laughs] much too fast. He was very proud. And very angry."
+  },
+  {
+    "id": "enzo.general_filler.13",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.6,
+    "peak_db": -5.5,
+    "heard": "Mojave built their first car in a barn in Barstow, Aurum built theirs in a palace in Monaco. On track, the barn is not so far behind.",
+    "script": "Mojave built their first car in a barn in Barstow. Aurum built theirs in a palace in Monaco. [chuckles] On track, the barn is not so far behind."
+  },
+  {
+    "id": "enzo.general_filler.14",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -26.4,
+    "peak_db": -4.5,
+    "heard": "Tyres are like coffee. Too cold? Terrible. Too hot? Also terrible. And Alastair drinks tea, so what does he know?",
+    "script": "Tyres are like coffee. Too cold, terrible. Too hot, also terrible. [laughs] And Alastair drinks tea, so what does he know?"
+  },
+  {
+    "id": "enzo.grid_and_lights.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.1,
+    "peak_db": -1.4,
+    "heard": "Cars rolling to the grid! 12 drivers, 6 teams, 0 friends.",
+    "script": "[excited] Cars rolling to the grid! Twelve drivers, six teams, zero friends."
+  },
+  {
+    "id": "enzo.grid_and_lights.02",
+    "match": 0.8,
+    "flag": true,
+    "skipped": [
+      "cole",
+      "he",
+      "is"
+    ],
+    "added": [
+      "kalt",
+      "he's"
+    ],
+    "tag_read": [],
+    "mean_db": -24.8,
+    "peak_db": -6.2,
+    "heard": "Formation lap, warming the tyres, Kalt Maddox weaves like he's already racing.",
+    "script": "Formation lap, warming the tyres. [chuckles] Cole Maddox weaves like he is already racing."
+  },
+  {
+    "id": "enzo.grid_and_lights.03",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -37.2,
+    "peak_db": -17.2,
+    "heard": "Everybody finding their slot. You can feel the tension from here.",
+    "script": "Everybody finding their slot. [whispers] You can feel the tension from here."
+  },
+  {
+    "id": "enzo.grid_and_lights.04",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -40.0,
+    "peak_db": -15.5,
+    "heard": "The lights are coming on.",
+    "script": "[whispers] The lights are coming on..."
+  },
+  {
+    "id": "enzo.grid_and_lights.05",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.0,
+    "peak_db": -2.0,
+    "heard": "First light, second, here we go, here we go!",
+    "script": "First light... second... [excited] here we go, here we go!"
+  },
+  {
+    "id": "enzo.grid_and_lights.06",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -34.2,
+    "peak_db": -11.7,
+    "heard": "Lights on, everybody still, nobody breathe.",
+    "script": "[whispers] Lights on. Everybody still. Nobody breathe..."
+  },
+  {
+    "id": "enzo.grid_and_lights.07",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.8,
+    "peak_db": -1.0,
+    "heard": "Lights out! Andi amo!",
+    "script": "[shouting] Lights out! Andiamo!"
+  },
+  {
+    "id": "enzo.grid_and_lights.08",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.3,
+    "peak_db": -1.0,
+    "heard": "And they're gone! The race is on!",
+    "script": "[shouting] And they're gone! The race is on!"
+  },
+  {
+    "id": "enzo.grid_and_lights.09",
+    "match": 0.889,
+    "flag": true,
+    "skipped": [
+      "turn"
+    ],
+    "added": [
+      "third"
+    ],
+    "tag_read": [],
+    "mean_db": -12.6,
+    "peak_db": -0.5,
+    "heard": "Go, go, go! Twelve cars charging for third one!",
+    "script": "[shouting] Go, go, go! Twelve cars charging for turn one!"
+  },
+  {
+    "id": "enzo.halfway.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.4,
+    "peak_db": -4.0,
+    "heard": "Halfway! Plenty still to happen tonight.",
+    "script": "[excited] Halfway! Plenty still to happen tonight!"
+  },
+  {
+    "id": "enzo.halfway.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.9,
+    "peak_db": -5.3,
+    "heard": "Half distance. Now the real race begins.",
+    "script": "Half distance. [dramatically] Now the real race begins."
+  },
+  {
+    "id": "enzo.halfway.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.5,
+    "peak_db": -4.1,
+    "heard": "Half the race gone. Who has saved something? Kai Whitlow, always.",
+    "script": "[mischievously] Half the race gone. Who has saved something? Kai Whitlow, always."
+  },
+  {
+    "id": "enzo.hard_crash.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -2.4,
+    "heard": "Huge crash into the wall!",
+    "script": "[shouting] Huge crash! Into the wall!"
+  },
+  {
+    "id": "enzo.hard_crash.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.2,
+    "peak_db": -2.0,
+    "heard": "Mamma Mia! A massive impact there!",
+    "script": "[gasps] Mamma mia! A massive impact there!"
+  },
+  {
+    "id": "enzo.hard_crash.03",
+    "match": 0.8,
+    "flag": true,
+    "skipped": [
+      "fibre"
+    ],
+    "added": [
+      "fiber"
+    ],
+    "tag_read": [],
+    "mean_db": -16.0,
+    "peak_db": -1.5,
+    "heard": "Big hit! Carbon fiber everywhere!",
+    "script": "[shouting] Big hit! Carbon fibre everywhere!"
+  },
+  {
+    "id": "enzo.hard_crash.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.0,
+    "peak_db": -1.2,
+    "heard": "Oh no! A heavy crash! That car is destroyed!",
+    "script": "[shocked] Oh no, a heavy crash! That car is destroyed!"
+  },
+  {
+    "id": "enzo.intro_session.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -25.4,
+    "peak_db": -5.5,
+    "heard": "Free drive tonight! No grid, no rivals, no Alastair complaining about the start. Well, maybe a little.",
+    "script": "[warmly] Free Drive tonight. No grid, no rivals, no Alastair complaining about the start. [chuckles] Well, maybe a little."
+  },
+  {
+    "id": "enzo.intro_session.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.7,
+    "peak_db": -2.6,
+    "heard": "Good evening! The whole circuit belongs to you tonight. No Varrone, no Valois, nobody in the mirrors. Go and find the limit, my friend.",
+    "script": "[excited] Good evening! The whole circuit belongs to you tonight. No Varrone, no Valois, nobody in the mirrors. Go and find the limit, my friend."
+  },
+  {
+    "id": "enzo.intro_session.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.2,
+    "peak_db": -4.3,
+    "heard": "Buona sera and welcome. 6 teams, 12 cars and not one of them came here to lose. Especially not my Saetta, I mean THE Saetta team. I am completely neutral.",
+    "script": "Buonasera and welcome! Six teams, twelve cars, and not one of them came here to lose. Especially not my Saetta. [clears throat] I mean, the Saetta team. I am completely neutral."
+  },
+  {
+    "id": "enzo.intro_session.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.7,
+    "peak_db": -3.0,
+    "heard": "Good evening everybody! Race night! The engines are warm, Remy Valois is smiling like he already won, and already I can smell the brakes.",
+    "script": "[excited] Good evening, everybody! Race night! The engines are warm, Remy Valois is smiling like he already won, and already I can smell the brakes."
+  },
+  {
+    "id": "enzo.intro_session.05",
+    "match": 0.962,
+    "flag": true,
+    "skipped": [
+      "allora"
+    ],
+    "added": [
+      "alora"
+    ],
+    "tag_read": [],
+    "mean_db": -22.0,
+    "peak_db": -2.0,
+    "heard": "Welcome to the broadcast. Alora, the grid is set. Saetta, Corvid, Kalt, Mojave, Aurum, and Sarab. Six teams, one trophy, and tonight somebody becomes a hero.",
+    "script": "Welcome to the broadcast! Allora, the grid is set: Saetta, Corvid, Kalt, Mojave, Aurum and Sarab. Six teams, one trophy, and tonight somebody becomes a hero."
+  },
+  {
+    "id": "enzo.intro_session.06",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.3,
+    "peak_db": -3.8,
+    "heard": "Welcome to the endurance. Hours, not minutes. Kai Whitlow is very happy tonight. For him, this is a short race.",
+    "script": "Welcome to the Endurance! Hours, not minutes. [chuckles] Kai Whitlow is very happy tonight. For him, this is a short race."
+  },
+  {
+    "id": "enzo.intro_session.07",
+    "match": 0.842,
+    "flag": true,
+    "skipped": [
+      "this",
+      "to",
+      "cole"
+    ],
+    "added": [
+      "these",
+      "two",
+      "cold"
+    ],
+    "tag_read": [],
+    "mean_db": -24.0,
+    "peak_db": -5.1,
+    "heard": "Endurance tonight, my friends. Fast is good, but the car must finish. Somebody please explain these two cold Maddox.",
+    "script": "Endurance tonight, my friends. Fast is good, but the car must finish. [sighs] Somebody please explain this to Cole Maddox."
+  },
+  {
+    "id": "enzo.intro_session.08",
+    "match": 0.941,
+    "flag": true,
+    "skipped": [
+      "bellissimo"
+    ],
+    "added": [
+      "bellissima"
+    ],
+    "tag_read": [],
+    "mean_db": -34.4,
+    "peak_db": -16.3,
+    "heard": "Look at that sky, orange over the barriers, Bellissima, even the Mojave cars match the sunset tonight.",
+    "script": "Look at that sky, orange over the barriers. Bellissimo. [laughs softly] Even the Mojave cars match the sunset tonight."
+  },
+  {
+    "id": "enzo.intro_session.09",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.7,
+    "peak_db": -6.4,
+    "heard": "The sun goes down, the lights come on. For me, the perfect hour to race. For Alastair, the perfect hour to complain.",
+    "script": "The sun goes down, the lights come on. [warmly] For me, the perfect hour to race. [chuckles] For Alastair, the perfect hour to complain."
+  },
+  {
+    "id": "enzo.intro_session.10",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -27.3,
+    "peak_db": -6.0,
+    "heard": "Blue hour turning into night. The city lights are on and the cars look like comets. Look at the Aurum gold under the lights. Magnifico!",
+    "script": "Blue hour turning into night, the city lights are on, and the cars look like comets. [whispers] Look at the Aurum gold under the lights. Magnifico."
+  },
+  {
+    "id": "enzo.intro_session.11",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.3,
+    "peak_db": -1.0,
+    "heard": "Night racing, headlights, sparks, and the noise bouncing off every wall. 12 engines and one very happy Italian.",
+    "script": "[excited] Night racing! Headlights, sparks, and the noise bouncing off every wall! [laughs] Twelve engines and one very happy Italian."
+  },
+  {
+    "id": "enzo.intro_session.12",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -1.1,
+    "heard": "Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling! Everybody else is praying!",
+    "script": "[excited] Rain tonight! Mamma mia! Aiko Tanabe and Freya Lindqvist are smiling. [chuckles] Everybody else is praying."
+  },
+  {
+    "id": "enzo.intro_session.13",
+    "match": 0.857,
+    "flag": true,
+    "skipped": [
+      "track",
+      "ask",
+      "cole"
+    ],
+    "added": [
+      "rack",
+      "as",
+      "called"
+    ],
+    "tag_read": [],
+    "mean_db": -30.4,
+    "peak_db": -10.2,
+    "heard": "Wet rack, spray everywhere, gentle hands tonight, or the car will bite. As called Maddox, he still has the teeth marks.",
+    "script": "Wet track, spray everywhere. Gentle hands tonight, or the car will bite. [chuckles] Ask Cole Maddox. He still has the teeth marks."
+  },
+  {
+    "id": "enzo.intro_track.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -20.7,
+    "peak_db": -1.6,
+    "heard": "Welcome to the Cornish Marina circuit. Street racing along the seafront, yachts in the harbour, concrete walls on every side. This is Sarab's home, and the crowd will be loud for Zayn Kareem. But touch a barrier here and your race is finished.",
+    "script": "Welcome to the Corniche Marina Circuit! Street racing along the seafront, yachts in the harbour, concrete walls on every side. This is Sarab's home, and the crowd will be loud for Zayn Kareem. [dramatically] But touch a barrier here, and your race is finished."
+  },
+  {
+    "id": "enzo.intro_track.02",
+    "match": 0.923,
+    "flag": true,
+    "skipped": [
+      "sahyadri",
+      "mamma",
+      "mia",
+      "varrone"
+    ],
+    "added": [
+      "sayadri",
+      "varone"
+    ],
+    "tag_read": [],
+    "mean_db": -24.9,
+    "peak_db": -5.0,
+    "heard": "Tonight we are in the western Ghats of India for the Sayadri Ghat circuit, hairpins cut into the mountain, mist in the valleys, and a long drop beside the road. This place demands respect, even from Mateo Varone.",
+    "script": "Tonight we are in the Western Ghats of India, for the Sahyadri Ghat Circuit. Hairpins cut into the mountain, mist in the valleys, and a long drop beside the road. [sighs] Mamma mia. This place demands respect, even from Matteo Varrone."
+  },
+  {
+    "id": "enzo.lap_one_complete.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.8,
+    "peak_db": -2.4,
+    "heard": "First lap done! Everybody still in one piece? Incredible!",
+    "script": "[laughs] First lap done! Everybody still in one piece? Incredible!"
+  },
+  {
+    "id": "enzo.lap_one_complete.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.7,
+    "peak_db": -5.7,
+    "heard": "Lap 1 complete. Now the race starts to settle.",
+    "script": "Lap one complete. Now the race starts to settle."
+  },
+  {
+    "id": "enzo.lap_one_complete.03",
+    "match": 0.909,
+    "flag": true,
+    "skipped": [
+      "cole"
+    ],
+    "added": [
+      "kalt"
+    ],
+    "tag_read": [],
+    "mean_db": -21.4,
+    "peak_db": -5.6,
+    "heard": "One lap gone and Kalt, Maddox has not hit anybody. Yet.",
+    "script": "[sarcastic] One lap gone, and Cole Maddox has not hit anybody. Yet."
+  },
+  {
+    "id": "enzo.last_corner_battle.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.4,
+    "peak_db": -3.8,
+    "heard": "Last corner, side by side for the line.",
+    "script": "[shouting] Last corner! Side by side for the line!"
+  },
+  {
+    "id": "enzo.last_corner_battle.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.7,
+    "peak_db": -1.0,
+    "heard": "Final turn and they are together! Who wants it more?!",
+    "script": "Final turn, and they are together! [shouting] Who wants it more?"
+  },
+  {
+    "id": "enzo.last_corner_battle.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.2,
+    "peak_db": -0.9,
+    "heard": "Into the last corner, still fighting! Incredible!",
+    "script": "[shouting] Into the last corner, still fighting! Incredible!"
+  },
+  {
+    "id": "enzo.lead_lost.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.3,
+    "peak_db": -1.1,
+    "heard": "No! No! The lead is gone!",
+    "script": "[outraged] No! No! The lead is gone!"
+  },
+  {
+    "id": "enzo.lead_lost.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.3,
+    "peak_db": -6.4,
+    "heard": "Past for first place, Mamma Mia so close.",
+    "script": "[frustrated sigh] Passed for first place! Mamma mia, so close."
+  },
+  {
+    "id": "enzo.lead_lost.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.8,
+    "peak_db": -2.2,
+    "heard": "Lost P1! Stay in the slipstream, it is not finished!",
+    "script": "[urgently] Lost P1! Stay in the slipstream, it is not finished!"
+  },
+  {
+    "id": "enzo.lead_lost.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -25.5,
+    "peak_db": -8.1,
+    "heard": "Second now. But the fight is still on, my friends.",
+    "script": "[sighs] Second now. But the fight is still on, my friends!"
+  },
+  {
+    "id": "enzo.lead_taken.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -13.7,
+    "peak_db": -1.1,
+    "heard": "Into the lead, P1, Bellissimo!",
+    "script": "[shouting] Into the lead! P1! Bellissimo!"
+  },
+  {
+    "id": "enzo.lead_taken.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.8,
+    "peak_db": -2.0,
+    "heard": "Front of the field, nobody ahead now, only clear air.",
+    "script": "[excited] Front of the field! Nobody ahead now, only clear air!"
+  },
+  {
+    "id": "enzo.lead_taken.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.8,
+    "peak_db": -0.8,
+    "heard": "The lead is taken! Now can they keep it?",
+    "script": "[shouting] The lead is taken! [laughs] Now, can they keep it?"
+  },
+  {
+    "id": "enzo.lead_taken.04",
+    "match": 0.9,
+    "flag": true,
+    "skipped": [
+      "champion's"
+    ],
+    "added": [
+      "champions"
+    ],
+    "tag_read": [],
+    "mean_db": -16.3,
+    "peak_db": -0.8,
+    "heard": "Leading the race, the champions view nothing but empty road.",
+    "script": "[excited] Leading the race! The champion's view, nothing but empty road!"
+  },
+  {
+    "id": "enzo.nitro_used.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.3,
+    "peak_db": -2.0,
+    "heard": "Nitro! Look at it fly!",
+    "script": "[excited] Nitro! Look at it fly!"
+  },
+  {
+    "id": "enzo.nitro_used.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.3,
+    "peak_db": -1.4,
+    "heard": "Boost engaged! Andiamo, andiamo!",
+    "script": "[shouting] Boost engaged! Andiamo, andiamo!"
+  },
+  {
+    "id": "enzo.nitro_used.03",
+    "match": 0.88,
+    "flag": true,
+    "skipped": [
+      "straight"
+    ],
+    "added": [
+      "hahaha",
+      "strait"
+    ],
+    "tag_read": [],
+    "mean_db": -16.5,
+    "peak_db": -0.9,
+    "heard": "Hahaha, like a missile down the strait, even an Aurum would be jealous.",
+    "script": "[laughs] Like a missile down the straight! Even an Aurum would be jealous!"
+  },
+  {
+    "id": "enzo.nitro_used.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.5,
+    "peak_db": -5.3,
+    "heard": "There goes the Nitro. The engine is screaming and so am I.",
+    "script": "There goes the nitro. [chuckles] The engine is screaming, and so am I!"
+  },
+  {
+    "id": "enzo.off_track.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.0,
+    "peak_db": -1.4,
+    "heard": "Off the track! Into the run-off!",
+    "script": "[gasps] Off the track! Into the run-off!"
+  },
+  {
+    "id": "enzo.off_track.02",
+    "match": 0.833,
+    "flag": true,
+    "skipped": [
+      "off"
+    ],
+    "added": [
+      "of"
+    ],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -4.8,
+    "heard": "Wide of the road, losing time.",
+    "script": "Wide! Off the road, losing time!"
+  },
+  {
+    "id": "enzo.off_track.03",
+    "match": 0.909,
+    "flag": true,
+    "skipped": [
+      "ran"
+    ],
+    "added": [
+      "run"
+    ],
+    "tag_read": [],
+    "mean_db": -20.8,
+    "peak_db": -6.7,
+    "heard": "Run out of road. The track is that way, my friend.",
+    "script": "[sarcastic] Ran out of road. The track is that way, my friend."
+  },
+  {
+    "id": "enzo.off_track.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -21.7,
+    "peak_db": -3.6,
+    "heard": "Too much speed and straight on. Mamma Mia.",
+    "script": "Too much speed, and straight on! [sighs] Mamma mia."
+  },
+  {
+    "id": "enzo.overtake_player.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.4,
+    "peak_db": -3.9,
+    "heard": "Through, up the inside, beautiful move!",
+    "script": "[excited] Through! Up the inside, beautiful move!"
+  },
+  {
+    "id": "enzo.overtake_player.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.2,
+    "peak_db": -2.9,
+    "heard": "Late on the breaks, and the place is taken. Very Varrone.",
+    "script": "[laughs] Late on the brakes, and the place is taken! Very Varrone!"
+  },
+  {
+    "id": "enzo.overtake_player.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.3,
+    "peak_db": -0.3,
+    "heard": "Around the outside! Mamma Mia, what courage!",
+    "script": "[shouting] Around the outside! Mamma mia, what courage!"
+  },
+  {
+    "id": "enzo.overtake_player.04",
+    "match": 0.9,
+    "flag": true,
+    "skipped": [
+      "layla"
+    ],
+    "added": [
+      "leila"
+    ],
+    "tag_read": [],
+    "mean_db": -25.5,
+    "peak_db": -4.3,
+    "heard": "Another one picked off, Leila Qasimi would approve of that.",
+    "script": "[chuckles] Another one picked off. Layla Qasimi would approve of that."
+  },
+  {
+    "id": "enzo.overtake_player.05",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.8,
+    "peak_db": -5.2,
+    "heard": "Clean pass. No contact, no drama. Alastair has nothing to complain about.",
+    "script": "Clean pass. No contact, no drama. [sarcastic] Alastair has nothing to complain about."
+  },
+  {
+    "id": "enzo.overtaken_player.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.9,
+    "peak_db": -3.2,
+    "heard": "Oh, past! The door was left wide open there.",
+    "script": "[gasps] Oh, passed! The door was left wide open there!"
+  },
+  {
+    "id": "enzo.overtaken_player.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.8,
+    "peak_db": -4.8,
+    "heard": "Lost a place. Too polite into that corner. Too polite!",
+    "script": "[sighs] Lost a place. Too polite into that corner. Too polite!"
+  },
+  {
+    "id": "enzo.overtaken_player.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.6,
+    "peak_db": -1.6,
+    "heard": "They come through on the inside, respond now, respond now!",
+    "script": "[urgently] They come through on the inside! Respond now, respond now!"
+  },
+  {
+    "id": "enzo.overtaken_player.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.8,
+    "peak_db": -0.4,
+    "heard": "Overtaken! No, no, no, this is not acceptable! Fight back!",
+    "script": "[outraged] Overtaken! No, no, no, this is not acceptable! Fight back!"
+  },
+  {
+    "id": "enzo.overtaken_player.05",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -31.9,
+    "peak_db": -13.3,
+    "heard": "A place gone, head down, there is still time.",
+    "script": "[sighs] A place gone. Head down, there is still time."
+  },
+  {
+    "id": "enzo.personal_best.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.1,
+    "peak_db": -5.3,
+    "heard": "A personal best, getting faster every lap.",
+    "script": "A personal best! Getting faster every lap!"
+  },
+  {
+    "id": "enzo.personal_best.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.6,
+    "peak_db": -2.5,
+    "heard": "New best lap! The rhythm is coming now, I can hear it!",
+    "script": "[warmly] New best lap! The rhythm is coming now, I can hear it."
+  },
+  {
+    "id": "enzo.personal_best.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -20.3,
+    "peak_db": -3.7,
+    "heard": "Personal best! This is how rookies become champions, step by step.",
+    "script": "[warmly] Personal best! This is how rookies become champions, step by step."
+  },
+  {
+    "id": "enzo.photo_finish.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.1,
+    "peak_db": -1.6,
+    "heard": "Photo finish! Who got it?",
+    "script": "[shouting] Photo finish! Who got it?"
+  },
+  {
+    "id": "enzo.photo_finish.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.6,
+    "peak_db": -0.3,
+    "heard": "Together on the line! Too close to call!",
+    "script": "Together on the line! [gasps] Too close to call!"
+  },
+  {
+    "id": "enzo.photo_finish.03",
+    "match": 0.824,
+    "flag": true,
+    "skipped": [
+      "a",
+      "can't"
+    ],
+    "added": [
+      "can"
+    ],
+    "tag_read": [],
+    "mean_db": -17.4,
+    "peak_db": -2.5,
+    "heard": "Mamma mia, photo finish, I can separate them.",
+    "script": "[excited] Mamma mia, a photo finish! I can't separate them!"
+  },
+  {
+    "id": "enzo.pit_entry.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.7,
+    "peak_db": -2.8,
+    "heard": "Into the pits, the crew is ready!",
+    "script": "Into the pits! The crew is ready!"
+  },
+  {
+    "id": "enzo.pit_entry.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -1.2,
+    "heard": "Boxing this lap. Let's see the stop.",
+    "script": "[excited] Boxing this lap! Let's see the stop!"
+  },
+  {
+    "id": "enzo.pit_entry.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.2,
+    "peak_db": -2.5,
+    "heard": "Pit entry now! Watch the speed limit!",
+    "script": "[urgently] Pit entry now. Watch the speed limit!"
+  },
+  {
+    "id": "enzo.pit_exit.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.4,
+    "peak_db": -1.3,
+    "heard": "Out of the pits, back into the fight.",
+    "script": "Out of the pits! Back into the fight!"
+  },
+  {
+    "id": "enzo.pit_exit.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.6,
+    "peak_db": -0.9,
+    "heard": "Rejoining now, fresh tires, full attack!",
+    "script": "Rejoining now. [excited] Fresh tyres, full attack!"
+  },
+  {
+    "id": "enzo.pit_exit.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -21.9,
+    "peak_db": -2.7,
+    "heard": "Pit! Exit! Where do they come out?",
+    "script": "Pit exit! [curious] Where do they come out?"
+  },
+  {
+    "id": "enzo.pit_limiter_warning.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.9,
+    "peak_db": -0.4,
+    "heard": "Careful! Speeding in the pit lane!",
+    "script": "[urgently] Careful! Speeding in the pit lane!"
+  },
+  {
+    "id": "enzo.pit_limiter_warning.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.8,
+    "peak_db": -1.6,
+    "heard": "Too fast in the pits, limiter, limiter!",
+    "script": "Too fast in the pits! [shouting] Limiter, limiter!"
+  },
+  {
+    "id": "enzo.pit_limiter_warning.03",
+    "match": 0.857,
+    "flag": true,
+    "skipped": [
+      "penalty",
+      "is"
+    ],
+    "added": [
+      "penalty's"
+    ],
+    "tag_read": [],
+    "mean_db": -22.3,
+    "peak_db": -4.9,
+    "heard": "Watch the pit speed, a penalty's coming, I promise you.",
+    "script": "[sighs] Watch the pit speed. A penalty is coming, I promise you."
+  },
+  {
+    "id": "enzo.pit_stop_fast.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.6,
+    "peak_db": -2.1,
+    "heard": "What a stop! Lightning fast!",
+    "script": "[excited] What a stop! Lightning fast!"
+  },
+  {
+    "id": "enzo.pit_stop_fast.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.4,
+    "peak_db": -1.7,
+    "heard": "Bellissimo! The crew was perfect!",
+    "script": "[shouting] Bellissimo! The crew was perfect!"
+  },
+  {
+    "id": "enzo.pit_stop_fast.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.1,
+    "peak_db": -3.4,
+    "heard": "Super quick! Even the Saetta crew would applaud that one.",
+    "script": "[laughs] Super quick! Even the Saetta crew would applaud that one!"
+  },
+  {
+    "id": "enzo.pit_stop_slow.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.1,
+    "peak_db": -2.9,
+    "heard": "Slow stop. Something went wrong.",
+    "script": "[gasps] Slow stop! Something went wrong!"
+  },
+  {
+    "id": "enzo.pit_stop_slow.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.8,
+    "peak_db": -1.3,
+    "heard": "Taking too long! Come on, come on, come on!",
+    "script": "Taking too long! [frustrated] Come on, come on, come on!"
+  },
+  {
+    "id": "enzo.pit_stop_slow.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.5,
+    "peak_db": -6.4,
+    "heard": "A delay in the pits. Maybe they stopped for an espresso.",
+    "script": "[sarcastic] A delay in the pits. Maybe they stopped for an espresso."
+  },
+  {
+    "id": "enzo.player_last.01",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -31.6,
+    "peak_db": -13.0,
+    "heard": "Last place, a tough night, but we learn.",
+    "script": "[sighs] Last place. A tough night, but we learn."
+  },
+  {
+    "id": "enzo.player_last.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -26.7,
+    "peak_db": -6.9,
+    "heard": "At the back. Never mind. Even Varrone was last once. Once.",
+    "script": "[chuckles] At the back. Never mind, even Varrone was last once. Once."
+  },
+  {
+    "id": "enzo.player_last.03",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -33.5,
+    "peak_db": -13.8,
+    "heard": "Last across the line. Head up, my friend.",
+    "script": "[warmly] Last across the line. Head up, my friend."
+  },
+  {
+    "id": "enzo.player_midfield.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.9,
+    "peak_db": -6.3,
+    "heard": "A midfield finish, experience gained, and next time, more.",
+    "script": "A midfield finish. Experience gained, and next time, more."
+  },
+  {
+    "id": "enzo.player_midfield.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.1,
+    "peak_db": -6.6,
+    "heard": "Not the result we wanted, but a solid race.",
+    "script": "[sighs] Not the result we wanted, but a solid race."
+  },
+  {
+    "id": "enzo.player_midfield.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -28.7,
+    "peak_db": -10.9,
+    "heard": "Across the line in the pack, we go again.",
+    "script": "Across the line in the pack. [warmly] We go again!"
+  },
+  {
+    "id": "enzo.player_podium.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -1.4,
+    "heard": "A podium! A great result!",
+    "script": "[excited] A podium! A great result!"
+  },
+  {
+    "id": "enzo.player_podium.02",
+    "match": 0.667,
+    "flag": true,
+    "skipped": [
+      "onto"
+    ],
+    "added": [
+      "on",
+      "to",
+      "haha"
+    ],
+    "tag_read": [],
+    "mean_db": -14.2,
+    "peak_db": -0.8,
+    "heard": "On to the podium! Haha! Champagne tonight!",
+    "script": "Onto the podium! [laughs] Champagne tonight!"
+  },
+  {
+    "id": "enzo.player_podium.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.7,
+    "peak_db": -4.3,
+    "heard": "Top 3. A very, very good drive.",
+    "script": "Top three! [warmly] A very, very good drive."
+  },
+  {
+    "id": "enzo.player_wins.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.0,
+    "peak_db": -3.2,
+    "heard": "Winner! What a drive! Bellissimo!",
+    "script": "[shouting] Winner! What a drive! Bellissimo!"
+  },
+  {
+    "id": "enzo.player_wins.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.1,
+    "peak_db": -1.7,
+    "heard": "Across the line first, a champion's performance!",
+    "script": "[excited] Across the line first! A champion's performance!"
+  },
+  {
+    "id": "enzo.player_wins.03",
+    "match": 0.909,
+    "flag": false,
+    "skipped": [],
+    "added": [
+      "ha",
+      "ha"
+    ],
+    "tag_read": [],
+    "mean_db": -16.0,
+    "peak_db": -1.3,
+    "heard": "Victory! Mamma mia, they did it! Ha ha, Alistair, I am crying!",
+    "script": "[shouting] Victory! Mamma mia, they did it! [laughs] Alastair, I am crying!"
+  },
+  {
+    "id": "enzo.player_wins.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.9,
+    "peak_db": -2.3,
+    "heard": "First place! Nobody could stop them tonight! Nobody!",
+    "script": "[excited] First place! Nobody could stop them tonight! Nobody!"
+  },
+  {
+    "id": "enzo.race_start_bad.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.1,
+    "peak_db": -2.2,
+    "heard": "Oh no, bogged down. Cars streaming past on both sides.",
+    "script": "[gasps] Oh no, bogged down! Cars streaming past on both sides!"
+  },
+  {
+    "id": "enzo.race_start_bad.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -29.1,
+    "peak_db": -12.0,
+    "heard": "Slow away, far too much wheelspin there.",
+    "script": "[frustrated sigh] Slow away. Far too much wheelspin there."
+  },
+  {
+    "id": "enzo.race_start_bad.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -24.1,
+    "peak_db": -8.1,
+    "heard": "A relaxed start, very relaxed, like a Sunday drive to the beach.",
+    "script": "[sarcastic] A relaxed start. Very relaxed. Like a Sunday drive to the beach."
+  },
+  {
+    "id": "enzo.race_start_bad.04",
+    "match": 0.8,
+    "flag": true,
+    "skipped": [
+      "mamma",
+      "mia"
+    ],
+    "added": [
+      "man",
+      "manier"
+    ],
+    "tag_read": [],
+    "mean_db": -21.2,
+    "peak_db": -2.0,
+    "heard": "Man-Manier, the start is gone. Now we fight back!",
+    "script": "Mamma mia, the start is gone! [determined] Now we fight back!"
+  },
+  {
+    "id": "enzo.race_start_good.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.7,
+    "peak_db": -1.9,
+    "heard": "What a launch! Clean off the line and gaining places!",
+    "script": "[excited] What a launch! Clean off the line and gaining places!"
+  },
+  {
+    "id": "enzo.race_start_good.02",
+    "match": 0.889,
+    "flag": true,
+    "skipped": [
+      "remy"
+    ],
+    "added": [
+      "remi"
+    ],
+    "tag_read": [],
+    "mean_db": -16.5,
+    "peak_db": -1.9,
+    "heard": "Perfect reaction! Remi Valois himself could not start better!",
+    "script": "[shouting] Perfect reaction! Remy Valois himself could not start better!"
+  },
+  {
+    "id": "enzo.race_start_good.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -2.4,
+    "heard": "Great start! Into turn one with all the momentum!",
+    "script": "[excited] Great start! Into turn one with all the momentum!"
+  },
+  {
+    "id": "enzo.race_start_good.04",
+    "match": 0.909,
+    "flag": true,
+    "skipped": [
+      "off"
+    ],
+    "added": [
+      "of"
+    ],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -2.6,
+    "heard": "Like a rocket of the grid, that is how you begin.",
+    "script": "[laughs] Like a rocket off the grid! That is how you begin!"
+  },
+  {
+    "id": "enzo.rain_starting.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.5,
+    "peak_db": -2.1,
+    "heard": "Rain is starting! Watch the grip now!",
+    "script": "[excited] Rain is starting! Watch the grip now!"
+  },
+  {
+    "id": "enzo.rain_starting.02",
+    "match": 0.846,
+    "flag": true,
+    "skipped": [
+      "aiko",
+      "is"
+    ],
+    "added": [
+      "i",
+      "got"
+    ],
+    "tag_read": [],
+    "mean_db": -15.6,
+    "peak_db": -0.7,
+    "heard": "Drops on the visor, it's beginning to rain. I got Tanabe smiling somewhere.",
+    "script": "Drops on the visor! It's beginning to rain! [laughs] Aiko Tanabe is smiling somewhere."
+  },
+  {
+    "id": "enzo.rain_starting.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.9,
+    "peak_db": -0.8,
+    "heard": "Here comes the rain! Mamma mia, everything changes!",
+    "script": "Here comes the rain! [dramatically] Mamma mia, everything changes!"
+  },
+  {
+    "id": "enzo.recovery_after_incident.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -17.1,
+    "peak_db": -3.0,
+    "heard": "Back on track, now chase them down.",
+    "script": "Back on track! Now chase them down!"
+  },
+  {
+    "id": "enzo.recovery_after_incident.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -15.5,
+    "peak_db": -0.4,
+    "heard": "Going again! Never give up, never!",
+    "script": "[excited] Going again! Never give up, never!"
+  },
+  {
+    "id": "enzo.recovery_after_incident.03",
+    "match": 0.857,
+    "flag": true,
+    "skipped": [
+      "rejoined"
+    ],
+    "added": [
+      "rejoin"
+    ],
+    "tag_read": [],
+    "mean_db": -28.3,
+    "peak_db": -9.0,
+    "heard": "Rejoin the race. Breathe, focus, forget it.",
+    "script": "Rejoined the race. [warmly] Breathe, focus, forget it."
+  },
+  {
+    "id": "enzo.recovery_after_incident.04",
+    "match": 0.909,
+    "flag": true,
+    "skipped": [
+      "cole"
+    ],
+    "added": [
+      "kalt"
+    ],
+    "tag_read": [],
+    "mean_db": -20.2,
+    "peak_db": -1.3,
+    "heard": "Recovering well. Kalt, Maddox does this every week. The fight continues!",
+    "script": "[chuckles] Recovering well. Cole Maddox does this every week. The fight continues!"
+  },
+  {
+    "id": "enzo.side_by_side.01",
+    "match": 0.727,
+    "flag": true,
+    "skipped": [
+      "nobody",
+      "is"
+    ],
+    "added": [
+      "nobody's"
+    ],
+    "tag_read": [],
+    "mean_db": -16.2,
+    "peak_db": -0.5,
+    "heard": "Side by side, nobody's lifting.",
+    "script": "[excited] Side by side! Nobody is lifting!"
+  },
+  {
+    "id": "enzo.side_by_side.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.6,
+    "peak_db": -2.8,
+    "heard": "Wheel to wheel into the corner, who blinks first?",
+    "script": "Wheel to wheel into the corner! [dramatically] Who blinks first?"
+  },
+  {
+    "id": "enzo.side_by_side.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -14.6,
+    "peak_db": -1.6,
+    "heard": "Door to door! This is racing, my friends!",
+    "script": "[shouting] Door to door! This is racing, my friends!"
+  },
+  {
+    "id": "enzo.side_by_side.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -16.3,
+    "peak_db": -2.1,
+    "heard": "Together, through the turn, the stewards are reaching for their pens.",
+    "script": "[laughs] Together through the turn! The stewards are reaching for their pens!"
+  },
+  {
+    "id": "enzo.slipstream.01",
+    "match": 0.8,
+    "flag": true,
+    "skipped": [
+      "slipstream"
+    ],
+    "added": [
+      "sleep",
+      "stream"
+    ],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -3.5,
+    "heard": "In the sleep stream now, getting the tow.",
+    "script": "In the slipstream now, getting the tow!"
+  },
+  {
+    "id": "enzo.slipstream.02",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -31.4,
+    "peak_db": -7.3,
+    "heard": "Tucked in behind, pulled along. Get ready.",
+    "script": "Tucked in behind, pulled along. [whispers] Get ready..."
+  },
+  {
+    "id": "enzo.slipstream.03",
+    "match": 0.87,
+    "flag": true,
+    "skipped": [
+      "car",
+      "ahead"
+    ],
+    "added": [
+      "carahead"
+    ],
+    "tag_read": [],
+    "mean_db": -28.2,
+    "peak_db": -9.4,
+    "heard": "Using the draft, free speed and the Carahead pays for it.",
+    "script": "[mischievously] Using the draft. Free speed, and the car ahead pays for it."
+  },
+  {
+    "id": "enzo.slipstream.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -22.8,
+    "peak_db": -3.0,
+    "heard": "Right under the rear wing, close enough to read the sponsor stickers.",
+    "script": "Right under the rear wing. [chuckles] Close enough to read the sponsor stickers."
+  },
+  {
+    "id": "enzo.soft_crash.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -21.6,
+    "peak_db": -4.4,
+    "heard": "Contact! A little bump there.",
+    "script": "Contact! A little bump there."
+  },
+  {
+    "id": "enzo.soft_crash.02",
+    "match": 0.833,
+    "flag": true,
+    "skipped": [
+      "ooh"
+    ],
+    "added": [
+      "who"
+    ],
+    "tag_read": [],
+    "mean_db": -20.8,
+    "peak_db": -3.9,
+    "heard": "Who touched the barrier? Some damage?",
+    "script": "[gasps] Ooh, touched the barrier! Some damage?"
+  },
+  {
+    "id": "enzo.soft_crash.03",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -30.2,
+    "peak_db": -11.9,
+    "heard": "A tap on the wall. The paint shop will be busy tonight.",
+    "script": "A tap on the wall. [chuckles] The paint shop will be busy tonight."
+  },
+  {
+    "id": "enzo.soft_crash.04",
+    "match": 0.889,
+    "flag": true,
+    "skipped": [
+      "funfair"
+    ],
+    "added": [
+      "fanfare"
+    ],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -1.0,
+    "heard": "Bumping cars! This is not the fanfare, my friends.",
+    "script": "Bumping cars! [sarcastic] This is not the funfair, my friends!"
+  },
+  {
+    "id": "enzo.spin.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.5,
+    "peak_db": -3.3,
+    "heard": "SPIN! AROUND IT GOES!",
+    "script": "[gasps] Spin! Around it goes!"
+  },
+  {
+    "id": "enzo.spin.02",
+    "match": 0.889,
+    "flag": true,
+    "skipped": [],
+    "added": [
+      "it's"
+    ],
+    "tag_read": [],
+    "mean_db": -14.9,
+    "peak_db": -0.9,
+    "heard": "Lost the rear! It's spinning!",
+    "script": "[shouting] Lost the rear! Spinning!"
+  },
+  {
+    "id": "enzo.spin.03",
+    "match": 0.947,
+    "flag": true,
+    "skipped": [
+      "a"
+    ],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.3,
+    "peak_db": -3.4,
+    "heard": "Mamma Mia, full spin! Keep it off the wall!",
+    "script": "Mamma mia, a full spin! Keep it off the wall!"
+  },
+  {
+    "id": "enzo.spin.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -2.0,
+    "heard": "Round and round, very pretty, very slow.",
+    "script": "[laughs] Round and round! Very pretty, very slow!"
+  },
+  {
+    "id": "enzo.stint_change_dusk_to_night.01",
+    "match": 1.0,
+    "flag": true,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -30.3,
+    "peak_db": -11.2,
+    "heard": "The sun has gone, now we race into the night.",
+    "script": "The sun has gone. [warmly] Now we race into the night!"
+  },
+  {
+    "id": "enzo.stint_change_dusk_to_night.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -25.4,
+    "peak_db": -5.1,
+    "heard": "Dusk becomes night, headlights on, and a new race begins.",
+    "script": "Dusk becomes night. Headlights on, and a new race begins."
+  },
+  {
+    "id": "enzo.stint_change_dusk_to_night.03",
+    "match": 0.889,
+    "flag": true,
+    "skipped": [
+      "bellissimo"
+    ],
+    "added": [
+      "pelissimo"
+    ],
+    "tag_read": [],
+    "mean_db": -31.1,
+    "peak_db": -11.3,
+    "heard": "The sky turns dark blue, Pelissimo, the night stint.",
+    "script": "The sky turns dark blue. [whispers] Bellissimo. The night stint."
+  },
+  {
+    "id": "enzo.track_drying.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.5,
+    "peak_db": -4.8,
+    "heard": "The track is drying. A dry line is appearing.",
+    "script": "The track is drying! A dry line is appearing!"
+  },
+  {
+    "id": "enzo.track_drying.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.1,
+    "peak_db": -7.2,
+    "heard": "The rain has stopped. Bad news for Freya Lindqvist, good news for everybody else.",
+    "script": "[chuckles] The rain has stopped. Bad news for Freya Lindqvist, good news for everybody else."
+  },
+  {
+    "id": "enzo.track_drying.03",
+    "match": 0.857,
+    "flag": true,
+    "skipped": [
+      "drying"
+    ],
+    "added": [
+      "drawing"
+    ],
+    "tag_read": [],
+    "mean_db": -19.7,
+    "peak_db": -2.8,
+    "heard": "Drawing out now, time to push again!",
+    "script": "Drying out now. [excited] Time to push again!"
+  },
+  {
+    "id": "enzo.wall_scrape.01",
+    "match": 0.8,
+    "flag": true,
+    "skipped": [
+      "wall"
+    ],
+    "added": [
+      "wool"
+    ],
+    "tag_read": [],
+    "mean_db": -18.6,
+    "peak_db": -2.6,
+    "heard": "Scraping the wool, sparks flying.",
+    "script": "Scraping the wall! Sparks flying!"
+  },
+  {
+    "id": "enzo.wall_scrape.02",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.2,
+    "peak_db": -3.5,
+    "heard": "Kissing the barrier all the way along there.",
+    "script": "[gasps] Kissing the barrier all the way along there!"
+  },
+  {
+    "id": "enzo.wall_scrape.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -20.5,
+    "peak_db": -4.5,
+    "heard": "Grinding along the wall, very romantic, very expensive.",
+    "script": "Grinding along the wall! [sarcastic] Very romantic. Very expensive."
+  },
+  {
+    "id": "enzo.winner_fireworks.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -20.0,
+    "peak_db": -3.7,
+    "heard": "Fireworks! Look at the sky! What a celebration!",
+    "script": "[excited] Fireworks! Look at the sky! What a celebration!"
+  },
+  {
+    "id": "enzo.winner_fireworks.02",
+    "match": 0.889,
+    "flag": true,
+    "skipped": [],
+    "added": [
+      "ha",
+      "ha"
+    ],
+    "tag_read": [],
+    "mean_db": -19.4,
+    "peak_db": -3.8,
+    "heard": "The fireworks go up for the winner, ha ha, Bellissimo!",
+    "script": "The fireworks go up for the winner! [laughs] Bellissimo!"
+  },
+  {
+    "id": "enzo.winner_fireworks.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -23.0,
+    "peak_db": -3.3,
+    "heard": "Listen to that! The whole circuit is celebrating.",
+    "script": "Listen to that! [warmly] The whole circuit is celebrating!"
+  },
+  {
+    "id": "kavya.paddock_report.01",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.0,
+    "peak_db": -0.4,
+    "heard": "Hello from the paddock, Kavya Iyer here with 12 drivers, 6 teams and far too many secrets for one notebook.",
+    "script": "[warmly] Hello from the paddock! Kavya Iyer here, with twelve drivers, six teams, and far too many secrets for one notebook."
+  },
+  {
+    "id": "kavya.paddock_report.02",
+    "match": 0.939,
+    "flag": true,
+    "skipped": [
+      "hot",
+      "brakes"
+    ],
+    "added": [
+      "heartbreaks"
+    ],
+    "tag_read": [],
+    "mean_db": -19.9,
+    "peak_db": -1.0,
+    "heard": "Saetta's garage smells of espresso and heartbreaks. Vittoria Saldani runs it like an opera house. Lots of shouting and somehow it always ends beautifully.",
+    "script": "Saetta's garage smells of espresso and hot brakes. Vittoria Saldani runs it like an opera house. [laughs] Lots of shouting, and somehow it always ends beautifully."
+  },
+  {
+    "id": "kavya.paddock_report.03",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -18.2,
+    "peak_db": -0.4,
+    "heard": "Mateo Varrone kisses the lightning bolt on his helmet before every start, then he breaks about 10 meters later than physics recommends.",
+    "script": "Matteo Varrone kisses the lightning bolt on his helmet before every start. [chuckles] Then he brakes about ten metres later than physics recommends."
+  },
+  {
+    "id": "kavya.paddock_report.04",
+    "match": 1.0,
+    "flag": false,
+    "skipped": [],
+    "added": [],
+    "tag_read": [],
+    "mean_db": -19.1,
+    "peak_db": -0.6,
+    "heard": "Freya Lindqvist learned car control on the frozen lakes of Sweden. She told me, grip is overrated, she meant it.",
+    "script": "Freya Lindqvist learned car control on the frozen lakes of Sweden. She told me grip is overrated. [laughs] She meant it."
+  },
+  {
+    "id": "kavya.paddock_report.05",
+    "match": 0.963,
+    "flag": true,
+    "skipped": [
+      "holds"
+    ],
+    "added": [
+      "hosts"
+    ],
+    "tag_read": [],
+    "mean_db": -18.3,
+    "peak_db": -0.3,
+    "heard": "Leyla Qasimi learned to race on the desert roads of Oman in her uncle's pickup truck. Now she hosts the record for passes in a single race.",
+    "script": "Layla Qasimi learned to race on the desert roads of Oman, in her uncle's pickup truck. [laughs] Now she holds the record for passes in a single race."
+  }
+]

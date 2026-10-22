@@ -1,0 +1,117 @@
+{
+  "car": "av12",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Everything here is applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "model": "assets/cars/av12/source.json (scripts/model-car.py): its own glass, cabin, mirrors and wheels; mirrors/interior/glass tuning does not apply",
+  "suspension": {
+    "pitch": 0.6,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.015
+  },
+  "aero": [],
+  "log": [
+    "2026-10-19: replaced the Meshy shell with the Sketchfab model (L1, blackcube4 Aventador); earlier shell fixes dropped with it",
+    "run 1: 12 see-through gaps, all real openings (rear wing daylight, diffuser fins; traced) -> waived",
+    "run 1: front tyres 1.1 cm under the arch lip, -1.5 cm in the brake dive -> ride 0.015"
+  ],
+  "qa": {
+    "waive": [
+      {
+        "view": "front",
+        "at": [
+          0.37,
+          0.57
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "front",
+        "at": [
+          0.63,
+          0.57
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.37,
+          0.57
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.63,
+          0.57
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.78,
+          0.65
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.7,
+          0.68
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "rear-left",
+        "at": [
+          0.63,
+          0.33
+        ],
+        "why": "daylight between the rear diffuser fins (traced: trace-rear-left-6.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.21,
+          0.65
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.3,
+          0.68
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "rear-right",
+        "at": [
+          0.37,
+          0.33
+        ],
+        "why": "daylight between the rear diffuser fins (traced: trace-rear-left-6.png)"
+      },
+      {
+        "view": "low-left",
+        "at": [
+          0.86,
+          0.58
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      },
+      {
+        "view": "low-left",
+        "at": [
+          0.82,
+          0.59
+        ],
+        "why": "daylight under the rear wing and between its endplates and the deck (traced: trace-front-left-5.png)"
+      }
+    ]
+  }
+}

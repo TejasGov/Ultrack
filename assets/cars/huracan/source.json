@@ -1,0 +1,43 @@
+{
+  "name": "HU\u201310",
+  "src": "../../../sources/sketchfab/Lhuracan-sto/prepared.glb",
+  "credit": {
+    "title": "2023 Lamborghini Hurac\u00e1n STO",
+    "author": "Galaxy Car Showroom (adrianaflak09)",
+    "authorUrl": "https://sketchfab.com/adrianaflak09",
+    "url": "https://sketchfab.com/3d-models/2023-lamborghini-huracan-sto-19c4d3f7679e4765ac1f9c3be12c0899",
+    "license": "CC BY 4.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "19c4d3f7679e4765ac1f9c3be12c0899",
+    "replacement": false,
+    "nonCommercialOnly": false,
+    "additionalCredits": "Probably a rip from a mobile racing game: the part and material names (LOD_A_..._mm_..., 2021_lamborghini_huracan_sto_*.etc, car_chassis.etc) are Real Racing 3's and the page is tagged Unity. The licence is CC BY, but the provenance is unclear: replace before any public release."
+  },
+  "rotateZ": 90,
+  "length": 4.547,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Tyre_",
+      "Spin_"
+    ],
+    "tyre": [
+      "Tyre_"
+    ],
+    "caliper": [
+      "Caliper_"
+    ]
+  },
+  "roles": {},
+  "interior": [
+    "INT:"
+  ],
+  "exhaust": [
+    "EXHAUST_misc"
+  ],
+  "budget": {
+    "body0": 130000,
+    "body1": 25000,
+    "wheel": 10000
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "src": "../../../sources/sketchfab/L1-aventador-blackcube4/model.glb",
+  "credit": { "title": "Lamborghini Aventador with Interior", "author": "blackcube4", "url": "https://sketchfab.com/3d-models/36eb1fa54a0d4be695d4cd90c30f4ff1", "license": "CC-BY-NC (exterior: Lambo_SC04, Aventador SVJ Black-Ghost, CC-BY-NC)" },
+  "rotateZ": -90,
+  "length": 4.943,
+  "wheels": { "mode": "loose", "spin": ["Wheels_", "Tires_", "Brake disk"], "caliper": ["Brake_"], "tyre": ["Tires_"] },
+  "roles": { "Body": "paint", "Window_Glass": "glass", "Mirror": "mirror", "Red_Lights": "tail", "Front_Light": "head", "Front_Light_Lens": "projector" },
+  "interior": ["Interior", "Motor", "Seam", "Inner door", "Display", "Window base"],
+  "exhaust": ["Exhaust_"],
+  "budget": { "body0": 130000, "body1": 25000, "wheel": 10000 }
+}

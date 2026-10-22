@@ -1,0 +1,51 @@
+{
+  "schema": "game-room.prop-manifest.v1",
+  "roomId": "tokyo",
+  "generation": {
+    "provider": "meshy",
+    "apiModel": "meshy-5",
+    "pricingSource": "https://docs.meshy.ai/en/api/pricing",
+    "pricingVerifiedAt": "",
+    "creditsPerTexturedTask": null,
+    "hardCreditCeiling": 0,
+    "maxChargedAttemptsPerAsset": 2,
+    "status": "Not requested; no paid provider used"
+  },
+  "assets": [
+    {
+      "id": "street-kit",
+      "function": "Reusable road furniture, fence and lamps",
+      "description": "Procedural initial kit; detailed geometry pending",
+      "class": "reusable",
+      "dimensionsMeters": [
+        3,
+        1,
+        9
+      ],
+      "attachmentFace": "floor",
+      "semanticFront": "toward roadway",
+      "polygonTarget": 4000,
+      "rejectionCriteria": [
+        "Visible unsupported fixtures",
+        "Silhouette degradation at racing-camera distance",
+        "Intrusion into road envelope"
+      ],
+      "status": "study"
+    },
+    {
+      "id": "landmark-family",
+      "function": "Distinct district landmarks and route navigation",
+      "description": "Twelve individually named placement studies; bespoke silhouettes pending",
+      "class": "hero",
+      "attachmentFace": "floor",
+      "semanticFront": "road frontage",
+      "polygonTarget": 150000,
+      "rejectionCriteria": [
+        "Generic silhouette at final-art review",
+        "Footprint deviation without design reason",
+        "Unscheduled false openings"
+      ],
+      "status": "study"
+    }
+  ]
+}

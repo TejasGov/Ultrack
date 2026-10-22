@@ -1,0 +1,95 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Destrier-X",
+ "source": {
+  "title": "Bugatti Destrier",
+  "author": "let's not care abt it (Pie-The-destroyer-of-the-World)",
+  "url": "https://sketchfab.com/3d-models/40f60b384cdb44858983d60151397179",
+  "license": "CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3426,
+   "width": 0.306,
+   "x": -1.4281,
+   "track": 2.0811
+  },
+  "rear": {
+   "radius": 0.3497,
+   "width": 0.4193,
+   "x": 1.7318,
+   "track": 2.019
+  }
+ },
+ "size": {
+  "length": 5.07,
+  "width": 2.554,
+  "height": 1.197
+ },
+ "lights": {
+  "front": [
+   [
+    -1.781,
+    0.648,
+    0.962
+   ],
+   [
+    -1.773,
+    0.649,
+    -0.973
+   ],
+   [
+    -1.867,
+    0.566,
+    0.949
+   ],
+   [
+    -1.86,
+    0.567,
+    -0.961
+   ]
+  ],
+  "rear": [
+   [
+    2.165,
+    0.57,
+    0.402
+   ],
+   [
+    2.049,
+    0.685,
+    -0.695
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.426,
+    0.709,
+    0.699
+   ],
+   [
+    -1.426,
+    0.978,
+    0.699
+   ],
+   [
+    0.497,
+    0.978,
+    0.699
+   ],
+   [
+    0.497,
+    0.709,
+    0.699
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 73486,
+  "body1": 25622,
+  "wheel": 9996
+ }
+}

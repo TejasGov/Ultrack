@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting-user-style-approval",
+  "driver": {
+    "name": "Theo Ashcombe",
+    "code": "ASH",
+    "nation": "GBR",
+    "age": 24,
+    "role": "third-generation racer",
+    "bio": "Third-generation racer with impeccable manners and none on track.",
+    "background": "Grandfather raced at Silverstone, father ran Corvid's test team; grew up in the paddock.",
+    "personality": "Writes a handwritten apology note after every collision, then does it again; a running feud with Varrone since they touched at the Corniche hairpin.",
+    "rivals": [
+      "VAR"
+    ]
+  },
+  "team": "corvid",
+  "raceNumber": 4,
+  "carKey": "aston-martin-valk",
+  "manufacturer": "Aston Martin",
+  "car": "Valkyrie",
+  "titleSponsor": "HSBC",
+  "font": {
+    "family": "Cinzel",
+    "file": "cinzel-latin-900-normal.woff2",
+    "weight": "900"
+  },
+  "style": "Original fictional driver in GTA V loading-screen-inspired inked, cel-shaded illustration; no real driver likeness.",
+  "illustration": "illustration-v1.webp",
+  "sourceIllustration": "source/illustration-v1.png",
+  "sourceSha256": "a99ad6b6033a87f185495decc3d689ab5546a26539f3668ccfb48b6d2edee5da",
+  "outputs": {
+    "illustration-v1.webp": {
+      "bytes": 209546,
+      "sha256": "9708e819b1b8ce584c170b47e4913af650cf0de2f67e3cc6c2775b40700dff65"
+    },
+    "poster-v1.svg": {
+      "bytes": 3671209,
+      "sha256": "93849f3564b2208c3b19adca07bc241c43abdd16e19f18e0e427e29ccfe5abb9"
+    },
+    "poster-v1.png": {
+      "bytes": 3614175,
+      "sha256": "b1c81e289f750115a02a47a9fd2a3e7cd06c738188e2137e098c31dda48184a8"
+    }
+  },
+  "composition": "1920x1080 static driver poster; Cinzel team lettering is outlined and the artwork is embedded for portability."
+}

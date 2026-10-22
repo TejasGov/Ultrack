@@ -1,0 +1,902 @@
+[
+  {
+    "car": "av12",
+    "layer": "idle",
+    "start": 50.8,
+    "seconds": 0.75,
+    "referenceRpmEstimate": 950,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+      "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.70248,
+    "peak": 0.34495,
+    "rms": 0.115,
+    "sha256": "1f85499a9913fcc06a58a60791c73ce6f871a7378d4956304efdde5c09e9049a"
+  },
+  {
+    "car": "av12",
+    "layer": "low",
+    "start": 49.5,
+    "seconds": 0.32,
+    "referenceRpmEstimate": 2000,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+      "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.27031,
+    "peak": 0.35072,
+    "rms": 0.115,
+    "sha256": "82a0d7749ed03c0b59ab33f6a83cfb6944c801cbcd25728bcb51b1ce1f31180c"
+  },
+  {
+    "car": "av12",
+    "layer": "mid",
+    "start": 42.1,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 4200,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+      "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.20575,
+    "peak": 0.28633,
+    "rms": 0.115,
+    "sha256": "77c9b326529356e715d1a6edf096a07a19c95265b3869a6da6ba10570dcd8641"
+  },
+  {
+    "car": "av12",
+    "layer": "high",
+    "start": 54.8,
+    "seconds": 0.22,
+    "referenceRpmEstimate": 7200,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+      "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.17162,
+    "peak": 0.37911,
+    "rms": 0.115,
+    "sha256": "3a5faaae85178da9785aa6e825abc96e230901c7993e49e85d1f98ba959ce687"
+  },
+  {
+    "car": "av12",
+    "layer": "decel",
+    "start": 55.6,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 4100,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+      "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.27456,
+    "peak": 0.22474,
+    "rms": 0.115,
+    "sha256": "388a124f7dc30896a1e68a90f3dacb85d3a6dee2f5e6924c0032b9decdf92f01"
+  },
+  {
+    "car": "furari-488",
+    "layer": "idle",
+    "start": 63,
+    "seconds": 1.6,
+    "referenceRpmEstimate": 950,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+      "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.55029,
+    "peak": 0.3892,
+    "rms": 0.115,
+    "sha256": "3495ed8447afa36f9db5f372a74d7f392f98ebf81bf9afe9abd10ca97ac5f251"
+  },
+  {
+    "car": "furari-488",
+    "layer": "low",
+    "start": 69.6,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 2100,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+      "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.24306,
+    "peak": 0.37005,
+    "rms": 0.115,
+    "sha256": "a3a663b61ae2a746459b1ddc0cfe63ce48d9ad2eeb60a4a774e221176412dd61"
+  },
+  {
+    "car": "furari-488",
+    "layer": "mid",
+    "start": 96.7,
+    "seconds": 0.23,
+    "referenceRpmEstimate": 4000,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+      "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.20254,
+    "peak": 0.3418,
+    "rms": 0.115,
+    "sha256": "11ad23ad85cf3f87189cfd5e8d4c93e39495b92d6f35c539d7eca300f7d6735e"
+  },
+  {
+    "car": "furari-488",
+    "layer": "high",
+    "start": 120.2,
+    "seconds": 0.25,
+    "referenceRpmEstimate": 6800,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+      "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.20287,
+    "peak": 0.37238,
+    "rms": 0.115,
+    "sha256": "5fe7d0ab645f17cdc2b2b719b06b8f3429b3d3ad182bbbc40a9a4f7601efd562"
+  },
+  {
+    "car": "furari-488",
+    "layer": "decel",
+    "start": 71.1,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 3000,
+    "source": {
+      "author": "FiExhaust",
+      "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+      "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.25256,
+    "peak": 0.36138,
+    "rms": 0.115,
+    "sha256": "2477777bb2a953a6749d39959bea0cef301c5a122bd8da133f5d016aed76b56e"
+  },
+  {
+    "car": "mp1x",
+    "layer": "idle",
+    "start": 12.3,
+    "seconds": 1.5,
+    "referenceRpmEstimate": 1000,
+    "source": {
+      "author": "FiExhaust",
+      "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+      "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.42829,
+    "peak": 0.33742,
+    "rms": 0.115,
+    "sha256": "3f7cd470b1863053aa3f7a7cd8da73e8dfd99398fa7812c2dea5955da3c05649"
+  },
+  {
+    "car": "mp1x",
+    "layer": "low",
+    "start": 7.1,
+    "seconds": 0.28,
+    "referenceRpmEstimate": 2200,
+    "source": {
+      "author": "FiExhaust",
+      "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+      "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.23404,
+    "peak": 0.33119,
+    "rms": 0.115,
+    "sha256": "ac6ec94a1385f13e41910042357b6742fd10369956cdb8ab871270e113359f31"
+  },
+  {
+    "car": "mp1x",
+    "layer": "mid",
+    "start": 22.7,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 4200,
+    "source": {
+      "author": "FiExhaust",
+      "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+      "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.20596,
+    "peak": 0.36798,
+    "rms": 0.115,
+    "sha256": "26f51c1d7a5ec49e1475c523e698422ced222697f1ec225b1406289469878ae8"
+  },
+  {
+    "car": "mp1x",
+    "layer": "high",
+    "start": 24.6,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 6600,
+    "source": {
+      "author": "FiExhaust",
+      "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+      "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.19692,
+    "peak": 0.22934,
+    "rms": 0.115,
+    "sha256": "41a301b92ca173b1a89aa7ac093ddf3cd1b4a1933f3df234f85ae478d85a2d30"
+  },
+  {
+    "car": "mp1x",
+    "layer": "decel",
+    "start": 9.9,
+    "seconds": 0.25,
+    "referenceRpmEstimate": 2800,
+    "source": {
+      "author": "FiExhaust",
+      "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+      "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.20415,
+    "peak": 0.33749,
+    "rms": 0.115,
+    "sha256": "88620767bfc1d92c23d60009bccb1b6bf2752b267d2bacd01df46cc112ce71d7"
+  },
+  {
+    "car": "aston-martin-valk",
+    "layer": "idle",
+    "start": 18,
+    "seconds": 1.2,
+    "referenceRpmEstimate": 1100,
+    "source": {
+      "author": "Car and Driver España",
+      "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+      "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.12571,
+    "peak": 0.39962,
+    "rms": 0.115,
+    "sha256": "4ce188e87620e10da0e4f424ab7ecc21c481231e4d1d4e9fe1734e53a6e3a78a"
+  },
+  {
+    "car": "aston-martin-valk",
+    "layer": "low",
+    "start": 21,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 2400,
+    "source": {
+      "author": "Car and Driver España",
+      "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+      "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.26267,
+    "peak": 0.5721,
+    "rms": 0.115,
+    "sha256": "c2b478787e0f96a2a9a65daa1e610282d65bcf58d3ba3d4a33c4cd983543e138"
+  },
+  {
+    "car": "aston-martin-valk",
+    "layer": "mid",
+    "start": 23.6,
+    "seconds": 0.25,
+    "referenceRpmEstimate": 5200,
+    "source": {
+      "author": "Car and Driver España",
+      "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+      "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.22202,
+    "peak": 0.39839,
+    "rms": 0.115,
+    "sha256": "9221e41c009ddd1f1ccd5574f6dedb1eab002703ad21729a994fee09ae1dad88"
+  },
+  {
+    "car": "aston-martin-valk",
+    "layer": "high",
+    "start": 31,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 9500,
+    "source": {
+      "author": "Car and Driver España",
+      "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+      "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.26269,
+    "peak": 0.46764,
+    "rms": 0.115,
+    "sha256": "ba7a240942d5f86f6cb5399528bcd51babd99143ade7210888752ef4d3161d10"
+  },
+  {
+    "car": "aston-martin-valk",
+    "layer": "decel",
+    "start": 12.3,
+    "seconds": 0.28,
+    "referenceRpmEstimate": 4500,
+    "source": {
+      "author": "Car and Driver España",
+      "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+      "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.23294,
+    "peak": 0.43743,
+    "rms": 0.115,
+    "sha256": "13e01384a990158af68cf03e4829b4c96a6bfd103c6b44f6420cb87e90b77f70"
+  },
+  {
+    "car": "mustang",
+    "layer": "idle",
+    "start": 25,
+    "seconds": 1.4,
+    "referenceRpmEstimate": 850,
+    "source": {
+      "author": "Next-Gen Speed",
+      "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+      "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.34585,
+    "peak": 0.63005,
+    "rms": 0.115,
+    "sha256": "516863044f058f96d1c9d8e0cd3bc5ff0e67fb8169aef432cf1e19b74a1bdb54"
+  },
+  {
+    "car": "mustang",
+    "layer": "low",
+    "start": 16.2,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 2000,
+    "source": {
+      "author": "Next-Gen Speed",
+      "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+      "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.26017,
+    "peak": 0.32128,
+    "rms": 0.115,
+    "sha256": "998fc0cab407e4d6430a73a0b0163303efe77596342893e501ac5ace3ddaf745"
+  },
+  {
+    "car": "mustang",
+    "layer": "mid",
+    "start": 18.1,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 3800,
+    "source": {
+      "author": "Next-Gen Speed",
+      "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+      "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.21221,
+    "peak": 0.5062,
+    "rms": 0.115,
+    "sha256": "2b8dd80419f91e7cbcee7d0f15c140e7b74a4263d44db65a8740a382558511c6"
+  },
+  {
+    "car": "mustang",
+    "layer": "high",
+    "start": 20.5,
+    "seconds": 0.22,
+    "referenceRpmEstimate": 6100,
+    "source": {
+      "author": "Next-Gen Speed",
+      "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+      "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.19552,
+    "peak": 0.36123,
+    "rms": 0.115,
+    "sha256": "c54c5e8677b9683379d6ca2af8166856bc4452122fd93ab7571ac7f6a9443ec8"
+  },
+  {
+    "car": "mustang",
+    "layer": "decel",
+    "start": 21.9,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 2800,
+    "source": {
+      "author": "Next-Gen Speed",
+      "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+      "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.26067,
+    "peak": 0.36576,
+    "rms": 0.115,
+    "sha256": "b11fe0473d89185dd4df4f7a1e3c5d88e7369b4e596c9c3f4e32a1d53c6836f3"
+  },
+  {
+    "car": "bmw1",
+    "layer": "idle",
+    "start": 24,
+    "seconds": 1.6,
+    "referenceRpmEstimate": 950,
+    "source": {
+      "author": "Sahan Chethiya",
+      "title": "BMW i8 Revs & Exhaust Sound",
+      "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.55208,
+    "peak": 0.47744,
+    "rms": 0.115,
+    "sha256": "9a75cc87841d5f7ebadfe0796f6d8e4e45f57036d01d6e7383cb84a932d8f485"
+  },
+  {
+    "car": "bmw1",
+    "layer": "low",
+    "start": 10.5,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 2000,
+    "source": {
+      "author": "Sahan Chethiya",
+      "title": "BMW i8 Revs & Exhaust Sound",
+      "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.25081,
+    "peak": 0.23247,
+    "rms": 0.115,
+    "sha256": "3fc3178583952b8b7bfdfdf9969da194e8eb9f1cd5391bcc7259cbba5fb6a369"
+  },
+  {
+    "car": "bmw1",
+    "layer": "mid",
+    "start": 14.1,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 3600,
+    "source": {
+      "author": "Sahan Chethiya",
+      "title": "BMW i8 Revs & Exhaust Sound",
+      "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.21325,
+    "peak": 0.67077,
+    "rms": 0.115,
+    "sha256": "a77eca07c0a60a3b309966a105dff21da8534a0ad7f9527472ac3a37aadea3cc"
+  },
+  {
+    "car": "bmw1",
+    "layer": "high",
+    "start": 15.9,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 5200,
+    "source": {
+      "author": "Sahan Chethiya",
+      "title": "BMW i8 Revs & Exhaust Sound",
+      "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.20998,
+    "peak": 0.23942,
+    "rms": 0.115,
+    "sha256": "dcfd0c52f01210d0cee581759967a46cadd45eac2773a6d4bd111612b328d84b"
+  },
+  {
+    "car": "bmw1",
+    "layer": "decel",
+    "start": 17.4,
+    "seconds": 0.25,
+    "referenceRpmEstimate": 2800,
+    "source": {
+      "author": "Sahan Chethiya",
+      "title": "BMW i8 Revs & Exhaust Sound",
+      "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.22423,
+    "peak": 0.32393,
+    "rms": 0.115,
+    "sha256": "bbc31df1a81a6c8533f8f57d0f3b1ccb6e73ad68175933f5d7d7f1ae5564f4be"
+  },
+  {
+    "car": "buggati",
+    "layer": "idle",
+    "start": 27,
+    "seconds": 1.5,
+    "referenceRpmEstimate": 950,
+    "source": {
+      "author": "TvdL Films",
+      "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+      "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.44954,
+    "peak": 0.46894,
+    "rms": 0.115,
+    "sha256": "5701621283ec0938760df4d06bbefaac4ad07c95c1eb9e397fb3469938d76c9a"
+  },
+  {
+    "car": "buggati",
+    "layer": "low",
+    "start": 20,
+    "seconds": 0.32,
+    "referenceRpmEstimate": 1900,
+    "source": {
+      "author": "TvdL Films",
+      "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+      "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.27054,
+    "peak": 0.4191,
+    "rms": 0.115,
+    "sha256": "97ee576ac6fdcfaa77a56a75e7cb020ce1daa9fba333c3ab6478caa9eda8ab8f"
+  },
+  {
+    "car": "buggati",
+    "layer": "mid",
+    "start": 95.2,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 3600,
+    "source": {
+      "author": "TvdL Films",
+      "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+      "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.18908,
+    "peak": 0.35508,
+    "rms": 0.115,
+    "sha256": "69356119f757be8363eff380462c661c2d7fa1c0b4dfd248e5d96586d9e349e6"
+  },
+  {
+    "car": "buggati",
+    "layer": "high",
+    "start": 97.3,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 5600,
+    "source": {
+      "author": "TvdL Films",
+      "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+      "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.19987,
+    "peak": 0.37252,
+    "rms": 0.115,
+    "sha256": "85744e49b0a45d0c0fdad2381200e02f5b5fb6c40b777ac3ff41a2182c9507f8"
+  },
+  {
+    "car": "buggati",
+    "layer": "decel",
+    "start": 22.8,
+    "seconds": 0.35,
+    "referenceRpmEstimate": 2200,
+    "source": {
+      "author": "TvdL Films",
+      "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+      "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.28465,
+    "peak": 0.32651,
+    "rms": 0.115,
+    "sha256": "9f25f2d11eac58bef2b49cc39c24921175ccf5edc92877de495e0bd149787c71"
+  },
+  {
+    "car": "bentley-gt",
+    "layer": "idle",
+    "start": 100,
+    "seconds": 1.3,
+    "referenceRpmEstimate": 850,
+    "source": {
+      "author": "QuickSilver Sound Architects",
+      "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+      "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.24958,
+    "peak": 0.2766,
+    "rms": 0.115,
+    "sha256": "7c199c7e343e6c369607f93c3b3224c203d4351dcc5d86063f405118c6811cfe"
+  },
+  {
+    "car": "bentley-gt",
+    "layer": "low",
+    "start": 95.4,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 1800,
+    "source": {
+      "author": "QuickSilver Sound Architects",
+      "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+      "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.2474,
+    "peak": 0.25804,
+    "rms": 0.115,
+    "sha256": "60429093d645a7173116a7ef147060b5ffb0a895297c659d4b83737b535150ac"
+  },
+  {
+    "car": "bentley-gt",
+    "layer": "mid",
+    "start": 104.7,
+    "seconds": 0.25,
+    "referenceRpmEstimate": 3300,
+    "source": {
+      "author": "QuickSilver Sound Architects",
+      "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+      "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.20788,
+    "peak": 0.36025,
+    "rms": 0.115,
+    "sha256": "eebd854e55f66bd0538fd2175e843a0fbad3c91ba63fa7a1e97d2d1f13e639d8"
+  },
+  {
+    "car": "bentley-gt",
+    "layer": "high",
+    "start": 111.5,
+    "seconds": 0.24,
+    "referenceRpmEstimate": 5100,
+    "source": {
+      "author": "QuickSilver Sound Architects",
+      "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+      "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.2015,
+    "peak": 0.3832,
+    "rms": 0.115,
+    "sha256": "e709b1eee0a78a62b543bc05e9925ab300710f7a93d5b7364e9fceb99ab18747"
+  },
+  {
+    "car": "bentley-gt",
+    "layer": "decel",
+    "start": 113.5,
+    "seconds": 0.28,
+    "referenceRpmEstimate": 2600,
+    "source": {
+      "author": "QuickSilver Sound Architects",
+      "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+      "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.23794,
+    "peak": 0.29652,
+    "rms": 0.115,
+    "sha256": "e05588bc3526ab1bc78d055a7853f46079a29fbfbee6ae79acd9a21de7a1593e"
+  },
+  {
+    "car": "jaguarxkjss",
+    "layer": "idle",
+    "start": 12.5,
+    "seconds": 1.2,
+    "referenceRpmEstimate": 1300,
+    "source": {
+      "author": "Dan Outside",
+      "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+      "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 1.17375,
+    "peak": 0.45909,
+    "rms": 0.115,
+    "sha256": "91a8b88a5b23ab3844388b958b2356d4337d366e8ad1701d0f22be507d31746d"
+  },
+  {
+    "car": "jaguarxkjss",
+    "layer": "low",
+    "start": 6.2,
+    "seconds": 0.45,
+    "referenceRpmEstimate": 1800,
+    "source": {
+      "author": "Dan Outside",
+      "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+      "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.38915,
+    "peak": 0.39066,
+    "rms": 0.115,
+    "sha256": "37b3abcdb6bca5e462fafd15dced34d315b86bf9fa88dc1af926998c4b3166e8"
+  },
+  {
+    "car": "jaguarxkjss",
+    "layer": "mid",
+    "start": 4.5,
+    "seconds": 0.35,
+    "referenceRpmEstimate": 2500,
+    "source": {
+      "author": "Dan Outside",
+      "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+      "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.29329,
+    "peak": 0.28612,
+    "rms": 0.115,
+    "sha256": "7b67b0c9656aa443dd9c89d1d8fc1d20d30d644582454927c3b1f97682ed1ae2"
+  },
+  {
+    "car": "jaguarxkjss",
+    "layer": "high",
+    "start": 3.1,
+    "seconds": 0.3,
+    "referenceRpmEstimate": 3200,
+    "source": {
+      "author": "Dan Outside",
+      "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+      "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.25694,
+    "peak": 0.3759,
+    "rms": 0.115,
+    "sha256": "3332698cd1a1e455aa2def8a4217b118e68b3848b08ceadc6743c47a6b20dfa0"
+  },
+  {
+    "car": "jaguarxkjss",
+    "layer": "decel",
+    "start": 7.5,
+    "seconds": 0.4,
+    "referenceRpmEstimate": 1800,
+    "source": {
+      "author": "Dan Outside",
+      "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+      "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+      "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    "duration": 0.36829,
+    "peak": 0.31432,
+    "rms": 0.115,
+    "sha256": "dfcd917d30ce6211179431b8098ce3d5d2bb67d21105d26e19663fdde93e107e"
+  }
+]

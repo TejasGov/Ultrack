@@ -1,0 +1,54 @@
+{
+  "av12": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "furari-488": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "mp1x": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "jaguarxkjss": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "nuvolari": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "buggati": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "destrier": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "blackbird": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "porsche1": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "huracan": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "laferrari": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "aston-martin-valk": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "bmw1": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  }
+}
