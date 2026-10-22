@@ -28,6 +28,8 @@ import { Trails } from './trails.js';
 import { CarFx } from './carkit/fx.js';
 import { PhysicsWorld } from './physics/world.js';
 import { Game } from './game/game.js';
+import { store } from './game/store.js';
+import { trackOf, trackUrl, optionalJson } from './tracks.js';
 import { GarageRoom } from './garage-room.js';
 import { DriverHoardings } from './driver-hoardings.js';
 import { FINISH_RAIN, FINISH_FLOW, FINISH_SPARK, applyRainGlass } from './finish.js';
@@ -35,15 +37,26 @@ import { wetUniforms, wetify, wetCars } from './wet-road.js';
 import { makeRain } from './wet-rain.js';
 import { TIERS, detectTier, GpuTimer, Culler, DynamicResolution } from './perf.js';
 
+const DEV_QUERY = new URLSearchParams(location.search);
 const A = '/assets/';
+// the circuit (src/tracks.js): the menu's choice, or ?track= on the developer viewer. An unknown id is Marina.
+let TRACK = trackOf(DEV_QUERY.get('dev') === '1' ? DEV_QUERY.get('track') : store.settings.track);
+const U = (what) => trackUrl(TRACK, what, TEX);
 const LOOKS = {
-  dusk: { hdri: 'belfast_sunset_puresky_2k.hdr', env: 0.8, bg: 0.5, exposure: 0.45, tm: 'Neutral', bloomGain: 0.67, bloomThr: 2.1, fog: 0x4a4658, fogDensity: 0.001, emissive: 0.5, lights: 0.0, sun: 2.4, sunColor: 0xffb27a, trails: 0.35,
+  // midday, clear sky: the sun is high and hard, the sky is the light (env), no lamp is on; LEDs and screens stay, dimmed.
+  // sunEl/skyEl: elevation (deg) of the sun light and of the visible sun (default: the low dusk sun); lamps: the cars' lamp
+  // mode; hl: floor of the dev headlight (0 = off); glow: lamp-sprite gain (default follows `lights`); hdriClamp: cap on the
+  // HDRI's sun disc (it is clipped at 65504 and would turn the paint's reflection into a white blot)
+  day: { hdri: 'qwantani_noon_puresky_2k.hdr', env: 0.9, bg: 1.0, exposure: 1.5, tm: 'Neutral', bloomGain: 0.4, bloomThr: 1.8, fog: 0xb4c8dc, fogDensity: 0.00045, emissive: 0.2, lights: 0.0, sun: 4.5, sunColor: 0xfff1de, trails: 0.1,
+    dn: 0, hdriRot: 2.82, fogSun: [0.1, 0.09, 0.07], flare: 0.4, glint: [1.8, 1.75, 1.6], sunEl: 50, skyEl: 49.8, lamps: 'running', hl: 0, glow: 0, hdriClamp: 64,
+    grade: { s: 0.3, black: 0.012, shadows: [0.93, 0.97, 1.05], highs: [1.03, 1.0, 0.95], sat: 1.06 } },
+  dusk: { dn: 0.35, lamps: 'running', hdri: 'belfast_sunset_puresky_2k.hdr', env: 0.8, bg: 0.5, exposure: 0.45, tm: 'Neutral', bloomGain: 0.67, bloomThr: 2.1, fog: 0x4a4658, fogDensity: 0.001, emissive: 0.5, lights: 0.0, sun: 2.4, sunColor: 0xffb27a, trails: 0.35,
     hdriRot: 2.88, fogSun: [0.42, 0.23, 0.11], flare: 1.0, glint: [6.0, 3.4, 1.5],
     grade: { s: 0.55, black: 0.03, shadows: [0.84, 0.93, 1.12], highs: [1.08, 1.0, 0.86], sat: 1.12 } },
-  bluehour: { hdri: 'qwantani_dusk_1_puresky_2k.hdr', env: 0.22, bg: 0.3, exposure: 1.1, tm: 'AgX', fog: 0x26324a, fogDensity: 0.0009, emissive: 1.0, lights: 0.6, sun: 0.35, sunColor: 0x9fb6ff, trails: 0.9,
+  bluehour: { dn: 0.7, hdri: 'qwantani_dusk_1_puresky_2k.hdr', env: 0.22, bg: 0.3, exposure: 1.1, tm: 'AgX', fog: 0x26324a, fogDensity: 0.0009, emissive: 1.0, lights: 0.6, sun: 0.35, sunColor: 0x9fb6ff, trails: 0.9,
     hdriRot: 3.17, fogSun: [0.22, 0.16, 0.16], flare: 0.25, glint: [0.5, 0.45, 0.55],
     grade: { s: 0.4, black: 0.02, shadows: [0.86, 0.95, 1.14], highs: [1.06, 1.0, 0.9], sat: 1.06 } },
-  night: { hdri: 'qwantani_night_puresky_2k.hdr', env: 0.035, bg: 0.035, exposure: 1.25, tm: 'AgX', fog: 0x0a0f1a, fogDensity: 0.0012, emissive: 1.4, lights: 1.0, sun: 0.12, sunColor: 0x8ea4d6, trails: 1.3,
+  night: { dn: 1, hdri: 'qwantani_night_puresky_2k.hdr', env: 0.035, bg: 0.035, exposure: 1.25, tm: 'AgX', fog: 0x0a0f1a, fogDensity: 0.0012, emissive: 1.4, lights: 1.0, sun: 0.12, sunColor: 0x8ea4d6, trails: 1.3,
     hdriRot: 0, fogSun: [0, 0, 0], flare: 0, glint: [0, 0, 0],
     grade: { s: 0.4, black: 0.015, shadows: [0.86, 0.96, 1.14], highs: [1.1, 1.0, 0.86], sat: 1.08 } },
 };
@@ -87,9 +100,9 @@ const params = {
   player: true,            // you drive the hero car (off: the AI drives it, for benchmarks and flythroughs)
 };
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
-const TEX = new URLSearchParams(location.search).get('tex') === 'webp' ? 'webp' : 'ktx2';
+const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
 // the game (src/game: menus, garage, HUD, sessions) runs by default; ?dev=1 is the bare viewer with its tuning panel
-const DEV = new URLSearchParams(location.search).get('dev') === '1';
+const DEV = DEV_QUERY.get('dev') === '1';
 let game = null, benchmarking=false;
 const inputDebug=DEV?new InputDebug(document.body):null;
 
@@ -296,9 +309,11 @@ headlight.shadow.mapSize.set(512, 512);   // it only covers 60 m
 Object.assign(headlight.shadow.camera, { near: 0.5, far: 90 });
 headlight.shadow.bias = -0.0004;
 const sun = new THREE.DirectionalLight(0xffffff, 0);
-const SUN_DIR = new THREE.Vector3(-0.55, 0.21, -0.77).normalize();   // low over the back straight: long golden shadows
+// the sun: the track gives its bearing, the look its height (default: low over the back straight, long golden shadows);
 // the visible sun sits lower than the light, just above the HDRI's own sun (~2 deg), so their glows merge into one
-const SKY_SUN = new THREE.Vector3(-0.55, 0, -0.77).normalize().setY(Math.tan(THREE.MathUtils.degToRad(7))).normalize();
+const sunAt = (v, el) => { const [bx, bz] = TRACK.sun, n = Math.hypot(bx, bz); return v.set(bx / n * Math.cos(el), Math.sin(el), bz / n * Math.cos(el)); };
+const SUN_EL = Math.atan2(0.21, Math.hypot(0.55, 0.77)), SKY_EL = THREE.MathUtils.degToRad(7);
+const SUN_DIR = sunAt(new THREE.Vector3(), SUN_EL), SKY_SUN = sunAt(new THREE.Vector3(), SKY_EL);
 FOG_SUN.dir.set(SKY_SUN.toArray());
 wetUniforms.uGlintDir.value.copy(SKY_SUN);
 sun.castShadow = true;
@@ -366,7 +381,7 @@ const SCENERY_TEST = new URLSearchParams(location.search).get('scenery') === '1'
 const gpuTimer = new GpuTimer(renderer);
 const dynres = new DynamicResolution();
 const hdriCache = new Map();
-let gltfLoader, venuePromise;
+let gltfLoader, venuePromise, venueRoot = null;
 const garageRoom = DEV ? null : new GarageRoom(renderer);
 
 const mark = (n) => performance.mark('ultrack:' + n);   // read with performance.getEntriesByType('mark')
@@ -378,7 +393,12 @@ async function load() {
   field.fx = new CarFx(scene);                 // exhaust, pops, nitro, tyre smoke (carkit/fx.js)
   const carsReady = field.load(gltfLoader, game ? [game.startupCar] : undefined);
   carsReady.catch(() => {});                   // handled where it is consumed
-  track = await fetch(A + 'track.json').then(r=>{if(!r.ok)throw Error('Track metadata failed');return r.json();});
+  // a saved circuit whose files are gone (Tokyo before its export, or removed later) falls back to Marina
+  track = await fetchTrack().catch((error) => {
+    if (TRACK.id === trackOf().id) throw error;
+    console.warn(`Track ${TRACK.id} unavailable, using ${trackOf().id}:`, error);
+    TRACK = trackOf(); store.set('track', TRACK.id); return fetchTrack();
+  });
   buildPath();
   await carsReady;
   field.setTrack(curve, curveLength); field.grid(track); newTrails(field.cars);
@@ -387,17 +407,56 @@ async function load() {
   else await ensureVenue();
 }
 
+const fetchTrack = () => fetch(U('track')).then((r) => { if (!r.ok) throw Error('Track metadata failed'); return r.json(); });
+const NO_LIGHTS = { floodlights: [], standLamps: [], streetLamps: [] };   // a track without lights.json is lit by the sky alone
+
 function ensureVenue() {
-  return venuePromise ??= loadVenue().catch(error=>{venuePromise=null;throw error;});
+  const p = venuePromise ??= loadVenue().catch((error) => { if (venuePromise === p) venuePromise = null; throw error; });
+  return p;
+}
+
+/** free a loaded subtree's GPU memory: geometry, instance buffers, materials and the textures they hold */
+function disposeTree(root) {
+  root.traverse((o) => {
+    o.geometry?.dispose(); o.dispose?.();
+    for (const m of [].concat(o.material ?? [])) {
+      for (const v of Object.values(m)) if (v?.isTexture) v.dispose();
+      m.dispose();
+    }
+  });
+}
+/** drop the venue (geometry, textures, glows, crowd, culler, hoardings) so another circuit can load without leaking */
+function unloadVenue() {
+  venuePromise = null; venueLights = null; culler = null; captureBoost = [];
+  if (venueRoot) { scene.remove(venueRoot); disposeTree(venueRoot); venueRoot = null; }
+  if (glows) { scene.remove(glows.points); disposeTree(glows.points); glows = null; }
+  sceneryExperiment?.dispose(); sceneryExperiment = null;
+  people.clear(); driverHoardings.clear(); life.reset();
+  allMats.clear(); wetMats.length = 0;
+  for (const light of [...pool.flood, ...pool.stand, ...pool.street]) { light.userData.lamp = null; light.userData.want = 0; light.intensity = 0; }   // not parked at the old lamps
+}
+/** Switch circuit: the old venue goes, the new track's data replaces the path and the grid; the venue itself loads on demand
+ *  (ensureVenue). The caller owns the collision world (game.js) and the menu. Reverts and rethrows if the new track will not load. */
+async function setTrack(id) {
+  const next = trackOf(id), prev = TRACK;
+  if (next === prev) return;
+  unloadVenue(); warming = null;
+  TRACK = next;
+  try { track = await fetchTrack(); } catch (error) { TRACK = prev; track = await fetchTrack(); aimSun(LOOKS[params.look]); throw error; }
+  buildPath(); field.setTrack(curve, curveLength); field.grid(track); newTrails(field.cars);
+  aimSun(LOOKS[params.look]);
 }
 
 async function loadVenue() {
+  const T = TRACK, has = T.has;
   const [gltf, lightsJson] = await Promise.all([
-    gltfLoader.loadAsync(import.meta.env.DEV&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:A + (TEX === 'ktx2' ? 'marina_visual_ktx2.glb' : 'marina_visual.glb')),
-    fetch(A + 'lights.json').then((r) => r.json()),
+    gltfLoader.loadAsync(import.meta.env.DEV&&T.id==='marina'&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:U('visual')),
+    optionalJson(U('lights'), NO_LIGHTS),
     setLook(params.look),
   ]);
+  if (T !== TRACK) { disposeTree(gltf.scene); return; }   // another circuit was picked while this one loaded
   venueLights = lightsJson;
+  venueRoot = gltf.scene;
   scene.add(gltf.scene);
   const aniso = renderer.capabilities.getMaxAnisotropy();
   gltf.scene.traverse((o) => {
@@ -443,6 +502,7 @@ async function loadVenue() {
     }
     life.attach(o);
   });
+  applyDayNight(LOOKS[params.look]);
   // every lamp also gets a stable glow sprite; the tiny lamp meshes drop under the bloom threshold (they shimmered)
   // The road mirror draws the venue a second time (~7 ms). Small unlit props (cones, posts, tyre stacks, bunting,
   // crew kit: a few blurred pixels in a wet-road reflection) move to layer NO_MIRROR, which the main camera, the
@@ -463,7 +523,7 @@ async function loadVenue() {
   // lamp, LED and neon surfaces burn 3x brighter in the player car's reflection capture (their glow sprites can't be
   // in it): the paint then reflects bright light shapes after dark, the biggest cue of a premium finish
   captureBoost = [...allMats].filter((m) => /^M_Lamp|Neon|LED|M_VipGlow|M_VipEdge|M_GarageHeader/.test(m.name) && m.emissiveIntensity > 0);
-  if(SCENERY_TEST){
+  if(SCENERY_TEST&&has.yachts&&has.buildings){
     const {SceneryExperiment}=await import('./scenery-experiment.js');
     try{
       sceneryExperiment=new SceneryExperiment(gltf.scene,{panel:true,params,resize,renderer});
@@ -477,20 +537,20 @@ async function loadVenue() {
   }
   culler = new Culler(gltf.scene);
   // real characters replace the placeholder people (loaded after the venue so the track shows first)
-  const populate=()=>people.populate(gltfLoader,scene,gltf.scene,track).then(n=>console.info('people:',n)).catch(e=>console.warn('people:',e));
+  const populate=()=>people.populate(gltfLoader,scene,gltf.scene,track,{pit:has.pit,vip:has.vip?U('vip'):null,alive:()=>venueRoot===gltf.scene}).then(n=>console.info('people:',n)).catch(e=>console.warn('people:',e));
   const later=()=>setTimeout(()=>{if(globalThis.requestIdleCallback)requestIdleCallback(populate,{timeout:5000});else populate();},2500);
   // the car-lab cars: the player's is on the title screen, the rest load on demand (Field.ensure)
   makeReflector();
   mark('venue-ready');
     console.info(`cars: ${field.cars.length} active, no parked pit cars`);
-    if(DEV || params.quality==='ultra')later();
+    if(has.people&&(DEV || params.quality==='ultra'))later();
     // team artwork in each team's font on the garages, pit boxes, flags and the Corniche Club (see teamdress.js): after
     // the car, so its fonts and canvases never compete with the car's download
-    dressTeams([...allMats]).then((n) => console.info(`team artwork: ${n} materials`)).catch((e) => console.warn('teams:', e));
+    if(has.teamDress)dressTeams([...allMats]).then((n) => console.info(`team artwork: ${n} materials`)).catch((e) => console.warn('teams:', e));
     if (game) return;    // the game sets up physics per session
     // physics (src/physics): the cars drive on the track's collision mesh; ?physics=0 keeps the old line-following
     if (new URLSearchParams(location.search).get('physics') !== '0') {
-      const pw = await PhysicsWorld.create(A + 'marina_collision.glb');
+      const pw = await PhysicsWorld.create(U('collision'));
       field.enablePhysics(pw, { player: params.player });
       console.info('physics: on (you drive: WASD / arrows, Space handbrake, Shift nitro, R reset; or a gamepad)');
     }
@@ -624,11 +684,25 @@ function jumpTo(name) { dist = ((JUMPS[name]?.() ?? 0) + curveLength) % curveLen
 
 // ------------------------------------------------------------------------------------------------ looks & settings
 
+/** cap a half-float HDR's pixels at `max`: positive halves order as their bit patterns (the sign bit set = negative, left alone) */
+function clampHalf(data, max) {
+  const cap = THREE.DataUtils.toHalfFloat(max);
+  for (let i = 0; i < data.length; i++) if (data[i] > cap && data[i] < 0x8000) data[i] = cap;
+}
+/** point the sun light and the visible sun for this look (heights) and track (bearing); the shadow camera re-aims next tick */
+function aimSun(look) {
+  sunAt(SUN_DIR, look.sunEl !== undefined ? THREE.MathUtils.degToRad(look.sunEl) : SUN_EL);
+  sunAt(SKY_SUN, look.skyEl !== undefined ? THREE.MathUtils.degToRad(look.skyEl) : SKY_EL);
+  FOG_SUN.dir.set(SKY_SUN.toArray());
+  wetUniforms.uGlintDir.value.copy(SKY_SUN);
+  sky.uniforms.uSun.value.copy(SKY_SUN);
+  sun.target.position.set(NaN, 0, NaN);
+}
 async function setLook(name) {
   const look = LOOKS[name];
   let pending=hdriCache.get(look.hdri);
   if(!pending){
-    pending=(async()=>{const hdr=await new HDRLoader().loadAsync(A+'hdri/'+look.hdri);hdr.mapping=THREE.EquirectangularReflectionMapping;return {bg:hdr,env:pmrem.fromEquirectangular(hdr).texture};})();
+    pending=(async()=>{const hdr=await new HDRLoader().loadAsync(A+'hdri/'+look.hdri);hdr.mapping=THREE.EquirectangularReflectionMapping;if(look.hdriClamp)clampHalf(hdr.image.data,look.hdriClamp);return {bg:hdr,env:pmrem.fromEquirectangular(hdr).texture};})();
     hdriCache.set(look.hdri,pending);pending.catch(()=>hdriCache.delete(look.hdri));
   }
   const tex=await pending;
@@ -638,15 +712,21 @@ async function setLook(name) {
   scene.backgroundIntensity = look.bg;
   scene.backgroundRotation.y = scene.environmentRotation.y = look.hdriRot;
   sky.setLook(name);
+  aimSun(look);
   scene.environmentIntensity = look.env;
   applyAll();
 }
 
+/** the track's optional day/night backdrop blend (tracks.js dayNight) for this look */
+function applyDayNight(look) {
+  const d = TRACK.dayNight; if (!d) return;
+  for (const m of allMats) if (d.day.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = 1 - look.dn; }
+}
 function applyAll() {
   const look = LOOKS[params.look];
   renderer.toneMapping = { AgX: THREE.AgXToneMapping, ACES: THREE.ACESFilmicToneMapping, Neutral: THREE.NeutralToneMapping }[params.toneMapping === 'auto' ? look.tm : params.toneMapping];
   renderer.toneMappingExposure = look.exposure * params.exposure;
-  scene.fog = params.fog > 0 ? new THREE.FogExp2(look.fog, look.fogDensity * params.fog) : null;
+  scene.fog = params.fog > 0 ? new THREE.FogExp2(look.fog, look.fogDensity * params.fog * TRACK.fog) : null;
   allMats.forEach((m) => { if (m.emissiveIntensity !== undefined) m.emissiveIntensity = m.userData.emissive0 * look.emissive * params.emissive; });
   wetMats.forEach((m) => {
     const w = params.wet;
@@ -686,6 +766,7 @@ function applyAll() {
   fu.uShadows.value.set(...G.shadows); fu.uHighs.value.set(...G.highs);
   fu.uFlare.value = look.flare * params.flare;
   FOG_SUN.color.set(look.fogSun);
+  applyDayNight(look);
   controls.enabled = params.mode === 'orbit';
 }
 
@@ -782,7 +863,7 @@ function updateFx(t, cull = false) {
   if (cull && culler && params.cull) { culler.k = params.cullDistance; cullStats = culler.update(camera.position); }
   if (field) {
     field.captureEvery = ({low:0,medium:8,high:4,ultra:2})[params.quality==='auto'?device.tier:params.quality] ?? 4;
-    field.lightMode = params.look === 'dusk' ? 'running' : 'low';
+    field.lightMode = look.lamps ?? 'low';
     field.cars.forEach((c) => { c.root.visible = params.cars; });
     if (params.cars) field.update(t, camera, renderer, look, [rain, people.group, glows?.points, reflector, trails?.mesh, field.fx?.smoke, field.fx?.fire, field.fx?.jet], captureBoost);
     // hidden from the car's reflection capture: a 3 px glow sprite fills a 128 px cube face, and the road mirror
@@ -797,7 +878,7 @@ function updateFx(t, cull = false) {
   const edge = Math.max(Math.abs(sp.x), Math.abs(sp.y));
   finalPass.uniforms.uSun.value.set(sp.x * 0.5 + 0.5, sp.y * 0.5 + 0.5, inFront ? 1 - THREE.MathUtils.smoothstep(edge, 0.85, 1.15) : 0);
   finalPass.uniforms.uAspect.value = camera.aspect;
-  glows?.update(t, camera, renderer.getContext().drawingBufferHeight, scene.fog, (0.35 + 0.65 * look.lights) * params.venueLights);
+  glows?.update(t, camera, renderer.getContext().drawingBufferHeight, scene.fog, (look.glow ?? 0.35 + 0.65 * look.lights) * params.venueLights);
 }
 
 function placeOnPath() {
@@ -835,7 +916,7 @@ function updateSpeedBlur(dt, pathSpeed) {
 }
 
 // smoke is lit by the scene around it: warm and bright at dusk, dim after dark (fire is emissive)
-const FX_LIGHT = { dusk: new THREE.Color(0.95, 0.82, 0.72), bluehour: new THREE.Color(0.45, 0.5, 0.62), night: new THREE.Color(0.3, 0.3, 0.36) };
+const FX_LIGHT = { day: new THREE.Color(0.88, 0.9, 0.94), dusk: new THREE.Color(0.95, 0.82, 0.72), bluehour: new THREE.Color(0.45, 0.5, 0.62), night: new THREE.Color(0.3, 0.3, 0.36) };
 
 // Monotonic animation time without the deprecated THREE.Clock wrapper.
 const animationEpoch=performance.now();
@@ -890,7 +971,7 @@ function tick(now) {
   const fwd = camera.getWorldDirection(new THREE.Vector3());
   headlight.position.copy(camera.position).addScaledVector(fwd, 0.5).addScaledVector(up, -0.4);
   headlight.target.position.copy(camera.position).addScaledVector(fwd, 60).addScaledVector(up, -1.25);   // aim far: no hotspot at the bumper
-  headlight.intensity = params.headlight && params.mode !== 'chase' ? 90 * Math.max(0.2, look.lights) : 0;   // in chase the car's own beams light the road
+  headlight.intensity = params.headlight && params.mode !== 'chase' ? 90 * Math.max(look.hl ?? 0.2, look.lights) : 0;   // in chase the car's own beams light the road
   const cell = 8;
   const cx = Math.round(camera.position.x / cell) * cell, cz = Math.round(camera.position.z / cell) * cell;
   if (cx !== sun.target.position.x || cz !== sun.target.position.z) {
@@ -1020,7 +1101,7 @@ async function benchScenery(frames=16,{width=960,height=540}={}) {
 }
 renderer.info.autoReset = false;
 // console access for tuning; renderNow draws a frame immediately (the app's pane can stall rAF while it is scripted)
-window.viewer = { THREE, composer, params, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
+window.viewer = { THREE, composer, params, LOOKS, setTrack, unloadVenue, ensureVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
   scenery:()=>sceneryExperiment, benchScenery,
   field: () => field,
   cheer: (k = 1) => { life.cheer(k); people.cheer(); }, people: people.count, peopleList: people.list, device,
@@ -1045,7 +1126,7 @@ function newTrails(cars) {
 
 if (!DEV) {
   gui.hide(); hud.style.display = 'none'; loading.style.display = 'none';
-  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>driverHoardings.set(keys,track), clearDriverHoardings:()=>driverHoardings.clear(), collisionUrl: A + 'marina_collision.glb', track: () => track });
+  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, track: () => track, setTrack, trackId: () => TRACK.id });
   game.screens.title.progress(0.15);
   window.game = game;
 }

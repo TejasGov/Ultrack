@@ -7,7 +7,7 @@ const KEY = 'ultrack.v1';
 
 export const DEFAULT_SETTINGS = {
   // display
-  quality: 'auto', look: 'dusk', weather: 'dry', motionBlur: 'full', reduceMotion: false, fovOffset: 0, showFps: false,
+  quality: 'auto', look: 'dusk', track: 'marina', weather: 'dry', motionBlur: 'full', reduceMotion: false, fovOffset: 0, showFps: false,
   // driving
   assists: 'rookie', units: 'kmh', laps: 3, opponents: true,
   // audio (0..1)

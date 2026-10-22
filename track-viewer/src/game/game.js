@@ -21,6 +21,7 @@ import { rewardFor } from './economy.js';
 import { applyUpgrades } from './carinfo.js';
 import { canSelectCar, carProgression } from './progression.js';
 import { RaceLoading } from './race-loading.js';
+import { trackOf } from '../tracks.js';
 
 export class Game {
   /** ctx: { params, camera, controls, track(), device, applyAll, applyQuality, setLook, resize, newTrails, collisionUrl } */
@@ -87,6 +88,28 @@ export class Game {
       if(stop())return void(this.preloading===id&&(this.preloading=null));
       await (this.warmP=this.ctx.warmRace?.(keys,stop));
     })().catch(error=>{console.warn('Race preload:',error);if(this.preloading===id)this.preloading=null;});
+  }
+  /** The circuit picked in the setup screen: saved, the old venue and collision world dropped, the new track's data loaded and the
+   *  race preload restarted. A track that will not load leaves the player on the one they had. Calls queue, so quick toggling
+   *  settles on the last choice. */
+  selectTrack(id) {
+    return this.trackP = (this.trackP ?? Promise.resolve()).then(async () => {
+      const next = trackOf(id), prev = this.ctx.trackId();
+      if (next.id === prev) return;
+      this.preloading = null;                                           // cancels a preload in flight (its stop() sees the change)
+      await this.warmP?.catch(() => {});
+      this.worldP?.then((w) => w.dispose(), () => {}); this.worldP = null;
+      this.setBusy(`Loading ${next.name}…`);
+      try {
+        await this.ctx.setTrack(next.id);
+        store.set('track', next.id); store.set('look', next.look);       // a circuit opens at its own hour; Time of day changes it
+        this.hud?.el.remove(); this.hud = new Hud(this.root, this.ctx.track());
+        this.setBusy(''); this.applySettings(); this.lineup();
+      } catch (error) {
+        console.warn('Track switch failed:', error);
+        store.set('track', prev); this.setBusy(`${next.name} could not load.`);
+      }
+    });
   }
   /** the collision world: built in the menu if the preload got there, else now (each session owns one) */
   takeWorld(){const world=this.worldP??PhysicsWorld.create(this.ctx.collisionUrl);this.worldP=null;return world;}
@@ -240,6 +263,7 @@ export class Game {
       return;
     }
     if (this.starting) return; this.starting = true;
+    await this.trackP;                                                  // a circuit change in flight lands first
     const S = store.settings, M = MODES[mode];
     const requestedFrom=this.screen;
     let preparedWorld, cancelled=false;
@@ -251,7 +275,7 @@ export class Game {
     };
     try {
     this.setBusy('');
-    await this.raceLoading?.open({mode,reduceMotion:S.reduceMotion,onCancel:()=>{
+    await this.raceLoading?.open({mode,reduceMotion:S.reduceMotion,track:trackOf(S.track).name,onCancel:()=>{
       cancelled=true;this.raceLoading.close();this.ctx.clearDriverHoardings?.();this.lineup();this.show('menu');
     }});
     if(cancelled)return;
@@ -294,7 +318,7 @@ export class Game {
     this.session = new Session(F, mode, { laps: S.laps });     // last: update() runs a session only once it is complete
     this.setBusy('');
     this.mode = mode; this.lastLaps = S.laps;
-    this.audio.commentary?.setTags([...M.tags, S.look === 'night' ? 'night' : S.look === 'dusk' ? 'dusk' : 'night', S.weather === 'rain' ? 'rain' : 'dry', 'corniche']);
+    this.audio.commentary?.setTags([...M.tags, S.look === 'day' ? null : S.look === 'dusk' ? 'dusk' : 'night', S.weather === 'rain' ? 'rain' : 'dry', trackOf(S.track).tag].filter(Boolean));
     if (this.audio.engine?.rev) this.audio.play(this.audio.engine.prof.start ?? this.audio.engine.rev, { bus: 'engine', gain: 0.7 });
     this.cameraFor('chase');
     F.rig = null;                                // a fresh chase rig, snapped behind the car

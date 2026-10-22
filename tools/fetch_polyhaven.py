@@ -19,8 +19,9 @@ TEXTURES = {
 }
 MODELS = {"concrete_road_barrier": "1k", "street_lamp_01": "1k"}
 HDRIS = {"qwantani_dusk_2_puresky": "2k", "qwantani_dusk_2": "1k",
-         # the game's lighting looks: golden dusk, blue hour, night
-         "belfast_sunset_puresky": "2k", "qwantani_dusk_1_puresky": "2k", "qwantani_night_puresky": "2k"}
+         # the game's lighting looks: day, golden dusk, blue hour, night
+         "belfast_sunset_puresky": "2k", "qwantani_dusk_1_puresky": "2k", "qwantani_night_puresky": "2k",
+         "qwantani_noon_puresky": "2k"}   # the day look
 
 
 def get_json(url):

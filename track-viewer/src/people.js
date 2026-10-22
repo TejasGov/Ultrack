@@ -17,7 +17,7 @@ const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2
 const pick = (a) => a[Math.floor(rnd() * a.length)];
 
 async function loadLib(loader, ids) {
-  await Promise.all(ids.map(async (id) => {
+  await Promise.all(ids.filter((id) => !lib[id]).map(async (id) => {   // loaded once: a second venue reuses the cast (reloading leaked their textures)
     const g = await loader.loadAsync(`/assets/characters/${id}.glb`);
     g.scene.traverse((o) => {
       if (!o.isMesh) return;
@@ -83,12 +83,15 @@ const faceTrack = (pos, track) => {
 /** Load the cast and place it. `venue` is the loaded track scene, `track` the track.json. */
 // spectators: off by default. The game is raced at dusk and night, where 3D fans are barely visible and cost ~20 ms
 // a frame; the stands' animated crowd cards carry that job. Officials borrow two of the casual models.
-export async function populate(loader, scene, venue, track, { max = 400, spectators = false } = {}) {
+// pit: the pit crews (a track without pit boxes has none); vip: URL of the booth's vip.json, or null; alive(): false once the
+// venue this cast was made for has been replaced (a track switch during the load)
+export async function populate(loader, scene, venue, track, { max = 400, spectators = false, pit = true, vip: vipUrl = '/assets/vip.json', alive = () => true } = {}) {
   await loadLib(loader, ['pete', 'racer', 'leonard', 'marshal', 'lewis', 'brian', ...(spectators ? SPECTATORS : [])]);
+  if (!alive()) return 0;
   scene.add(group);
   venue.updateMatrixWorld(true);
   // pit crews: two Petes per box (one kneeling at the tyres, one standing), drivers at the first boxes
-  const crew = placeholders(venue, /^crew_/);
+  const crew = pit ? placeholders(venue, /^crew_/) : [];
   crew.forEach((c, k) => {
     if (k % 3 === 2) return;                                  // two per box are enough; keeps the lane readable
     spawn(scene, 'pete', c.pos, c.yaw, k % 3 === 0 ? ['inspect', 'kneelIdle'] : ['stand'], { cheer: 'cheer' });
@@ -99,7 +102,8 @@ export async function populate(loader, scene, venue, track, { max = 400, spectat
   placeholders(venue, /^official(_\d+)?$/).forEach((o) => spawn(scene, pick(['lewis', 'brian']), o.pos, o.yaw, ['shift'], { cheer: 'clap' }));
   // the commentators at the rail of the Corniche Club's booth balcony (tracks/marina/vip.py -> vip.json): Lewis plays
   // Enzo (cheers on the big moments), Brian plays Alastair (applauds, grudgingly)
-  const vip = await fetch('/assets/vip.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  const vip = vipUrl && await fetch(vipUrl).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  if (!alive()) return 0;
   vip?.announcers?.forEach((a, k) => spawn(scene, k ? 'brian' : 'lewis', new THREE.Vector3(...a.pos), a.yawRad, ['shift'], { cheer: k ? 'clap' : 'cheer' }));
   // photographers beside the TV towers, kneeling or looking down the track
   placeholders(venue, /^camera_tower(_\d+)?$/, false).forEach((t, k) => {
@@ -180,6 +184,12 @@ export function cheer() {
     base.fadeOut(0.3);
     setTimeout(() => { act.fadeOut(0.4); base.reset().fadeIn(0.4).play(); }, (clip.duration - 0.4) * 1000);
   }
+}
+
+/** Remove everyone (the venue they stood in is gone). The character library stays loaded; clones share its geometry and materials. */
+export function clear() {
+  for (const p of people) { p.mixer.stopAllAction(); p.mixer.uncacheRoot(p.root); }
+  people.length = 0; group.clear();
 }
 
 export const count = () => people.length;

@@ -13,7 +13,7 @@ const files = [
   [join(out, 'web', 'marina_collision.glb'), 'marina_collision.glb'],   // Rapier ground, kerbs, run-off and walls (src/physics)
   [join(out, 'lights.json'), 'lights.json'],
   [join(out, 'vip.json'), 'vip.json'],
-  ...['belfast_sunset_puresky', 'qwantani_dusk_1_puresky', 'qwantani_night_puresky'].map((id) =>
+  ...['qwantani_noon_puresky', 'belfast_sunset_puresky', 'qwantani_dusk_1_puresky', 'qwantani_night_puresky'].map((id) =>
     [join(root, 'assets', 'polyhaven', id, `${id}_2k.hdr`), `hdri/${id}_2k.hdr`]),
 ];
 for (const [original, rel] of files) {
@@ -22,6 +22,19 @@ for (const [original, rel] of files) {
   if (!existsSync(src)) throw new Error(`missing ${src}: build the track first (see tracks/marina/README.md)`);
   mkdirSync(dirname(join(dest, rel)), { recursive: true });
   copyFileSync(src, join(dest, rel));
+}
+// the other circuits (src/tracks.js) go to public/assets/<id>/ under the same names. Built from tracks/<id>/out/web/ (else out/), and only
+// once the track is usable (track.json, collision and a venue): an unbuilt track is skipped, which keeps it out of the menu.
+for (const id of ['tokyo']) {
+  const out = join(root, 'tracks', id, 'out'), find = (name) => [join(out, 'web', name), join(out, name)].find(existsSync);
+  const names = ['track.json', `${id}_collision.glb`, `${id}_visual.glb`, `${id}_visual_ktx2.glb`, 'lights.json', 'vip.json'];
+  const found = Object.fromEntries(names.map((n) => {
+    const shell = n.endsWith('_visual.glb') || n.endsWith('_visual_ktx2.glb') ? find(n.replace(/\.glb$/, '_shell.glb')) : null, whole = find(n);
+    return [n, shell && (!whole || statSync(shell).mtimeMs >= statSync(whole).mtimeMs) ? shell : whole];
+  }));
+  if (!found['track.json'] || !found[`${id}_collision.glb`] || !(found[`${id}_visual_ktx2.glb`] ?? found[`${id}_visual.glb`])) { console.log(`skipped ${id}: not exported yet`); continue; }
+  mkdirSync(join(dest, id), { recursive: true });
+  for (const [n, src] of Object.entries(found)) if (src) copyFileSync(src, join(dest, id, n));
 }
 // characters (Mixamo + Meshy, compressed): assets/characters/web/*.glb -> /assets/characters/
 const chars = join(root, 'assets', 'characters', 'web');

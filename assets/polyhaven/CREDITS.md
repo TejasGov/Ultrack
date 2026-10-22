@@ -15,5 +15,6 @@ All CC0 (public domain): https://polyhaven.com/license
 - **Belfast Sunset (Pure Sky)** (`belfast_sunset_puresky`) by Greg Zaal, Dimitrios Savva, Jarod Guest: https://polyhaven.com/a/belfast_sunset_puresky
 - **Qwantani Dusk 1 (Pure Sky)** (`qwantani_dusk_1_puresky`) by Greg Zaal, Jarod Guest: https://polyhaven.com/a/qwantani_dusk_1_puresky
 - **Qwantani Night (Pure Sky)** (`qwantani_night_puresky`) by Greg Zaal, Jarod Guest: https://polyhaven.com/a/qwantani_night_puresky
+- **Qwantani Noon (Pure Sky)** (`qwantani_noon_puresky`) by Greg Zaal, Jarod Guest: https://polyhaven.com/a/qwantani_noon_puresky (2k HDR from https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/qwantani_noon_puresky_2k.hdr, downloaded 2026-10-22 for the day look)
 
 Moved to _archive/2026-10-21/assets/polyhaven/ on 2026-10-21 (unused by the track build and the game): concrete_road_barrier, qwantani_dusk_2, qwantani_dusk_2_puresky. Their credit lines above are kept for history; tools/fetch_polyhaven.py downloads them again.

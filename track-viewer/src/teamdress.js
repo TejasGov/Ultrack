@@ -93,17 +93,18 @@ export async function dressTeams(materials) {
     return t;
   };
   const cache = new Map();
+  const free = (m) => { m.map?.dispose(); if (m.emissiveMap !== m.map) m.emissiveMap?.dispose(); };   // the track's own artwork is replaced: free it (a track switch leaked it)
   let n = 0;
   for (const m of materials) {
     if (m.name === 'M_VipSign') {
-      m.map = m.emissiveMap = tex(sign()); m.emissive?.set(0xffffff); m.needsUpdate = true; n++; continue;
+      const t = tex(sign()); free(m); m.map = m.emissiveMap = t; m.emissive?.set(0xffffff); m.needsUpdate = true; n++; continue;
     }
     const hit = /^M_(GarageHeader|PitBox|Flag|TeamBanner)_([A-Z]+)/.exec(m.name);
     const team = hit && BY_NAME[hit[2]];
     if (!team) continue;
     const key = hit[1] + team.id;
     if (!cache.has(key)) cache.set(key, tex(DRAW[hit[1]](team)));
-    m.map = cache.get(key);
+    free(m); m.map = cache.get(key);
     m.color?.set(0xffffff);
     if (hit[1] === 'GarageHeader') { m.emissiveMap = m.map; m.emissive?.set(0xffffff); if (team.light) m.emissiveIntensity = 1.5; }
     if (hit[1] === 'PitBox') { m.transparent = true; m.depthWrite = false; m.polygonOffset = true; m.polygonOffsetFactor = -2; }

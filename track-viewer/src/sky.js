@@ -1,6 +1,6 @@
 // Clouds and sky shading over the Poly Haven background: a camera-centred dome drawn behind everything.
 // - clouds: three octaves of value noise projected onto a cloud deck ~1.5 km up, drifting with the wind, thinning to
-//   haze at the horizon; lit by the look (dusk: warm undersides, silver toward the sun; blue hour: cool grey; night: the
+//   haze at the horizon; lit by the look (day: white tops, blue-grey undersides; dusk: warm undersides, silver toward the sun; blue hour: cool grey; night: the
 //   city's sodium glow from below, dark tops)
 // - horizon glow: a light-pollution band so the skyline stands in haze, not in a black void
 // Values are HDR (the background is too), tone-mapped with the scene.
@@ -11,6 +11,8 @@ export const SKY_LOOKS = {
   // sun: the disc and its glow through the haze (golden hour backlight; none at night)
   dusk:     { cover: 0.56, lit: [2.0, 1.05, 0.55], shade: [0.16, 0.13, 0.2], haze: [0.9, 0.5, 0.32], zenith: [0.0, 0.0, 0.0], glowH: 0.14, alpha: 0.97, sun: [3.2, 1.7, 0.75] },
   bluehour: { cover: 0.52, lit: [0.32, 0.36, 0.52], shade: [0.07, 0.08, 0.14], haze: [0.38, 0.3, 0.32], zenith: [0.0, 0.01, 0.03], glowH: 0.12, alpha: 0.9, sun: [0.35, 0.3, 0.36] },
+  // day: a few fair-weather cumulus, lit white from above with blue-grey undersides; the HDRI's own sun disc does the sun
+  day:      { cover: 0.34, lit: [1.9, 1.92, 2.0], shade: [0.5, 0.57, 0.7], haze: [0.3, 0.38, 0.5], zenith: [0.0, 0.0, 0.0], glowH: 0.1, alpha: 0.88, sun: [0.7, 0.66, 0.55] },
   night:    { cover: 0.56, lit: [0.16, 0.1, 0.06], shade: [0.012, 0.014, 0.022], haze: [0.11, 0.065, 0.035], zenith: [0.0, 0.0, 0.006], glowH: 0.09, alpha: 0.92, sun: [0, 0, 0] },
 };
 

@@ -6,6 +6,7 @@ import {teamLogoUrl} from '../team-logos.js';
 import { carName, ROSTER } from './carinfo.js';
 import { MODES } from './session.js';
 import { store, ASSISTS, WEATHER, fmtTime } from './store.js';
+import { trackOf, availableTracks } from '../tracks.js';
 
 export const TEAM_OF = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, t])));
 export const ENTRY = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, c])));
@@ -16,7 +17,7 @@ export function teamMark(t) {
   const c = parseInt(t.colors.primary.slice(1), 16), l = 0.2126 * (c >> 16) + 0.7152 * ((c >> 8) & 255) + 0.0722 * (c & 255);
   return l < 45 ? t.colors.secondary : t.colors.primary;
 }
-const LOOK_LABEL = { dusk: 'Dusk', bluehour: 'Blue hour', night: 'Night' };
+const LOOK_LABEL = { day: 'Day', dusk: 'Dusk', bluehour: 'Evening', night: 'Night' };   // bluehour keeps its id (saves, sky and HDRI tables)
 
 /** h('div.a.b', { onclick, style }, ...children) */
 export function h(sel, attrs = {}, ...kids) {   // null / false children are skipped
@@ -126,7 +127,7 @@ function screen(cls, ...kids) { return h('div.screen.hidden.' + cls, {}, ...kids
 export function TitleScreen(game) {
   const bar = h('div.loadbar', {}, h('i'));
   const el = screen('title-screen', h('div.scrim.full', { style: { background: 'radial-gradient(circle at 50% 45%, rgba(4,5,8,0.2), rgba(4,5,8,0.75))', backdropFilter: 'none' } }),
-    h('i.logo'), h('div.press', {}, 'PRESS ANY KEY · LOADING GARAGE'), bar, h('div.ver', {}, 'V2 · CORNICHE MARINA'));
+    h('i.logo'), h('div.press', {}, 'PRESS ANY KEY · LOADING GARAGE'), bar, h('div.ver', {}, 'V2 · ' + trackOf(store.settings.track).name.toUpperCase()));
   const go = () => game.boot();
   el.addEventListener('pointerdown', go);
   return { el, onKey: go, progress: (p) => bar.style.setProperty('--p', p), ready: () => { el.querySelector('.press').textContent = 'PRESS ANY KEY'; bar.style.opacity = 0; } };
@@ -148,9 +149,10 @@ export function MenuScreen(game) {
     h('button.bento-tile.records-tile',{'data-nav':'',onclick:()=>game.show('records'),onmouseenter:e=>nav.hover(e.currentTarget)},h('span.tile-kicker',{},'PERSONAL RECORDS'),h('strong',{},'The timing board'),record),
     tile('settings','Settings','MAKE IT YOURS','Picture, driving and sound.','settings-tile'),
     tile('credits','Credits','THE PEOPLE & THE CRAFT','Model creators, sources and licenses.','credits-tile'));
-  const el=screen('menu.home',h('div.scrim'),h('i.logo.brand'),h('div.home-heading',{},'CORNICHE MARINA',h('span',{},'THE CIRCUIT IS YOURS'),coinChip),grid,
+  const trackName=document.createTextNode('');
+  const el=screen('menu.home',h('div.scrim'),h('i.logo.brand'),h('div.home-heading',{},trackName,h('span',{},'THE CIRCUIT IS YOURS'),coinChip),grid,
     h('div.footer',{},h('span',{},h('b',{},'ARROWS'),'SELECT'),h('span',{},h('b',{},'ENTER'),'GO'),h('div.sp'),h('span',{},'ULTRACK / V2')));
-  return {el,nav:true,grid:true,onShow(){coinChip.textContent='U-COINS  '+store.coins.toLocaleString('en');fillCard(current,store.data.car);const best=store.data.best[store.data.car];record.textContent=(best?'BEST '+fmtTime(best):'Set your first lap')+' · '+carName(store.data.car);},back(){game.show('title');}};
+  return {el,nav:true,grid:true,onShow(){trackName.textContent=trackOf(store.settings.track).name.toUpperCase();coinChip.textContent='U-COINS  '+store.coins.toLocaleString('en');fillCard(current,store.data.car);const best=store.data.best[store.data.car];record.textContent=(best?'BEST '+fmtTime(best):'Set your first lap')+' · '+carName(store.data.car);},back(){game.show('title');}};
 }
 
 export function RecordsScreen(game) {
@@ -183,24 +185,29 @@ export function fillCard(card, key) {
 }
 
 export function SetupScreen(game) {
-  let mode = 'race';
+  let mode = 'race', tracks = [];   // tracks: the circuits whose files exist; the row shows only with a choice (Tokyo once exported)
   const title = h('h2'), sub = h('div.sub'), rows = h('div'), card = h('div.carcard');
   const start = h('button.cta', { 'data-nav': '', onclick: () => game.startSession(mode), onmouseenter: (e) => nav.hover(e.currentTarget) }, 'Start');
   const el = screen('menu', h('div.scrim'), h('div.panel.setup', {}, title, sub, rows, start), card,
     h('div.footer', {}, h('span', {}, h('b', {}, '←→'), 'CHANGE'), h('span', {}, h('b', {}, 'ENTER'), 'START'), h('span', {}, h('b', {}, 'ESC'), 'BACK')));
+  function build() {
+    const M = MODES[mode], S = store.settings;
+    title.textContent = M.label; sub.textContent = M.desc;
+    fill(rows, 
+      tracks.length > 1 ? row('Circuit', seg(tracks.map((t) => [t.id, t.name]), trackOf(S.track).id, (v) => { game.selectTrack(v).then(() => { build(); nav.mark(); }); })) : null,
+      M.laps ? row('Laps', seg([[1, '1'], [3, '3'], [5, '5'], [10, '10']], S.laps, (v) => store.set('laps', v))) : null,
+      row('Time of day', seg(Object.entries(LOOK_LABEL), S.look, (v) => { store.set('look', v); game.applySettings(); })),
+      row('Weather', seg(Object.entries(WEATHER).map(([k, w]) => [k, w.label]), S.weather, (v) => { store.set('weather', v); game.applySettings(); })),
+      row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { store.set('assists', v); }), ASSISTS[S.assists].note),
+    );
+  }
   return {
     el, nav: true,
     onShow(m) {
-      mode = m ?? mode; const M = MODES[mode], S = store.settings;
-      title.textContent = M.label; sub.textContent = M.desc;
-      fill(rows, 
-        M.laps ? row('Laps', seg([[1, '1'], [3, '3'], [5, '5'], [10, '10']], S.laps, (v) => store.set('laps', v))) : null,
-        row('Time of day', seg(Object.entries(LOOK_LABEL), S.look, (v) => { store.set('look', v); game.applySettings(); })),
-        row('Weather', seg(Object.entries(WEATHER).map(([k, w]) => [k, w.label]), S.weather, (v) => { store.set('weather', v); game.applySettings(); })),
-        row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { store.set('assists', v); }), ASSISTS[S.assists].note),
-      );
+      mode = m ?? mode; build();
       fillCard(card, store.data.car);
       nav.reset(0);
+      availableTracks().then((list) => { if (list.length !== tracks.length) { tracks = list; build(); nav.mark(); } });
     },
     back() { game.show('menu'); },
   };
@@ -298,7 +305,7 @@ export function ResultsScreen(game) {
       if (mode === 'race') {
         const me = rows.findIndex((r) => r.hero) + 1, lead = rows[0].total;
         const fastest = Math.min(...rows.map((r) => r.best ?? Infinity));
-        fill(panel, h('h2', {}, me === 1 ? 'Victory' : `P${me}`), h('div.sub', {}, `${MODES.race.label} · ${data.laps} ${data.laps === 1 ? 'lap' : 'laps'} · Corniche Marina`),
+        fill(panel, h('h2', {}, me === 1 ? 'Victory' : `P${me}`), h('div.sub', {}, `${MODES.race.label} · ${data.laps} ${data.laps === 1 ? 'lap' : 'laps'} · ${trackOf(store.settings.track).name}`),
           h('table', {}, h('tr', {}, h('th', {}, ''), h('th', {}, 'DRIVER'), h('th', {}, 'CAR'), h('th', { style: { textAlign: 'right' } }, 'BEST LAP'), h('th', { style: { textAlign: 'right' } }, 'TIME')),
             rows.map((r, k) => css(h('tr' + (r.hero ? '.me' : ''), {},
               h('td.p', {}, k + 1),

@@ -1,0 +1,45 @@
+// The track registry: which circuit the game is on, where its files live and which venue systems it has. main.js,
+// game.js and the menu read the selected track from here instead of naming Marina. Plain data plus fetch probes, so
+// node tests can import it.
+//   stem       file base name: <stem>_visual(_ktx2).glb, <stem>_collision.glb (tracks/<id>/out/web -> sync-assets.mjs)
+//   dir        public URL folder; Marina keeps /assets/ itself (its files predate the registry), the rest get /assets/<id>/
+//   look       the time of day the track opens in when picked in the menu
+//   fog        multiplies the look's fog density (a bigger or hazier venue)
+//   sun        [x, z] bearing of the sun over the track; its height comes from the look
+//   tag        the commentary tag for lines about this circuit (null: none)
+//   dayNight   optional: { day: RegExp on the name of the day skyline's material } for a backdrop of two coincident bands (the night one
+//              opaque, the day one just inside it); main.js fades the day band's opacity per look (LOOKS dn: 0 = day .. 1 = night, opacity 1 - dn). Marina has none.
+//   has        venue systems; one that is off is skipped without a request or an error
+//     pit        pit crews and boxes (people.js placeholders)    vip        vip.json: the booth's commentators
+//     hoardings  driver posters beside the track                  people     the Mixamo/Meshy cast
+//     yachts / buildings  scenery LOD (scenery-experiment.js)     teamDress  team artwork on garages, boxes and flags
+export const TRACKS = {
+  marina: {
+    id: 'marina', name: 'Corniche Marina', stem: 'marina', dir: '/assets/', look: 'dusk', fog: 1, sun: [-0.55, -0.77], tag: 'corniche',
+    has: { pit: true, vip: true, hoardings: true, people: true, yachts: true, buildings: true, teamDress: true },
+  },
+  tokyo: {
+    id: 'tokyo', name: 'Tokyo Hiragana Circuit', stem: 'tokyo', dir: '/assets/tokyo/', look: 'night', fog: 1, sun: [-0.55, -0.77], tag: null,
+    dayNight: { day: /^M_SupertallBackdropDay$/ },
+    // flip these on as the Tokyo export grows pit boxes, a VIP booth, hoarding sites and Marina-style scenery
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
+};
+export const DEFAULT_TRACK = 'marina';
+export const trackOf = (id) => TRACKS[id] ?? TRACKS[DEFAULT_TRACK];
+const FILES = { track: () => 'track.json', lights: () => 'lights.json', vip: () => 'vip.json', collision: (t) => `${t.stem}_collision.glb`,
+  visual: (t, tex) => `${t.stem}_visual${tex === 'ktx2' ? '_ktx2' : ''}.glb` };
+/** URL of one of the track's files: what is track | lights | vip | collision | visual (tex: 'ktx2' | 'webp'). */
+export const trackUrl = (t, what, tex = 'ktx2') => t.dir + FILES[what](t, tex);
+
+// A dev server (and a static host) answers a missing file with index.html, so "200" proves nothing: judge by type.
+const real = (url, not) => fetch(url, { headers: { Range: 'bytes=0-0' } }).then((r) => r.ok && !not.test(r.headers.get('content-type') ?? '')).catch(() => false);
+/** Fetch JSON that may not exist (lights.json, vip.json): the fallback when it is missing or is the SPA fallback page. */
+export const optionalJson = (url, fallback = null) => fetch(url).then((r) => (r.ok && /json/.test(r.headers.get('content-type') ?? '') ? r.json() : fallback)).catch(() => fallback);
+let probed = null;
+/** The tracks whose files are on the server: Marina always, the others once track.json, the collision mesh and the venue exist. */
+export function availableTracks() {
+  return probed ??= Promise.all(Object.values(TRACKS).map(async (t) =>
+    t.id === DEFAULT_TRACK || (await Promise.all(['track', 'collision', 'visual'].map((what) => real(trackUrl(t, what), /html/)))).every(Boolean) ? t : null,
+  )).then((list) => list.filter(Boolean));
+}

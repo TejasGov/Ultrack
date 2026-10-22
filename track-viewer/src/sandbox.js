@@ -60,10 +60,12 @@ const fill = new THREE.HemisphereLight(0xdfe6ff, 0x30302c, 0.35); scene.add(fill
 const pmrem = new THREE.PMREMGenerator(renderer);
 const studioEnv = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 const hdr = {};
-async function hdri(file) { if (!hdr[file]) { const t = await new HDRLoader().loadAsync(A + 'hdri/' + file); t.mapping = THREE.EquirectangularReflectionMapping; hdr[file] = t; } return hdr[file]; }
+async function hdri(file) { if (!hdr[file]) { const t = await new HDRLoader().loadAsync(A + 'hdri/' + file); if (/noon/.test(file)) { const d = t.image.data, cap = THREE.DataUtils.toHalfFloat(64); for (let i = 0; i < d.length; i++) if (d[i] > cap && d[i] < 0x8000) d[i] = cap; }   // the sun disc is clipped at 65504 in the file
+    t.mapping = THREE.EquirectangularReflectionMapping; hdr[file] = t; } return hdr[file]; }
 const LOOKS = {
   studio: { env: () => studioEnv, envI: 1, bg: new THREE.Color(0x16181c), sun: [0xffffff, 2.2, [-4, 7, 3]], exp: 1.0, lamps: 'running', fx: [1, 1, 1], bloom: 3.0 },
   dusk: { env: () => hdri('belfast_sunset_puresky_2k.hdr'), envI: 0.8, bg: 'env', bgI: 0.22, sun: [0xffb27a, 2.4, [-10, 4, -6]], exp: 0.55, lamps: 'running', fx: [0.95, 0.82, 0.72], bloom: 2.1 },
+  day: { env: () => hdri('qwantani_noon_puresky_2k.hdr'), envI: 0.9, bg: 'env', bgI: 1.0, sun: [0xfff1de, 4.5, [-5, 10, -4]], exp: 1.5, lamps: 'running', fx: [1, 0.98, 0.94], bloom: 1.8 },
   night: { env: () => hdri('qwantani_night_puresky_2k.hdr'), envI: 0.25, bg: new THREE.Color(0x05070b), sun: [0x9fb4e8, 0.35, [5, 8, 4]], exp: 1.2, lamps: 'low', fx: [0.3, 0.3, 0.36], bloom: 1.4 },
 };
 let look = 'studio';

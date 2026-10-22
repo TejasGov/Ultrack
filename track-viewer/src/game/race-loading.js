@@ -17,7 +17,7 @@ export class RaceLoading {
     if(this.preloaded)return;
     this.preloaded=new Image();this.preloaded.src='/assets/loading/broadcast.webp';
   }
-  async open({ mode = 'race', reduceMotion = false, onCancel } = {}) {
+  async open({ mode = 'race', reduceMotion = false, track = 'Corniche Marina', onCancel } = {}) {
     this.close(); this.active = true; this.done = new Set(); this.started = performance.now();
     this.previousFocus = document.activeElement;
     const el = this.el = document.createElement('section');
@@ -38,7 +38,7 @@ export class RaceLoading {
     });
     const mast = document.createElement('header');
     const logo = new Image(); logo.src = '/assets/brand/ultrack-alpha.webp'; logo.alt = 'Ultrack';
-    const event = document.createElement('span'); event.textContent = `CORNICHE MARINA\n${mode === 'race' ? 'SEVEN TEAMS. ONE GRID.' : mode.replaceAll('_', ' ').toUpperCase()}`;
+    const event = document.createElement('span'); event.textContent = `${track.toUpperCase()}\n${mode === 'race' ? 'SEVEN TEAMS. ONE GRID.' : mode.replaceAll('_', ' ').toUpperCase()}`;
     mast.append(logo, event);
     const foot = document.createElement('footer');
     const status = document.createElement('div'); status.className = 'race-loading-status';

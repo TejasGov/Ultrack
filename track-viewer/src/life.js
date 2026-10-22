@@ -193,6 +193,9 @@ export function attach(o) {
   }
 }
 
+/** Forget the loaded venue's live-updated parts (the screen, LED bands, hotel crown): its materials were disposed. */
+export function reset() { drawScreen = null; screenT = -1; ledBands = []; crown = null; }
+
 /** A big moment (overtake, win, crash): the crowd jumps, then settles over a few seconds. */
 export function cheer(amount = 1) { cheerTarget = Math.max(cheerTarget, amount); }
 
