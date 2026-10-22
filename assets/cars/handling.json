@@ -11,7 +11,7 @@
    "downforce": 1,
    "cogM": 0.46,
    "weightFront": 0.43,
-   "bop": 0.93,
+   "bop": 0.933,
    "bopGrip": 1,
    "brakeK": 1.066
   },
@@ -25,7 +25,7 @@
    "downforce": 1.5,
    "cogM": 0.42,
    "weightFront": 0.42,
-   "bop": 0.94,
+   "bop": 0.947,
    "bopGrip": 1,
    "brakeK": 1.033
   },
@@ -39,8 +39,8 @@
    "downforce": 2.4,
    "cogM": 0.38,
    "weightFront": 0.44,
-   "bop": 0.93,
-   "bopGrip": 0.95,
+   "bop": 0.88,
+   "bopGrip": 1,
    "brakeK": 1.033
   },
   "jaguarxkjss": {
@@ -54,7 +54,7 @@
    "cogM": 0.4,
    "weightFront": 0.45,
    "bop": 0.93,
-   "bopGrip": 0.979,
+   "bopGrip": 1,
    "brakeK": 1.033
   },
   "furari-488": {
@@ -67,7 +67,7 @@
    "downforce": 1.2,
    "cogM": 0.44,
    "weightFront": 0.41,
-   "bop": 0.934,
+   "bop": 0.939,
    "bopGrip": 1,
    "brakeK": 1.033
   },
@@ -82,7 +82,7 @@
    "cogM": 0.5,
    "weightFront": 0.53,
    "bop": 1.07,
-   "bopGrip": 1.103,
+   "bopGrip": 1.12,
    "brakeK": 0.925
   },
   "bmw1": {
@@ -95,7 +95,7 @@
    "downforce": 0.9,
    "cogM": 0.45,
    "weightFront": 0.52,
-   "bop": 1,
+   "bop": 1.068,
    "bopGrip": 1,
    "brakeK": 1.011
   },
@@ -109,8 +109,8 @@
    "downforce": 0.9,
    "cogM": 0.45,
    "weightFront": 0.43,
-   "bop": 0.93,
-   "bopGrip": 0.958,
+   "bop": 0.913,
+   "bopGrip": 1,
    "brakeK": 1.241
   },
   "destrier": {
@@ -123,8 +123,8 @@
    "downforce": 1.4,
    "cogM": 0.38,
    "weightFront": 0.43,
-   "bop": 0.93,
-   "bopGrip": 0.95,
+   "bop": 0.88,
+   "bopGrip": 0.956,
    "brakeK": 1.241
   },
   "bentley-gt": {
@@ -137,7 +137,7 @@
    "downforce": 0.35,
    "cogM": 0.52,
    "weightFront": 0.56,
-   "bop": 1,
+   "bop": 1.056,
    "bopGrip": 1,
    "brakeK": 1.033
   },
@@ -151,7 +151,7 @@
    "downforce": 0.9,
    "cogM": 0.42,
    "weightFront": 0.46,
-   "bop": 0.932,
+   "bop": 0.927,
    "bopGrip": 1,
    "brakeK": 1.033
   },
@@ -165,8 +165,8 @@
    "downforce": 1.1,
    "cogM": 0.41,
    "weightFront": 0.43,
-   "bop": 0.93,
-   "bopGrip": 0.95,
+   "bop": 0.88,
+   "bopGrip": 1,
    "brakeK": 1.131
   },
   "huracan": {
@@ -179,8 +179,8 @@
    "downforce": 1.3,
    "cogM": 0.43,
    "weightFront": 0.41,
-   "bop": 0.93,
-   "bopGrip": 0.95,
+   "bop": 1,
+   "bopGrip": 1,
    "brakeK": 1.131
   },
   "laferrari": {
@@ -193,8 +193,8 @@
    "downforce": 1.4,
    "cogM": 0.4,
    "weightFront": 0.41,
-   "bop": 0.93,
-   "bopGrip": 0.95,
+   "bop": 0.88,
+   "bopGrip": 1,
    "brakeK": 1.131
   }
  }
