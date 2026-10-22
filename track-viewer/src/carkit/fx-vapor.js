@@ -21,7 +21,7 @@ const VAPOR = /* glsl */`
   vec3 nrm = normalize(vec3(d * 2.0 + (vec2(n, w) - 0.5) * 0.7, sqrt(max(0.06, 1.0 - min(r * r, 1.0)))));
   float lit = smoothstep(0.1, 0.95, dot(nrm, normalize(vec3(sl, uSunV.z))) * 0.5 + 0.5);
   float fw = pow(max(0.0, -uSunV.z), 3.0) * (0.45 + 0.55 * (1.0 - body));         // thin edges glow when looking into the sun
-  vec3 col = vCol * (uLight * 1.15 + uSunCol * (0.1 + 0.75 * lit) + uSunCol * fw * 1.2);
+  vec3 col = min(vCol * (uLight * 1.15 + uSunCol * (0.1 + 0.75 * lit) + uSunCol * fw * 1.2), vec3(uCap));      // uCap: sunlit steam never clips to white
   col += vRel * (0.4 + 0.6 * body);                                              // tail-lamp glow in the steam
   gl_FragColor = vec4(col, a);`;
 
@@ -41,8 +41,8 @@ export class Vapor {
     this.sunW = new THREE.Vector3(0.3, 0.5, 0.3).normalize();      // toward the sun, world
     this.pool = new Pool({
       blending: THREE.NormalBlending, fragment: VAPOR, name: 'fx-steam', max: 3500, order: 5,
-      pre: 'uniform vec3 uSunV, uSunCol;',
-      uniforms: { uSunV: { value: new THREE.Vector3(0, 0, -1) }, uSunCol: { value: new THREE.Color(0, 0, 0) } },
+      pre: 'uniform vec3 uSunV, uSunCol; uniform float uCap;',
+      uniforms: { uSunV: { value: new THREE.Vector3(0, 0, -1) }, uSunCol: { value: new THREE.Color(0, 0, 0) }, uCap: { value: 99 } },
       onRender: (renderer, camera, u) => u.uSunV.value.copy(this.sunW).transformDirection(camera.matrixWorldInverse),
     });
     const u = this.pool.mesh.material.uniforms;
@@ -75,7 +75,7 @@ export class Vapor {
     const amt = 1 - sstep(10, 48, speed);
     if (amt < 0.02) return;
     const cold = clamp(0.4 + 0.5 * (1 - S.warm) + 0.4 * fx.damp, 0, 1);
-    const rate = (9 + 9 * throttle) * amt * (0.6 + 0.6 * cold) * q;
+    const rate = (9 + 9 * throttle) * amt * (0.6 + 0.6 * cold) * q * fx.steamK;
     const puff = S.blip === 1 ? 3 : 0;
     const lamp = Math.min(2.6, 0.7 + 2.0 * (c.lampLevel ?? 0)) * (0.1 + 0.9 * fx.nightK);     // red glow near the lamps: night, more on the brake
     for (const a of c.exhausts ?? []) {
@@ -88,7 +88,7 @@ export class Vapor {
       while (k-- > 0) this.pool.spawn(p.x + d.x * 0.04, p.y + d.y * 0.04, p.z + d.z * 0.04,
         v.x * 0.7 + d.x * exit + rnd(0.12), v.y * 0.7 + d.y * exit + 0.45 + rnd(0.12), v.z * 0.7 + d.z * exit + rnd(0.12),
         lamp, lamp * 0.07, lamp * 0.05,
-        (0.95 + Math.random() * 0.8) * (0.75 + 0.25 * cold), 0.1, (0.36 + Math.random() * 0.34 + 0.12 * throttle) * big, (0.6 + 0.25 * Math.random()) * (0.6 + 0.4 * cold) * (0.7 + 0.3 * amt) * big,
+        (0.95 + Math.random() * 0.8) * (0.75 + 0.25 * cold), 0.1, (0.36 + Math.random() * 0.34 + 0.12 * throttle) * big, (0.6 + 0.25 * Math.random()) * (0.6 + 0.4 * cold) * (0.7 + 0.3 * amt) * big * Math.min(1, 0.35 + 0.65 * fx.steamK),
         0.88, 0.9, 0.95, 2.2, 1.6, 0.35);
     }
   }

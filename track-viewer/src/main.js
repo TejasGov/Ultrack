@@ -48,7 +48,7 @@ const LOOKS = {
   // mode; hl: floor of the dev headlight (0 = off); glow: lamp-sprite gain (default follows `lights`); hdriClamp: cap on the
   // HDRI's sun disc (it is clipped at 65504 and would turn the paint's reflection into a white blot)
   day: { hdri: 'qwantani_noon_puresky_2k.hdr', env: 0.9, bg: 1.0, exposure: 1.5, tm: 'Neutral', bloomGain: 0.4, bloomThr: 1.8, fog: 0xb4c8dc, fogDensity: 0.00045, emissive: 0.2, lights: 0.0, sun: 4.5, sunColor: 0xfff1de, trails: 0.1,
-    dn: 0, hdriRot: 2.82, fogSun: [0.1, 0.09, 0.07], flare: 0.4, glint: [1.8, 1.75, 1.6], sunEl: 50, skyEl: 49.8, lamps: 'running', hl: 0, glow: 0, hdriClamp: 64,
+    dn: 0, hdriRot: 2.82, fogSun: [0.1, 0.09, 0.07], flare: 0.4, glint: [1.8, 1.75, 1.6], sunEl: 50, skyEl: 49.8, lamps: 'running', hl: 0, glow: 0, hdriClamp: 64, steam: 0.2, steamCap: 0.55,
     grade: { s: 0.3, black: 0.012, shadows: [0.93, 0.97, 1.05], highs: [1.03, 1.0, 0.95], sat: 1.06 } },
   dusk: { dn: 0.35, lamps: 'running', hdri: 'belfast_sunset_puresky_2k.hdr', env: 0.8, bg: 0.5, exposure: 0.45, tm: 'Neutral', bloomGain: 0.67, bloomThr: 2.1, fog: 0x4a4658, fogDensity: 0.001, emissive: 0.5, lights: 0.0, sun: 2.4, sunColor: 0xffb27a, trails: 0.35,
     hdriRot: 2.88, fogSun: [0.42, 0.23, 0.11], flare: 1.0, glint: [6.0, 3.4, 1.5],
@@ -60,6 +60,13 @@ const LOOKS = {
     hdriRot: 0, fogSun: [0, 0, 0], flare: 0, glint: [0, 0, 0],
     grade: { s: 0.4, black: 0.015, shadows: [0.86, 0.96, 1.14], highs: [1.1, 1.0, 0.86], sat: 1.08 } },
 };
+// steam / steamCap: exhaust steam density (1) and the ceiling of its sunlit brightness (none): steam hardly shows on a warm sunny day.
+// A track's `looks` (tracks.js) override these per look; setTrack re-merges them over the base table.
+const BASE_LOOKS = structuredClone(LOOKS);
+function mergeLooks() {
+  for (const k in LOOKS) { const o = TRACK.looks?.[k] ?? {}; for (const p in LOOKS[k]) delete LOOKS[k][p]; Object.assign(LOOKS[k], structuredClone(BASE_LOOKS[k]), o, { grade: { ...BASE_LOOKS[k].grade, ...o.grade } }); }
+}
+mergeLooks();
 // tm: tone mapping. Neutral keeps saturated paint red at dusk (AgX turned it salmon); AgX's highlight roll-off keeps
 // the floodlights from clipping to white blocks after dark.
 // hdriRot turns each HDRI so its own sun (or afterglow) sits on SUN_DIR's bearing: one sun, not two.
@@ -397,7 +404,7 @@ async function load() {
   track = await fetchTrack().catch((error) => {
     if (TRACK.id === trackOf().id) throw error;
     console.warn(`Track ${TRACK.id} unavailable, using ${trackOf().id}:`, error);
-    TRACK = trackOf(); store.set('track', TRACK.id); return fetchTrack();
+    TRACK = trackOf(); mergeLooks(); store.set('track', TRACK.id); return fetchTrack();
   });
   buildPath();
   await carsReady;
@@ -441,8 +448,8 @@ async function setTrack(id) {
   const next = trackOf(id), prev = TRACK;
   if (next === prev) return;
   unloadVenue(); warming = null;
-  TRACK = next;
-  try { track = await fetchTrack(); } catch (error) { TRACK = prev; track = await fetchTrack(); aimSun(LOOKS[params.look]); throw error; }
+  TRACK = next; mergeLooks();
+  try { track = await fetchTrack(); } catch (error) { TRACK = prev; mergeLooks(); track = await fetchTrack(); aimSun(LOOKS[params.look]); throw error; }
   buildPath(); field.setTrack(curve, curveLength); field.grid(track); newTrails(field.cars);
   aimSun(LOOKS[params.look]);
 }
@@ -982,7 +989,7 @@ function tick(now) {
 
   life.update(t, dt, look.emissive * params.emissive);
   updateFx(t);
-  field?.fx?.update(params.paused ? 0 : dt, FX_LIGHT[params.look] ?? FX_LIGHT.dusk);
+  field?.fx?.update(params.paused ? 0 : dt, FX_LIGHT[params.look] ?? FX_LIGHT.dusk, LOOKS[params.look]);
   people.update(dt, camera.position, camera);
   if (culler && params.cull && t - cullT > 0.2) { cullT = t; culler.k = params.cullDistance; cullStats = culler.update(camera.position); }
 

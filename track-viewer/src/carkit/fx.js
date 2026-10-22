@@ -52,7 +52,7 @@ export class CarFx {
     this.flash = 0; this.lit = 0; this.nj = 0; this.time = 0; this.glow = 0;
     this.quality = 1;      // 0..1 scales emission (set from the quality tier)
     this.damp = 0.25;      // 0..1 cold / damp air: steam shows more, tyre spray from ~0.3 up (set from the weather)
-    this.heroNitro = 0; this.heroSeen = false; this.nightK = 0;
+    this.heroNitro = 0; this.heroSeen = false; this.nightK = 0; this.steamK = 1;
     this.focus = new THREE.Vector3(); this.focused = false;      // the player's car: others far from it skip their spray
     this.wind = { x: 0, z: 0 };
     this.tmp = { p: new THREE.Vector3(), d: new THREE.Vector3(), q: new THREE.Quaternion(), c: new THREE.Vector3() };
@@ -187,8 +187,9 @@ export class CarFx {
     }
   }
 
-  /** dt seconds; light: ambient tint for the gas (look-dependent; fire and plasma are emissive) */
-  update(dt, light = new THREE.Color(1, 1, 1)) {
+  /** dt seconds; light: ambient tint for the gas (look-dependent; fire and plasma are emissive); look: its `steam` (density, 1) and `steamCap` (sunlit brightness ceiling) */
+  update(dt, light = new THREE.Color(1, 1, 1), look = {}) {
+    this.steamK = look.steam ?? 1; this.vapor.pool.mesh.material.uniforms.uCap.value = look.steamCap ?? 99;
     this.gas.mesh.material.uniforms.uLight.value.copy(light);
     const lum = 0.2126 * light.r + 0.7152 * light.g + 0.0722 * light.b;
     this.nightK = 1 - sstep(0.35, 0.8, lum);

@@ -9,6 +9,7 @@
 //   tag        the commentary tag for lines about this circuit (null: none)
 //   dayNight   optional: { day: RegExp on the name of the day skyline's material } for a backdrop of two coincident bands (the night one
 //              opaque, the day one just inside it); main.js fades the day band's opacity per look (LOOKS dn: 0 = day .. 1 = night, opacity 1 - dn). Marina has none.
+//   looks      optional per-look overrides merged over main.js LOOKS while this track is active (grade merges key by key); Marina has none
 //   has        venue systems; one that is off is skipped without a request or an error
 //     pit        pit crews and boxes (people.js placeholders)    vip        vip.json: the booth's commentators
 //     hoardings  driver posters beside the track                  people     the Mixamo/Meshy cast
@@ -21,6 +22,14 @@ export const TRACKS = {
   tokyo: {
     id: 'tokyo', name: 'Tokyo Hiragana Circuit', stem: 'tokyo', dir: '/assets/tokyo/', look: 'night', fog: 1, sun: [-0.55, -0.77], tag: null,
     dayNight: { day: /^M_SupertallBackdropDay$/ },
+    // the canopies keep the asphalt and stands in shade: more exposure and sky light by day; the baked skyline and signs follow `emissive`;
+    // the neon blooms from a higher threshold at night. The steps day > dusk > evening > night only ever go down.
+    looks: {
+      day: { exposure: 2.1, env: 1.25, emissive: 0.32, fogDensity: 0.0003, sun: 6, grade: { shadows: [1, 0.99, 0.97], sat: 1.02 } },
+      dusk: { exposure: 0.85, env: 1.0 },
+      bluehour: { exposure: 0.95, bg: 0.16, bloomGain: 0.7, emissive: 0.9 },
+      night: { bloomGain: 0.65, bloomThr: 1.35, emissive: 1.2 },
+    },
     // flip these on as the Tokyo export grows pit boxes, a VIP booth, hoarding sites and Marina-style scenery
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
