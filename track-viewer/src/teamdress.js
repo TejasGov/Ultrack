@@ -42,6 +42,7 @@ const DRAW = {
     g.strokeStyle = t.light || c.secondary; g.lineWidth = b; g.strokeRect(b / 2, b / 2, W - b, H - b);
     g.fillStyle = c.primary; g.globalAlpha = 0.85; g.fillRect(b, H * 0.3, W - 2 * b, H * 0.4); g.globalAlpha = 1;
     drawTeamLogo(g,t,W/2,H/2,6.0*s.k,1.5*s.k);
+    drawSponsor(g,t.sponsor,W/2,H*.86,W*.2,H*.1);   // the title sponsor's panel across the box's front edge
     t.cars.forEach((car, j) => text(s, String(car.number), W * (j ? 0.9 : 0.1), H / 2, 1.0, { fill: c.secondary, maxW: 1.2 }));
     return s;
   },

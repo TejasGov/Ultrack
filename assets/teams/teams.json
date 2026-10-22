@@ -1,6 +1,6 @@
 {
  "version": 2,
- "note": "Seven fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); there are seven of them, one per team. 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 14 cars, so Mojave and Liberty have one each; their second car is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
+ "note": "Eight fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); one per team (Sony, Hayate's, is an extra team-sponsor brand with trackside boards). 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 16 cars, so Corvid, Hayate, Mojave and Liberty have one each; their second car is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
  "teams": [
   {
    "id": "saetta",
@@ -177,8 +177,7 @@
     }
    ],
    "pitBoxes": [
-    9,
-    10
+    9
    ],
    "engine": "na-v12-screamer / w12-twin-turbo",
    "finish": "gloss",
@@ -218,7 +217,8 @@
       "background": "From Värmland, Sweden; forest rallies and ice racing on frozen lakes until Cal Beaumont watched her slide a car across one and offered her a seat at Mojave.",
       "personality": "Deadpan; says grip is overrated and means it; the brawler Maddox's great rival (she slides the car, he shoves it); the one person at Mojave who has never been impressed by the barn.",
       "rivals": [
-       "MAD"
+       "MAD",
+       "MIZ"
       ]
      }
     },
@@ -283,7 +283,8 @@
       "rivals": [
        "KAR",
        "QUI",
-       "BEA"
+       "BEA",
+       "KUR"
       ]
      }
     },
@@ -456,6 +457,73 @@
     "carbon": true
    },
    "livery": "pearl white; teal dune contour lines that flow from nose to tail like a topographic map; a sand-gold falcon on the roof; numbers in teal with a gold drop shadow"
+  },
+  {
+   "id": "hayate",
+   "name": "Hayate",
+   "short": "HYT",
+   "meaning": "Japanese: 疾風, a sudden gale",
+   "home": "Oyama, Shizuoka (in the shadow of Mt Fuji)",
+   "principal": "Tatsuo Hamamoto",
+   "line": "You hear us after we pass.",
+   "cars": [
+    {
+     "key": "nissan-z",
+     "number": 23,
+     "driver": {
+      "name": "Kaito Mizuno",
+      "code": "MIZ",
+      "nation": "JPN",
+      "age": 29,
+      "role": "the drift king",
+      "bio": "Touge drift champion from the Izu mountain passes; steers with the throttle.",
+      "background": "Born in Numazu, Shizuoka, a fishmonger's son who learned to slide a car on the Izu Skyline at night before going legal in D1 and Super GT; Hamamoto signed him after watching him drift a full wet lap of Fuji.",
+      "personality": "Calm in the car, chatty out of it; bows to every marshal; treats the apex as a suggestion; he and Lindqvist have argued for two seasons about who is the better sideways, and he and teammate Kuroda about whether sideways is fast.",
+      "rivals": [
+       "LIN",
+       "KUR"
+      ]
+     }
+    },
+    {
+     "key": "supra",
+     "number": 37,
+     "driver": {
+      "name": "Rina Kuroda",
+      "code": "KUR",
+      "nation": "JPN",
+      "age": 31,
+      "role": "the quiet ace",
+      "bio": "Former Super GT champion from Toyota City; the grid's most precise qualifier.",
+      "background": "From Toyota City, Aichi, a supplier engineer's daughter with her first kart at six; took the Super GT GT300 title at 24 and an engineering degree on the side; Hamamoto hired her to build the car around her.",
+      "personality": "Speaks on the radio only in lap numbers and tenths; keeps a handwritten logbook of every lap she has driven; respects Valois and would very much like to beat him; says Mizuno's sliding is murder on the tyres, then watches every replay.",
+      "rivals": [
+       "VAL",
+       "MIZ"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [
+    10
+   ],
+   "engine": "twin-turbo-v6 / turbo-i4",
+   "finish": "metallic",
+   "sponsor": "Sony",
+   "font": {
+    "family": "Dela Gothic One",
+    "file": "dela-gothic-one-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#3a1f78",
+    "secondary": "#f4f1ea",
+    "accent": "#ff4a2e",
+    "carbon": true,
+    "ink": "#f4f1ea"
+   },
+   "livery": "murasaki-violet body; a seigaiha wave band in white and vermilion rolls back over each rear quarter; kanji number roundels (二十三, 三十七) behind the door; the 疾風 wordmark on the bonnet and rear deck; a white SONY panel on the door and a katakana ソニー plate on the rear wing; vermilion stripes over the roof; vermilion LED strips (the team's lighting colour) edge the number roundel, banners and garage; numbers in a white roundel with a vermilion ring",
+   "light": "#ff5a3c"
   }
  ]
 }

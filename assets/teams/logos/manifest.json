@@ -584,6 +584,122 @@
           }
         }
       }
+    },
+    "hayate": {
+      "name": "Hayate",
+      "emblem": "Kazaguruma (wind pinwheel) mon",
+      "font": {
+        "family": "Dela Gothic One",
+        "file": "dela-gothic-one-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#3a1f78",
+        "secondary": "#f4f1ea",
+        "accent": "#ff4a2e",
+        "carbon": true,
+        "ink": "#f4f1ea"
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "hayate-lockup-onTeam.svg",
+            "png": "hayate-lockup-onTeam.png",
+            "webp": "hayate-lockup-onTeam.webp",
+            "sourceSha256": "5d71134aeffd8dc83b8f9af81a3c3ad5e804187a7c86cf851b0228244cf853b2",
+            "pngSha256": "aa0097c4acc47dfca12b5e89815543a86bb8066f26cce431347e0800f75cb1a1",
+            "pngBytes": 36575,
+            "webpSha256": "5505e7cecb547ae4e2ff23ad399218ef941208313ba23a85e77def9e6ed365a0",
+            "webpBytes": 20220
+          },
+          "icon": {
+            "svg": "hayate-icon-onTeam.svg",
+            "png": "hayate-icon-onTeam.png",
+            "webp": "hayate-icon-onTeam.webp",
+            "sourceSha256": "51963e5dcc439355556ac03b30ad9406f2cc6e1ca920cc3ee7ec5f5feb852a64",
+            "pngSha256": "c080a9cd6fad3e3adcc5e3f7f37e7505ef0407153149e180a44e4ac945905079",
+            "pngBytes": 15315,
+            "webpSha256": "7a2765f838a48c0f83b0e87c1ab03d5c1e3f5f70b6f876e2effd89076eb91a5b",
+            "webpBytes": 9758
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "hayate-lockup-onDark.svg",
+            "png": "hayate-lockup-onDark.png",
+            "webp": "hayate-lockup-onDark.webp",
+            "sourceSha256": "0f162b5c962561a3f2b25bff7c9fc25ad81a79ed4ec0d78f1b452eb75a313160",
+            "pngSha256": "1aa3e2f8c4caea1bfd0d3c512ca8551a51a6d406420a07db79a08b73b3fd83be",
+            "pngBytes": 21485,
+            "webpSha256": "fbe721b322609a3fd88ec935ad7319a0bc0f3dc9d2480c0dfdd8d1e039e5f144",
+            "webpBytes": 11302
+          },
+          "icon": {
+            "svg": "hayate-icon-onDark.svg",
+            "png": "hayate-icon-onDark.png",
+            "webp": "hayate-icon-onDark.webp",
+            "sourceSha256": "4683aefe2f8b352e5b7bb22d6579bb57e347c11a52ad77c0cbbc5ec363321f62",
+            "pngSha256": "2cfba38cb9febf6aa6ce58584886eb96083144b6f67abcc5fafe0217c16e66ed",
+            "pngBytes": 8494,
+            "webpSha256": "11582ef1e6f3e2f0580d885ecb4e719af348d1fa36fafcebc08615fd04d383ee",
+            "webpBytes": 4672
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "hayate-lockup-onLight.svg",
+            "png": "hayate-lockup-onLight.png",
+            "webp": "hayate-lockup-onLight.webp",
+            "sourceSha256": "d124d4bddafe67ed4a92cc316bf66b27302f93ca1dabb717b3c6ba1d4ac0a9de",
+            "pngSha256": "b330755db6bc085eea0e03824fd69380fa3f217107e5d3cf145e99882f49ccc8",
+            "pngBytes": 21589,
+            "webpSha256": "9dbec90ddae156b419b0dd2ccdb320ec83bad11f58791b096952864f404ac56b",
+            "webpBytes": 11210
+          },
+          "icon": {
+            "svg": "hayate-icon-onLight.svg",
+            "png": "hayate-icon-onLight.png",
+            "webp": "hayate-icon-onLight.webp",
+            "sourceSha256": "4683aefe2f8b352e5b7bb22d6579bb57e347c11a52ad77c0cbbc5ec363321f62",
+            "pngSha256": "2cfba38cb9febf6aa6ce58584886eb96083144b6f67abcc5fafe0217c16e66ed",
+            "pngBytes": 8494,
+            "webpSha256": "11582ef1e6f3e2f0580d885ecb4e719af348d1fa36fafcebc08615fd04d383ee",
+            "webpBytes": 4672
+          }
+        },
+        "kanji": {
+          "num23": {
+            "svg": "hayate-num23-kanji.svg",
+            "png": "hayate-num23-kanji.png",
+            "webp": "hayate-num23-kanji.webp",
+            "sourceSha256": "d42bc2e6f6f8cc9f5ab87a3689d47fa772cf7eb4206e6db7304b7acf842ca544",
+            "pngSha256": "db5d394b430d6232cbeeb846650c54eee16fcb35335eca4d4cc38de4c35e1a54",
+            "pngBytes": 11191,
+            "webpSha256": "e98c1b686e757c280ffc3c5035c8e76cedac24f77374b2379dafcb7865c404a8",
+            "webpBytes": 6786
+          },
+          "num37": {
+            "svg": "hayate-num37-kanji.svg",
+            "png": "hayate-num37-kanji.png",
+            "webp": "hayate-num37-kanji.webp",
+            "sourceSha256": "5f30f4b029de7069f805be908163fff8a662bcf5d05ce9a8978b3bf18210cec8",
+            "pngSha256": "7d713d8c60ab19445076fee5123efa4dc7db2c16bf9f9708fb96461830565144",
+            "pngBytes": 12260,
+            "webpSha256": "d68396a74bba6b7f66d89afb61e785e4db8da1eb5327b7dc203a995e19b2eddc",
+            "webpBytes": 7754
+          },
+          "katakana": {
+            "svg": "hayate-katakana-kanji.svg",
+            "png": "hayate-katakana-kanji.png",
+            "webp": "hayate-katakana-kanji.webp",
+            "sourceSha256": "1784016fdfef863955733b77ea083bf7bd9f8195ad02af0e7f198f21d01857d8",
+            "pngSha256": "f3fd7ee703d4818fb282e79cc8f37affa419a5fc865b8efd94df96d5dc895422",
+            "pngBytes": 3031,
+            "webpSha256": "dfb9130aed5c4af998c86f4baddf6006a6a4e713eb46d84904c04b66e9022aad",
+            "webpBytes": 1148
+          }
+        }
+      }
     }
   }
 }

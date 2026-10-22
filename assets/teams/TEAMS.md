@@ -1,6 +1,6 @@
 # Ultrack teams and drivers
 
-Seven fictional race teams own the grid, each with two cars and two drivers, like F1 constructors (fourteen cars; a race runs one car per team, so seven). `teams.json` holds the data the game reads:
+Eight fictional race teams own the grid, each with two cars and two drivers, like F1 constructors (sixteen cars; a race runs one car per team, so eight). `teams.json` holds the data the game reads:
 - per team: id, name, three-letter code, colours (plus an optional text colour, `ink`, for a team whose accent is too pale to read on its primary), an optional light colour (`light`), display font, paint finish, livery brief and pit boxes;
 - per car: its key and race number;
 - per driver: name, broadcast code, nationality, age, role, a one-line bio, background, personality and rivals (driver codes).
@@ -9,7 +9,7 @@ Team and driver names are fictional. Real sponsor artwork is used in this local 
 
 ## Teams
 
-All seven teams have original emblems and outlined wordmarks, exported as SVG
+All eight teams have original emblems and outlined wordmarks, exported as SVG
 masters plus transparent PNG/WebP textures. Team, dark-background and
 light-background variants are available as horizontal lockups and standalone
 emblems. See [logo documentation](logos/README.md) and the live gallery at
@@ -25,8 +25,9 @@ cards reuse these assets. Sponsor artwork is separate from the team identities.
 | **Aurum** | AUR | Latin: gold | Monaco | Helene Aurelle | W16 (the two Bugattis) |
 | **Liberty** | LIB | English: freedom; the cracked bell of Philadelphia | Philadelphia, PA | Harlan Whitfield | V8 / W16 (Mustang and Blackbird) |
 | **Sarab** | SRB | Arabic: a mirage (the home team) | Corniche Marina | Rashid Al-Mansouri | V8 / flat-six |
+| **Hayate** | HYT | Japanese: 疾風, a sudden gale | Oyama, Shizuoka | Tatsuo Hamamoto | twin-turbo V6 (Nissan Z GT4) / turbo four (Supra Super GT) |
 
-Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Seven teams and seven trackside sponsors besides the tyre supplier: one title sponsor each.
+Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Eight teams, one title sponsor each (Hayate's is Sony, whose boards also line the Marina; see ../sponsors/README.md).
 
 ## Saetta and Toro: the two Italian houses
 
@@ -40,6 +41,14 @@ What Toro stands for: noise, honesty and over-engineering. Naturally aspirated e
 
 **The rivalry.** Saetta's founder never took back what he said, and Toro has spent sixty-three years proving him wrong in public, one clutch at a time. The two crews drink in different bars in the same village (San Cesario sul Panaro, halfway between the factories) and have never swapped a spanner. Last season the series organisers forced a one-year truce, the Via Emilia accord: Saetta ran a Toro-built AV-12 as a guest car beside its own Furari, with its own academy driver, Matteo Varrone, at the wheel. When the accord ended the car went home to Sant'Agata, and Varrone, who had fallen in love with it, went with it. Saetta's tifosi still whistle him; he answers by kissing the lightning bolt on his helmet before every start. Toro's second seat belongs to Paloma Ortega, a matador's daughter who lets the bull charge and steps aside at the last metre.
 
+## Hayate: the Japanese team
+
+**Hayate** (疾風, "a sudden gale"; Oyama, Shizuoka, in the shadow of Mt Fuji; founded 2019, principal Tatsuo Hamamoto) is the eighth team and the Japanese one. Hamamoto, a former Fuji Speedway race engineer, built it on two ideas: Super GT-bred cars, and drivers who can do something engineers cannot teach. Its two cars are the Nissan Z GT4 (#23, Kaito Mizuno) and the Toyota GR Supra Super GT (#37, Rina Kuroda); the numbers are the Super GT paddock's, and on the rear quarters they are written again in kanji (二十三, 三十七) in roundels. Its line is *You hear us after we pass.* Its sponsor is Sony, in Latin on the door and in katakana (ソニー) beside it.
+
+The look: murasaki (Edo violet), shironeri white and shu vermilion, three colours no other team uses. The emblem is a kazaguruma, a wind pinwheel, in a mon-style ring (an original crest; there is no sun-disc or rising-sun motif anywhere in the livery). The livery carries seigaiha (wave) scales over each rear quarter. The wordmark is 疾風 beside HAYATE and ハヤテ, in Dela Gothic One (SIL OFL; a subset in `track-viewer/public/assets/fonts`, a TTF subset in `assets/teams/fonts` for Blender). It holds pit box 10, the one Corvid kept after Kalt left.
+
+Rivalries: Mizuno and Lindqvist argue about who is the better sideways; Kuroda wants Valois's crown; the two teammates disagree about whether sliding is fast. No recorded commentary names Hayate yet; the generic lines play.
+
 ## Drivers
 
 | # | Driver | Code | Nation | Team | Car | In one line |
@@ -51,15 +60,17 @@ What Toro stands for: noise, honesty and over-engineering. Naturally aspirated e
 | 8 | Freya Lindqvist | LIN | SWE | Mojave | Mercedes-AMG One | rally convert |
 | 9 | Rosa Quintero | QUI | MEX | Mojave | Mercedes-AMG GT4 | rookie |
 | 16 | Armand Beaulieu | BEA | FRA | Aurum | Bugatti Destrier | the gentleman racer |
+| 23 | Kaito Mizuno | MIZ | JPN | Hayate | Nissan Z GT4 | the drift king |
 | 17 | Sofia Calderini | CAL | SUI | Saetta | Furari 488-R | the calm one at Saetta |
 | 27 | Thiago Barreto | BAR | BRA | Saetta | La Furari | the showman |
+| 37 | Rina Kuroda | KUR | JPN | Hayate | Toyota GR Supra Super GT | the quiet ace |
 | 33 | Layla Qasimi | QAS | OMN | Sarab | 911–T | the overtaker |
 | 44 | Kai Whitlow | WHI | NZL | Corvid | Continental GT | the grid's veteran |
 | 63 | Paloma Ortega | ORT | ESP | Toro | HU–10 | the matador |
 | 66 | Cole Maddox | MAD | USA | Liberty | Mustang ST–6 | the brawler |
 | 76 | Wade Hollis | HOL | USA | Liberty | Hennessey Blackbird | the Colonel |
 
-The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Fourteen drivers, thirteen nations (two Americans at Liberty).
+The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Sixteen drivers, fourteen nations (two Americans at Liberty, two Japanese at Hayate).
 
 ## Driver profiles
 
@@ -113,3 +124,5 @@ The booth script is assets/audio/announcers/SCRIPT.md. Enzo's lines (v2) and Kav
 ## To decide
 
 Several car display names in the car-lab profiles echo real models (Valkyrie, Continental GT, Chiron-X, 911-T, XKSS). Next to fictional teams and drivers, they should get fictional model names too.
+- **Kaito Mizuno** (MIZ, JPN, 29, Hayate #23), the drift king. Born in Numazu, Shizuoka, a fishmonger's son who learned to slide a car on the Izu Skyline at night before going legal in D1 and Super GT; Hamamoto signed him after watching him drift a full wet lap of Fuji. Calm in the car, chatty out of it; bows to every marshal; treats the apex as a suggestion. Rivals: Freya Lindqvist, Rina Kuroda.
+- **Rina Kuroda** (KUR, JPN, 31, Hayate #37), the quiet ace. From Toyota City, Aichi, a supplier engineer's daughter; first kart at six, Super GT GT300 champion at 24, an engineering degree on the side; Hamamoto hired her to build the car around her. Speaks on the radio only in lap numbers and tenths; keeps a handwritten logbook of every lap; would very much like to beat Valois; says Mizuno's sliding is murder on the tyres, then watches every replay. Rivals: Remy Valois, Kaito Mizuno.

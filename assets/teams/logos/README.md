@@ -1,6 +1,6 @@
 # Ultrack team identities
 
-Seven original emblems and wordmarks use the colors and typefaces in `../teams.json`.
+Eight original emblems and wordmarks use the colors and typefaces in `../teams.json`.
 Lettering is outlined into SVG paths at build time. Masters contain no external
 fonts, raster images or scripts. These original team identities are separate from
 third-party sponsor logos.
@@ -14,6 +14,7 @@ third-party sponsor logos.
 | Liberty | Winged star | Graduate, reinforced strokes |
 | Toro | Bull head | Unbounded Black |
 | Sarab | Falcon above a dune | Lalezar |
+| Hayate | Kazaguruma (wind pinwheel) mon crest | Dela Gothic One: 疾風 + HAYATE + ハヤテ |
 
 Each identity has a horizontal lockup (1024×256) and emblem (256×256), with
 `onTeam`, `onDark` and `onLight` variants. SVG masters, transparent PNG and
@@ -46,3 +47,9 @@ Python dependencies: fonttools and brotli. Raster exports use the project's shar
 Review and download the identities at `/team-brand-guide.html`. `review.png` is a
 contact sheet. Asset and canvas checks do not replace an in-game visual review
 of placement on every model.
+
+Hayate (Japanese, sponsor Sony) is built by `track-viewer/scripts/build-team-logo-hayate.py` (the root `scripts/build-team-logos.py` has no Hayate entry and
+was left alone: do not rerun it expecting Hayate), then `prepare-team-logos.mjs` as above. Besides the usual three variants it has a `kanji` variant of
+square 256 px decals that the livery draws (`num23`, `num37`: kanji number roundels; `katakana`: the ソニー plate), loaded through `loadTeamExtras()` in
+`src/team-logos.js`. Its font file is a subset of Dela Gothic One (Latin plus the glyphs used; re-subset the full font from Google Fonts
+before using a new glyph in a wordmark). No rising-sun motif is used anywhere.

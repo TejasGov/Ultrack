@@ -44,3 +44,26 @@ Corniche Marina's own branding remains. Collision geometry is untouched.
 `tracks/marina/brand_art.py` also supplies these assets to future source builds.
 Both WebP and KTX2 exports contain the artwork. `test:sponsors` verifies all 15
 brands, source hashes, UVs and removal of the former sponsor lettering.
+
+## Sony (Hayate's title sponsor) and the reusable Sony boards
+
+- **Source:** the Sony wordmark SVG, [Wikimedia Commons "File:Sony_logo.svg"](https://commons.wikimedia.org/wiki/File:Sony_logo.svg),
+  downloaded from `https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg` on 2026-10-22 (retained as `sources/sony.svg`; the SHA-256 is in
+  `manifest.json` and the SHA-1 matches Commons). Commons tags it **public domain** (a text logo below the threshold of originality, "Restrictions: trademarked");
+  the wordmark is by Yasuo Kuroki for Sony (1973). It remains a **Sony Group Corporation trademark**: used on a local noncommercial fan project, no endorsement implied.
+  Manifest entry `sony` (`usage: team-sponsor`, `venue: false`, alias `ソニー`): on liveries and garages, outside the 15-brand replaced-boards count.
+- **Board set:** `boards/sony-<aspect>.png`, aspect = round(width / height * 1000), the key brand_art.py uses: 324 and 389 (vertical pole banners, 1.1x3.4 and 0.7x1.8 m),
+  1600 (3:2 flag), 3000 (12x4 hoarding/billboard), 3111 (14x4.5), 6000 (6x1 fence/LED board), 8571 (12x1.4 fascia / pit-wall board), 10833 and 11818 (26x2.4 and 26x2.2 bridge/gantry
+  banners), 15000 (24x1.6 footbridge banner). White panel, black wordmark, repeated across wide boards; 1024 px wide (2048 for aspect >= 8).
+  Also `logos/sony.png` (512 px, transparent). Regenerate, or make the same set for another brand with a source SVG: `node track-viewer/scripts/make-sponsor-boards.mjs sony [aspect ...]`.
+- **Placing them on a map** (Blender, as `tracks/marina/add_hayate.py` does):
+  ```python
+  sys.path.insert(0, 'tracks/marina'); import brand_art
+  sony = next(b for b in brand_art.BRANDS if b['id'] == 'sony')
+  obj.data = brand_art.board_mesh('sony_12x4', sony, 12, 4)       # w, h in metres; the matching boards/sony-<aspect>.png is used
+  # LED board: board_mesh(name, sony, 6, 1, False, True); flat paint on the ground: board_mesh(name, sony, w, h, True)
+  ```
+  A ratio that is not in the list needs its aspect added to `ASPECTS` in make-sponsor-boards.mjs and a rerun. Swapping an existing board's `.data` keeps its transform and sharing;
+  on a new map create the object and make the same call.
+- **On the Marina** (`tracks/marina/add_hayate.py`): six LED bands, a fascia and two pole banners across the pit lane from boxes 8-11, hoardings 011 and 014 on the main straight,
+  the T1 billboard, the footbridge banner and one T1 gantry banner. The sponsor panel is also painted on Hayate's garage header and pit box (`src/teamdress.js`, now for every team's pit box) and on the cars (`src/livery.js`).

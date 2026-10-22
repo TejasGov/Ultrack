@@ -66,3 +66,9 @@ cold-load times and an in-game visual approval were not collected in this pass.
   teams use `colors.ink` (Toro) and the Toro lettering in `assets/teams/fonts/` for Blender text.
 - Team tests with hard-coded counts (`test:team-logos` expects seven teams and 28 venue surfaces, `test:progression` and
   `test-loading` count fourteen cars) must say seven, 28 and fourteen.
+
+## Hayate, the Japanese team, and Sony (2026-10-22)
+- **Hayate** is the eighth team (`hayate`, HYT, Oyama, Shizuoka; murasaki violet, white and vermilion; Dela Gothic One): Nissan Z GT4 (#23, Kaito Mizuno) and Toyota GR Supra Super GT (#37, Rina Kuroda),
+  sponsor Sony. Sixteen cars, one per team racing. Box 10 is Hayate's and Corvid keeps 9. The car folders (`nissan-z`, `supra`) come from the car pipeline; until they exist, tests that load models fail.
+- Driver posters for Mizuno and Kuroda are not made (`test:hoardings` / `test:driver-intro` fail on the missing `poster-hoarding.webp`, as for any new driver).
+- Logos: `track-viewer/scripts/build-team-logo-hayate.py` (see assets/teams/logos/README.md). Venue: `tracks/marina/add_hayate.py`. Sony boards: assets/sponsors/README.md.

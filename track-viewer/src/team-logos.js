@@ -23,3 +23,5 @@ export function drawTeamLogo(g,team,x,y,w,h,{variant='onTeam',kind='lockup',rot=
  else{g.fillStyle=team.colors.accent;g.font='bold '+h*.55+'px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(team.name.toUpperCase(),0,0,w);}
  g.restore();return !!im;
 }
+/** Extra baked decals (a team's 'kanji' variant: number roundels, katakana sponsor plate); the car liveries draw them. */
+export const loadTeamExtras=()=>Promise.all(Object.entries(FILES).flatMap(([id,v])=>Object.keys(v.kanji??{}).map(kind=>loadTeamLogo(id,'kanji',kind))));

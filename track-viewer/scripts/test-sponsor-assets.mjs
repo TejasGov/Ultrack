@@ -5,6 +5,7 @@ const base=new URL('../../',import.meta.url),manifest=JSON.parse(readFileSync(ne
 const venueBrands=manifest.brands.filter(b=>b.venue!==false);
 assert.equal(venueBrands.length,15);
 assert.equal(new Set(manifest.brands.map(b=>b.id)).size,manifest.brands.length);
+for(const a of [324,389,1600,3000,3111,6000,8571,10833,11818,15000])assert.ok(existsSync(new URL('assets/sponsors/boards/sony-'+a+'.png',base)),'Sony board '+a);
 for(const b of manifest.brands){
  assert.equal(createHash('sha256').update(readFileSync(new URL(b.sourceFile,base))).digest('hex'),b.sourceSha256);
  assert.ok(existsSync(new URL('assets/sponsors/'+b.file,base)));
@@ -26,5 +27,6 @@ for(const file of ['marina_visual.glb','marina_visual_ktx2.glb']){
  for(const b of venueBrands)assert.ok(materials.some(m=>m.getName().startsWith('M_AdLogo_'+b.id+'-')),'Missing '+b.id+' in '+file);
  assert.ok(!doc.getRoot().listMaterials().some(m=>/^M_Ad_(?:fascia_)?[0-6]_.*_fg$/.test(m.getName())),'Legacy sponsor lettering must be removed.');
  for(const mesh of doc.getRoot().listMeshes())for(const p of mesh.listPrimitives())if(p.getMaterial()?.getName().startsWith('M_AdLogo_'))assert.ok(p.getAttribute('TEXCOORD_0'),'Original logo panels need UVs.');
+ assert.ok(materials.some(m=>m.getName().startsWith('M_AdLogo_sony-')),'Sony hoardings missing in '+file);
  console.log(file+': all 15 brands present, logo UVs valid, fictional sponsor lettering removed.');
 }

@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import {SPONSOR_BRANDS,drawSponsor,loadSponsorLogos} from './sponsors.js';
 import logoUrl from '../../assets/brand/ultrack_logo_alpha.webp';
-import {loadTeamLogos,drawTeamLogo} from './team-logos.js';
+import {loadTeamLogos,loadTeamExtras,drawTeamLogo} from './team-logos.js';
 
 // the trackside brands (tracks/marina/venue.py SPONSORS): name, tagline, panel and text colour (linear), mark
 
@@ -25,6 +25,7 @@ export function loadAssets() {
   ready ??= Promise.all([
     loadSponsorLogos(),
     loadTeamLogos(),
+    loadTeamExtras(),
     ...FONTS.map(([family, file, desc]) => new FontFace(family, `url(/assets/fonts/${file})`, desc).load().then((f) => document.fonts.add(f))),
     new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = logoUrl; }),
   ]).then((r) => ({ logo: r[r.length - 1] }));
@@ -65,6 +66,7 @@ const NUMBER = {
   saetta: ['roundel', 'a', 's', 'p'], corvid: ['roundel', 's', 'a', 'p'],
   mojave: ['box', 'a', 's', 's'], aurum: ['roundel', 'p', 's', 's'], liberty: ['roundel', 'a', 's', 'p'], sarab: ['roundel', 'a', 's', 's'],
   toro: ['roundel', 's', 'a', 'p'],      // black plate, bone ring, yellow digits
+  hayate: ['roundel', 's', 'a', 'p'],    // white plate, vermilion ring, violet digits
 };
 const role = (c, r) => ({ p: c.primary, s: c.secondary, a: c.accent })[r];
 /** lettering on the team's own paint: colors.ink where the accent is too pale for it (Toro's yellow), else the accent */
@@ -163,6 +165,22 @@ const FLANK = {
     horn(X(-0.2), 0.47, X(1.12), wy + 0.07, 0.12, 0.14);     // the upper horn climbs to the shoulder
     horn(X(-0.2), 0.43, X(0.98), 0.33, -0.05, 0.1);          // the lower one drops toward the sill
   },
+  // seigaiha (wave) scales in vermilion and white roll over the rear quarter, a kanji number roundel and the katakana sponsor plate (baked logos)
+  hayate(s, P, L, c, car, team) {
+    const { xf, xr, x1, wy } = L, g = s.g, k = s.k, R = 0.1, y0 = 0.27, y1 = wy - 0.09, xs = xr - 0.28;
+    g.save(); g.beginPath(); const a = P(xs, y1), b = P(x1 + 0.1, y0); g.rect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])); g.clip();
+    g.lineWidth = 0.007 * k;
+    for (let row = 0, y = y0; y < y1 + R; row++, y += R * 0.5) {
+      for (let x = xs - R + (row % 2) * R; x < x1 + R * 2; x += R * 2) {
+        const [px, py] = P(x, y);
+        [[1, c.accent], [0.7, c.secondary], [0.4, c.accent]].forEach(([f, col]) => { g.strokeStyle = col; g.beginPath(); g.arc(px, py, R * f * k, Math.PI, 2 * Math.PI); g.stroke(); });
+      }
+    }
+    g.restore();
+    const dx = xf + (xr - xf) * 0.79, dy = 0.24 + (wy - 0.24) * 0.5;
+    drawTeamLogo(g, team, ...P(xr + 0.2, 0.4), 0.2 * k, 0.2 * k, { variant: 'kanji', kind: 'num' + car.number });
+    drawTeamLogo(g, team, ...P(dx, dy - 0.085), 0.24 * k, 0.24 * k, { variant: 'kanji', kind: 'katakana' });
+  },
   // teal dune contour lines from nose to tail, a gold line along the sill
   sarab(s, P, L, c) {
     const { x0, x1 } = L, g = s.g;
@@ -195,6 +213,7 @@ const TOPS = {
     stripe(s, P, L, c.secondary, [-0.04, 0.04], 0.007);
   },
   liberty(s, P, L, c, team) { stripe(s, P, L, c.accent, [0], 0.17); stripe(s, P, L, c.secondary, [-0.125, 0.125], 0.05); stripe(s, P, L, team.light, [-0.165, 0.165], 0.008); },
+  hayate(s, P, L, c) { stripe(s, P, L, c.accent, [-0.1, 0.1], 0.035); stripe(s, P, L, c.secondary, [-0.06, 0.06], 0.012); },
   toro(s, P, L, c) { stripe(s, P, L, c.secondary, [0], 0.2); stripe(s, P, L, c.accent, [-0.14, 0.14], 0.012); },
   sarab(s, P, L, c) {
     const { x0, x1, z0, z1 } = L, g = s.g;

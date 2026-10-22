@@ -217,6 +217,27 @@
         "width": 1024,
         "height": 609
       }
+    },
+    {
+      "id": "sony",
+      "name": "Sony",
+      "aliases": [
+        "SONY",
+        "ソニー"
+      ],
+      "source": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Sony_logo.svg",
+      "sourceFile": "assets/sponsors/sources/sony.svg",
+      "sourceSha256": "f6191bc69f8df259c86a13dc9582ba9ed2e0101d4452ba3f1d33ec8e907ddda0",
+      "file": "logos/sony.png",
+      "background": "#ffffff",
+      "ink": null,
+      "usage": "team-sponsor",
+      "venue": false,
+      "retrieved": "2026-10-22",
+      "license": "Public domain (Wikimedia Commons, {{PD-textlogo}}: text logo below the threshold of originality); trademarked, Restrictions: trademarked. Sony and the Sony wordmark are trademarks of Sony Group Corporation; used here on a local noncommercial fan project, no endorsement implied.",
+      "author": "Yasuo Kuroki / Sony (wordmark, 1973); SVG on Commons",
+      "boards": "boards/sony-<aspect>.png, aspect = round(width/height*1000): 324 389 1600 3000 3111 6000 8571 10833 11818 15000 (make-sponsor-boards.mjs)"
     }
   ]
 }
