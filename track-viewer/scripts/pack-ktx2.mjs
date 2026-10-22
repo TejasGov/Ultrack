@@ -15,10 +15,12 @@ import { ktx2 } from 'ktx2-encoder/gltf-transform';
 import sharp from 'sharp';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const out = join(root, 'tracks', 'marina', 'out');
-const src = join(out, 'marina_visual.glb');
+const TRACK = process.env.TRACK ?? 'marina';
+const TEX_MAX = Number(process.env.TEX_MAX ?? 2048);   // Tokyo's 8192 px panorama bands need 4096   // TRACK=tokyo reads tracks/tokyo/out/tokyo_visual.glb
+const out = join(root, 'tracks', TRACK, 'out');
+const src = join(out, `${TRACK}_visual.glb`);
 const tmp = join(out, 'web', '_geometry.glb');
-const dst = join(out, 'web', 'marina_visual_ktx2.glb');
+const dst = join(out, 'web', `${TRACK}_visual_ktx2.glb`);
 if (!existsSync(src)) throw new Error(`missing ${src}: build the track first`);
 
 // 1. geometry: identical to the WebP build (see tracks/marina/README.md), textures left as they are
@@ -43,14 +45,14 @@ const imageDecoder = async (buffer) => {
   return { data: new Uint8Array(data), width: info.width, height: info.height };
 };
 const common = { generateMipmap: true, imageDecoder };
-await doc.transform(textureCompress({ encoder: sharp, resize: [2048, 2048] }));   // same cap as the WebP build; keeps the format
+await doc.transform(textureCompress({ encoder: sharp, resize: [TEX_MAX, TEX_MAX] }));   // same cap as the WebP build; keeps the format
 // Compressed mip chains need power-of-two sizes: the 1536x393 logo uploaded with missing levels and rendered black.
 // UVs span 0..1, so stretching to the next power of two changes nothing on screen.
 const pot = (n) => 2 ** Math.ceil(Math.log2(n));
 for (const t of doc.getRoot().listTextures()) {
   const [w, h] = t.getSize() || [0, 0];
   if (!w || (pot(w) === w && pot(h) === h)) continue;
-  t.setImage(new Uint8Array(await sharp(t.getImage()).resize(Math.min(2048, pot(w)), Math.min(2048, pot(h)), { fit: 'fill' }).png().toBuffer()));
+  t.setImage(new Uint8Array(await sharp(t.getImage()).resize(Math.min(TEX_MAX, pot(w)), Math.min(TEX_MAX, pot(h)), { fit: 'fill' }).png().toBuffer()));
   t.setMimeType('image/png');
 }
 await doc.transform(

@@ -1,5 +1,36 @@
 # Tokyo Hiragana circuit — Blender production start
 
+## Game build v11 (what the game loads)
+
+`out/tokyo_game_v11.blend` is built from a copy of v10 by `game_v11.py` (v10 is never written). Run it with one Blender process, `powershell tracks/tokyo/run_blender.ps1 -Script tracks/tokyo/game_v11.py` (`-b -t 6`, below-normal priority), then `node tracks/tokyo/pack-web.mjs` (same steps as Marina's `npm run pack`, parametrised through `TRACK=tokyo`; the viewer scripts `pack-ktx2`, `shell-venue`, `partition-venue` and `test-track` read that variable and default to Marina). Previews: `render_v11.py` (EEVEE, 12 samples) -> `out/v11-*.png`. Measure: `node tracks/tokyo/measure-glb.mjs <glb>` -> `out/v11-budget.json`. Contract test: `cd track-viewer && TRACK=tokyo node scripts/test-track.mjs` (PASS: a 105.6 s raycast-vehicle lap through the tunnel and over the bridge).
+
+| File | What it is |
+|---|---|
+| `out/tokyo_visual.glb` | raw Blender export (53 MB) |
+| `out/tokyo_collision.glb` | `col_asphalt`, `col_curb`, `col_wall`, `col_paved`, `col_grass` (35k triangles) |
+| `out/web/tokyo_visual.glb`, `_ktx2`, `_shell`, `_sectors` (and the combinations) | what the game loads: meshopt, WebP or KTX2 (4096 px cap, Marina's is 2048), hidden faces removed, 768 m draw sections |
+| `out/web/tokyo_collision.glb` | meshopt collision |
+| `out/track.json`, `out/lights.json` | Marina's schema (see below). `lights.json` has floodlights, stand lamps, street lamps |
+| `out/v11-budget.json`, `out/v11-*.png` | triangle and draw-call counts, previews |
+
+**Coordinates.** Start/finish line at the origin, start heading +X (cars.js grids on +X), Z up kept absolute (road dips to -12 m in the tunnel). Source order of `centerline-v10.json`, rotated to start at index 33 (the start gantry).
+
+**Replaced against v10.** Foliage -> 4 instanced low-poly trees (sakura A/B, broadleaf, pine; 300-1,000 triangles) plus a 4-triangle crossed-card stand-in per tree whose material ends in `Far` (the Culler swaps them in at distance); groves and tree clusters on 9 new hills and where removed blocks stood. FONT text -> one atlas (`textures/tokyo_sign_atlas.png`, material `M_SignNeonAtlas`) on quads; 3 hero signs stay meshes. Sponsor boards -> `brand_art.board_mesh` 6x1 quads (8 brands, shared meshes, GPU-instanced). Frontages: 24 far ones removed (5 moved to 31-42 m from the road, checked against the road, the other footprints and the ground slope), every third near one removed, the rest decimated to ~1.3k. Stands -> stepped shells + `M_Crowd` alpha-cut strips (Marina's texture). Landmarks, bridge and wheel decimated; storm drains and the empty lamp/fence-post placeholders removed, lamps rebuilt as instanced pole + head. Old skyline matte, world and sky removed.
+
+**Panorama band.** `skyline_band` (night) and `skyline_band_day` (day, 2 m inside it): a 360 degree cylinder of radius 2800 m centred on the circuit, 128 segments, height = 2 pi R / 9.6 = 1,832 m. UV u runs 0..1 around, v 0..1 up (v=0 is the image top); the seam is a duplicated column. Vertex alpha (`COLOR_0`) fades the foot over 4% and the top above 72%. Textures: `textures/panorama/tokyo_skyline_night.png` and `tokyo_skyline_day.png` (any RGBA, aspect 9.6:1, 8192 px wide, seamless in u, sky already alpha 0). To swap art: replace those files, rebuild, pack; a different aspect needs `PANO_ASPECT` in `game_v11.py`. Materials `M_SupertallBackdrop` (night) and `M_SupertallBackdropDay` (day): the viewer already keeps fog off `M_Supertall*`. Day/night blend is a material switch, not a uniform (glTF has none): drive `opacity` of the day material, night stays opaque below it (day 0 -> `M_SupertallBackdropDay.opacity = 1`, dusk 0.65, evening 0.3, night 0). Both meshes are named `skyline*` so NO_CAST applies. The old Fuji matte is not exported (`KEEP_FUJI` in the script) because the day panorama already has a faint Fuji.
+
+**Water and ground.** The bay, lagoon surfaces are one mesh named `water` with `extras.surface = "water"` (the viewer swaps its water shader). `ground_terrain`/`ground_plane` carry planar UVs (24 m per tile).
+
+**track.json** follows Marina's fields: `centerline` (1,440 samples, 3.6 m, game coords), `halfWidth` 9, `racingLine` (zeros), `slope` (real), `banking` 0, `headingYawRad`, `sectors` (thirds), `checkpoints` (every 25), `corners` (8, by heading change), `start` with 8 `gridSlots` (8 m apart, alternating +-3 m), `surfaces`, `landmarks`, `weather`, `lapLength` 5,180 m, plus `capabilities` (`pit`, `vip`, `hoardings`, `driverHoardings` all false), `backdrop` (band mesh names, textures, radius, height, centre) and `pitLane: null`.
+
+**Missing for full racing.** No pit lane or boxes (`pitLane` is null; endurance/pit stops need a lane, garages, 12 boxes and `pit` collision), no `vip.json`/Corniche-Club equivalent, no hoardings or driver hoardings, no kerb sausages, no run-off (the barrier stands 11.9 m from the centre line; the shoulder is `col_paved`), no team-dressed garage or flag materials, `racingLine` is the centre line (AI will not cut corners), corner names are generic. Free drive works. Terrain above the tunnel roof is in `col_grass`; a downward ray from high above the tunnel hits it before the road.
+
+**Budget (start-line view, Culler rules).** v10: 12.1 M drawn, 6.2 M unique. v11 web GLB: 421k unique triangles, 1.22 M with all instances, 1.13 M submitted at the start line (0.41 M inside the frustum), 113 draw calls (205 with the sector variant; Marina 280). See `out/v11-budget.json`.
+
+**Current V10:** `out/tokyo_japanese_v10.blend`. The lower road descends to −12 m beneath a lagoon at the bay's −0.55 m water level. Nine supplied architectural references inform new gates, castle, garden temple and bridge, flowing race HQ, timber tower, lantern hall, woven cedar hall, neon shrine and four curved grandstands. 141 smaller frontages replace the old window blocks. See `JAPANESE-V10.md`, `out/v10-checks.json`, and `out/v10_*.png`. V9 files are preserved.
+
+**Latest V9 correction:** `out/tokyo_realism_v9_tunnel_fixed.blend` places the lower crossing in a lit tunnel with a water basin above its roof and below the suspension bridge. Ridge and Shibuya stands face the racing circuit. See `V9-TUNNEL-STANDS.md`. The existing V9 source is preserved.
+
 **Latest realism pass:** `out/tokyo_realism_v9.blend` adds painted concrete run-off aprons, LED barrier lines and sponsor boards, a wider mix of Japanese architecture, and cultural landmarks (floating torii, shrine, castle keep). Built from V8 by `realism_v9.py`; see `REALISM-V9.md` and the `out/v9_*.png` review renders.
 
 **Previous lighting / depth pass:** `out/tokyo_neon_depth_v8.blend` aligns Fuji beyond the commercial avenue, with layered Japanese signs, warm lanterns, pink sakura, smaller far-city lights and colored road reflections. Actual review render: `out/neon_depth_v8.png`. See `NEON-DEPTH-V8.md` for composition and runtime limits. Previous scenes are preserved.

@@ -1,0 +1,78 @@
+[
+  {
+    "file": "tokyo_visual.glb",
+    "before": 421531,
+    "after": 416921,
+    "removed": 4610,
+    "sourceBytes": 8541452,
+    "outputBytes": 8743936,
+    "changes": [
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate | 浅草門",
+        "removed": 1497
+      },
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate",
+        "removed": 1697
+      },
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate | bracketwork and side stairs",
+        "removed": 254
+      },
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate | stone court and lanterns",
+        "removed": 1159
+      },
+      {
+        "mesh": "V10 frontage 026 | timber shoji tiled eaves projecting sign",
+        "removed": 1
+      },
+      {
+        "mesh": "V10 frontage 029 | timber shoji tiled eaves projecting sign",
+        "removed": 1
+      },
+      {
+        "mesh": "V10 frontage 053 | timber shoji tiled eaves projecting sign",
+        "removed": 1
+      }
+    ]
+  },
+  {
+    "file": "tokyo_visual_ktx2.glb",
+    "before": 421531,
+    "after": 416921,
+    "removed": 4610,
+    "sourceBytes": 12173836,
+    "outputBytes": 12071992,
+    "changes": [
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate | 浅草門",
+        "removed": 1497
+      },
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate",
+        "removed": 1697
+      },
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate | bracketwork and side stairs",
+        "removed": 254
+      },
+      {
+        "mesh": "V10 01 | Asakusa vermilion romon gate | stone court and lanterns",
+        "removed": 1159
+      },
+      {
+        "mesh": "V10 frontage 026 | timber shoji tiled eaves projecting sign",
+        "removed": 1
+      },
+      {
+        "mesh": "V10 frontage 029 | timber shoji tiled eaves projecting sign",
+        "removed": 1
+      },
+      {
+        "mesh": "V10 frontage 053 | timber shoji tiled eaves projecting sign",
+        "removed": 1
+      }
+    ]
+  }
+]

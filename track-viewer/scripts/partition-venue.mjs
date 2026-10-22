@@ -9,14 +9,15 @@ import {existsSync,statSync,mkdirSync,writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 await Promise.all([MeshoptDecoder.ready,MeshoptEncoder.ready]);
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder,'meshopt.encoder':MeshoptEncoder});
-const root=new URL('../../tracks/marina/out/web/',import.meta.url),qa=new URL('../qa/sectors/',import.meta.url);
+const TRACK=process.env.TRACK??'marina';   // TRACK=tokyo: tracks/tokyo/out/web, own QA folder; SECTOR_RE picks the whole-circuit meshes
+const root=new URL(`../../tracks/${TRACK}/out/web/`,import.meta.url),qa=new URL(TRACK==='marina'?'../qa/sectors/':`../qa/sectors-${TRACK}/`,import.meta.url);
 mkdirSync(qa,{recursive:true});
 const CELL=768;
 // Keep terrain and small painted/detail meshes intact: partitioning those adds
 // too many tiny draws and file overhead for little saved work.
-const selected=/^track_00$/;
+const selected=process.env.SECTOR_RE?new RegExp(process.env.SECTOR_RE):/^track_00$/;
 const report=[];
-for(const base of ['marina_visual','marina_visual_ktx2']){
+for(const base of [`${TRACK}_visual`,`${TRACK}_visual_ktx2`]){
  const original=fileURLToPath(new URL(base+'.glb',root)),shell=fileURLToPath(new URL(base+'_shell.glb',root));
  const src=existsSync(shell)&&statSync(shell).mtimeMs>=statSync(original).mtimeMs?shell:original;
  const doc=await io.read(src),changes=[];

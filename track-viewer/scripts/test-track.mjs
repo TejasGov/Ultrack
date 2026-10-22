@@ -19,7 +19,8 @@ import { MeshoptDecoder } from 'meshoptimizer';
 import RAPIER from '@dimforge/rapier3d-compat';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const out = join(root, 'tracks', 'marina', 'out');
+const TRACK = process.env.TRACK ?? 'marina';
+const out = join(root, 'tracks', TRACK, 'out');
 const track = JSON.parse(readFileSync(join(out, 'track.json'), 'utf8'));
 const failures = [];
 const fail = (msg) => { failures.push(msg); };
@@ -29,7 +30,7 @@ const fail = (msg) => { failures.push(msg); };
 await MeshoptDecoder.ready;
 await RAPIER.init();
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
-const doc = await io.read(join(out, 'web', 'marina_collision.glb'));
+const doc = await io.read(join(out, 'web', `${TRACK}_collision.glb`));
 const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
 const surfaceOf = new Map();          // collider handle -> surface name (col_asphalt ...)
 let tris = 0;
@@ -122,12 +123,12 @@ for (const g of track.start.gridSlots) {
   if (!h || h.surface !== 'col_asphalt') fail(`grid slot ${g.slot}: ${h ? h.surface : 'no ground'}`);
 }
 let pitBad = 0;
-track.pitLane.polyline.forEach((p, k) => {
+(track.pitLane?.polyline ?? []).forEach((p, k) => {   // a track without a pit lane (Tokyo) skips this check
   const h = cast({ x: p[0], y: p[1] + 3, z: p[2] }, { x: 0, y: -1, z: 0 }, 10);
-  const end = k === 0 || k === track.pitLane.polyline.length - 1;   // entry and exit merge across the tarmac run-off
-  if (!h || !(ROAD.has(h.surface) || (end && h.surface === 'col_runoff_tarmac'))) { pitBad++; console.log(`pit lane point ${k}/${track.pitLane.polyline.length}: ${h ? h.surface : 'no ground'}`); }
+  const end = k === 0 || k === (track.pitLane?.polyline.length ?? 0) - 1;   // entry and exit merge across the tarmac run-off
+  if (!h || !(ROAD.has(h.surface) || (end && h.surface === 'col_runoff_tarmac'))) { pitBad++; console.log(`pit lane point ${k}/${(track.pitLane?.polyline.length ?? 0)}: ${h ? h.surface : 'no ground'}`); }
 });
-if (pitBad) fail(`pit lane: ${pitBad}/${track.pitLane.polyline.length} polyline points not on asphalt/pit`);
+if (pitBad) fail(`pit lane: ${pitBad}/${(track.pitLane?.polyline.length ?? 0)} polyline points not on asphalt/pit`);
 console.log(`static: ground ${groundBad} bad, height ${heightBad} off, walls intruding ${intrude}, grid ${track.start.gridSlots.length} slots, pit ${pitBad} bad`);
 
 // ------------------------------------------------------------------------------------------------ 4: a lap

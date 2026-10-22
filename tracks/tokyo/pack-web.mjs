@@ -1,0 +1,28 @@
+// Tokyo web build, the same steps as track-viewer/scripts/pack-web.mjs for Marina (read its header for why each flag):
+//   node tracks/tokyo/pack-web.mjs      after game_v11.py   ->  tracks/tokyo/out/web/tokyo_{visual,collision,visual_ktx2,*_shell,*_sectors}.glb
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const out = join(root, 'tracks', 'tokyo', 'out');
+const viewer = join(root, 'track-viewer');
+process.env.TRACK = 'tokyo';
+process.env.TEX_MAX ??= '4096';
+process.env.SHELL_RE ??= 'frontage|stand|castle|romon|lantern|neon_shrine|timber';
+process.env.SECTOR_RE ??= '.';          // every mesh over 1,500 triangles that spans more than one 768 m cell
+mkdirSync(join(out, 'web'), { recursive: true });
+const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const gt = (...args) => execFileSync(npx, ['-y', '@gltf-transform/cli@4', ...args], { stdio: 'inherit', shell: true, cwd: viewer });
+const q16 = ['--level', 'high', '--quantize-position', '16'];
+const tmp = join(out, 'web', '_opt.glb');
+gt('optimize', join(out, 'tokyo_visual.glb'), tmp, '--compress', 'false', '--texture-compress', 'webp', '--texture-size', '4096', '--simplify', 'false', '--palette', 'false');
+gt('meshopt', tmp, join(out, 'web', 'tokyo_visual.glb'), ...q16);
+gt('optimize', join(out, 'tokyo_collision.glb'), tmp, '--compress', 'false', '--texture-compress', 'false', '--simplify', 'false', '--weld', 'false', '--join', 'false');
+gt('meshopt', tmp, join(out, 'web', 'tokyo_collision.glb'), ...q16);
+rmSync(tmp);
+const run = (script) => execFileSync(process.execPath, [join(viewer, 'scripts', script)], { stdio: 'inherit', cwd: viewer, env: process.env });
+run('pack-ktx2.mjs');
+if (!process.env.SKIP_SHELL) run('shell-venue.mjs');     // hidden-face removal runs Blender (-b): one Blender process at a time
+run('partition-venue.mjs');

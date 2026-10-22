@@ -1,0 +1,149 @@
+{
+ "before_v10": {
+  "visible_evaluated_triangles": 12093487,
+  "unique_approx": 6160235,
+  "by_group": {
+   "Foliage (name classification)": 6004880,
+   "V10 | Japanese district architecture": 2371092,
+   "V10 | curved race venues": 1408716,
+   "V9 | barrier sponsor boards": 897260,
+   "V10 | Japanese wayfinding": 539776,
+   "V10 | nine reference landmarks": 489391,
+   "V5 | sculpted bridge structure": 88016,
+   "V6 | Yoyogi observation wheel": 49748,
+   "V3 | streets and furniture": 47516,
+   "01_TRACK": 46822,
+   "02_TERRAIN": 35864,
+   "V9 | street life and utilities": 28216,
+   "V10 | sea level underpass": 20172,
+   "V8 | neon depth architecture": 19468,
+   "V9 | cultural landmarks": 17024,
+   "07_STREET_KIT": 15204,
+   "V9 | kerb paint and LED barrier lines": 5744,
+   "V9 | painted concrete run-off": 4920,
+   "V4 | event infrastructure": 2496,
+   "03_VIADUCT": 1016,
+   "V9 | realistic Tokyo skyline PNG matte": 80,
+   "V5 | local bridge atmosphere": 48,
+   "V9 | extended landscape grass": 16,
+   "V7 | distant Mount Fuji matte": 2
+  }
+ },
+ "after_v11_blender": {
+  "objects_x_tris_by_group": {
+   "track and terrain": 89342,
+   "bridge, wheel, tunnel, street kit, other": 88614,
+   "landmarks": 96480,
+   "frontages (district architecture)": 81029,
+   "stands (shell + crowd)": 28100,
+   "hills and lamps (new)": 5520,
+   "text (signs, wayfinding)": 3099,
+   "sponsor boards": 360,
+   "foliage": 757624
+  },
+  "unique_by_group": {
+   "track and terrain": 89342,
+   "bridge, wheel, tunnel, street kit, other": 75022,
+   "landmarks": 96480,
+   "frontages (district architecture)": 81029,
+   "stands (shell + crowd)": 28100,
+   "hills and lamps (new)": 3916,
+   "text (signs, wayfinding)": 3099,
+   "sponsor boards": 6,
+   "foliage": 3120
+  },
+  "objects_x_tris": 1150168,
+  "unique": 380114,
+  "v10_by_group_evaluated": {
+   "other": 879076,
+   "foliage": 6001992,
+   "text": 1441556,
+   "frontage": 2371092,
+   "stands": 1408716
+  },
+  "trees": {
+   "sakura_a": 254,
+   "sakura_b": 173,
+   "pine": 301,
+   "broadleaf": 280
+  }
+ },
+ "web_glb": {
+  "tokyo_visual.glb": {
+   "camera": {
+    "pos": [
+     0,
+     3.5,
+     0
+    ],
+    "yawRad": 1.5707963267948966,
+    "fovV": 62,
+    "far": 9000,
+    "cullK": 280
+   },
+   "unique_triangles": 421531,
+   "total_triangles_all_instances": 1223592,
+   "drawn_submitted_triangles": 1131832,
+   "drawn_in_frustum_triangles": 408499,
+   "draw_calls_all": 131,
+   "draw_calls_submitted": 113,
+   "draw_calls_in_frustum": 107,
+   "meshes": 68,
+   "nodes": 68,
+   "instanced_nodes": 22,
+   "materials": 88,
+   "textures": 20
+  },
+  "tokyo_visual_sectors.glb": {
+   "camera": {
+    "pos": [
+     0,
+     3.5,
+     0
+    ],
+    "yawRad": 1.5707963267948966,
+    "fovV": 62,
+    "far": 9000,
+    "cullK": 280
+   },
+   "unique_triangles": 416921,
+   "total_triangles_all_instances": 1218937,
+   "drawn_submitted_triangles": 1010922,
+   "drawn_in_frustum_triangles": 287598,
+   "draw_calls_all": 316,
+   "draw_calls_submitted": 204,
+   "draw_calls_in_frustum": 198,
+   "meshes": 191,
+   "nodes": 215,
+   "instanced_nodes": 22,
+   "materials": 88,
+   "textures": 20
+  }
+ },
+ "marina_reference": {
+  "camera": {
+   "pos": [
+    0,
+    3.5,
+    0
+   ],
+   "yawRad": 1.5707963267948966,
+   "fovV": 62,
+   "far": 9000,
+   "cullK": 280
+  },
+  "unique_triangles": 268299,
+  "total_triangles_all_instances": 636277,
+  "drawn_submitted_triangles": 490258,
+  "drawn_in_frustum_triangles": 282181,
+  "draw_calls_all": 359,
+  "draw_calls_submitted": 280,
+  "draw_calls_in_frustum": 224,
+  "meshes": 195,
+  "nodes": 195,
+  "instanced_nodes": 76,
+  "materials": 260,
+  "textures": 117
+ },
+ "note": "drawn_* are at the start line (camera 3.5 m up, +X, fov 62, 16:9) with the viewer Culler rules (perf.js); in_frustum counts only what the camera sees. Preview renders: v11-*.png"
+}

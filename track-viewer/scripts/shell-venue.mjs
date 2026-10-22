@@ -7,12 +7,13 @@ import {mkdirSync,writeFileSync,readFileSync,existsSync,statSync} from 'node:fs'
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 await Promise.all([MeshoptDecoder.ready,MeshoptEncoder.ready]);
-const root=new URL('../../tracks/marina/out/web/',import.meta.url),qa=new URL('../qa/shells/',import.meta.url);
+const TRACK=process.env.TRACK??'marina';   // TRACK=tokyo: tracks/tokyo/out/web, own QA folder
+const root=new URL(`../../tracks/${TRACK}/out/web/`,import.meta.url),qa=new URL(TRACK==='marina'?'../qa/shells/':`../qa/shells-${TRACK}/`,import.meta.url);
 mkdirSync(qa,{recursive:true});
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder,'meshopt.encoder':MeshoptEncoder});
-const selected=/yacht|skyline|hotel|pit_building|garage|vip_booth|transporter/i;
+const selected=process.env.SHELL_RE?new RegExp(process.env.SHELL_RE,'i'):/yacht|skyline|hotel|pit_building|garage|vip_booth|transporter/i;
 const report=[];
-for(const file of ['marina_visual.glb','marina_visual_ktx2.glb']){
+for(const file of [`${TRACK}_visual.glb`,`${TRACK}_visual_ktx2.glb`]){
  const src=fileURLToPath(new URL(file,root)),doc=await io.read(src),candidates=[],payload=[];
  let before=0;
  for(const mesh of doc.getRoot().listMeshes()){

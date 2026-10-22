@@ -1,0 +1,258 @@
+[
+  {
+    "base": "tokyo_visual",
+    "cellMetres": 768,
+    "sourceBytes": 8743936,
+    "outputBytes": 8978836,
+    "changes": [
+      {
+        "name": "Continuous road | 18m | source spline",
+        "triangles": 11520,
+        "sections": 6
+      },
+      {
+        "name": "Avenue five-tier cedar pavilion and swept roofs",
+        "triangles": 23620,
+        "sections": 9
+      },
+      {
+        "name": "Catch fence mesh 1",
+        "triangles": 1600,
+        "sections": 6
+      },
+      {
+        "name": "Catch fence tension cable",
+        "triangles": 14376,
+        "sections": 6
+      },
+      {
+        "name": "Continuous concrete barrier",
+        "triangles": 22952,
+        "sections": 6
+      },
+      {
+        "name": "Continuous edge line",
+        "triangles": 9426,
+        "sections": 6
+      },
+      {
+        "name": "Continuous sidewalk 1",
+        "triangles": 24816,
+        "sections": 6
+      },
+      {
+        "name": "V9 extended landscape grass plane",
+        "triangles": 44224,
+        "sections": 22
+      },
+      {
+        "name": "V10 04 | flowing white Tokyo race headquarters | 東京 レース本部",
+        "triangles": 5873,
+        "sections": 6
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate | 浅草門",
+        "triangles": 5065,
+        "sections": 6
+      },
+      {
+        "name": "V10 09 | Akihabara neon shrine gateway | 電 光 神 社",
+        "triangles": 4010,
+        "sections": 4
+      },
+      {
+        "name": "Kerb | inner",
+        "triangles": 2876,
+        "sections": 6
+      },
+      {
+        "name": "Rounded portal tower 704",
+        "triangles": 60480,
+        "sections": 3
+      },
+      {
+        "name": "Suspension system, hanger clamps and warm rail edges",
+        "triangles": 10320,
+        "sections": 3
+      },
+      {
+        "name": "V9 barrier LED line 1.001",
+        "triangles": 5736,
+        "sections": 6
+      },
+      {
+        "name": "V9 offshore Wangan-style expressway viaduct",
+        "triangles": 8508,
+        "sections": 9
+      },
+      {
+        "name": "V9 paddock apron north border 0",
+        "triangles": 2460,
+        "sections": 6
+      },
+      {
+        "name": "V9 utility poles, transformers and sagging wires",
+        "triangles": 1800,
+        "sections": 2
+      },
+      {
+        "name": "V9 vending machine clusters",
+        "triangles": 1872,
+        "sections": 4
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate",
+        "triangles": 30756,
+        "sections": 6
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate | bracketwork and side stairs",
+        "triangles": 7115,
+        "sections": 4
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate | stone court and lanterns",
+        "triangles": 73751,
+        "sections": 5
+      },
+      {
+        "name": "V10 04 | flowing white Tokyo race headquarters",
+        "triangles": 1562,
+        "sections": 5
+      },
+      {
+        "name": "V10 08 | curved Bayfront cedar grandstand | spectators and fascia.001",
+        "triangles": 8360,
+        "sections": 5
+      }
+    ]
+  },
+  {
+    "base": "tokyo_visual_ktx2",
+    "cellMetres": 768,
+    "sourceBytes": 12071992,
+    "outputBytes": 12307072,
+    "changes": [
+      {
+        "name": "Continuous road | 18m | source spline",
+        "triangles": 11520,
+        "sections": 6
+      },
+      {
+        "name": "Avenue five-tier cedar pavilion and swept roofs",
+        "triangles": 23620,
+        "sections": 9
+      },
+      {
+        "name": "Catch fence mesh 1",
+        "triangles": 1600,
+        "sections": 6
+      },
+      {
+        "name": "Catch fence tension cable",
+        "triangles": 14376,
+        "sections": 6
+      },
+      {
+        "name": "Continuous concrete barrier",
+        "triangles": 22952,
+        "sections": 6
+      },
+      {
+        "name": "Continuous edge line",
+        "triangles": 9426,
+        "sections": 6
+      },
+      {
+        "name": "Continuous sidewalk 1",
+        "triangles": 24816,
+        "sections": 6
+      },
+      {
+        "name": "V9 extended landscape grass plane",
+        "triangles": 44224,
+        "sections": 22
+      },
+      {
+        "name": "V10 04 | flowing white Tokyo race headquarters | 東京 レース本部",
+        "triangles": 5873,
+        "sections": 6
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate | 浅草門",
+        "triangles": 5065,
+        "sections": 6
+      },
+      {
+        "name": "V10 09 | Akihabara neon shrine gateway | 電 光 神 社",
+        "triangles": 4010,
+        "sections": 4
+      },
+      {
+        "name": "Kerb | inner",
+        "triangles": 2876,
+        "sections": 6
+      },
+      {
+        "name": "Rounded portal tower 704",
+        "triangles": 60480,
+        "sections": 3
+      },
+      {
+        "name": "Suspension system, hanger clamps and warm rail edges",
+        "triangles": 10320,
+        "sections": 3
+      },
+      {
+        "name": "V9 barrier LED line 1.001",
+        "triangles": 5736,
+        "sections": 6
+      },
+      {
+        "name": "V9 offshore Wangan-style expressway viaduct",
+        "triangles": 8508,
+        "sections": 9
+      },
+      {
+        "name": "V9 paddock apron north border 0",
+        "triangles": 2460,
+        "sections": 6
+      },
+      {
+        "name": "V9 utility poles, transformers and sagging wires",
+        "triangles": 1800,
+        "sections": 2
+      },
+      {
+        "name": "V9 vending machine clusters",
+        "triangles": 1872,
+        "sections": 4
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate",
+        "triangles": 30756,
+        "sections": 6
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate | bracketwork and side stairs",
+        "triangles": 7115,
+        "sections": 4
+      },
+      {
+        "name": "V10 01 | Asakusa vermilion romon gate | stone court and lanterns",
+        "triangles": 73751,
+        "sections": 5
+      },
+      {
+        "name": "V10 04 | flowing white Tokyo race headquarters",
+        "triangles": 1562,
+        "sections": 5
+      },
+      {
+        "name": "V10 08 | curved Bayfront cedar grandstand | spectators and fascia.001",
+        "triangles": 8360,
+        "sections": 5
+      }
+    ]
+  }
+]

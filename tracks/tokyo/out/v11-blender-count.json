@@ -1,0 +1,39 @@
+{
+ "objects_x_tris_by_group": {
+  "track and terrain": 89342,
+  "bridge, wheel, tunnel, street kit, other": 88614,
+  "landmarks": 96480,
+  "frontages (district architecture)": 81029,
+  "stands (shell + crowd)": 28100,
+  "hills and lamps (new)": 5520,
+  "text (signs, wayfinding)": 3099,
+  "sponsor boards": 360,
+  "foliage": 757624
+ },
+ "unique_by_group": {
+  "track and terrain": 89342,
+  "bridge, wheel, tunnel, street kit, other": 75022,
+  "landmarks": 96480,
+  "frontages (district architecture)": 81029,
+  "stands (shell + crowd)": 28100,
+  "hills and lamps (new)": 3916,
+  "text (signs, wayfinding)": 3099,
+  "sponsor boards": 6,
+  "foliage": 3120
+ },
+ "objects_x_tris": 1150168,
+ "unique": 380114,
+ "v10_by_group_evaluated": {
+  "other": 879076,
+  "foliage": 6001992,
+  "text": 1441556,
+  "frontage": 2371092,
+  "stands": 1408716
+ },
+ "trees": {
+  "sakura_a": 254,
+  "sakura_b": 173,
+  "pine": 301,
+  "broadleaf": 280
+ }
+}
