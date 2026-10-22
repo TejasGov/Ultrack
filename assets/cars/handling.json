@@ -196,6 +196,34 @@
    "bop": 0.88,
    "bopGrip": 1,
    "brakeK": 1.131
+  },
+  "nissan-z": {
+   "hp": 400,
+   "zeroTo100": 3.8,
+   "topKmh": 270,
+   "drive": "RWD",
+   "massKg": 1400,
+   "grip": 1.16,
+   "downforce": 0.85,
+   "cogM": 0.45,
+   "weightFront": 0.52,
+   "bop": 1.07,
+   "bopGrip": 1.021,
+   "brakeK": 1.131
+  },
+  "supra": {
+   "hp": 650,
+   "zeroTo100": 2.8,
+   "topKmh": 300,
+   "drive": "RWD",
+   "massKg": 1020,
+   "grip": 1.36,
+   "downforce": 1.6,
+   "cogM": 0.4,
+   "weightFront": 0.5,
+   "bop": 0.945,
+   "bopGrip": 1,
+   "brakeK": 1.131
   }
  }
 }

@@ -1,5 +1,5 @@
 # Prepares the four 2026-10-21 Sketchfab cars for scripts/model-car.py (track-viewer): game-rip structure -> role-tagged parts.
-#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4>
+#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4|nissanz|supra>
 # Reads <folder>/model.glb, writes <folder>/prepared.glb with
 #   - every mesh un-parented, in world space (the pipeline measures and scales it itself),
 #   - object names the pipeline's wheel patterns find ("Tyre_", "Spin_" = rim + disc, "Caliper_", "INT:" = cabin),
@@ -13,7 +13,7 @@ from mathutils import Vector, Matrix
 
 key = sys.argv[sys.argv.index('--') + 1]
 HERE = os.path.dirname(os.path.abspath(__file__))
-FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4'}[key]
+FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4', 'nissanz': 'Nnissan-z-gt4', 'supra': 'Tsupra-gt'}[key]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=os.path.join(HERE, FOLDER, 'model.glb'))
 
@@ -38,6 +38,7 @@ def image_of(m):
     n = next((n for n in m.node_tree.nodes if n.type == 'BSDF_PRINCIPLED'), None)
     if not n or not n.inputs['Base Color'].links: return None
     nd = n.inputs['Base Color'].links[0].from_node
+    while nd.type == 'MIX' and nd.inputs['A'].links: nd = nd.inputs['A'].links[0].from_node     # glTF colour factor / vertex colour multiply: the texture is input A
     return nd.image if nd.type == 'TEX_IMAGE' else None
 def pixels(img):
     if img.name not in _img:
@@ -182,26 +183,28 @@ def p918():
 if key == 'p918': p918()
 
 # ================= the AMG GT4 (Real Racing 3 rip: parents "<scene>:LOD_A_<PART>_mm_<kind>", livery atlas with the grey base, green stripes, black roof band; nose -Y) =================
-def gt4():
+def gt4(win=('wubdiws',), ext=None, drop=()):   # win: the glass material names; ext: the one paint atlas material (None: every ext part); drop: parts removed
     for o in list(bpy.context.scene.objects):
         if o.type != 'MESH': continue
         m = re.search(r'LOD_A_(.+?)_mm_([A-Za-z0-9]+)', PART[o.name])
         part, k = (m.group(1), m.group(2)) if m else (PART[o.name], 'misc')
+        if any(d in PART[o.name] for d in drop): bpy.data.objects.remove(o); continue
         raw = PART[o.name].split('LOD_A_')[-1]
         mat = o.material_slots[0].material if o.material_slots else None
         mn = mat.name if mat else ''
         base = raw
+        if 'MIRROR_GLASS' in part: put(o, base, 'mirror'); continue     # the Z keeps its mirror glass under INT_
         if part.startswith('INT_') or part == 'INTERIOR': put(o, 'INT:' + base, 'keep'); continue
         if part == 'TYRE': put(o, 'Tyre_' + base, 'keep'); continue
         if part in ('WHEEL', 'ROTOR'): put(o, 'Spin_' + base, 'keep'); continue
         if part.startswith('BRAKE_CALIPER'): put(o, 'Caliper_' + base, 'caliper'); continue
-        if part.startswith('GLASS'): put(o, base, 'glass' if mn == 'wubdiws' else 'keep'); continue
+        if part.startswith('GLASS'): put(o, base, 'glass' if mn in win else 'keep'); continue
         if part.startswith('MIRROR_GLASS'): put(o, base, 'mirror'); continue
         if part.startswith('MIRROR'): put(o, base, 'mirrorPaint' if k == 'ext' else 'mirrorHousing'); continue
         if part.startswith('HEADLIGHT_LENS'): put(o, base, 'headkeep'); continue
         if part.startswith('TAILLIGHT_LENS'): put(o, base, 'keep'); continue
         if part.startswith('BRAKES_'): put(o, base, 'tail'); continue
-        if k == 'ext' and part not in ('EXHAUST', 'CHASSIS'):
+        if k == 'ext' and part not in ('EXHAUST', 'CHASSIS') and (not ext or mn == ext):
             img = image_of(mat); arr = pixels(img)
             ref = np.median(arr.reshape(-1, 3), axis=0)           # the livery's grey base is most of the atlas
             isgrey = lambda f, uvl: float(np.abs(face_rgb(arr, f, uvl) - ref).max()) < 0.10
@@ -213,6 +216,36 @@ def gt4():
             continue
         put(o, base + '_' + mn, 'keep')
 if key == 'gt4': gt4()
+# the Z GT4 (same rip family: white atlas, red stripes and decals stay; "mm_windiws" glass; a shattered-window mesh is dropped)
+if key == 'nissanz': gt4(win=('mm_windiws',), ext='mm_ext', drop=('windows_shattered',))
+
+# ================= the GR Supra Super GT (one body atlas: white base takes the team paint, red/black livery, decals and the number stay; nose -Y) =================
+def supra():
+    for o in list(bpy.context.scene.objects):
+        if o.type != 'MESH': continue
+        mat = o.material_slots[0].material if o.material_slots else None
+        mn = mat.name if mat else ''
+        base = PART[o.name] or o.name
+        if mn == 'inter': put(o, 'INT:' + base, 'keep'); continue
+        if mn == 'tyre': put(o, 'Tyre_' + base, 'keep'); continue
+        if mn in ('material_13', 'word'): put(o, 'Spin_' + base + '_' + mn, 'keep'); continue
+        if mn == 'glass': put(o, base, 'glass'); continue
+        if mn == 'red_glass': put(o, base, 'tail'); continue       # the rear light bar is lens and lamp in one
+        if mn == 'head_glass': put(o, base, 'headkeep'); continue
+        if mn.startswith('brake_'): put(o, base, 'tail'); continue
+        if mn == 'body':
+            mg = split(o, lambda f, uvl: abs(f.calc_center_median().x) > 0.99 and 0.64 < f.calc_center_median().z < 0.75 and 0 < f.calc_center_median().y < 0.03 and f.normal.y > 0.9)
+            if mg is o: put(o, base + '_mirrors', 'mirror'); continue      # the mirror glass faces the driver: rear-facing faces of the two stalks' heads (raw model metres)
+            if mg: put(mg, 'mirrorglass', 'mirror')
+            arr = pixels(image_of(mat)); ref = np.median(arr.reshape(-1, 3), axis=0)
+            g = split(o, lambda f, uvl: float(np.abs(face_rgb(arr, f, uvl) - ref).max()) >= 0.10)
+            if g is o: put(o, base + '_livery', 'keep')
+            else:
+                put(o, base, 'paint')
+                if g: put(g, base + '_livery', 'keep')
+            continue
+        put(o, base + '_' + mn, 'keep')
+if key == 'supra': supra()
 
 # ================= export =================
 def export():

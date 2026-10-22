@@ -1,0 +1,455 @@
+{
+  "car": "nissan-z",
+  "date": "2026-10-22T20:55:32.614Z",
+  "tuning": {
+    "car": "nissan-z",
+    "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+    "suspension": {
+      "pitch": 0.5,
+      "roll": 0.85,
+      "freq": 1.6,
+      "ride": 0.05
+    },
+    "aero": [],
+    "log": [
+      "2026-10-22: new complete model (Sketchfab, see assets/cars/nissan-z/source.json); first QA run"
+    ]
+  },
+  "summary": {
+    "pass": 8,
+    "warn": 2,
+    "fail": 1,
+    "review": 1,
+    "info": 1
+  },
+  "checks": [
+    {
+      "id": "see-through",
+      "title": "No see-through gaps (every part in place)",
+      "status": "fail",
+      "value": "9 gaps ≥ 20 cm², 6 of 5-20 cm²",
+      "expect": "none",
+      "fix": "automatic interior fills (carkit/interior.js: floor, keel, bays, bulkheads, arch liners, cabin); trace a gap that survives them (masks.png, then a magenta-background render) and add a fill or a tuning.glass scale",
+      "detail": [
+        {
+          "view": "left",
+          "area": 12,
+          "cm2": 24.6,
+          "at": [
+            0.85,
+            0.56
+          ]
+        },
+        {
+          "view": "left",
+          "area": 6,
+          "cm2": 12.3,
+          "at": [
+            0.86,
+            0.56
+          ]
+        },
+        {
+          "view": "right",
+          "area": 6,
+          "cm2": 12.3,
+          "at": [
+            0.14,
+            0.56
+          ]
+        },
+        {
+          "view": "right",
+          "area": 12,
+          "cm2": 24.6,
+          "at": [
+            0.15,
+            0.56
+          ]
+        },
+        {
+          "view": "front-left",
+          "area": 9,
+          "cm2": 18.5,
+          "at": [
+            0.8,
+            0.64
+          ]
+        },
+        {
+          "view": "front-left",
+          "area": 183,
+          "cm2": 375.5,
+          "at": [
+            0.75,
+            0.67
+          ]
+        },
+        {
+          "view": "front-left",
+          "area": 15,
+          "cm2": 30.8,
+          "at": [
+            0.71,
+            0.68
+          ]
+        },
+        {
+          "view": "front-left",
+          "area": 6,
+          "cm2": 12.3,
+          "at": [
+            0.7,
+            0.68
+          ]
+        },
+        {
+          "view": "front-right",
+          "area": 9,
+          "cm2": 18.5,
+          "at": [
+            0.2,
+            0.64
+          ]
+        },
+        {
+          "view": "front-right",
+          "area": 183,
+          "cm2": 375.5,
+          "at": [
+            0.25,
+            0.67
+          ]
+        },
+        {
+          "view": "front-right",
+          "area": 15,
+          "cm2": 30.8,
+          "at": [
+            0.29,
+            0.68
+          ]
+        },
+        {
+          "view": "front-right",
+          "area": 6,
+          "cm2": 12.3,
+          "at": [
+            0.3,
+            0.68
+          ]
+        },
+        {
+          "view": "low-left",
+          "area": 19,
+          "cm2": 39,
+          "at": [
+            0.83,
+            0.58
+          ]
+        },
+        {
+          "view": "low-left",
+          "area": 25,
+          "cm2": 51.3,
+          "at": [
+            0.84,
+            0.58
+          ]
+        },
+        {
+          "view": "low-right",
+          "area": 12,
+          "cm2": 24.6,
+          "at": [
+            0.13,
+            0.56
+          ]
+        }
+      ]
+    },
+    {
+      "id": "glass-cover",
+      "title": "Glass fills the window openings (advisory)",
+      "status": "warn",
+      "value": "0% of opening pixels covered",
+      "expect": "≥ 90%",
+      "fix": "car-lab profile glass polygons (read-only) or tuning.glass { push, offset } here",
+      "detail": [
+        {
+          "name": "left",
+          "all": 2,
+          "uncoveredPx": 18,
+          "openingsPx": 18
+        },
+        {
+          "name": "right",
+          "all": 2,
+          "uncoveredPx": 18,
+          "openingsPx": 18
+        },
+        {
+          "name": "front",
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
+        },
+        {
+          "name": "rear",
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
+        },
+        {
+          "name": "top",
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
+        },
+        {
+          "name": "front-left",
+          "all": 4,
+          "uncoveredPx": 213,
+          "openingsPx": 213
+        },
+        {
+          "name": "rear-left",
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
+        },
+        {
+          "name": "front-right",
+          "all": 4,
+          "uncoveredPx": 213,
+          "openingsPx": 213
+        },
+        {
+          "name": "rear-right",
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
+        },
+        {
+          "name": "low-left",
+          "all": 2,
+          "uncoveredPx": 44,
+          "openingsPx": 44
+        },
+        {
+          "name": "low-right",
+          "all": 1,
+          "uncoveredPx": 12,
+          "openingsPx": 12
+        }
+      ]
+    },
+    {
+      "id": "wheels",
+      "title": "Tyres sit in the arches: a visible gap, no clipping, flush with the body",
+      "status": "warn",
+      "value": "front: clear 0.056 top 0.062 poke 0.294; front: clear 0.056 top 0.062 poke 0.294; rear: clear 0.046 top 0.053 poke 0.294; rear: clear 0.046 top 0.053 poke 0.294",
+      "expect": "clearance ≥ 0 (lip overlap under 2 cm warns), top gap 1.2-12 cm, poke -10..+4 cm",
+      "fix": "tuning.suspension { ride } raises the body off the wheels (m); arch lips that dip into the tyre need a shell fix",
+      "detail": [
+        {
+          "wheel": "wheel_FL",
+          "axle": "front",
+          "minClearance": 0.056,
+          "topGap": 0.062,
+          "poke": 0.294
+        },
+        {
+          "wheel": "wheel_FR",
+          "axle": "front",
+          "minClearance": 0.056,
+          "topGap": 0.062,
+          "poke": 0.294
+        },
+        {
+          "wheel": "wheel_RL",
+          "axle": "rear",
+          "minClearance": 0.046,
+          "topGap": 0.053,
+          "poke": 0.294
+        },
+        {
+          "wheel": "wheel_RR",
+          "axle": "rear",
+          "minClearance": 0.046,
+          "topGap": 0.053,
+          "poke": 0.294
+        }
+      ]
+    },
+    {
+      "id": "glass-fit",
+      "title": "Glass sits in the openings, not on top of the paint or under it",
+      "status": "pass",
+      "value": "floating 1%, buried 0%, over openings 11%",
+      "expect": "floating ≤ 5%, buried ≤ 30%",
+      "fix": "tuning.glass { push } (m, along the pane normal)",
+      "detail": {
+        "samples": 190,
+        "floating": 0.011,
+        "buried": 0,
+        "overOpening": 0.105,
+        "floatingAt": [
+          [
+            0.22,
+            1.11,
+            0.66
+          ],
+          [
+            0.22,
+            1.11,
+            -0.66
+          ]
+        ]
+      }
+    },
+    {
+      "id": "exhaust",
+      "title": "Exhaust and nitro points sit on the rear surface with a clear exit",
+      "status": "pass",
+      "value": "1 points, 0 off the body or blocked, asymmetry 0 m",
+      "expect": "on the surface (−4..+8 cm), unblocked, mirror-symmetric",
+      "fix": "assets/cars/exhaust.json tips [y, z] (and up for top exits); ?debug=exhaust shows them",
+      "detail": [
+        {
+          "kind": "exhaust",
+          "name": "exhaust_0",
+          "onBody": 0.02,
+          "blocked": false,
+          "z": -0.353
+        }
+      ]
+    },
+    {
+      "id": "mirrors",
+      "title": "Side mirrors: real-style housings, both sides, symmetric, on short arms",
+      "status": "pass",
+      "value": "the model's own, asymmetry 0 m, housing gap 0.062 / 0.06 m",
+      "expect": "tuned style, asymmetry ≤ 2 cm, gap 1.5-32 cm",
+      "fix": "tuning.mirrors { style: blade|gt|bullet, scale, offset, housing }",
+      "detail": {
+        "present": true,
+        "asymmetry": 0,
+        "housingGap": [
+          0.062,
+          0.06
+        ],
+        "size": [
+          0.066,
+          0.142,
+          0.151
+        ]
+      }
+    },
+    {
+      "id": "lamps",
+      "title": "Tail lamps: red but unlit off the brake, bright and blooming on it",
+      "status": "pass",
+      "value": "area 84 cm2; dusk b0: 56.6, dusk b1: 161.6, night b0: 47.8, night b1: 195.4",
+      "expect": "off: lum < 125, red; on: ≥ 90 and ≥ off + 40 (saturated red has low luminance; glossy lenses mirror the sky when off)",
+      "fix": "carkit/lamps.js (levels are shared; area-normalised); tuning.lamps only for a real exception",
+      "detail": [
+        {
+          "look": "dusk",
+          "brake": 0,
+          "area": 0.0084,
+          "px": 726,
+          "lum": 56.6,
+          "redOverGreen": 4.8,
+          "peak": 131
+        },
+        {
+          "look": "dusk",
+          "brake": 1,
+          "area": 0.0084,
+          "px": 726,
+          "lum": 161.6,
+          "redOverGreen": 1.84,
+          "peak": 173
+        },
+        {
+          "look": "night",
+          "brake": 0,
+          "area": 0.0084,
+          "px": 726,
+          "lum": 47.8,
+          "redOverGreen": 16.28,
+          "peak": 131
+        },
+        {
+          "look": "night",
+          "brake": 1,
+          "area": 0.0084,
+          "px": 726,
+          "lum": 195.4,
+          "redOverGreen": 1.42,
+          "peak": 202
+        }
+      ]
+    },
+    {
+      "id": "premium",
+      "title": "Premium look against the reference (judged by eye: look.png, reference.png)",
+      "status": "review",
+      "value": "-",
+      "expect": "as good as the Endurance garage frames",
+      "fix": "finishes.json (paint), tuning.mirrors, lamps; geometry limits need a better source model",
+      "detail": null
+    },
+    {
+      "id": "pitch",
+      "title": "Body dips under braking (1 g)",
+      "status": "pass",
+      "value": "1.07°",
+      "expect": "0.8-3.2°",
+      "fix": "tuning.suspension { pitch, freq, damping }"
+    },
+    {
+      "id": "roll",
+      "title": "Body rolls in a corner",
+      "status": "pass",
+      "value": "1.97°",
+      "expect": "0.6-3.5°",
+      "fix": "tuning.suspension { roll }"
+    },
+    {
+      "id": "travel",
+      "title": "Tyres stay clear of the arches with the nose down",
+      "status": "pass",
+      "value": "0.042 m",
+      "expect": "≥ 0",
+      "fix": "tuning.suspension { pitch } lower, or { ride } higher"
+    },
+    {
+      "id": "aero",
+      "title": "Active aero (none set for this car)",
+      "status": "info",
+      "value": "-",
+      "expect": "only for cars that have it",
+      "fix": "tuning.aero"
+    },
+    {
+      "id": "fx",
+      "title": "Exhaust smoke, pops, nitro flames and drift smoke all show",
+      "status": "pass",
+      "value": "idle smoke 17, pop fire 16, nitro fire 56, drift smoke 245",
+      "expect": "all > 0 (drift > 20)",
+      "fix": "exhaust.json points; carkit/fx.js rates"
+    }
+  ],
+  "metric": {
+    "pitch": 1.0651089190024718,
+    "roll": 1.9657665604507406,
+    "aero": 0,
+    "smokeIdle": 17,
+    "fireLift": 16,
+    "fireNitro": 56,
+    "smokeDrift": 245,
+    "clearBrake": 0.042
+  }
+}

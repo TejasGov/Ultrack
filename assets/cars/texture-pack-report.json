@@ -166,5 +166,33 @@
     "originalBytes": 1372640,
     "compressedBytes": 992888,
     "textures": 18
+  },
+  {
+    "key": "nissan-z",
+    "lod": 0,
+    "originalBytes": 3433872,
+    "compressedBytes": 1387548,
+    "textures": 17
+  },
+  {
+    "key": "nissan-z",
+    "lod": 1,
+    "originalBytes": 1483052,
+    "compressedBytes": 851572,
+    "textures": 15
+  },
+  {
+    "key": "supra",
+    "lod": 0,
+    "originalBytes": 3111812,
+    "compressedBytes": 836432,
+    "textures": 1
+  },
+  {
+    "key": "supra",
+    "lod": 1,
+    "originalBytes": 1506624,
+    "compressedBytes": 440540,
+    "textures": 1
   }
 ]

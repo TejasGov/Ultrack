@@ -20,7 +20,7 @@ const profileFile = (key) => PROFILES[`../../car-lab/src/vehicle/profiles/${key}
 // names of the profile cars without loading the profiles (car-lab profile "name"; model cars name themselves in model.json)
 const PROFILE_NAMES = { 'aston-martin-valk': 'Valkyrie', av12: 'AV–12', 'bentley-gt': 'Continental GT', bmw1: 'Mercedes-AMG GT4', buggati: 'Chiron-X',
   'furari-488': 'Furari 488-R', jaguarxkjss: 'Mercedes-AMG One', mp1x: 'McLaren 720S', mustang: 'ST–6',
-  porsche1: '911–T' };
+  porsche1: '911–T', 'nissan-z': 'Nissan Z GT4', supra: 'GR Supra GT' };
 import { createVehicleMaterials, FINISHES } from '../../car-lab/src/vehicle/materials.js';
 import { createWheelSet, createGlass, createMirrors } from '../../car-lab/src/vehicle/parts.js';
 import { createVehicleLights } from '../../car-lab/src/vehicle/lights.js';

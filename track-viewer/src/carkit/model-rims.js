@@ -4,6 +4,8 @@ const RIMS={
   'furari-488':['M_Rim_Main_SetPT_Max.002'],
   mp1x:['rims'],
   bmw1:['wheel'],
+  'nissan-z':['mm_wheel'],
+  supra:['material_13'],
   jaguarxkjss:['tyre','crbnfibre'],
 };
 export function isModelRim(key,name='') {return RIMS[key]?.includes(name.replace(/^[^|]*\|/,''))??false;}

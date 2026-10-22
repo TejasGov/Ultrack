@@ -17,7 +17,9 @@
     "buggati": 470000,
     "bentley-gt": 452616,
     "mp1x": 378184,
-    "porsche1": 465940
+    "porsche1": 465940,
+    "nissan-z": 1387548,
+    "supra": 836432
   },
   "uiLogoBytes": 107624,
   "note": "Each selected car is loaded on demand; far LOD, rivals and spectators are deferred. Full browser/network/parse/GPU latency is not measured here."

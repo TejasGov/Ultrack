@@ -1,0 +1,28 @@
+{
+  "name": "GR Supra GT",
+  "src": "../../../sources/sketchfab/Tsupra-gt/prepared.glb",
+  "credit": {
+    "title": "Toyota GR Supra Super GT",
+    "author": "ruizruizharry",
+    "authorUrl": "https://sketchfab.com/ruizruizharry",
+    "url": "https://sketchfab.com/3d-models/toyota-gr-supra-super-gt-a4c8879f36fb45d69d05ad0bb746ddd7",
+    "license": "CC BY 4.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "a4c8879f36fb45d69d05ad0bb746ddd7",
+    "replacement": false,
+    "nonCommercialOnly": false,
+    "additionalCredits": "CC BY: credit the author. The model carries Toyota Gazoo Racing decals and a number plate in its own livery: replace before any public release."
+  },
+  "rotateZ": -90,
+  "length": 4.6,
+  "wheels": {
+    "mode": "loose",
+    "spin": ["Tyre_", "Spin_"],
+    "tyre": ["Tyre_"],
+    "caliper": ["Caliper_"]
+  },
+  "roles": {},
+  "interior": ["INT:"],
+  "exhaust": ["EXHAUST_none"],
+  "budget": { "body0": 60000, "body1": 20000, "wheel": 5000 }
+}

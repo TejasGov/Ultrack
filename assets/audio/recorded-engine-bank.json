@@ -261,6 +261,94 @@
       "shifts": [],
       "sharedWith": "furari-488"
     },
+    "nissan-z": {
+      "name": "Nissan Z GT4 twin-turbo V6 (the Ferrari 488 GTB twin-turbo V8 recording)",
+      "redline": 7000,
+      "cars": [
+        "nissan-z"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/furari-488-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/furari-488-low.ogg",
+          "rpm": 2100
+        },
+        "mid": {
+          "file": "engines/recorded/furari-488-mid.ogg",
+          "rpm": 4000
+        },
+        "high": {
+          "file": "engines/recorded/furari-488-high.ogg",
+          "rpm": 6800
+        },
+        "decel": {
+          "file": "engines/recorded/furari-488-decel.ogg",
+          "rpm": 3000
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a twin-turbo engine (no VR30 V6 recording yet); the Z GT4 revs to about 7,000 rpm",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/furari-488-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "furari-488"
+    },
+    "supra": {
+      "name": "Toyota GR Supra GT500 turbo inline-4 (the Ferrari 488 GTB twin-turbo V8 recording)",
+      "redline": 8000,
+      "cars": [
+        "supra"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/furari-488-idle.ogg",
+          "rpm": 950
+        },
+        "low": {
+          "file": "engines/recorded/furari-488-low.ogg",
+          "rpm": 2100
+        },
+        "mid": {
+          "file": "engines/recorded/furari-488-mid.ogg",
+          "rpm": 4000
+        },
+        "high": {
+          "file": "engines/recorded/furari-488-high.ogg",
+          "rpm": 6800
+        },
+        "decel": {
+          "file": "engines/recorded/furari-488-decel.ogg",
+          "rpm": 3000
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+        "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a turbo engine (no RI4A inline-4 recording yet); pitch follows the 8,000 rpm redline",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/furari-488-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "furari-488"
+    },
     "buggati": {
       "name": "Bugatti Chiron W16",
       "redline": 6800,

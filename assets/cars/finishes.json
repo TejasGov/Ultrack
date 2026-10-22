@@ -117,6 +117,24 @@
       "rim": "#1d1f23",
       "caliper": "#d12a1e",
       "why": "Huracan STO: pearlescent gloss (Blu Laufey on the model) with a carbon bonnet centre and roof (the model's own black parts), carbon sills and aero, black forged 20-inch wheels; the model has no separate calipers (the disc is baked into the wheel), so the caliper colour waits for a model that has them"
+    },
+    "nissan-z": {
+      "paint": "metallic",
+      "flake": 0.45,
+      "flakeMm": 0.6,
+      "carbonBelow": 0,
+      "rim": "#1d1f23",
+      "caliper": "#d12a1e",
+      "why": "Nissan Z GT4: fine-flake metallic over the model's own carbon, red stripes and NISMO decals, black race wheels, red Brembo calipers as on the car"
+    },
+    "supra": {
+      "paint": "metallic",
+      "flake": 0.3,
+      "flakeMm": 0.5,
+      "carbonBelow": 0,
+      "rim": "#2a2c30",
+      "caliper": "#d12a1e",
+      "why": "GR Supra GT500: gloss metallic over the model's own red and black Gazoo Racing livery, number plate and carbon aero; the model has no separate calipers (the rims are baked), so the caliper colour waits for a model that has them"
     }
   }
 }

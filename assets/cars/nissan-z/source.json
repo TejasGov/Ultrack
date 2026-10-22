@@ -1,0 +1,28 @@
+{
+  "name": "Nissan Z GT4",
+  "src": "../../../sources/sketchfab/Nnissan-z-gt4/prepared.glb",
+  "credit": {
+    "title": "2023 Nissan Z GT4",
+    "author": "ddiaz-design",
+    "authorUrl": "https://sketchfab.com/ddiaz-design",
+    "url": "https://sketchfab.com/3d-models/2023-nissan-z-gt4-d0bf1d00af3145658c2bdf21fab81a90",
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "modelId": "d0bf1d00af3145658c2bdf21fab81a90",
+    "replacement": false,
+    "nonCommercialOnly": true,
+    "additionalCredits": "Based on a Real Racing 3 model; credits vertex-warehouse.com. Non-commercial and share-alike licence: fine for this local fan project, replace before any public release."
+  },
+  "rotateZ": -90,
+  "length": 4.38,
+  "wheels": {
+    "mode": "loose",
+    "spin": ["Tyre_", "Spin_"],
+    "tyre": ["Tyre_"],
+    "caliper": ["Caliper_"]
+  },
+  "roles": {},
+  "interior": ["INT:"],
+  "exhaust": ["EXHAUST_mm"],
+  "budget": { "body0": 70000, "body1": 20000, "wheel": 5000 }
+}

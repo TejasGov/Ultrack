@@ -46,5 +46,13 @@
   "bmw1": {
     "lod0": "car_lod0_ktx2.glb",
     "lod1": "car_lod1_ktx2.glb"
+  },
+  "nissan-z": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "supra": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
   }
 }
