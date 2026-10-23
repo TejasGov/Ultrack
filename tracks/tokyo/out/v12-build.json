@@ -1,0 +1,203 @@
+{
+ "clearance_before": {
+  "violators": 6,
+  "names": [
+   "V10 08 | curved Bayfront cedar grandstand | spectators and fascia",
+   "V10 08 | curved Bayfront cedar grandstand",
+   "Staggered starting grid paint",
+   "V10 08 | curved Roppongi ridge gallery",
+   "V10 08 | curved Paddock club terraces",
+   "Race lighting masts and fixture banks"
+  ]
+ },
+ "pushed V10 08 | curved Roppongi ridge gallery": 6.0,
+ "pushed V10 08 | curved Roppongi ridge gallery | spectators and fascia": 1.0,
+ "masts moved/total": [
+  72,
+  96
+ ],
+ "frontage instancing": {
+  "frontages": 134,
+  "unique_meshes_before": 134,
+  "heroes": 21,
+  "linked_duplicates": 113
+ },
+ "trees": {
+  "sakura": {
+   "trees": 138,
+   "heroes": 4,
+   "full": 39,
+   "lod": 99
+  },
+  "canopy": {
+   "trees": 51,
+   "heroes": 3,
+   "full": 15,
+   "lod": 36
+  },
+  "cedar": {
+   "trees": 21,
+   "heroes": 2,
+   "full": 2,
+   "lod": 19
+  },
+  "framing": {
+   "trees": 8,
+   "heroes": 2,
+   "full": 8,
+   "lod": 0
+  }
+ },
+ "text datablocks after sharing": 234,
+ "v8 signs restored": 284,
+ "avenue mid-rises restored": 0,
+ "led": {
+  "lagoon_edges": 128,
+  "bay_shore_x": 450,
+  "bay_bbox": [
+   450,
+   3350,
+   -2100,
+   2300
+  ]
+ },
+ "street stations": 153,
+ "pylons": 153,
+ "lanterns": 918,
+ "sakura lining": 75,
+ "pagoda": {
+  "pos": [
+   266,
+   -96,
+   8
+  ],
+  "side": 1,
+  "frontages_hidden": 0
+ },
+ "bridge": {
+  "towers": 2,
+  "night_group": [
+   "Bridge | night atmosphere",
+   "Bridge | night lighting"
+  ]
+ },
+ "tower mats": [
+  "V5 pearl concrete | weathered bridge",
+  "V3 charcoal",
+  "V5 satin bridge rail",
+  "V5 pale inner arch reveal",
+  "V5 pearl concrete | weathered bridge",
+  "V3 charcoal",
+  "V5 satin bridge rail",
+  "V5 pale inner arch reveal"
+ ],
+ "wall dressing segments": 2380,
+ "fuji": {
+  "card": true,
+  "loc": [
+   0,
+   0,
+   0
+  ]
+ },
+ "corner cam run-off range": [
+  1283,
+  1288
+ ],
+ "tree LOD by camera distance (75 m)": {
+  "full": 30,
+  "lod1": 263
+ },
+ "frontage LOD by camera distance (140 m)": {
+  "full": 37,
+  "lod1": 97
+ },
+ "clearance_after": {
+  "violators": 0,
+  "names": []
+ },
+ "budget": {
+  "visible_objects": 3786,
+  "unique_mesh_datablocks": 1680,
+  "unique_triangles": 2702409,
+  "drawn_triangles": 8009707,
+  "shared_datablocks": 112,
+  "top_drawn": [
+   [
+    "Sakura master 0 LOD1.006",
+    1189754,
+    146
+   ],
+   [
+    "Sakura master 0",
+    777924,
+    21
+   ],
+   [
+    "Sakura master 1 LOD1.002",
+    358556,
+    44
+   ],
+   [
+    "V10 08 | curved Roppongi ridge gallery",
+    242072,
+    1
+   ],
+   [
+    "Sakura master 1",
+    222264,
+    6
+   ],
+   [
+    "V12 lantern",
+    184632,
+    942
+   ],
+   [
+    "V10 08 | curved Shibuya garden stand",
+    175564,
+    1
+   ],
+   [
+    "Sponsor board.007",
+    154080,
+    30
+   ],
+   [
+    "V10 frontage 057 | timber shoji tiled eaves",
+    143976,
+    7
+   ],
+   [
+    "V10 frontage 024 | timber shoji tiled eaves",
+    139160,
+    7
+   ],
+   [
+    "V10 02 | white plaster five tier castle",
+    131815,
+    1
+   ],
+   [
+    "Sponsor board.096",
+    117240,
+    30
+   ],
+   [
+    "V10 08 | curved Roppongi ridge gallery | spectators and fascia",
+    113664,
+    1
+   ],
+   [
+    "V10 frontage 111 | timber shoji tiled eaves",
+    109840,
+    5
+   ],
+   [
+    "V10 frontage 026 | timber shoji tiled eaves",
+    98196,
+    7
+   ]
+  ]
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "label": "v10",
+ "envelope_m": 14.5,
+ "rule": "plan distance to centerline of any vertex >= 14.5 m",
+ "checked": 335,
+ "violators": 6,
+ "clear": 329,
+ "list": [
+  {
+   "name": "V10 08 | curved Bayfront cedar grandstand | spectators and fascia",
+   "min_dist": 0.02,
+   "nearest_cl_index": 24,
+   "collections": [
+    "V10 | curved race venues"
+   ]
+  },
+  {
+   "name": "V10 08 | curved Bayfront cedar grandstand",
+   "min_dist": 0.05,
+   "nearest_cl_index": 24,
+   "collections": [
+    "V10 | curved race venues"
+   ]
+  },
+  {
+   "name": "Staggered starting grid paint",
+   "min_dist": 1.75,
+   "nearest_cl_index": 52,
+   "collections": [
+    "V4 | event infrastructure"
+   ]
+  },
+  {
+   "name": "V10 08 | curved Roppongi ridge gallery",
+   "min_dist": 11.13,
+   "nearest_cl_index": 543,
+   "collections": [
+    "V10 | curved race venues"
+   ]
+  },
+  {
+   "name": "V10 08 | curved Paddock club terraces",
+   "min_dist": 11.86,
+   "nearest_cl_index": 29,
+   "collections": [
+    "V10 | curved race venues"
+   ]
+  },
+  {
+   "name": "Race lighting masts and fixture banks",
+   "min_dist": 13.65,
+   "nearest_cl_index": 132,
+   "collections": [
+    "V4 | event infrastructure"
+   ]
+  }
+ ]
+}
