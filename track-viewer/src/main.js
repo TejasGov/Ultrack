@@ -717,7 +717,8 @@ async function setLook(name) {
   scene.background = tex.bg;
   scene.environment = tex.env;
   scene.backgroundIntensity = look.bg;
-  scene.backgroundRotation.y = scene.environmentRotation.y = look.hdriRot;
+  const turn = Math.atan2(TRACK.sun[0], TRACK.sun[1]) - Math.atan2(...trackOf('marina').sun);     // hdriRot is tuned on Marina's sun bearing
+  scene.backgroundRotation.y = scene.environmentRotation.y = look.hdriRot + turn;
   sky.setLook(name);
   aimSun(look);
   scene.environmentIntensity = look.env;
@@ -727,9 +728,10 @@ async function setLook(name) {
 /** the track's optional day/night backdrop blend (tracks.js dayNight) for this look */
 function applyDayNight(look) {
   const d = TRACK.dayNight; if (!d) return;
+  const nk = THREE.MathUtils.smoothstep(look.dn, 0.5, 0.7);     // night-only: off through dusk (dn .35), full from evening (dn .7)
   for (const m of allMats) {
     if (d.day.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = 1 - look.dn; }
-    else if (d.night?.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = look.dn * (d.nightK?.[m.name] ?? 1); }
+    else if (d.night?.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = nk * (d.nightK?.[m.name] ?? 1); m.visible = nk > 0; }
   }
 }
 function applyAll() {

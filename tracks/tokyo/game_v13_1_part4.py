@@ -170,6 +170,13 @@ for (p, d_, typ, color, energy, nm_) in cands:
     _, ci = road_dist(gp.x, gp.y)
     tg = Vector(CL[ci]) if typ != 'SPOT' else gp + (M.to_3x3() @ d_) * 30
     flood.append({'pos': to_game(*gp), 'target': to_game(*tg), 'warm': color[0] > color[2]})
+hut = next((o for o in sc.objects if o.name.startswith('V10 03 | garden temple') and o.type == 'MESH'), None)
+if hut:     # the garden's own wash light is a V13 light (skipped above): one warm flood from the road side lights it at night
+    hp = hut.matrix_world.translation.copy()
+    _, ci = road_dist(hp.x, hp.y)
+    to_road = (Vector(CL[ci]).to_2d() - hp.to_2d()).normalized()
+    lp = hp + Vector((to_road.x, to_road.y, 0)) * 30 + Vector((0, 0, 14))
+    flood.insert(0, {'pos': to_game(*lp), 'target': to_game(*(hp + Vector((0, 0, 2)))), 'warm': True})
 for o in sc.objects:
     if o.name.startswith('lamp_pole_'):
         street.append({'pos': to_game(*(o.matrix_world.translation + Vector((0, 0, 9.0))))})

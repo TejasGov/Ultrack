@@ -7,7 +7,7 @@
 //   fog        multiplies the look's fog density (a bigger or hazier venue)
 //   sun        [x, z] bearing of the sun over the track; its height comes from the look
 //   tag        the commentary tag for lines about this circuit (null: none)
-//   dayNight   optional: { day: RegExp on the name of the day skyline's materials, night: RegExp on materials that only show at night (opacity = dn x nightK[name]) } for a backdrop of two coincident bands (the night one
+//   dayNight   optional: { day: RegExp on the name of the day skyline's materials, night: RegExp on materials that only show from evening on (off at dusk; opacity = nightK[name]) } for a backdrop of two coincident bands (the night one
 //              opaque, the day one just inside it); main.js fades the day band's opacity per look (LOOKS dn: 0 = day .. 1 = night, opacity 1 - dn). Marina has none.
 //   looks      optional per-look overrides merged over main.js LOOKS while this track is active (grade merges key by key); Marina has none
 //   has        venue systems; one that is off is skipped without a request or an error
@@ -20,13 +20,14 @@ export const TRACKS = {
     has: { pit: true, vip: true, hoardings: true, people: true, yachts: true, buildings: true, teamDress: true },
   },
   tokyo: {
-    id: 'tokyo', name: 'Tokyo Hiragana Circuit', stem: 'tokyo', dir: '/assets/tokyo/', look: 'night', fog: 1, sun: [-0.55, -0.77], tag: null,
+    id: 'tokyo', name: 'Tokyo Hiragana Circuit', stem: 'tokyo', dir: '/assets/tokyo/', look: 'night', fog: 1, sun: [-0.94, 0.34], tag: null,     // west-south-west: Marina's bearing set straight down the neon street
     dayNight: { day: /^M_Supertall\w*Day$/, night: /^M_(NightBeam|NightBridgeRed|SupertallLightsNight)$/, nightK: { M_NightBeam: 0.16 } },     // v13.1: the sky arc, the ridges (by day) and the searchlights / distant lights (by night)
     // the canopies keep the asphalt and stands in shade: more exposure and sky light by day; the baked skyline and signs follow `emissive`;
     // the neon blooms from a higher threshold at night. The steps day > dusk > evening > night only ever go down.
     looks: {
       day: { exposure: 2.1, env: 1.25, emissive: 0.32, fogDensity: 0.0003, sun: 6, grade: { shadows: [1, 0.99, 0.97], sat: 1.02 } },
-      dusk: { exposure: 0.85, env: 1.0 },
+      // the dusk sun sets straight down the neon street: a softer flare, sun haze and road glint than Marina's open bay
+      dusk: { exposure: 0.85, env: 1.0, flare: 0.35, fogSun: [0.2, 0.11, 0.05], glint: [2.4, 1.4, 0.6] },
       bluehour: { exposure: 0.95, bg: 0.16, bloomGain: 0.7, emissive: 0.9 },
       night: { bloomGain: 0.65, bloomThr: 1.35, emissive: 1.2 },
     },
