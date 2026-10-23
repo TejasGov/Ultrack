@@ -19,8 +19,8 @@ ENVELOPE = HALF_W + KERB + RUNOFF + MARGIN
 CHECK_COLLS = ('V3 | district architecture', 'V3 | cedar stadiums', 'V8 | neon depth architecture', 'V9 | architectural diversity',
                'V9 | cultural landmarks', 'V10 | Japanese district architecture', 'V10 | nine reference landmarks',
                'V10 | curved race venues', 'V4 | event infrastructure')
-CHECK_PREFIX = ('V12 |',)          # every V12 collection whose name has venue / stand / architecture in it
-CHECK_WORDS = ('venue', 'stand', 'architecture', 'landmark')
+CHECK_PREFIX = ('V12 |', 'V13 |')          # every V12 collection whose name has venue / stand / architecture in it
+CHECK_WORDS = ('venue', 'stand', 'architecture', 'landmark', 'village')
 
 
 def centerline_kd(step=1.0):

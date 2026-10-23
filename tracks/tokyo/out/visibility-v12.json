@@ -1,0 +1,134 @@
+{
+ "castle": {
+  "los_pct": 58.7,
+  "ahead_pct": 13.5,
+  "longest_ahead_run_m": 220,
+  "run_starts_station": 1750,
+  "centre": [
+   -60,
+   250,
+   33
+  ],
+  "samples": 259
+ },
+ "hq": {
+  "los_pct": 49.0,
+  "ahead_pct": 19.7,
+  "longest_ahead_run_m": 340,
+  "run_starts_station": 2420,
+  "centre": [
+   -230,
+   -307,
+   9
+  ],
+  "samples": 259
+ },
+ "gate": {
+  "los_pct": 19.3,
+  "ahead_pct": 6.9,
+  "longest_ahead_run_m": 260,
+  "run_starts_station": 760,
+  "centre": [
+   103,
+   573,
+   15
+  ],
+  "samples": 259
+ },
+ "pagoda": {
+  "los_pct": 68.7,
+  "ahead_pct": 29.3,
+  "longest_ahead_run_m": 300,
+  "run_starts_station": 450,
+  "centre": [
+   133,
+   -48,
+   22
+  ],
+  "samples": 259
+ },
+ "lantern_hall": {
+  "los_pct": 14.3,
+  "ahead_pct": 0.4,
+  "longest_ahead_run_m": 20,
+  "run_starts_station": 1190,
+  "centre": [
+   -680,
+   561,
+   9
+  ],
+  "samples": 259
+ },
+ "timber_tower": {
+  "los_pct": 51.7,
+  "ahead_pct": 4.2,
+  "longest_ahead_run_m": 60,
+  "run_starts_station": 1030,
+  "centre": [
+   -890,
+   78,
+   24
+  ],
+  "samples": 259
+ },
+ "woven_hall": {
+  "los_pct": 22.8,
+  "ahead_pct": 12.4,
+  "longest_ahead_run_m": 580,
+  "run_starts_station": 0,
+  "centre": [
+   448,
+   -570,
+   7
+  ],
+  "samples": 259
+ },
+ "neon_gate": {
+  "los_pct": 23.6,
+  "ahead_pct": 9.3,
+  "longest_ahead_run_m": 140,
+  "run_starts_station": 1710,
+  "centre": [
+   420,
+   477,
+   15
+  ],
+  "samples": 259
+ },
+ "ferris_wheel": {
+  "los_pct": 63.3,
+  "ahead_pct": 8.1,
+  "longest_ahead_run_m": 300,
+  "run_starts_station": 1220,
+  "centre": [
+   -506,
+   -221,
+   65
+  ],
+  "samples": 259
+ },
+ "bridge": {
+  "los_pct": 68.7,
+  "ahead_pct": 14.3,
+  "longest_ahead_run_m": 420,
+  "run_starts_station": 1240,
+  "centre": [
+   -324,
+   118,
+   47
+  ],
+  "samples": 259
+ },
+ "garden_temple": {
+  "los_pct": 45.9,
+  "ahead_pct": 9.3,
+  "longest_ahead_run_m": 220,
+  "run_starts_station": 1380,
+  "centre": [
+   -390,
+   -237,
+   6
+  ],
+  "samples": 259
+ }
+}

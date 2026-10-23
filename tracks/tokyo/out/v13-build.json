@@ -1,0 +1,571 @@
+{
+ "visibility_before": {
+  "castle": {
+   "los_pct": 58.7,
+   "ahead_pct": 13.5,
+   "longest_ahead_run_m": 220,
+   "run_starts_station": 1750,
+   "centre": [
+    -60,
+    250,
+    33
+   ],
+   "samples": 259
+  },
+  "hq": {
+   "los_pct": 49.0,
+   "ahead_pct": 19.7,
+   "longest_ahead_run_m": 340,
+   "run_starts_station": 2420,
+   "centre": [
+    -230,
+    -307,
+    9
+   ],
+   "samples": 259
+  },
+  "gate": {
+   "los_pct": 19.3,
+   "ahead_pct": 6.9,
+   "longest_ahead_run_m": 260,
+   "run_starts_station": 760,
+   "centre": [
+    103,
+    573,
+    15
+   ],
+   "samples": 259
+  },
+  "pagoda": {
+   "los_pct": 68.7,
+   "ahead_pct": 29.3,
+   "longest_ahead_run_m": 300,
+   "run_starts_station": 450,
+   "centre": [
+    133,
+    -48,
+    22
+   ],
+   "samples": 259
+  },
+  "lantern_hall": {
+   "los_pct": 14.3,
+   "ahead_pct": 0.4,
+   "longest_ahead_run_m": 20,
+   "run_starts_station": 1190,
+   "centre": [
+    -680,
+    561,
+    9
+   ],
+   "samples": 259
+  },
+  "timber_tower": {
+   "los_pct": 51.7,
+   "ahead_pct": 4.2,
+   "longest_ahead_run_m": 60,
+   "run_starts_station": 1030,
+   "centre": [
+    -890,
+    78,
+    24
+   ],
+   "samples": 259
+  },
+  "woven_hall": {
+   "los_pct": 22.8,
+   "ahead_pct": 12.4,
+   "longest_ahead_run_m": 580,
+   "run_starts_station": 0,
+   "centre": [
+    448,
+    -570,
+    7
+   ],
+   "samples": 259
+  },
+  "neon_gate": {
+   "los_pct": 23.6,
+   "ahead_pct": 9.3,
+   "longest_ahead_run_m": 140,
+   "run_starts_station": 1710,
+   "centre": [
+    420,
+    477,
+    15
+   ],
+   "samples": 259
+  },
+  "ferris_wheel": {
+   "los_pct": 63.3,
+   "ahead_pct": 8.1,
+   "longest_ahead_run_m": 300,
+   "run_starts_station": 1220,
+   "centre": [
+    -506,
+    -221,
+    65
+   ],
+   "samples": 259
+  },
+  "bridge": {
+   "los_pct": 68.7,
+   "ahead_pct": 14.3,
+   "longest_ahead_run_m": 420,
+   "run_starts_station": 1240,
+   "centre": [
+    -324,
+    118,
+    47
+   ],
+   "samples": 259
+  },
+  "garden_temple": {
+   "los_pct": 45.9,
+   "ahead_pct": 9.3,
+   "longest_ahead_run_m": 220,
+   "run_starts_station": 1380,
+   "centre": [
+    -390,
+    -237,
+    6
+   ],
+   "samples": 259
+  }
+ },
+ "frontage objects hidden to open the landmark views": {
+  "lantern_hall": 12,
+  "timber_tower": 0,
+  "neon_gate": 7
+ },
+ "landmarks moved": {
+  "lantern_hall": {
+   "from_xy": [
+    -680,
+    561
+   ],
+   "to_xy": [
+    -395,
+    439
+   ],
+   "dz": 12.2,
+   "run": 400.0,
+   "pct": 12.0,
+   "moved_m": 310.0
+  },
+  "timber_tower": {
+   "from_xy": [
+    -890,
+    78
+   ],
+   "to_xy": [
+    -823,
+    -108
+   ],
+   "dz": 0.0,
+   "run": 300.0,
+   "pct": 11.6,
+   "moved_m": 197.9
+  },
+  "neon_gate": {
+   "from_xy": [
+    420,
+    477
+   ],
+   "to_xy": [
+    -48,
+    574
+   ],
+   "dz": 3.4,
+   "run": 360.0,
+   "pct": 6.9,
+   "moved_m": 478.1
+  }
+ },
+ "stand gap": {
+  "stations": [
+   99,
+   127
+  ],
+  "length_m": 56
+ },
+ "hq placement": {
+  "x": -182.8,
+  "y": -605.9,
+  "z": 0.0,
+  "yaw": -0.0,
+  "station": 113,
+  "gap_stations": [
+   99,
+   127
+  ],
+  "obstacle_points_inside": 0
+ },
+ "lantern hall lanterns": 188,
+ "panorama": {
+  "old": {
+   "radius": 2800,
+   "height_m": 1833,
+   "tallest_tip_deg": 32.4,
+   "typical_peak_deg": 26.4,
+   "band_top_deg": 33.2,
+   "repeats": 1
+  },
+  "new": {
+   "radius": 7000.0,
+   "height_m": 764,
+   "tallest_tip_deg": 5.7,
+   "typical_peak_deg": 4.4,
+   "repeats": 6,
+   "mirrored": true,
+   "base_z": -40
+  },
+  "tallest_fraction": 0.97,
+  "typical_fraction": 0.758
+ },
+ "fuji": "card at 7.7 km, summit about 10 degrees up, behind the ring",
+ "bridge stations checked": 293,
+ "bridge lane offenders before": {},
+ "bridge lane offenders after": {},
+ "tunnel": {
+  "depressed_stations": [
+   1833,
+   2244
+  ],
+  "covered_stations": [
+   1913,
+   2148
+  ],
+  "covered_length_m": 470,
+  "depressed_length_m": 822
+ },
+ "tunnel tiles": 4072,
+ "jet fans": 32,
+ "niches": 15,
+ "murals": {
+  "count": 32,
+  "size_m": [
+   6.4,
+   3.6
+  ],
+  "aspect": "16:9",
+  "materials": [
+   "M_AnimeMural_01",
+   "M_AnimeMural_02",
+   "M_AnimeMural_03",
+   "M_AnimeMural_04"
+  ],
+  "spacing_m": 20,
+  "placeholder": "soft gradient + \"ANIME MURAL / PLACEHOLDER nn\", textures/anime_mural/placeholder_nn.png"
+ },
+ "hologram anchors": [
+  {
+   "name": "HOLO_anchor_01",
+   "spot": "tunnel exit",
+   "pos": [
+    -565.9,
+    -5.5,
+    -6.5
+   ],
+   "size_m": [
+    6.0,
+    9.0
+   ]
+  },
+  {
+   "name": "HOLO_anchor_02",
+   "spot": "neon street",
+   "pos": [
+    308.4,
+    -51.3,
+    14.1
+   ],
+   "size_m": [
+    5.0,
+    9.0
+   ]
+  },
+  {
+   "name": "HOLO_anchor_03",
+   "spot": "gate plaza",
+   "pos": [
+    103.0,
+    557.0,
+    7.4
+   ],
+   "size_m": [
+    9.0,
+    13.0
+   ]
+  },
+  {
+   "name": "HOLO_anchor_04",
+   "spot": "start-straight building face",
+   "pos": [
+    -181.8,
+    -568.9,
+    9.5
+   ],
+   "size_m": [
+    30.0,
+    12.0
+   ]
+  },
+  {
+   "name": "HOLO_anchor_05",
+   "spot": "pagoda court",
+   "pos": [
+    266.0,
+    -95.6,
+    9.0
+   ],
+   "size_m": [
+    6.0,
+    9.0
+   ]
+  },
+  {
+   "name": "HOLO_anchor_06",
+   "spot": "bridge entry",
+   "pos": [
+    -462.0,
+    269.8,
+    35.1
+   ],
+   "size_m": [
+    10.0,
+    6.0
+   ]
+  }
+ ],
+ "lagoon village": {
+  "pavilions": 23,
+  "tents": 13
+ },
+ "wide runoff corners": 7,
+ "crowd strips": 7164,
+ "corner camera run-off": {
+  "range": [
+   150,
+   188
+  ],
+  "outside_side": -1,
+  "field_xy": [
+   203,
+   -518
+  ]
+ },
+ "clearance_after": {
+  "violators": 0,
+  "names": [],
+  "checked": 347
+ },
+ "visibility_after": {
+  "castle": {
+   "los_pct": 58.3,
+   "ahead_pct": 13.1,
+   "longest_ahead_run_m": 200,
+   "run_starts_station": 1270,
+   "centre": [
+    -60,
+    250,
+    37
+   ],
+   "samples": 259
+  },
+  "hq": {
+   "los_pct": 26.6,
+   "ahead_pct": 11.2,
+   "longest_ahead_run_m": 500,
+   "run_starts_station": 2340,
+   "centre": [
+    -182,
+    -607,
+    7
+   ],
+   "samples": 259
+  },
+  "gate": {
+   "los_pct": 17.0,
+   "ahead_pct": 4.6,
+   "longest_ahead_run_m": 220,
+   "run_starts_station": 780,
+   "centre": [
+    103,
+    573,
+    15
+   ],
+   "samples": 259
+  },
+  "pagoda": {
+   "los_pct": 68.0,
+   "ahead_pct": 29.3,
+   "longest_ahead_run_m": 300,
+   "run_starts_station": 450,
+   "centre": [
+    133,
+    -48,
+    22
+   ],
+   "samples": 259
+  },
+  "lantern_hall": {
+   "los_pct": 34.4,
+   "ahead_pct": 12.4,
+   "longest_ahead_run_m": 400,
+   "run_starts_station": 930,
+   "centre": [
+    -395,
+    439,
+    21
+   ],
+   "samples": 259
+  },
+  "timber_tower": {
+   "los_pct": 57.9,
+   "ahead_pct": 8.1,
+   "longest_ahead_run_m": 160,
+   "run_starts_station": 1210,
+   "centre": [
+    -823,
+    -108,
+    24
+   ],
+   "samples": 259
+  },
+  "woven_hall": {
+   "los_pct": 22.4,
+   "ahead_pct": 12.4,
+   "longest_ahead_run_m": 580,
+   "run_starts_station": 0,
+   "centre": [
+    448,
+    -570,
+    7
+   ],
+   "samples": 259
+  },
+  "neon_gate": {
+   "los_pct": 20.1,
+   "ahead_pct": 6.9,
+   "longest_ahead_run_m": 360,
+   "run_starts_station": 790,
+   "centre": [
+    -48,
+    574,
+    19
+   ],
+   "samples": 259
+  },
+  "ferris_wheel": {
+   "los_pct": 62.9,
+   "ahead_pct": 8.1,
+   "longest_ahead_run_m": 300,
+   "run_starts_station": 1220,
+   "centre": [
+    -506,
+    -221,
+    65
+   ],
+   "samples": 259
+  },
+  "bridge": {
+   "los_pct": 65.6,
+   "ahead_pct": 12.0,
+   "longest_ahead_run_m": 420,
+   "run_starts_station": 1240,
+   "centre": [
+    -324,
+    118,
+    47
+   ],
+   "samples": 259
+  },
+  "garden_temple": {
+   "los_pct": 49.8,
+   "ahead_pct": 9.3,
+   "longest_ahead_run_m": 220,
+   "run_starts_station": 1380,
+   "centre": [
+    -390,
+    -237,
+    6
+   ],
+   "samples": 259
+  }
+ },
+ "hq visible from start straight": {
+  "stations_tested": 23,
+  "visible_pct": 65.2,
+  "ahead_pct": 0.0
+ },
+ "budget": {
+  "visible_objects": 4049,
+  "unique_mesh_datablocks": 1739,
+  "unique_triangles": 2625356,
+  "drawn_triangles": 7933656,
+  "shared_datablocks": 113,
+  "top_drawn": [
+   [
+    "Sakura master 0 LOD1.006",
+    1189754,
+    146
+   ],
+   [
+    "Sakura master 0",
+    777924,
+    21
+   ],
+   [
+    "Sakura master 1 LOD1.002",
+    358556,
+    44
+   ],
+   [
+    "V10 08 | curved Roppongi ridge gallery",
+    242072,
+    1
+   ],
+   [
+    "Sakura master 1",
+    222264,
+    6
+   ],
+   [
+    "V12 lantern",
+    184632,
+    942
+   ],
+   [
+    "V10 08 | curved Shibuya garden stand",
+    175564,
+    1
+   ],
+   [
+    "Sponsor board.007",
+    154080,
+    30
+   ],
+   [
+    "V10 frontage 057 | timber shoji tiled eaves",
+    143976,
+    7
+   ],
+   [
+    "V10 frontage 024 | timber shoji tiled eaves",
+    139160,
+    7
+   ],
+   [
+    "Sponsor board.096",
+    117240,
+    30
+   ],
+   [
+    "V10 08 | curved Roppongi ridge gallery | spectators and fascia",
+    113664,
+    1
+   ]
+  ]
+ }
+}

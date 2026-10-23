@@ -1,0 +1,9 @@
+{
+ "label": "v13",
+ "envelope_m": 14.5,
+ "rule": "plan distance to centerline of any vertex >= 14.5 m",
+ "checked": 347,
+ "violators": 0,
+ "clear": 347,
+ "list": []
+}
