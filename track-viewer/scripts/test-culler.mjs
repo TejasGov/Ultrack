@@ -20,5 +20,17 @@ for (const d of [10, lim * 0.9, lim * 1.1, lim * 1.3, lim * 3, lim * 1.1, lim * 
   const expectBoth = d < lim * 8 * 0.99;             // past FAR x the distance both are gone
   if (expectBoth ? near + far !== 10 : near + far !== 0) { bad++; console.error(`d=${d.toFixed(0)}: near ${near} far ${far}`); }
 }
+// distance tiers: names tagged `~lo-hi` show only inside the range (instanced and plain), full -> copy swap with no gap
+{
+  const r2 = new THREE.Group(), g2 = new THREE.BoxGeometry(2, 2, 2);
+  const mk = (name) => { const o = new THREE.InstancedMesh(g2, new THREE.MeshBasicMaterial(), 3); o.name = name; for (let k = 0; k < 3; k++) o.setMatrixAt(k, new THREE.Matrix4().makeTranslation(k, 0, 0)); r2.add(o); return o; };
+  const a = mk('hero~0-100'), b = mk('hero_far~100-1500');
+  const plain = new THREE.Mesh(g2, new THREE.MeshBasicMaterial()); plain.name = 'castle~0-300'; r2.add(plain);
+  const c2 = new Culler(r2);
+  for (const [d, wa, wb, wp] of [[10, 3, 0, true], [80, 3, 0, true], [150, 0, 3, true], [400, 0, 3, false], [1400, 0, 3, false], [1700, 0, 0, false], [10, 3, 0, true]]) {
+    c2.update(new THREE.Vector3(0, 0, d));
+    if (a.count !== wa || b.count !== wb || plain.visible !== wp) { bad++; console.error(`tier d=${d}: ${a.count}/${b.count}/${plain.visible}`); }
+  }
+}
 if (bad) { console.error('FAIL'); process.exit(1); }
 console.log('PASS');

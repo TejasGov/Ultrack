@@ -7,7 +7,7 @@
 //   fog        multiplies the look's fog density (a bigger or hazier venue)
 //   sun        [x, z] bearing of the sun over the track; its height comes from the look
 //   tag        the commentary tag for lines about this circuit (null: none)
-//   dayNight   optional: { day: RegExp on the name of the day skyline's material } for a backdrop of two coincident bands (the night one
+//   dayNight   optional: { day: RegExp on the name of the day skyline's materials, night: RegExp on materials that only show at night (opacity = dn x nightK[name]) } for a backdrop of two coincident bands (the night one
 //              opaque, the day one just inside it); main.js fades the day band's opacity per look (LOOKS dn: 0 = day .. 1 = night, opacity 1 - dn). Marina has none.
 //   looks      optional per-look overrides merged over main.js LOOKS while this track is active (grade merges key by key); Marina has none
 //   has        venue systems; one that is off is skipped without a request or an error
@@ -21,7 +21,7 @@ export const TRACKS = {
   },
   tokyo: {
     id: 'tokyo', name: 'Tokyo Hiragana Circuit', stem: 'tokyo', dir: '/assets/tokyo/', look: 'night', fog: 1, sun: [-0.55, -0.77], tag: null,
-    dayNight: { day: /^M_SupertallBackdropDay$/ },
+    dayNight: { day: /^M_Supertall\w*Day$/, night: /^M_(NightBeam|NightBridgeRed|SupertallLightsNight)$/, nightK: { M_NightBeam: 0.16 } },     // v13.1: the sky arc, the ridges (by day) and the searchlights / distant lights (by night)
     // the canopies keep the asphalt and stands in shade: more exposure and sky light by day; the baked skyline and signs follow `emissive`;
     // the neon blooms from a higher threshold at night. The steps day > dusk > evening > night only ever go down.
     looks: {

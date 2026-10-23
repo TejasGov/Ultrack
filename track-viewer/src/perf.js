@@ -67,12 +67,17 @@ export class GpuTimer {
  * Hides meshes that would cover a few pixels at most: visible while distance < radius * k. Instanced sets are culled
  * per instance by compacting their instance matrices (count shrinks), so a palm 2 km away costs nothing.
  * Large objects (track chunks, ground, skyline, water) are never culled.
+ * Distance tiers (Tokyo v13.1): a mesh or instanced set whose name carries `~lo-hi` (metres, hi optional) is visible only while its
+ * distance is inside that range, so full-detail and lower-poly copies of the same object swap without the 280 x radius rule
+ * (which never culls a 25 m frontage inside a 3 km circuit). A tagged set is culled per instance even with fewer than 6 instances.
  * Far stand-ins: an instanced set whose material name ends in "Far" (the trackside truss modules' solid boxes) sits at
  * the same positions as a detailed set with the same bounds. Per instance it shows exactly where the detailed one is
  * culled (from 1.2x its distance, until it comes back inside 1x), out to FAR x that distance, so far trusses cost one
  * box each and near ones keep every member.
  */
 const FAR = 8;
+const TIER = /~(\d+)-(\d*)/;
+const tierOf = (o) => { const m = TIER.exec(o.name || '') ?? TIER.exec(o.parent?.name || ''); return m ? { lo: +m[1], hi: m[2] ? +m[2] : Infinity } : null; };
 export class Culler {
   constructor(root) {
     this.items = [];
@@ -82,8 +87,9 @@ export class Culler {
     root.traverse((o) => {
       if (!o.isMesh || !o.geometry || o.userData.sceneryLodManaged) return;
       if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+      const tier = tierOf(o);
       if (o.isInstancedMesh) {
-        if (o.count < 6) return;
+        if (o.count < 6 && !tier) return;
         // a multi-material object arrives as sibling InstancedMeshes (mast, lamp units, beacon): cull them all by the
         // biggest, or the small parts vanish first and their glows float in the sky
         let r = o.geometry.boundingSphere.radius;
@@ -100,11 +106,12 @@ export class Culler {
           pos.set([p.x, p.y, p.z], k * 3);
         }
         const far = [].concat(o.material).some((m) => /Far$/.test(m.name));
-        this.sets.push({ o, src, pos, r, total: o.count, far });
+        this.sets.push({ o, src, pos, r, total: o.count, far, tier });
         o.frustumCulled = false;     // its bounding sphere spans the whole venue anyway
         return;
       }
       sphere.copy(o.geometry.boundingSphere).applyMatrix4(o.matrixWorld);
+      if (tier) { this.items.push({ o, c: sphere.center.clone(), r: Math.max(sphere.radius, 0.5), tier }); return; }
       if (sphere.radius > 45) return;
       this.items.push({ o, c: sphere.center.clone(), r: Math.max(sphere.radius, 0.5) });
     });
@@ -116,7 +123,9 @@ export class Culler {
     for (const it of this.items) {
       if (it.o.userData.replaced) { it.o.visible = false; continue; }    // placeholders swapped for real characters
       const d = it.c.distanceToSquared(cam), lim = (it.r * this.k) ** 2;
-      const v = it.o.visible ? d < lim * H : d < lim;
+      let v;
+      if (it.tier) { const t = it.tier; v = it.o.visible ? d >= (t.lo / 1.1) ** 2 && d < (t.hi * 1.1) ** 2 : d >= t.lo ** 2 && d < t.hi ** 2; }
+      else v = it.o.visible ? d < lim * H : d < lim;
       it.o.visible = v;
       if (!v) hidden++;
     }
@@ -130,7 +139,8 @@ export class Culler {
         const dx = s.pos[k * 3] - cam.x, dy = s.pos[k * 3 + 1] - cam.y, dz = s.pos[k * 3 + 2] - cam.z;
         const d = dx * dx + dy * dy + dz * dz;
         // the mirror image of the detailed set's hysteresis, so the two swap on the same update and never both show
-        if (s.far) s.on[k] = (s.on[k] ? d >= lim : d >= lim * H) && d < lim * FAR * FAR;
+        if (s.tier) { const t = s.tier; s.on[k] = s.on[k] ? d >= (t.lo / 1.1) ** 2 && d < (t.hi * 1.1) ** 2 : d >= t.lo ** 2 && d < t.hi ** 2; }
+        else if (s.far) s.on[k] = (s.on[k] ? d >= lim : d >= lim * H) && d < lim * FAR * FAR;
         else s.on[k] = s.on[k] ? d < lim * H : d < lim;
         if (s.on[k]) {
           if(s.order[n]!==k){changed=true;s.order[n]=k;arr.set(s.src.subarray(k*16,k*16+16),n*16);}

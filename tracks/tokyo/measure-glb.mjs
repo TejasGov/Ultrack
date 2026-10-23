@@ -57,8 +57,12 @@ const sphereOf = (mesh) => {
 };
 const sph = new Map();
 const K = 280;
+const TIER = /~(\d+)-(\d*)/;      // v13.1 distance tiers (track-viewer/src/perf.js): visible while lo <= distance < hi
+const tierOf = (node, mesh) => { const m = TIER.exec(node.getName() || '') ?? TIER.exec(mesh.getName() || ''); return m ? { lo: +m[1], hi: m[2] ? +m[2] : Infinity } : null; };
 const r2 = { submitted: { tris: 0, calls: 0 }, frustum: { tris: 0, calls: 0 }, all: { tris: 0, calls: 0 } };
 const byMaterial = new Set();
+const byGroup = {};      // submitted draw calls and triangles by object-name family
+const famOf = (node, mesh) => (node.getName() || mesh.getName() || '').replace(/[~].*$/, '').replace(/\d+/g, '#').slice(0, 30);
 for (const node of doc.getRoot().listNodes()) {
   const mesh = node.getMesh();
   if (!mesh) continue;
@@ -67,6 +71,7 @@ for (const node of doc.getRoot().listNodes()) {
   const sc = Math.cbrt(Math.abs(W[0] * (W[5] * W[10] - W[6] * W[9]) - W[4] * (W[1] * W[10] - W[2] * W[9]) + W[8] * (W[1] * W[6] - W[2] * W[5])));
   const wc = [W[0] * s.c[0] + W[4] * s.c[1] + W[8] * s.c[2] + W[12], W[1] * s.c[0] + W[5] * s.c[1] + W[9] * s.c[2] + W[13], W[2] * s.c[0] + W[6] * s.c[1] + W[10] * s.c[2] + W[14]];
   const inst = node.getExtension('EXT_mesh_gpu_instancing');
+  const tier = tierOf(node, mesh);
   const nprim = mesh.listPrimitives().length;
   mesh.listPrimitives().forEach((p) => byMaterial.add(p.getMaterial()?.getName() ?? ''));
   if (inst) {
@@ -78,19 +83,21 @@ for (const node of doc.getRoot().listNodes()) {
       T?.getElement(i, tv); S?.getElement(i, sv);
       const p = [W[0] * tv[0] + W[4] * tv[1] + W[8] * tv[2] + W[12], W[1] * tv[0] + W[5] * tv[1] + W[9] * tv[2] + W[13], W[2] * tv[0] + W[6] * tv[1] + W[10] * tv[2] + W[14]];
       const d = Math.hypot(p[0] - cam[0], p[1] - cam[1], p[2] - cam[2]);
-      if (n >= 6 && d > s.r * sc * Math.max(sv[0], sv[1], sv[2]) * K) continue;
+      if (tier) { if (d < tier.lo || d >= tier.hi) continue; }
+      else if (n >= 6 && d > s.r * sc * Math.max(sv[0], sv[1], sv[2]) * K) continue;
       sub++;
       if (inFrustum(p, s.r * sc * sv[0])) fr++;
     }
     r2.submitted.tris += t * sub; r2.frustum.tris += t * fr;
-    if (sub) r2.submitted.calls += nprim;
+    if (sub) { r2.submitted.calls += nprim; const g = byGroup[famOf(node, mesh)] ??= { calls: 0, tris: 0 }; g.calls += nprim; g.tris += t * sub; }
     if (fr) r2.frustum.calls += nprim;
   } else {
     r2.all.tris += t; r2.all.calls += nprim;
     const R = s.r * sc, d = Math.hypot(wc[0] - cam[0], wc[1] - cam[1], wc[2] - cam[2]);
-    if (R <= 45 && d > Math.max(R, 0.5) * K) continue;
+    if (tier) { if (d < tier.lo || d >= tier.hi) continue; }
+    else if (R <= 45 && d > Math.max(R, 0.5) * K) continue;
     const vis = inFrustum(wc, R);
-    if (vis) { r2.submitted.tris += t; r2.submitted.calls += nprim; r2.frustum.tris += t; r2.frustum.calls += nprim; }
+    if (vis) { r2.submitted.tris += t; r2.submitted.calls += nprim; r2.frustum.tris += t; r2.frustum.calls += nprim; const g = byGroup[famOf(node, mesh)] ??= { calls: 0, tris: 0 }; g.calls += nprim; g.tris += t; }
   }
 }
 const nodes = doc.getRoot().listNodes();
@@ -103,5 +110,6 @@ const res = {
   meshes: unique.size, nodes: nodes.length, instanced_nodes: nodes.filter((n) => n.getExtension('EXT_mesh_gpu_instancing')).length,
   materials: doc.getRoot().listMaterials().length, textures: doc.getRoot().listTextures().length,
 };
+res.submitted_by_family = Object.fromEntries(Object.entries(byGroup).sort((a, b) => b[1].calls - a[1].calls).slice(0, 25));
 console.log(JSON.stringify(res, null, 1));
 if (opt('--out')) writeFileSync(opt('--out'), JSON.stringify(res, null, 1));

@@ -8,26 +8,31 @@ import json
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
-FONT = 'C:/Windows/Fonts/msgothic.ttc'
+FONT = 'C:/Windows/Fonts/msgothic.ttc'          # v11; cells may name a 'font': 'bold' (Yu Gothic Bold) or 'medium' (Yu Gothic Medium), v13.1
+FONTS = {'bold': 'C:/Windows/Fonts/YuGothB.ttc', 'medium': 'C:/Windows/Fonts/YuGothM.ttc'}
 SIZE, PAD, MAXW, MAXH, PPM = 2048, 4, 1024, 512, 110   # atlas px, gutter, max cell px, pixels per metre
 
 
-def fit(body, w, h):
+def fit(body, w, h, font=None):
+    path = FONTS.get(font, FONT)
     lines = body.split('\n')
     lo, hi = 6, 400
     while lo < hi:                                   # largest font size whose text fits the cell
         mid = (lo + hi + 1) // 2
-        f = ImageFont.truetype(FONT, mid)
+        f = ImageFont.truetype(path, mid)
         bw = max(f.getbbox(l)[2] for l in lines)
         bh = len(lines) * int(mid * 1.15)
         if bw <= w * 0.96 and bh <= h * 0.96:
             lo = mid
         else:
             hi = mid - 1
-    return ImageFont.truetype(FONT, lo), lo
+    return ImageFont.truetype(path, lo), lo
 
 
-def main(src, png, js):
+def main(src, png, js, size=None):
+    global SIZE
+    if size:
+        SIZE = int(size)
     cells = json.load(open(src, encoding='utf8'))
     for c in cells:
         s = min(PPM, MAXW / c['w'], MAXH / c['h'])
@@ -43,7 +48,7 @@ def main(src, png, js):
             raise SystemExit('atlas full: raise SIZE or lower PPM')
         cell = Image.new('RGBA', (c['pw'], c['ph']), (0, 0, 0, 0))
         d = ImageDraw.Draw(cell)
-        f, size = fit(c['body'], c['pw'], c['ph'])
+        f, size = fit(c['body'], c['pw'], c['ph'], c.get('font'))
         lines = c['body'].split('\n')
         lh = int(size * 1.15)
         top = (c['ph'] - lh * len(lines)) // 2
@@ -60,4 +65,4 @@ def main(src, png, js):
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:4])
+    main(*sys.argv[1:5])

@@ -1,6 +1,42 @@
 # Tokyo Hiragana circuit — Blender production start
 
-## Game build v11 (what the game loads)
+## Game build v13.1 (what the game loads now; replaces v11)
+
+`game_v13_1.py` (+ `game_v13_1_part2.py` .. `_part4.py`, all exec'd from it) reads `out/tokyo_v13_1.blend` (never written), saves `out/tokyo_game_v13_1.blend`, exports `out/tokyo_visual.glb`, `tokyo_collision.glb`, `track.json`, `lights.json`. Run one Blender process (`powershell tracks/tokyo/run_blender.ps1 -Script tracks/tokyo/game_v13_1.py`, about 45 s), then `node tracks/tokyo/pack-web.mjs` (about 4.5 min; `NO_JOIN=1` and `SKIP_SHELL=1` by default now) and `cd track-viewer && node scripts/sync-assets.mjs`. The collision, track.json and lights code is `game_v11.py`'s, so the contract test is unchanged. v11 can still be rebuilt with `game_v11.py`; its stale `_shell` GLBs are in `out/_archive/2026-10-23/` (MANIFEST there).
+
+**The hard line.** v11 was rejected for stripping the buildings. v13.1 decimates nothing that is near the road: the budget comes from distance tiers, instancing, atlases and merging.
+
+| what | how |
+|---|---|
+| frontages (129) | 12 full-detail v10 hero meshes (14-21k triangles each) as GPU instances, visible 0-170 m; a 7 % copy of the same hero (1.6-2.5k) 170-1500 m |
+| trees (309: 237 sakura, 51 canopy, 21 cedar) | the v10 sakura / canopy meshes, full 0-38 m (canopy and cedar 55 m); a 13 % copy to 240 m (280 m); a 4-triangle crossed card to 2.8 km |
+| lanterns (1,156) | full 0-110 m, octahedron 110-700 m |
+| landmarks, wheel, bridge, tunnel pieces, castle, HQ, gate... (22 meshes over 2,500 triangles) | full detail out to 300-900 m (about 9 x their radius), a 12 % copy beyond; the castle, pagoda, HQ and the rest under 2,500 triangles are untouched |
+| text | all 3D text (890 labels: sponsor text, kanji, plaques, pylons, wayfinding, bridge and tunnel signs) is baked to one 4096 px atlas on quads in Yu Gothic Bold / Medium (`textures/tokyo_sign_atlas_v13.png`, `build_sign_atlas.py` takes a font per cell); 2 hero signs stay 3D |
+| sponsor logos | `brand_art` quads, instanced per brand, where the 3D board text was (180); the V9 coloured panels stay behind |
+| stands | the two curved ridge / Shibuya stands are rebuilt as stepped shells (v11 generator, not a decimation); the v12 start stands are exported as modelled; the crowd is alpha-cutout strips (`M_CrowdCutout`, `M_Crowd`) |
+| everything small and static | 660 objects merged per 768 m cell (6 cells); 38 materials merged (exact duplicates, then colours within 0.14 at the same emission) |
+| materials | node graphs become plain glTF materials: the wire fence is `M_Fence` on a generated grid, tunnel tiles `M_TunnelTile`, gantry screens `M_BigScreen`, murals `M_AnimeMural_01..04` (real art, 16:9, emission 0.8) |
+
+**Distance tiers need `track-viewer/src/perf.js`.** The Culler only culled by 280 x radius, which never hides a 25 m frontage inside a 3 km circuit. A mesh or instanced set whose name carries `~lo-hi` (metres) is now visible only while its distance is inside that range, per instance, with 10 % hysteresis; untagged objects behave as before. `scripts/test-culler.mjs` covers it (PASS). `measure-glb.mjs` honours the tags, `measure-views.mjs` runs it at five viewpoints.
+
+**Backdrop.** One skyline arc (one Tokyo Tower, 59.6 degrees, R 7000 m, `skyline_arc` / `skyline_arc_day`, materials `M_SupertallBackdrop` / `M_SupertallBackdropDay`), the Fuji card (`skyline_fuji`), two ridges (`skyline_hills_*`, night and `_day` with `M_SupertallHills` / `M_SupertallHillsDay`), 900 distant lights, searchlight cards, all named `skyline*` (NO_CAST) with `M_Supertall*` materials (fog off). The haze, the soft arc ends and the base fades are baked into the textures (`bake_backdrop_v13_1.py` -> `textures/panorama/tokyo_arc_night.png`, `_day`, `textures/tokyo_fuji_v13.png`). Day / night: `tracks.js` `dayNight` now has `day: /^M_Supertall\w*Day$/` (opacity 1 - dn: the day arc and day ridges) and `night: /^M_(NightBeam|NightBridgeRed|SupertallLightsNight)$/` with `nightK` (opacity dn x k: searchlights 0.16, distant lights, the red glow shells on the bridge towers), applied in `main.js applyDayNight`. Fuji has one material for all looks.
+
+**Budget** (`out/v13_1-budget.json`, `measure-views.mjs` on `out/web/tokyo_visual_ktx2.glb`, the Culler's rules, 62 degree FOV, 9 km far; v11: 1.13 M submitted, 113 calls at the start line): unique 1.22 M triangles (v11 0.42 M, v10 6.2 M), 14.6 M with every tier and instance counted, 182 meshes, 38 instanced nodes, 131 materials, 31 textures; file 27.8 MB (KTX2) / 19.5 MB (WebP).
+
+| view | submitted triangles | in frustum | draw calls (submitted / in frustum) |
+|---|---|---|---|
+| start line | 679k | 459k | 268 / 256 |
+| neon street | 1.32 M | 712k | 339 / 315 |
+| bridge | 875k | 557k | 361 / 332 |
+| tunnel | 537k | 399k | 248 / 240 |
+| west straight | 679k | 367k | 218 / 205 |
+
+**Verification.** `cd track-viewer && TRACK=tokyo node scripts/test-track.mjs`: PASS (105.6 s lap through the tunnel and over the bridge). `node scripts/qa-tokyo-views.mjs` (dev server :5180): five views x day / dusk / bluehour / night, `out/v13_1-game-looks.jpg` (`make_game_sheet.py`), 0 console errors (a run right after Vite re-optimised dependencies logged aborted module requests once; a warm run is clean). Title screen ready in 1.0 s, Free Drive (Tokyo) loaded in 14.5 s on this PC. `renderer.info` in the browser reads about 1,350-1,780 calls and 3.4-4.6 M triangles per frame because it counts the shadow passes too.
+
+**Compromises.** The neon street and bridge views are over the 300 call target (339, 361; the start line is 268): the frontage hero sets carry 8 materials each, the accent materials are many, and the whole-circuit meshes are split per sector. A palette atlas for the accent colours would cut it further. The 4096 px sign atlas is over the KTX2 encoder's 12.5 Mpix limit, so it ships as WebP. The shell (hidden-face) pass is skipped so the full-detail frontages are not audited. The red night light of the bridge towers is a red glow shell (lights are not in the GLB); the tunnel luminaires and cove lines are emissive meshes; the searchlight cards are flat cones with a vertical fade at 16 % opacity. Only sakura heroes 0 and 1 survived in the saved v13.1 file (v12's LOD pass had orphaned the rest), so the sakura use two full meshes with per-tree scale; the cedar uses the canopy mesh. The garden, castle, HQ, lantern hall and the rest of the v13.1 art are exported as modelled. No `holo_*` character is placed; the six `HOLO_anchor_##` positions are in `track.json` (`holograms`).
+
+## Game build v11 (superseded by v13.1 above; rebuild with game_v11.py)
 
 `out/tokyo_game_v11.blend` is built from a copy of v10 by `game_v11.py` (v10 is never written). Run it with one Blender process, `powershell tracks/tokyo/run_blender.ps1 -Script tracks/tokyo/game_v11.py` (`-b -t 6`, below-normal priority), then `node tracks/tokyo/pack-web.mjs` (same steps as Marina's `npm run pack`, parametrised through `TRACK=tokyo`; the viewer scripts `pack-ktx2`, `shell-venue`, `partition-venue` and `test-track` read that variable and default to Marina). Previews: `render_v11.py` (EEVEE, 12 samples) -> `out/v11-*.png`. Measure: `node tracks/tokyo/measure-glb.mjs <glb>` -> `out/v11-budget.json`. Contract test: `cd track-viewer && TRACK=tokyo node scripts/test-track.mjs` (PASS: a 105.6 s raycast-vehicle lap through the tunnel and over the bridge).
 

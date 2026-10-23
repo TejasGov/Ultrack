@@ -727,7 +727,10 @@ async function setLook(name) {
 /** the track's optional day/night backdrop blend (tracks.js dayNight) for this look */
 function applyDayNight(look) {
   const d = TRACK.dayNight; if (!d) return;
-  for (const m of allMats) if (d.day.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = 1 - look.dn; }
+  for (const m of allMats) {
+    if (d.day.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = 1 - look.dn; }
+    else if (d.night?.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = look.dn * (d.nightK?.[m.name] ?? 1); }
+  }
 }
 function applyAll() {
   const look = LOOKS[params.look];

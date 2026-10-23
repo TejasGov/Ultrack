@@ -2,8 +2,8 @@
   {
     "base": "tokyo_visual",
     "cellMetres": 768,
-    "sourceBytes": 8743936,
-    "outputBytes": 8978836,
+    "sourceBytes": 19548932,
+    "outputBytes": 20761112,
     "changes": [
       {
         "name": "Continuous road | 18m | source spline",
@@ -11,127 +11,247 @@
         "sections": 6
       },
       {
-        "name": "Avenue five-tier cedar pavilion and swept roofs",
-        "triangles": 23620,
-        "sections": 9
-      },
-      {
-        "name": "Catch fence mesh 1",
-        "triangles": 1600,
-        "sections": 6
+        "name": "Avenue ribbed lantern promenade",
+        "triangles": 13936,
+        "sections": 2
       },
       {
         "name": "Catch fence tension cable",
-        "triangles": 14376,
+        "triangles": 2396,
         "sections": 6
       },
       {
-        "name": "Continuous concrete barrier",
-        "triangles": 22952,
+        "name": "Catch fence tension cable.001",
+        "triangles": 2396,
         "sections": 6
       },
       {
-        "name": "Continuous edge line",
-        "triangles": 9426,
+        "name": "Catch fence tension cable.002",
+        "triangles": 2396,
         "sections": 6
       },
       {
-        "name": "Continuous sidewalk 1",
-        "triangles": 24816,
-        "sections": 6
-      },
-      {
-        "name": "V9 extended landscape grass plane",
-        "triangles": 44224,
-        "sections": 22
-      },
-      {
-        "name": "V10 04 | flowing white Tokyo race headquarters | 東京 レース本部",
-        "triangles": 5873,
-        "sections": 6
-      },
-      {
-        "name": "V10 01 | Asakusa vermilion romon gate | 浅草門",
-        "triangles": 5065,
-        "sections": 6
-      },
-      {
-        "name": "V10 09 | Akihabara neon shrine gateway | 電 光 神 社",
-        "triangles": 4010,
+        "name": "Catch fence tension cable.003",
+        "triangles": 2396,
         "sections": 4
       },
       {
-        "name": "Kerb | inner",
-        "triangles": 2876,
+        "name": "Catch fence tension cable.004",
+        "triangles": 2396,
+        "sections": 4
+      },
+      {
+        "name": "Catch fence tension cable.005",
+        "triangles": 2396,
+        "sections": 4
+      },
+      {
+        "name": "Continuous concrete barrier",
+        "triangles": 11476,
         "sections": 6
       },
       {
-        "name": "Rounded portal tower 704",
-        "triangles": 60480,
-        "sections": 3
+        "name": "Continuous concrete barrier.001",
+        "triangles": 11476,
+        "sections": 4
+      },
+      {
+        "name": "Continuous edge line",
+        "triangles": 2870,
+        "sections": 6
+      },
+      {
+        "name": "Continuous edge line.001",
+        "triangles": 2870,
+        "sections": 4
+      },
+      {
+        "name": "Continuous sidewalk 1",
+        "triangles": 2666,
+        "sections": 4
+      },
+      {
+        "name": "Continuous sidewalk -1",
+        "triangles": 2666,
+        "sections": 6
+      },
+      {
+        "name": "Roppongi topography | valley carved.002",
+        "triangles": 35840,
+        "sections": 9
+      },
+      {
+        "name": "Kerb | inner",
+        "triangles": 2870,
+        "sections": 4
+      },
+      {
+        "name": "Kerb | outer",
+        "triangles": 2868,
+        "sections": 6
+      },
+      {
+        "name": "Lantern promenade kit",
+        "triangles": 15232,
+        "sections": 4
+      },
+      {
+        "name": "Race lighting masts and fixture banks",
+        "triangles": 1920,
+        "sections": 4
+      },
+      {
+        "name": "static_0_0",
+        "triangles": 36272,
+        "sections": 7
+      },
+      {
+        "name": "static_0_1",
+        "triangles": 8036,
+        "sections": 2
+      },
+      {
+        "name": "static_-1_0",
+        "triangles": 11044,
+        "sections": 4
+      },
+      {
+        "name": "Storm drains 1",
+        "triangles": 12096,
+        "sections": 4
+      },
+      {
+        "name": "Storm drains -1",
+        "triangles": 12096,
+        "sections": 6
       },
       {
         "name": "Suspension system, hanger clamps and warm rail edges",
-        "triangles": 10320,
+        "triangles": 36464,
         "sections": 3
       },
       {
         "name": "V9 barrier LED line 1.001",
-        "triangles": 5736,
+        "triangles": 2868,
+        "sections": 4
+      },
+      {
+        "name": "V9 barrier LED line -1.001",
+        "triangles": 2868,
+        "sections": 6
+      },
+      {
+        "name": "V9 barrier sponsor boards 1.001",
+        "triangles": 2646,
+        "sections": 4
+      },
+      {
+        "name": "V9 barrier sponsor boards -1.001",
+        "triangles": 2646,
         "sections": 6
       },
       {
         "name": "V9 offshore Wangan-style expressway viaduct",
-        "triangles": 8508,
-        "sections": 9
-      },
-      {
-        "name": "V9 paddock apron north border 0",
-        "triangles": 2460,
-        "sections": 6
+        "triangles": 6756,
+        "sections": 3
       },
       {
         "name": "V9 utility poles, transformers and sagging wires",
-        "triangles": 1800,
+        "triangles": 22600,
         "sections": 2
       },
       {
         "name": "V9 vending machine clusters",
-        "triangles": 1872,
+        "triangles": 5616,
         "sections": 4
       },
       {
-        "name": "V10 01 | Asakusa vermilion romon gate",
-        "triangles": 30756,
-        "sections": 6
+        "name": "V10 continuous excavated approach landscaping",
+        "triangles": 4480,
+        "sections": 2
       },
       {
-        "name": "V10 01 | Asakusa vermilion romon gate | bracketwork and side stairs",
-        "triangles": 7115,
+        "name": "V10 cut walls, grass shoulders and tunnel fittings",
+        "triangles": 6420,
+        "sections": 2
+      },
+      {
+        "name": "V10 submerged tunnel | 24m clear width",
+        "triangles": 8560,
+        "sections": 2
+      },
+      {
+        "name": "V12 painted run-off bands",
+        "triangles": 5892,
+        "sections": 5
+      },
+      {
+        "name": "V12 pylon poles",
+        "triangles": 1836,
+        "sections": 3
+      },
+      {
+        "name": "V12_Seoul-style_start_stand_|_north~0-900",
+        "triangles": 11088,
+        "sections": 2
+      },
+      {
+        "name": "V12_Seoul-style_start_stand_|_south~0-900",
+        "triangles": 6508,
+        "sections": 2
+      },
+      {
+        "name": "V13_castle_|_bracketed_eaves_and_soffits~0-300",
+        "triangles": 3174,
+        "sections": 2
+      },
+      {
+        "name": "V13_crowd_cutout_strips_far~900-3500",
+        "triangles": 1719,
         "sections": 4
       },
       {
-        "name": "V10 01 | Asakusa vermilion romon gate | stone court and lanterns",
-        "triangles": 73751,
-        "sections": 5
+        "name": "V13_crowd_cutout_strips~0-900",
+        "triangles": 14328,
+        "sections": 4
       },
       {
-        "name": "V10 04 | flowing white Tokyo race headquarters",
-        "triangles": 1562,
-        "sections": 5
+        "name": "V13 mural frames",
+        "triangles": 1536,
+        "sections": 2
       },
       {
-        "name": "V10 08 | curved Bayfront cedar grandstand | spectators and fascia.001",
-        "triangles": 8360,
-        "sections": 5
+        "name": "V13 mural LED edges",
+        "triangles": 1536,
+        "sections": 2
+      },
+      {
+        "name": "V13 tunnel cove light line",
+        "triangles": 8422,
+        "sections": 2
+      },
+      {
+        "name": "V13 tunnel lit lane edges",
+        "triangles": 8234,
+        "sections": 2
+      },
+      {
+        "name": "V13 tunnel tiled liner",
+        "triangles": 8144,
+        "sections": 2
+      },
+      {
+        "name": "V13 wide run-off bands",
+        "triangles": 5316,
+        "sections": 4
       }
     ]
   },
   {
     "base": "tokyo_visual_ktx2",
     "cellMetres": 768,
-    "sourceBytes": 12071992,
-    "outputBytes": 12307072,
+    "sourceBytes": 27808380,
+    "outputBytes": 28197308,
     "changes": [
       {
         "name": "Continuous road | 18m | source spline",
@@ -139,119 +259,239 @@
         "sections": 6
       },
       {
-        "name": "Avenue five-tier cedar pavilion and swept roofs",
-        "triangles": 23620,
-        "sections": 9
-      },
-      {
-        "name": "Catch fence mesh 1",
-        "triangles": 1600,
-        "sections": 6
+        "name": "Avenue ribbed lantern promenade",
+        "triangles": 13936,
+        "sections": 2
       },
       {
         "name": "Catch fence tension cable",
-        "triangles": 14376,
+        "triangles": 2396,
         "sections": 6
       },
       {
-        "name": "Continuous concrete barrier",
-        "triangles": 22952,
+        "name": "Catch fence tension cable.001",
+        "triangles": 2396,
         "sections": 6
       },
       {
-        "name": "Continuous edge line",
-        "triangles": 9426,
+        "name": "Catch fence tension cable.002",
+        "triangles": 2396,
         "sections": 6
       },
       {
-        "name": "Continuous sidewalk 1",
-        "triangles": 24816,
-        "sections": 6
-      },
-      {
-        "name": "V9 extended landscape grass plane",
-        "triangles": 44224,
-        "sections": 22
-      },
-      {
-        "name": "V10 04 | flowing white Tokyo race headquarters | 東京 レース本部",
-        "triangles": 5873,
-        "sections": 6
-      },
-      {
-        "name": "V10 01 | Asakusa vermilion romon gate | 浅草門",
-        "triangles": 5065,
-        "sections": 6
-      },
-      {
-        "name": "V10 09 | Akihabara neon shrine gateway | 電 光 神 社",
-        "triangles": 4010,
+        "name": "Catch fence tension cable.003",
+        "triangles": 2396,
         "sections": 4
       },
       {
-        "name": "Kerb | inner",
-        "triangles": 2876,
+        "name": "Catch fence tension cable.004",
+        "triangles": 2396,
+        "sections": 4
+      },
+      {
+        "name": "Catch fence tension cable.005",
+        "triangles": 2396,
+        "sections": 4
+      },
+      {
+        "name": "Continuous concrete barrier",
+        "triangles": 11476,
         "sections": 6
       },
       {
-        "name": "Rounded portal tower 704",
-        "triangles": 60480,
-        "sections": 3
+        "name": "Continuous concrete barrier.001",
+        "triangles": 11476,
+        "sections": 4
+      },
+      {
+        "name": "Continuous edge line",
+        "triangles": 2870,
+        "sections": 6
+      },
+      {
+        "name": "Continuous edge line.001",
+        "triangles": 2870,
+        "sections": 4
+      },
+      {
+        "name": "Continuous sidewalk 1",
+        "triangles": 2666,
+        "sections": 4
+      },
+      {
+        "name": "Continuous sidewalk -1",
+        "triangles": 2666,
+        "sections": 6
+      },
+      {
+        "name": "Roppongi topography | valley carved.002",
+        "triangles": 35840,
+        "sections": 9
+      },
+      {
+        "name": "Kerb | inner",
+        "triangles": 2870,
+        "sections": 4
+      },
+      {
+        "name": "Kerb | outer",
+        "triangles": 2868,
+        "sections": 6
+      },
+      {
+        "name": "Lantern promenade kit",
+        "triangles": 15232,
+        "sections": 4
+      },
+      {
+        "name": "Race lighting masts and fixture banks",
+        "triangles": 1920,
+        "sections": 4
+      },
+      {
+        "name": "static_0_0",
+        "triangles": 36272,
+        "sections": 7
+      },
+      {
+        "name": "static_0_1",
+        "triangles": 8036,
+        "sections": 2
+      },
+      {
+        "name": "static_-1_0",
+        "triangles": 11044,
+        "sections": 4
+      },
+      {
+        "name": "Storm drains 1",
+        "triangles": 12096,
+        "sections": 4
+      },
+      {
+        "name": "Storm drains -1",
+        "triangles": 12096,
+        "sections": 6
       },
       {
         "name": "Suspension system, hanger clamps and warm rail edges",
-        "triangles": 10320,
+        "triangles": 36464,
         "sections": 3
       },
       {
         "name": "V9 barrier LED line 1.001",
-        "triangles": 5736,
+        "triangles": 2868,
+        "sections": 4
+      },
+      {
+        "name": "V9 barrier LED line -1.001",
+        "triangles": 2868,
+        "sections": 6
+      },
+      {
+        "name": "V9 barrier sponsor boards 1.001",
+        "triangles": 2646,
+        "sections": 4
+      },
+      {
+        "name": "V9 barrier sponsor boards -1.001",
+        "triangles": 2646,
         "sections": 6
       },
       {
         "name": "V9 offshore Wangan-style expressway viaduct",
-        "triangles": 8508,
-        "sections": 9
-      },
-      {
-        "name": "V9 paddock apron north border 0",
-        "triangles": 2460,
-        "sections": 6
+        "triangles": 6756,
+        "sections": 3
       },
       {
         "name": "V9 utility poles, transformers and sagging wires",
-        "triangles": 1800,
+        "triangles": 22600,
         "sections": 2
       },
       {
         "name": "V9 vending machine clusters",
-        "triangles": 1872,
+        "triangles": 5616,
         "sections": 4
       },
       {
-        "name": "V10 01 | Asakusa vermilion romon gate",
-        "triangles": 30756,
-        "sections": 6
+        "name": "V10 continuous excavated approach landscaping",
+        "triangles": 4480,
+        "sections": 2
       },
       {
-        "name": "V10 01 | Asakusa vermilion romon gate | bracketwork and side stairs",
-        "triangles": 7115,
+        "name": "V10 cut walls, grass shoulders and tunnel fittings",
+        "triangles": 6420,
+        "sections": 2
+      },
+      {
+        "name": "V10 submerged tunnel | 24m clear width",
+        "triangles": 8560,
+        "sections": 2
+      },
+      {
+        "name": "V12 painted run-off bands",
+        "triangles": 5892,
+        "sections": 5
+      },
+      {
+        "name": "V12 pylon poles",
+        "triangles": 1836,
+        "sections": 3
+      },
+      {
+        "name": "V12_Seoul-style_start_stand_|_north~0-900",
+        "triangles": 11088,
+        "sections": 2
+      },
+      {
+        "name": "V12_Seoul-style_start_stand_|_south~0-900",
+        "triangles": 6508,
+        "sections": 2
+      },
+      {
+        "name": "V13_castle_|_bracketed_eaves_and_soffits~0-300",
+        "triangles": 3174,
+        "sections": 2
+      },
+      {
+        "name": "V13_crowd_cutout_strips_far~900-3500",
+        "triangles": 1719,
         "sections": 4
       },
       {
-        "name": "V10 01 | Asakusa vermilion romon gate | stone court and lanterns",
-        "triangles": 73751,
-        "sections": 5
+        "name": "V13_crowd_cutout_strips~0-900",
+        "triangles": 14328,
+        "sections": 4
       },
       {
-        "name": "V10 04 | flowing white Tokyo race headquarters",
-        "triangles": 1562,
-        "sections": 5
+        "name": "V13 mural frames",
+        "triangles": 1536,
+        "sections": 2
       },
       {
-        "name": "V10 08 | curved Bayfront cedar grandstand | spectators and fascia.001",
-        "triangles": 8360,
-        "sections": 5
+        "name": "V13 mural LED edges",
+        "triangles": 1536,
+        "sections": 2
+      },
+      {
+        "name": "V13 tunnel cove light line",
+        "triangles": 8422,
+        "sections": 2
+      },
+      {
+        "name": "V13 tunnel lit lane edges",
+        "triangles": 8234,
+        "sections": 2
+      },
+      {
+        "name": "V13 tunnel tiled liner",
+        "triangles": 8144,
+        "sections": 2
+      },
+      {
+        "name": "V13 wide run-off bands",
+        "triangles": 5316,
+        "sections": 4
       }
     ]
   }

@@ -1,0 +1,70 @@
+{
+ "signs": {
+  "quads": 890,
+  "atlas_cells": 194,
+  "hero_signs": 2
+ },
+ "sponsor logo boards": 180,
+ "trees": {
+  "sakura": 237,
+  "canopy": 51,
+  "cedar": 21,
+  "tiers": "full 0-38 m (canopy/cedar 55), 13 % copy to 240 m (280), cards to 2.8 km"
+ },
+ "frontages": {
+  "count": 129,
+  "heroes": 12,
+  "full_tris_each": [
+   14028,
+   19880,
+   21120,
+   20568,
+   21208
+  ],
+  "far_tris_each": [
+   1630,
+   2276,
+   2460,
+   2368,
+   2452
+  ]
+ },
+ "lanterns": 1156,
+ "landmark tiers": 22,
+ "materials": {
+  "before": 170,
+  "merged_duplicates": 38
+ },
+ "merged static objects": 660,
+ "static cells": 6,
+ "blender count": {
+  "objects_x_tris": 14532811,
+  "unique": 1196221,
+  "by_group": {
+   "track and terrain": 61294,
+   "other whole objects": 238464,
+   "trees (3 tiers)": 10576224,
+   "landmarks / other (tiered)": 466430,
+   "backdrop": 5652,
+   "frontages (2 tiers)": 2872163,
+   "lanterns (2 tiers)": 244096,
+   "signs and boards": 7428,
+   "merged static cells": 61060
+  },
+  "unique_by_group": {
+   "track and terrain": 61294,
+   "other whole objects": 223268,
+   "trees (3 tiers)": 92890,
+   "landmarks / other (tiered)": 466430,
+   "backdrop": 5652,
+   "frontages (2 tiers)": 278101,
+   "lanterns (2 tiers)": 452,
+   "signs and boards": 7074,
+   "merged static cells": 61060
+  },
+  "source": {
+   "mesh": 5874462,
+   "text": 2262648
+  }
+ }
+}

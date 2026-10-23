@@ -29,7 +29,7 @@ if (!existsSync(src)) throw new Error(`missing ${src}: build the track first`);
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const tmp0 = join(out, 'web', '_opt.glb');
 execFileSync(npx, ['-y', '@gltf-transform/cli@4', 'optimize', src, tmp0,
-  '--compress', 'false', '--texture-compress', 'false', '--simplify', 'false', '--palette', 'false'], { stdio: 'inherit', shell: true });
+  '--compress', 'false', '--texture-compress', 'false', '--simplify', 'false', '--palette', 'false', ...(process.env.NO_JOIN ? ['--join', 'false'] : [])], { stdio: 'inherit', shell: true });   // NO_JOIN: Tokyo's distance tiers are separate named meshes
 execFileSync(npx, ['-y', '@gltf-transform/cli@4', 'meshopt', tmp0, tmp, '--level', 'high', '--quantize-position', '16'],
   { stdio: 'inherit', shell: true });
 rmSync(tmp0);

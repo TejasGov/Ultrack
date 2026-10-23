@@ -1,0 +1,40 @@
+{
+ "start line": {
+  "submitted_tris": 679155,
+  "in_frustum_tris": 458977,
+  "draw_calls_submitted": 268,
+  "draw_calls_in_frustum": 256
+ },
+ "_file": {
+  "unique_triangles": 1219697,
+  "total_triangles_all_instances": 14558667,
+  "meshes": 182,
+  "instanced_nodes": 38,
+  "materials": 131,
+  "textures": 31
+ },
+ "neon street": {
+  "submitted_tris": 1322595,
+  "in_frustum_tris": 711670,
+  "draw_calls_submitted": 339,
+  "draw_calls_in_frustum": 315
+ },
+ "bridge": {
+  "submitted_tris": 875114,
+  "in_frustum_tris": 557475,
+  "draw_calls_submitted": 361,
+  "draw_calls_in_frustum": 332
+ },
+ "tunnel": {
+  "submitted_tris": 537090,
+  "in_frustum_tris": 398821,
+  "draw_calls_submitted": 248,
+  "draw_calls_in_frustum": 240
+ },
+ "west straight": {
+  "submitted_tris": 679045,
+  "in_frustum_tris": 366760,
+  "draw_calls_submitted": 218,
+  "draw_calls_in_frustum": 205
+ }
+}
