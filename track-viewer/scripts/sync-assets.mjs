@@ -128,3 +128,19 @@ if(existsSync(driverRoot)){
 
 // Tokyo photo textures (assets/polyhaven -> public/assets/tokyo/tex/*.ktx2) for src/venue/tokyo/materials.js; only sets that are new or changed
 await import("./pack-tokyo-tex.mjs");
+
+// Tokyo hologram characters (tracks/tokyo/textures/anime/gen/holo_*.png, 720x1280 RGBA cut-outs) -> public/assets/tokyo/holo/<name>.webp at
+// 576x1024: the runtime holograms (src/venue/tokyo/holograms.js) need no more, and three of them are ~9 MB of GPU memory. Only when new or changed.
+{
+  const gen = join(root, 'tracks', 'tokyo', 'textures', 'anime', 'gen'), to = join(dest, 'tokyo', 'holo');
+  const holos = existsSync(gen) ? readdirSync(gen).filter((f) => /^holo_\d+_\w+\.png$/.test(f)) : [];
+  if (holos.length) {
+    const { default: sharp } = await import('sharp');
+    mkdirSync(to, { recursive: true });
+    for (const f of holos) {
+      const out = join(to, f.replace(/\.png$/, '.webp'));
+      if (existsSync(out) && statSync(out).mtimeMs >= statSync(join(gen, f)).mtimeMs) continue;
+      await sharp(join(gen, f)).resize(576, 1024, { kernel: 'lanczos3' }).webp({ quality: 86, alphaQuality: 92, effort: 5 }).toFile(out);
+    }
+  }
+}

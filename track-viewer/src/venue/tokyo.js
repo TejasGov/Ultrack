@@ -4,6 +4,10 @@
 // ctx: { scene, root (the venue glTF scene), track (track.json), renderer, camera, lights (lights.json), allMats, wetUniforms, NO_MIRROR }
 // A part that fails to load is skipped with a warning: the track still runs without it.
 const PARTS = [
+  () => import('./tokyo/holograms.js'),
+  () => import('./tokyo/torii.js'),
+  () => import('./tokyo/petals.js'),
+  () => import('./tokyo/pond.js'),
   () => import('./tokyo/materials.js'),
 ];
 
