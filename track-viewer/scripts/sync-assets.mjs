@@ -125,3 +125,6 @@ if(existsSync(driverRoot)){
   const gallery=join(driverRoot,'gallery.html');
   if(existsSync(gallery))copyFileSync(gallery,join(root,'track-viewer','public','driver-posters.html'));
 }
+
+// Tokyo photo textures (assets/polyhaven -> public/assets/tokyo/tex/*.ktx2) for src/venue/tokyo/materials.js; only sets that are new or changed
+await import("./pack-tokyo-tex.mjs");

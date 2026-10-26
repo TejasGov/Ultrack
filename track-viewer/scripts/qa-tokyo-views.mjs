@@ -37,6 +37,8 @@ const browser = await chromium.launch({ executablePath: chrome, headless: true, 
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } });
 const errors = [];
 await ctx.addInitScript(([look]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track: 'tokyo', look, weather: 'dry' } })); } catch { /* none */ } }, [looks[0]]);
+// a stub for Vite's HMR socket: any agent saving a file would otherwise reload this page mid-run and leave it on the title screen
+await ctx.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; Object.assign(F, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 }); window.WebSocket = F; });
 const page = await ctx.newPage();
 page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
