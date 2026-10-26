@@ -9,6 +9,12 @@ const PARTS = [
   () => import('./tokyo/petals.js'),
   () => import('./tokyo/pond.js'),
   () => import('./tokyo/materials.js'),
+  () => import('./tokyo/mirror-height.js'),
+  () => import('./tokyo/light-pools.js'),
+  () => import('./tokyo/sky-glow.js'),
+  () => import('./tokyo/bridge-lights.js'),
+  () => import('./tokyo/look.js'),
+  () => import('./tokyo/tunnel-light.js'),
 ];
 
 export async function create(ctx) {

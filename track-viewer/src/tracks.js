@@ -23,15 +23,15 @@ export const TRACKS = {
   },
   tokyo: {
     id: 'tokyo', name: 'Tokyo Hiragana Circuit', stem: 'tokyo', dir: '/assets/tokyo/', look: 'night', fog: 1, sun: [-0.94, 0.34], tag: null,     // west-south-west: Marina's bearing set straight down the neon street
-    dayNight: { day: /^M_Supertall\w*Day$/, night: /^M_(NightBeam|NightBridgeRed|SupertallLightsNight)$/, nightK: { M_NightBeam: 0.16 } },     // v13.1: the sky arc, the ridges (by day) and the searchlights / distant lights (by night)
+    dayNight: { day: /^M_Supertall\w*Day$/, night: /^M_(NightBeam|NightBridgeRed|SupertallLightsNight)$/, nightK: { M_NightBeam: 0.1 } },     // v13.1: the sky arc, the ridges (by day) and the searchlights / distant lights (by night)
     // the canopies keep the asphalt and stands in shade: more exposure and sky light by day; the baked skyline and signs follow `emissive`;
     // the neon blooms from a higher threshold at night. The steps day > dusk > evening > night only ever go down.
     looks: {
       day: { exposure: 2.1, env: 1.25, emissive: 0.32, fogDensity: 0.0003, sun: 6, grade: { shadows: [1, 0.99, 0.97], sat: 1.02 } },
       // the dusk sun sets straight down the neon street: a softer flare, sun haze and road glint than Marina's open bay
       dusk: { exposure: 0.85, env: 1.0, flare: 0.35, fogSun: [0.2, 0.11, 0.05], glint: [2.4, 1.4, 0.6] },
-      bluehour: { exposure: 0.95, bg: 0.16, bloomGain: 0.7, emissive: 0.9 },
-      night: { bloomGain: 0.65, bloomThr: 1.35, emissive: 1.2 },
+      bluehour: { exposure: 0.9, bg: 0.12, bloomGain: 0.55, emissive: 0.9, fog: 0x1d2a4f, grade: { s: 0.5, black: 0.03, shadows: [0.84, 0.94, 1.16], sat: 1.12 } },
+      night: { bloomGain: 0.45, bloomThr: 1.35, emissive: 1.2, fog: 0x0d0f24, fogDensity: 0.0014, fogSun: [0.03, 0.012, 0.02] },
     },
     wet: { wet: ['V4 damp Poly Haven asphalt', 'Warm road paint', 'Concrete | mineral', 'V12 run-off blue', 'V12 run-off pink', 'V12 run-off yellow',
       'V9 painted concrete | flow', 'V9 painted concrete | ichimatsu', 'V9 painted concrete | chevron', 'V9 painted concrete | seigaiha', 'Park meadow'],
