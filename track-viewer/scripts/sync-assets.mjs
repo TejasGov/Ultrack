@@ -126,9 +126,6 @@ if(existsSync(driverRoot)){
   if(existsSync(gallery))copyFileSync(gallery,join(root,'track-viewer','public','driver-posters.html'));
 }
 
-// Tokyo photo textures (assets/polyhaven -> public/assets/tokyo/tex/*.ktx2) for src/venue/tokyo/materials.js; only sets that are new or changed
-await import("./pack-tokyo-tex.mjs");
-
 // Tokyo hologram characters (tracks/tokyo/textures/anime/gen/holo_*.png, 720x1280 RGBA cut-outs) -> public/assets/tokyo/holo/<name>.webp at
 // 576x1024: the runtime holograms (src/venue/tokyo/holograms.js) need no more, and three of them are ~9 MB of GPU memory. Only when new or changed.
 {
@@ -144,3 +141,6 @@ await import("./pack-tokyo-tex.mjs");
     }
   }
 }
+
+// Tokyo photo textures (assets/polyhaven -> public/assets/tokyo/tex/*.ktx2) for src/venue/tokyo/materials.js; only sets that are new or changed
+await import("./pack-tokyo-tex.mjs");
