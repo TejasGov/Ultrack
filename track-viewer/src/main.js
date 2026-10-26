@@ -12,6 +12,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
@@ -106,6 +107,17 @@ const params = {
   reduceMotion: false,     // camera shake, roll and most of the FOV changes off (motion-sickness setting)
   player: true,            // you drive the hero car (off: the AI drives it, for benchmarks and flythroughs)
 };
+// Render-pass savings (the perf job). All on in the game; viewer.perf.<name> = false (console, scripts/perf-passes.mjs --compare, perf-ab.mjs)
+// draws the frame the old way, so each can be timed and compared pixel by pixel.
+//   noTransmission  transmissive glass (the cars' light covers, Tokyo's gondolas) is drawn as alpha glass in the world: see worldGlass. Any
+//                   transmissive material in view makes three draw the whole opaque scene again into a full-size 4x target, the road mirror with it
+//   mirrorOnce      the road mirror is drawn for the frame, not again for the transmission pass's copy of the scene
+//   mirrorSkip      no road-mirror render while the road is too dry for it to show: see mirrorWanted
+//   idleLights      a look with no venue lamp lit (day, dusk) hides the lamp pool: its 16 lights sit at intensity 0, which three still runs in every lit fragment
+// ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
+const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights') };
+const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
 // the game (src/game: menus, garage, HUD, sessions) runs by default; ?dev=1 is the bare viewer with its tuning panel
@@ -263,6 +275,10 @@ composer.addPass(smaa);
 
 // wetUniforms (the planar mirror and weather the road shaders read): wet-road.js
 let reflector = null;
+// The mirror is the second-costliest render of the frame and it only shows on a wet road: the road shader adds reflection x fresnel x wet x
+// (1 - smoothstep(.12, .6, roughness)), so at the game's Dry (wet .15) only a near-polished surface shows it (a little neon on glossy paint):
+// below MIRROR_DRY it is not drawn. (It also gates the sun glint on the road; with the mirror off the glint is not occluded, a few levels at most.)
+function mirrorWanted() { return params.mirror && params.wet > (PERF.mirrorSkip ? MIRROR_DRY : 0); }
 function makeReflector() {
   if (reflector) { scene.remove(reflector); reflector.getRenderTarget().dispose(); }
   const size = renderer.getDrawingBufferSize(new THREE.Vector2()).multiplyScalar(params.mirrorRes);
@@ -276,12 +292,15 @@ function makeReflector() {
   reflector.material.colorWrite = false;   // draws nothing itself; only its render target matters
   reflector.material.depthWrite = false;
   reflector.renderOrder = -1;
-  reflector.visible = params.mirror && params.wet > 0;
+  reflector.visible = mirrorWanted();
   const tex = reflector.getRenderTarget().texture;
   wetUniforms.tReflection.value = tex;
   // while the mirror renders, the road must not sample the very texture being drawn (a WebGL feedback loop)
   const renderMirror = reflector.onBeforeRender;
   reflector.onBeforeRender = function (...args) {
+    // the transmission pass draws the opaque list into its own target first: the road mirror is part of that list but nothing there needs it
+    const rt = args[0].getRenderTarget();
+    if (PERF.mirrorOnce && rt && rt !== composer.renderTarget1 && rt !== composer.renderTarget2) return;
     wetUniforms.tReflection.value = null;
     const peopleOn = people.group.visible;
     people.group.visible = false;    // the wet road doesn't need to mirror every spectator
@@ -380,6 +399,78 @@ function fadeLights(dt) {
 
 const allMats = new Set();
 const wetMats = [];
+// Transmissive glass: the car GLBs keep their lamp covers and some windows transmissive, and Tokyo's gondolas are. While one is in view three
+// draws the whole opaque scene a second time into a full-size 4x multisampled target (the transmission pass), the road mirror included, and
+// the mirror's own render has a transmission pass for the glass it sees: about 2x the frame and 4x the mirror, for a few small panes.
+// In the world they are drawn without it: transmission off, and the one line of three's shader that mixes in the transmitted scene
+// (diffuse = mix(diffuse, scene behind * colour * (1 - F), transmission)) reads the scene's average colour instead. That is what a pane
+// of this glass transmits anyway: the car covers are frosted (roughness .92 selects the last mip of the transmission target, about one
+// texel), the windows' tint is near-black. The average is taken from the last frame's scene (avgRT, two tiny passes after the RenderPass).
+// The garage keeps the real transmission: its close-ups are the one place it shows.
+const avgRT = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, depthBuffer: false });
+// Every pixel counts (a sparse sample misses the sun and the lamps, which carry most of an HDR frame's mean): the frame is reduced into a
+// 64x36 grid (15x15 bilinear taps per cell, two pixels each), and the grid into one texel. The glass feeds the next frame's mean, so a NaN or
+// Inf pixel anywhere (a shader in progress, a wet-road spike) would stick as a black screen for good: such taps are dropped, highlights capped.
+const avgMid = new THREE.WebGLRenderTarget(64, 36, { type: THREE.HalfFloatType, depthBuffer: false });
+const avgVertex = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4( position.xy, 0.0, 1.0 ); }';
+const avgCells = new FullScreenQuad(new THREE.ShaderMaterial({
+  uniforms: { tScene: { value: null } }, vertexShader: avgVertex,
+  fragmentShader: 'uniform sampler2D tScene; varying vec2 vUv; void main() { vec3 s = vec3( 0.0 ); for ( int j = 0; j < 15; j ++ ) for ( int i = 0; i < 15; i ++ ) { vec3 t = texture2D( tScene, vUv + ( ( vec2( float( i ), float( j ) ) + 0.5 ) / 15.0 - 0.5 ) / vec2( 64.0, 36.0 ) ).rgb; s += ( all( lessThan( t, vec3( 1e4 ) ) ) && all( greaterThanEqual( t, vec3( 0.0 ) ) ) ) ? min( t, vec3( 64.0 ) ) : vec3( 0.0 ); } gl_FragColor = vec4( s / 225.0, 1.0 ); }',
+}));
+const avgOne = new FullScreenQuad(new THREE.ShaderMaterial({
+  uniforms: { tScene: { value: avgMid.texture } }, vertexShader: avgVertex,
+  fragmentShader: 'uniform sampler2D tScene; varying vec2 vUv; void main() { vec3 s = vec3( 0.0 ); for ( int j = 0; j < 18; j ++ ) for ( int i = 0; i < 32; i ++ ) s += texture2D( tScene, ( vec2( float( i ), float( j ) ) * 2.0 + 1.0 ) / vec2( 64.0, 36.0 ) ).rgb; gl_FragColor = vec4( s / 576.0, 1.0 ); }',
+}));
+const glassVeil = { value: 0.96 };     // 1 - F, the Fresnel share three takes off the transmitted light; viewer.glassVeil tunes it
+const glass = [];            // { mesh, slot (index in a material array, or -1), real, car, on }
+const twins = new Map();     // transmissive material -> its twin without transmission
+const glassSeen = new WeakMap();     // car -> LOD levels scanned (a car's far body loads a moment after the car, with glass of its own)
+let inWorld = true, glassOn = 0;
+{
+  const renderPass = composer.passes[0], renderScene = renderPass.render.bind(renderPass);
+  renderPass.render = (r, writeBuffer, readBuffer, ...rest) => {
+    renderScene(r, writeBuffer, readBuffer, ...rest);
+    if (!glassOn) return;
+    const target = r.getRenderTarget();
+    avgCells.material.uniforms.tScene.value = readBuffer.texture;
+    r.setRenderTarget(avgMid); avgCells.render(r); r.setRenderTarget(avgRT); avgOne.render(r); r.setRenderTarget(target);
+  };
+}
+function twinOf(m) {
+  let w = twins.get(m);
+  if (!w) {
+    const t = m.transmission;
+    w = m.clone(); w.transmission = 0;
+    w.onBeforeCompile = (shader, r) => {
+      m.onBeforeCompile.call(w, shader, r);
+      shader.uniforms.tAvg = { value: avgRT.texture }; shader.uniforms.uT = { value: t }; shader.uniforms.uVeil = glassVeil;
+      shader.fragmentShader = 'uniform sampler2D tAvg; uniform float uT, uVeil;\n' + shader.fragmentShader.replace('#include <transmission_fragment>', 'totalDiffuse = mix( totalDiffuse, texture2D( tAvg, vec2( 0.5 ) ).rgb * diffuseColor.rgb * uVeil, uT );');
+    };
+    w.customProgramCacheKey = () => 'world-glass';
+    twins.set(m, w);
+  }
+  return w;
+}
+function noteGlass(o, car) {
+  const mats = Array.isArray(o.material) ? o.material : [o.material];
+  mats.forEach((m, slot) => {
+    if (m.transmission > 0 && !glass.some((g) => g.mesh === o && g.slot === (Array.isArray(o.material) ? slot : -1))) glass.push({ mesh: o, slot: Array.isArray(o.material) ? slot : -1, real: m, car, on: false });
+  });
+}
+function worldGlass(world = inWorld) {
+  inWorld = world;
+  for (const c of field?.all ?? []) {
+    const levels = c.lod?.levels.length ?? 0;
+    if (glassSeen.get(c) !== levels) { glassSeen.set(c, levels); c.root.traverse((o) => { if (o.isMesh) noteGlass(o, true); }); }
+  }
+  for (const g of glass) {
+    const want = PERF.noTransmission && (world || !g.car);
+    if (g.on === want) continue;
+    g.on = want; glassOn += want ? 1 : -1;
+    const m = want ? twinOf(g.real) : g.real;
+    if (g.slot < 0) g.mesh.material = m; else g.mesh.material[g.slot] = m;
+  }
+}
 let track = null, curve = null, curveLength = 1, dist = 0, cumLen = [];
 let field = null;
 let culler = null, cullT = 0, cullStats = { hidden: 0, culledInstances: 0 };
@@ -442,6 +533,7 @@ function unloadVenue() {
   sceneryExperiment?.dispose(); sceneryExperiment = null;
   people.clear(); driverHoardings.clear(); life.reset();
   allMats.clear(); wetMats.length = 0;
+  for (let i = glass.length - 1; i >= 0; i--) if (!glass[i].car) { if (glass[i].on) glassOn--; glass.splice(i, 1); }
   for (const light of [...pool.flood, ...pool.stand, ...pool.street]) { light.userData.lamp = null; light.userData.want = 0; light.intensity = 0; }   // not parked at the old lamps
 }
 /** Switch circuit: the old venue goes, the new track's data replaces the path and the grid; the venue itself loads on demand
@@ -477,6 +569,7 @@ async function loadVenue() {
     const mats = Array.isArray(o.material) ? o.material : [o.material];
     mats.forEach((m) => {
       allMats.add(m);
+      noteGlass(o, false);
       m.userData.emissive0 = m.emissiveIntensity ?? 1;
       // the supertalls stand 3-5 km out: exponential fog would erase them, so they keep their own (baked-in) depth
       if (m.name.startsWith('M_Supertall')) m.fog = false;
@@ -513,6 +606,7 @@ async function loadVenue() {
     life.attach(o);
   });
   applyDayNight(LOOKS[params.look]);
+  worldGlass();
   // every lamp also gets a stable glow sprite; the tiny lamp meshes drop under the bloom threshold (they shimmered)
   // The road mirror draws the venue a second time (~7 ms). Small unlit props (cones, posts, tyre stacks, bunting,
   // crew kit: a few blurred pixels in a wet-road reflection) move to layer NO_MIRROR, which the main camera, the
@@ -549,6 +643,10 @@ async function loadVenue() {
   if (T.venue) {
     const fx = await (await T.venue()).create({ scene, root: gltf.scene, track, renderer, camera, lights: lightsJson, allMats, wetUniforms, NO_MIRROR });
     if (T !== TRACK) fx.dispose(); else { venueFx = fx; venueFx.setLook?.(LOOKS[params.look], params); }
+    // the venue effects add materials of their own: transmissive glass among them would bring the second scene render back
+    const cars = new Set((field?.all ?? []).map((c) => c.root));
+    scene.children.forEach((ch) => { if (!cars.has(ch)) ch.traverse((o) => { if (o.isMesh) noteGlass(o, false); }); });
+    worldGlass();
   }
   // real characters replace the placeholder people (loaded after the venue so the track shows first)
   const populate=()=>people.populate(gltfLoader,scene,gltf.scene,track,{pit:has.pit,vip:has.vip?U('vip'):null,alive:()=>venueRoot===gltf.scene}).then(n=>console.info('people:',n)).catch(e=>console.warn('people:',e));
@@ -573,6 +671,7 @@ async function loadVenue() {
 async function prepareRaceRenderer({isCancelled=()=>false}={}) {
   // Let the intro/loading UI paint before submitting any heavy GPU work.
   await new Promise(resolve=>requestAnimationFrame(resolve));
+  worldGlass(true);
   field.chase(camera,1/60,{reduceMotion:true});
   const look=LOOKS[params.look],power=look.lights*params.venueLights;
   placeNearest(pool.flood,venueLights.floodlights,camera.position,1400*power);
@@ -615,9 +714,9 @@ function cubeHide(fn){
 }
 // A submit made in the race's own state (chase mode: the headlight stops casting; the hero's beams on), so program keys match.
 function raceState(fn){
-  const mode=params.mode,beams=field.hero.beams.map(b=>b.visible);
-  params.mode='chase';applyAll();field.hero.beams.forEach(b=>{b.visible=true;});
-  try{fn();}finally{params.mode=mode;applyAll();field.hero.beams.forEach((b,i)=>{b.visible=beams[i];});}
+  const mode=params.mode,beams=field.hero.beams.map(b=>b.visible),world=inWorld;
+  params.mode='chase';worldGlass(true);applyAll();field.hero.beams.forEach(b=>{b.visible=true;});
+  try{fn();}finally{params.mode=mode;worldGlass(world);applyAll();field.hero.beams.forEach((b,i)=>{b.visible=beams[i];});}
 }
 // the sun's shadow map first renders inside the GTAO pass, which hides the cars (and so the hero's beams): that light set, then the full one
 function carsHidden(fn){const cars=field.all.filter(c=>c.root.visible);cars.forEach(c=>{c.root.visible=false;});try{fn();}finally{cars.forEach(c=>{c.root.visible=true;});}}
@@ -743,6 +842,9 @@ function applyDayNight(look) {
 }
 function applyAll() {
   const look = LOOKS[params.look];
+  worldGlass();
+  const poolOn = !PERF.idleLights || look.lights * params.venueLights > 0;
+  for (const light of [...pool.flood, ...pool.stand, ...pool.street]) light.visible = poolOn;
   renderer.toneMapping = { AgX: THREE.AgXToneMapping, ACES: THREE.ACESFilmicToneMapping, Neutral: THREE.NeutralToneMapping }[params.toneMapping === 'auto' ? look.tm : params.toneMapping];
   renderer.toneMappingExposure = look.exposure * params.exposure;
   scene.fog = params.fog > 0 ? new THREE.FogExp2(look.fog, look.fogDensity * params.fog * TRACK.fog) : null;
@@ -756,8 +858,8 @@ function applyAll() {
   FINISH_RAIN.value = Math.min(1, params.rain * 2);
   { const g = look.glint, k = Math.max(g[0], g[1], g[2], 1e-3); FINISH_SPARK.value.setRGB(...[0, 1, 2].map((i) => (0.04 + 0.1 * k) * (0.6 + 0.4 * g[i] / k))); }   // beads catch the light of the look (warm at dusk, none but lamps at night)
   wetUniforms.uGlint.value.setRGB(...look.glint);
-  wetUniforms.uMirror.value = params.mirror ? 1 : 0;
-  if (reflector) reflector.visible = params.mirror && params.wet > 0;
+  wetUniforms.uMirror.value = mirrorWanted() ? 1 : 0;
+  if (reflector) reflector.visible = mirrorWanted();
   rain.visible = params.rain > 0;
   rain.material.uniforms.uOpacity.value = params.rain * 0.55;
   gtao.enabled = params.ao;
@@ -958,6 +1060,7 @@ function tick(now) {
   if(game?.raceLoading.active){garageRoom?.suspend();return;}
   if(game?.session && params.paused){garageRoom?.suspend();return;}
   if(garageRoom && !game.session){
+    worldGlass(false);
     if(sceneryExperiment?.panel)sceneryExperiment.panel.hidden=true;
     controls.enabled=false;
     FINISH_RAIN.value=0;   // the showroom is indoors: no rain beads on the paint
@@ -965,6 +1068,7 @@ function tick(now) {
     return;
   }
   garageRoom?.suspend();
+  worldGlass(true);
   FINISH_RAIN.value = Math.min(1, params.rain * 2);   // back out in the weather
   if(sceneryExperiment?.panel)sceneryExperiment.panel.hidden=false;
 
@@ -1122,7 +1226,7 @@ async function benchScenery(frames=16,{width=960,height=540}={}) {
 }
 renderer.info.autoReset = false;
 // console access for tuning; renderNow draws a frame immediately (the app's pane can stall rAF while it is scripted)
-window.viewer = { THREE, composer, params, LOOKS, setTrack, unloadVenue, ensureVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
+window.viewer = { THREE, composer, params, perf: PERF, glassVeil, LOOKS, setTrack, unloadVenue, ensureVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
   scenery:()=>sceneryExperiment, benchScenery,
   field: () => field,
   cheer: (k = 1) => { life.cheer(k); people.cheer(); }, people: people.count, peopleList: people.list, device,
