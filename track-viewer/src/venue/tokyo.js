@@ -1,0 +1,18 @@
+// Tokyo's runtime effects: everything the GLB cannot carry (animated, look-dependent or shader-made), loaded by
+// main.js through tracks.js `venue` after the venue GLB. Each part is its own module in ./tokyo/ with the same contract:
+//   export async function create(ctx) -> { update?(t, camera, look), setLook?(look, params), dispose() }
+// ctx: { scene, root (the venue glTF scene), track (track.json), renderer, camera, lights (lights.json), allMats, wetUniforms, NO_MIRROR }
+// A part that fails to load is skipped with a warning: the track still runs without it.
+const PARTS = [
+];
+
+export async function create(ctx) {
+  const parts = (await Promise.all(PARTS.map(async (load) => {
+    try { return await (await load()).create(ctx); } catch (e) { console.warn('tokyo fx part skipped:', e); return null; }
+  }))).filter(Boolean);
+  return {
+    update: (t, camera, look) => { for (const p of parts) p.update?.(t, camera, look); },
+    setLook: (look, params) => { for (const p of parts) p.setLook?.(look, params); },
+    dispose: () => { for (const p of parts) p.dispose(); },
+  };
+}

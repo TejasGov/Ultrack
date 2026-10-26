@@ -383,6 +383,7 @@ const wetMats = [];
 let track = null, curve = null, curveLength = 1, dist = 0, cumLen = [];
 let field = null;
 let culler = null, cullT = 0, cullStats = { hidden: 0, culledInstances: 0 };
+let venueFx = null;     // the track's own runtime effects (tracks.js `venue`): { update(t, camera, look), setLook(look, params), dispose() }
 let sceneryExperiment = null;
 const SCENERY_TEST = new URLSearchParams(location.search).get('scenery') === '1';
 const gpuTimer = new GpuTimer(renderer);
@@ -435,6 +436,7 @@ function disposeTree(root) {
 /** drop the venue (geometry, textures, glows, crowd, culler, hoardings) so another circuit can load without leaking */
 function unloadVenue() {
   venuePromise = null; venueLights = null; culler = null; captureBoost = [];
+  venueFx?.dispose(); venueFx = null;
   if (venueRoot) { scene.remove(venueRoot); disposeTree(venueRoot); venueRoot = null; }
   if (glows) { scene.remove(glows.points); disposeTree(glows.points); glows = null; }
   sceneryExperiment?.dispose(); sceneryExperiment = null;
@@ -466,6 +468,7 @@ async function loadVenue() {
   venueRoot = gltf.scene;
   scene.add(gltf.scene);
   const aniso = renderer.capabilities.getMaxAnisotropy();
+  const wetNames = T.wet?.wet ?? WET, puddleNames = T.wet?.puddles ?? PUDDLES;    // a track's own material names (WET / PUDDLES are Marina's)
   gltf.scene.traverse((o) => {
     if (!o.isMesh) return;
     // shadows: everything receives; flat ground-like surfaces and the far backdrop do not cast (they never shade anything)
@@ -494,10 +497,10 @@ async function loadVenue() {
       for (const key of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap']) {
         if (m[key]) { m[key].anisotropy = m.name === 'M_Fence' ? 1 : aniso; m[key].needsUpdate = true; }
       }
-      if (WET.includes(m.name) && !m.userData.wet) {
+      if (wetNames.includes(m.name) && !m.userData.wet) {
         m.userData.wet = true;
         wetMats.push(m);
-        wetify(m, { puddles: PUDDLES.includes(m.name) });
+        wetify(m, { puddles: puddleNames.includes(m.name) });
       }
     });
     if (o.name === 'water' || o.userData.surface === 'water') {
@@ -543,6 +546,10 @@ async function loadVenue() {
     }
   }
   culler = new Culler(gltf.scene);
+  if (T.venue) {
+    const fx = await (await T.venue()).create({ scene, root: gltf.scene, track, renderer, camera, lights: lightsJson, allMats, wetUniforms, NO_MIRROR });
+    if (T !== TRACK) fx.dispose(); else { venueFx = fx; venueFx.setLook?.(LOOKS[params.look], params); }
+  }
   // real characters replace the placeholder people (loaded after the venue so the track shows first)
   const populate=()=>people.populate(gltfLoader,scene,gltf.scene,track,{pit:has.pit,vip:has.vip?U('vip'):null,alive:()=>venueRoot===gltf.scene}).then(n=>console.info('people:',n)).catch(e=>console.warn('people:',e));
   const later=()=>setTimeout(()=>{if(globalThis.requestIdleCallback)requestIdleCallback(populate,{timeout:5000});else populate();},2500);
@@ -779,6 +786,7 @@ function applyAll() {
   fu.uFlare.value = look.flare * params.flare;
   FOG_SUN.color.set(look.fogSun);
   applyDayNight(look);
+  venueFx?.setLook?.(look, params);
   controls.enabled = params.mode === 'orbit';
 }
 
@@ -891,6 +899,7 @@ function updateFx(t, cull = false) {
   finalPass.uniforms.uSun.value.set(sp.x * 0.5 + 0.5, sp.y * 0.5 + 0.5, inFront ? 1 - THREE.MathUtils.smoothstep(edge, 0.85, 1.15) : 0);
   finalPass.uniforms.uAspect.value = camera.aspect;
   glows?.update(t, camera, renderer.getContext().drawingBufferHeight, scene.fog, (look.glow ?? 0.35 + 0.65 * look.lights) * params.venueLights);
+  venueFx?.update(t, camera, look);
 }
 
 function placeOnPath() {

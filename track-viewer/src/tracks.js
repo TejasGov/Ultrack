@@ -10,6 +10,8 @@
 //   dayNight   optional: { day: RegExp on the name of the day skyline's materials, night: RegExp on materials that only show from evening on (off at dusk; opacity = nightK[name]) } for a backdrop of two coincident bands (the night one
 //              opaque, the day one just inside it); main.js fades the day band's opacity per look (LOOKS dn: 0 = day .. 1 = night, opacity 1 - dn). Marina has none.
 //   looks      optional per-look overrides merged over main.js LOOKS while this track is active (grade merges key by key); Marina has none
+//   wet        optional { wet, puddles }: the track's material names that go wet in the rain / that also pool (default: Marina's names in main.js)
+//   venue      optional () => import(module with create(ctx)): the track's runtime effects, made after its GLB (src/venue/<id>.js)
 //   has        venue systems; one that is off is skipped without a request or an error
 //     pit        pit crews and boxes (people.js placeholders)    vip        vip.json: the booth's commentators
 //     hoardings  driver posters beside the track                  people     the Mixamo/Meshy cast
@@ -31,6 +33,10 @@ export const TRACKS = {
       bluehour: { exposure: 0.95, bg: 0.16, bloomGain: 0.7, emissive: 0.9 },
       night: { bloomGain: 0.65, bloomThr: 1.35, emissive: 1.2 },
     },
+    wet: { wet: ['V4 damp Poly Haven asphalt', 'Warm road paint', 'Concrete | mineral', 'V12 run-off blue', 'V12 run-off pink', 'V12 run-off yellow',
+      'V9 painted concrete | flow', 'V9 painted concrete | ichimatsu', 'V9 painted concrete | chevron', 'V9 painted concrete | seigaiha', 'Park meadow'],
+    puddles: ['V4 damp Poly Haven asphalt'] },
+    venue: () => import('./venue/tokyo.js'),
     // flip these on as the Tokyo export grows pit boxes, a VIP booth, hoarding sites and Marina-style scenery
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
