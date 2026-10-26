@@ -5,21 +5,21 @@
 // a sign, a lantern string or an LED line is a segment along its own principal axis, so a line lights a continuous band, never a
 // dotted one that would strobe at speed). All pools are one merged mesh, one draw call, at fixed places: nothing jumps from lamp to
 // lamp. They fade with fog and per look (none by day but the tunnel's, a trace at dusk) and darken a little on a wet road.
-//   sources: lights.json streetLamps (sodium); clusters of the emissive surfaces in SOURCES (colour from the material, or from
-//   the sign atlas itself for the neon signs)
+//   sources: lights.json streetLamps (sodium); every sign in its own hue (signs.js, the colours neon-signs gives them: a lit panel
+//   throws more light than neon-tube text); clusters of the other emissive surfaces in SOURCES (colour from the material)
 import * as THREE from 'three';
 import { TRACKS } from '../../tracks.js';
+import { analyseSigns, PALETTE } from './signs.js';
 
 const GROUND = new Set(TRACKS.tokyo.wet.wet);                 // the surfaces a pool may fall on: road, paint, kerbs, pavement, park
 const LAMP = 0, NEON = 1, WARM = 2, TUNNEL = 3;                // gain groups (uGain.xyzw)
 const SODIUM = new THREE.Color('#ffb46b');
 // emissive sources: material name, gain group, cluster cell (m, 3D), strength, colour override (else the material's emissive colour)
 const SOURCES = [
-  { re: /^M_SignNeonAtlas$/, kind: NEON, cell: 10, k: 0.9, atlas: true },
-  { re: /^(V12 pylon board (amber|cyan|pink|violet)|V8 (pink|ice)|V10 (cyan|pink))$/, kind: NEON, cell: 10, k: 0.8 },
+  { re: /^V10 (cyan|pink)$/, kind: NEON, cell: 10, k: 0.8 },
   { re: /^V9 vm_(white|red|blue|green)$/, kind: NEON, cell: 4, k: 0.6, color: '#eaf3ff' },              // vending machines: a cool white apron
-  { re: /^(V9 LED (violet|lime|white|pink|cyan|amber)|V12 LED (cyan|purple))$/, kind: NEON, cell: 16, k: 0.3 },   // LED lines on the barriers
-  { re: /^(V12 red lantern glow|V13 lantern paper white|V8 (paper|amber)|V9 amber_lamp)$/, kind: WARM, cell: 9, k: 0.75, color: '#ff9a4a' },
+  { re: /^(V9 LED (violet|lime|white|pink|cyan|amber)|V12 LED (cyan|purple))$/, kind: NEON, cell: 16, k: 0.12 },   // LED lines on the barriers
+  { re: /^(V12 red lantern glow|V13 lantern paper white|V9 amber_lamp)$/, kind: WARM, cell: 9, k: 0.75, color: '#ff9a4a' },
   { re: /^(V10 warm|V12 pagoda shoji|V13 (lamp warm|village window|castle window warm))$/, kind: WARM, cell: 10, k: 0.5, color: '#ffb46b' },
   { re: /^V13\.1 tunnel luminaire$/, kind: TUNNEL, cell: 24, k: 1.0, color: '#f2f6ff' },   // long cells: one continuous band, no 7 Hz beat at speed
   { re: /^V13 cove warm white$/, kind: TUNNEL, cell: 24, k: 0.4, color: '#ffe4ce' },
@@ -28,8 +28,14 @@ const NEAR_ROAD = 30;            // m from the centerline: farther sources light
 const MAX_R = { [LAMP]: 26, [NEON]: 14, [WARM]: 12, [TUNNEL]: 15 };
 const H_REF = 6;                 // a source this high over its ground has the nominal peak; the peak goes as 1/h^2 (capped)
 
-/** Ground height lookup over the GROUND meshes: triangles binned on a 4 m grid (xz). height(x, z, below) = the highest ground under `below`. */
-function groundField(root) {
+/** Ground height lookup over the GROUND meshes: triangles binned on a 4 m grid (xz). height(x, z, below) = the highest ground under `below`.
+ *  Built once per venue (neon-streaks uses it too). */
+const fields = new WeakMap();
+export function groundField(root) {
+  if (!fields.has(root)) fields.set(root, buildGroundField(root));
+  return fields.get(root);
+}
+function buildGroundField(root) {
   const CELL = 4, cells = new Map(), big = [], T = [];
   const key = (ix, iz) => (ix + 30000) * 60000 + (iz + 30000);
   const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), m = new THREE.Matrix4(), w = new THREE.Matrix4();
@@ -71,29 +77,31 @@ function groundField(root) {
   };
 }
 
-/** The sign atlas, read back once at 128 x 128 (its mips average each cell): the neon's own colours for its spill. */
-function readAtlas(renderer, tex) {
-  const S = 128, rt = new THREE.WebGLRenderTarget(S, S), px = new Uint8Array(S * S * 4);
-  const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms: { map: { value: tex } }, depthTest: false,
-    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
-    fragmentShader: 'uniform sampler2D map; varying vec2 vUv; void main() { gl_FragColor = vec4(texture2D(map, vUv).rgb, 1.0); }' }));
-  const was = renderer.getRenderTarget();
-  try { renderer.setRenderTarget(rt); renderer.render(quad, new THREE.Camera()); renderer.readRenderTargetPixels(rt, 0, 0, S, S, px); }
-  finally { renderer.setRenderTarget(was); rt.dispose(); quad.geometry.dispose(); quad.material.dispose(); }
-  return (u, v) => { const x = Math.min(S - 1, Math.max(0, Math.floor((u - Math.floor(u)) * S))), y = Math.min(S - 1, Math.max(0, Math.floor((v - Math.floor(v)) * S))), o = (y * S + x) * 4; return [px[o] / 255, px[o + 1] / 255, px[o + 2] / 255]; };
+/** The signs as light sources: a segment along each one's longer horizontal side, in its hue; print and far-tier copies throw none. */
+function signSources(root) {
+  const out = [], size = new THREE.Vector3();
+  for (const s of analyseSigns(root).signs) {
+    if (s.style > 2) continue;
+    s.box.getSize(size);
+    const half = Math.max(0, Math.max(size.x, size.z) / 2 - 0.4), seg = size.x > size.z ? new THREE.Vector2(half, 0) : new THREE.Vector2(0, half);
+    const area = s.panel ? s.A : s.glyphs.reduce((a, g) => a + g.A, 0);
+    // spread: a sign faces the street and lights the ground in front of it, not a wide disc; many wide pools in many hues
+    // summed to a muddy brown wash that also drowned the wet road's reflections
+    out.push({ pos: s.pos.clone(), seg, spread: 3.5, color: PALETTE[s.hue].c.clone().multiplyScalar(PALETTE[s.hue].k), kind: NEON,
+      k: (s.style < 2 ? 1 : 0.55) * THREE.MathUtils.clamp(Math.sqrt(area / (1 + 2 * half)) / 1.3, 0.35, 1.6) });
+  }
+  return out;
 }
+
 /** Emissive surfaces grouped into sources: per cluster cell the area-weighted centroid, colour and principal axis (a segment). */
-function emissiveSources(root, renderer) {
-  const atlases = new Map();     // texture -> colour lookup (the sign meshes share one atlas)
+function emissiveSources(root) {
   const out = [], a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), e1 = new THREE.Vector3(), e2 = new THREE.Vector3();
   const m = new THREE.Matrix4(), w = new THREE.Matrix4(), I = [0, 0, 0];
   for (const S of SOURCES) {
     const cells = new Map();
     root.traverse((o) => {
       if (!o.isMesh || Array.isArray(o.material) || !S.re.test(o.material.name) || /_far~/.test(o.name)) return;   // the near tier is enough
-      const mat = o.material, pos = o.geometry.attributes.position, uv = o.geometry.attributes.uv, idx = o.geometry.index, nt = (idx ? idx.count : pos.count) / 3;
-      let atlas = null;
-      if (S.atlas && mat.emissiveMap && uv) { atlas = atlases.get(mat.emissiveMap); if (!atlas) atlases.set(mat.emissiveMap, atlas = readAtlas(renderer, mat.emissiveMap)); }
+      const mat = o.material, pos = o.geometry.attributes.position, idx = o.geometry.index, nt = (idx ? idx.count : pos.count) / 3;
       const base = new THREE.Color(S.color ?? mat.emissive);
       for (let k = 0, ni = o.isInstancedMesh ? o.count : 1; k < ni; k++) {
         if (o.isInstancedMesh) { o.getMatrixAt(k, m); w.multiplyMatrices(o.matrixWorld, m); } else w.copy(o.matrixWorld);
@@ -103,7 +111,7 @@ function emissiveSources(root, renderer) {
           const area = e1.subVectors(b, a).cross(e2.subVectors(c, a)).length() / 2;
           if (area < 1e-4) continue;
           const x = (a.x + b.x + c.x) / 3, y = (a.y + b.y + c.y) / 3, z = (a.z + b.z + c.z) / 3;
-          const col = atlas ? atlas((uv.getX(I[0]) + uv.getX(I[1]) + uv.getX(I[2])) / 3, (uv.getY(I[0]) + uv.getY(I[1]) + uv.getY(I[2])) / 3) : [base.r, base.g, base.b];
+          const col = [base.r, base.g, base.b];
           const kk = `${Math.floor(x / S.cell)},${Math.floor(y / S.cell)},${Math.floor(z / S.cell)}`;
           let s = cells.get(kk);
           if (!s) cells.set(kk, s = { x: 0, y: 0, z: 0, xx: 0, xz: 0, zz: 0, A: 0, r: 0, g: 0, b: 0 });
@@ -168,14 +176,15 @@ const FS = /* glsl */`
     gl_FragColor = vec4(vCol * (e * g * vSrc.w * exp(-uFogD * uFogD * vDepth * vDepth)), 1.0);
   }`;
 
-export async function create({ scene, root, track, renderer, lights, NO_MIRROR }) {
+export async function create({ scene, root, track, lights, NO_MIRROR }) {
   const t0 = performance.now();
   const height = groundField(root);
   const C = track.centerline;
   const nearestRoad = (x, z) => { let bd = Infinity, bi = 0; for (let i = 0; i < C.length; i++) { const d = (C[i][0] - x) ** 2 + (C[i][2] - z) ** 2; if (d < bd) { bd = d; bi = i; } } return { d: Math.sqrt(bd), p: C[bi] }; };
   const sources = [
     ...(lights?.streetLamps ?? []).map((l) => ({ pos: new THREE.Vector3(...l.pos), seg: new THREE.Vector2(), color: SODIUM, kind: LAMP, k: 1 })),
-    ...emissiveSources(root, renderer),
+    ...emissiveSources(root),
+    ...signSources(root),
   ];
   // pools: the ground under the source (moved a little toward the road for signs and lanterns, which face it), height, radius
   const pools = [];
@@ -187,10 +196,10 @@ export async function create({ scene, root, track, renderer, lights, NO_MIRROR }
     const c = s.pos.clone();
     if (s.kind === NEON || s.kind === WARM) {
       const to = new THREE.Vector2(road.p[0] - c.x, road.p[2] - c.z), d = to.length();
-      if (d > 0.1) { const step = Math.min(0.7 * (s.pos.y - g0), 0.6 * d); c.x += to.x / d * step; c.z += to.y / d * step; }
+      if (d > 0.1) { const step = Math.min(1.0 * (s.pos.y - g0), 0.75 * d); c.x += to.x / d * step; c.z += to.y / d * step; }
     }
-    const gy = height(c.x, c.z, s.pos.y - 0.15) ?? g0, h = Math.max(0.7, s.pos.y - gy);
-    pools.push({ src: s.src, c: new THREE.Vector3(c.x, gy, c.z), seg: s.seg, h, R: THREE.MathUtils.clamp(2.4 * h, 3, MAX_R[s.kind]), color: s.color.clone().multiplyScalar(s.k * THREE.MathUtils.clamp((H_REF / h) ** 2, 0.35, 2)), kind: s.kind, top: s.pos.y - 0.15 });
+    const gy = height(c.x, c.z, s.pos.y - 0.15) ?? g0, h = Math.max(0.7, s.pos.y - gy), hs = Math.min(h, s.spread ?? h);
+    pools.push({ src: s.src, c: new THREE.Vector3(c.x, gy, c.z), seg: s.seg, h: hs, R: THREE.MathUtils.clamp(2.4 * hs, 3, MAX_R[s.kind]), color: s.color.clone().multiplyScalar(s.k * THREE.MathUtils.clamp((H_REF / h) ** 2, 0.35, 2)), kind: s.kind, top: s.pos.y - 0.15 });
   }
   // one merged mesh: a grid per pool (a rectangle around its segment), each vertex dropped onto the ground and lifted LIFT: the
   // road is crowned and the ramps bend, so between vertices the surface rises above the straight card edge; the lift (and the
@@ -244,8 +253,8 @@ export async function create({ scene, root, track, renderer, lights, NO_MIRROR }
   return {
     pools,
     setLook(look, params) {
-      const dn = look.dn ?? 1, night = THREE.MathUtils.smoothstep(dn, 0.35, 1), wet = 1 - 0.35 * THREE.MathUtils.smoothstep(params?.wet ?? 0, 0.25, 1);   // water darkens what it soaks
-      uniforms.uGain.value.set(look.lights * 0.16, night * 0.13, night * 0.1, dn > 0.85 ? 0.035 : 0.09 - 0.05 * dn).multiplyScalar(wet);   // the tunnel is lit by day too, brighter than at night
+      const dn = look.dn ?? 1, night = THREE.MathUtils.smoothstep(dn, 0.35, 1), wet = 1 - 0.6 * THREE.MathUtils.smoothstep(params?.wet ?? 0, 0.25, 1);   // water darkens what it soaks: the reflections carry a wet road
+      uniforms.uGain.value.set(look.lights * 0.16, night * 0.3, night * 0.07, dn > 0.85 ? 0.035 : 0.09 - 0.05 * dn).multiplyScalar(wet);   // the tunnel is lit by day too, brighter than at night
     },
     update() { uniforms.uFogD.value = scene.fog?.density ?? 0; },
     dispose() { scene.remove(mesh); geo.dispose(); mat.dispose(); },

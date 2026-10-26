@@ -15,6 +15,9 @@ const PARTS = [
   () => import('./tokyo/bridge-lights.js'),
   () => import('./tokyo/look.js'),
   () => import('./tokyo/tunnel-light.js'),
+  () => import('./tokyo/neon-signs.js'),
+  () => import('./tokyo/neon-wash.js'),
+  () => import('./tokyo/neon-streaks.js'),
 ];
 
 export async function create(ctx) {

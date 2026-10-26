@@ -43,7 +43,7 @@ export async function create({ scene, track }) {
         vec2 p = o + r * t;                                                   // where the ray crosses the skyline's circle
         float brg = mod(degrees(atan(p.x, -p.y)) + 360.0, 360.0);             // clockwise from north (-z)
         float city = smoothstep(${(ARC.from - 24).toFixed(1)}, ${(ARC.from + 8).toFixed(1)}, brg) * (1.0 - smoothstep(${(ARC.to - 8).toFixed(1)}, ${(ARC.to + 26).toFixed(1)}, brg));
-        float tower = exp(-pow((brg - ${ARC.tower.toFixed(1)}) / 16.0, 2.0));
+        float tw = (brg - ${ARC.tower.toFixed(1)}) / 16.0, tower = exp(-tw * tw);      // (pow() of a negative base is NaN on D3D)
         float e = max(d.y, 0.0), under = smoothstep(-0.06, 0.0, d.y);
         vec3 col = uFar * exp(-e / 0.1)
                  + city * (uLow * (0.55 + 0.45 * tower) * exp(-e / mix(0.055, 0.075, tower)) + uHigh * (0.6 + 0.4 * tower) * exp(-e / 0.22));

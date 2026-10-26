@@ -626,7 +626,7 @@ async function loadVenue() {
   dimLampMeshes(allMats);
   // lamp, LED and neon surfaces burn 3x brighter in the player car's reflection capture (their glow sprites can't be
   // in it): the paint then reflects bright light shapes after dark, the biggest cue of a premium finish
-  captureBoost = [...allMats].filter((m) => /^M_Lamp|Neon|LED|M_VipGlow|M_VipEdge|M_GarageHeader/.test(m.name) && m.emissiveIntensity > 0);
+  captureBoost = [...allMats].filter((m) => /^M_Lamp|Neon|LED|M_VipGlow|M_VipEdge|M_GarageHeader|pylon board|^V8 (pink|ice|amber|paper)$|pagoda shoji|lantern (glow|paper)/.test(m.name) && m.emissiveIntensity > 0);
   if(SCENERY_TEST&&has.yachts&&has.buildings){
     const {SceneryExperiment}=await import('./scenery-experiment.js');
     try{

@@ -22,7 +22,7 @@ const ASPECT = 576 / 1024;
 const PAD = 0.12;                                   // the quad is larger than the picture so the halo has room
 
 const NIGHT = new THREE.Color('#19e3ff'), VIOLET = new THREE.Color('#7a3cff');
-const shared = { uTime: { value: 0 }, uK: { value: 1 }, uGain: { value: 1 }, uCyan: { value: NIGHT }, uViolet: { value: VIOLET } };   // uK: opacity of the whole projection, uGain: its HDR brightness
+const shared = { uTime: { value: 0 }, uK: { value: 1 }, uGain: { value: 1 }, uSat: { value: 1 }, uCyan: { value: NIGHT }, uViolet: { value: VIOLET } };   // uK: opacity of the whole projection, uGain: its HDR brightness
 
 const FOG = /* glsl */`
 #if defined(USE_FOG) && defined(FOG_EXP2)
@@ -54,7 +54,7 @@ const FIGURE_VS = /* glsl */`
 
 const FIGURE_FS = /* glsl */`
   #include <fog_pars_fragment>
-  uniform sampler2D map; uniform vec2 uTexel; uniform float uTime, uK, uGain, uSeed, uLines;
+  uniform sampler2D map; uniform vec2 uTexel; uniform float uTime, uK, uGain, uSat, uSeed, uLines;
   uniform vec3 uCyan, uViolet;
   varying vec2 vUv; varying float vDist;
   float inside(vec2 p) { vec2 e = smoothstep(vec2(0.0), vec2(0.004), p) * (1.0 - smoothstep(vec2(0.996), vec2(1.0), p)); return e.x * e.y; }
@@ -76,6 +76,7 @@ const FIGURE_FS = /* glsl */`
     float lum = dot(c, vec3(0.299, 0.587, 0.114));
     vec3 tint = mix(uCyan, uViolet, smoothstep(0.1, 1.0, uv.y));
     vec3 col = mix(c, tint * (0.22 + 1.5 * lum), 0.48);                // the character stays readable, the light is the hologram's
+    col = max(mix(vec3(dot(col, vec3(0.2126, 0.7152, 0.0722))), col, uSat), 0.0);   // deeper colour after dark: additive over the neon it went pale
     // scanlines in figure space (so they drift with the figure, not the screen); gone before they would alias
     float sl = uv.y * uLines - uTime * 2.4, fw = fwidth(sl);
     float amp = 0.30 * (1.0 - smoothstep(0.16, 0.45, fw));
@@ -137,7 +138,7 @@ const mat = (vs, fs, extra) => new THREE.ShaderMaterial({
   vertexShader: vs, fragmentShader: fs, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: true,
   uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { uSeed: { value: 0 } }, extra]),
 });
-const share = (m) => { for (const k of ['uTime', 'uK', 'uGain', 'uCyan', 'uViolet']) if (m.uniforms[k]) m.uniforms[k] = shared[k]; return m; };
+const share = (m) => { for (const k of ['uTime', 'uK', 'uGain', 'uSat', 'uCyan', 'uViolet']) if (m.uniforms[k]) m.uniforms[k] = shared[k]; return m; };
 
 export async function create(ctx) {
   const loader = new THREE.TextureLoader();
@@ -159,7 +160,7 @@ export async function create(ctx) {
     const H = h.h, W = H * ASPECT, R = Math.max(2.4, W * 0.5), seed = (i * 0.37 + 0.11) % 1;
     const fig = share(mat(FIGURE_VS, FIGURE_FS, {
       map: { value: map }, uTexel: { value: new THREE.Vector2(1 / 576, 1 / 1024) }, uSize: { value: new THREE.Vector2(W, H) }, uLines: { value: 150 },
-      uTime: shared.uTime, uK: shared.uK, uGain: shared.uGain, uCyan: shared.uCyan, uViolet: shared.uViolet,
+      uTime: shared.uTime, uK: shared.uK, uGain: shared.uGain, uSat: shared.uSat, uCyan: shared.uCyan, uViolet: shared.uViolet,
     }));
     fig.uniforms.map.value = map;                                  // UniformsUtils.merge clones textures: keep the loaded one
     fig.uniforms.uSeed.value = seed;
@@ -196,7 +197,7 @@ export async function create(ctx) {
     // night and evening at full strength; dusk reduced; day a faint ghost (a projection you can just make out in daylight)
     setLook(look) {
       const n = THREE.MathUtils.smoothstep(look.dn, 0.1, 0.7);
-      shared.uK.value = THREE.MathUtils.lerp(0.18, 1, n); shared.uGain.value = THREE.MathUtils.lerp(0.9, 1.9, n);      // night: bright enough to out-shine the neon without burning to white
+      shared.uK.value = THREE.MathUtils.lerp(0.18, 1, n); shared.uGain.value = THREE.MathUtils.lerp(0.9, 1.7, n); shared.uSat.value = THREE.MathUtils.lerp(1, 2.2, n);      // night: bright enough to out-shine the neon without burning to white
     },
     dispose() {
       ctx.scene.remove(group);
