@@ -18,3 +18,11 @@ All CC0 (public domain): https://polyhaven.com/license
 - **Qwantani Noon (Pure Sky)** (`qwantani_noon_puresky`) by Greg Zaal, Jarod Guest: https://polyhaven.com/a/qwantani_noon_puresky (2k HDR from https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/qwantani_noon_puresky_2k.hdr, downloaded 2026-10-22 for the day look)
 
 Moved to _archive/2026-10-21/assets/polyhaven/ on 2026-10-21 (unused by the track build and the game): concrete_road_barrier, qwantani_dusk_2, qwantani_dusk_2_puresky. Their credit lines above are kept for history; tools/fetch_polyhaven.py downloads them again.
+- **Grey Roof 01** (`grey_roof_01`) by Rob Tuytel: https://polyhaven.com/a/grey_roof_01 (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **Japanese Cedar Planks** (`japanese_cedar_planks`) by Charlotte Baglioni, Rico Cilliers: https://polyhaven.com/a/japanese_cedar_planks (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **White Plaster 02** (`white_plaster_02`) by Rob Tuytel: https://polyhaven.com/a/white_plaster_02 (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **Concrete Wall 009** (`concrete_wall_009`) by Charlotte Baglioni: https://polyhaven.com/a/concrete_wall_009 (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **Painted Metal Shutter** (`painted_metal_shutter`) by Dario Barresi, Rico Cilliers, Charlotte Baglioni: https://polyhaven.com/a/painted_metal_shutter (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **Pavement 01** (`pavement_01`) by Rob Tuytel: https://polyhaven.com/a/pavement_01 (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **Lacquered Cherry Wood** (`lacquered_cherry_wood`) by Jenelle van Heerden, Rico Cilliers: https://polyhaven.com/a/lacquered_cherry_wood (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **Japanese Stone Wall** (`japanese_stone_wall`) by Rico Cilliers, Charlotte Baglioni, Dario Barresi: https://polyhaven.com/a/japanese_stone_wall (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
