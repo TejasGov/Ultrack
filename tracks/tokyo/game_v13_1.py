@@ -33,7 +33,8 @@ from mathutils.kdtree import KDTree
 T = Path(__file__).resolve().parent
 ROOT = T.parents[1]
 O = T / 'out'
-SRC, DST = O / 'tokyo_v13_1.blend', O / 'tokyo_game_v13_1.blend'
+V14 = 'v14' in sys.argv     # `-Rest v14`: the same game build from out/tokyo_v14.blend (V14-RUNTIME-MAP.md)
+SRC, DST = (O / 'tokyo_v14.blend', O / 'tokyo_game_v14.blend') if V14 else (O / 'tokyo_v13_1.blend', O / 'tokyo_game_v13_1.blend')
 sys.path.insert(0, str(ROOT / 'tracks' / 'marina'))
 import brand_art  # noqa: E402
 
@@ -232,7 +233,8 @@ def road_dist(x, y):
 
 
 NOT_GAME = ('HOLO_', 'V13.1 skyline arc', 'V13 skyline_band', 'V12 skyline_band', 'V13.1 far hills', 'V13.1 near hills', 'V13.1 horizon haze', 'V13.1 distant',
-            'V13 searchlight', 'V13.1 searchlight', 'V12 searchlight')
+            'V13 searchlight', 'V13.1 searchlight', 'V12 searchlight',
+            'V14 bridge cable LED dots')     # the runtime's instanced dots (bridge-lights.js) stay the cable lights
 spots = [(o.matrix_world.translation.copy(), o.matrix_world.to_quaternion() @ Vector((0, 0, -1)), o.data.type, tuple(o.data.color), o.data.energy, o.name)
          for o in sc.objects if o.type == 'LIGHT' and not coll_hidden(o)]
 holo = [dict(name=o.name, pos=o.matrix_world.translation.copy(), fwd=o.matrix_world.to_quaternion() @ Vector((0, 1, 0)), props={k: o[k] for k in o.keys() if not k.startswith('_')})

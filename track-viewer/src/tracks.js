@@ -23,7 +23,7 @@ export const TRACKS = {
   },
   tokyo: {
     id: 'tokyo', name: 'Tokyo Hiragana Circuit', stem: 'tokyo', dir: '/assets/tokyo/', look: 'night', fog: 1, sun: [-0.94, 0.34], tag: null,     // west-south-west: Marina's bearing set straight down the neon street
-    dayNight: { day: /^M_Supertall\w*Day$/, night: /^M_(NightBeam|NightBridgeRed|SupertallLightsNight)$/, nightK: { M_NightBeam: 0.1, M_NightBridgeRed: 0.3 } },     // the red shell over the tower tops read as a flat salmon slab at full opacity: a tint     // v13.1: the sky arc, the ridges (by day) and the searchlights / distant lights (by night)
+    dayNight: { day: /^M_Supertall\w*Day$/, night: /^(M_(NightBeam|NightBridgeRed|SupertallLightsNight)|V14 tower top red lens)$/, nightK: { M_NightBeam: 0.1, M_NightBridgeRed: 0.3 } },     // the red shell over the tower tops read as a flat salmon slab at full opacity: a tint     // v13.1: the sky arc, the ridges (by day) and the searchlights / distant lights (by night)
     // the canopies keep the asphalt and stands in shade: more exposure and sky light by day; the baked skyline and signs follow `emissive`;
     // the neon blooms from a higher threshold at night. The steps day > dusk > evening > night only ever go down.
     looks: {

@@ -159,8 +159,9 @@ track = {
 }
 (O / 'track.json').write_text(json.dumps(track, separators=(',', ':')), encoding='utf8')
 flood, stand_l, street = [], [], []
-cands = [x for x in spots if x[2] == 'SPOT' and not x[5].startswith(('V13', 'V12'))] or sorted(
-    [x for x in spots if x[2] in ('POINT', 'AREA') and not x[5].startswith(('V13', 'V12', 'gantry'))], key=lambda x: -x[4])
+# V14 lights are review-only (V14-RUNTIME-MAP.md): the game keeps v13.1's floodlights
+cands = [x for x in spots if x[2] == 'SPOT' and not x[5].startswith(('V14', 'V13', 'V12'))] or sorted(
+    [x for x in spots if x[2] in ('POINT', 'AREA') and not x[5].startswith(('V14', 'V13', 'V12', 'gantry'))], key=lambda x: -x[4])
 taken = []
 for (p, d_, typ, color, energy, nm_) in cands:
     gp = M @ p

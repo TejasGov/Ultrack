@@ -1,7 +1,7 @@
 {
  "signs": {
-  "quads": 890,
-  "atlas_cells": 194,
+  "quads": 1033,
+  "atlas_cells": 257,
   "hero_signs": 2
  },
  "sponsor logo boards": 180,
@@ -30,41 +30,41 @@
   ]
  },
  "lanterns": 1156,
- "landmark tiers": 22,
+ "landmark tiers": 23,
  "materials": {
-  "before": 170,
+  "before": 211,
   "merged_duplicates": 38
  },
- "merged static objects": 660,
+ "merged static objects": 728,
  "static cells": 6,
  "blender count": {
-  "objects_x_tris": 14532811,
-  "unique": 1196221,
+  "objects_x_tris": 14690789,
+  "unique": 1228183,
   "by_group": {
    "track and terrain": 61294,
-   "other whole objects": 238464,
+   "other whole objects": 383708,
    "trees (3 tiers)": 10576224,
-   "landmarks / other (tiered)": 466430,
+   "landmarks / other (tiered)": 472826,
    "backdrop": 5652,
    "frontages (2 tiers)": 2872163,
    "lanterns (2 tiers)": 244096,
-   "signs and boards": 7428,
-   "merged static cells": 61060
+   "signs and boards": 7714,
+   "merged static cells": 67112
   },
   "unique_by_group": {
    "track and terrain": 61294,
-   "other whole objects": 223268,
+   "other whole objects": 242496,
    "trees (3 tiers)": 92890,
-   "landmarks / other (tiered)": 466430,
+   "landmarks / other (tiered)": 472826,
    "backdrop": 5652,
    "frontages (2 tiers)": 278101,
    "lanterns (2 tiers)": 452,
-   "signs and boards": 7074,
-   "merged static cells": 61060
+   "signs and boards": 7360,
+   "merged static cells": 67112
   },
   "source": {
-   "mesh": 5874462,
-   "text": 2262648
+   "mesh": 6031554,
+   "text": 2517190
   }
  }
 }
