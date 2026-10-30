@@ -109,7 +109,7 @@ export class Game {
         this.setBusy(''); this.applySettings(); this.lineup();
       } catch (error) {
         console.warn('Track switch failed:', error);
-        store.set('track', prev); this.setBusy(`${next.name} could not load.`);
+        store.set('track', prev); this.setBusy(`${next.name} could not load.`); this.lineup();   // setTrack unloaded the old venue: preload it again
       }
     });
   }
