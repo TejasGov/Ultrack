@@ -532,7 +532,7 @@ export class Field {
       c.speed = 0;
       c.lat = (k % 2 ? -1.6 : 1.6);
       c.root.position.set(s.pos[0], s.pos[1], s.pos[2]);
-      c.root.rotation.y = 0;                                               // the grid faces +X (start heading)
+      c.root.rotation.y = (s.headingYawRad ?? Math.PI / 2) - Math.PI / 2;   // +X along the slot heading (atan2(dx,dz)): India's grid sits on a bend
       c.car.rotation.y = Math.PI;                                          // car-lab noses point -X
       c.onGrid = true; c.reverse = false;
     });
@@ -760,8 +760,11 @@ export class Field {
       if (cast !== c.cast) { c.cast = cast; c.lod.traverse((o) => { if (o.isMesh) o.castShadow = cast; }); }
       // car-lab tunes its lamps for a studio; setLamps puts them at venue levels (tail lamps dim until the brake)
       setLamps(c, this.lightMode, c.onGrid ? 0 : (c.brake ?? 0), t);
-      c.beams.forEach((b) => { b.visible = true; b.intensity *= 0.28; });  // stable light count; 650 cd blinded
     }
+    // after every car's lamps, absolute (not *=): after a car switch the beams ride the new hero, but the old car's
+    // lamps.update still writes them (650 cd, visible = on), and it may run after the hero or not at all
+    const hi = this.lightMode === 'high', on = hi || this.lightMode === 'low';
+    for (const c of this.cars) c.beams.forEach((b) => { b.visible = true; b.intensity = on ? (hi ? 1500 : 650) * 0.28 : 0; b.angle = hi ? 0.23 : 0.32; });  // stable light count; 650 cd blinded
     // player-car reflections: one cube face per frame, round-robin (all six at once cost six extra scene renders in a
     // single frame), then one PMREM filter when the set is fresh
     this.tick = (this.tick ?? 0) + 1;
@@ -809,6 +812,7 @@ export class Field {
   /** On a kerb: the car's line runs within ~0.6 m of the track edge (track.json halfWidth + the racing-line offset). */
   onKerb(c) {
     const t = this.track; if (!t || !c.speed) return false;
+    if (c.vehicle) return c.speed > 12 && c.vehicle.wheels.some((w) => w.contact && w.surface?.rumble);   // physics never writes c.dist / c.curLat: read the tyres
     const n = t.centerline.length, i = Math.round((c.dist / this.length) * n) % n;
     return Math.abs((t.racingLine[i] ?? 0) + (c.curLat ?? 0)) > t.halfWidth[i] - 0.6 && c.speed > 12;
   }
