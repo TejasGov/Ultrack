@@ -363,6 +363,11 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - Copy is per track: kicker "Corniche Marina · Dusk", title, and the true field size ("Eight teams. One grid.").
   - Footer: a 4 px stage bar with the stage name and percentage, plus the `back` and Esc prompt at `--fs-micro`.
   - No Arial, no gold, no pulse. `test-race-loading.mjs` is updated with it (slide count and images).
+  - As built: `LOADING_SLIDES` is one entry per circuit (`race-loading.js`), its image the circuit's still. The kicker is the
+    circuit, the time of day and any weather but dry; the field line comes from `teams.json` (one car per team). The stage name
+    is the first stage still running, in `LOAD_STAGES` order; it ends on "Ready for the grid". After 20 s an `info` note says
+    first-time preparation takes longer. The overlay sets `pointer-events: auto` (it sits in `#ui`), so Back takes clicks.
+  - Esc cancels. The pad's B does not reach this screen until H7, so the Back prompt shows the Esc cap only.
 - **Grid lights and countdown**
   - The lights tile stays.
   - Count digits are ink in Anton, fading in from 0.96 to 1 scale with an opacity fade (no 1.3 pop). GO is ink.
@@ -399,6 +404,11 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - Earnings: a `coin` line, ink.
   - Again is primary, Menu secondary.
   - Fits 1280x720.
+  - As built: the header says Results (mode icon) with the circuit on the right. The left column holds the outcome: the heading
+    (Victory or P6 at `--fs-hero`; the mode name for trial and drift), the readouts and the earnings, plus the "Est" note when a
+    gap is estimated. The right column holds the podium and table, your car over the lap table (trial), or your car alone (drift).
+    Table rows are Nav stops, so a long table scrolls by keyboard and pad. Focus starts on Again; Esc is Menu (its prompt sits in
+    the button). `qa-ui-tour.mjs s5` finishes a real 1-lap race for the earnings block.
 - **Trial, drift and free HUD**
   - The lone LAP tile joins the timing tile.
   - Invalid lap is an icon plus accent text at `--fs-label`.
@@ -482,6 +492,11 @@ These are files the UI pass does not own. Each patch is exact text.
   - New: `const startBtn = pad?.buttons[9]?.pressed; if (startBtn && !this.startBtn) { if (!this.screen) this.pause(); else if (this.screenName === 'pause' && !this.screen.modal) this.resume(); } this.startBtn = startBtn;`
   - Why: the spec's pause footer is "Esc or Menu resumes"; today only B does (Nav's back). Until this lands the footer
     shows the B glyph.
+- **H7. `src/game/game.js` `update()`: the pad's B cancels race loading, as Esc does.**
+  - Old: `if(this.raceLoading?.active)return;   // first: the pad must not drive the Setup screen under the loading overlay`
+  - New: `if(this.raceLoading?.active){const b=navigator.getGamepads?.().find((g)=>g?.connected)?.buttons[1]?.pressed;if(b&&!this.loadB)this.raceLoading.cancel?.();this.loadB=b;return;}   // first: the pad must not drive the Setup screen under the loading overlay; B is its Back`
+  - Then, in `race-loading.js`, the Back prompt becomes `prompt('Esc', 'b')` (add `icon('pad-b', { cls: 'pp' })` beside the cap).
+  - Why: a pad player has no way back from a long first load; the keyboard has Esc.
 - **Out of scope for the UI pass.**
   - The flat garage room behind the menus and garage (`garage-room.js`). It is the biggest remaining "placeholder" read, and
     the menus cover it with stills and scrims meanwhile.

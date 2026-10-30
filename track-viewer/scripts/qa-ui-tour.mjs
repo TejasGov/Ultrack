@@ -13,6 +13,8 @@
 // s3: setup (four modes), settings (four tabs; from the menu and from pause), pause (race, trial, free) and the confirm modal;
 // PART=setup|settings|pause runs one part.
 // s4: the garage (four tabs on another car, keyboard-only paint and a buy, the car stills, a car swap that moves nothing).
+// s5: race loading (on its own, then from Start) and results (a finished 1-lap race with its earnings, a trial, a drift); with
+// TRACK=tokyo|india only the loading (PART=all: the results too).
 //   OUT=qa/ui-tour/S1-primitives-small-screens node scripts/qa-lock.mjs -- node scripts/qa-ui-tour.mjs s1
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -327,6 +329,51 @@ async function s4() {
   await key('Escape'); await settle(); checks.escGarage = await nav(() => window.game.screenName);
 }
 
+const S5 = label === 's5';
+/** what s5 owns: race loading (opened on its own at three sizes with two stages done, then Ready, Esc, reduce motion; then the real
+ *  one from Start) and results: a finished 1-lap race (podium, table, the earnings block), a trial with sample laps, a drift with a
+ *  sample score, each at three sizes with the heading and both buttons on screen. TRACK=tokyo|india: the loading only, the real one
+ *  cancelled with Esc (PART=all runs the results there too) */
+async function s5() {
+  const imgs = () => page.waitForFunction(() => [...document.querySelectorAll('#ui .screen.on img, .race-loading img')].every((i) => i.complete), null, { timeout: 20000 }).catch(() => {});
+  const expect = await nav(async (t) => (await import('/src/tracks.js')).trackOf(t).name, track);
+  const copy = () => nav(() => { const q = (s) => document.querySelector('.race-loading ' + s), img = q('.rl-still');
+    return { kick: q('.rl-kick')?.textContent, title: q('h1')?.textContent, field: q('.rl-field')?.textContent, stage: q('.rl-stage')?.textContent, pct: q('.rl-pct')?.textContent,
+      still: img?.src.split('/').slice(-2).join('/'), stillLoaded: !!img && img.complete && img.naturalWidth > 0, fonts: [...new Set([...document.querySelectorAll('.race-loading *')].map((e) => getComputedStyle(e).fontFamily.split(',')[0]))] }; });
+  const open = (reduceMotion = false) => nav(([n, reduceMotion]) => { const L = window.game.raceLoading; L.open({ mode: 'race', track: n, reduceMotion, onCancel: () => L.close() }); }, [expect, reduceMotion]);
+  await open(); await nav(() => { window.game.raceLoading.complete('Circuit'); window.game.raceLoading.complete('Grid'); });
+  await imgs(); await page.waitForTimeout(300); await shot('race-loading-' + track, true);
+  const c = await copy(); checks.loading = { expect, ...c, namesCircuit: !!c.kick?.includes(expect) && c.still === `tracks/${track}.webp` };
+  await nav(() => { for (const s of ['Circuit', 'Grid', 'Track physics', 'Audio', 'Graphics']) window.game.raceLoading.complete(s); }); await frames(); await shot('race-loading-ready');
+  checks.loadingReady = (await copy()).stage;
+  await key('Escape'); checks.loadingEsc = await nav(() => !window.game.raceLoading.active && !document.querySelector('.race-loading'));
+  await open(true); await frames(); checks.loadingReduceMotion = await nav(() => document.querySelector('.rl-still').getAnimations().length === 0); await key('Escape');
+  // the real one, from Start
+  await tile('race'); await page.click('.panel.setup button.cta');
+  await page.waitForSelector('.race-loading', { state: 'visible', timeout: 60000 }); await imgs(); await frames();
+  checks.realLoading = await copy(); checks.realLoading.namesCircuit = !!checks.realLoading.kick?.includes(expect); await shot('race-loading-real');
+  if (track !== 'marina' && process.env.PART !== 'all') {
+    await key('Escape'); await settle(); checks.cancelToMenu = await nav(() => window.game.screenName === 'menu' && !window.game.raceLoading.active); return;
+  }
+  // results: the heading and both buttons inside the viewport at every size, where focus is, whether the table scrolls
+  const fit = () => nav(() => { const on = (s) => { const r = document.querySelector('.results.on ' + s)?.getBoundingClientRect(); return !!r && r.top >= 0 && r.left >= 0 && r.bottom <= innerHeight && r.right <= innerWidth; };
+    const rows = document.querySelector('.results.on .r-rows');
+    return { h2: on('h2'), again: on('[data-id=again]'), menu: on('[data-id=menu]'), earn: !!document.querySelector('.results.on .earn'), earnOn: on('.earn'), focus: document.activeElement?.dataset.id ?? null, rowsScroll: rows ? rows.scrollHeight > rows.clientHeight : null }; });
+  await page.waitForFunction(() => window.game?.session && !window.game.raceLoading.active, null, { timeout: 300000 });
+  await running(1); await nav(() => window.game.session.field.setPlayer(false));                // the AI drives the lap to the flag
+  await page.waitForFunction(() => window.game.screenName === 'results', null, { timeout: 420000, polling: 1000 }); await settle(); await imgs();
+  await shot('results-race', true, fit);
+  await key('ArrowLeft'); const left = await nav(() => document.activeElement?.dataset.id); await key('ArrowUp'); const up = await nav(() => document.activeElement?.className);
+  checks.resultsKeys = { left, up }; await key('Escape'); await settle(); checks.resultsEsc = await nav(() => window.game.screenName);
+  await start('trial'); await running(2);
+  await page.evaluate(() => { const g = window.game, T = g.session.trk.get(g.field.hero); T.laps.push({ t: 92.341, valid: true }, { t: 90.112, valid: true }, { t: 95.871, valid: false }, { t: 91.002, valid: true }); T.lastLap = 91.002; T.best = 90.112; });
+  await key('Escape'); await settle(); await pauseOpt('End'); await imgs(); await shot('results-trial-sample', true, fit);
+  await page.click('.results [data-id=menu]'); await settle();
+  await start('drift'); await running(2);
+  await page.evaluate(() => { window.game.session.drift.score = 18420; window.game.results(); }); await settle(); await imgs(); await shot('results-drift-sample', true, fit);
+  await page.click('.results [data-id=menu]'); await settle();
+}
+
 try {
   await page.goto(base);
   await page.waitForSelector('.title-screen.on', { timeout: 60000 });
@@ -335,7 +382,7 @@ try {
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
   await settle(); await shot('title-ready', S1);
   await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
-  if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else if (S4) await s4(); else {                                                             // the whole tour (not re-indented)
+  if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else if (S4) await s4(); else if (S5) await s5(); else {                                                             // the whole tour (not re-indented)
   await shot('menu', true);
   await key('ArrowRight'); await shot('menu-focus-moved');                                    // keyboard focus on the second tile
   await key('ArrowLeft');
@@ -377,7 +424,7 @@ try {
   await pauseOpt('Settings'); await shot('settings-from-pause'); await key('Escape'); await settle();
   await pauseOpt('Resume'); await frames();
   await page.evaluate(() => window.game.results()); await settle(); await shot('results-race-midrace', true);
-  await page.click('.results .cta.ghost'); await settle();
+  await page.click('.results [data-id=menu]'); await settle();
 
   // ---- time trial: the countdown, the HUD with sample laps, pause with "End", the trial results
   await start('trial');
@@ -387,12 +434,12 @@ try {
   await frames(); await settle(); await shot('hud-trial-sample');
   await key('Escape'); await settle(); await shot('pause-trial');
   await pauseOpt('End'); await shot('results-trial-sample');
-  await page.click('.results .cta.ghost'); await settle();
+  await page.click('.results [data-id=menu]'); await settle();
 
   // ---- drift attack: the HUD, then its results with a sample score
   await start('drift'); await running(2); await settle(); await shot('hud-drift');
   await page.evaluate(() => { window.game.session.drift.score = 18420; window.game.results(); }); await settle(); await shot('results-drift-sample');
-  await page.click('.results .cta.ghost'); await settle();
+  await page.click('.results [data-id=menu]'); await settle();
 
   // ---- free drive: the HUD, pause, quit
   await start('free'); await running(2); await settle(); await shot('hud-free');

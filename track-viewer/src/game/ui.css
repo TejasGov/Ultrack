@@ -25,11 +25,6 @@
 :where(#ui) :focus-visible, :where(#ui) .sel { outline: var(--focus-w) solid var(--focus-color); outline-offset: var(--focus-offset); }
 :where(#ui) :is(.row, .lrow):is(.sel, :focus-visible) { outline: none; }
 
-/* the scene behind every menu: darkened toward the menu side, a film edge at the bottom */
-.scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4, 5, 8, 0.86) 0%, rgba(4, 5, 8, 0.55) 34%, rgba(4, 5, 8, 0) 62%),
-  linear-gradient(0deg, rgba(4, 5, 8, 0.7) 0%, rgba(4, 5, 8, 0) 26%); }
-.scrim.full { background: rgba(4, 5, 8, 0.6); backdrop-filter: blur(6px); }
-
 .logo { display: block; background: url('/assets/brand/ultrack-alpha.webp') center / contain no-repeat; aspect-ratio: 1149 / 223; filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.55)); }
 /* title: the circuit's still under a light scrim, the logo at 44 %, one static prompt; while loading, a stage, a percentage and a 4 px bar */
 .title-screen .t-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -47,35 +42,8 @@
 .team-logo { display:block; width:200px; max-width:100%; height:50px; object-fit:contain; object-position:left center; }
 
 
-/* ---------------------------------------------------------------- panels (setup, settings, garage, pause, results) */
-.panel { position: absolute; }
-.panel:not(.pnl) { background: var(--glass-2); backdrop-filter: blur(14px); clip-path: polygon(var(--slant) 0, 100% 0, 100% calc(100% - var(--slant)), calc(100% - var(--slant)) 100%, 0 100%, 0 var(--slant));
-  border-top: 2px solid var(--red); padding: 26px 30px 28px; }
-.panel h2 { margin: 0 0 4px; font-style: italic; font-weight: 900; font-size: 44px; text-transform: uppercase; line-height: 1; letter-spacing: 0.01em; }
-.panel .sub { font-size: 17px; color: var(--ink-2); margin-bottom: 18px; line-height: 1.35; }
-
-.cta:not(.btn) { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; padding: 12px 34px 12px 26px; font-style: italic; font-weight: 900; font-size: 30px;
-  text-transform: uppercase; background: var(--red); color: #fff; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); transition: transform 0.25s var(--ease), background 0.2s; }
-.cta:not(.btn):is(:hover, .sel) { transform: translateX(6px); background: #ff2129; }
-.cta.ghost { background: rgba(255, 255, 255, 0.08); color: var(--ink); font-size: 22px; padding: 10px 26px 10px 20px; }
-.cta.ghost:hover, .cta.ghost.sel { background: rgba(255, 255, 255, 0.18); }
-
-
-
-/* ---------------------------------------------------------------- pause, results */
-.results .panel { left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(980px, 92vw); }
-.results table { width: 100%; border-collapse: collapse; font-size: 22px; }
-.results th { text-align: left; font-size: 13px; letter-spacing: 0.24em; color: var(--ink-3); padding: 6px 10px; font-weight: 800; }
-.results td { padding: 9px 10px; border-top: 1px solid var(--line); }
-.results td.p { font-family: var(--num); font-size: 30px; width: 54px; }
-.results tr.me td { background: rgba(227, 20, 27, 0.14); }
-.results tr.me td.p { color: var(--red); }
-.results td .tm { display: inline-block; width: 10px; height: 22px; background: var(--team); margin-right: 12px; vertical-align: -4px; clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
-.results td.num { font-family: var(--num); font-size: 22px; letter-spacing: 0.02em; text-align: right; }
-.results .big { font-family: var(--num); font-size: 120px; line-height: 0.9; margin: 6px 0 10px; }
-.results .big small { font-size: 40px; color: var(--ink-3); margin-left: 8px; }
-.results .rec { color: var(--gold); font-size: 22px; letter-spacing: 0.2em; }
-.results .acts { display: flex; gap: 14px; }
+/* ---------------------------------------------------------------- panels (setup, settings) */
+.panel { position: absolute; }   /* the setup Start keeps .cta for the QA scripts ('.panel.setup button.cta'); .btn styles it */
 
 @media (max-width: 900px) {
   .panel.setup.pnl, .panel.settings.pnl { left: 16px; right: 16px; width: auto; }   /* outranks .panel.pnl and the widths set further down */
@@ -241,14 +209,64 @@ kbd .icon { font-size: var(--icon-s); }
 .records-tile .tile-text { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--sp-6); }
 .tile-best { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: var(--sp-7); }
 
-/* results: what a session paid */
-.earn { margin: 18px 0 2px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.04); }
-.earn .etotal { display: flex; align-items: baseline; justify-content: space-between; font-size: 14px; letter-spacing: 0.22em; color: var(--ink-3); }
-.earn .etotal b { font-family: var(--num); font-weight: 400; font-size: 40px; color: var(--gold); letter-spacing: 0.02em; }
-.earn .elines { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-top: 4px; font-size: 16px; color: var(--ink-2); letter-spacing: 0.06em; }
-.earn .elines b { margin-left: 8px; font-family: var(--num); font-weight: 400; color: var(--ink); }
-.earn .ebal { margin-top: 6px; font-size: 13px; letter-spacing: 0.2em; color: var(--ink-3); }
-.earn .ebal b { font-family: var(--num); font-weight: 400; color: var(--ink); }
+/* ---------------------------------------------------------------- results: the outcome left (heading, readouts, earnings), the detail right (podium + table, laps, the car) */
+.r-body { display: grid; grid-template-columns: calc(440 * var(--u)) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: var(--sp-7); }
+.r-kick { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.r-kick .icon { font-size: var(--icon-s); }
+.r-side { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-5); min-height: 0; overflow-y: auto; }
+.r-side > * { flex: none; }
+.r-head h2 { margin: 0; padding-right: 0.1em; font-style: italic; font-weight: 900; font-size: var(--fs-display); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
+.r-head h2.r-hero { font-size: var(--fs-hero); line-height: 0.9; }   /* the race's outcome: Victory or the position */
+.r-sub { margin: var(--sp-2) 0 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }
+.r-stats { align-self: stretch; display: flex; gap: var(--sp-6); padding: var(--sp-4) 0; border-block: 1px solid var(--c-line); }
+.r-big { display: flex; align-items: flex-end; gap: var(--sp-7); }
+.r-big .stat-r:first-child > b { font-family: var(--font-num); font-weight: 400; font-size: var(--fs-hero); line-height: 1; letter-spacing: 0.01em; }   /* the hero readout: Anton at 96 design px */
+.r-big .stat-r:first-child > b small { font-family: var(--font-ui); font-weight: 700; }
+.r-big .stat-r + :is(.stat-r, .r-new) { padding: 0 0 var(--sp-3) var(--sp-5); border-left: 1px solid var(--c-line-2); }   /* the record beside the score, on its baseline, after a hairline */
+.r-big .stat-r + .stat-r > b { font-size: var(--fs-title); }
+.r-new, .r-best, .r-ok, .r-bad { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; }
+.r-new .icon, .r-ok .icon, .r-bad .icon { font-size: var(--icon-m); }
+.r-best .icon { font-size: var(--icon-s); }
+.r-ok { color: var(--c-ink-2); }
+.r-bad { color: var(--c-accent); }   /* an invalid lap: the icon and accent text */
+.r-note { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-3); }
+.r-main { display: flex; flex-direction: column; justify-content: flex-end; gap: var(--sp-4); min-width: 0; min-height: 0; }
+.r-main .tbar { width: 4px; height: calc(24 * var(--u)); border-radius: var(--r-1); background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }   /* a dark team still shows: the line edge */
+.r-car { display: block; flex: none; width: 100%; height: calc(208 * var(--u)); object-fit: contain; object-position: center bottom; object-view-box: inset(24% 8% 12% 19%); }   /* the car's box in every still */
+.r-car.solo { flex: 1 1 auto; height: auto; min-height: 0; }
+/* the podium: P2, P1 (taller), P3 cutouts on one ground line; position, team bar, driver and team under each */
+.r-podium { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: var(--sp-5); }
+.pod { display: flex; flex-direction: column; min-width: 0; }
+.pod .r-car { height: calc(120 * var(--u)); }
+.pod.p1 .r-car { height: calc(152 * var(--u)); }
+.pod-text { display: grid; grid-template-columns: auto 4px minmax(0, 1fr); align-items: center; gap: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--c-line-2); }
+.pod-pos { font-family: var(--font-num); font-weight: 400; font-size: var(--fs-num-l); line-height: 1; }
+.pod.me .pod-pos { color: var(--c-accent); }   /* yours */
+.pod .c-name { flex-direction: column; align-items: flex-start; gap: 2px; font-size: var(--fs-value); }
+.pod .c-name b { max-width: 100%; }
+/* the tables: a panel that grows with its rows up to the column, then scrolls (the rows are Nav stops) */
+.r-table { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; padding: var(--sp-2) var(--sp-4); }
+.r-rows .lrow:last-child { border-bottom: 0; }
+.r-cols { --cols: calc(32 * var(--u)) 4px minmax(0, 1.25fr) minmax(0, 1fr) calc(152 * var(--u)) calc(144 * var(--u)); }
+.t-cols { --cols: calc(64 * var(--u)) calc(160 * var(--u)) calc(160 * var(--u)) minmax(0, 1fr); }
+.t-cols > :last-child { padding-left: var(--sp-6); }   /* status reads apart from the numbers */
+.lhead:is(.r-cols, .t-cols) > span { display: inline-flex; align-items: center; }
+.lhead > .val { justify-content: flex-end; }
+.lrow.me { background: var(--c-accent-wash); }   /* your row */
+.lrow.me .r-pos { color: var(--c-accent); }
+.r-carname { min-width: 0; color: var(--c-ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.r-cols .val, .t-cols .val { display: inline-flex; align-items: center; justify-content: flex-end; gap: var(--sp-2); }
+.r-bolt { font-size: var(--icon-s); }   /* the fastest lap: ink, the bolt */
+/* earnings: the total on a coin line in ink, its parts, the balance after */
+.earn { align-self: stretch; display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); border: 1px solid var(--c-line); border-radius: var(--r-3); background: var(--c-fill-1); }
+.earn :is(.etotal, .ebal) { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); }
+.earn b { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--c-ink-1); }
+.earn .etotal b { font-size: var(--fs-title); }
+.earn .etotal .icon { font-size: var(--icon-l); }
+.earn .ebal b { font-size: var(--fs-value); }
+.earn .ebal .icon { font-size: var(--icon-m); }
+.earn .elines { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-5); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--c-line); font-size: var(--fs-body); color: var(--c-ink-2); }
+.earn .elines b { margin-left: var(--sp-2); font-size: var(--fs-body); }
 
 .driver-intro { position: fixed; inset: 0; z-index: 1000; background: #080b10; color: #f5f1e8; pointer-events: auto; }
 .driver-intro-frame { position: absolute; inset: 0 0 52px; overflow: hidden; display: grid; place-items: center; }

@@ -111,7 +111,6 @@ export class Nav {
     this.game.screen?.onSel?.(el, byKey);
   }
   focusAt(t) { const el = t?.closest?.('[data-nav]'), k = el ? this.items().indexOf(el) : -1; if (k >= 0 && k !== this.i) { this.i = k; this.mark(); } }
-  hover() {}   // retired: hover is a --c-fill-2 style only (results still calls it until its own pass)
   /** gamepad: d-pad with key repeat, A = Enter, B = back */
   pad(dt) {
     const p = navigator.getGamepads?.().find((g) => g?.connected); if (!p) return;
@@ -492,43 +491,72 @@ export function PauseScreen(game) {
   };
 }
 
-/** what a session paid in U-coins: a total and its lines */
+/** what a session paid in U-coins: the total on a coin line in ink, its parts, the balance after */
 function earnBlock(reward) {
   if (!reward) return null;
-  return h('div.earn', {}, h('div.etotal', {}, h('span', {}, 'U-COINS EARNED'), h('b', {}, '+' + reward.total.toLocaleString('en'))),
-    h('div.elines', {}, reward.lines.map(([label, v]) => h('span', {}, label, h('b', {}, '+' + v)))), h('div.ebal', {}, 'BALANCE ', h('b', {}, store.coins.toLocaleString('en'))));
+  const coins = (v, sign = '') => h('b.tnum', {}, icon('coin'), sign + v.toLocaleString('en'));
+  return h('div.earn', { 'aria-label': 'U-coins earned' }, h('div.etotal', {}, h('span.kick', {}, 'U-coins earned'), coins(reward.total, '+')),
+    h('div.elines', {}, reward.lines.map(([label, v]) => h('span', {}, label, h('b.tnum', {}, '+' + v.toLocaleString('en'))))),
+    h('div.ebal', {}, h('span.kick', {}, 'Balance'), coins(store.coins)));
 }
 
+/** results: the outcome on the left (heading, readouts, what it paid), the detail on the right: a race's podium (the P1-P3
+ *  cutouts) over the finishing table, a trial's laps under your car, a drift's car. Rows are Nav stops (a long table scrolls by
+ *  them); focus starts on Again, the one primary; Esc is Menu */
 export function ResultsScreen(game) {
-  const panel = h('div.panel');
-  const el = screen('results', h('div.scrim.full'), panel);
+  const again = h('button.btn.btn-primary', { 'data-nav': '', 'data-id': 'again', onclick: () => game.restart() }, icon('restart'), 'Again');
+  const menu = h('button.btn.btn-secondary', { 'data-nav': '', 'data-id': 'menu', onclick: () => game.quit() }, icon('home'), 'Menu', prompt('Esc', 'b'));
+  const htitle = h('h1'), kick = h('span.kick.r-kick'), side = h('div.r-side'), main = h('div.r-main');
+  const el = screen('results', h('div.sscrim'), h('header.shead', {}, h('i.logo'), htitle, kick), h('div.sbody.r-body', {}, side, main),
+    h('div.sfoot', {}, prompt(['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'), prompt('Enter', 'a', 'Choose'), h('div.sp'), menu, again));
+  const time = (t) => (Number.isFinite(t) ? fmtTime(t) : empty());
+  const head = (title, sub, hero = false) => h('div.r-head', {}, h('h2' + (hero ? '.r-hero' : ''), {}, title), h('p.r-sub', {}, sub));
+  const big = (...kids) => h('div.r-big', {}, kids);
+  const rows = (cls, cols, list) => { const s = h('div.lscroll.r-rows', { onscroll: (e) => fadeMore(e.currentTarget) }, list); return [h('div.pnl.r-table', {}, h('div.lhead.' + cls, {}, cols), s), s]; };   // [the table panel, its scroller]
+  const carHero = (key, cls = '') => h('img.r-car' + cls, { src: still('cars', key), alt: '', decoding: 'async' });
+  const laps = (n) => `${n} ${n === 1 ? 'lap' : 'laps'}`;
   return {
-    el, nav: true,
+    el, nav: true, grid: true,
     onShow(data) {
-      const { mode, rows, record, score, laps, best } = data;
-      const acts = h('div.acts', {}, h('button.cta', { 'data-nav': '', onclick: () => game.restart(), onmouseenter: (e) => nav.hover(e.currentTarget) }, 'Again'),
-        h('button.cta.ghost', { 'data-nav': '', onclick: () => game.quit(), onmouseenter: (e) => nav.hover(e.currentTarget) }, 'Menu'));
+      const { mode, record, score, best } = data, car = store.data.car;
+      fill(htitle, icon(MODE_ICON[mode] ?? 'trophy'), 'Results'); fill(kick, icon('track'), trackOf(store.settings.track).name);
+      let scroller = null;
       if (mode === 'race') {
-        const me = rows.findIndex((r) => r.hero) + 1, lead = rows[0].total;
-        const fastest = Math.min(...rows.map((r) => r.best ?? Infinity));
-        fill(panel, h('h2', {}, me === 1 ? 'Victory' : `P${me}`), h('div.sub', {}, `${MODES.race.label} · ${data.laps} ${data.laps === 1 ? 'lap' : 'laps'} · ${trackOf(store.settings.track).name}`),
-          h('table', {}, h('tr', {}, h('th', {}, ''), h('th', {}, 'DRIVER'), h('th', {}, 'CAR'), h('th', { style: { textAlign: 'right' } }, 'BEST LAP'), h('th', { style: { textAlign: 'right' } }, 'TIME')),
-            rows.map((r, k) => css(h('tr' + (r.hero ? '.me' : ''), {},
-              h('td.p', {}, k + 1),
-              h('td', {}, h('span.tm'), `${r.driver.name}`, h('span', { style: { color: 'var(--ink-3)', marginLeft: '10px', fontSize: '16px' } }, r.driver.team.name)),
-              h('td', { style: { color: 'var(--ink-2)' } }, carName(r.key)),
-              h('td.num', { style: { color: r.best === fastest ? 'var(--nitro-2)' : '' } }, fmtTime(r.best)),
-              h('td.num', {}, k === 0 ? fmtTime(r.total) : `+${(r.total - lead).toFixed(3)}${r.finished ? '' : ' *'}`)), { '--team': teamMark(r.driver.team) }))),
-          h('div.note', { style: { fontSize: '14px', color: 'var(--ink-3)', margin: '8px 0 0' } }, rows.some((r) => !r.finished) ? '* still on track: gap estimated from pace' : ''), earnBlock(data.reward), acts);
+        const R = data.rows, me = R.findIndex((r) => r.hero), lead = R[0].total, you = R[me];
+        const fastest = Math.min(...R.map((r) => r.best ?? Infinity));
+        const pod = (r, k) => css(h('div.pod' + (k === 0 ? '.p1' : '') + (r.hero ? '.me' : ''), {}, carHero(r.key),
+          h('div.pod-text', {}, h('b.pod-pos', {}, `P${k + 1}`), h('i.tbar'), h('span.c-name', {}, h('b', {}, r.driver.name), h('small', {}, r.driver.team.name)))), { '--team': teamMark(r.driver.team) });
+        const [table, s] = rows('r-cols', [h('span', {}, 'Pos'), h('span'), h('span', {}, 'Driver'), h('span', {}, 'Car'), h('span.val', {}, icon('timer'), 'Best lap'), h('span.val', {}, 'Time')],
+          R.map((r, k) => css(h('div.lrow.r-cols' + (r.hero ? '.me' : ''), { 'data-nav': '', tabIndex: 0 },
+            h('b.r-pos.tnum', {}, k + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, r.driver.name), h('small', {}, r.driver.team.name), r.hero ? icon('check', { label: 'You' }) : null),
+            h('span.r-carname', {}, carName(r.key)),
+            h('span.val', {}, r.best === fastest && Number.isFinite(fastest) ? icon('bolt', { cls: 'r-bolt', label: 'Fastest lap' }) : null, time(r.best)),
+            h('span.val', {}, k === 0 ? time(r.total) : Number.isFinite(r.total - lead) ? ['+' + (r.total - lead).toFixed(3), r.finished ? null : h('small', {}, 'Est')] : empty())), { '--team': teamMark(r.driver.team) })));
+        scroller = s;
+        fill(side, head(me === 0 ? 'Victory' : `P${me + 1}`, `${MODES.race.label} · ${laps(data.laps)} · ${carName(car)}`, true),
+          h('div.r-stats', {}, stat('Position', String(me + 1), `/ ${R.length}`), stat('Time', time(you?.total)), stat('Best lap', time(you?.best))),
+          earnBlock(data.reward), R.some((r) => !r.finished) ? h('p.r-note', {}, 'Est: still on track, the gap is estimated from pace.') : null);
+        fill(main, h('div.r-podium', {}, [1, 0, 2].filter((k) => R[k]).map((k) => pod(R[k], k))), table);
       } else if (mode === 'drift') {
-        fill(panel, h('h2', {}, 'Drift Attack'), h('div.sub', {}, `${carName(store.data.car)} · 90 seconds`),
-          h('div.big', {}, Math.round(score).toLocaleString('en'), h('small', {}, 'PTS')), record ? h('div.rec', {}, 'NEW RECORD') : h('div.sub', {}, `Record ${store.driftOf(store.data.car).toLocaleString('en')}`), earnBlock(data.reward), acts);
+        const rec = store.driftOf(car);   // after a new record this is the score itself
+        fill(side, head('Drift Attack', `${MODES.drift.seconds} seconds · ${carName(car)}`),
+          big(stat('Score', Math.round(score).toLocaleString('en'), 'PTS'), record ? h('span.r-new', {}, icon('star'), 'New record') : stat('Record', rec ? rec.toLocaleString('en') : empty(), rec ? 'PTS' : null)),
+          earnBlock(data.reward));
+        fill(main, carHero(car, '.solo'));
       } else {
-        fill(panel, h('h2', {}, 'Time Trial'), h('div.sub', {}, `${carName(store.data.car)} · ${laps.length} ${laps.length === 1 ? 'lap' : 'laps'}`),
-          h('div.big', {}, fmtTime(best)), record ? h('div.rec', {}, 'NEW PERSONAL BEST') : null,
-          h('table', {}, laps.map((l, k) => h('tr', {}, h('td.p', {}, k + 1), h('td.num', { style: { textAlign: 'left', color: l.valid ? '' : 'var(--bad)' } }, fmtTime(l.t), l.valid ? '' : '  invalid')))), earnBlock(data.reward), acts);
+        const L = data.laps, valid = L.filter((l) => l.valid).length;
+        const [table, s] = rows('t-cols', [h('span', {}, icon('lap'), 'Lap'), h('span.val', {}, icon('timer'), 'Time'), h('span.val', {}, 'To best'), h('span', {}, 'Status')],
+          L.map((l, k) => h('div.lrow.t-cols', { 'data-nav': '', tabIndex: 0 }, h('b.tnum', {}, k + 1), h('span.val', {}, time(l.t)),
+            h('span.val', {}, !l.valid || !Number.isFinite(best) ? empty() : l.t === best ? h('span.r-best', {}, icon('star'), 'Best') : '+' + (l.t - best).toFixed(3)),
+            l.valid ? h('span.r-ok', {}, icon('check'), 'Valid') : h('span.r-bad', {}, icon('invalid'), 'Invalid'))));
+        scroller = s;
+        fill(side, head('Time Trial', `${laps(L.length)} · ${carName(car)}`),
+          big(stat('Best lap', time(best))), record ? h('span.r-new', {}, icon('star'), 'New personal best') : null,
+          h('div.r-stats', {}, stat('Laps', String(L.length)), stat('Valid', String(valid), `/ ${L.length}`)), earnBlock(data.reward));
+        fill(main, carHero(car), table);
       }
-      nav.reset(0);
+      if (scroller) fadeMore(scroller);
+      nav.reset(nav.items().indexOf(again));
     },
     back() { game.quit(); },
   };
