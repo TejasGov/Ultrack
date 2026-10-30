@@ -21,6 +21,9 @@ const PARTS = [
   () => import('./tokyo/neon-streaks.js'),
 ];
 
+/** main.js calls this as the venue GLB starts loading ({ renderer, ktx2 }): the photo textures load meanwhile */
+export function prefetch(ctx) { import('./tokyo/materials.js').then((m) => m.prefetch(ctx)).catch(() => {}); }
+
 export async function create(ctx) {
   const parts = (await Promise.all(PARTS.map(async (load) => {
     try { return await (await load()).create(ctx); } catch (e) { console.warn('tokyo fx part skipped:', e); return null; }

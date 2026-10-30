@@ -338,11 +338,18 @@ async function loadSets(renderer, shared) {
   return out;
 }
 
+let early = null;   // prefetch(): the photo sets start loading while main.js is still fetching and parsing the venue GLB
+export function prefetch(ctx) {
+  const q = new URLSearchParams(location.search);
+  if (q.get('tmat') !== '0' && q.get('tmtex') !== '0') early ??= loadSets(ctx.renderer, ctx.ktx2);
+}
+
 export async function create(ctx) {
   const q = new URLSearchParams(location.search);
   if (q.get('tmat') === '0') return { dispose() {} };
   const t0 = performance.now();
-  const sets = q.get('tmtex') === '0' ? {} : await loadSets(ctx.renderer, ctx.ktx2);
+  const sets = q.get('tmtex') === '0' ? {} : await (early ?? loadSets(ctx.renderer, ctx.ktx2));
+  early = null;
   // the sakura trunks and branches share `V10 tile` with the roofs: in a mesh that also carries petals or leaves, that slot gets a plain clone
   const plain = new Map();
   ctx.root?.traverse((o) => {

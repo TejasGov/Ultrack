@@ -553,6 +553,7 @@ async function setTrack(id) {
 
 async function loadVenue() {
   const T = TRACK, has = T.has;
+  T.venue?.().then((m) => m.prefetch?.({ renderer, ktx2: gltfLoader.ktx2Loader }), () => {});   // a venue module's own textures load alongside its GLB
   const [gltf, lightsJson] = await Promise.all([
     gltfLoader.loadAsync(import.meta.env.DEV&&T.id==='marina'&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:U('visual')),
     optionalJson(U('lights'), NO_LIGHTS),
