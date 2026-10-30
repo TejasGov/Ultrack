@@ -7,6 +7,7 @@ import { carName, ROSTER } from './carinfo.js';
 import { MODES } from './session.js';
 import { store, ASSISTS, WEATHER, fmtTime } from './store.js';
 import { trackOf, availableTracks } from '../tracks.js';
+import { icon } from './icons.js';
 
 export const TEAM_OF = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, t])));
 export const ENTRY = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, c])));
@@ -37,14 +38,38 @@ export function h(sel, attrs = {}, ...kids) {   // null / false children are ski
 export const fill = (el, ...kids) => el.replaceChildren(...kids.flat().filter((k) => k !== null && k !== undefined && k !== false));
 export const css = (el, vars) => { for (const [k, v] of Object.entries(vars)) el.style.setProperty(k, v); return el; };
 
+// ---------------------------------------------------------------------------------------------- system primitives (docs/ui-system.md)
+const root = () => globalThis.document?.documentElement;   // absent in the node tests' fake DOM
+/** the last input device: html[data-input=pad] shows pad glyphs in every prompt, anything else keyboard caps (set only on a change) */
+export function setInput(kind) { const d = root(); if (d && d.dataset.input !== kind) d.dataset.input = kind; }
+/** html[data-motion=reduce] from the in-game setting: ui-tokens.css zeroes every duration and slide under it */
+export function syncMotion() { const d = root(); if (d) d.dataset.motion = store.settings.reduceMotion ? 'reduce' : 'full'; }
+export const still = (kind, id) => `/assets/ui/stills/${kind}/${id}.webp`;   // tracks/<id>, cars/<key> (make-ui-stills.mjs)
+/** the one empty value: an em dash in ink-4, the same on every screen */
+export const empty = () => h('span.empty', { 'aria-label': 'None' }, '—');
+const cap = (k) => h('kbd', {}, k.startsWith('arrow-') ? icon(k) : k);
+/** a key hint: keyboard caps (an arrow is its icon) or the pad glyph, whichever device was used last, then the action */
+export const prompt = (keys, pad, label) => h('span.prompt', {}, h('span.pk', {}, [keys].flat().map(cap)), pad ? icon('pad-' + pad, { cls: 'pp' }) : null, label ? h('span.pl', {}, label) : null);
+/** the footer's Back: a ghost button with its Esc / B prompt, last in the band */
+export const backButton = (onclick) => h('button.btn.btn-ghost', { 'data-nav': '', onclick }, icon('back'), 'Back', prompt('Esc', 'b'));
+/** the shared header band: the logo, the screen title, an optional kicker on the right */
+const header = (title, kick) => h('header.shead', {}, h('i.logo'), h('h1', {}, title), kick ? h('span.kick', {}, kick) : null);
+/** a scroller's bottom fade while more is below (on scroll and on rebuild, never per frame) */
+const fadeMore = (el) => el.classList.toggle('more', el.scrollHeight - el.scrollTop - el.clientHeight > 1);
+
 // ---------------------------------------------------------------------------------------------- navigation
 /** Keyboard / gamepad focus over a screen's [data-nav] elements: up/down move, left/right adjust, Enter clicks. */
 export class Nav {
   constructor(game) {
-    this.game = game; this.i = 0;
+    this.game = game; this.i = 0; syncMotion();
+    // a click or a Tab focus moves Nav focus to that item; hover never does, so the mouse and the keys cannot fight
+    addEventListener('pointerdown', (e) => { setInput('key'); this.focusAt(e.target); }, true);
+    addEventListener('focusin', (e) => this.focusAt(e.target));
     addEventListener('keydown', (e) => {
+      setInput('key');
       if(game.raceLoading?.active)return;
-      const s = game.screen; if (!s?.nav) return;
+      const s = game.screen;
+      if (!s?.nav) { const a = globalThis.document?.activeElement; if (a?.closest?.('#ui .screen')) a.blur(); return; }   // a fading screen's button must not take Space / Enter from the race
       if (e.target?.tagName === 'INPUT' && e.target.type === 'color') return;
       const k = e.code;
       if (k === 'ArrowDown') { this.moveSpatial(0,1); e.preventDefault(); }
@@ -70,17 +95,24 @@ export class Nav {
   }
   adjust(d) { this.items()[this.i]?.dispatchEvent(new CustomEvent('adjust', { detail: d })); }
   mark(byKey = false) {
-    const L = this.items();
+    const L = this.items(), el = L[this.i], a = globalThis.document?.activeElement;
     L.forEach((e, k) => e.classList.toggle('sel', k === this.i));
-    L[this.i]?.scrollIntoView?.({ block: 'nearest' });
-    this.game.screen?.onSel?.(L[this.i], byKey);
+    // DOM focus follows Nav (one ring; Tab goes on from it), but only on a screen already shown: focusing a button inside the
+    // keydown that opened its screen (Enter on the title) would hand that key's default click to the button
+    const shown = this.game.screen?.el.classList.contains?.('on');
+    if (shown && el?.tabIndex >= 0) el.focus?.({ preventScroll: true });
+    else if (shown && a?.closest?.('#ui') && a !== el) a.blur();
+    el?.scrollIntoView?.({ block: 'nearest' });
+    this.game.screen?.onSel?.(el, byKey);
   }
-  hover(el) { const k = this.items().indexOf(el); if (k >= 0 && k !== this.i) { this.i = k; this.mark(); } }
+  focusAt(t) { const el = t?.closest?.('[data-nav]'), k = el ? this.items().indexOf(el) : -1; if (k >= 0 && k !== this.i) { this.i = k; this.mark(); } }
+  hover() {}   // retired: hover is a --c-fill-2 style only (garage.js still calls it until its own pass)
   /** gamepad: d-pad with key repeat, A = Enter, B = back */
   pad(dt) {
     const p = navigator.getGamepads?.().find((g) => g?.connected); if (!p) return;
     const b = (i) => p.buttons[i]?.pressed, ax = p.axes;
     const dir = b(13) || ax[1] > 0.6 ? 'd' : b(12) || ax[1] < -0.6 ? 'u' : b(14) || ax[0] < -0.6 ? 'l' : b(15) || ax[0] > 0.6 ? 'r' : null;
+    if (dir || p.buttons.some((x) => x.pressed)) setInput('pad');            // prompts follow the pad; an attribute write only on a change
     this.rep = dir === this.dir ? this.rep - dt : 0; this.dir = dir;
     if (dir && this.rep <= 0) { this.rep = this.rep === 0 ? 0.38 : 0.12; ({ d: () => this.moveSpatial(0,1), u: () => this.moveSpatial(0,-1), l: () => this.game.screen?.grid?this.moveSpatial(-1,0):this.adjust(-1), r: () => this.game.screen?.grid?this.moveSpatial(1,0):this.adjust(1) })[dir](); }
     const a = b(0), back = b(1);
@@ -124,13 +156,18 @@ export const getNav = () => nav;
 // ---------------------------------------------------------------------------------------------- screens
 function screen(cls, ...kids) { return h('div.screen.hidden.' + cls, {}, ...kids); }
 
+/** boot: the circuit's still under a light scrim, the logo, one static prompt, and while loading a stage, a percentage and a 4 px bar */
 export function TitleScreen(game) {
-  const bar = h('div.loadbar', {}, h('i'));
-  const el = screen('title-screen', h('div.scrim.full', { style: { background: 'radial-gradient(circle at 50% 45%, rgba(4,5,8,0.2), rgba(4,5,8,0.75))', backdropFilter: 'none' } }),
-    h('i.logo'), h('div.press', {}, 'PRESS ANY KEY · LOADING GARAGE'), bar, h('div.ver', {}, 'V2 · ' + trackOf(store.settings.track).name.toUpperCase()));
+  const stage = h('span.kick'), pct = h('span.t-pct.tnum'), bar = h('div.bar4', {}, h('i'));
+  const load = h('div.t-load', {}, h('div.t-loadrow', {}, stage, pct), bar);
+  const el = screen('title-screen', h('img.t-still', { src: still('tracks', trackOf(store.settings.track).id), alt: '', decoding: 'async' }), h('div.t-scrim'),
+    h('i.logo'), h('div.t-status', {}, h('div.t-press', {}, prompt('Enter', 'a', 'Press any key')), load));
   const go = () => game.boot();
   el.addEventListener('pointerdown', go);
-  return { el, onKey: go, progress: (p) => bar.style.setProperty('--p', p), ready: () => { el.querySelector('.press').textContent = 'PRESS ANY KEY'; bar.style.opacity = 0; } };
+  // main.js reports 0.15 (garage and cars loading), 0.7 (shaders compiling) and game.attach() 1
+  const progress = (p) => { bar.style.setProperty('--p', p); pct.textContent = `${Math.round(p * 100)} %`; stage.textContent = p < 0.7 ? 'Loading garage' : p < 1 ? 'Preparing cars' : 'Ready'; };
+  progress(0);
+  return { el, onKey: go, progress, ready: () => { progress(1); load.classList.add('done'); } };
 }
 
 export function MenuScreen(game) {
@@ -155,26 +192,72 @@ export function MenuScreen(game) {
   return {el,nav:true,grid:true,onShow(){trackName.textContent=trackOf(store.settings.track).name.toUpperCase();coinChip.textContent='U-COINS  '+store.coins.toLocaleString('en');fillCard(current,store.data.car);const best=store.bestOf(store.data.car);record.textContent=(best?'BEST '+fmtTime(best):'Set your first lap')+' · '+carName(store.data.car);},back(){game.show('title');}};
 }
 
+/** records per circuit: circuit cards (the stills) on the left, the roster's best lap and best drift on the right. Viewing a
+ *  circuit here never changes the selected one (the saved records are keyed 'circuit/car', store.js). */
 export function RecordsScreen(game) {
-  const body=h('div.records-list'),el=screen('records',h('div.scrim.full'),h('div.panel',{},h('h2',{},'Personal records'),h('div.sub',{},'SAVED ON THIS DEVICE'),body,
-    h('button.cta',{'data-nav':'',onclick:()=>game.show('menu')},'Back')));
-  return {el,nav:true,onShow(){fill(body,...ROSTER.map(k=>h('div.record-row',{},h('strong',{},carName(k)),h('span',{},fmtTime(store.bestOf(k))),h('span',{},store.driftOf(k).toLocaleString('en')+' PTS'))));},back(){game.show('menu');}};
+  let viewed = trackOf(store.settings.track), tracks = [viewed];
+  const lap = (t, k) => store.data.best[`${t.id}/${k}`], drift = (t, k) => store.data.drift[`${t.id}/${k}`];
+  const cards = h('div.rec-circuits'), rows = h('div.lscroll.rec-rows', { onscroll: (e) => fadeMore(e.currentTarget) });
+  const table = h('div.pnl.rec-table', {}, h('div.lhead.rec-cols', {}, h('span.c-car', {}, 'Car'), h('span.val', {}, icon('timer'), 'Best lap'), h('span.val', {}, icon('drift'), 'Best drift')), rows);
+  const el = screen('records', h('div.sscrim'), header('Records', 'Saved on this device'), h('div.sbody.rec-body', {}, cards, table),
+    h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Browse'), prompt('Enter', 'a', 'Show circuit'), h('div.sp'), backButton(() => game.show('menu'))));
+  function build() {
+    fill(cards, tracks.map((t) => {
+      const on = t === viewed, n = ROSTER.filter((k) => lap(t, k) !== undefined).length;
+      return h('button.ccard' + (on ? '.on' : ''), { 'data-nav': '', 'aria-pressed': String(on), onclick: () => { viewed = t; build(); nav.mark(); } },
+        h('img', { src: still('tracks', t.id), alt: '', decoding: 'async' }),
+        h('span.ccard-text', {}, h('span.kick', {}, n ? `${n} ${n === 1 ? 'lap' : 'laps'} set` : 'No laps yet'), h('strong', {}, t.name)),
+        on ? icon('check', { cls: 'ccard-check', label: 'Showing' }) : null);
+    }));
+    fill(rows, ROSTER.map((k) => {
+      const team = TEAM_OF[k], b = lap(viewed, k), d = drift(viewed, k);
+      return css(h('div.lrow.rec-cols', { 'data-nav': '', tabindex: 0 }, h('i.tbar'), h('img.cut', { src: still('cars', k), alt: '', decoding: 'async' }),
+        h('span.c-name', {}, h('b', {}, carName(k)), h('small', {}, team.name), k === store.data.car ? icon('check', { label: 'Your car' }) : null),
+        h('span.val', {}, b !== undefined ? fmtTime(b) : empty()), h('span.val', {}, d ? [d.toLocaleString('en'), h('small', {}, 'PTS')] : empty())), { '--team': teamMark(team) });
+    }));
+    fadeMore(rows);
+  }
+  return {
+    el, nav: true, grid: true,
+    onShow() {
+      viewed = trackOf(store.settings.track); if (!tracks.includes(viewed)) tracks = [viewed];
+      build(); nav.reset(tracks.indexOf(viewed));
+      availableTracks().then((list) => { if (list.length !== tracks.length) { tracks = list; build(); nav.reset(tracks.indexOf(viewed)); } });
+    },
+    back() { game.show('menu'); },
+  };
 }
 
+// credits by kind, from the files that own the facts (model.json, the engine recordings' credits.json); fonts and code by hand
 const MODEL_CREDITS=Object.values(import.meta.glob('../../../assets/cars/*/model.json',{eager:true,import:'default'})).map(m=>m.source).filter(Boolean).sort((a,b)=>String(a.title).localeCompare(String(b.title)));
+const FONT_CREDITS = [
+  ['Barlow Condensed', 'The Barlow Project Authors', 'https://github.com/jpt/barlow'],
+  ['Anton', 'The Anton Project Authors', 'https://github.com/googlefonts/AntonFont'],
+];
+const CODE_CREDITS = [
+  ['three.js', 'three.js authors', 'https://threejs.org', 'MIT', 'https://github.com/mrdoob/three.js/blob/dev/LICENSE'],
+  ['Rapier physics', 'Dimforge', 'https://rapier.rs', 'Apache-2.0', 'https://www.apache.org/licenses/LICENSE-2.0'],
+];
 export function CreditsScreen(game) {
-  const link=(label,url)=>/^https?:\/\//.test(url??'')?h('a',{'data-nav':'',href:url,target:'_blank',rel:'noopener noreferrer'},label):h('span',{},label);
-  const body=h('div.credit-list',{},...MODEL_CREDITS.map(c=>h('article.credit-card',{},h('h3',{},c.title),h('p',{},'Created by ',link(c.author,c.authorUrl??c.url)),
-    h('p',{},link('Original model',c.url),' · ',link(c.license,c.licenseUrl)),
-    c.additionalCredits?h('p',{},c.additionalCredits):null,
-    h('p',{},'Adapted for Ultrack: scale, orientation, wheel separation, materials and runtime LODs.'))),
-    h('article.credit-card',{},h('h3',{},'Additional Lamborghini exterior credit'),h('p',{},link('Lambo_SC04','https://sketchfab.com/Lambo_SC04'),' · Aventador SVJ Black-Ghost · CC BY-NC. Interior/combined model: blackcube4.')),
-    h('article.credit-card',{},h('h3',{},'Circuit, voices & sound'),h('p',{},'Environment HDRIs: Poly Haven (CC0). Commentary voices and crash effects: ElevenLabs. Real recorded engines: YouTube creators below. EV motor, wind and tyre layers: procedural Web Audio.')),
-    ...ENGINE_CREDITS.map(c=>h('article.credit-card',{},h('h3',{},c.name+' recording'),h('p',{},link(c.title,c.url),' · ',c.author,' · ',link(c.license,c.licenseUrl)),h('p',{},c.changes))),
-    h('article.credit-card',{},h('h3',{},'Sponsor & marque artwork'),h('p',{},'Simple Icons; Pirelli official artwork; Rolex wordmark via Wikimedia Commons; car-logos-dataset. Original marks remain with their owners. Source URLs and hashes: assets/sponsors/manifest.json.')),
-    h('p.credit-notice',{},'Local noncommercial fan project. Several models carry non-commercial or share-alike licenses (listed above), and any model with unresolved provenance must be replaced before public distribution.'));
-  const el=screen('credits',h('div.scrim.full'),h('div.panel',{},h('h2',{},'Credits'),h('div.sub',{},'THE PEOPLE BEHIND THE MACHINES'),body,h('button.cta',{'data-nav':'',onclick:()=>game.show('menu')},'Back')));
-  return {el,nav:true,back(){game.show('menu');}};
+  const link = (label, url) => /^https?:\/\//.test(url ?? '') ? h('a.ink-link', { 'data-nav': '', href: url, target: '_blank', rel: 'noopener noreferrer' }, label, icon('arrow-up-right')) : h('span', {}, label);
+  const links = (...l) => h('p.cr-links', {}, l);
+  const item = (title, ...lines) => h('article.cr-item', {}, h('h3', {}, title), lines);
+  const note = (text) => (text ? h('p.cr-note', {}, text) : null);   // provenance and licence notes: shown verbatim, never reworded
+  const group = (name, items) => h('section.cr-group', {}, h('h2.kick', {}, name), h('div.cr-grid', {}, items));
+  const scroll = h('div.lscroll.cr-scroll', { onscroll: (e) => fadeMore(e.currentTarget) },
+    group('Cars', [...MODEL_CREDITS.map((c) => item(c.title, h('p', {}, 'Created by ', link(c.author, c.authorUrl ?? c.url)), links(link('Original model', c.url), link(c.license, c.licenseUrl)),
+      note(c.additionalCredits), h('p.cr-dim', {}, 'Adapted for Ultrack: scale, orientation, wheel separation, materials and runtime LODs.'))),
+    item('Additional Lamborghini exterior credit', links(link('Lambo_SC04', 'https://sketchfab.com/Lambo_SC04')), h('p', {}, 'Aventador SVJ Black-Ghost, CC BY-NC. Interior/combined model: blackcube4.'))]),
+    group('Audio', [...ENGINE_CREDITS.map((c) => item(c.name + ' recording', links(link(c.title, c.url)), h('p', {}, 'Recorded by ', c.author), links(link(c.license, c.licenseUrl)), h('p.cr-dim', {}, c.changes))),
+      item('Voices and effects', h('p', {}, 'Commentary voices and crash effects: ElevenLabs.'), h('p', {}, 'EV motor, wind and tyre layers: procedural Web Audio.'))]),
+    group('Artwork', [item('Environment HDRIs', h('p', {}, 'Poly Haven (CC0).')),
+      item('Sponsor & marque artwork', h('p', {}, 'Simple Icons; Pirelli official artwork; Rolex wordmark via Wikimedia Commons; car-logos-dataset. Original marks remain with their owners. Source URLs and hashes: assets/sponsors/manifest.json.'))]),
+    group('Fonts', FONT_CREDITS.map(([name, by, url]) => item(name, h('p', {}, by), links(link('Source', url), link('SIL Open Font License 1.1', 'https://openfontlicense.org'))))),
+    group('Code', CODE_CREDITS.map(([name, by, url, lic, licUrl]) => item(name, h('p', {}, by), links(link('Project', url), link(lic, licUrl))))),
+    h('p.cr-notice', {}, icon('info'), h('span', {}, 'Local noncommercial fan project. Several models carry non-commercial or share-alike licenses (listed above), and any model with unresolved provenance must be replaced before public distribution.')));
+  const el = screen('credits', h('div.sscrim'), header('Credits', 'The people behind the machines'), h('div.sbody', {}, h('div.pnl.cr-panel', {}, scroll)),
+    h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Browse'), prompt('Enter', 'a', 'Open link'), h('div.sp'), backButton(() => game.show('menu'))));
+  return { el, nav: true, onShow() { fadeMore(scroll); }, back() { game.show('menu'); } };
 }
 
 export function fillCard(card, key) {
@@ -233,7 +316,7 @@ export function SettingsScreen(game) {
         row('Time of day', seg(Object.entries(LOOK_LABEL), S.look, set('look'))),
         row('Weather', seg(Object.entries(WEATHER).map(([k, w]) => [k, w.label]), S.weather, set('weather'))),
         row('Motion blur', seg([['off', 'Off'], ['light', 'Light'], ['full', 'Full']], S.motionBlur, set('motionBlur'))),
-        row('Reduce motion', toggle(S.reduceMotion, set('reduceMotion')), 'Less camera shake, roll and speed zoom'),
+        row('Reduce motion', toggle(S.reduceMotion, (v) => { set('reduceMotion')(v); syncMotion(); }), 'Less camera shake, roll and speed zoom'),
         row('Field of view', slider(S.fovOffset, { min: -10, max: 15, step: 1, fmt: (v) => (v > 0 ? `+${v}` : `${v}`) }, set('fovOffset'))),
         row('Show FPS', toggle(S.showFps, set('showFps'))),
       ],

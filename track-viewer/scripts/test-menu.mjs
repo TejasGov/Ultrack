@@ -13,7 +13,7 @@ class Element extends EventTarget {
  querySelectorAll(selector){const found=[];for(const c of this.children){if(selector==='[data-nav]'&&Object.hasOwn(c.attrs,'data-nav'))found.push(c);found.push(...c.querySelectorAll(selector));}return found;}
  scrollIntoView(){}click(){this.dispatchEvent(new Event('click'));}getBoundingClientRect(){return this.rect??{x:0,y:0,width:100,height:100};}
 }
-globalThis.Node=Element;globalThis.document={createElement:t=>new Element(t),createTextNode:t=>{const n=new Element('text');n.textContent=t;return n;}};
+globalThis.Node=Element;globalThis.document={createElement:t=>new Element(t),createElementNS:(ns,t)=>new Element(t),createTextNode:t=>{const n=new Element('text');n.textContent=t;return n;}};   // NS: icons.js's <svg><use>
 globalThis.addEventListener=()=>{};
 const server=await createServer({root:new URL('../',import.meta.url).pathname.replace(/^\/([A-Za-z]:)/,'$1'),configFile:false,server:{middlewareMode:true,hmr:false},appType:'custom'});
 try{
@@ -27,7 +27,10 @@ try{
  nav.reset(0);nav.moveSpatial(1,0);assert.equal(nav.i,1);nav.moveSpatial(0,1);assert.equal(nav.i,4);
  const credits=UI.CreditsScreen(game);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));
  const records=UI.RecordsScreen(game);records.onShow();const rosterSize=JSON.parse((await import('node:fs')).readFileSync(new URL('../../assets/teams/teams.json',import.meta.url))).teams.flatMap(t=>t.cars).length;
- assert.equal(records.el.children[1].children[2].children.length,rosterSize,'the records board lists the whole roster, not only cars car-lab can assemble');
+ const recordRows=records.el.children[2].children[1].children[1].children;   // screen > body > table panel > rows
+ assert.equal(recordRows.length,rosterSize,'the records board lists the whole roster, not only cars car-lab can assemble');
+ assert.ok(recordRows.every(r=>Object.hasOwn(r.attrs,'data-nav')),'every record row is a nav stop');
+ assert.ok(records.el.textContent.includes('—')&&!records.el.textContent.includes('-:--.---'),'an empty record is the em dash, never -:--.---');
  // credits come from every assets/cars/*/model.json: one card per model, none named in code
  const {readdirSync,existsSync,readFileSync}=await import('node:fs'),carsDir=new URL('../../assets/cars/',import.meta.url);
  const titles=readdirSync(carsDir,{withFileTypes:true}).filter(d=>d.isDirectory()&&existsSync(new URL(d.name+'/model.json',carsDir))).map(d=>JSON.parse(readFileSync(new URL(d.name+'/model.json',carsDir))).source?.title).filter(Boolean);

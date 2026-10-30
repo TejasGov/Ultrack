@@ -9,6 +9,7 @@
   <script>
     (function () {
       var q = new URLSearchParams(location.search), look = 'dusk', track = 'marina';
+      if (q.get('dev') === '1') document.documentElement.dataset.dev = '1';   // the dev overlays below show only in the bare viewer
       try { var st = JSON.parse(localStorage.getItem('ultrack.v1')).settings || {}; look = st.look || 'dusk'; track = st.track || 'marina'; } catch (e) {}
       if (q.get('dev') === '1' && q.get('track')) track = q.get('track');
       if (!/^[a-z0-9_]+$/.test(track)) track = 'marina';
@@ -21,11 +22,14 @@
     })();
   </script>
   <style>
-    html, body { margin: 0; height: 100%; background: #05070b; overflow: hidden; font-family: system-ui, sans-serif; }
+    /* --c-bg and the game font before ui.css (and its ui-tokens.css) arrive with the module, so the first paint is the game's */
+    :root { --c-bg: #07090d; }
+    html, body { margin: 0; height: 100%; background: var(--c-bg); overflow: hidden; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
     #app { position: fixed; inset: 0; }
-    #hud { position: fixed; left: 12px; bottom: 12px; color: #cfe; font: 12px/1.4 ui-monospace, monospace;
+    #hud, #loading { display: none; }
+    [data-dev] #hud { display: block; position: fixed; left: 12px; bottom: 12px; color: #cfe; font: 12px/1.4 ui-monospace, monospace;
            background: rgba(0, 0, 0, 0.45); padding: 6px 10px; border-radius: 4px; pointer-events: none; white-space: pre; }
-    #loading { position: fixed; inset: 0; display: grid; place-items: center; color: #9cf; font: 14px ui-monospace, monospace; }
+    [data-dev] #loading { display: grid; position: fixed; inset: 0; place-items: center; color: #9cf; font: 14px ui-monospace, monospace; }
   </style>
 </head>
 <body>

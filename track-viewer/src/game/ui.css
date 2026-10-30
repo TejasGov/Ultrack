@@ -16,12 +16,14 @@
 
 #ui { position: fixed; inset: 0; pointer-events: none; color: var(--ink); font-family: var(--label); font-weight: 700; user-select: none; z-index: 10; }
 :where(#ui) * { box-sizing: border-box; }
-#ui .screen { position: absolute; inset: 0; pointer-events: auto; opacity: 0; transition: opacity 0.45s var(--ease); }
+#ui .screen { position: absolute; inset: 0; pointer-events: auto; opacity: 0; transition: opacity var(--dur-3) var(--ease-out); }   /* the 250 ms screen fade */
 #ui .screen.on { opacity: 1; }
 #ui .screen.hidden { display: none; }
 :where(#ui) :where(button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; text-align: left; }   /* :where: no specificity, so every component style wins */
 :where(#ui) :focus { outline: none; }
-:where(#ui) :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+/* one focus look for Nav (.sel) and the keyboard (:focus-visible): an accent ring outside the element; list rows take a wash and an inset bar instead */
+:where(#ui) :focus-visible, :where(#ui) .sel { outline: var(--focus-w) solid var(--focus-color); outline-offset: var(--focus-offset); }
+:where(#ui) :is(.row, .lrow, .garage .car):is(.sel, :focus-visible) { outline: none; }
 
 /* the scene behind every menu: darkened toward the menu side, a film edge at the bottom */
 .scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4, 5, 8, 0.86) 0%, rgba(4, 5, 8, 0.55) 34%, rgba(4, 5, 8, 0) 62%),
@@ -29,12 +31,18 @@
 .scrim.full { background: rgba(4, 5, 8, 0.6); backdrop-filter: blur(6px); }
 
 .logo { display: block; background: url('/assets/brand/ultrack-alpha.webp') center / contain no-repeat; aspect-ratio: 1149 / 223; filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.55)); }
-.title-screen .logo { position: absolute; left: 50%; top: 44%; width: min(70vw, 860px); transform: translate(-50%, -50%); }
-.title-screen .press { position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%); font-size: 22px; letter-spacing: 0.32em; color: var(--ink-2); animation: pulse 2.4s ease-in-out infinite; }
-.title-screen .ver { position: absolute; right: 28px; bottom: 22px; font-size: 13px; letter-spacing: 0.2em; color: var(--ink-3); }
-.title-screen .loadbar { position: absolute; left: 50%; bottom: calc(14% - 26px); width: 220px; height: 2px; transform: translateX(-50%); background: var(--line); overflow: hidden; }
-.title-screen .loadbar i { position: absolute; inset: 0; background: var(--red); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform 0.4s var(--ease); }
-@keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+/* title: the circuit's still under a light scrim, the logo at 44 %, one static prompt; while loading, a stage, a percentage and a 4 px bar */
+.title-screen .t-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.title-screen .t-scrim { position: absolute; inset: 0; background: linear-gradient(0deg, var(--c-scrim-edge), transparent 50%), radial-gradient(closest-side at 50% 44%, var(--c-scrim), transparent); }
+.title-screen .logo { position: absolute; left: 50%; top: 44%; width: calc(860 * var(--u)); transform: translate(-50%, -50%); }
+.t-status { position: absolute; left: 50%; bottom: calc(var(--gutter) + var(--sp-6)); width: calc(320 * var(--u)); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: var(--sp-5); }
+.t-press .prompt { gap: var(--sp-3); font-size: var(--fs-value); color: var(--c-ink-1); }
+.t-load { width: 100%; transition: opacity var(--dur-3) var(--ease-out); }
+.t-load.done { opacity: 0; }
+.t-loadrow { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--sp-2); }
+.t-pct { font-size: var(--fs-micro); letter-spacing: var(--track-label); color: var(--c-ink-2); }
+.bar4 { height: 4px; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
+.bar4 i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform var(--dur-3) var(--ease-out); }
 
 /* ---------------------------------------------------------------- main menu */
 .menu .brand { position: absolute; left: 70px; top: 48px; width: 230px; }
@@ -191,30 +199,126 @@
 .current-car .num { position:absolute;right:22px;top:16px;font:48px var(--num);color:var(--team); }
 .current-car .team { font-size:18px; }.current-car .drv { font-size:13px;color:var(--ink-3); }
 .bento-grid .records-tile { grid-column:span 2; }
-.records .panel,.credits .panel { position:absolute;left:8vw;right:8vw;top:7vh;bottom:7vh;max-width:none;display:flex;flex-direction:column;padding:28px;background:var(--glass);border:1px solid var(--line);border-radius:14px; }
-.credit-list,.records-list { overflow-y:auto;min-height:0;margin:12px 0 20px;flex:1; }
-.credit-card { padding:16px 0;border-bottom:1px solid var(--line);font-weight:500; }
-.credit-card h3 { margin:0 0 8px;font-size:24px; }.credit-card p { margin:5px 0;color:var(--ink-2);font-size:17px; }
-.credit-card a { color:#98d6ee;text-decoration:underline;text-underline-offset:3px; }
-.credit-notice { font-size:16px;line-height:1.5;color:var(--ink-2); }
-.record-row { display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;padding:16px;border-bottom:1px solid var(--line);font-size:22px; }
 .input-debug { position:fixed;left:16px;bottom:58px;z-index:100;pointer-events:none;padding:14px;border:1px solid #748797;border-radius:10px;background:rgba(5,9,15,.9);color:#d3f7e1;font:12px/1.55 monospace;white-space:pre-wrap; }
 @media(max-width:900px) {
   .home .brand { left:4vw;top:3vh;width:170px; }.home-heading { right:4vw;top:3vh; }
   .home-heading span { font-size:15px; }.bento-grid { left:4vw;right:4vw;top:15vh;bottom:70px;gap:8px;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr .8fr .8fr; }
   .bento-grid .race-tile { grid-row:span 2; }.bento-grid .current-car { grid-column:span 2; }.bento-grid .records-tile { grid-column:span 1; }
   .tile-desc { font-size:13px; }.tile-kicker { font-size:9px; }.home .footer { padding:0 4vw;gap:15px; }
-  .record-row { font-size:17px; }
 }
 @media(max-width:540px) {
   .home-heading { display:none; }.bento-grid { overflow:auto;grid-template-columns:1fr 1fr;grid-template-rows:repeat(6,minmax(100px,1fr)); }
   .bento-grid .race-tile { grid-row:span 1;grid-column:span 2;min-height:140px; }.race-tile strong { font-size:45px; }
   .bento-grid .bento-tile { padding:16px; }.bento-grid .current-car { padding-right:70px; }.bento-grid .records-tile { grid-column:span 2; }
 }
-@media(prefers-reduced-motion:reduce) { #ui * { animation:none!important;transition:none!important; } }
+/* reduce motion, the OS setting or the in-game one (html[data-motion=reduce], ui.js syncMotion): nothing in the UI moves, hard-coded durations included */
+@media(prefers-reduced-motion:reduce) { #ui, #ui *, #ui *::before, #ui *::after { animation:none!important;transition:none!important; } }
+:root[data-motion=reduce] :is(#ui, #ui *, #ui *::before, #ui *::after) { animation:none!important;transition:none!important; }
 
-.asset-loading { position:absolute;left:50%;bottom:64px;transform:translateX(-50%);padding:12px 24px;background:rgba(8,14,22,.96);border:1px solid #758495;border-radius:10px;z-index:80;font-size:18px;color:#fff;pointer-events:none; }
-.asset-loading[hidden] {display:none;}
+/* ---------------------------------------------------------------- system primitives (docs/ui-system.md, "Components"): screens opt in by class */
+/* the shared frame: header band (logo + title), body, footer band (prompts left, Back last) */
+.sscrim { position: absolute; inset: 0; background: var(--c-scrim); backdrop-filter: var(--blur-scrim); }
+.shead { position: absolute; left: var(--gutter); right: var(--gutter); top: var(--gutter); height: calc(40 * var(--u)); display: flex; align-items: center; gap: var(--sp-5); }
+.shead .logo { flex: none; width: calc(168 * var(--u)); filter: none; }
+.shead h1 { margin: 0; padding-left: var(--sp-5); border-left: 1px solid var(--c-line-2); font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
+.shead .kick { margin-left: auto; }
+.sbody { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(var(--gutter) + 40 * var(--u) + var(--sp-6)); bottom: calc(var(--sp-5) + 56 * var(--u) + var(--sp-3)); }
+.sfoot { position: absolute; left: var(--gutter); right: var(--gutter); bottom: var(--sp-5); height: calc(56 * var(--u)); display: flex; align-items: center; gap: var(--sp-6); border-top: 1px solid var(--c-line); }
+.sfoot .sp { flex: 1; }
+.kick { margin: 0; font-size: var(--fs-label); font-weight: 700; letter-spacing: var(--track-wide); text-transform: uppercase; color: var(--c-ink-3); }
+.pnl { background: var(--c-panel); backdrop-filter: var(--blur-panel); border: 1px solid var(--c-line); border-radius: var(--r-3); padding: var(--sp-6); }
+.empty { color: var(--c-ink-4); }
+.val { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.val small { margin-left: var(--sp-1); font-size: var(--fs-micro); letter-spacing: var(--track-label); color: var(--c-ink-3); }
+
+/* buttons: primary (one per screen), secondary, ghost (Back, Close, inline) */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); height: calc(48 * var(--u)); padding: 0 var(--sp-5); border-radius: var(--r-2);
+  font-size: var(--fs-value); line-height: 1; letter-spacing: var(--track-label); text-transform: uppercase; white-space: nowrap;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out); }
+.btn > .icon { font-size: var(--icon-m); }
+.btn-primary { background: var(--c-accent); color: var(--c-ink-1); font-style: italic; font-weight: 900; letter-spacing: var(--track-title); }
+.btn-primary:hover { background: var(--c-accent-hi); }
+:where(#ui) .btn-primary:is(.sel, :focus-visible) { outline-color: var(--c-ink-1); }   /* the accent fill already says "primary" */
+.btn-secondary { background: var(--c-fill-1); box-shadow: inset 0 0 0 1px var(--c-line-2); color: var(--c-ink-1); }
+.btn-secondary:hover { background: var(--c-fill-2); }
+.btn-ghost { padding: 0 var(--sp-3); color: var(--c-ink-2); }
+.btn-ghost:hover, .btn-ghost.sel { color: var(--c-ink-1); }
+.btn-ghost:hover { background: var(--c-fill-1); }
+.btn .prompt { margin-left: var(--sp-1); }
+
+/* prompts: keycaps (arrows are icons) or pad glyphs, by the last input device (html[data-input], ui.js setInput) */
+.prompt { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-micro); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); white-space: nowrap; }
+.prompt .pk { display: inline-flex; gap: var(--sp-1); }
+:where(#ui) kbd { display: inline-flex; align-items: center; justify-content: center; min-width: calc(24 * var(--u)); height: calc(24 * var(--u)); padding: 0 var(--sp-1);
+  border: 1px solid var(--c-line-2); border-radius: var(--r-1); font: inherit; font-size: var(--fs-micro); letter-spacing: var(--track-title); color: var(--c-ink-1); }
+kbd .icon { font-size: var(--icon-s); }
+.prompt .pp { font-size: var(--icon-m); color: var(--c-ink-1); }
+:root[data-input=pad] .prompt .pk, :root:not([data-input=pad]) .prompt .pp { display: none; }
+
+/* list rows: one grid (--cols) shared with a header row; focus is a wash and an inset accent bar, never a ring a scroller would clip */
+.lhead, .lrow { display: grid; grid-template-columns: var(--cols); align-items: center; column-gap: var(--sp-4); padding: 0 var(--sp-3); }
+.lhead { height: calc(40 * var(--u)); font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); border-bottom: 1px solid var(--c-line-2); }
+.lhead .icon { margin-right: var(--sp-2); font-size: var(--icon-s); }
+.lrow { min-height: calc(44 * var(--u)); font-size: var(--fs-value); border-bottom: 1px solid var(--c-line); transition: background-color var(--dur-1) var(--ease-out); }
+.lrow:hover { background: var(--c-fill-2); }
+:where(#ui) .lrow:is(.sel, :focus-visible) { background: var(--c-accent-wash); box-shadow: inset var(--rule) 0 0 var(--c-accent); }
+.lscroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.lscroll.more { mask-image: linear-gradient(#000 calc(100% - var(--sp-5)), transparent); }   /* the 24 px fade while more is below */
+
+/* toast (game.setBusy keeps its markup): raised, icon + text, bottom-centre in the footer band; [data-kind=error] has the accent edge */
+.asset-loading { position: absolute; left: 50%; bottom: calc(var(--sp-5) + var(--sp-1)); z-index: 80; display: flex; align-items: center; gap: var(--sp-3);
+  min-height: calc(48 * var(--u)); max-width: min(calc(720 * var(--u)), calc(100vw - 2 * var(--gutter))); padding: var(--sp-2) var(--sp-5) var(--sp-2) var(--sp-4);
+  background: var(--c-panel-2); border: 1px solid var(--c-line); border-radius: var(--r-3); box-shadow: var(--shadow-raised);
+  font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-1); pointer-events: none; opacity: 1; transform: translateX(-50%);
+  transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out), display var(--dur-3) allow-discrete; }
+.asset-loading::before { content: ''; flex: none; width: var(--icon-xl); height: var(--icon-xl); background: currentColor; mask: url('/assets/ui/icons/info.svg') center / contain no-repeat; }
+.asset-loading[data-kind=error] { box-shadow: inset var(--rule) 0 0 var(--c-accent), var(--shadow-raised); }
+.asset-loading[data-kind=error]::before { background: var(--c-accent); mask-image: url('/assets/ui/icons/error.svg'); }
+.asset-loading[hidden] { display: none; opacity: 0; transform: translate(-50%, var(--slide)); transition-duration: calc(var(--dur-3) * 0.72); transition-timing-function: var(--ease-in); }
+@starting-style { .asset-loading:not([hidden]) { opacity: 0; transform: translate(-50%, var(--slide)); } }
+
+/* ---------------------------------------------------------------- records: circuit cards (the stills) beside the roster's table */
+.rec-body { display: grid; grid-template-columns: calc(480 * var(--u)) minmax(0, 1fr); gap: var(--sp-5); }
+.rec-circuits { display: flex; flex-direction: column; gap: var(--sp-3); min-height: 0; }
+.ccard { position: relative; flex: 1 1 0; min-height: 0; display: flex; align-items: flex-end; padding: var(--sp-5); overflow: hidden; border: 1px solid var(--c-line); border-radius: var(--r-3);
+  background: var(--c-panel); transition: border-color var(--dur-1) var(--ease-out); }
+.ccard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.45; transition: opacity var(--dur-2) var(--ease-out); }
+.ccard::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, var(--c-scrim-edge), var(--c-scrim) 40%, transparent 75%); }
+.ccard .kick { color: var(--c-ink-2); }   /* over a still: one step up from a panel's ink-3 */
+.ccard:hover img { opacity: 0.7; }
+.ccard.on { border-color: var(--c-line-2); }
+.ccard.on img { opacity: 1; }
+.ccard-text { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--sp-2); }
+.ccard strong { font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
+.ccard.on .ccard-text::after { content: ''; width: calc(48 * var(--u)); height: var(--rule); background: var(--c-ink-1); }   /* selected: an ink underline, never accent */
+.ccard-check { position: absolute; z-index: 1; top: var(--sp-4); right: var(--sp-4); font-size: var(--icon-l); }
+.rec-table { display: flex; flex-direction: column; min-height: 0; padding: var(--sp-3) var(--sp-5) 0; }
+.rec-cols { --cols: 4px calc(88 * var(--u)) minmax(0, 1fr) calc(168 * var(--u)) calc(168 * var(--u)); }
+.rec-cols .c-car { grid-column: 1 / 4; }
+.rec-rows { flex: 1; }
+.rec-cols .tbar { width: 4px; height: calc(24 * var(--u)); border-radius: var(--r-1); background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }
+.rec-cols .cut { display: block; width: 100%; height: calc(40 * var(--u)); object-fit: contain; object-view-box: inset(24% 8% 12% 19%); }   /* the car's box in every still */
+.c-name { display: flex; align-items: baseline; gap: var(--sp-3); min-width: 0; white-space: nowrap; }
+.c-name b { overflow: hidden; text-overflow: ellipsis; }
+.c-name small { font-size: var(--fs-micro); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
+.c-name .icon { align-self: center; flex: none; font-size: var(--icon-s); }
+
+/* ---------------------------------------------------------------- credits: grouped, ink links, notes verbatim */
+.cr-panel { height: 100%; display: flex; flex-direction: column; padding: 0; }
+.cr-scroll { flex: 1; padding: var(--sp-6); }
+.cr-group + .cr-group { margin-top: var(--sp-7); }
+.cr-group > .kick { padding-bottom: var(--sp-3); margin-bottom: var(--sp-5); border-bottom: 1px solid var(--c-line-2); }
+.cr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-6); }
+.cr-item h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-value); font-weight: 700; line-height: var(--lh-body); }
+.cr-item p, .cr-notice { margin: var(--sp-1) 0 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); overflow-wrap: anywhere; }
+.cr-links { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); }
+.cr-dim { color: var(--c-ink-3); }
+.cr-item .cr-note { color: var(--c-ink-2); }
+.cr-notice { display: flex; gap: var(--sp-3); margin-top: var(--sp-7); padding: var(--sp-4); border-radius: var(--r-2); background: var(--c-fill-1); }
+.cr-notice .icon { flex: none; font-size: var(--icon-m); margin-top: var(--sp-1); color: var(--c-ink-1); }
+.ink-link { color: var(--c-ink-1); text-decoration: underline; text-decoration-color: var(--c-ink-3); text-underline-offset: 0.2em; border-radius: var(--r-1); transition: text-decoration-color var(--dur-1) var(--ease-out); }
+.ink-link:hover { text-decoration-color: var(--c-ink-1); }
+.ink-link .icon { margin-left: var(--sp-1); font-size: var(--icon-s); }
 
 /* ---------------------------------------------------------------- U-coins, specs and upgrades (garage.js) */
 .coinchip { margin-top: 10px; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); }

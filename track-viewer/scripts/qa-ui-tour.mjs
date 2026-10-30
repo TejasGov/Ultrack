@@ -7,6 +7,9 @@
 // Out: $OUT, or qa/ui-tour/<label>/. 1600x900; the menu, setup, garage, settings, a race HUD frame and results also at 1280x720
 // and 1920x1080. States the tour cannot reach in minutes (a lap time, a drift score, a finished race) are set on the live
 // session and say so in their file name ("sample"); results are the real session's results screen, opened mid-race.
+// A UI-pass step as the label (s1) tours only that step's screens, every shot at all three sizes, plus its keyboard and motion
+// checks in report.json "checks" (no race: light on the GPU). s1: title, records, credits, the toast.
+//   OUT=qa/ui-tour/S1-primitives-small-screens node scripts/qa-lock.mjs -- node scripts/qa-ui-tour.mjs s1
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
@@ -79,6 +82,62 @@ async function start(mode, loadingShot) {
 }
 const running = (t = 0) => page.waitForFunction((t) => window.game.session?.state === 'running' && window.game.session.raceT > t, t, { timeout: 60000 });
 const pauseOpt = async (text) => { await page.click(`.pause .opt:has-text("${text}")`); await frames(); await settle(); };
+const S1 = label === 's1', checks = {};
+const nav = (f, a) => page.evaluate(f, a);
+/** keyboard-only reach of the open screen: the arrows from every Nav stop (a search over the four keys), and Tab through the page */
+async function reach(name) {
+  const n = await nav(() => window.game.nav.items().length), seen = new Set([await nav(() => window.game.nav.i)]), todo = [...seen];
+  while (todo.length) {
+    const i = todo.shift();
+    for (const k of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) {
+      await nav((i) => window.game.nav.reset(i), i); await key(k);
+      const j = await nav(() => window.game.nav.i); if (!seen.has(j)) { seen.add(j); todo.push(j); }
+    }
+  }
+  await nav(() => { window.game.nav.reset(0); document.activeElement?.blur(); });
+  const tabbed = new Set(); let synced = true;
+  for (let t = 0; t < n + 6; t++) {
+    await key('Tab');
+    const [j, i] = await nav(() => [window.game.nav.items().indexOf(document.activeElement), window.game.nav.i]);
+    if (j >= 0) { tabbed.add(j); synced &&= i === j; }
+  }
+  checks[name] = { stops: n, arrows: seen.size, tab: tabbed.size, tabMovesNav: synced };
+}
+/** what s1 owns: title, records, credits, the toast; keyboard reach, hover, Esc, and reduce motion (no animation on a screen change) */
+async function s1() {
+  const imgs = () => page.waitForFunction(() => [...document.querySelectorAll('#ui .screen.on img')].every((i) => i.complete), null, { timeout: 15000 });
+  await page.click('.bento-tile.records-tile'); await settle(); await imgs(); await shot('records', true);
+  await reach('records');
+  await nav(() => window.game.nav.reset(0)); await page.hover('.rec-rows .lrow:nth-child(5)'); await frames();
+  checks.hoverKeepsFocus = await nav(() => window.game.nav.i === 0);
+  const cards = await page.$$('.ccard');
+  if (cards.length > 1) {                                                                       // Enter on another circuit shows its records
+    await nav(() => window.game.nav.reset([...document.querySelectorAll('.ccard')].findIndex((c) => !c.classList.contains('on'))));
+    await key('Enter'); await frames(); await imgs(); await shot('records-other-circuit', true);
+    checks.enterShowsCircuit = await nav(() => document.querySelector('.ccard.sel')?.classList.contains('on'));
+  }
+  await key('Escape'); await settle(); checks.escRecords = await nav(() => window.game.screenName === 'menu');
+  await tile('credits'); await shot('credits', true);
+  await nav(() => { const s = document.querySelector('.cr-scroll'); s.scrollTop = s.scrollHeight; }); await frames(); await shot('credits-end', true);
+  await reach('credits');
+  await key('Escape'); await settle(); checks.escCredits = await nav(() => window.game.screenName === 'menu');
+  await nav(() => window.game.setBusy('Preparing 1 car…')); await page.waitForTimeout(400); await shot('toast-busy', true);
+  await nav(() => { window.game.setBusy('Session could not load. Try Start again.'); window.game.busyEl.dataset.kind = 'error'; }); await page.waitForTimeout(400); await shot('toast-error-sample', true);
+  await nav(() => { window.game.setBusy(''); delete window.game.busyEl.dataset.kind; }); await page.waitForTimeout(400);
+  // reduce motion from the game's own setting: no CSS transition or animation runs on a screen change
+  const flip = () => nav(() => [...document.querySelectorAll('.screen.on .row')].find((r) => /Reduce motion/.test(r.textContent)).querySelector('.toggle').click());
+  await tile('settings'); await flip(); checks.motionAttr = await nav(() => document.documentElement.dataset.motion);
+  await key('Escape'); await settle();
+  const anims = [];
+  for (const sel of ['.bento-tile.records-tile', null, '.bento-tile[data-id=credits]', null]) {
+    if (sel) await page.click(sel); else await key('Escape');
+    await frames(); anims.push(await nav(() => document.getAnimations().map((a) => a.transitionProperty ?? a.animationName ?? 'animation')));
+    await settle();
+  }
+  checks.reduceMotionAnimations = anims;
+  await tile('settings'); await flip(); await key('Escape'); await settle();
+  checks.motionAttrAfter = await nav(() => document.documentElement.dataset.motion);
+}
 
 try {
   await page.goto(base);
@@ -86,8 +145,9 @@ try {
   await page.evaluate(() => document.fonts.ready);
   await shot('title-loading');
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
-  await settle(); await shot('title-ready');
+  await settle(); await shot('title-ready', S1);
   await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
+  if (S1) await s1(); else {                                                                   // the whole tour (not re-indented)
   await shot('menu', true);
   await key('ArrowRight'); await shot('menu-focus-moved');                                    // keyboard focus on the second tile
   await key('ArrowLeft');
@@ -150,13 +210,14 @@ try {
   await start('free'); await running(2); await settle(); await shot('hud-free');
   await key('Escape'); await settle(); await shot('pause-free');
   await pauseOpt('Quit to menu'); await shot('menu-after-quit');
+  }
 } catch (e) {
   errors.push('tour: ' + e.message.split('\n')[0]);
   await page.screenshot({ path: join(out, 'zz-failure.png') }).catch(() => {});
   process.exitCode = 1;
 } finally {
-  writeFileSync(join(out, 'report.json'), JSON.stringify({ base, track, shots, errors: [...new Set(errors)].slice(0, 60) }, null, 1));
+  writeFileSync(join(out, 'report.json'), JSON.stringify({ base, track, checks, shots, errors: [...new Set(errors)].slice(0, 60) }, null, 1));
   await browser.close();
 }
 const flagged = shots.filter((s) => s.audit.offscreen.length || s.audit.clipped.length || s.audit.iconGlyphs.length);
-console.log(JSON.stringify({ out, shots: shots.length, flagged: flagged.map((s) => s.file), errors: [...new Set(errors)].slice(0, 20) }, null, 1));
+console.log(JSON.stringify({ out, shots: shots.length, checks, flagged: flagged.map((s) => s.file), errors: [...new Set(errors)].slice(0, 20) }, null, 1));
