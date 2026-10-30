@@ -7,8 +7,11 @@
 //   hoardings            OPPO / vivo boards on four city façades and one BJP roadside hoarding on the city approach (images in
 //                        assets/india/ads, sources in assets/sponsors/manifest.json); Sony -> Jio is tracks.js `brands`
 //   crowd                a seated spectator on most stand seats: three instanced meshes (shirt, head, legs), no per-frame work
+//   wet-road mirror      Tokyo's mirror-height part: the plane follows the road under the camera (82% of the lap is over 3 m up,
+//                        where a mirror at y = 0 reflected the sky instead of the lamps and cars)
 // The lit windows and the warm lamp heads are in the GLB ('IN window glow night' via tracks.js dayNight, 'M_LampWarm' via glow.js).
 import * as THREE from 'three';
+import { create as mirrorHeight } from './tokyo/mirror-height.js';
 
 const AMBER = new THREE.Color(0xffb347), WARM = new THREE.Color(0xffe2b8);
 const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -80,6 +83,7 @@ export async function create({ scene, root, track, NO_MIRROR }) {
   const group = new THREE.Group(); group.name = 'india venue fx'; scene.add(group);
   const dispose = [];
   let night = 0;
+  const mirror = await mirrorHeight({ scene, track }); dispose.push(mirror);
 
   // ---- the export's boards glow after dark with a flat white emissive (the glTF lost Blender's image-linked emission, so every board
   // turned into a white bar at night): they glow with their own print, at a third (a white print at full gain bloomed like a lamp).
@@ -199,6 +203,7 @@ export async function create({ scene, root, track, NO_MIRROR }) {
       for (const mat of lit) mat.emissiveIntensity = 0.3 * night;
     },
     update(t, camera) {
+      mirror.update(t, camera);
       // retro-reflection: brightest straight back at the light source (the car / camera), a few metres to ~150 m, smooth in distance
       for (let i = 0; i < pos.length; i++) {
         toCam.subVectors(camera.position, pos[i]); const d = toCam.length();
