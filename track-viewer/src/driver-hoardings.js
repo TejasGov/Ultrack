@@ -32,7 +32,7 @@ export class DriverHoardings{
     const wanted=new Set(entries.map(entry=>entry.url));
     for(const [url,promise] of this.textures)if(!wanted.has(url)){this.textures.delete(url);promise.then(texture=>texture?.dispose());}
     const textures=await Promise.all(entries.map(e=>{
-      if(!this.textures.has(e.url))this.textures.set(e.url,this.loader.loadAsync(e.url).then(texture=>{texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;return texture;}).catch(error=>{this.textures.delete(e.url);console.warn('Driver hoarding:',e.key,error);return null;}));
+      if(!this.textures.has(e.url))this.textures.set(e.url,this.loader.loadAsync(e.url).then(texture=>{texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;return texture;}).catch(error=>{console.warn('Driver hoarding:',e.key,error);return null;}));// the null stays cached: a missing poster warns once, not on every race start
       return this.textures.get(e.url);
     }));
     if(revision!==this.revision)return;

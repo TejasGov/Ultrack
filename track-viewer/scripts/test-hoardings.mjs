@@ -26,6 +26,9 @@ try{
  boards.clear();assert.equal(boards.root.children.length,0);
  let finishTexture;boards.textures.clear();boards.loader.loadAsync=()=>new Promise(resolve=>{finishTexture=resolve;});
  const pending=boards.set([keys[0]],track);boards.clear();finishTexture(new THREE.Texture());await pending;assert.equal(boards.root.children.length,0,'Cancelled race cannot restore stale boards');
+ const warn=console.warn,missing=racingPosters([keys[1]])[0].url;console.warn=()=>{};boards.textures.clear();requests.length=0;
+ boards.loader.loadAsync=async url=>{requests.push(url);if(url===missing)throw Error('missing');return new THREE.Texture();};
+ await boards.set(keys,track);await boards.set(keys,track);console.warn=warn;assert.equal(requests.length,teams.length,'A missing poster is not refetched every race');
  const originalCreate=PhysicsWorld.create;PhysicsWorld.create=async()=>({dispose(){}});
  const points=[new THREE.Vector3(),new THREE.Vector3(100,0,0),new THREE.Vector3(100,0,100),new THREE.Vector3(0,0,100)];
  const field={all:[],N:4,length:400,linePts:points,configure({hero,racers}){this.cars=racers.map(key=>({key,hero:key===hero}));this.all=this.cars;this.hero=this.cars[0];},enablePhysics(){this.input={clear(){},setEnabled(){}};this.cars.forEach(car=>{car.vehicle={cur:{pos:points[0].clone()}};});}};
