@@ -1129,10 +1129,11 @@ function tick(now) {
   headlight.target.position.copy(camera.position).addScaledVector(fwd, 60).addScaledVector(up, -1.25);   // aim far: no hotspot at the bumper
   headlight.intensity = params.headlight && params.mode !== 'chase' ? 90 * Math.max(look.hl ?? 0.2, look.lights) : 0;   // in chase the car's own beams light the road
   const cell = 8;
-  const cx = Math.round(camera.position.x / cell) * cell, cz = Math.round(camera.position.z / cell) * cell;
-  if (cx !== sun.target.position.x || cz !== sun.target.position.z) {
-    sun.target.position.set(cx, 0, cz);
-    sun.position.set(cx, 0, cz).addScaledVector(SUN_DIR, 200);
+  // y follows too: the 140 m box aimed at y = 0 sat h*cos(sunEl) off a road h m up (India's ghat climbs to 53 m, Tokyo's bridge 28 m)
+  const cx = Math.round(camera.position.x / cell) * cell, cy = Math.round(camera.position.y / cell) * cell, cz = Math.round(camera.position.z / cell) * cell;
+  if (cx !== sun.target.position.x || cy !== sun.target.position.y || cz !== sun.target.position.z) {
+    sun.target.position.set(cx, cy, cz);
+    sun.position.set(cx, cy, cz).addScaledVector(SUN_DIR, 200);
     sun.shadow.needsUpdate = true;
   }
 
