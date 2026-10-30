@@ -5,6 +5,7 @@ import {PlayerInput} from '../src/physics/driver.js';
 import {Vehicle} from '../src/physics/vehicle.js';
 import {padSteer} from '../src/physics/player-controls.js';
 import {isModelRim} from '../src/carkit/model-rims.js';
+import {shedBodywork} from '../src/carkit/loose-parts.js';
 import {summarizeFrames} from '../src/model-benchmark.js';
 import {GameAudio} from '../src/game/audio.js';
 import {EV} from '../src/game/ev.js';
@@ -64,6 +65,20 @@ test('respawn resets steering, drift/controller history, velocities and wheel mo
 test('wheel material selectors exclude tyres, brake discs, badges and screws',()=>{
  for(const [key,name] of [['av12','Carbon'],['furari-488','M_Rim_Main_SetPT_Max.002'],['mp1x','rims'],['jaguarxkjss','crbnfibre']])assert.ok(isModelRim(key,'keep|'+name));
  for(const name of ['Tires','Brake_disk','Wheel_Screw','Rim_Badge','tyre_blk'])for(const key of ['av12','furari-488','mp1x','jaguarxkjss'])assert.equal(isModelRim(key,'keep|'+name),false);
+});
+test('a wheel group sheds body parts that reach past the tyre into the body, and leaves the wheel alone',()=>{
+ // a non-indexed mesh in wheel space (hub on Z, R .35): a tyre-sized triangle, plus a two-triangle part 1.5 m away whose second triangle sits
+ // near the hub (joined by a corner, so it is the same part); a clean wheel is left untouched
+ const tri=(...p)=>p.flat(),geo=(...tris)=>new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(tris.flat(),3)),mat=new THREE.MeshBasicMaterial();
+ const wheel=new THREE.Group(),level=new THREE.Group();wheel.position.set(1,0,0);level.position.set(0,.5,0);
+ const near=tri([0,0,0],[.3,0,0],[0,.3,0]),far1=tri([1.5,0,0],[1.6,0,0],[1.5,.1,0]),far2=tri([1.5,0,0],[.1,0,0],[0,.1,.1]);
+ const mesh=new THREE.Mesh(geo(near,far1,far2),mat);wheel.add(mesh);
+ shedBodywork(wheel,.35,level);
+ assert.equal(mesh.geometry.attributes.position.count,3,'only the wheel-sized triangle stays in the wheel');
+ assert.equal(level.children.length,1);const part=level.children[0];assert.equal(part.material,mat);assert.equal(part.geometry.attributes.position.count,6);
+ assert.deepEqual([...part.geometry.attributes.position.array.slice(0,3)].map(v=>+v.toFixed(3)),[2.5,-.5,0],'the part lands in body space (wheel offset in, body offset out)');
+ const clean=new THREE.Group(),m2=new THREE.Mesh(geo(near),mat);clean.add(m2);shedBodywork(clean,.35,level);
+ assert.equal(level.children.length,1);assert.equal(m2.geometry.attributes.position.count,3);
 });
 test('frame-time reports use percentile samples, rejecting invalid data',()=>{
  assert.deepEqual(summarizeFrames([1,2,3,4,100]),{frames:5,meanMs:22,p50Ms:3,p95Ms:100});assert.throws(()=>summarizeFrames([]));

@@ -83,11 +83,11 @@ try{
  console.log('Economy: migration, prices by class, purchase rules, earnings by mode, pacing and upgrade gains hold.');
  const {Field,KEYS}=await server.ssrLoadModule('/src/cars.js'),field=new Field(new THREE.Scene());
  field.input=new PlayerInput({target:new EventTarget(),doc:new EventTarget(),pads:()=>[]});
- field.all=KEYS.map(key=>({key,root:new THREE.Group(),beams:[],wheels:[{pivot:new THREE.Group()}]}));field.hero=field.all[0];
+ field.all=KEYS.map(key=>({key,root:new THREE.Group(),beams:[],wheels:[{pivot:new THREE.Group(),spin:new THREE.Group()}]}));field.hero=field.all[0];
  for(let i=0;i<12;i++){
-  field.input.keys.add('KeyA');field.input.read(.3);field.all.forEach(c=>c.wheels[0].pivot.rotation.y=.4);
+  field.input.keys.add('KeyA');field.input.read(.3);field.all.forEach(c=>{c.wheels[0].pivot.rotation.y=.4;c.wheels[0].spin.rotation.z=2.5;});
   field.configure({hero:KEYS[i],racers:KEYS});assert.equal(field.input.read(.1).steer,0);
-  assert.ok(field.all.every(c=>c.wheels[0].pivot.rotation.y===0));
+  assert.ok(field.all.every(c=>c.wheels[0].pivot.rotation.y===0&&c.wheels[0].spin.rotation.z===0),'a new session starts every car with its wheels square and unturned');
  }
  const raceKeys=KEYS.slice(0,7);
  field.configure({hero:raceKeys[0],racers:raceKeys});

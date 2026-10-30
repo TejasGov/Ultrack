@@ -35,6 +35,7 @@ import { wheelStep } from './wheelDroop.js';
 import { RAPIER } from './physics/world.js';
 import { buildMirrors } from './carkit/mirrors.js';
 import { Chassis } from './carkit/chassis.js';
+import { shedBodywork } from './carkit/loose-parts.js';
 import { ActiveAero } from './carkit/aero.js';
 import { setLamps } from './carkit/lamps.js';
 import { Vehicle } from './physics/vehicle.js';
@@ -354,6 +355,7 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero, 
   const detail = [], simple = [];
   for (const w of wheelSet.wheels) {
     mergeByMaterial(w.spin, false);
+    shedBodywork(w.spin, w.spec.radius, lod.levels[0].object);     // body parts a model's wheel node holds would spin round the hub
     w.spin.children.forEach((o) => detail.push(o));
     const cal = w.pivot.getObjectByName(`${w.pivot.name}_calipers`);
     if (cal) { mergeByMaterial(cal); detail.push(cal); }
@@ -588,7 +590,7 @@ export class Field {
     for (const c of this.all) {
       c.hero=c===next;delete c.vehicle;delete c.ai;c.root.visible=true;c.root.quaternion.identity();
       c.speed=c.brake=c.steer=c.throttle=0;c.chassis?.reset();
-      for(const w of c.wheels){w.pivot.rotation.y=0;if(w.baseY!==undefined)w.pivot.position.y=w.baseY;}
+      for(const w of c.wheels){w.pivot.rotation.y=0;w.spin.rotation.z=0;if(w.baseY!==undefined)w.pivot.position.y=w.baseY;}   // the last session's wheel angle does not carry over
       if(c.shadow){c.shadow.rotation.set(0,0,0);c.shadow.position.y=0.025;c.shadow.material.opacity=0.85;}   // flat again (groundShadow tilts it while driving)
     }
     this.hero = next;
