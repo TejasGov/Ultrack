@@ -49,8 +49,17 @@ export class GarageRoom {
   }
 
   /** Build the room's programs in parallel before its first frame: a first synchronous draw compiled them one by one and froze the
-   *  title for seconds on a cold shader cache. Same state as render(), so the program keys match. */
-  compile(car) { let ready=Promise.resolve(); this.render(car,0,{draw:()=>{ready=this.renderer.compileAsync(this.scene,this.camera);}}); return ready; }
+   *  title for seconds on a cold shader cache. Same state as render(), so the program keys match; and again into a linear target,
+   *  for the variants the car glass's transmission pre-pass draws (linear output, no tone mapping). */
+  compile(car) {
+    let ready=Promise.resolve();
+    this.render(car,0,{draw:()=>{
+      const r=this.renderer,was=r.getRenderTarget();this.linear??=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType});
+      try{r.setRenderTarget(null);const screen=r.compileAsync(this.scene,this.camera);r.setRenderTarget(this.linear);ready=Promise.all([screen,r.compileAsync(this.scene,this.camera)]);}
+      finally{r.setRenderTarget(was);}
+    }});
+    return ready;
+  }
 
   render(car,dt,{garage=false,reduceMotion=false,draw}={}) {
     if(!car)return;
