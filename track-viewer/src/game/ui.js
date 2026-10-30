@@ -6,7 +6,7 @@ import {teamLogoUrl} from '../team-logos.js';
 import { carName, ROSTER } from './carinfo.js';
 import { MODES } from './session.js';
 import { store, ASSISTS, WEATHER, fmtTime } from './store.js';
-import { trackOf, availableTracks } from '../tracks.js';
+import { trackOf, availableTracks, optionalJson, trackUrl } from '../tracks.js';
 import { icon } from './icons.js';
 
 export const TEAM_OF = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, t])));
@@ -89,7 +89,7 @@ export class Nav {
     let best=-1,score=Infinity;
     L.forEach((e,i)=>{if(i===this.i)return;const b=e.getBoundingClientRect(),xx=b.x+b.width/2-x,yy=b.y+b.height/2-y;
       const ahead=xx*dx+yy*dy,cross=Math.abs(xx*dy-yy*dx);
-      if(ahead>1&&ahead+cross*2<score){score=ahead+cross*2;best=i;}
+      if(ahead>1&&ahead+cross*2<score-1){score=ahead+cross*2;best=i;}   // a tie within 1 px keeps the earlier stop: Right from Race is Time Trial, not Garage
     });
     if(best>=0){this.i=best;this.mark(true);}
   }
@@ -170,26 +170,66 @@ export function TitleScreen(game) {
   return { el, onKey: go, progress, ready: () => { progress(1); load.classList.add('done'); } };
 }
 
+/** a circuit's length (m) and corner count from its track.json, fetched once per circuit (null until it answers, or if it cannot) */
+const FACTS = {};
+const factsOf = (t) => FACTS[t.id] ??= optionalJson(trackUrl(t, 'track')).then((j) => j && { m: j.lapLength, corners: j.corners?.length });
+/** a stat readout: label, tabular value, unit (docs/ui-system.md "Stat readout") */
+const stat = (label, value, unit) => h('span.stat-r', {}, h('small', {}, label), h('b.tnum', {}, value, unit ? h('small', {}, unit) : null));
+
+/** the bento home: the Race tile on the selected circuit's still, the modes, your car, records, settings and credits. Every tile
+ *  is a Nav stop with one look: a kicker, a word, an arrow-up-right go mark; focus is a ring plus a wash that never hides a still. */
 export function MenuScreen(game) {
-  const tile=(id,label,kicker,desc,cls='')=>h('button.bento-tile.'+cls,{
-    'data-nav':'','data-id':id,'data-desc':desc,onmouseenter:e=>nav.hover(e.currentTarget),
-    onclick:()=>MODES[id]?game.show('setup',id):game.show(id)
-  },h('span.tile-kicker',{},kicker),h('strong',{},label),h('span.tile-desc',{},desc),h('span.tile-arrow',{'aria-hidden':'true'},'↗'));
-  const coinChip=h('div.coinchip'),current=h('button.bento-tile.current-car',{'data-nav':'','aria-label':'Current car, open garage',onclick:()=>game.show('garage'),onmouseenter:e=>nav.hover(e.currentTarget)}),record=h('span.tile-desc');
-  const grid=h('div.bento-grid',{},
-    tile('race','Race','01 / THE MAIN EVENT',MODES.race.desc,'race-tile'),
-    tile('trial','Time Trial','02 / CHASE YOUR BEST',MODES.trial.desc,'trial-tile'),
-    tile('drift','Drift Attack','03 / FIND THE LIMIT',MODES.drift.desc,'drift-tile'),
-    tile('free','Free Drive','04 / YOUR CIRCUIT',MODES.free.desc,'free-tile'),
-    tile('garage','Garage','THE COLLECTION',ROSTER.length + ' cars. Your colours. Your upgrades.','garage-tile'),
+  const go = (id) => () => (MODES[id] ? game.show('setup', id) : game.show(id));
+  const tile = (id, ic, word, kicker, desc, cls = '', extra = null, bg = null) => h('button.bento-tile.' + cls, { 'data-nav': '', 'data-id': id, onclick: go(id) }, bg,
+    h('span.tile-top', {}, icon(ic, { cls: 'tile-icon' }), icon('arrow-up-right', { cls: 'tile-go' })),
+    h('span.tile-text', {}, h('span.tile-kicker', {}, kicker), h('strong', {}, word), desc ? h('span.tile-desc', {}, desc) : null, extra));
+  const raceStill = h('img.tile-still', { alt: '', decoding: 'async' }), circuit = h('b'), len = h('b.tnum'), corners = h('b.tnum');
+  const facts = h('span.tile-facts', {}, h('span.stat-r', {}, h('small', {}, 'Circuit'), circuit), h('span.stat-r', {}, h('small', {}, 'Length'), len), h('span.stat-r', {}, h('small', {}, 'Corners'), corners));
+  const race = tile('race', 'race', 'Race', 'The main event', MODES.race.desc, 'race-tile', facts, raceStill);
+  const best = h('span.tile-desc.tile-best');
+  const current = h('button.bento-tile.current-car', { 'data-nav': '', 'aria-label': 'Your car: open the garage', onclick: () => game.show('garage') });
+  const grid = h('div.bento-grid', {}, race,
+    tile('trial', 'time-trial', 'Time Trial', 'Chase your best', MODES.trial.desc, 'trial-tile'),
+    tile('drift', 'drift', 'Drift Attack', 'Find the limit', MODES.drift.desc, 'drift-tile'),
+    tile('free', 'free-drive', 'Free Drive', 'Your circuit', MODES.free.desc, 'free-tile'),
+    tile('garage', 'garage', 'Garage', 'The collection', ROSTER.length + ' cars. Your colours. Your upgrades.', 'garage-tile'),
     current,
-    h('button.bento-tile.records-tile',{'data-nav':'',onclick:()=>game.show('records'),onmouseenter:e=>nav.hover(e.currentTarget)},h('span.tile-kicker',{},'PERSONAL RECORDS'),h('strong',{},'The timing board'),record),
-    tile('settings','Settings','MAKE IT YOURS','Picture, driving and sound.','settings-tile'),
-    tile('credits','Credits','THE PEOPLE & THE CRAFT','Model creators, sources and licenses.','credits-tile'));
-  const trackName=document.createTextNode('');
-  const el=screen('menu.home',h('div.scrim'),h('i.logo.brand'),h('div.home-heading',{},trackName,h('span',{},'THE CIRCUIT IS YOURS'),coinChip),grid,
-    h('div.footer',{},h('span',{},h('b',{},'ARROWS'),'SELECT'),h('span',{},h('b',{},'ENTER'),'GO'),h('div.sp'),h('span',{},'ULTRACK / V2')));
-  return {el,nav:true,grid:true,onShow(){trackName.textContent=trackOf(store.settings.track).name.toUpperCase();coinChip.textContent='U-COINS  '+store.coins.toLocaleString('en');fillCard(current,store.data.car);const best=store.bestOf(store.data.car);record.textContent=(best?'BEST '+fmtTime(best):'Set your first lap')+' · '+carName(store.data.car);},back(){game.show('title');}};
+    tile('records', 'trophy', 'Records', 'Personal records', null, 'records-tile', best),
+    tile('settings', 'settings', 'Settings', 'Make it yours', 'Picture, driving and sound.', 'settings-tile'),
+    tile('credits', 'people', 'Credits', 'The people and the craft', 'Model creators, sources and licenses.', 'credits-tile'));
+  const trackName = h('span'), coins = h('b.tnum');
+  // .home-heading's first child is the circuit name (scripts/qa-track-switch.mjs reads it)
+  const el = screen('home', h('div.sscrim'),
+    h('header.shead', {}, h('i.logo'), h('div.home-heading', {}, h('span.hh-item', {}, icon('track'), trackName), h('span.hh-item.hh-coins', { 'aria-label': 'U-coins' }, icon('coin'), coins))),
+    h('div.sbody', {}, grid),
+    h('div.sfoot', {}, prompt(['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'), prompt('Enter', 'a', 'Go')));
+  let shown = null;   // the circuit on the Race tile: the still and facts change only when it does (no reload flash)
+  return {
+    el, nav: true, grid: true,
+    onShow() {
+      const t = trackOf(store.settings.track), mph = store.settings.units === 'mph';
+      trackName.textContent = t.name; coins.textContent = store.coins.toLocaleString('en');
+      fillCarTile(current, store.data.car);
+      const k = store.data.car, b = store.bestOf(k), d = store.driftOf(k);   // this circuit, your car
+      fill(best, stat('Best lap', b ? fmtTime(b) : empty()), stat('Best drift', d ? d.toLocaleString('en') : empty(), d ? 'PTS' : null), stat('Car', carName(k)));
+      if (shown === t.id + mph) return; shown = t.id + mph;
+      raceStill.src = still('tracks', t.id); circuit.textContent = t.name; fill(len, empty()); fill(corners, empty());
+      factsOf(t).then((f) => {
+        if (!f || shown !== t.id + mph) return;
+        fill(len, f.m ? [(f.m / (mph ? 1609.344 : 1000)).toFixed(2), h('small', {}, mph ? 'MI' : 'KM')] : empty()); fill(corners, f.corners ? String(f.corners) : empty());
+      });
+    },
+    // no back(): Esc and pad B do nothing on the menu, the title is boot only
+  };
+}
+
+/** the menu's "Your car" tile: the cutout over a team-tinted panel, the name, the team logo and the driver */
+function fillCarTile(card, key) {
+  const t = TEAM_OF[key], e = ENTRY[key];
+  css(card, { '--team': teamMark(t) });
+  fill(card, h('img.tile-car', { src: still('cars', key), alt: '', decoding: 'async' }),
+    h('span.tile-top', {}, h('span.tile-kicker', {}, 'YOUR CAR'), icon('arrow-up-right', { cls: 'tile-go' })),
+    h('span.tile-text', {}, h('strong', {}, carName(key)), teamLogo(t), h('span.tile-drv', {}, icon('helmet'), e.driver.name, h('small', {}, e.driver.nation))));
 }
 
 /** records per circuit: circuit cards (the stills) on the left, the roster's best lap and best drift on the right. Viewing a

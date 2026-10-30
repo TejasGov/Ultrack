@@ -44,20 +44,6 @@
 .bar4 { height: 4px; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
 .bar4 i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform var(--dur-3) var(--ease-out); }
 
-/* ---------------------------------------------------------------- main menu */
-.menu .brand { position: absolute; left: 70px; top: 48px; width: 230px; }
-.menu .list { position: absolute; left: 64px; top: 50%; transform: translateY(-46%); display: flex; flex-direction: column; gap: 2px; }
-.menu .item { position: relative; display: flex; align-items: baseline; gap: 18px; padding: 8px 40px 8px 22px; font-style: italic; font-weight: 900; font-size: 52px;
-  line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink-3); transition: color 0.25s var(--ease), transform 0.35s var(--ease); }
-.menu .item small { font-size: 15px; letter-spacing: 0.24em; font-weight: 800; color: var(--ink-3); opacity: 0; transition: opacity 0.25s; }
-.menu .item::before { content: ''; position: absolute; left: 0; top: 10%; bottom: 10%; width: 5px; background: var(--red); transform: skewX(-14deg) scaleY(0); transition: transform 0.35s var(--ease); }
-.menu .item.sel, .menu .item:hover { color: var(--ink); transform: translateX(10px); }
-.menu .item.sel::before, .menu .item:hover::before { transform: skewX(-14deg) scaleY(1); }
-.menu .item.sel small { opacity: 1; }
-.menu .item.minor { font-size: 34px; margin-top: 2px; }
-.menu .item.minor:first-of-type { margin-top: 18px; }
-.menu .blurb { position: absolute; left: 86px; bottom: 98px; max-width: 460px; font-size: 20px; color: var(--ink-2); font-weight: 700; line-height: 1.3; min-height: 54px; }
-
 .carcard { position: absolute; right: 56px; bottom: 82px; width: 360px; padding: 18px 22px 18px 26px; background: var(--glass); backdrop-filter: blur(10px);
   clip-path: polygon(var(--slant) 0, 100% 0, 100% 100%, 0 100%, 0 var(--slant)); border-left: 4px solid var(--team, var(--red)); }
 .carcard .k { font-size: 13px; letter-spacing: 0.28em; color: var(--ink-3); }
@@ -66,7 +52,6 @@
 .team-logo { display:block; width:200px; max-width:100%; height:50px; object-fit:contain; object-position:left center; }
 .garage .cars h3 .team-logo { width:156px; height:39px; }
 .garage .title .team-logo { width:220px; height:55px; }
-.current-car .team-logo { width:160px; height:40px; }
 .carcard .drv { font-size: 16px; color: var(--ink-2); margin-top: 6px; letter-spacing: 0.04em; }
 .carcard .num { position: absolute; right: 20px; top: 14px; font-family: var(--num); font-size: 54px; color: var(--team, var(--red)); opacity: 0.9; }
 
@@ -167,7 +152,6 @@
 .results .acts { display: flex; gap: 14px; }
 
 @media (max-width: 900px) {
-  .menu .item { font-size: 38px; } .menu .item.minor { font-size: 26px; } .menu .brand { left: 24px; width: 220px; } .menu .list { left: 24px; }
   .carcard { display: none; } .setup, .settings { left: 16px; right: 16px; width: auto; }
 }
 
@@ -178,39 +162,7 @@
 :where(#ui) ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); }
 
 
-/* V2: shared tile language for the home screen and race telemetry. */
-.home .scrim { background: linear-gradient(90deg,rgba(5,9,15,.9),rgba(5,9,15,.55)),linear-gradient(0deg,rgba(5,9,15,.9),transparent); }
-.home .brand { left:5vw;top:4vh;width:210px; }
-.home-heading { position:absolute;right:5vw;top:4vh;text-align:right;font-size:12px;letter-spacing:.24em;color:var(--ink-3); }
-.home-heading span { display:block;margin-top:8px;color:var(--ink);font-size:20px; }
-.bento-grid { position:absolute;left:5vw;right:5vw;top:17vh;bottom:86px;display:grid;grid-template-columns:1.45fr 1fr 1fr 1fr;grid-template-rows:1fr 1fr .72fr;gap:12px; }
-.bento-grid .bento-tile { position:relative;min-width:0;padding:clamp(14px,2vw,28px);display:flex;flex-direction:column;justify-content:flex-end;gap:9px;background:rgba(19,27,38,.9);border:1px solid rgba(255,255,255,.13);border-radius:12px;text-align:left;overflow:hidden;transition:background .2s,border-color .2s,transform .2s; }
-.bento-grid .bento-tile.sel,.bento-grid .bento-tile:hover,.bento-grid .bento-tile:focus-visible { background:rgba(38,47,61,.97);border-color:var(--ink);transform:translateY(-2px);outline:0; }
-.bento-tile strong { font-size:clamp(22px,2.6vw,40px);line-height:1;text-transform:uppercase;font-style:italic; }
-.tile-kicker { font-size:11px;letter-spacing:.16em;color:var(--ink-2); }
-.tile-desc { font-size:clamp(13px,1.25vw,18px);font-weight:500;color:var(--ink-2);line-height:1.25;max-width:90%; }
-.tile-arrow { position:absolute;right:18px;top:16px;font-size:25px;color:var(--ink-3); }
-.bento-grid .race-tile { grid-row:span 2;background:linear-gradient(145deg,#a50c19,#400e1d 60%,#141c29);justify-content:flex-end; }
-.race-tile::before { content:'01';position:absolute;top:-12px;left:10px;font:clamp(100px,15vw,220px)/1 var(--num);opacity:.1; }
-.race-tile strong { font-size:clamp(45px,6vw,88px); }
-.bento-grid .current-car { grid-column:span 2;background:linear-gradient(115deg,rgba(19,27,38,.96),rgba(28,40,55,.88));padding-right:76px; }
-.current-car .k { font-size:11px;color:var(--ink-3);letter-spacing:.16em; }
-.current-car .name { font:clamp(20px,2.5vw,38px)/1.1 var(--num); }
-.current-car .num { position:absolute;right:22px;top:16px;font:48px var(--num);color:var(--team); }
-.current-car .team { font-size:18px; }.current-car .drv { font-size:13px;color:var(--ink-3); }
-.bento-grid .records-tile { grid-column:span 2; }
 .input-debug { position:fixed;left:16px;bottom:58px;z-index:100;pointer-events:none;padding:14px;border:1px solid #748797;border-radius:10px;background:rgba(5,9,15,.9);color:#d3f7e1;font:12px/1.55 monospace;white-space:pre-wrap; }
-@media(max-width:900px) {
-  .home .brand { left:4vw;top:3vh;width:170px; }.home-heading { right:4vw;top:3vh; }
-  .home-heading span { font-size:15px; }.bento-grid { left:4vw;right:4vw;top:15vh;bottom:70px;gap:8px;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr .8fr .8fr; }
-  .bento-grid .race-tile { grid-row:span 2; }.bento-grid .current-car { grid-column:span 2; }.bento-grid .records-tile { grid-column:span 1; }
-  .tile-desc { font-size:13px; }.tile-kicker { font-size:9px; }.home .footer { padding:0 4vw;gap:15px; }
-}
-@media(max-width:540px) {
-  .home-heading { display:none; }.bento-grid { overflow:auto;grid-template-columns:1fr 1fr;grid-template-rows:repeat(6,minmax(100px,1fr)); }
-  .bento-grid .race-tile { grid-row:span 1;grid-column:span 2;min-height:140px; }.race-tile strong { font-size:45px; }
-  .bento-grid .bento-tile { padding:16px; }.bento-grid .current-car { padding-right:70px; }.bento-grid .records-tile { grid-column:span 2; }
-}
 /* reduce motion, the OS setting or the in-game one (html[data-motion=reduce], ui.js syncMotion): nothing in the UI moves, hard-coded durations included */
 @media(prefers-reduced-motion:reduce) { #ui, #ui *, #ui *::before, #ui *::after { animation:none!important;transition:none!important; } }
 :root[data-motion=reduce] :is(#ui, #ui *, #ui *::before, #ui *::after) { animation:none!important;transition:none!important; }
@@ -320,8 +272,52 @@ kbd .icon { font-size: var(--icon-s); }
 .ink-link:hover { text-decoration-color: var(--c-ink-1); }
 .ink-link .icon { margin-left: var(--sp-1); font-size: var(--icon-s); }
 
+/* ---------------------------------------------------------------- home (bento): the circuit's still on Race, icon + kicker + word + go mark on every tile */
+.home-heading { margin-left: auto; display: flex; align-items: center; gap: var(--sp-5); font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-2); }
+.hh-item { display: inline-flex; align-items: center; gap: var(--sp-2); white-space: nowrap; }
+.hh-item .icon { font-size: var(--icon-m); }
+.hh-coins { padding-left: var(--sp-5); border-left: 1px solid var(--c-line-2); color: var(--c-ink-1); }   /* coins are ink with the coin icon, never gold */
+.hh-coins b { font-size: var(--fs-value); letter-spacing: 0; }
+.bento-grid { height: 100%; display: grid; grid-template-columns: 1.45fr 1fr 1fr 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) auto; gap: var(--sp-3); }
+.bento-tile { position: relative; isolation: isolate; min-width: 0; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: var(--sp-3);
+  padding: var(--sp-5); overflow: hidden; background: var(--c-panel); border: 1px solid var(--c-line); border-radius: var(--r-3); }
+/* one overlay under the text: hover fill, focus wash and (Race) the still's scrim; it sits over a still, so focus never replaces the picture */
+.bento-tile::before { content: ''; position: absolute; inset: 0; z-index: -1; transition: background-color var(--dur-1) var(--ease-out); }
+.bento-tile:hover::before { background-color: var(--c-fill-2); }
+:where(#ui) .bento-tile:is(.sel, :focus-visible)::before { background-color: var(--c-accent-wash); }
+.tile-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); }
+.tile-icon { font-size: var(--icon-l); color: var(--c-ink-1); }
+.tile-go { font-size: var(--icon-m); color: var(--c-ink-3); transition: color var(--dur-1) var(--ease-out); }
+.bento-tile:is(:hover, .sel, :focus-visible) .tile-go { color: var(--c-ink-1); }
+.tile-text { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; }
+.tile-kicker { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bento-tile strong { font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
+.tile-desc { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); max-width: 40ch; }
+.stat-r { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+.stat-r > small { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
+.stat-r > b { font-size: var(--fs-value); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stat-r b small { margin-left: var(--sp-1); font-size: var(--fs-micro); letter-spacing: var(--track-label); color: var(--c-ink-3); }
+/* Race: two rows, the selected circuit's still under a bottom-up scrim, the facts on a hairline */
+.race-tile { grid-row: span 2; }
+.tile-still { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.race-tile::before { background-image: linear-gradient(0deg, var(--c-scrim-edge), var(--c-scrim) 45%, transparent 80%); }
+.race-tile strong { font-size: var(--fs-display); }
+.race-tile :is(.tile-kicker, .tile-desc, .stat-r > small) { color: var(--c-ink-2); }   /* over a still: one step up from a panel's ink */
+.tile-facts { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--sp-6); margin-top: var(--sp-3); padding-top: var(--sp-4); border-top: 1px solid var(--c-line-2); }
+/* Your car: the cutout over a team-tinted panel (identity only), the name, the logo and the driver */
+.current-car { grid-column: span 2; background: linear-gradient(90deg, transparent 25%, color-mix(in srgb, var(--team) 12%, transparent)), var(--c-panel); }   /* the tint behind the car, the words on neutral */
+.tile-car { position: absolute; z-index: -2; right: var(--sp-4); bottom: var(--sp-2); width: 60%; height: 82%; object-fit: contain; object-position: right bottom; object-view-box: inset(24% 8% 12% 19%); }
+.current-car .tile-text { max-width: 44%; }
+.current-car .team-logo { width: calc(160 * var(--u)); height: calc(40 * var(--u)); }
+.tile-drv { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-body); color: var(--c-ink-2); white-space: nowrap; }
+.tile-drv .icon { font-size: var(--icon-s); }
+.tile-drv small { font-size: var(--fs-micro); letter-spacing: var(--track-label); color: var(--c-ink-3); }
+.records-tile { grid-column: span 2; }
+/* Records: kicker and word on the left, your car's best on this circuit on the right */
+.records-tile .tile-text { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--sp-6); }
+.tile-best { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: var(--sp-7); }
+
 /* ---------------------------------------------------------------- U-coins, specs and upgrades (garage.js) */
-.coinchip { margin-top: 10px; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); }
 .garage .detail { width: 470px; }
 .garage .progression { display: grid; gap: 4px; margin: 12px 0 18px; padding: 10px 12px; border-left: 3px solid var(--team); background: rgba(255,255,255,.045); }
 .garage .progression strong { font-size: 23px; letter-spacing: .06em; }

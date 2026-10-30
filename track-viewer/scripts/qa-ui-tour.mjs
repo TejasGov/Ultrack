@@ -8,7 +8,8 @@
 // and 1920x1080. States the tour cannot reach in minutes (a lap time, a drift score, a finished race) are set on the live
 // session and say so in their file name ("sample"); results are the real session's results screen, opened mid-race.
 // A UI-pass step as the label (s1) tours only that step's screens, every shot at all three sizes, plus its keyboard and motion
-// checks in report.json "checks" (no race: light on the GPU). s1: title, records, credits, the toast.
+// checks in report.json "checks" (no race: light on the GPU). s1: title, records, credits, the toast. s2: the bento home (and
+// one circuit switch in setup, which loads the other venue).
 //   OUT=qa/ui-tour/S1-primitives-small-screens node scripts/qa-lock.mjs -- node scripts/qa-ui-tour.mjs s1
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -139,6 +140,34 @@ async function s1() {
   checks.motionAttrAfter = await nav(() => document.documentElement.dataset.motion);
 }
 
+const S2 = label === 's2';
+/** what s2 owns: the bento home. Three sizes, the focused Race tile keeping its still, keyboard reach, Esc staying on the menu,
+ *  and the Race tile following a circuit switched in setup */
+async function s2() {
+  const imgs = () => page.waitForFunction(() => [...document.querySelectorAll('#ui .screen.on img')].every((i) => i.complete), null, { timeout: 15000 });
+  const raceStill = () => nav(() => { const t = document.querySelector('.bento-tile[data-id=race]'), i = t.querySelector('.tile-still');
+    return { sel: t.classList.contains('sel'), src: i.getAttribute('src'), loaded: i.complete && i.naturalWidth > 0, visible: i.checkVisibility({ checkOpacity: true }), facts: t.querySelector('.tile-facts').textContent }; });
+  const facts = () => page.waitForFunction(() => !/—/.test(document.querySelector('.tile-facts').textContent), null, { timeout: 10000 }).catch(() => {});
+  await nav(() => window.game.nav.reset(0)); await imgs(); await facts();
+  await shot('menu', true);
+  checks.raceFocused = await raceStill();
+  await key('ArrowRight'); await shot('menu-focus-moved', true);
+  await reach('menu');
+  await nav(() => window.game.nav.reset(2)); await page.hover('.bento-tile[data-id=race]'); await frames(); await shot('menu-hover-race');
+  checks.hoverKeepsFocus = await nav(() => window.game.nav.i === 2);
+  await key('Escape'); await page.waitForTimeout(400); checks.escStaysOnMenu = await nav(() => window.game.screenName === 'menu');
+  // switch the circuit in setup: the Race tile then shows the new circuit's still
+  await tile('race'); await page.waitForTimeout(600);
+  const other = await nav(() => { const r = [...document.querySelectorAll('.panel.setup .row')].find((e) => /Circuit/i.test(e.querySelector('label')?.textContent ?? ''));
+    const b = r && [...r.querySelectorAll('.seg button')].find((x) => !x.classList.contains('on')); b?.click(); return b?.textContent ?? null; });
+  if (other) {
+    await page.waitForFunction(() => window.game.trackP, null, { timeout: 5000 }); await nav(() => window.game.trackP);
+    await key('Escape'); await settle(); await nav(() => window.game.nav.reset(0)); await imgs(); await facts();
+    checks.afterSwitch = { picked: other, ...(await raceStill()), saved: await nav(() => JSON.parse(localStorage.getItem('ultrack.v1')).settings.track) };
+    await shot('menu-after-circuit-switch', true);
+  } else checks.afterSwitch = 'one circuit only: no switch';
+}
+
 try {
   await page.goto(base);
   await page.waitForSelector('.title-screen.on', { timeout: 60000 });
@@ -147,7 +176,7 @@ try {
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
   await settle(); await shot('title-ready', S1);
   await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
-  if (S1) await s1(); else {                                                                   // the whole tour (not re-indented)
+  if (S1) await s1(); else if (S2) await s2(); else {                                                                // the whole tour (not re-indented)
   await shot('menu', true);
   await key('ArrowRight'); await shot('menu-focus-moved');                                    // keyboard focus on the second tile
   await key('ArrowLeft');
