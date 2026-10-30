@@ -16,6 +16,7 @@
 /* one focus look for Nav (.sel) and the keyboard (:focus-visible): an accent ring outside the element; list rows take a wash and an inset bar instead */
 :where(#ui) :focus-visible, :where(#ui) .sel { outline: var(--focus-w) solid var(--focus-color); outline-offset: var(--focus-offset); }
 :where(#ui) :is(.row, .lrow):is(.sel, :focus-visible) { outline: none; }
+:where(#ui) .race-loading:focus-visible { outline: none; }   /* the dialog holds focus at rest (race-loading.js); only Tab onto Back shows a ring */
 
 .logo { display: block; background: url('/assets/brand/ultrack-alpha.webp') center / contain no-repeat; aspect-ratio: 1149 / 223; filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.55)); }
 /* title: the circuit's still under a light scrim, the logo at 44 %, one static prompt; while loading, a stage, a percentage and a 4 px bar */
@@ -145,6 +146,7 @@ kbd .icon { font-size: var(--icon-s); }
 .cr-scroll { flex: 1; padding: var(--sp-6); }
 .cr-group + .cr-group { margin-top: var(--sp-7); }
 .cr-group > .kick { padding-bottom: var(--sp-3); margin-bottom: var(--sp-5); border-bottom: 1px solid var(--c-line-2); }
+.cr-intro { margin: 0 0 var(--sp-5); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }   /* what holds for the whole group, said once */
 .cr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-6); }
 .cr-item h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-value); font-weight: 700; line-height: var(--lh-body); }
 .cr-item p, .cr-notice { margin: var(--sp-1) 0 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); overflow-wrap: anywhere; }
@@ -192,8 +194,12 @@ kbd .icon { font-size: var(--icon-s); }
 .race-tile strong { font-size: var(--fs-display); }
 .race-tile :is(.tile-kicker, .tile-desc, .stat-r > small) { color: var(--c-ink-2); }   /* over a still: one step up from a panel's ink */
 .tile-facts { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--sp-6); margin-top: var(--sp-3); padding-top: var(--sp-4); border-top: 1px solid var(--c-line-2); }
-/* Your car: the cutout over a team-tinted panel (identity only), the name, the logo and the driver */
-.current-car { grid-column: span 2; background: linear-gradient(90deg, transparent 25%, color-mix(in srgb, var(--team) 12%, transparent)), var(--c-panel); }   /* the tint behind the car, the words on neutral */
+/* Your car: the cutout on the plain panel (a team colour is identity only, never a fill), the name, the logo and the driver */
+.current-car { grid-column: span 2; }
+/* Garage: three cars of the roster in the band between the icon and the words (it was the one medium tile with no picture) */
+.garage-tile .tile-top { order: -1; }
+.tile-cars { flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: var(--sp-3); }
+.tile-cars img { flex: 1 1 0; min-width: 0; height: 100%; max-height: calc(88 * var(--u)); object-fit: contain; }
 .tile-car { position: absolute; z-index: -2; right: var(--sp-4); bottom: var(--sp-2); width: 60%; height: 82%; object-fit: contain; object-position: right bottom; object-view-box: inset(24% 8% 12% 19%); }
 .current-car .tile-text { max-width: 44%; }
 .current-car .team-logo { width: calc(160 * var(--u)); height: calc(40 * var(--u)); }
@@ -215,6 +221,7 @@ kbd .icon { font-size: var(--icon-s); }
 .r-head h2.r-hero { font-size: var(--fs-hero); line-height: 0.9; }   /* the race's outcome: Victory or the position */
 .r-sub { margin: var(--sp-2) 0 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }
 .r-stats { align-self: stretch; display: flex; gap: var(--sp-6); padding: var(--sp-4) 0; border-block: 1px solid var(--c-line); }
+.r-stats + .r-stats { margin-top: calc(-1 * var(--sp-5)); border-top: 0; }   /* a second row of the same block: one hairline between */
 .r-big { display: flex; align-items: flex-end; gap: var(--sp-7); }
 .r-big .stat-r:first-child > b { font-family: var(--font-num); font-weight: 400; font-size: var(--fs-hero); line-height: 1; letter-spacing: 0.01em; }   /* the hero readout: Anton at 96 design px */
 .r-big .stat-r:first-child > b small { font-family: var(--font-ui); font-weight: 700; }
@@ -226,7 +233,9 @@ kbd .icon { font-size: var(--icon-s); }
 .r-ok { color: var(--c-ink-2); }
 .r-bad { color: var(--c-accent); }   /* an invalid lap: the icon and accent text */
 .r-note { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-3); }
+.r-table .r-note { flex: none; padding: var(--sp-2) var(--sp-3) 0; border-top: 1px solid var(--c-line); }   /* the Est footnote under the gaps */
 .r-main { display: flex; flex-direction: column; justify-content: flex-end; gap: var(--sp-4); min-width: 0; min-height: 0; }
+.r-main > .r-car:first-child { margin-bottom: auto; }   /* your car (trial, drift) at the top of the column on every results screen: alone it fell onto the footer rule */
 .r-main .tbar { width: 4px; height: calc(24 * var(--u)); border-radius: var(--r-1); background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }   /* a dark team still shows: the line edge */
 .r-car { display: block; flex: none; width: 100%; height: calc(208 * var(--u)); object-fit: contain; object-position: center bottom; object-view-box: inset(24% 8% 12% 19%); }   /* the car's box in every still */
 /* the podium: P2, P1 (taller), P3 cutouts on one ground line; position, team bar, driver and team under each */
@@ -317,7 +326,7 @@ kbd .icon { font-size: var(--icon-s); }
 
 /* ---------------------------------------------------------------- setup and settings: one panel anchored top-left under the header, clamped above the footer */
 .dscrim { position: absolute; inset: 0; background: linear-gradient(90deg, var(--c-scrim-edge), transparent 40%), linear-gradient(0deg, var(--c-scrim-edge), transparent calc(56 * var(--u) + 2 * var(--sp-5))); }
-.settings-screen.over-race .dscrim { background: var(--c-scrim); backdrop-filter: var(--blur-scrim); }   /* from pause: a full scrim over the race */
+.settings-screen .dscrim { background: var(--c-scrim); backdrop-filter: var(--blur-scrim); }   /* a full scrim, from pause and from the menu: the 720-wide panel covered half the turntable car and its paint smeared through the panel blur */
 .shead h1 { display: inline-flex; align-items: center; gap: var(--sp-3); }
 .shead h1 .icon { font-size: var(--icon-l); }
 .panel.pnl { position: absolute; left: var(--gutter); top: calc(var(--gutter) + 40 * var(--u) + var(--sp-6)); display: flex; flex-direction: column; gap: var(--sp-4); padding: var(--sp-5);
@@ -346,11 +355,12 @@ kbd .icon { font-size: var(--icon-s); }
 .ctl-cols.lrow { padding-block: var(--sp-2); }
 .lhead.ctl-cols > span { display: inline-flex; align-items: center; }
 .ctl-a { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.ctl-a small { font-size: var(--fs-micro); line-height: var(--lh-body); color: var(--c-ink-2); }
+.ctl-a small { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }   /* body copy at the body size, like every row note */
 .ctl-k { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
 .ctl-p { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--icon-l); }
 .ctl-p .empty { font-size: var(--fs-value); }
-.set-tip { display: flex; gap: var(--sp-3); margin: var(--sp-5) var(--sp-3) var(--sp-3); padding: var(--sp-4); border-radius: var(--r-2); background: var(--c-fill-1);
+.set-tip { flex: none; display: flex; gap: var(--sp-3); margin: var(--sp-2) 0 0;   /* pinned under the table, outside the scroller: cut by the panel it read as clipped */
+  padding: var(--sp-4); border-radius: var(--r-2); background: var(--c-fill-1);
   font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-1); }
 .set-tip .icon { flex: none; margin-top: 2px; font-size: var(--icon-m); }
 
@@ -393,9 +403,10 @@ kbd .icon { font-size: var(--icon-s); }
 .ga-list, .ga-detail { position: absolute; top: var(--ga-top); bottom: var(--ga-bottom); display: flex; flex-direction: column; min-height: 0; padding: 0; }
 .ga-list { left: var(--gutter); width: var(--ga-list); }
 .ga-detail { right: var(--gutter); width: var(--ga-detail); }
-/* the title: team logo, car name, driver, over a left-to-right scrim so it reads on any part of the room at every size */
-.ga-title { position: absolute; top: var(--ga-top); left: calc(var(--gutter) + var(--ga-list) + var(--sp-5)); right: calc(var(--gutter) + var(--ga-detail) + var(--sp-5)); display: flex; flex-direction: column;
-  align-items: flex-start; gap: var(--sp-2); padding: var(--sp-4) var(--sp-5); border-radius: var(--r-3); background: linear-gradient(90deg, var(--c-scrim-edge), transparent); pointer-events: none; }
+/* the title: team logo, car name, driver, on a panel sized to its words (a scrim-to-clear box let the lit wall show sharp through its right half) */
+.ga-title { position: absolute; top: var(--ga-top); left: calc(var(--gutter) + var(--ga-list) + var(--sp-5)); max-width: calc(100% - 2 * var(--gutter) - var(--ga-list) - var(--ga-detail) - 2 * var(--sp-5));
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); padding: var(--sp-4) var(--sp-5); border: 1px solid var(--c-line); border-radius: var(--r-3);
+  background: var(--c-panel); backdrop-filter: var(--blur-panel); pointer-events: none; }
 .ga-title .team-logo { width: calc(144 * var(--u)); height: calc(36 * var(--u)); }
 .ga-title h2 { max-width: 100%; margin: 0; padding-right: 0.1em; font-style: italic; font-weight: 900; font-size: var(--fs-display); line-height: var(--lh-tight); letter-spacing: var(--track-title);
   text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

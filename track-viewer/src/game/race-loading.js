@@ -53,7 +53,8 @@ export class RaceLoading {
     back.onclick = this.cancel;
     this.onKey = e => { if (e.code === 'Escape') { e.preventDefault(); this.cancel(); } };
     addEventListener('keydown', this.onKey);
-    root.append(image, el('div', 'rl-scrim'), head, copy, el('footer', 'rl-foot', back, el('div', 'sp'), status)); this.root.append(root); back.focus({ preventScroll: true });
+    // focus the dialog, not Back: a held or auto-repeated Enter from Start must not click Back and quit the load (Esc cancels, the mouse clicks Back)
+    root.tabIndex = -1; root.append(image, el('div', 'rl-scrim'), head, copy, el('footer', 'rl-foot', back, el('div', 'sp'), status)); this.root.append(root); root.focus({ preventScroll: true });
     this.progress();
     this.slowTimer = setTimeout(() => { if (this.active) this.slow.hidden = false; }, 20000);
     // Let the backdrop reach the compositor before heavy scene preparation starts.

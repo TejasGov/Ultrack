@@ -160,6 +160,8 @@ export function toggle(on, onchange) {
   return t;
 }
 /** a settings row: a label and a control; the whole row is one nav stop (and one Tab stop) */
+/** a note is a sentence and ends with a full stop (store.js ASSISTS notes have none until H9) */
+const sentence = (t) => (/[.!?]$/.test(t) ? t : t + '.');
 export function row(label, control, note) {
   return h('div.row', { 'data-nav': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1) },
     h('label', {}, label), control, note ? h('div.note', {}, note) : null);
@@ -175,7 +177,7 @@ export function TitleScreen(game) {
   const stage = h('span.kick'), pct = h('span.t-pct.tnum'), bar = h('div.bar4', {}, h('i'));
   const load = h('div.t-load', {}, h('div.t-loadrow', {}, stage, pct), bar);
   const el = screen('title-screen', h('img.t-still', { src: still('tracks', trackOf(store.settings.track).id), alt: '', decoding: 'async' }), h('div.t-scrim'),
-    h('i.logo'), h('div.t-status', {}, h('div.t-press', {}, prompt('Enter', 'a', 'Press any key')), load));
+    h('i.logo'), h('div.t-status', {}, h('div.t-press', {}, h('span.prompt', {}, 'Press any key')), load));   // no keycap: an Enter cap beside "any key" contradicted it
   const go = () => game.boot();
   el.addEventListener('pointerdown', go);
   // main.js reports 0.15 (garage and cars loading), 0.7 (shaders compiling) and game.attach() 1
@@ -202,11 +204,12 @@ export function MenuScreen(game) {
   const race = tile('race', 'race', 'Race', 'The main event', MODES.race.desc, 'race-tile', facts, raceStill);
   const best = h('span.tile-desc.tile-best');
   const current = h('button.bento-tile.current-car', { 'data-nav': '', 'aria-label': 'Your car: open the garage', onclick: () => game.show('garage') });
+  const garageCars = h('span.tile-cars');   // three other cars of the roster between the Garage tile's icon and its words
   const grid = h('div.bento-grid', {}, race,
     tile('trial', 'time-trial', 'Time Trial', 'Chase your best', MODES.trial.desc, 'trial-tile'),
     tile('drift', 'drift', 'Drift Attack', 'Find the limit', MODES.drift.desc, 'drift-tile'),
     tile('free', 'free-drive', 'Free Drive', 'Your circuit', MODES.free.desc, 'free-tile'),
-    tile('garage', 'garage', 'Garage', 'The collection', ROSTER.length + ' cars. Your colours. Your upgrades.', 'garage-tile'),
+    tile('garage', 'garage', 'Garage', 'The collection', ROSTER.length + ' cars. Your colours. Your upgrades.', 'garage-tile', null, garageCars),
     current,
     tile('records', 'trophy', 'Records', 'Personal records', null, 'records-tile', best),
     tile('settings', 'settings', 'Settings', 'Make it yours', 'Picture, driving and sound.', 'settings-tile'),
@@ -225,6 +228,7 @@ export function MenuScreen(game) {
       trackName.textContent = t.name; coins.textContent = store.coins.toLocaleString('en');
       fillCarTile(current, store.data.car);
       const k = store.data.car, b = store.bestOf(k), d = store.driftOf(k);   // this circuit, your car
+      if (garageCars.dataset.car !== k) { garageCars.dataset.car = k; fill(garageCars, ROSTER.filter((x) => x !== k).slice(0, 3).map((x) => h('img', { src: still('cars/thumbs', x), alt: '', decoding: 'async' }))); }
       fill(best, stat('Best lap', b ? fmtTime(b) : empty()), stat('Best drift', d ? d.toLocaleString('en') : empty(), d ? 'PTS' : null), stat('Car', carName(k)));
       if (shown === t.id + mph) return; shown = t.id + mph;
       raceStill.src = still('tracks', t.id); raceStill.dataset.track = t.id; circuit.textContent = t.name; fill(len, empty()); fill(corners, empty());
@@ -237,7 +241,7 @@ export function MenuScreen(game) {
   };
 }
 
-/** the menu's "Your car" tile: the cutout over a team-tinted panel, the name, the team logo and the driver */
+/** the menu's "Your car" tile: the cutout on the plain panel (team colour is identity only, never a fill), the name, the team logo and the driver */
 function fillCarTile(card, key) {
   const t = TEAM_OF[key], e = ENTRY[key];
   css(card, { '--team': teamMark(t) });
@@ -300,12 +304,17 @@ export function CreditsScreen(game) {
   // model.json's additionalCredits mixes provenance notes (they stay in the file, docs/ui-system.md risks) with a co-author: the player sees only the name.
   // shortcut: reads the "credits <name>" phrase the notes use, upgrade to a credit field in model.json when one exists
   const note = (text) => { const by = /\bcredits\s+(.+?)(?:\.\s|;|\.?$)/i.exec(text ?? '')?.[1]?.trim(); return by ? h('p.cr-note', {}, 'Also credited: ', by) : null; };
-  const licence = (text) => /^CC(?: Attribution|[ -][A-Z]+(?:-[A-Z]+)*)(?: \d\.\d)?/.exec(text ?? '')?.[0] ?? text;   // the licence's name; the notes after it are provenance
-  const group = (name, items) => h('section.cr-group', {}, h('h2.kick', {}, name), h('div.cr-grid', {}, items));
+  // one spelling and a link for every model licence: model.json writes "CC Attribution", "CC-BY 4.0 (url)" and "CC-BY-NC (...)"; the notes after the name are provenance.
+  // Sketchfab's Creative Commons licences are 4.0, so a name with no version is 4.0
+  const licence = (text) => {
+    const head = /^[^;(]*/.exec(text ?? '')[0], code = /-NC-SA\b/.test(head) ? 'BY-NC-SA' : /-NC\b/.test(head) ? 'BY-NC' : /^CC[ -](BY|Attribution)/i.test(head) ? 'BY' : null, ver = /\d\.\d/.exec(head)?.[0] ?? '4.0';
+    return code ? link(`CC ${code} ${ver}`, `https://creativecommons.org/licenses/${code.toLowerCase()}/${ver}/`) : h('span', {}, text);
+  };
+  const group = (name, items, intro) => h('section.cr-group', {}, h('h2.kick', {}, name), intro ? h('p.cr-intro', {}, intro) : null, h('div.cr-grid', {}, items));
   const scroll = h('div.lscroll.cr-scroll', { onscroll: (e) => fadeMore(e.currentTarget) },
-    group('Cars', [...MODEL_CREDITS.map((c) => item(c.title, h('p', {}, 'Created by ', link(c.author, c.authorUrl ?? c.url)), links(link('Original model', c.url), link(licence(c.license), c.licenseUrl)),
-      note(c.additionalCredits), h('p.cr-dim', {}, 'Adapted for Ultrack: scale, orientation, wheel separation, materials and runtime LODs.'))),
-    item('Additional Lamborghini exterior credit', links(link('Lambo_SC04', 'https://sketchfab.com/Lambo_SC04')), h('p', {}, 'Aventador SVJ Black-Ghost, CC BY-NC. Interior/combined model: blackcube4.'))]),
+    group('Cars', [...MODEL_CREDITS.map((c) => item(c.title, h('p', {}, 'Created by ', link(c.author, c.authorUrl ?? c.url)), links(link('Original model', c.url), licence(c.license)), note(c.additionalCredits))),
+      item('Additional Lamborghini exterior credit', links(link('Lambo_SC04', 'https://sketchfab.com/Lambo_SC04'), licence('CC BY-NC')), h('p', {}, 'Aventador SVJ Black-Ghost. Interior and combined model: blackcube4.'))],
+    'Every car is adapted for Ultrack: scale, orientation, wheel separation, materials and runtime LODs.'),
     group('Audio', [...ENGINE_CREDITS.map((c) => item(c.name + ' recording', links(link(c.title, c.url)), h('p', {}, 'Recorded by ', c.author), links(link(c.license, c.licenseUrl)), h('p.cr-dim', {}, c.changes))),
       item('Voices and effects', h('p', {}, 'Commentary voices and crash effects: ElevenLabs.'), h('p', {}, 'EV motor, wind and tyre layers: procedural Web Audio.'))]),
     group('Artwork', [item('Environment HDRIs', h('p', {}, 'Poly Haven (CC0).')),
@@ -345,14 +354,14 @@ export function SetupScreen(game) {
     const L = nav.items(), k = L.indexOf(cur); nav.reset(Math.max(0, k >= 0 ? k : L.findIndex((e) => e.getAttribute('aria-label') === was)));
   }
   function build() {
-    const M = MODES[mode], S = store.settings, note = h('span', {}, ASSISTS[S.assists].note);
+    const M = MODES[mode], S = store.settings, note = h('span', {}, sentence(ASSISTS[S.assists].note));
     fill(htitle, icon(MODE_ICON[mode]), M.label); sub.textContent = M.desc;
     fill(rows,
       tracks.length > 1 ? row('Circuit', seg(tracks.map((t) => [t.id, circuitCard(t)]), trackOf(S.track).id, (v) => { game.selectTrack(v).then(() => { if (game.screen?.el === el) rebuild(); }); }, 'cards')) : null,
       M.laps ? row('Laps', seg(lapChoices, S.laps, (v) => store.set('laps', v))) : null,
       row('Time of day', seg(looks(), S.look, (v) => { store.set('look', v); game.applySettings(); })),
       row('Weather', seg(weathers(), S.weather, (v) => { store.set('weather', v); game.applySettings(); })),
-      row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { store.set('assists', v); note.textContent = ASSISTS[v].note; }), note),
+      row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { store.set('assists', v); note.textContent = sentence(ASSISTS[v].note); }), note),
     );
     fadeMore(rows);
   }
@@ -392,6 +401,8 @@ export function SettingsScreen(game) {
   let tab = 'display', from = 'menu';
   const tabs = h('div.stabs', { 'data-nav': '', tabIndex: 0, role: 'tablist', 'aria-label': 'Settings tabs', onadjust: (e) => api.onKeyTab(e.detail), onclick: () => api.onKeyTab(1) });
   const body = h('div.lscroll.set-body', { onscroll: (e) => fadeMore(e.currentTarget) });
+  // the Controls tip sits under the table, outside the scroller, so the panel never cuts it
+  const tip = h('p.set-tip', {}, icon('info'), h('span', {}, 'Drift: pull the handbrake while turning at speed, then steer to hold the angle. The normal brake keeps cornering grip. Drifting refills nitro fastest.'));
   const el = screen('settings-screen', h('div.dscrim'), header('Settings', 'Saved on this device'), h('div.panel.settings.pnl', {}, tabs, body),
     h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Select'), prompt(['arrow-left', 'arrow-right'], 'ls', 'Change'), h('div.sp'), backButton(() => api.back())));
   const set = (k) => (v) => { store.set(k, v); game.applySettings(); };
@@ -402,17 +413,17 @@ export function SettingsScreen(game) {
       onclick: (e) => { e.stopPropagation(); tab = id; build(); nav.reset(0); } }, icon(ic), label)), prompt('E', 'rb'));
     const R = {
       display: () => [
-        row('Quality', seg([['auto', 'Auto'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra']], S.quality, set('quality')), `Auto picked ${game.ctx.device.tier} for this computer`),
+        row('Quality', seg([['auto', 'Auto'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra']], S.quality, set('quality')), `Auto picked ${game.ctx.device.tier} for this computer.`),
         row('Time of day', seg(looks(), S.look, set('look'))),
         row('Weather', seg(weathers(), S.weather, set('weather'))),
         row('Motion blur', seg([['off', 'Off'], ['light', 'Light'], ['full', 'Full']], S.motionBlur, set('motionBlur'))),
-        row('Reduce motion', toggle(S.reduceMotion, (v) => { set('reduceMotion')(v); syncMotion(); }), 'Less camera shake, roll and speed zoom'),
-        row('Field of view', slider(S.fovOffset, { min: -10, max: 15, step: 1, fmt: (v) => (v > 0 ? `+${v}` : `${v}`), unit: '°' }, set('fovOffset'))),
+        row('Reduce motion', toggle(S.reduceMotion, (v) => { set('reduceMotion')(v); syncMotion(); }), 'Less camera shake, roll and speed zoom.'),
+        row('Field of view', slider(S.fovOffset, { min: -10, max: 15, step: 1, fmt: (v) => (v < 0 ? `−${-v}` : `+${v}`), unit: '°' }   /* an offset: +0° is the default, never a bare 0° */, set('fovOffset'))),
         group('Developer'),
         row('Show FPS', toggle(S.showFps, set('showFps'))),
       ],
-      driving: () => { const note = h('span', {}, ASSISTS[S.assists].note); return [
-        row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { set('assists')(v); note.textContent = ASSISTS[v].note; }), note),
+      driving: () => { const note = h('span', {}, sentence(ASSISTS[S.assists].note)); return [
+        row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { set('assists')(v); note.textContent = sentence(ASSISTS[v].note); }), note),
         row('Speed in', seg([['kmh', 'km/h'], ['mph', 'mph']], S.units, set('units'))),
         row('Race laps', seg(lapChoices, S.laps, set('laps'))),
       ]; },
@@ -429,17 +440,16 @@ export function SettingsScreen(game) {
         ...CONTROLS.map(([a, more, keys, pads]) => h('div.lrow.ctl-cols', { 'data-nav': '', tabIndex: 0, 'aria-label': a },
           h('span.ctl-a', {}, h('b', {}, a), more ? h('small', {}, more) : null), h('span.ctl-k', {}, keys.map(cap)),
           h('span.ctl-p', {}, pads.length ? pads.map(([p, name]) => icon('pad-' + p, { label: name })) : empty()))),
-        h('p.set-tip', {}, icon('info'), h('span', {}, 'Drift: pull the handbrake while turning at speed, then steer to hold the angle. The normal brake keeps cornering grip. Drifting refills nitro fastest.')),
       ],
     };
-    fill(body, R[tab]());
+    fill(body, R[tab]()); if (tab === 'controls') body.after(tip); else tip.remove();
     body.scrollTop = 0; fadeMore(body);
   }
   const api = {
     el, nav: true,
     onShow(f) { from = f ?? 'menu'; el.classList.toggle('over-race', from === 'pause'); build(); nav.reset(0); },
     onKeyTab(d) { tab = TABS[(TABS.findIndex(([id]) => id === tab) + d + TABS.length) % TABS.length][0]; build(); nav.reset(0); },
-    onSel(e) { if (e && e === [...body.querySelectorAll('[data-nav]')].at(-1)) { body.scrollTop = body.scrollHeight; fadeMore(body); } },   // the last row shows what sits below it (the Controls tip at 720 p), not just itself
+    onSel(e) { if (e && e === [...body.querySelectorAll('[data-nav]')].at(-1)) { body.scrollTop = body.scrollHeight; fadeMore(body); } },   // the last row scrolls the body to its end, so the fade mask lets go
     back() { game.show(from); },
   };
   return api;
@@ -535,9 +545,12 @@ export function ResultsScreen(game) {
             h('span.val', {}, r.best === fastest && Number.isFinite(fastest) ? icon('bolt', { cls: 'r-bolt', label: 'Fastest lap' }) : null, time(r.best)),
             h('span.val', {}, k === 0 ? time(r.total) : Number.isFinite(r.total - lead) ? ['+' + (r.total - lead).toFixed(3), r.finished ? null : h('small', {}, 'Est')] : empty())), { '--team': teamMark(r.driver.team) })));
         scroller = s;
+        if (R.some((r) => !r.finished)) table.append(h('p.r-note', {}, 'Est: still on track, the gap is estimated from pace.'));   // the table's footnote, under the gaps it explains
+        const gap = (r) => (Number.isFinite(r?.total - lead) ? stat(me === 0 ? 'Margin' : 'To winner', '+' + (r.total - lead).toFixed(3), r.finished ? null : 'Est') : stat(me === 0 ? 'Margin' : 'To winner', empty()));
         fill(side, head(me === 0 ? 'Victory' : `P${me + 1}`, `${MODES.race.label} · ${laps(data.laps)} · ${carName(car)}`, true),
           h('div.r-stats', {}, stat('Position', String(me + 1), `/ ${R.length}`), stat('Time', time(you?.total)), stat('Best lap', time(you?.best))),
-          earnBlock(data.reward), R.some((r) => !r.finished) ? h('p.r-note', {}, 'Est: still on track, the gap is estimated from pace.') : null);
+          h('div.r-stats', {}, gap(me === 0 ? R[1] : you), stat('Fastest lap', time(fastest))),   // the race summary: the gap that decided it, the field's best lap
+          earnBlock(data.reward));
         fill(main, h('div.r-podium', {}, [1, 0, 2].filter((k) => R[k]).map((k) => pod(R[k], k))), table);
       } else if (mode === 'drift') {
         const rec = store.driftOf(car), banked = game.session?.drift?.banked ?? [], top = game.hud?.topMult ?? 1;   // after a new record rec is the score itself
