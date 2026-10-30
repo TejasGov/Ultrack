@@ -171,7 +171,7 @@ export class Game {
     if(this.raceLoading?.active){if(e.code!=='Tab')e.preventDefault();return;}   // Tab reaches Back; Enter and the rest stay swallowed
     if (this.screenName === 'title') { this.screens.title.onKey(); return; }
     if (this.session && !this.screen) {
-      if (e.code === 'Escape') { this.pause(); e.preventDefault(); }
+      if (e.code === 'Escape') { if (!e.repeat) this.pause(); e.preventDefault(); }
       if (e.code === 'KeyC' && !e.repeat) this.cycleCamera();   // one view per press: key repeat would flicker through all five
     }
     if ((this.screenName === 'settings' || this.screenName === 'garage') && (e.code === 'KeyQ' || e.code === 'KeyE')) this.screens[this.screenName].onKeyTab(e.code === 'KeyQ' ? -1 : 1);

@@ -74,7 +74,7 @@ export class Nav {
       else if (k === 'ArrowUp') { this.moveSpatial(0,-1); e.preventDefault(); }
       else if (k === 'ArrowLeft' || k === 'ArrowRight') { this.lr(k === 'ArrowLeft' ? -1 : 1); e.preventDefault(); }
       else if (k === 'Enter' || k === 'NumpadEnter') { this.items()[this.i]?.click(); e.preventDefault(); }
-      else if (k === 'Escape' || k === 'Backspace') { s.back?.(); e.preventDefault(); }
+      else if (k === 'Escape' || k === 'Backspace') { if (!e.repeat) s.back?.(); e.preventDefault(); }   // one step back per press: a held Esc toggled pause and resume
     });
   }
   items() { const s = this.game.screen; return [...((s?.modal ?? s?.el)?.querySelectorAll('[data-nav]') ?? [])].filter((e) => e.offsetParent !== null); }   // an open modal traps focus
