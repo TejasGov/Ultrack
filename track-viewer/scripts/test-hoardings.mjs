@@ -29,6 +29,8 @@ try{
  const warn=console.warn,missing=racingPosters([keys[1]])[0].url;console.warn=()=>{};boards.textures.clear();requests.length=0;
  boards.loader.loadAsync=async url=>{requests.push(url);if(url===missing)throw Error('missing');return new THREE.Texture();};
  await boards.set(keys,track);await boards.set(keys,track);console.warn=warn;assert.equal(requests.length,teams.length,'A missing poster is not refetched every race');
+ assert.equal(boards.root.children.length,teams.length-1,'A missing poster puts up no blank board');assert(!boards.entries.some(e=>e.url===missing));
+ boards.root.children.forEach((board,i)=>assert(board.position.distanceTo(hoardingPose(track,i,teams.length-1).position)<1e-6,'The remaining boards stay evenly spaced'));
  const originalCreate=PhysicsWorld.create;PhysicsWorld.create=async()=>({dispose(){}});
  const points=[new THREE.Vector3(),new THREE.Vector3(100,0,0),new THREE.Vector3(100,0,100),new THREE.Vector3(0,0,100)];
  const field={all:[],N:4,length:400,linePts:points,configure({hero,racers}){this.cars=racers.map(key=>({key,hero:key===hero}));this.all=this.cars;this.hero=this.cars[0];},enablePhysics(){this.input={clear(){},setEnabled(){}};this.cars.forEach(car=>{car.vehicle={cur:{pos:points[0].clone()}};});}};

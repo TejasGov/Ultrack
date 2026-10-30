@@ -6,7 +6,7 @@ export function racingPosters(keys){
     const team=TEAMS.teams.find(t=>t.cars.some(c=>c.key===key)),car=team?.cars.find(c=>c.key===key);
     if(!car)throw Error('Unknown driver hoarding: '+key);
     const slug=car.driver.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
-    return {key,team:team.id,driver:car.driver.name,color:team.colors.secondary,url:`/assets/drivers/${slug}/poster-hoarding.webp`};
+    return {key,team:team.id,driver:car.driver.name,url:`/assets/drivers/${slug}/poster-hoarding.webp`};
   });
 }
 export function hoardingPose(track,index,count){
@@ -36,12 +36,12 @@ export class DriverHoardings{
       return this.textures.get(e.url);
     }));
     if(revision!==this.revision)return;
-    this.entries=entries;
-    entries.forEach((entry,i)=>{
-      const pose=hoardingPose(track,i,entries.length),board=new THREE.Group();board.name=`driver_hoarding_${entry.key}`;
+    const maps=textures.filter(Boolean);this.entries=entries.filter((entry,i)=>textures[i]);// no poster, no board: a flat team-colour slab reads as a placeholder prop
+    this.entries.forEach((entry,i)=>{
+      const pose=hoardingPose(track,i,this.entries.length),board=new THREE.Group();board.name=`driver_hoarding_${entry.key}`;
       board.position.copy(pose.position);pose.target.y=pose.position.y;board.lookAt(pose.target);
       const frame=new THREE.Mesh(this.frame,this.metal);frame.position.z=-.15;board.add(frame);
-      const material=new THREE.MeshBasicMaterial({map:textures[i],color:textures[i]?0xffffff:entry.color,toneMapped:false});
+      const material=new THREE.MeshBasicMaterial({map:maps[i],toneMapped:false});
       this.materials.push(material);
       const image=new THREE.Mesh(this.plane,material);image.position.z=.015;board.add(image);
       for(const x of [-3.3,3.3]){const post=new THREE.Mesh(this.post,this.metal);post.position.set(x,-3.75,-.16);board.add(post);}
