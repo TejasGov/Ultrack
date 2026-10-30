@@ -638,6 +638,20 @@ async function loadVenue() {
   // lamp, LED and neon surfaces burn 3x brighter in the player car's reflection capture (their glow sprites can't be
   // in it): the paint then reflects bright light shapes after dark, the biggest cue of a premium finish
   captureBoost = [...allMats].filter((m) => /^M_Lamp|Neon|LED|M_VipGlow|M_VipEdge|M_GarageHeader|pylon board|^V8 (pink|ice|amber|paper)$|pagoda shoji|lantern (glow|paper)/.test(m.name) && m.emissiveIntensity > 0);
+  // location-specific brands (tracks.js `brands`): a board material takes another image of the same shape, keeping its sampling
+  if (T.brands) {
+    const tl = new THREE.TextureLoader();
+    for (const m of allMats) {
+      const f = T.brands[m.name], old = m.map; if (!f || !old) continue;
+      tl.loadAsync(`${T.dir}ads/${f}.png`).then((t) => {
+        if (gen !== venueGen) return t.dispose();
+        for (const k of ['flipY', 'colorSpace', 'wrapS', 'wrapT', 'anisotropy', 'channel', 'rotation']) t[k] = old[k];
+        t.offset.copy(old.offset); t.repeat.copy(old.repeat); t.center.copy(old.center);
+        if (m.emissiveMap === old) m.emissiveMap = t;
+        m.map = t; m.needsUpdate = true; old.dispose();
+      }).catch((e) => console.warn('brands:', e));
+    }
+  }
   applyAll();     // emissive levels and wet gains were still the raw GLB values (setLook's applyAll ran before allMats filled); after the lit tests above, which read the raw values
   if(SCENERY_TEST&&has.yachts&&has.buildings){
     const {SceneryExperiment}=await import('./scenery-experiment.js');

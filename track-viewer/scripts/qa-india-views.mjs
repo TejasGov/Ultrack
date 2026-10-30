@@ -26,6 +26,15 @@ const VIEWS = {
   '4-kavi-chowk': { cam: at(ki - 20, 2), tgt: [kavi[0], kavi[1] + 8, kavi[2]] },
   '5-barrier-reflectors': { cam: at(300, 1.1), tgt: at(336, 0.6) },
   '6-hairpin': { cam: at(826, 1.6), tgt: at(850, 0) },
+  // venue/india.js dressing: Jio boards (tracks.js `brands`), the city's OPPO / vivo façades, the BJP hoarding, the stands' crowd
+  '7-jio-boards': { cam: at(nearestIdx([288, 16, -8]) - 14, 1.6), tgt: [288, 16.5, -8] },
+  '8-jio-gantry': { cam: at(nearestIdx([477, 60, -178]) - 28, 1.6), tgt: [477, 59, -178] },
+  '9-city-boards': { cam: at(505, 1.6), tgt: [424, 56, -200] },
+  '10-city-boards-2': { cam: at(150, 1.6), tgt: [401.6, 49, -143.4] },
+  '11-hoarding': { cam: at(458, 1.6), tgt: (() => { const p = at(485), q = at(487), r = at(483), tx = q[0] - r[0], tz = q[2] - r[2], l = Math.hypot(tx, tz); return [p[0] + tz / l * 17, p[1] + 5, p[2] - tx / l * 17]; })() },
+  '12-kavi-crowd': { cam: at(nearestIdx([756, 55, -91]), 1.6), tgt: [756, 51, -91] },
+  '13-west-crowd': { cam: at(nearestIdx([-113, 9, 60]), 1.6), tgt: [-113, 6, 60] },
+  '14-pines': { cam: at(856, 1.6), tgt: at(880, 3) },
 };
 const only = process.env.ONLY?.split(',');
 for (const name of Object.keys(VIEWS)) if (only && !only.some((p) => name.startsWith(p))) delete VIEWS[name];

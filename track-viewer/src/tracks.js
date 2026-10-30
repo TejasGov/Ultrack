@@ -48,6 +48,9 @@ export const TRACKS = {
     // the baked vertex colours are albedo only: the same lift by day as Tokyo's, with the toned-down sun (main.js LOOKS)
     looks: { day: { exposure: 1.75, env: 1.3, sun: 4.2 }, dusk: { exposure: 0.6 } },
     wet: { wet: ['India | asphalt'], puddles: ['India | asphalt'] },
+    // location-specific brands: a GLB board material -> an image of the same aspect in `${dir}ads/` (main.js; sources in
+    // assets/sponsors/manifest.json). India's long Sony boards and the gantry banner carry Jio; the 3:1 Sony boards stay.
+    brands: { 'DRESS | board sony-6000': 'jio-6000', 'DRESS | board sony-11818': 'jio-11818' },
     venue: () => import('./venue/india.js'),
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },

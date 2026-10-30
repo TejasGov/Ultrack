@@ -12,7 +12,9 @@ if(!brand)throw Error('Unknown brand '+id);
 // the aspects the Marina's boards use (assets/sponsors/board-plan.json) plus a 3:2 flag
 const ASPECTS=[324,389,1600,3000,3111,6000,8571,10833,11818,15000];
 const wanted=(only.length?only.map(Number):ASPECTS);
-const source=readFileSync(new URL(brand.sourceFile.replace(/^assets\/sponsors\//,''),root));
+let source=readFileSync(new URL(brand.sourceFile.replace(/^assets\/sponsors\//,''),root));
+// a one-colour mark (Simple Icons) takes the brand's ink, as in prepare-sponsor-logos.mjs
+if(brand.ink&&brand.sourceFile.endsWith('.svg'))source=Buffer.from(source.toString().replace('<svg ','<svg fill="'+brand.ink+'" '));
 const logo=await sharp(source,{density:300}).resize({width:512}).ensureAlpha().png().toBuffer();
 writeFileSync(new URL(brand.file,root),logo);
 const trim=await sharp(source,{density:600}).trim({threshold:1}).png().toBuffer(),meta=await sharp(trim).metadata();

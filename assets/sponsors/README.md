@@ -67,3 +67,18 @@ brands, source hashes, UVs and removal of the former sponsor lettering.
   on a new map create the object and make the same call.
 - **On the Marina** (`tracks/marina/add_hayate.py`): six LED bands, a fascia and two pole banners across the pit lane from boxes 8-11, hoardings 011 and 014 on the main straight,
   the T1 billboard, the footbridge banner and one T1 gantry banner. The sponsor panel is also painted on Hayate's garage header and pit box (`src/teamdress.js`, now for every team's pit box) and on the cars (`src/livery.js`).
+
+## India's brands (location-specific)
+
+Each track can carry its own brands: `brands` in `track-viewer/src/tracks.js` maps a GLB board material to an image of the same
+aspect in that track's `ads/` folder (applied in `main.js` after the venue loads). India's long Sony boards and the gantry banner
+carry **Jio**; its 3:1 Sony boards stay Sony. `venue/india.js` adds **OPPO** and **vivo** boards on four city façades and one
+roadside **BJP** hoarding on the city approach. All four are `usage: venue-india`, `venue: false` (outside Marina's 15).
+
+- Jio, OPPO, vivo: Simple Icons SVGs (`sources/jio.svg`, `oppo.svg`, `vivo.svg`), downloaded 2026-10-30 with the user's OK; brand
+  hex from Simple Icons' data (Jio #0A2885, OPPO #2D683D, vivo #415FFF). Boards by `make-sponsor-boards.mjs` (which now applies `ink`).
+- BJP: the lotus emblem, Wikimedia Commons "File:Logo of the Bharatiya Janata Party.svg" (public domain, trademarked), and the PM's
+  official portrait, Commons "File:Official portrait of the Prime Minister Narendra Modi, November 2020 (cropped).jpg" (1280 px
+  rendition, GODL-India). The hoarding is composed by `track-viewer/scripts/make-india-hoarding.mjs`.
+
+These marks and the portrait belong to their owners; used on a local noncommercial fan project, no endorsement implied.

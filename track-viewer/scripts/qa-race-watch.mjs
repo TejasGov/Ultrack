@@ -33,7 +33,18 @@ await page.waitForFunction(() => window.game.session.field.rig, null, { timeout:
 await page.evaluate(() => {
   const f = window.game.session.field; f.setPlayer(false);
   const rig = f.rig, up = rig.update.bind(rig); rig.update = (cam, h, dt, o) => { window.__cast = o.cast; return up(cam, h, dt, o); };
-  window.__ft = []; let last = performance.now(); const tick = () => { const n = performance.now(); window.__ft.push(n - last); last = n; requestAnimationFrame(tick); }; requestAnimationFrame(tick);
+  // every frame (this rAF runs after the app's render): its mean brightness on a 16x9 copy; a frame under a third of the recent
+  // median is logged with where the car and the camera were (whole black frames in races)
+  const cv = window.viewer.renderer.domElement, c2 = Object.assign(document.createElement('canvas'), { width: 16, height: 9 }), g2 = c2.getContext('2d', { willReadFrequently: true }), hist = [];
+  window.__dark = [];
+  window.__ft = []; let last = performance.now(); const tick = () => {
+    const n = performance.now(); window.__ft.push(n - last); last = n;
+    g2.drawImage(cv, 0, 0, 16, 9); const d = g2.getImageData(0, 0, 16, 9).data; let s = 0; for (let i = 0; i < d.length; i += 4) s += d[i] + d[i + 1] + d[i + 2];
+    const b = s / 432, med = hist.length > 20 ? [...hist].sort((x, y) => x - y)[hist.length >> 1] : b;
+    if (b < med / 3 && window.__dark.length < 200) { const h = window.game.session.field.hero.root.position, c = window.viewer.camera.position; window.__dark.push({ t: +window.game.session.raceT.toFixed(2), b: +b.toFixed(1), med: +med.toFixed(1), car: [h.x, h.y, h.z].map((v) => +v.toFixed(1)), cam: [c.x, c.y, c.z].map((v) => +v.toFixed(2)) }); }
+    hist.push(b); if (hist.length > 60) hist.shift(); window.__darkMed = med;
+    requestAnimationFrame(tick);
+  }; requestAnimationFrame(tick);
 });
 const samples = [];
 const t0 = Date.now(), maxMs = (+laps * 240 + 120) * 1000;
@@ -58,6 +69,7 @@ while (Date.now() - t0 < maxMs) {
   if (s.t >= nextShot) { await page.screenshot({ path: join(out, `shot-${String(Math.round(s.t)).padStart(4, '0')}.png`) }); nextShot += 15; }
   if (s.state === 'done') { await page.waitForTimeout(3000); await page.screenshot({ path: join(out, 'finish.png') }); break; }
 }
+const [darkFrames, frameLuma] = await page.evaluate(() => [window.__dark, window.__darkMed]);
 await browser.close();
 const bad = (f) => samples.filter(f).map((s) => s.t);
 const summary = {
@@ -65,6 +77,7 @@ const summary = {
   camLowOrUnder: bad((s) => s.camOverGround !== null && s.camOverGround !== undefined && s.camOverGround < 0.2),
   carHidden: bad((s) => s.carHidden), pulledIn: bad((s) => s.clear < 0.5),carOffFrame: bad((s) => Math.abs(s.ndc[0]) > 0.8 || Math.abs(s.ndc[1]) > 0.8),
   stopped: bad((s) => s.state === 'running' && s.kmh < 10 && s.t > 15), slowFrames: bad((s) => s.worstMs > 100),
+  darkFrames: darkFrames.length, frameLuma: +(frameLuma ?? 0).toFixed(1), darkAt: darkFrames.slice(0, 12),
   fps: { min: Math.min(...samples.map((s) => s.fps)), median: samples.map((s) => s.fps).sort((a, b) => a - b)[samples.length >> 1] },
   errors: [...new Set(errors)].slice(0, 40),
 };
