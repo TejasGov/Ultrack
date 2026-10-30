@@ -296,8 +296,11 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
 - **Menu (bento)**
   - The grid stays, at `--sp-3` gaps.
   - The Race tile (2 rows) carries the selected circuit's still, the circuit name and its facts (length, corners), with no
-    `01` watermark.
-  - The mode tiles carry their icon at `--icon-l` above the kicker.
+    `01` watermark. Marina's still is a wide straight under a tall sky, so the tile and the setup card crop it
+    (`object-view-box: inset(34% 0 0 22%)` on `[data-track=marina]`): the gantry sits in the top half and the words on tarmac.
+    `object-position` alone cannot do it, because a tall tile crops the sides, not the top.
+  - The mode tiles carry their icon at `--icon-l` above the kicker. Their descriptions keep a 3-line minimum (`3lh`), so the
+    Time Trial, Drift Attack and Free Drive words sit on one line even though Drift's copy runs to 3 lines.
   - "Your car" carries the car cutout over a team-tinted panel (team colour at 12 %), the name, the team logo and the driver.
     The huge number goes.
   - Records and credits are text tiles.
@@ -309,7 +312,9 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
     header, clamped above the footer; its rows scroll inside it when the window is short.
   - Rows stack the label over the control, so segments get the panel's full width. In order: Circuit (cards, 3 across:
     still, name, length and corners, selected = a 2 px ink ring and a `check`), Laps (segment), Time of day (icons plus
-    words), Weather (icons plus words), Assists (segment plus a note in ink-2).
+    words), Weather (icons plus words), Assists (segment plus a note in ink-2). A card's edge (1 px line, or the 2 px ink
+    ring when selected) is drawn on its `::after` at z-index 1: the button isolates and its still sits at z-index -2, so the
+    button's own inset shadow would paint under the picture.
   - Start is the primary button at the bottom of the panel.
   - The car card goes. The car shows in the 3D scene. The showroom camera turns, so at some bearings the car's rear still
     reaches under the panel; H5 moves the showroom view right while setup is up, and then the panel clears it at every
@@ -350,6 +355,10 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - Values carry units.
   - "Show FPS" moves under a Developer group.
   - From pause, a full `--c-scrim` covers the race, and the camera label is hidden while any screen is up.
+  - From the menu the 720-wide panel covers about half of the turntable car; H5 moves the showroom view right for settings
+    too (0.2 of the width, as the panel reaches 49 % of it).
+  - The header's right-hand subtitle ("Saved on this device", also on records, credits and results) is `--c-ink-2`: ink-3
+    over the lit garage wall measured 2.7:1.
 - **Records**
   - A circuit selector (cards).
   - A table with a header row: car (cutout and team bar), best lap, best drift. Empty values show `—`.
@@ -357,10 +366,13 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - Back is a ghost button in the footer, not a full-width bar.
 - **Credits**
   - Grouped (Cars, Audio, Artwork, Fonts, Code) with headers. Links are ink and underlined, with `arrow-up-right`.
-  - Internal provenance notes are not player copy, but they are licensing facts. See the release blocker in the risks.
+  - The player sees each model's creator, the licence's name and the links, plus a co-author where the notes name one
+    ("Also credited: @VuckyZ123", read from the "credits <name>" phrase of `additionalCredits`). The provenance notes and
+    the text after a licence's name stay in `assets/cars/*/model.json`; see the release blocker in the risks.
 - **Toast**
   - The component rules above, bottom-centre in the footer band.
-  - `setBusy` keeps its markup. The kind and timeout come from the engine patch (H2).
+  - `setBusy` keeps its markup. The kind and timeout come from the engine patch (H2); until it lands, "Session could not
+    load" shows as info.
 - **Race loading**
   - The backdrop is the selected circuit's still (a slow 1.04 scale over the whole load, which reduce motion stops).
   - Copy is per track: kicker "Corniche Marina · Dusk", title, and the true field size ("Eight teams. One grid.").
@@ -392,8 +404,18 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - As built (`hud.js`, `hud.css`, `hud-gauge.js`, `hud-map.js`):
     - The HUD's corner groups scale by its own `--s`, so `hud.css` sizes are design px, never `--u` tokens (they would scale
       twice). Labels are `--hl`, 15 design px with a 12 px floor: 12 px at 1280x720. Colours, radii, durations and easing are
-      the tokens; there is no blur on HUD tiles.
-    - The standings' "Leader" is a label; your row is `--c-fill-3` with a 2 px accent inset bar.
+      the tokens; there is no blur on HUD tiles. The tiles are `--c-panel-2` (0.9), not `--c-panel`: at the trial and drift
+      start the lit gantry and the start lights showed through 0.74 behind the em dashes. Same frame cost, no blur.
+    - The standings' "Leader" is a label; your row is `--c-fill-3` with a 2 px accent inset bar. The rank numbers 1..N are a
+      static column over the rows, so only the team bar, the code and the gap glide (a number inside a moving row ran out of
+      order mid-glide). Rows are opaque (the tile's base colour under their fill) and the row moving up has the higher
+      z-index, so two crossing rows never show through each other.
+    - The timing tile's delta shows only under a LAST that has a time (`.nolast`). Every lap delta, there and in the message
+      strip, is a true sign (`+` or U+2212, never a hyphen-minus), a thin space (U+2009) and the seconds: `− 0.418`.
+    - The shift-light rail is unseen below the shift band (each light's opacity is its own 0..1 ramp); at rest the plateless
+      row read as stray grey dashes over the scenery.
+    - Nitro: the bar and the icon turn accent together, at once, on the same `.nitro.on` class.
+    - The drift record sits on the score's baseline (its `margin-top` is measured: Barlow 28 against Anton 56).
     - Empty times and an empty drift record are the em dash in `--c-ink-3`, not ink-4: on a translucent tile over a lit gantry
       ink-4 vanishes. The running lap is the em dash too until the lap starts.
     - Lap invalid swaps the LAP TIME label for the `invalid` icon and "Lap invalid" in accent, so the tile never changes size.
@@ -424,13 +446,16 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
     - a max-height table that scrolls.
   - Your row has the accent wash.
   - Trial: a lap list table (lap, time, delta to best, a valid `check` or `invalid` icon) beside the best-lap readout.
-  - Drift: the score at hero size with the record beside it (`—` if none).
+  - Drift: the score at hero size with the record beside it (`—` if none), then a stat row: drifts banked, the best chain
+    (the largest banked drift, `session.drift.banked`) and the top multiplier (the HUD keeps the highest it showed,
+    `hud.topMult`, as the session keeps none). Your car at the trial results' scale, bottom right.
   - Earnings: a `coin` line, ink.
   - Again is primary, Menu secondary.
   - Fits 1280x720.
   - As built: the header says Results (mode icon) with the circuit on the right. The left column holds the outcome: the heading
     (Victory or P6 at `--fs-hero`; the mode name for trial and drift), the readouts and the earnings, plus the "Est" note when a
-    gap is estimated. The right column holds the podium and table, your car over the lap table (trial), or your car alone (drift).
+    gap is estimated. The right column holds the podium and table, your car over the lap table (trial), or your car at the same
+    size alone (drift).
     Table rows are Nav stops, so a long table scrolls by keyboard and pad. Focus starts on Again; Esc is Menu (its prompt sits in
     the button). `qa-ui-tour.mjs s5` finishes a real 1-lap race for the earnings block.
 - **Trial, drift and free HUD**
@@ -481,9 +506,11 @@ These are files the UI pass does not own. Each patch is exact text.
     this.busyEl.dataset.kind=kind;if(message&&ms)this.busyT=setTimeout(()=>{if(this.busyEl.textContent===message)this.busyEl.hidden=true;},ms);
     ```
 
-  - Callers that report failures pass `{kind:'error'}`. That is game.js lines 110, 222, 262, plus `src/main.js`
+  - Callers that report failures pass `{kind:'error'}`. As of 2026-10-30 that is game.js line 112
+    (`` `${next.name} could not load.` ``), 224 (`'Car could not load. Select another car or retry.'`), 264 (the car level
+    notice) and 333 (`'Session could not load. Try Start again.'`, the one the final review saw as info), plus `src/main.js`
     `game?.setBusy('Circuit could not load. Reload to retry.',{kind:'error'})`.
-  - Why: the toast never dismissed, and errors looked like info.
+  - Why: the toast never dismissed, and errors looked like info (the `info` icon, no accent edge).
 - **H3. `src/game/game.js` `show()` and `hideScreens()`: match the new fade.**
   - Change `}, 450);` to `}, 260);` in both.
   - Why: the screen fade becomes `--dur-3` (250 ms). The 450 ms timer only kept a faded screen in the layout longer.
@@ -513,9 +540,12 @@ These are files the UI pass does not own. Each patch is exact text.
     `render(car,dt,{garage=false,shift=0,reduceMotion=false,draw}={}) {this.shift=reduceMotion?shift:(this.shift??0)+(shift-(this.shift??0))*Math.min(1,dt*10);   // eased over ~250 ms, snapped under reduce motion`
     and `this.resize(innerWidth,innerHeight,garage);` to `this.resize(innerWidth,innerHeight,garage,this.shift);`.
   - `main.js`: change `garageRoom.render(field?.hero,dt,{garage:game.screenName==='garage',reduceMotion:params.reduceMotion});` to
-    `garageRoom.render(field?.hero,dt,{garage:game.screenName==='garage',shift:game.screenName==='setup'?.12:0,reduceMotion:params.reduceMotion});`
+    `garageRoom.render(field?.hero,dt,{garage:game.screenName==='garage',shift:{setup:.12,settings:.2}[game.screenName]??0,reduceMotion:params.reduceMotion});`
   - Why: the showroom camera orbits the car, and at its widest bearing the car's left edge is at 32 % of the width, under
-    the 520-wide setup panel. Moved 12 % right, it clears the panel at every bearing and every size.
+    the 520-wide setup panel. Moved 12 % right, it clears the panel at every bearing and every size. The settings panel is
+    720 design px, so its right edge is at 49 % of the width at every 16:9 size (gutter plus panel, both in `--u`): 20 %
+    moves the car's 32-68 % span to 52-88 %. The garage room only renders without a session, so settings from pause is
+    untouched.
 - **H6. `src/game/game.js` `update()`: the pad's Menu button also resumes from pause.**
   - Old: `const startBtn = pad?.buttons[9]?.pressed; if (startBtn && !this.startBtn && !this.screen) this.pause(); this.startBtn = startBtn;`
   - New: `const startBtn = pad?.buttons[9]?.pressed; if (startBtn && !this.startBtn) { if (!this.screen) this.pause(); else if (this.screenName === 'pause' && !this.screen.modal) this.resume(); } this.startBtn = startBtn;`
@@ -526,6 +556,21 @@ These are files the UI pass does not own. Each patch is exact text.
   - New: `if(this.raceLoading?.active){const b=navigator.getGamepads?.().find((g)=>g?.connected)?.buttons[1]?.pressed;if(b&&!this.loadB)this.raceLoading.cancel?.();this.loadB=b;return;}   // first: the pad must not drive the Setup screen under the loading overlay; B is its Back`
   - Then, in `race-loading.js`, the Back prompt becomes `prompt('Esc', 'b')` (add `icon('pad-b', { cls: 'pp' })` beside the cap).
   - Why: a pad player has no way back from a long first load; the keyboard has Esc.
+- **H8. `scripts/test-hoardings.mjs`: a driver with no poster yet warns instead of failing.**
+  - Old: `import {readFileSync,statSync} from 'node:fs';` New: `import {existsSync,readFileSync,statSync} from 'node:fs';`
+  - Old: ` for(const car of teams.flatMap(t=>t.cars)){` New: ` const missing=new Set();for(const car of teams.flatMap(t=>t.cars)){`
+  - Old: `   assert(statSync(new URL('../public'+p.url,import.meta.url)).size>0);`
+    New: `   const poster=new URL('../public'+p.url,import.meta.url);if(existsSync(poster))assert(statSync(poster).size>0);else missing.add(p.url);   // no poster yet: the game puts up no board (asserted below)`
+  - After that loop's closing ` }`, add: ` if(missing.size)console.warn('Drivers with no poster yet (no board goes up):',[...missing].join(', '));`
+  - Why: four posters are missing (kaito-mizuno and rina-kuroda of Hayate, added 2026-10-22, thiago-barreto, paloma-ortega),
+    so `npm run test:driver-intro` and `test:race-loading` exit 1 on an asset gap the game already handles. The real fix is
+    the four posters (an asset task).
+- **H9. `src/game/store.js` `ASSISTS`: the notes end with a period, like every other description on setup and settings.**
+  - `'Forgiving: the car follows the wheel, ABS and traction control help'` becomes `'... control help.'`, and
+    `'Less grip, looser alignment, minimal help: throttle and countersteer are yours'` becomes `'... are yours.'`.
+- **H10. `assets/cars/mp1x/model.json` and `public/assets/cars/mp1x/license.json`: `"title": "2017 Mclaren 720s"` becomes
+  `"title": "2017 McLaren 720S"`.** The credits print the title as the player-facing name. (Sketchfab's own page spells it
+  "Mclaren", so this is a display fix, not the source's title.)
 - **Out of scope for the UI pass.**
   - The flat garage room behind the menus and garage (`garage-room.js`). It is the biggest remaining "placeholder" read, and
     the menus cover it with stills and scrims meanwhile.
@@ -533,9 +578,10 @@ These are files the UI pass does not own. Each patch is exact text.
 
 ## 7. Risks to tell the user
 
-- **Release blocker (credits).** The credits show provenance notes calling some car models probable rips from a mobile
-  game. The `assets/cars/*/license.json` of aston-martin-valk, huracan, laferrari and porsche1 mention a mobile game. That is
-  a licensing fact, not copy to polish. The UI pass groups and restyles the credits but does not reword or hide it. Those cars need
-  replacing or a licence before any public release.
+- **Release blocker (credits).** The provenance notes in `assets/cars/*/model.json` (`additionalCredits`, and the text after
+  some licence names) call several car models probable rips from a game: aston-martin-valk, bmw1, huracan, laferrari,
+  nissan-z and porsche1 (a mobile racing game), blackbird and furari-488 (Forza), and supra carries real team decals. The
+  credits screen no longer shows those notes to the player (creator, licence name, links and any named co-author only), but
+  the facts stand: those cars need replacing or a licence before any public release.
 - **Real names and brands in stills.** The stills show the in-game sponsor boards and stand names (for example a driver-name
   banner at Marina). They are the game's own dressing, so they carry whatever clearance the boards themselves have.
