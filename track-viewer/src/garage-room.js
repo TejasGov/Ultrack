@@ -48,7 +48,11 @@ export class GarageRoom {
     this.camera.updateProjectionMatrix();
   }
 
-  render(car,dt,{garage=false,reduceMotion=false}={}) {
+  /** Build the room's programs in parallel before its first frame: a first synchronous draw compiled them one by one and froze the
+   *  title for seconds on a cold shader cache. Same state as render(), so the program keys match. */
+  compile(car) { let ready=Promise.resolve(); this.render(car,0,{draw:()=>{ready=this.renderer.compileAsync(this.scene,this.camera);}}); return ready; }
+
+  render(car,dt,{garage=false,reduceMotion=false,draw}={}) {
     if(!car)return;
     const renderer=this.renderer,root=car.root,parent=root.parent,visible=root.visible;
     this.savedPosition.copy(root.position);this.savedQuaternion.copy(root.quaternion);
@@ -67,7 +71,7 @@ export class GarageRoom {
       setLamps(car,'running',0);car.beams.forEach(b=>{b.visible=false;});
       this.controls.enabled=garage;this.controls.autoRotate=!reduceMotion;this.controls.update(dt);
       this.resize(innerWidth,innerHeight,garage);
-      renderer.info.reset();renderer.render(this.scene,this.camera);
+      if(draw)draw();else{renderer.info.reset();renderer.render(this.scene,this.camera);}
     } finally {
       if(parent)parent.add(root);else this.scene.remove(root);
       root.position.copy(this.savedPosition);root.quaternion.copy(this.savedQuaternion);root.visible=visible;

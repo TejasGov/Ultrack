@@ -1260,6 +1260,6 @@ if (!DEV) {
 }
 applyQuality();
 Promise.all([load(),DEV?setLook(params.look):Promise.resolve()])
-  .then(() => { game?.screens.title.progress(0.7); })
+  .then(() => { game?.screens.title.progress(0.7); return garageRoom?.compile(field.hero); })
   .then(() => { loading.remove(); requestAnimationFrame(tick); })
   .catch((e) => { loading.textContent = 'failed to load: ' + e.message; console.error(e);game?.rejectVenue(e);game?.setBusy('Circuit could not load. Reload to retry.'); });
