@@ -90,16 +90,19 @@ export class AIDriver {
       near ||= gap > -6 && gap < 30 && Math.abs(oLat - myLat) < 4.5;
       if (gap > -4 && gap < 30 && Math.abs(oLat - myLat) < 2.4 && (!blk || Math.abs(gap) < Math.abs(blk.gap))) blk = { gap, lat: oLat, speed: o.vehicle.speed };
     }
-    // the lane stays on the asphalt (track.json halfWidth around the centre line, racingLine = the line's offset from it)
-    const T = F.track, r = T?.halfWidth ? Math.floor(this.i / N * T.halfWidth.length) : -1;
-    const room = r < 0 ? 6 : T.halfWidth[r] - 1.6, rl = r < 0 ? 0 : T.racingLine?.[r] ?? 0, lo = -room - rl, hi = room - rl;
-    if (blk) { this.passSide ||= myLat >= blk.lat ? 1 : -1; const w = this.lane + this.passSide * 3; if (w > hi || w < lo) this.passSide = -this.passSide; }
-    else if (!near) this.passSide = 0;                                // hold the passing lane until the car is 6 m behind
-    const laneWant = this.passSide ? THREE.MathUtils.clamp(this.lane + this.passSide * 3, lo, hi) : this.lane;
-    this.laneNow = (this.laneNow ?? this.lane) + (laneWant - (this.laneNow ?? this.lane)) * (blk ? 0.02 : 0.01);   // 0.4 s out, 0.8 s back: the pursuit target never snaps
     const speed = v.speed, look = 6 + speed * 0.55;
     let j = this.i, acc = 0;
     while (acc < look) { const a = line[j], b = line[(j + 1) % N]; acc += a.distanceTo(b); j = (j + 1) % N; }
+    // the lane stays on the asphalt (track.json halfWidth around the centre line, racingLine = the line's offset from it), judged at
+    // the pursuit target: Marina's line swings edge to edge in 30-50 m, so a lane legal under the car is in the wall 20 m on
+    const T = F.track, r = T?.halfWidth ? Math.floor(j / N * T.halfWidth.length) : -1;
+    const room = r < 0 ? 6 : T.halfWidth[r] - 1.6, rl = r < 0 ? 0 : T.racingLine?.[r] ?? 0, lo = Math.min(-room - rl, this.lane), hi = Math.max(room - rl, this.lane);
+    // the side is picked once per pass: flipping it mid-pass swerved the car across the one it was passing
+    if (blk) { if (!this.passSide) { this.passSide = myLat >= blk.lat ? 1 : -1; const w = this.lane + this.passSide * 3; if (w > hi || w < lo) this.passSide = -this.passSide; } }
+    else if (!near) this.passSide = 0;                                // hold the passing lane until the car is 6 m behind
+    const laneWant = this.passSide ? this.lane + this.passSide * 3 : this.lane;   // passSide is unset until a first car is near
+    // 0.4 s out, 0.8 s back: the pursuit target never snaps; clamped as eased, so the way back never runs off the asphalt either
+    this.laneNow = THREE.MathUtils.clamp((this.laneNow ?? this.lane) + (laneWant - (this.laneNow ?? this.lane)) * (blk ? 0.02 : 0.01), lo, hi);
     const target = line[j].clone().addScaledVector(F.lineLeft[j], this.laneNow);
     const to = target.sub(p), left = new THREE.Vector3(0, 1, 0).cross(fwd).normalize();
     const ang = Math.atan2(to.dot(left), to.dot(fwd));                  // + = target is to the left
