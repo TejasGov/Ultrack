@@ -79,13 +79,17 @@ const beadsFrag = (P) => `
           vec4 bd = finBeads(bq, bpm, bdens, uFlow);
           vec2 bt = bAx * bd.x + bAc * bd.y;
           vec3 bOff = mat3(viewMatrix) * mat3(modelMatrix) * (bA * bt.x + bB * bt.y);
-          clearcoatNormal = normalize(clearcoatNormal + bOff * 1.3 * bfade);
+          #ifdef USE_CLEARCOAT
+            clearcoatNormal = normalize(clearcoatNormal + bOff * 1.3 * bfade);   // matte has no coat: three.js then declares no clearcoatNormal
+          #endif
           finBeadVis = bd.z * bfade;
           finBeadRim = bd.w * bfade;
         }`;
 const beadsGain = `
+        #ifdef USE_CLEARCOAT
         clearcoatSpecularIndirect = clearcoatSpecularIndirect * (1.0 + 0.3 * uRainBeads + 3.0 * finBeadVis) + uSpark * finBeadVis * (1.0 - 0.55 * dot(diffuseColor.rgb, vec3(0.333)));     // wet coat: a little glossier     // the sparkle field: a bead catches the sky and the lamps
-        clearcoatSpecularDirect *= 1.0 + 4.0 * finBeadVis;`;
+        clearcoatSpecularDirect *= 1.0 + 4.0 * finBeadVis;
+        #endif`;
 
 /** spec: finishes.json entry; box: the body's bounds (shell space, the y the paint shader reads). */
 export function applyFinish(mat, spec = {}, box) {
