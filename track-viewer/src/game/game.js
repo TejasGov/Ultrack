@@ -112,8 +112,8 @@ export class Game {
     });
   }
   /** the collision world: built in the menu if the preload got there, else now (each session owns one) */
-  takeWorld(){const world=this.worldP??PhysicsWorld.create(this.ctx.collisionUrl);this.worldP=null;return world;}
-  prepareWorld(){if(!this.worldP){this.worldP=PhysicsWorld.create(this.ctx.collisionUrl);this.worldP.catch(()=>{this.worldP=null;});}}
+  takeWorld(){const world=this.worldP??PhysicsWorld.create(this.ctx.collisionUrl,this.ctx.physicsOpts);this.worldP=null;return world;}
+  prepareWorld(){if(!this.worldP){this.worldP=PhysicsWorld.create(this.ctx.collisionUrl,this.ctx.physicsOpts);this.worldP.catch(()=>{this.worldP=null;});}}
   async ensureVehicles(keys,{announce=true}={}){
     const request=this.busyRequest=(this.busyRequest??0)+1;
     if(announce)this.setBusy('Preparing '+keys.length+' '+(keys.length===1?'car':'cars')+'…');

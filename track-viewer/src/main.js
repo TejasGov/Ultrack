@@ -689,7 +689,7 @@ async function loadVenue() {
     if (game) return;    // the game sets up physics per session
     // physics (src/physics): the cars drive on the track's collision mesh; ?physics=0 keeps the old line-following
     if (new URLSearchParams(location.search).get('physics') !== '0') {
-      const pw = await PhysicsWorld.create(U('collision'));
+      const pw = await PhysicsWorld.create(U('collision'), { voidWalls: !!TRACK.voidWalls });
       field.enablePhysics(pw, { player: params.player });
       console.info('physics: on (you drive: WASD / arrows, Space handbrake, Shift nitro, R reset; or a gamepad)');
     }
@@ -1278,7 +1278,7 @@ function newTrails(cars) {
 
 if (!DEV) {
   gui.hide(); hud.style.display = 'none'; loading.style.display = 'none';
-  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, track: () => track, setTrack, trackId: () => TRACK.id });
+  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, get physicsOpts() { return { voidWalls: !!TRACK.voidWalls }; }, track: () => track, setTrack, trackId: () => TRACK.id });
   game.screens.title.progress(0.15);
   window.game = game;
 }
