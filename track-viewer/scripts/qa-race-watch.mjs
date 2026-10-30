@@ -28,7 +28,8 @@ await page.click('.bento-tile[data-id=race]');
 await page.waitForSelector('.panel.setup button.cta', { state: 'visible' });
 await page.click('.panel.setup button.cta');
 await page.waitForFunction(() => window.game?.session && !window.game.raceLoading.active, null, { timeout: 300000 });
-// the AI drives the hero; keep the camera's static ray cast for the checks below
+// the AI drives the hero; keep the camera's static ray cast for the checks below (Marina opens on an intro camera: wait for the chase rig)
+await page.waitForFunction(() => window.game.session.field.rig, null, { timeout: 120000 });
 await page.evaluate(() => {
   const f = window.game.session.field; f.setPlayer(false);
   const rig = f.rig, up = rig.update.bind(rig); rig.update = (cam, h, dt, o) => { window.__cast = o.cast; return up(cam, h, dt, o); };
