@@ -394,7 +394,7 @@ export class Vehicle {
 
   resetControls() {
     Object.assign(this.controls,{throttle:0,brake:0,steer:0,handbrake:0,nitro:0,reset:false,hold:false});
-    Object.assign(this.state,{hit:0,vPrev:null,tcsActive:0,absActive:0,escActive:0,shift:0,shiftSlow:0,hbT:0,steer:0,steerInput:0,drive:0,driveDirection:0,driveInput:0,serviceBrake:0,reverse:false,stopTime:0,drift:0,driftHold:0,driftDir:0,prevBrake:0,beta:0,betaPrev:0,target:0,upsideDown:0,nitroOn:false});
+    Object.assign(this.state,{hit:0,vPrev:null,tcsActive:0,absActive:0,escActive:0,shift:0,shiftSlow:0,hbT:0,steer:0,steerInput:0,drive:0,driveDirection:0,driveInput:0,serviceBrake:0,reverse:false,stopTime:0,drift:0,driftHold:0,driftDir:0,prevBrake:0,beta:0,betaPrev:0,yawErr:0,target:0,upsideDown:0,nitroOn:false});
   }
 
   /** put the car back on the track: position, heading, standing still */
