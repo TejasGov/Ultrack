@@ -158,8 +158,8 @@ export class ChaseRig {
     // the car's height is smoothed (the collision mesh has seams that would nod the whole view); x and z follow rigidly
     // (the target leads by the smoothed climb rate x 2/omega, the spring's steady lag on a ramp, so a long grade isn't trailed ~1 m)
     const p = hero.root.position;
-    s.vy = (s.vy ?? 0) + ((p.y - (s.py ?? p.y)) / Math.max(dt, 1e-4) - (s.vy ?? 0)) * (1 - Math.exp(-dt / 0.25)); s.py = p.y;
-    [s.ay, s.ayv] = spring(s.ay, s.ayv, p.y + 0.2 * s.vy, 10, dt);
+    s.vy = (s.vy ?? 0) + ((p.y - (s.py ?? p.y)) / Math.max(dt, 1e-4) - (s.vy ?? 0)) * (1 - Math.exp(-dt / 0.12)); s.py = p.y;
+    [s.ay, s.ayv] = spring(s.ay, s.ayv, p.y + (2 / 18) * s.vy, 18, dt);
 
     // distance breathes out a little with speed; hard acceleration pushes the camera back, braking pulls it in
     const longG = (v - s.v) / Math.max(dt, 1e-4) / 9.81; s.v = v;
@@ -181,9 +181,11 @@ export class ChaseRig {
     if (opts.cast && lenH > 0.1) {
       // the rays start at the car's real height: on a long climb the smoothed s.ay trails ~1 m below the car, and knee rays from
       // there start under the road, hit it and pull the camera into a top-down view for the whole climb (India)
+      // and they follow the grade (rise per metre behind the car, from the climb rate): flat, they meet the road itself ~3 m back on a steep descent
+      const g = clamp(-s.vy / Math.max(v, 8), -0.35, 0.35), k = Math.hypot(1, g), kDir = dirH.clone().setY(g).divideScalar(k);
       const side = new THREE.Vector3().crossVectors(dirH, UP).multiplyScalar(0.35), knee = new THREE.Vector3(px, p.y + 0.55, pz);
       let hit = lenH;
-      for (const o of [0, 1, -1]) { const d = opts.cast(knee.clone().addScaledVector(side, o), dirH, lenH + 0.35); if (d !== null) hit = Math.min(hit, d - 0.35); }
+      for (const o of [0, 1, -1]) { const d = opts.cast(knee.clone().addScaledVector(side, o), kDir, lenH * k + 0.35); if (d !== null) hit = Math.min(hit, (d - 0.35) / k); }
       let c = clamp(hit / lenH, 0.25, 1);
       const eye = new THREE.Vector3(px, p.y + 0.9, pz), ray = cam.clone().sub(eye), rl = ray.length();
       const d = opts.cast(eye, ray.divideScalar(rl), rl + 0.35); if (d !== null) c = Math.min(c, clamp((d - 0.35) / rl, 0.25, 1));
@@ -194,9 +196,10 @@ export class ChaseRig {
     // the ground: never lower than 0.28 m above the road under the camera (a kerb or a crest between the car and the lens)
     if (opts.cast) {
       const g = opts.cast(camera.position.clone().add(UP), new THREE.Vector3(0, -1, 0), 2.2);
-      const minY = g === null ? -1e9 : camera.position.y + 1 - g + 0.28;
+      // (held relative to the car: in world height its slow release trailed a descent by rate/8, ~0.8 m high on India's 17 % drop)
+      const minY = g === null ? -1e9 : camera.position.y + 1 - g + 0.28 - p.y;
       s.floor = minY > s.floor ? minY : s.floor + (minY - s.floor) * (1 - Math.exp(-8 * dt));
-      if (camera.position.y < s.floor) camera.position.y = s.floor;
+      if (camera.position.y < p.y + s.floor) camera.position.y = p.y + s.floor;
     }
 
     // look into the corner: aim a few degrees past the lagging yaw, toward where the heading is turning (the apex), not the outer wall
