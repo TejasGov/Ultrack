@@ -14,7 +14,7 @@
 .hud .bc { left: 50%; bottom: var(--sp-5); transform: translateX(-50%) scale(var(--s)); transform-origin: 50% 100%; }
 .hud .cc { left: 50%; top: 0; width: 1600px; height: 900px; margin-left: -800px; transform-origin: 50% 0; }
 
-.hud .tile { background: var(--c-panel); border: 1px solid var(--c-line); border-radius: var(--r-3); }
+.hud .tile { background: var(--c-panel-2); border: 1px solid var(--c-line); border-radius: var(--r-3); }   /* raised (0.9): the lit start gantry showed through 0.74; still no blur */
 /* a label: tracked caps in ink-3, an optional 16 px icon before it */
 .hud .k { display: flex; align-items: center; gap: 4px; font-size: var(--hl); line-height: 1.2; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); white-space: nowrap; }
 .hud .k .icon { font-size: 16px; }
@@ -30,14 +30,18 @@
 .hud .big.lap { margin-top: 0; font-family: var(--font-ui); font-weight: 700; font-size: 38px; line-height: 50px; }
 .hud:not(.racing) .tl { display: none; }
 .hud .standings { position: relative; margin-top: 12px; }
-.hud .srow { position: absolute; left: 0; top: 0; width: 100%; height: 24px; display: grid; grid-template-columns: 24px 4px 1fr auto; align-items: center; gap: 8px; padding: 0 8px 0 4px;
-  background: var(--c-fill-1); border-radius: var(--r-1); font-size: 17px; letter-spacing: 0.06em; transition: transform var(--dur-3) var(--ease-out); will-change: transform; }
-.hud .srow .n { font-size: 16px; text-align: center; color: var(--c-ink-2); }
+/* rows glide (transform) under a static rank column; a row is opaque (the tile's base colour under its fill), so two crossing rows
+   never show through each other, and the one moving up is on top (z-index, hud.js) */
+.hud .srow { position: absolute; left: 0; top: 0; width: 100%; height: 24px; display: grid; grid-template-columns: 4px 1fr auto; align-items: center; gap: 8px; padding: 0 8px 0 36px;
+  background: linear-gradient(var(--c-fill-1), var(--c-fill-1)) rgb(14, 18, 25); border-radius: var(--r-1); font-size: 17px; letter-spacing: 0.06em; transition: transform var(--dur-3) var(--ease-out); will-change: transform; }
+.hud .ranks { position: absolute; left: 4px; top: 0; z-index: 99; width: 24px; }
+.hud .ranks span { display: block; height: 28px; line-height: 24px; font-size: 16px; text-align: center; color: var(--c-ink-2); }
+.hud .ranks span.me { color: var(--c-ink-1); }
 .hud .srow i { height: 14px; border-radius: 1px; background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }   /* the edge: dark teams stay distinct */
 .hud .srow .g { font-size: 16px; color: var(--c-ink-2); letter-spacing: 0.04em; }
 .hud .srow .g.lead { font-size: var(--hl); letter-spacing: var(--track-label); color: var(--c-ink-3); }
-.hud .srow.me { background: var(--c-fill-3); box-shadow: inset var(--rule) 0 0 var(--c-accent); }
-.hud .srow.me .n, .hud .srow.me .g { color: var(--c-ink-1); }
+.hud .srow.me { background: linear-gradient(var(--c-fill-3), var(--c-fill-3)) rgb(14, 18, 25); box-shadow: inset var(--rule) 0 0 var(--c-accent); }
+.hud .srow.me .g { color: var(--c-ink-1); }
 
 /* ---- top centre: timing. Race: last | lap time | best; trial: the lap joins it on the left. Empty times are the em dash */
 .hud .timing { position: relative; display: grid; grid-template-columns: 152px 248px 152px; align-items: start; padding: 12px 16px 24px; }
@@ -55,6 +59,7 @@
 .hud .timing.inval .inv { display: flex; }
 .hud .delta { height: 20px; margin-top: 4px; font-size: 18px; line-height: 20px; letter-spacing: 0.02em; opacity: 0; transition: opacity var(--dur-3) var(--ease-out); }
 .hud .delta.good, .hud .delta.bad { opacity: 1; }
+.hud .timing.nolast .delta { opacity: 0; }   /* no delta under an em-dash LAST */
 .hud .delta.good { color: var(--c-pos); } .hud .delta.bad { color: var(--c-accent); }
 .hud .prog { position: absolute; left: 16px; right: 16px; bottom: 12px; height: 4px; display: flex; gap: 4px; }
 .hud .prog div { flex: 1 1 0; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
@@ -75,7 +80,7 @@
 .hud .dmain { display: flex; flex-direction: column; align-items: center; }
 .hud .drift .total { margin-top: 4px; font-family: var(--font-num); font-size: 56px; line-height: 1; }
 .hud .drec { display: flex; flex-direction: column; align-items: flex-end; }
-.hud .drec .rec { margin-top: 4px; font-size: 28px; line-height: 1.15; }
+.hud .drec .rec { margin-top: 29px; font-size: 28px; line-height: 1.15; }   /* on the score's baseline: Barlow 28 sits 25 px above Anton 56 at margin 4 (measured) */
 .hud .drift .chainrow { grid-column: 1 / -1; display: flex; justify-content: center; align-items: baseline; gap: 12px; height: 40px; margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--c-line); }
 .hud .drift .chain { font-size: 32px; line-height: 32px; }
 .hud .drift .chain.idle { font-size: var(--hl); line-height: 32px; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
@@ -95,7 +100,7 @@
 .hud .gauge { position: relative; width: 348px; height: 310px; }
 .hud .gauge::before { content: ''; position: absolute; left: -16px; top: 12px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle closest-side, rgba(6, 9, 14, 0.62) 0, rgba(6, 9, 14, 0.5) 60%, rgba(6, 9, 14, 0) 100%); }
 .hud .rail { position: absolute; left: 48px; right: 48px; top: 0; display: flex; gap: 4px; }
-.hud .rail i { flex: 1; height: 4px; border-radius: 2px; background: var(--c-ink-1); opacity: 0.12; transition: opacity 0.09s linear; }
+.hud .rail i { flex: 1; height: 4px; border-radius: 2px; background: var(--c-ink-1); opacity: 0; transition: opacity 0.09s linear; }   /* unseen below the shift band: at rest a plateless row read as stray dashes */
 .hud .rail i:nth-child(n+10) { background: var(--c-accent); }
 .hud .gauge.ev .rail { display: none; }
 .hud .dial { position: absolute; left: 0; top: 10px; width: 348px; height: 300px; }
@@ -129,7 +134,7 @@
 .hud .nitro.on .k { color: var(--c-ink-1); }
 .hud .nitro.on .k .icon { color: var(--c-accent); }
 .hud .nitro .bar { position: relative; margin-top: 8px; height: 8px; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
-.hud .nitro .bar i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transition: transform var(--dur-3) linear, background-color var(--dur-2); }
+.hud .nitro .bar i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transition: transform var(--dur-3) linear; }   /* the accent swaps with the icon's, at once: one firing state */
 .hud .nitro.on .bar i { background: var(--c-accent); }
 .hud .nitro.low:not(.on) .bar i { background: var(--c-ink-3); }
 .hud .nitro .bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent calc(100% - 2px), rgba(9, 12, 17, 0.92) calc(100% - 2px)) 0 0 / 20% 100%; }

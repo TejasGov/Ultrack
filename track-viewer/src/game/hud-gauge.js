@@ -98,7 +98,7 @@ export class Gauge {
     // shift lights: from 70% of the redline, each lit as its own threshold passes (smoothly), all of them at the shift point
     for (let i = 0; i < LEDS; i++) {
       const at = 0.7 + 0.265 * (i + 0.5) / LEDS, q = ev ? 0 : Math.round(smooth(at - 0.012, at + 0.012, rr) * 12);
-      if (this.cache['l' + i] !== q) { this.cache['l' + i] = q; this.leds[i].style.opacity = (0.12 + 0.88 * q / 12).toFixed(2); }
+      if (this.cache['l' + i] !== q) { this.cache['l' + i] = q; this.leds[i].style.opacity = (q / 12).toFixed(2); }   // unlit is unseen: no plate under the rail
     }
     this.flag(this.rail, 'shift', !ev && rr > 0.95);
     // speed: three fixed cells (Anton's 1 is narrow), right-aligned with the leading cells empty; repainted at ~16 Hz, a readout nobody can read at 60

@@ -23,12 +23,15 @@ const label = (name, text, cls = '') => h('span.k' + cls, {}, name ? icon(name) 
 /** the drift timer ring as two half-ring turns (deg) for the time left, f 0..1: each half is clipped to its side and turned back
  *  out of it, so the ring shrinks from 12 o'clock clockwise with transforms only */
 export const ringTurns = (f) => { f = Math.min(1, Math.max(0, f)); return [Math.min(f, 0.5) * 360 - 180, Math.max(0, f - 0.5) * 360 - 180]; };
+/** a lap delta as the HUD shows it: a true sign (+ or U+2212, never a hyphen), a thin space, the seconds */
+const signed = (sign, digits) => (sign === '+' ? '+' : '−') + ' ' + digits;
 /** a message's sub line ("1:31.204  −0.418  +40 U") as parts: a lap delta coloured by its sign, coins with the coin icon, not a U */
 export function msgParts(sub) {
   return String(sub).split(/\s{2,}/).filter(Boolean).map((p) => {
     const coin = /^\+([\d,]+) U$/.exec(p);
     if (coin) return { kind: 'coin', text: '+' + coin[1] };
-    if (/^[+−-]\d+\.\d{3}$/.test(p)) return { kind: p[0] === '+' ? 'dn' : 'up', text: p };   // a lap delta: − is faster
+    const d = /^([+−-])\s?(\d+\.\d{3})$/.exec(p);
+    if (d) return { kind: d[1] === '+' ? 'dn' : 'up', text: signed(d[1], d[2]) };   // a lap delta: − is faster
     return { kind: '', text: p };
   });
 }
@@ -87,7 +90,7 @@ export class Hud {
 
   /** a new session: nothing from the last one (lights, a message, the countdown, the lap delta) carries over */
   reset() {
-    this.lights(0); this.lapDelta(null);
+    this.lights(0); this.lapDelta(null); this.topMult = 1;
     this.msgEl.replaceChildren(); this.msgEl.classList.remove('out'); this.msgT = 0;
     this.countEl.className = 'count'; this.countEl.textContent = ''; this.countT = 0;
   }
@@ -121,7 +124,7 @@ export class Hud {
   /** the last lap against your best: stays on the timing tile until the next lap closes; nothing at all when there is none */
   lapDelta(delta, good) {
     const none = delta === null || delta === undefined;
-    this.deltaEl.textContent = none ? '' : `${delta > 0 ? '+' : '−'}${Math.abs(delta).toFixed(3)}`;
+    this.deltaEl.textContent = none ? '' : signed(delta > 0 ? '+' : '−', Math.abs(delta).toFixed(3));
     this.deltaEl.className = 'delta' + (none ? '' : good || delta < 0 ? ' good' : ' bad');
   }
 
@@ -129,20 +132,27 @@ export class Hud {
 
   lights(n) { this.lightsEl.classList.toggle('on', n > 0); [...this.lightsEl.children].forEach((e, k) => e.classList.toggle('on', k < n)); }
 
-  /** the standings: one persistent row per car, moved with a transform so a changed order glides */
+  /** the standings: one persistent row per car, moved with a transform so a changed order glides. The rank numbers are a static
+   *  column over the rows (a number in a moving row ran out of order mid-glide); the row moving up paints over the one it passes */
   standings(s, hero, gaps) {
+    const N = s.order.length;
     if (this.standFor !== s) {
-      this.standFor = s; this.rows.clear(); this.standEl.replaceChildren(); this.standEl.style.height = `${ROW * s.order.length}px`;
+      this.standFor = s; this.rows.clear(); this.standEl.style.height = `${ROW * N}px`; this.meRank = -1;
+      this.ranks = Array.from({ length: N }, (_, k) => h('span', {}, String(k + 1)));
+      this.standEl.replaceChildren(h('div.ranks', {}, ...this.ranks));
       for (const c of s.order) {
-        const d = s.driver(c), row = h('div.srow' + (c === hero ? '.me' : ''), { style: { transform: `translateY(${ROW * s.order.length}px)` } }, h('span.n'), h('i'), h('span.code', {}, d.code), h('span.g'));
+        const d = s.driver(c), row = h('div.srow' + (c === hero ? '.me' : ''), { style: { transform: `translateY(${ROW * N}px)` } }, h('i'), h('span.code', {}, d.code), h('span.g'));
         row.style.setProperty('--team', teamMark(d.team));
-        row.n = row.children[0]; row.g = row.children[3]; row.rank = -1; row.gap = '';
+        row.g = row.children[2]; row.rank = -1; row.gap = '';
         this.standEl.append(row); this.rows.set(c, row);
       }
     }
     gaps.forEach(({ car, gap }, k) => {
       const row = this.rows.get(car); if (!row) return;
-      if (row.rank !== k) { row.rank = k; row.n.textContent = k + 1; row.style.transform = `translateY(${k * ROW}px)`; }
+      if (row.rank !== k) {
+        row.rank = k; row.style.transform = `translateY(${k * ROW}px)`; row.style.zIndex = N - k;
+        if (car === hero) { this.ranks[this.meRank]?.classList.remove('me'); this.ranks[k]?.classList.add('me'); this.meRank = k; }
+      }
       const g = k === 0 ? 'LEADER' : `+${gap.toFixed(1)}`;
       if (row.gap !== g) { row.gap = g; row.g.textContent = g; row.g.classList.toggle('lead', k === 0); }
     });
@@ -171,6 +181,7 @@ export class Hud {
       this.curAge = (this.curAge ?? 0) + dt;
       if (this.curAge > 0.04 || cur === null) { this.curAge = 0; this.setTime(this.timeCur, 'tc', cur); }   // the running time repaints at ~25 Hz
       this.setTime(this.timeLast, 'tl', T.lastLap); this.setTime(this.timeBest, 'tb', best);
+      this.flag(this.timingEl, 'nolast', !Number.isFinite(T.lastLap));            // a delta only under a LAST that has a time
       this.flag(this.timingEl, 'inval', s.mode === 'trial' && !T.valid);
       const p = cur === null ? 0 : Math.min(1, Math.max(0, T.idx / s.N)), pq = Math.round(p * 400);
       if (this.cache.prog !== pq) {                                                // three sector bars, each filling as the lap passes through it
@@ -187,7 +198,7 @@ export class Hud {
       if (this.cache.ring !== rq) { this.cache.ring = rq; const [a, b] = ringTurns(rq / 240); this.ringR.style.transform = `rotate(${a}deg)`; this.ringL.style.transform = `rotate(${b}deg)`; }
       this.set(this.dRec, 'drec', rec > 0 ? rec.toLocaleString('en') : EMPTY); this.flag(this.dRec, 'empty', !(rec > 0));
       this.set(this.dChain, 'dch', D.chain > 0 ? `+${Math.round(D.chain).toLocaleString('en')}` : 'Drift to chain'); this.flag(this.dChain, 'idle', !(D.chain > 0));
-      this.set(this.dMult, 'dm', `×${D.mult.toFixed(1)}`);
+      this.set(this.dMult, 'dm', `×${D.mult.toFixed(1)}`); if (D.mult > (this.topMult ?? 1)) this.topMult = D.mult;   // the results' top multiplier: the session keeps none
       const bw = Math.round((D.mult >= 5 ? 1 : Math.min(1, (D.chainT % 2) / 2)) * (D.chain > 0 ? 100 : 0));
       if (this.cache.bar !== bw) { this.cache.bar = bw; this.dBar.style.transform = `scaleX(${bw / 100})`; }
     }
