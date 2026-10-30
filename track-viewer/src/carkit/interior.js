@@ -26,18 +26,44 @@ function strip(a, b) {
   return g;
 }
 
+/** Per x in `xs` (the mesh's parent frame via `inv` * matrixWorld): an index of the triangles whose x span reaches it (1 mm slack), or null
+ *  when that x has none. null for the whole mesh when three's raycast would not read a plain index (groups, morphs, instancing, a draw range). */
+function planeSlices(mesh, inv, xs) {
+  const g = mesh.geometry, pos = g.attributes.position;
+  if (mesh.isInstancedMesh || mesh.isSkinnedMesh || Array.isArray(mesh.material) || g.groups.length || g.morphAttributes.position || g.drawRange.start !== 0 || g.drawRange.count !== Infinity) return null;
+  const e = new THREE.Matrix4().multiplyMatrices(inv, mesh.matrixWorld).elements, X = new Float64Array(pos.count), eps = 1e-3;
+  for (let i = 0; i < pos.count; i++) X[i] = e[0] * pos.getX(i) + e[4] * pos.getY(i) + e[8] * pos.getZ(i) + e[12];
+  const idx = g.index, n = idx ? idx.count : pos.count, lists = xs.map(() => []);
+  for (let t = 0; t + 2 < n; t += 3) {
+    const a = idx ? idx.getX(t) : t, b = idx ? idx.getX(t + 1) : t + 1, c = idx ? idx.getX(t + 2) : t + 2;
+    const lo = Math.min(X[a], X[b], X[c]) - eps, hi = Math.max(X[a], X[b], X[c]) + eps;
+    xs.forEach((x, s) => { if (x >= lo && x <= hi) lists[s].push(a, b, c); });
+  }
+  return lists.map((l) => (l.length ? new THREE.BufferAttribute(new Uint32Array(l), 1) : null));
+}
+
 /** lod: the body LOD; glassBox: window outlines (shell metres, z = |z|); bodyBox: shell bounds; spec: tuning.interior */
 export function addInterior(lod, glassBox, bodyBox, spec = {}, wheels = null) {
   const level0 = lod.levels[0].object, shell = level0.children.filter((o) => o.isMesh);
   const group = new THREE.Group(); group.name = 'interior';      // cars.js merges it to one mesh per material
   level0.updateWorldMatrix(true, true);
   const M = level0.matrixWorld, inv = M.clone().invert(), ray = new THREE.Raycaster();
-  // first hit from `o` along `d`, both in shell metres; returns the hit in shell metres (or null)
-  const cast = (o, d) => { ray.set(o.clone().applyMatrix4(M), d.clone().transformDirection(M)); ray.far = 20; const h = ray.intersectObjects(shell, false)[0]; return h ? h.point.applyMatrix4(inv) : null; };
   const b = bodyBox, belt = glassBox.isEmpty() ? b.min.y + 0.55 * (b.max.y - b.min.y) : glassBox.min.y;
-  const N = 36, rows = [];
+  const N = 36, rows = [], xs = Array.from({ length: N + 1 }, (_, i) => b.min.x + 0.06 + (b.max.x - b.min.x - 0.12) * i / N);
+  // Every cast lies in the plane x = xs[at]: each mesh is cast against only the triangles that reach that plane (three's own
+  // raycast on an index of them, so the hits are the brute-force ones). Brute force cost ~130 ms of main thread per car.
+  const uses = new Map(); shell.forEach((m) => uses.set(m.geometry, (uses.get(m.geometry) ?? 0) + 1));   // a shared geometry keeps its full index
+  const slices = shell.map((m) => (uses.get(m.geometry) > 1 ? null : planeSlices(m, inv, xs))); let at = 0;
+  // first hit from `o` along `d`, both in shell metres; returns the hit in shell metres (or null)
+  const cast = (o, d) => {
+    ray.set(o.clone().applyMatrix4(M), d.clone().transformDirection(M)); ray.far = 20;
+    const full = shell.map((m) => m.geometry.index), hit = shell.filter((m, k) => !slices[k] || slices[k][at]);
+    shell.forEach((m, k) => { if (slices[k]) m.geometry.index = slices[k][at]; });
+    try { const h = ray.intersectObjects(hit, false)[0]; return h ? h.point.applyMatrix4(inv) : null; }
+    finally { shell.forEach((m, k) => { m.geometry.index = full[k]; }); }
+  };
   for (let i = 0; i <= N; i++) {
-    const x = b.min.x + 0.06 + (b.max.x - b.min.x - 0.12) * i / N;
+    const x = xs[i]; at = i;
     // the downward ray falls through any opening in the deck (exactly where the floor is needed): it only limits the keel
     const topHit = cast(new THREE.Vector3(x, b.max.y + 1, 0), new THREE.Vector3(0, -1, 0));
     let bot = cast(new THREE.Vector3(x, b.min.y - 1, 0), new THREE.Vector3(0, 1, 0))?.y ?? b.min.y;
