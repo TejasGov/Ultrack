@@ -116,7 +116,7 @@ export class Game {
   takeWorld(){const world=this.worldP??PhysicsWorld.create(this.ctx.collisionUrl,this.ctx.physicsOpts);this.worldP=null;return world;}
   prepareWorld(){if(!this.worldP){this.worldP=PhysicsWorld.create(this.ctx.collisionUrl,this.ctx.physicsOpts);this.worldP.catch(()=>{this.worldP=null;});}}
   async ensureVehicles(keys,{announce=true}={}){
-    const request=this.busyRequest=(this.busyRequest??0)+1;
+    const request=announce?(this.busyRequest=(this.busyRequest??0)+1):0;   // only shown requests count: a silent preload must not orphan the message
     if(announce)this.setBusy('Preparing '+keys.length+' '+(keys.length===1?'car':'cars')+'…');
     try{
       await this.venueReady;
