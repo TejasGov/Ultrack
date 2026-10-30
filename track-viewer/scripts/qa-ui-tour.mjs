@@ -84,7 +84,7 @@ const tile = async (id) => { await page.click(`.bento-tile[data-id=${id}]`); awa
 async function start(mode, loadingShot) {
   await tile(mode);
   await page.click('.panel.setup button.cta');
-  if (loadingShot) { await page.waitForSelector('.race-loading', { state: 'visible', timeout: 60000 }); await frames(); await shot('race-loading'); }
+  if (loadingShot) { await page.waitForSelector('.race-loading', { state: 'visible', timeout: 60000 }); await opaque('.race-loading'); await shot('race-loading'); }
   await page.waitForFunction(() => window.game?.session && !window.game.raceLoading.active, null, { timeout: 300000 });
   await page.waitForFunction(() => window.game.session.field.rig, null, { timeout: 120000 });   // Marina opens on an intro camera
 }
@@ -203,7 +203,9 @@ const padPress = async (i) => {
   await frames(); await frames(); await nav((i) => { window.__pad.buttons[i].pressed = false; }, i); await frames(); await frames();
 };
 const UD = ['ArrowUp', 'ArrowDown'];
-const tabOn = () => nav(() => document.querySelector('.stabs button.on')?.textContent);
+const tabOn = () => nav(() => document.querySelector('.screen.on .stabs button.on')?.textContent);   // the open screen's tabs: the hidden garage has .stabs too
+/** the toast or an overlay fully faded in: a shot two frames after it appears catches it half faded over the screen it covers */
+const opaque = (sel) => page.waitForFunction((sel) => { const e = document.querySelector(sel); return e && getComputedStyle(e).opacity === '1'; }, sel, { timeout: 5000 });
 /** what s3 owns: the form controls, setup (four modes), settings (four tabs, from the menu and from pause), pause (race, trial,
  *  free) and the confirm modal. Checks: the setup panel clear of the car, the settings panel top fixed across tabs, keyboard and
  *  pad reach, Esc from settings-from-pause, the modal's trapped focus, the camera label hidden over pause */
@@ -469,7 +471,7 @@ try {
   await key('Escape'); await settle();
   await page.click('.bento-tile.records-tile'); await settle(); await shot('records'); await key('Escape'); await settle();
   await tile('credits'); await shot('credits'); await key('Escape'); await settle();
-  await page.evaluate(() => window.game.setBusy('Session could not load. Try Start again.')); await frames(); await shot('toast-busy');
+  await page.evaluate(() => window.game.setBusy('Session could not load. Try Start again.')); await opaque('.asset-loading'); await shot('toast-busy');
   await page.evaluate(() => window.game.setBusy(''));
 
   // ---- race: loading, lights, GO, nitro, the HUD, a lap message, wrong way, camera label, map overview, pause, results
