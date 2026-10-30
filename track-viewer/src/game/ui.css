@@ -118,7 +118,7 @@
 .results .acts { display: flex; gap: 14px; }
 
 @media (max-width: 900px) {
-  .setup.pnl, .settings.pnl { left: 16px; right: 16px; width: auto; }
+  .panel.setup.pnl, .panel.settings.pnl { left: 16px; right: 16px; width: auto; }   /* outranks .panel.pnl and the widths set further down */
 }
 
 .garage .row { grid-template-columns: 96px 1fr; padding: 8px 4px; }

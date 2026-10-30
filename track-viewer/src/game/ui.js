@@ -433,6 +433,7 @@ export function SettingsScreen(game) {
     el, nav: true,
     onShow(f) { from = f ?? 'menu'; el.classList.toggle('over-race', from === 'pause'); build(); nav.reset(0); },
     onKeyTab(d) { tab = TABS[(TABS.findIndex(([id]) => id === tab) + d + TABS.length) % TABS.length][0]; build(); nav.reset(0); },
+    onSel(e) { if (e && e === [...body.querySelectorAll('[data-nav]')].at(-1)) { body.scrollTop = body.scrollHeight; fadeMore(body); } },   // the last row shows what sits below it (the Controls tip at 720 p), not just itself
     back() { game.show(from); },
   };
   return api;
