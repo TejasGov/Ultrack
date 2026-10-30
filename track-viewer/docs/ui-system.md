@@ -297,12 +297,16 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - Esc on the menu does nothing (the title is boot only). Quitting is a future modal.
   - Every tile is a Nav stop. `test-menu.mjs` still sees 9 `[data-nav]` buttons and "YOUR CAR".
 - **Setup (race, trial, drift, free)**
-  - The left panel is 560 design px wide and anchored to the top.
-  - Rows in order: Circuit (cards, 3 across: still, name, length and corners), Laps (stepper), Time of day (icons plus
+  - The left panel is 520 design px wide (560 touched the turntable car's rear wing) and anchored to the top under the
+    header, clamped above the footer; its rows scroll inside it when the window is short.
+  - Rows stack the label over the control, so segments get the panel's full width. In order: Circuit (cards, 3 across:
+    still, name, length and corners, selected = a 2 px ink ring and a `check`), Laps (segment), Time of day (icons plus
     words), Weather (icons plus words), Assists (segment plus a note in ink-2).
   - Start is the primary button at the bottom of the panel.
-  - The car card goes. The car shows in the 3D scene, and the panel never covers it at 1280 wide.
-  - Focus starts on the first row once the circuit row exists.
+  - The car card goes. The car shows in the 3D scene. The showroom camera turns, so at some bearings the car's rear still
+    reaches under the panel; H5 moves the showroom view right while setup is up, and then the panel clears it at every
+    bearing (`qa-ui-tour.mjs s3` measures both: `clear` and `clearShifted`).
+  - Focus starts on the first row once the circuit row exists (unless a key or click moved it first).
   - Free Drive's HUD hides the clock, so "No clock" is true.
 - **Garage**
   - The car list sits on the left: grouped by team (logo header), rows with a small cutout, name, class and level, and a
@@ -318,10 +322,11 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - "TEST BUILD" text goes.
   - Currency shows once, in the footer.
 - **Settings and settings from pause**
-  - The panel is anchored to the top. Tabs with icons are Nav stops, with LB/RB.
+  - The panel is anchored to the top. The tab row (icons, with the Q/LB and E/RB prompts at its ends) is one Nav stop:
+    Left/Right, Q/E and LB/RB switch tabs, and Down goes into the rows.
   - The Controls tab is a table: action, keyboard keycaps, pad glyphs. Rows are focusable.
   - Values carry units.
-  - "Show FPS" moves under a dev section.
+  - "Show FPS" moves under a Developer group.
   - From pause, a full `--c-scrim` covers the race, and the camera label is hidden while any screen is up.
 - **Records**
   - A circuit selector (cards).
@@ -427,6 +432,37 @@ These are files the UI pass does not own. Each patch is exact text.
 - **H4. `src/game/session.js` MODES.**
   - Copy stays unless the user wants it changed. Free Drive's "No clock" is made true by the HUD (no engine change), and
     the "Seven teams" error is in `race-loading.js` (UI).
+- **H5. `src/garage-room.js` and `src/main.js`: move the showroom view right while setup is up.**
+  - `garage-room.js` `resize()`, old:
+
+    ```js
+      resize(width,height,garage) {
+        const key=`${width}:${height}:${garage}`;if(key===this.size)return;this.size=key;
+        this.camera.aspect=width/height;
+        this.camera.setViewOffset(width,height,garage?width*.05:0,0,width,height);
+    ```
+
+    New:
+
+    ```js
+      resize(width,height,garage,shift=0) {
+        const key=`${width}:${height}:${garage}:${shift.toFixed(4)}`;if(key===this.size)return;this.size=key;
+        this.camera.aspect=width/height;
+        this.camera.setViewOffset(width,height,garage?width*.05:-width*shift,0,width,height);   // shift > 0: the car sits right of a left panel
+    ```
+
+  - `garage-room.js` `render()`: change `render(car,dt,{garage=false,reduceMotion=false,draw}={}) {` to
+    `render(car,dt,{garage=false,shift=0,reduceMotion=false,draw}={}) {this.shift=reduceMotion?shift:(this.shift??0)+(shift-(this.shift??0))*Math.min(1,dt*10);   // eased over ~250 ms, snapped under reduce motion`
+    and `this.resize(innerWidth,innerHeight,garage);` to `this.resize(innerWidth,innerHeight,garage,this.shift);`.
+  - `main.js`: change `garageRoom.render(field?.hero,dt,{garage:game.screenName==='garage',reduceMotion:params.reduceMotion});` to
+    `garageRoom.render(field?.hero,dt,{garage:game.screenName==='garage',shift:game.screenName==='setup'?.12:0,reduceMotion:params.reduceMotion});`
+  - Why: the showroom camera orbits the car, and at its widest bearing the car's left edge is at 32 % of the width, under
+    the 520-wide setup panel. Moved 12 % right, it clears the panel at every bearing and every size.
+- **H6. `src/game/game.js` `update()`: the pad's Menu button also resumes from pause.**
+  - Old: `const startBtn = pad?.buttons[9]?.pressed; if (startBtn && !this.startBtn && !this.screen) this.pause(); this.startBtn = startBtn;`
+  - New: `const startBtn = pad?.buttons[9]?.pressed; if (startBtn && !this.startBtn) { if (!this.screen) this.pause(); else if (this.screenName === 'pause' && !this.screen.modal) this.resume(); } this.startBtn = startBtn;`
+  - Why: the spec's pause footer is "Esc or Menu resumes"; today only B does (Nav's back). Until this lands the footer
+    shows the B glyph.
 - **Out of scope for the UI pass.**
   - The flat garage room behind the menus and garage (`garage-room.js`). It is the biggest remaining "placeholder" read, and
     the menus cover it with stills and scrims meanwhile.

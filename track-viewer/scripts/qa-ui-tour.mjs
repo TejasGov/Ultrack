@@ -10,6 +10,8 @@
 // A UI-pass step as the label (s1) tours only that step's screens, every shot at all three sizes, plus its keyboard and motion
 // checks in report.json "checks" (no race: light on the GPU). s1: title, records, credits, the toast. s2: the bento home (and
 // one circuit switch in setup, which loads the other venue).
+// s3: setup (four modes), settings (four tabs; from the menu and from pause), pause (race, trial, free) and the confirm modal;
+// PART=setup|settings|pause runs one part.
 //   OUT=qa/ui-tour/S1-primitives-small-screens node scripts/qa-lock.mjs -- node scripts/qa-ui-tour.mjs s1
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -59,14 +61,14 @@ const audit = () => page.evaluate(() => {
   return { offscreen, clipped, fonts: [...fonts], iconGlyphs: [...glyphs] };
 });
 let n = 0;
-/** a PNG of the page now; multi: also at 1280x720 and 1920x1080, then back to 1600x900 */
-async function shot(name, multi = false) {
+/** a PNG of the page now; multi: also at 1280x720 and 1920x1080, then back to 1600x900; probe: a measure kept per size */
+async function shot(name, multi = false, probe = null) {
   const id = String(++n).padStart(2, '0');
   for (const [w, h] of multi ? SIZES : SIZES.slice(0, 1)) {
     if (w !== 1600) { await page.setViewportSize({ width: w, height: h }); await frames(); await frames(); }
     const file = `${id}-${name}-${w}x${h}.png`;
     await page.screenshot({ path: join(out, file) });
-    shots.push({ file, audit: await audit() });
+    shots.push({ file, audit: await audit(), ...(probe ? { probe: await probe() } : {}) });
   }
   if (multi) { await page.setViewportSize({ width: 1600, height: 900 }); await frames(); await frames(); }
   console.log('shot', id, name);
@@ -86,11 +88,11 @@ const pauseOpt = async (text) => { await page.click(`.pause .opt:has-text("${tex
 const S1 = label === 's1', checks = {};
 const nav = (f, a) => page.evaluate(f, a);
 /** keyboard-only reach of the open screen: the arrows from every Nav stop (a search over the four keys), and Tab through the page */
-async function reach(name) {
+async function reach(name, keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) {   // a list screen: Up/Down only (Left/Right would change its settings)
   const n = await nav(() => window.game.nav.items().length), seen = new Set([await nav(() => window.game.nav.i)]), todo = [...seen];
   while (todo.length) {
     const i = todo.shift();
-    for (const k of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) {
+    for (const k of keys) {
       await nav((i) => window.game.nav.reset(i), i); await key(k);
       const j = await nav(() => window.game.nav.i); if (!seen.has(j)) { seen.add(j); todo.push(j); }
     }
@@ -168,6 +170,106 @@ async function s2() {
   } else checks.afterSwitch = 'one circuit only: no switch';
 }
 
+const S3 = label === 's3';
+/** the hero car on the showroom turntable against the setup panel. The room's camera (garage-room.js: fov 48, at (7.5, 2.8, 6.6)
+ *  round the target (0, .7, 0), the car at (0, .05, 0) unrotated) auto-rotates, so the car's left edge is taken over every bearing:
+ *  the panel must end left of the widest one */
+const carClear = () => nav(() => {
+  const T = window.viewer.THREE, root = window.game.field?.hero?.root, panel = document.querySelector('.panel.setup')?.getBoundingClientRect();
+  if (!root || !panel) return null;
+  root.updateMatrixWorld(true);
+  const inv = root.matrixWorld.clone().invert(), at = new T.Matrix4().makeTranslation(0, 0.05, 0), pts = [], v = new T.Vector3();
+  root.traverse((o) => { if (!o.isMesh || !o.visible || o.material?.transparent) return; o.geometry.boundingBox ?? o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox;
+    const m = at.clone().multiply(inv).multiply(o.matrixWorld);
+    for (let i = 0; i < 8; i++) pts.push(new T.Vector3(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).applyMatrix4(m)); });
+  const cam = new T.PerspectiveCamera(48, innerWidth / innerHeight, 0.1, 60), r = Math.hypot(7.5, 6.6), a0 = Math.atan2(7.5, 6.6);
+  let worst = Infinity, now = Infinity;
+  for (let a = 0; a < 360; a += 3) {
+    const t = a0 + a * Math.PI / 180; cam.position.set(r * Math.sin(t), 2.8, r * Math.cos(t)); cam.lookAt(0, 0.7, 0); cam.updateMatrixWorld();
+    const x = Math.min(...pts.map((p) => (v.copy(p).project(cam).x + 1) / 2 * innerWidth)); worst = Math.min(worst, x); if (a === 0) now = x;
+  }
+  // clearShifted: with the engine handoff that moves the showroom view 12 % right while setup is up (docs/ui-system.md, H5)
+  return { carLeftWorst: Math.round(worst), carLeftAtStart: Math.round(now), panelRight: Math.round(panel.right), clear: panel.right <= worst, clearShifted: panel.right <= worst + 0.12 * innerWidth };
+});
+/** a stand-in gamepad (navigator.getGamepads) so Nav.pad's LB / RB can be pressed for a few frames */
+const padPress = async (i) => {
+  await nav((i) => { const p = window.__pad ??= { connected: true, axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
+    Object.defineProperty(navigator, 'getGamepads', { configurable: true, value: () => [p] }); p.buttons[i].pressed = true; }, i);
+  await frames(); await frames(); await nav((i) => { window.__pad.buttons[i].pressed = false; }, i); await frames(); await frames();
+};
+const UD = ['ArrowUp', 'ArrowDown'];
+const tabOn = () => nav(() => document.querySelector('.stabs button.on')?.textContent);
+/** what s3 owns: the form controls, setup (four modes), settings (four tabs, from the menu and from pause), pause (race, trial,
+ *  free) and the confirm modal. Checks: the setup panel clear of the car, the settings panel top fixed across tabs, keyboard and
+ *  pad reach, Esc from settings-from-pause, the modal's trapped focus, the camera label hidden over pause */
+async function s3() {
+  const part = process.env.PART ?? 'setup,settings,pause';   // PART=setup|settings|pause: one part per run (a run stays short)
+  const imgs = () => page.waitForFunction(() => [...document.querySelectorAll('#ui .screen.on img')].every((i) => i.complete), null, { timeout: 15000 }).catch(() => {});
+  if (part.includes('setup')) for (const m of ['race', 'trial', 'drift', 'free']) {
+    await tile(m);
+    await page.waitForFunction(() => document.querySelectorAll('.panel.setup .seg.cards > button').length > 1, null, { timeout: 8000 }).catch(() => {});
+    await page.waitForFunction(() => ![...document.querySelectorAll('.cc-facts')].some((f) => /—/.test(f.textContent)), null, { timeout: 8000 }).catch(() => {});
+    await imgs();
+    checks['setupFocus-' + m] = await nav(() => { const g = window.game.nav; return g.items()[g.i]?.getAttribute('aria-label'); });
+    await shot('setup-' + m, true, carClear);
+    if (m === 'race') {
+      await reach('setup-race', UD);
+      await nav(() => window.game.nav.reset(1)); await key('ArrowRight'); await shot('setup-race-row-focus');
+      await key('ArrowLeft');
+    }
+    await key('Escape'); await settle();
+  }
+  if (part.includes('settings')) {
+  // the garage paint tab shares the controls: it must still lay out
+  await tile('garage'); await page.waitForFunction(() => window.viewer.params.mode === 'orbit', null, { timeout: 60000 });
+  for (let i = 0; i < 3; i++) await key('KeyE');
+  await shot('garage-paint'); await key('Escape'); await settle();
+
+  await tile('settings');
+  const top = () => nav(() => document.querySelector('.panel.settings').getBoundingClientRect().top);
+  const tops = {};
+  for (const t of ['display', 'driving', 'audio', 'controls']) {
+    tops[t] = await top(); await shot('settings-' + t, true);
+    await reach('settings-' + t, UD);
+    await key('KeyE'); await settle();
+  }
+  checks.settingsTop = { ...tops, same: new Set(Object.values(tops)).size === 1, after: await tabOn() };
+  await nav(() => window.game.nav.reset(0)); await key('ArrowRight'); const right = await tabOn(); await key('ArrowLeft'); const left = await tabOn();
+  await key('KeyQ'); const q = await tabOn(); await key('KeyE'); const e = await tabOn();
+  await key('ArrowDown'); const down = await nav(() => window.game.nav.items()[window.game.nav.i]?.getAttribute('aria-label'));
+  await padPress(5); const rb = await tabOn(); await shot('settings-pad-prompts'); await padPress(4); const lb = await tabOn();
+  await nav(() => { delete navigator.getGamepads; });
+  checks.settingsKeys = { right, left, q, e, down, rb, lb, input: await nav(() => document.documentElement.dataset.input) };
+  await key('Escape'); await settle();
+  }
+  if (!part.includes('pause')) return;
+
+  // race: pause (with the camera label just flashed), the restart modal, settings from pause and back, then quit through the modal
+  await start('race');
+  await running(1);
+  await key('KeyC'); await key('Escape'); await settle();
+  checks.camLabelOverPause = await nav(() => { const c = document.getElementById('cam-label'); return c && getComputedStyle(c).visibility; });
+  await shot('pause-race', true); await reach('pause-race', UD);
+  await pauseOpt('Restart'); await frames(); await page.waitForTimeout(300); await shot('pause-confirm-restart', true);
+  checks.modal = await nav(() => ({ focus: document.activeElement?.textContent, stops: window.game.nav.items().map((b) => b.textContent), inert: document.querySelector('.p-panel').inert }));
+  await key('ArrowRight'); checks.modalRight = await nav(() => document.activeElement?.textContent);
+  await key('Escape'); await frames();
+  checks.modalEsc = await nav(() => ({ open: !!document.querySelector('.modal'), screen: window.game.screenName, focus: window.game.nav.items()[window.game.nav.i]?.textContent }));
+  await pauseOpt('Settings'); await shot('settings-from-pause', true); await key('Escape'); await settle();
+  checks.escSettingsFromPause = await nav(() => window.game.screenName);
+  await pauseOpt('Quit to menu'); await page.waitForTimeout(300); await shot('pause-confirm-quit');
+  await page.click('.modal .btn-primary'); await settle(); checks.quitConfirmed = await nav(() => window.game.screenName);
+
+  await start('trial'); await running(2);
+  await page.evaluate(() => { const g = window.game, T = g.session.trk.get(g.field.hero); T.laps.push({ t: 92.341, valid: true }, { t: 90.112, valid: true }); T.lastLap = 90.112; T.best = 90.112; });
+  await key('Escape'); await settle(); await shot('pause-trial-sample', true);
+  await pauseOpt('Quit to menu'); await page.click('.modal .btn-primary'); await settle();
+
+  await start('free'); await running(1);
+  await key('Escape'); await settle(); await shot('pause-free', true);
+  await pauseOpt('Quit to menu'); await page.click('.modal .btn-primary'); await settle();
+}
+
 try {
   await page.goto(base);
   await page.waitForSelector('.title-screen.on', { timeout: 60000 });
@@ -176,7 +278,7 @@ try {
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
   await settle(); await shot('title-ready', S1);
   await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
-  if (S1) await s1(); else if (S2) await s2(); else {                                                                // the whole tour (not re-indented)
+  if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else {                                                             // the whole tour (not re-indented)
   await shot('menu', true);
   await key('ArrowRight'); await shot('menu-focus-moved');                                    // keyboard focus on the second tile
   await key('ArrowLeft');
@@ -238,7 +340,7 @@ try {
   // ---- free drive: the HUD, pause, quit
   await start('free'); await running(2); await settle(); await shot('hud-free');
   await key('Escape'); await settle(); await shot('pause-free');
-  await pauseOpt('Quit to menu'); await shot('menu-after-quit');
+  await pauseOpt('Quit to menu'); await page.click('.modal .btn-primary'); await settle(); await shot('menu-after-quit');   // Quit asks first
   }
 } catch (e) {
   errors.push('tour: ' + e.message.split('\n')[0]);

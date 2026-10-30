@@ -47,7 +47,7 @@ export function syncMotion() { const d = root(); if (d) d.dataset.motion = store
 export const still = (kind, id) => `/assets/ui/stills/${kind}/${id}.webp`;   // tracks/<id>, cars/<key> (make-ui-stills.mjs)
 /** the one empty value: an em dash in ink-4, the same on every screen */
 export const empty = () => h('span.empty', { 'aria-label': 'None' }, '—');
-const cap = (k) => h('kbd', {}, k.startsWith('arrow-') ? icon(k) : k);
+const cap = (k) => (k.startsWith('arrow-') ? h('kbd', { 'aria-label': k.slice(6) }, icon(k)) : h('kbd', {}, k));   // an arrow cap is its icon, named for screen readers
 /** a key hint: keyboard caps (an arrow is its icon) or the pad glyph, whichever device was used last, then the action */
 export const prompt = (keys, pad, label) => h('span.prompt', {}, h('span.pk', {}, [keys].flat().map(cap)), pad ? icon('pad-' + pad, { cls: 'pp' }) : null, label ? h('span.pl', {}, label) : null);
 /** the footer's Back: a ghost button with its Esc / B prompt, last in the band */
@@ -79,7 +79,7 @@ export class Nav {
       else if (k === 'Escape' || k === 'Backspace') { s.back?.(); e.preventDefault(); }
     });
   }
-  items() { return [...(this.game.screen?.el.querySelectorAll('[data-nav]') ?? [])].filter((e) => e.offsetParent !== null); }
+  items() { const s = this.game.screen; return [...((s?.modal ?? s?.el)?.querySelectorAll('[data-nav]') ?? [])].filter((e) => e.offsetParent !== null); }   // an open modal traps focus
   reset(i = 0) { this.i = i; this.mark(); }
   move(d) { const L = this.items(); if (!L.length) return; this.i = (this.i + d + L.length) % L.length; this.mark(true); this.game.audio.play('race/count-tick.ogg', { gain: 0.25 }); }
   moveSpatial(dx,dy) {
@@ -115,40 +115,51 @@ export class Nav {
     if (dir || p.buttons.some((x) => x.pressed)) setInput('pad');            // prompts follow the pad; an attribute write only on a change
     this.rep = dir === this.dir ? this.rep - dt : 0; this.dir = dir;
     if (dir && this.rep <= 0) { this.rep = this.rep === 0 ? 0.38 : 0.12; ({ d: () => this.moveSpatial(0,1), u: () => this.moveSpatial(0,-1), l: () => this.game.screen?.grid?this.moveSpatial(-1,0):this.adjust(-1), r: () => this.game.screen?.grid?this.moveSpatial(1,0):this.adjust(1) })[dir](); }
-    const a = b(0), back = b(1);
+    const a = b(0), back = b(1), lb = b(4), rb = b(5);
     if (a && !this.a) this.items()[this.i]?.click();
     if (back && !this.b) this.game.screen?.back?.();
-    this.a = a; this.b = back;
+    if (lb && !this.lb) this.game.screen?.onKeyTab?.(-1);                     // LB / RB: the tabs, as Q / E (game.js key)
+    if (rb && !this.rb) this.game.screen?.onKeyTab?.(1);
+    this.a = a; this.b = back; this.lb = lb; this.rb = rb;
   }
 }
 
-/** a row of choices: [[value, label], ...]; Left/Right steps through them */
-export function seg(choices, value, onchange) {
-  const wrap = h('div.seg');
-  const set = (v) => { value = v; [...wrap.children].forEach((b, k) => b.classList.toggle('on', choices[k][0] === v)); onchange(v); };
-  choices.forEach(([v, label]) => wrap.append(h('button', { onclick: (e) => { e.stopPropagation(); set(v); } }, label)));
-  [...wrap.children].forEach((b, k) => b.classList.toggle('on', choices[k][0] === value));
-  wrap.step = (d) => { const k = choices.findIndex((c) => c[0] === value); set(choices[Math.min(choices.length - 1, Math.max(0, k + d))][0]); };
+// controls: the row is the Nav stop (Left/Right steps its control), so the parts inside stay out of the Tab order (tabIndex -1)
+/** a segmented control: [[value, label, icon?], ...] as a grid of equal cells; the selected cell is an ink fill (focus is the row's
+ *  accent, never the same colour); cls 'cards' lays out picker cards instead of words. Left/Right steps it */
+export function seg(choices, value, onchange, cls = '') {
+  const wrap = css(h('div.seg' + (cls ? '.' + cls : ''), { role: 'radiogroup' }), { '--n': choices.length });
+  const mark = () => [...wrap.children].forEach((b, k) => { const on = choices[k][0] === value; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
+  const set = (v) => { value = v; mark(); onchange(v); };
+  choices.forEach(([v, label, ic]) => wrap.append(h('button', { tabIndex: -1, role: 'radio', onclick: (e) => { e.stopPropagation(); set(v); } }, ic ? icon(ic) : null, label)));
+  mark();
+  wrap.step = (d) => { const k = choices.findIndex((c) => c[0] === value), n = Math.min(choices.length - 1, Math.max(0, k + d)); if (n !== k) set(choices[n][0]); };
   return wrap;
 }
-export function slider(value, { min = 0, max = 1, step = 0.01, fmt = (v) => Math.round(v * 100) }, onchange) {
-  const out = h('output', {}, fmt(value)), inp = h('input', { type: 'range', min, max, step, value });
+/** a slider: the ink value part on a fill track, a round thumb, and the value with its unit (fmt gives the number, unit the suffix) */
+export function slider(value, { min = 0, max = 1, step = 0.01, fmt = (v) => Math.round(v * 100), unit = '%' }, onchange) {
+  const num = h('b', {}, fmt(value)), inp = h('input', { type: 'range', min, max, step, value, tabIndex: -1 });
   const paint = () => inp.style.setProperty('--v', `${((inp.value - min) / (max - min)) * 100}%`);
-  inp.addEventListener('input', () => { out.textContent = fmt(+inp.value); paint(); onchange(+inp.value); });
+  inp.addEventListener('input', () => { num.textContent = fmt(+inp.value); paint(); onchange(+inp.value); });
+  inp.addEventListener('click', (e) => e.stopPropagation());   // a click on the track sets the value; the row's click would step it again
   paint();
-  const wrap = h('div.slider', {}, inp, out);
+  const wrap = h('div.slider', {}, inp, h('output.tnum', {}, num, unit ? h('small', {}, unit) : null));
   wrap.step = (d) => { inp.value = Math.min(max, Math.max(min, +inp.value + d * step * 5)); inp.dispatchEvent(new Event('input')); };
   return wrap;
 }
+/** a toggle: a round track and the word On or Off beside it, so the state never rests on colour */
 export function toggle(on, onchange) {
-  const t = h('button.toggle' + (on ? '.on' : ''), { onclick: (e) => { e.stopPropagation(); on = !on; t.classList.toggle('on', on); onchange(on); } });
+  const word = h('span.tg-word');
+  const paint = () => { t.classList.toggle('on', on); t.setAttribute('aria-checked', String(on)); word.textContent = on ? 'On' : 'Off'; };
+  const t = h('button.toggle', { tabIndex: -1, role: 'switch', onclick: (e) => { e.stopPropagation(); on = !on; paint(); onchange(on); } }, h('span.tg-track', {}, h('i')), word);
+  paint();
   t.step = () => t.click();
   return t;
 }
-/** a settings row: a label and a control; the whole row is one nav stop */
+/** a settings row: a label and a control; the whole row is one nav stop (and one Tab stop) */
 export function row(label, control, note) {
-  const r = h('div.row', { 'data-nav': '', onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1), onmouseenter: (e) => nav?.hover(e.currentTarget) }, h('label', {}, label), control, note ? h('div.note', {}, note) : null);
-  return r;
+  return h('div.row', { 'data-nav': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1) },
+    h('label', {}, label), control, note ? h('div.note', {}, note) : null);
 }
 let nav = null;
 export const getNav = () => nav;
@@ -301,38 +312,59 @@ export function CreditsScreen(game) {
   return { el, nav: true, onShow() { fadeMore(scroll); }, back() { game.show('menu'); } };
 }
 
-export function fillCard(card, key) {
-  const t = TEAM_OF[key], e = ENTRY[key];
-  css(card, { '--team': teamMark(t) });
-  fill(card, h('div.k', {}, 'YOUR CAR'), h('div.num', {}, e.number), h('div.name', {}, carName(key)),
-    h('div.team', {},teamLogo(t)), h('div.drv', {}, `${e.driver.name} · ${e.driver.nation}`));
+const MODE_ICON = { race: 'race', trial: 'time-trial', drift: 'drift', free: 'free-drive' };
+const LOOK_ICON = { day: 'sun', dusk: 'sunset', bluehour: 'moon-horizon', night: 'moon' }, WEATHER_ICON = { dry: 'sun', damp: 'cloud-drizzle', rain: 'cloud-rain' };
+const looks = () => Object.entries(LOOK_LABEL).map(([k, l]) => [k, l, LOOK_ICON[k]]);
+const weathers = () => Object.entries(WEATHER).map(([k, w]) => [k, w.label, WEATHER_ICON[k]]);
+const lapChoices = [[1, '1'], [3, '3'], [5, '5'], [10, '10']];
+/** a circuit picker card: the still, the name, and its length and corners from track.json (an em dash until they arrive) */
+function circuitCard(t) {
+  const facts = h('span.cc-facts', {}, empty()), mph = store.settings.units === 'mph';
+  factsOf(t).then((f) => { if (f) fill(facts, f.m ? h('span', {}, h('b.tnum', {}, (f.m / (mph ? 1609.344 : 1000)).toFixed(2)), h('small', {}, mph ? 'MI' : 'KM')) : null, f.corners ? h('span', {}, h('b.tnum', {}, f.corners), h('small', {}, 'Corners')) : null); });
+  return [h('img', { src: still('tracks', t.id), alt: '', decoding: 'async' }), h('span.cc-text', {}, h('strong', {}, t.name), facts), icon('check', { cls: 'cc-check', label: 'Selected' })];
 }
 
+/** a mode's setup: one panel anchored top-left (the car stays clear in the scene), circuit cards, then laps, time of day, weather
+ *  and assists as segments, and Start (the one primary) at the bottom; the panel body scrolls when the window is short */
 export function SetupScreen(game) {
-  let mode = 'race', tracks = [];   // tracks: the circuits whose files exist; the row shows only with a choice (Tokyo once exported)
-  const title = h('h2'), sub = h('div.sub'), rows = h('div'), card = h('div.carcard');
-  const start = h('button.cta', { 'data-nav': '', onclick: () => game.startSession(mode), onmouseenter: (e) => nav.hover(e.currentTarget) }, 'Start');
-  const el = screen('menu', h('div.scrim'), h('div.panel.setup', {}, title, sub, rows, start), card,
-    h('div.footer', {}, h('span', {}, h('b', {}, '←→'), 'CHANGE'), h('span', {}, h('b', {}, 'ENTER'), 'START'), h('span', {}, h('b', {}, 'ESC'), 'BACK')));
-  function build() {
-    const M = MODES[mode], S = store.settings;
-    title.textContent = M.label; sub.textContent = M.desc;
-    fill(rows, 
-      tracks.length > 1 ? row('Circuit', seg(tracks.map((t) => [t.id, t.name]), trackOf(S.track).id, (v) => { game.selectTrack(v).then(() => { build(); nav.mark(); }); })) : null,
-      M.laps ? row('Laps', seg([[1, '1'], [3, '3'], [5, '5'], [10, '10']], S.laps, (v) => store.set('laps', v))) : null,
-      row('Time of day', seg(Object.entries(LOOK_LABEL), S.look, (v) => { store.set('look', v); game.applySettings(); })),
-      row('Weather', seg(Object.entries(WEATHER).map(([k, w]) => [k, w.label]), S.weather, (v) => { store.set('weather', v); game.applySettings(); })),
-      row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { store.set('assists', v); }), ASSISTS[S.assists].note),
-    );
+  let mode = 'race', tracks = [], touched = false;   // tracks: the circuits whose files exist; the row shows only with a choice
+  const htitle = h('h1'), sub = h('p.psub'), rows = h('div.lscroll.prows', { onscroll: (e) => fadeMore(e.currentTarget) });
+  const start = h('button.cta.btn.btn-primary', { 'data-nav': '', onclick: () => game.startSession(mode) }, icon('play'), 'Start');
+  const el = screen('setup-screen', h('div.dscrim'), h('header.shead', {}, h('i.logo'), htitle),
+    h('div.panel.setup.pnl', {}, sub, rows, start),
+    h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Select'), prompt(['arrow-left', 'arrow-right'], 'ls', 'Change'), h('div.sp'), backButton(() => game.show('menu'))));
+  /** rebuild the rows and keep focus on the same stop (a row by its label; Start and Back are the same elements) */
+  function rebuild() {
+    const cur = nav.items()[nav.i], was = cur?.getAttribute('aria-label'); build();
+    const L = nav.items(), k = L.indexOf(cur); nav.reset(Math.max(0, k >= 0 ? k : L.findIndex((e) => e.getAttribute('aria-label') === was)));
   }
+  function build() {
+    const M = MODES[mode], S = store.settings, note = h('span', {}, ASSISTS[S.assists].note);
+    fill(htitle, icon(MODE_ICON[mode]), M.label); sub.textContent = M.desc;
+    fill(rows,
+      tracks.length > 1 ? row('Circuit', seg(tracks.map((t) => [t.id, circuitCard(t)]), trackOf(S.track).id, (v) => { game.selectTrack(v).then(() => { if (game.screen?.el === el) rebuild(); }); }, 'cards')) : null,
+      M.laps ? row('Laps', seg(lapChoices, S.laps, (v) => store.set('laps', v))) : null,
+      row('Time of day', seg(looks(), S.look, (v) => { store.set('look', v); game.applySettings(); })),
+      row('Weather', seg(weathers(), S.weather, (v) => { store.set('weather', v); game.applySettings(); })),
+      row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { store.set('assists', v); note.textContent = ASSISTS[v].note; }), note),
+    );
+    fadeMore(rows);
+  }
+  // any key move, step or click before the circuit row lands keeps focus where the player put it
+  el.addEventListener('adjust', () => { touched = true; }, true); el.addEventListener('pointerdown', () => { touched = true; });
   return {
     el, nav: true,
     onShow(m) {
-      mode = m ?? mode; build();
-      fillCard(card, store.data.car);
+      mode = m ?? mode; touched = false; build();
       nav.reset(0);
-      availableTracks().then((list) => { if (list.length !== tracks.length) { tracks = list; build(); nav.mark(); } });
+      // the circuit row lands once the probe answers (at once after the first): focus then starts on it, the first row
+      availableTracks().then((list) => {
+        if (list.length === tracks.length) return;
+        tracks = list; if (game.screen?.el !== el) return;
+        if (touched) rebuild(); else { build(); nav.reset(0); }
+      });
     },
+    onSel(_, byKey) { touched ||= byKey; },
     back() { game.show('menu'); },
   };
 }
@@ -340,32 +372,44 @@ export function SetupScreen(game) {
 export { GarageScreen } from './garage.js';   // the garage, its stats, specs and upgrades
 
 // ---------------------------------------------------------------------------------------------- settings
+const TABS = [['display', 'Picture', 'picture'], ['driving', 'Driving', 'steering'], ['audio', 'Sound', 'volume'], ['controls', 'Controls', 'gamepad']];
+// the controls table: action, an optional detail, keyboard caps (arrow-* draw as icons), pad glyphs (pad-<id>); [] is "not bound"
+const CONTROLS = [
+  ['Accelerate', 'Brakes while reversing', ['W', 'arrow-up'], [['rt', 'RT']]], ['Brake', 'Reverses once stopped', ['S', 'arrow-down'], [['lt', 'LT']]],
+  ['Steer', null, ['A', 'D', 'arrow-left', 'arrow-right'], [['ls', 'Left stick']]], ['Handbrake', 'Starts a drift', ['Space'], [['a', 'A']]],
+  ['Nitro', null, ['Shift'], [['x', 'X']]], ['Reset to track', null, ['R'], [['y', 'Y']]], ['Camera', null, ['C'], [['rb', 'RB']]],
+  ['Map overview', null, ['M'], []], ['Pause', null, ['Esc'], [['menu', 'Menu']]],
+];
+/** settings: Picture, Driving, Sound and Controls in one panel anchored to the top, so a tab switch never moves it; the tab row is
+ *  a Nav stop (Left/Right, Q/E, LB/RB switch tabs), every row below one more. From pause, a full scrim covers the race */
 export function SettingsScreen(game) {
   let tab = 'display', from = 'menu';
-  const tabs = h('div.tabs'), body = h('div.body');
-  const el = screen('menu', h('div.scrim'), h('div.panel.settings', {}, h('h2', {}, 'Settings'), tabs, body),
-    h('div.footer', {}, h('span', {}, h('b', {}, '←→'), 'CHANGE'), h('span', {}, h('b', {}, 'ESC'), 'BACK'), h('div.sp'), h('span', {}, 'SAVED ON THIS DEVICE')));
+  const tabs = h('div.stabs', { 'data-nav': '', tabIndex: 0, role: 'tablist', 'aria-label': 'Settings tabs', onadjust: (e) => api.onKeyTab(e.detail), onclick: () => api.onKeyTab(1) });
+  const body = h('div.lscroll.set-body', { onscroll: (e) => fadeMore(e.currentTarget) });
+  const el = screen('settings-screen', h('div.dscrim'), header('Settings', 'Saved on this device'), h('div.panel.settings.pnl', {}, tabs, body),
+    h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Select'), prompt(['arrow-left', 'arrow-right'], 'ls', 'Change'), h('div.sp'), backButton(() => api.back())));
   const set = (k) => (v) => { store.set(k, v); game.applySettings(); };
-  const pct = (v) => `${Math.round(v * 100)}`;
+  const group = (name) => h('h3.kick.set-group', {}, name);
   function build() {
     const S = store.settings;
-    fill(tabs, ...[['display', 'Picture'], ['driving', 'Driving'], ['audio', 'Sound'], ['controls', 'Controls']].map(([id, label]) =>
-      h('button' + (tab === id ? '.on' : ''), { onclick: () => { tab = id; build(); nav.reset(0); } }, label)));
+    fill(tabs, prompt('Q', 'lb'), TABS.map(([id, label, ic]) => h('button' + (tab === id ? '.on' : ''), { tabIndex: -1, role: 'tab', 'aria-selected': String(tab === id),
+      onclick: (e) => { e.stopPropagation(); tab = id; build(); nav.reset(0); } }, icon(ic), label)), prompt('E', 'rb'));
     const R = {
       display: () => [
         row('Quality', seg([['auto', 'Auto'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra']], S.quality, set('quality')), `Auto picked ${game.ctx.device.tier} for this computer`),
-        row('Time of day', seg(Object.entries(LOOK_LABEL), S.look, set('look'))),
-        row('Weather', seg(Object.entries(WEATHER).map(([k, w]) => [k, w.label]), S.weather, set('weather'))),
+        row('Time of day', seg(looks(), S.look, set('look'))),
+        row('Weather', seg(weathers(), S.weather, set('weather'))),
         row('Motion blur', seg([['off', 'Off'], ['light', 'Light'], ['full', 'Full']], S.motionBlur, set('motionBlur'))),
         row('Reduce motion', toggle(S.reduceMotion, (v) => { set('reduceMotion')(v); syncMotion(); }), 'Less camera shake, roll and speed zoom'),
-        row('Field of view', slider(S.fovOffset, { min: -10, max: 15, step: 1, fmt: (v) => (v > 0 ? `+${v}` : `${v}`) }, set('fovOffset'))),
+        row('Field of view', slider(S.fovOffset, { min: -10, max: 15, step: 1, fmt: (v) => (v > 0 ? `+${v}` : `${v}`), unit: '°' }, set('fovOffset'))),
+        group('Developer'),
         row('Show FPS', toggle(S.showFps, set('showFps'))),
       ],
-      driving: () => [
-        row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { set('assists')(v); build(); }), ASSISTS[S.assists].note),
+      driving: () => { const note = h('span', {}, ASSISTS[S.assists].note); return [
+        row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { set('assists')(v); note.textContent = ASSISTS[v].note; }), note),
         row('Speed in', seg([['kmh', 'km/h'], ['mph', 'mph']], S.units, set('units'))),
-        row('Race laps', seg([[1, '1'], [3, '3'], [5, '5'], [10, '10']], S.laps, set('laps'))),
-      ],
+        row('Race laps', seg(lapChoices, S.laps, set('laps'))),
+      ]; },
       audio: () => [
         row('Master', slider(S.master, {}, set('master'))),
         row('Engine', slider(S.engine, {}, set('engine'))),
@@ -374,39 +418,71 @@ export function SettingsScreen(game) {
         row('Commentators', toggle(S.commentaryOn, set('commentaryOn')), 'Enzo Moretti, Alastair Finch and Kavya Iyer'),
         row('Crowd', slider(S.crowd, {}, set('crowd'))),
       ],
-      controls: () => [h('div.keys', {}, ...[
-        ['Accelerate · brake in reverse', 'W / ↑', 'RT'], ['Brake · reverse when stopped', 'S / ↓', 'LT'], ['Steer', 'A D / ← →', 'Left stick'], ['Handbrake · drift', 'Space', 'A'],
-        ['Nitro', 'Shift', 'X'], ['Reset to track', 'R', 'Y'], ['Camera', 'C', 'RB'], ['Pause', 'Esc', 'Start'],
-      ].flatMap(([a, k, p]) => [h('span', {}, a), h('b', {}, k), h('b', {}, p)])),
-      h('div.bio', { style: { marginTop: '16px' } }, 'Drift: pull the handbrake while turning at speed, then steer to hold the angle. The normal brake keeps cornering grip. Drifting refills nitro fastest.')],
+      controls: () => [
+        h('div.lhead.ctl-cols', {}, h('span', {}, 'Action'), h('span', {}, icon('keyboard'), 'Keyboard'), h('span', {}, icon('gamepad'), 'Pad')),
+        ...CONTROLS.map(([a, more, keys, pads]) => h('div.lrow.ctl-cols', { 'data-nav': '', tabIndex: 0, 'aria-label': a },
+          h('span.ctl-a', {}, h('b', {}, a), more ? h('small', {}, more) : null), h('span.ctl-k', {}, keys.map(cap)),
+          h('span.ctl-p', {}, pads.length ? pads.map(([p, name]) => icon('pad-' + p, { label: name })) : empty()))),
+        h('p.set-tip', {}, icon('info'), h('span', {}, 'Drift: pull the handbrake while turning at speed, then steer to hold the angle. The normal brake keeps cornering grip. Drifting refills nitro fastest.')),
+      ],
     };
-    fill(body, ...R[tab]().flat());
-    void pct;
+    fill(body, R[tab]());
+    body.scrollTop = 0; fadeMore(body);
   }
-  return {
+  const api = {
     el, nav: true,
-    onShow(f) { from = f ?? 'menu'; build(); nav.reset(0); },
-    onKeyTab(d) { const order = ['display', 'driving', 'audio', 'controls']; tab = order[(order.indexOf(tab) + d + 4) % 4]; build(); nav.reset(0); },
+    onShow(f) { from = f ?? 'menu'; el.classList.toggle('over-race', from === 'pause'); build(); nav.reset(0); },
+    onKeyTab(d) { tab = TABS[(TABS.findIndex(([id]) => id === tab) + d + TABS.length) % TABS.length][0]; build(); nav.reset(0); },
     back() { game.show(from); },
   };
+  return api;
 }
 
 // ---------------------------------------------------------------------------------------------- pause, results
+/** pause: a full scrim over the race, a centre panel with the session's context (mode, circuit, your car, then position, lap and
+ *  time as the mode has them) and the options as icon rows; Restart and Quit ask first in a modal that traps focus on Cancel */
 export function PauseScreen(game) {
-  const opt = (label, f) => h('button.opt', { 'data-nav': '', onclick: f, onmouseenter: (e) => nav.hover(e.currentTarget) }, label);
-  const head = h('h2'), sub = h('div.sub'), opts = h('div');
-  const el = screen('pause', h('div.scrim.full'), h('div.panel', {}, head, sub, opts));
+  let modal = null, opener = 0;
+  const opt = (ic, label, f) => h('button.lrow.opt', { 'data-nav': '', onclick: f }, icon(ic), h('span', {}, label), icon('chevron-right', { cls: 'opt-go' }));
+  const kick = h('span.kick.p-mode'), circuit = h('p.p-circuit'), car = h('img.p-car', { alt: '', decoding: 'async' }), strip = h('div.p-strip'), opts = h('div.p-opts');
+  const panel = h('div.pnl.p-panel', { role: 'dialog', 'aria-label': 'Paused' }, h('div.p-head', {}, h('div.p-title', {}, kick, h('h2', {}, 'Paused'), circuit), car), strip, opts);
+  const el = screen('pause', h('div.sscrim'), panel,
+    h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Select'), prompt('Enter', 'a', 'Choose'), h('div.sp'), prompt('Esc', 'b', 'Resume')));
+  /** the confirm modal: title, body, Cancel (focused: the safe option) and the action as the one primary */
+  function ask(title, body, ic, label, go) {
+    opener = nav.i; panel.inert = true;
+    modal = h('div.pnl.modal', { role: 'alertdialog', 'aria-modal': 'true', 'aria-label': title }, h('h2', {}, title), h('p', {}, body),
+      h('div.m-acts', {}, h('button.btn.btn-secondary', { 'data-nav': '', onclick: close }, 'Cancel'), h('button.btn.btn-primary', { 'data-nav': '', onclick: () => { close(); go(); } }, icon(ic), label)));
+    el.append(h('div.m-layer', {}, modal)); nav.reset(0);
+  }
+  function close(refocus = true) {
+    if (!modal) return;
+    modal.parentNode.remove(); modal = null; panel.inert = false;
+    if (refocus) nav.reset(opener);
+  }
   return {
     el, nav: true,
+    get modal() { return modal; }, get grid() { return !!modal; },   // Nav: only the modal's buttons, side by side
     onShow() {
-      const mode = game.session?.mode, M = MODES[mode] ?? {}, laps = game.session?.trk.get(game.field.hero)?.laps.length ?? 0;
-      head.textContent = 'Paused'; sub.textContent = `${M.label ?? ''} · ${carName(store.data.car)}`;
-      fill(opts, ...[opt('Resume', () => game.resume()), opt('Restart', () => game.restart()),
-        mode === 'trial' && laps ? opt('End · see laps', () => game.trialResults()) : null,
-        opt('Settings', () => game.show('settings', 'pause')), opt('Quit to menu', () => game.quit())].filter(Boolean));
+      close(false);
+      const s = game.session, mode = s?.mode, M = MODES[mode] ?? {}, T = s?.trk.get(game.field.hero), laps = T?.laps.length ?? 0;
+      fill(kick, mode ? icon(MODE_ICON[mode]) : null, M.label ?? '');
+      fill(circuit, icon('track'), trackOf(store.settings.track).name);
+      car.src = still('cars', store.data.car);
+      const time = (t) => (Number.isFinite(t) ? fmtTime(t) : empty());
+      fill(strip, stat('Car', carName(store.data.car)),
+        mode === 'race' && [stat('Position', String(s.heroPos), `/ ${s.order.length}`), stat('Lap', String(Math.min(s.laps, Math.max(1, T.cross))), `/ ${s.laps}`), stat('Time', time(s.raceT))],
+        mode === 'trial' && [stat('Lap', String(Math.max(1, T.cross))), stat('Best', time(T.best))],
+        mode === 'drift' && [stat('Score', Math.round(s.drift.score).toLocaleString('en'), 'PTS'), stat('Time left', String(Math.max(0, Math.ceil(s.drift.left))), 'S')],
+        mode === 'free' && [stat('Time of day', LOOK_LABEL[store.settings.look] ?? empty()), stat('Weather', WEATHER[store.settings.weather]?.label ?? empty())]);   // no clock: the conditions instead
+      fill(opts, opt('play', 'Resume', () => game.resume()),
+        opt('restart', 'Restart', () => ask('Restart?', mode === 'race' ? 'The race starts again from the grid.' : 'The session starts again from the beginning.', 'restart', 'Restart', () => game.restart())),
+        mode === 'trial' && laps ? opt('lap', 'End and see laps', () => game.trialResults()) : null,
+        opt('settings', 'Settings', () => game.show('settings', 'pause')),
+        opt('quit', 'Quit to menu', () => ask('Quit to menu?', 'This session ends and you go back to the main menu.', 'quit', 'Quit', () => game.quit())));
       nav.reset(0);
     },
-    back() { game.resume(); },
+    back() { if (modal) close(); else game.resume(); },
   };
 }
 
