@@ -178,7 +178,10 @@ gtao.render = (...args) => {
 composer.addPass(gtao);
 const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), params.bloomStrength, params.bloomRadius, params.bloomThreshold);
 // cap what one pixel feeds the bloom: the sky beside a low sun is ~40x the threshold and veiled the whole frame
+// and a pixel that overflowed the half-float target (Inf: a sharp sun glint on glass) or is NaN is dropped first: Inf * 0 above is
+// NaN, and the bloom's blur spread one such pixel over the whole frame (black frames on India's plateau)
 bloom.materialHighPassFilter.fragmentShader = bloom.materialHighPassFilter.fragmentShader.replace(
+  'vec4 texel = texture2D( tDiffuse, vUv );', 'vec4 texel = texture2D( tDiffuse, vUv );\n\t\t\tif ( any( isnan( texel.rgb ) ) || any( isinf( texel.rgb ) ) ) texel.rgb = vec3( 0.0 );\n\t\t\ttexel.rgb = min( texel.rgb, vec3( 6e4 ) );').replace(
   'gl_FragColor = mix( outputColor, texel, alpha );', 'gl_FragColor = mix( outputColor, vec4( texel.rgb * min( 1.0, 3.0 / max( v, 1e-4 ) ), texel.a ), alpha );');
 bloom.materialHighPassFilter.needsUpdate = true;
 composer.addPass(bloom);
@@ -387,7 +390,9 @@ function placeNearest(lights, list, cam, power) {
     if (light.castShadow) light.shadow.needsUpdate = true;
     light.position.fromArray(l.pos);
     if (light.target && l.target) light.target.position.fromArray(l.target);
+    light.userData.c0 ??= light.color.getHex();
     if (l.warm !== undefined) light.color.set(l.warm ? 0xffd2a0 : 0xe8f0ff);   // matches the tower's lamps
+    else light.color.set(l.color ?? light.userData.c0);   // lights.json may give a lamp its own colour (India: warm off-white)
     light.userData.want = power;
   });
 }

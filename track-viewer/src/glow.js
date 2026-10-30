@@ -27,7 +27,7 @@ export class Glows {
       this.add(l.pos, l.warm ? 0xffd6a8 : 0xe6eeff, 3.2, dir);
     }
     for (const l of lights.standLamps) this.add(l.pos, 0xfff0dc, 1.2, new THREE.Vector3(...l.target).sub(new THREE.Vector3(...l.pos)).normalize());
-    for (const l of lights.streetLamps) this.add(l.pos, 0xffc890, 0.9);
+    for (const l of lights.streetLamps) this.add(l.pos, l.color ?? 0xffc890, 0.9);
   }
 
   /** Beacons: one glow per cluster of vertices of every *Beacon* material (masts, skyline roofs, service vehicles). */

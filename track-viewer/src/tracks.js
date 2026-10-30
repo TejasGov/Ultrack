@@ -41,6 +41,16 @@ export const TRACKS = {
     // flip these on as the Tokyo export grows pit boxes, a VIP booth, hoarding sites and Marina-style scenery
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  india: {
+    id: 'india', name: 'India Ghat Circuit', stem: 'india', dir: '/assets/india/', look: 'day', fog: 0.45, sun: [-0.55, -0.77], tag: null,     // thin mountain air: the far ranges stay readable
+    // night-only: about a third of the city's windows (a lit shell over the glass, tracks/india/game_india.py)
+    dayNight: { day: /(?!)/, night: /^IN window glow night$/ },     // no day backdrop: `day` matches nothing
+    // the baked vertex colours are albedo only: the same lift by day as Tokyo's, with the toned-down sun (main.js LOOKS)
+    looks: { day: { exposure: 1.75, env: 1.3, sun: 4.2 }, dusk: { exposure: 0.6 } },
+    wet: { wet: ['India | asphalt'], puddles: ['India | asphalt'] },
+    venue: () => import('./venue/india.js'),
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
 };
 export const DEFAULT_TRACK = 'marina';
 export const trackOf = (id) => TRACKS[id] ?? TRACKS[DEFAULT_TRACK];

@@ -201,7 +201,18 @@ export class ChaseRig {
     s.bias = (s.bias ?? 0) + (clamp(s.hr * 0.1, -0.1, 0.1) * sstep(v, 8, 25) - (s.bias ?? 0)) * (1 - Math.exp(-5 * dt));   // <= ~5.7 deg
     const lookDir = ahead.clone().applyAxisAngle(UP, s.bias);
     const look = new THREE.Vector3(px, s.ay, pz).addScaledVector(lookDir, V.ahead + V.aheadV * re);   // along the lagging yaw: the car swings in the frame through corners
-    look.y += V.up;
+    // on a slope the aim follows the road a little way ahead (half its rise or fall, smoothed), so a steep descent stays in the
+    // frame and a climb isn't a view into the hill; a level road is unchanged
+    let rise = 0;
+    if (opts.cast) {
+      const probe = new THREE.Vector3(px, s.ay + 8, pz).addScaledVector(lookDir, 14), g = opts.cast(probe, new THREE.Vector3(0, -1, 0), 20);
+      if (g !== null) rise = clamp(8 - g, -4, 4) * 0.5;                // road height 14 m ahead, relative to the car
+    }
+    [s.rise, s.risev] = spring(s.rise ?? 0, s.risev ?? 0, rise * s.clear * (1 - 0.5 * rm), 3, dt);
+    look.y += V.up + s.rise;
+    // pulled in by a wall (a hairpin's inside) the camera climbs above the car: the aim comes back toward the car, so it stays in
+    // the frame instead of dropping out of the bottom while the lens looks down the road
+    look.lerp(tmpV.set(px, s.ay + 0.5, pz), clamp((1 - s.clear) * 1.3, 0, 0.8));
     camera.lookAt(look);
   }
 
