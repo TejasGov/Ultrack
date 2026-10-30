@@ -58,7 +58,7 @@
 .shead { position: absolute; left: var(--gutter); right: var(--gutter); top: var(--gutter); height: calc(40 * var(--u)); display: flex; align-items: center; gap: var(--sp-5); }
 .shead .logo { flex: none; width: calc(168 * var(--u)); filter: none; }
 .shead h1 { margin: 0; padding-left: var(--sp-5); border-left: 1px solid var(--c-line-2); font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
-.shead .kick { margin-left: auto; }
+.shead .kick { margin-left: auto; color: var(--c-ink-2); }   /* over the lit garage wall ink-3 measures 2.7:1; ink-2 clears 4.5:1 */
 .sbody { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(var(--gutter) + 40 * var(--u) + var(--sp-6)); bottom: calc(var(--sp-5) + 56 * var(--u) + var(--sp-3)); }
 .sfoot { position: absolute; left: var(--gutter); right: var(--gutter); bottom: var(--sp-5); height: calc(56 * var(--u)); display: flex; align-items: center; gap: var(--sp-6); border-top: 1px solid var(--c-line); }
 .sfoot .sp { flex: 1; }
@@ -87,7 +87,7 @@
 .prompt { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-micro); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); white-space: nowrap; }
 .prompt .pk { display: inline-flex; gap: var(--sp-1); }
 :where(#ui) kbd { display: inline-flex; align-items: center; justify-content: center; min-width: calc(24 * var(--u)); height: calc(24 * var(--u)); padding: 0 var(--sp-1);
-  border: 1px solid var(--c-line-2); border-radius: var(--r-1); font: inherit; font-size: var(--fs-micro); letter-spacing: var(--track-title); color: var(--c-ink-1); }
+  border: 1px solid var(--c-line-2); border-radius: var(--r-1); font: inherit; font-size: var(--fs-micro); letter-spacing: var(--track-title); text-transform: uppercase; color: var(--c-ink-1); }   /* keycaps are caps everywhere, not only in .prompt */
 kbd .icon { font-size: var(--icon-s); }
 .prompt .pp { font-size: var(--icon-m); color: var(--c-ink-1); }
 :root[data-input=pad] .prompt .pk, :root:not([data-input=pad]) .prompt .pp { display: none; }
@@ -178,6 +178,7 @@ kbd .icon { font-size: var(--icon-s); }
 .tile-kicker { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bento-tile strong { font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
 .tile-desc { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); max-width: 40ch; }
+:is(.trial-tile, .drift-tile, .free-tile) .tile-desc { min-height: 3lh; }   /* the mode row's words on one line: Drift's copy runs to 3 lines */
 .stat-r { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
 .stat-r > small { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
 .stat-r > b { font-size: var(--fs-value); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -185,6 +186,8 @@ kbd .icon { font-size: var(--icon-s); }
 /* Race: two rows, the selected circuit's still under a bottom-up scrim, the facts on a hairline */
 .race-tile { grid-row: span 2; }
 .tile-still { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+/* Marina's still is a wide start straight under a tall sky: crop the sky and the cut billboard, so the gantry sits up top and the words on tarmac */
+:is(.tile-still, .seg.cards img)[data-track=marina] { object-view-box: inset(34% 0 0 22%); }
 .race-tile::before { background-image: linear-gradient(0deg, var(--c-scrim-edge), var(--c-scrim) 45%, transparent 80%); }
 .race-tile strong { font-size: var(--fs-display); }
 .race-tile :is(.tile-kicker, .tile-desc, .stat-r > small) { color: var(--c-ink-2); }   /* over a still: one step up from a panel's ink */
@@ -226,7 +229,6 @@ kbd .icon { font-size: var(--icon-s); }
 .r-main { display: flex; flex-direction: column; justify-content: flex-end; gap: var(--sp-4); min-width: 0; min-height: 0; }
 .r-main .tbar { width: 4px; height: calc(24 * var(--u)); border-radius: var(--r-1); background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }   /* a dark team still shows: the line edge */
 .r-car { display: block; flex: none; width: 100%; height: calc(208 * var(--u)); object-fit: contain; object-position: center bottom; object-view-box: inset(24% 8% 12% 19%); }   /* the car's box in every still */
-.r-car.solo { flex: 1 1 auto; height: auto; min-height: 0; }
 /* the podium: P2, P1 (taller), P3 cutouts on one ground line; position, team bar, driver and team under each */
 .r-podium { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: var(--sp-5); }
 .pod { display: flex; flex-direction: column; min-width: 0; }
@@ -281,12 +283,15 @@ kbd .icon { font-size: var(--icon-s); }
 .seg.cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); padding: 0; background: none; }
 .seg.cards > button { position: relative;   /* content sets the height (overflow: hidden zeroes an aspect-ratio box's minimum); the top padding keeps the name under the check */
    isolation: isolate; flex-direction: column; align-items: stretch; justify-content: flex-end; height: auto; min-height: calc(88 * var(--u)); padding: calc(var(--icon-m) + var(--sp-3)) var(--sp-2) var(--sp-2);
-  overflow: hidden; border-radius: var(--r-2); background: var(--c-panel); box-shadow: inset 0 0 0 1px var(--c-line); color: var(--c-ink-1); white-space: normal; text-transform: none; letter-spacing: 0; text-align: left; }
+  overflow: hidden; border-radius: var(--r-2); background: var(--c-panel); color: var(--c-ink-1); white-space: normal; text-transform: none; letter-spacing: 0; text-align: left; }
 .seg.cards > button::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, var(--c-scrim-edge), transparent 75%); }
+/* the edge over the still: the button's own inset shadow paints under its z-index -2 img (isolation), so the ring is a layer on top */
+.seg.cards > button::after { content: ''; position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px var(--c-line); }
+.seg.cards > button.on::after { box-shadow: inset 0 0 0 var(--rule) var(--c-ink-1); }
 .seg.cards img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; transition: opacity var(--dur-2) var(--ease-out); }
 .seg.cards > button:hover { background: var(--c-panel); }
 .seg.cards > button:hover img { opacity: 0.75; }
-.seg.cards > button.on { background: var(--c-panel); color: var(--c-ink-1); box-shadow: inset 0 0 0 var(--rule) var(--c-ink-1); }
+.seg.cards > button.on { background: var(--c-panel); color: var(--c-ink-1); }
 .seg.cards > button.on img { opacity: 1; }
 .cc-text { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
 .cc-text strong { font-size: var(--fs-label); line-height: 1.15; letter-spacing: 0.06em; text-transform: uppercase; }

@@ -227,7 +227,7 @@ export function MenuScreen(game) {
       const k = store.data.car, b = store.bestOf(k), d = store.driftOf(k);   // this circuit, your car
       fill(best, stat('Best lap', b ? fmtTime(b) : empty()), stat('Best drift', d ? d.toLocaleString('en') : empty(), d ? 'PTS' : null), stat('Car', carName(k)));
       if (shown === t.id + mph) return; shown = t.id + mph;
-      raceStill.src = still('tracks', t.id); circuit.textContent = t.name; fill(len, empty()); fill(corners, empty());
+      raceStill.src = still('tracks', t.id); raceStill.dataset.track = t.id; circuit.textContent = t.name; fill(len, empty()); fill(corners, empty());
       factsOf(t).then((f) => {
         if (!f || shown !== t.id + mph) return;
         fill(len, f.m ? [(f.m / (mph ? 1609.344 : 1000)).toFixed(2), h('small', {}, mph ? 'MI' : 'KM')] : empty()); fill(corners, f.corners ? String(f.corners) : empty());
@@ -327,7 +327,7 @@ const lapChoices = [[1, '1'], [3, '3'], [5, '5'], [10, '10']];
 function circuitCard(t) {
   const facts = h('span.cc-facts', {}, empty()), mph = store.settings.units === 'mph';
   factsOf(t).then((f) => { if (f) fill(facts, f.m ? h('span', {}, h('b.tnum', {}, (f.m / (mph ? 1609.344 : 1000)).toFixed(2)), h('small', {}, mph ? 'MI' : 'KM')) : null, f.corners ? h('span', {}, h('b.tnum', {}, f.corners), h('small', {}, 'Corners')) : null); });
-  return [h('img', { src: still('tracks', t.id), alt: '', decoding: 'async' }), h('span.cc-text', {}, h('strong', {}, t.name), facts), icon('check', { cls: 'cc-check', label: 'Selected' })];
+  return [h('img', { src: still('tracks', t.id), alt: '', decoding: 'async', 'data-track': t.id }), h('span.cc-text', {}, h('strong', {}, t.name), facts), icon('check', { cls: 'cc-check', label: 'Selected' })];
 }
 
 /** a mode's setup: one panel anchored top-left (the car stays clear in the scene), circuit cards, then laps, time of day, weather
@@ -540,11 +540,13 @@ export function ResultsScreen(game) {
           earnBlock(data.reward), R.some((r) => !r.finished) ? h('p.r-note', {}, 'Est: still on track, the gap is estimated from pace.') : null);
         fill(main, h('div.r-podium', {}, [1, 0, 2].filter((k) => R[k]).map((k) => pod(R[k], k))), table);
       } else if (mode === 'drift') {
-        const rec = store.driftOf(car);   // after a new record this is the score itself
+        const rec = store.driftOf(car), banked = game.session?.drift?.banked ?? [], top = game.hud?.topMult ?? 1;   // after a new record rec is the score itself
         fill(side, head('Drift Attack', `${MODES.drift.seconds} seconds · ${carName(car)}`),
           big(stat('Score', Math.round(score).toLocaleString('en'), 'PTS'), record ? h('span.r-new', {}, icon('star'), 'New record') : stat('Record', rec ? rec.toLocaleString('en') : empty(), rec ? 'PTS' : null)),
+          h('div.r-stats', {}, stat('Drifts', String(banked.length)), stat('Best chain', banked.length ? Math.round(Math.max(...banked)).toLocaleString('en') : empty(), banked.length ? 'PTS' : null),
+            stat('Top multiplier', top > 1 ? `×${top.toFixed(1)}` : empty())),
           earnBlock(data.reward));
-        fill(main, carHero(car, '.solo'));
+        fill(main, carHero(car));   // the trial's car scale and place, bottom right
       } else {
         const L = data.laps, valid = L.filter((l) => l.valid).length;
         const [table, s] = rows('t-cols', [h('span', {}, icon('lap'), 'Lap'), h('span.val', {}, icon('timer'), 'Time'), h('span.val', {}, 'To best'), h('span', {}, 'Status')],
