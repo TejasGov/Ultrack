@@ -288,7 +288,7 @@ let reflector = null;
 // below MIRROR_DRY it is not drawn. (It also gates the sun glint on the road; with the mirror off the glint is not occluded, a few levels at most.)
 function mirrorWanted() { return params.mirror && params.wet > (PERF.mirrorSkip ? MIRROR_DRY : 0); }
 function makeReflector() {
-  if (reflector) { scene.remove(reflector); reflector.getRenderTarget().dispose(); }
+  if (reflector) { scene.remove(reflector); reflector.dispose(); reflector.geometry.dispose(); }   // dispose(): its target and material
   const size = renderer.getDrawingBufferSize(new THREE.Vector2()).multiplyScalar(params.mirrorRes);
   // a mirror at road height: it renders the scene from below once per frame; the road shaders sample it
   reflector = new Reflector(new THREE.PlaneGeometry(12000, 12000), {
