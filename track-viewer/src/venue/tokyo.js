@@ -1,7 +1,8 @@
 // Tokyo's runtime effects: everything the GLB cannot carry (animated, look-dependent or shader-made), loaded by
 // main.js through tracks.js `venue` after the venue GLB. Each part is its own module in ./tokyo/ with the same contract:
 //   export async function create(ctx) -> { update?(t, camera, look), setLook?(look, params), dispose() }
-// ctx: { scene, root (the venue glTF scene), track (track.json), renderer, camera, lights (lights.json), allMats, wetUniforms, NO_MIRROR }
+// ctx: { scene, root (the venue glTF scene), track (track.json), renderer, camera, lights (lights.json), allMats, wetUniforms, NO_MIRROR,
+//        ktx2 (the venue GLB's KTX2Loader: reuse its transcoder workers, never dispose it) }
 // A part that fails to load is skipped with a warning: the track still runs without it.
 const PARTS = [
   () => import('./tokyo/holograms.js'),

@@ -320,10 +320,10 @@ function patch(m, kind, defs, frag, uniforms, tex) {
   m.needsUpdate = true;
 }
 
-async function loadSets(renderer) {
+async function loadSets(renderer, shared) {
   const manifest = await fetch(TEX + 'manifest.json').then((r) => (r.ok && /json/.test(r.headers.get('content-type') ?? '') ? r.json() : null)).catch(() => null);
   if (!manifest) return {};
-  const loader = new KTX2Loader().setTranscoderPath('/basis/').detectSupport(renderer);
+  const loader = shared ?? new KTX2Loader().setTranscoderPath('/basis/').detectSupport(renderer);   // the venue's: its transcoder workers are up
   const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   const out = {};
   const load = Promise.all(SETS.map(async (slug) => {
@@ -334,7 +334,7 @@ async function loadSets(renderer) {
     } catch (e) { console.warn('tokyo materials: texture set', slug, 'unavailable, procedural fallback:', e?.message ?? e); }
   }));
   await Promise.race([load, new Promise((r) => setTimeout(r, 20000))]);   // never hold the venue for textures: what has loaded by then is used
-  loader.dispose();
+  if (!shared) loader.dispose();
   return out;
 }
 
@@ -342,7 +342,7 @@ export async function create(ctx) {
   const q = new URLSearchParams(location.search);
   if (q.get('tmat') === '0') return { dispose() {} };
   const t0 = performance.now();
-  const sets = q.get('tmtex') === '0' ? {} : await loadSets(ctx.renderer);
+  const sets = q.get('tmtex') === '0' ? {} : await loadSets(ctx.renderer, ctx.ktx2);
   // the sakura trunks and branches share `V10 tile` with the roofs: in a mesh that also carries petals or leaves, that slot gets a plain clone
   const plain = new Map();
   ctx.root?.traverse((o) => {
