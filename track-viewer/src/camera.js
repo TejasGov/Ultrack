@@ -156,8 +156,10 @@ export class ChaseRig {
     [s.yaw, s.yv] = spring(s.yaw, s.yv, s.yaw + dy, 2.4 * (4.5 + 2.5 * sstep(v, 5, 30) - 1.5 * fast) * (1 - 0.3 * lean) * (1 + 2.5 * sstep(Math.abs(dy), 0.9, 1.7)), dt);
 
     // the car's height is smoothed (the collision mesh has seams that would nod the whole view); x and z follow rigidly
+    // (the target leads by the smoothed climb rate x 2/omega, the spring's steady lag on a ramp, so a long grade isn't trailed ~1 m)
     const p = hero.root.position;
-    [s.ay, s.ayv] = spring(s.ay, s.ayv, p.y, 10, dt);
+    s.vy = (s.vy ?? 0) + ((p.y - (s.py ?? p.y)) / Math.max(dt, 1e-4) - (s.vy ?? 0)) * (1 - Math.exp(-dt / 0.25)); s.py = p.y;
+    [s.ay, s.ayv] = spring(s.ay, s.ayv, p.y + 0.2 * s.vy, 10, dt);
 
     // distance breathes out a little with speed; hard acceleration pushes the camera back, braking pulls it in
     const longG = (v - s.v) / Math.max(dt, 1e-4) / 9.81; s.v = v;
@@ -177,11 +179,14 @@ export class ChaseRig {
     const px = p.x, pz = p.z, pivot = new THREE.Vector3(px, s.ay + 0.9, pz), cam = new THREE.Vector3(px + s.off.x, s.ay + s.off.y, pz + s.off.z);
     const line = cam.clone().sub(pivot), len = line.length(), flat = new THREE.Vector3(line.x, 0, line.z), lenH = flat.length(), dirH = flat.clone().divideScalar(lenH || 1);
     if (opts.cast && lenH > 0.1) {
-      const side = new THREE.Vector3().crossVectors(dirH, UP).multiplyScalar(0.35), knee = new THREE.Vector3(px, s.ay + 0.55, pz);
+      // the rays start at the car's real height: on a long climb the smoothed s.ay trails ~1 m below the car, and knee rays from
+      // there start under the road, hit it and pull the camera into a top-down view for the whole climb (India)
+      const side = new THREE.Vector3().crossVectors(dirH, UP).multiplyScalar(0.35), knee = new THREE.Vector3(px, p.y + 0.55, pz);
       let hit = lenH;
       for (const o of [0, 1, -1]) { const d = opts.cast(knee.clone().addScaledVector(side, o), dirH, lenH + 0.35); if (d !== null) hit = Math.min(hit, d - 0.35); }
       let c = clamp(hit / lenH, 0.25, 1);
-      const d = opts.cast(pivot, line.clone().divideScalar(len), len + 0.35); if (d !== null) c = Math.min(c, clamp((d - 0.35) / len, 0.25, 1));
+      const eye = new THREE.Vector3(px, p.y + 0.9, pz), ray = cam.clone().sub(eye), rl = ray.length();
+      const d = opts.cast(eye, ray.divideScalar(rl), rl + 0.35); if (d !== null) c = Math.min(c, clamp((d - 0.35) / rl, 0.25, 1));
       s.clear = c < s.clear ? c : s.clear + (c - s.clear) * (1 - Math.exp(-2.5 * dt));
     } else s.clear += (1 - s.clear) * (1 - Math.exp(-2.5 * dt));
     camera.position.set(pivot.x + dirH.x * lenH * s.clear, pivot.y + line.y + Math.min(4, (1 - s.clear) * lenH * 0.9), pivot.z + dirH.z * lenH * s.clear);

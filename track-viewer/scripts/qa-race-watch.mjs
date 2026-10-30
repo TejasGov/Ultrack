@@ -51,7 +51,7 @@ while (Date.now() - t0 < maxMs) {
     }
     const ndc = p.clone().add(new T.Vector3(0, 0.6, 0)).project(cam); r.ndc = [+ndc.x.toFixed(2), +ndc.y.toFixed(2)];
     const ft = window.__ft.splice(0); r.fps = ft.length ? Math.round(1000 / (ft.reduce((a, b) => a + b, 0) / ft.length)) : 0; r.worstMs = Math.round(Math.max(0, ...ft));
-    r.y = +p.y.toFixed(2); r.camY = +c.y.toFixed(2);
+    r.y = +p.y.toFixed(2); r.camY = +c.y.toFixed(2); r.clear = +(S.field.rig.s?.clear ?? 1).toFixed(2);   // < 0.5: pulled in over the car
     return r;
   });
   samples.push(s);
@@ -63,7 +63,7 @@ const bad = (f) => samples.filter(f).map((s) => s.t);
 const summary = {
   track, look, laps: +laps, finished: samples.at(-1)?.state === 'done', raceTime: samples.at(-1)?.t, position: samples.at(-1)?.pos, samples: samples.length,
   camLowOrUnder: bad((s) => s.camOverGround !== null && s.camOverGround !== undefined && s.camOverGround < 0.2),
-  carHidden: bad((s) => s.carHidden), carOffFrame: bad((s) => Math.abs(s.ndc[0]) > 0.8 || Math.abs(s.ndc[1]) > 0.8),
+  carHidden: bad((s) => s.carHidden), pulledIn: bad((s) => s.clear < 0.5),carOffFrame: bad((s) => Math.abs(s.ndc[0]) > 0.8 || Math.abs(s.ndc[1]) > 0.8),
   stopped: bad((s) => s.state === 'running' && s.kmh < 10 && s.t > 15), slowFrames: bad((s) => s.worstMs > 100),
   fps: { min: Math.min(...samples.map((s) => s.fps)), median: samples.map((s) => s.fps).sort((a, b) => a - b)[samples.length >> 1] },
   errors: [...new Set(errors)].slice(0, 40),
