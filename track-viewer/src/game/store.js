@@ -78,6 +78,7 @@ export const BLUR = { off: 0, light: 0.55, full: 1 };
 /** m:ss.mmm (or s.mmm under a minute) */
 export function fmtTime(t) {
   if (t === undefined || t === null || !Number.isFinite(t)) return '-:--.---';
-  const m = Math.floor(t / 60), s = t - m * 60;
+  // round to whole ms first so 119.9996 rolls to 2:00.000, not 1:60.000
+  const ms = Math.round(t * 1000), m = Math.floor(ms / 60000), s = (ms - m * 60000) / 1000;
   return `${m}:${s.toFixed(3).padStart(6, '0')}`;
 }
