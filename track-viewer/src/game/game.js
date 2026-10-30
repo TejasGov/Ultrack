@@ -415,7 +415,8 @@ export class Game {
         if (!isTrial && e.valid) store.bestLap(hero.key, e.t);
         const delta = e.delta !== null && e.delta !== undefined ? `${e.delta > 0 ? '+' : '−'}${Math.abs(e.delta).toFixed(3)}` : '';
         let pay='';
-        if (s.mode === 'trial') { const r = this.pay({ mode: 'trial', validLaps: e.valid ? 1 : 0, pb: record }); if (r.total) pay = `  +${r.total} U`; }
+        // the first five valid laps of a trial pay (lapDone has already logged this one); later laps pay only a PB
+        if (s.mode === 'trial') { const r = this.pay({ mode: 'trial', validLaps: e.valid && s.trk.get(hero).laps.filter((l) => l.valid).length <= 5 ? 1 : 0, pb: record }); if (r.total) pay = `  +${r.total} U`; }
         if (s.mode === 'race' && e.pb && e.valid) this.racePb = true;
         H.lapDelta(e.valid ? e.delta : null, e.pb || record);
         H.message(e.valid ? `Lap ${e.n}` : 'Lap invalid', `${fmtTime(e.t)}  ${delta}${pay}`, !e.valid ? 'bad' : e.pb || record ? 'good' : delta.startsWith('+') ? 'bad' : '', 3.2);
