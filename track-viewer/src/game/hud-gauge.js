@@ -1,8 +1,9 @@
 // The instrument cluster (hud.js owns it): a tachometer with a real scale (from the display gearbox: redline, gear), a shift-light
-// rail above it, the speed as three fixed digit cells, the gear in its own cell, a nitro bar and the TCS / ABS / ESC tags.
-// An electric car has no revs: the dial becomes a power gauge and the gear cell shows D. The static scale is built once per
-// car; a frame moves one needle (a transform), a few opacities and, only when they change, three digits.
+// rail above it, the speed as three fixed digit cells (right-aligned, no ghost zeros), the gear on a round disc, a nitro bar and
+// the TCS / ABS / ESC tags. An electric car has no revs: the dial becomes a power gauge and the gear disc shows D. The static
+// scale is built once per car; a frame moves one needle (a transform), a few opacities and, only when they change, three digits.
 import { h } from './ui.js';
+import { icon } from './icons.js';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 const S = (tag, a = {}) => { const e = document.createElementNS(SVGNS, tag); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); return e; };
@@ -50,7 +51,7 @@ export class Gauge {
         this.spd = h('div.spd', {}, h('b'), h('b'), h('b')), this.unitEl = h('div.unit'),
         this.gearEl = h('div.gearcell', {}, this.gearTxt = h('span')),
         this.tagBox = h('div.tags', {}, ...['TCS', 'ABS', 'ESC'].map((t) => h('span.tag', {}, t))),
-        this.nitro = h('div.nitro', {}, h('span.k', {}, 'NITRO'), h('div.bar', {}, this.nFill = h('i')))));
+        this.nitro = h('div.nitro', {}, h('span.k', {}, icon('nitro'), 'NITRO'), h('div.bar', {}, this.nFill = h('i')))));
     this.tags = [...this.tagBox.children].map((e) => new Tag(e));
     this.leds = [...this.rail.children];
   }
@@ -100,23 +101,19 @@ export class Gauge {
       if (this.cache['l' + i] !== q) { this.cache['l' + i] = q; this.leds[i].style.opacity = (0.12 + 0.88 * q / 12).toFixed(2); }
     }
     this.flag(this.rail, 'shift', !ev && rr > 0.95);
-    // speed: three fixed cells (Anton's 1 is narrow), leading zeros dimmed; repainted at ~16 Hz, a readout nobody can read at 60
+    // speed: three fixed cells (Anton's 1 is narrow), right-aligned with the leading cells empty; repainted at ~16 Hz, a readout nobody can read at 60
     this.age = (this.age ?? 1) + dt;
     if (this.age > 0.06) {
       this.age = 0;
-      const n = Math.min(999, Math.round(v.speed * 3.6 * (mph ? 0.6214 : 1))), s = String(n).padStart(3, '0'), lead = 3 - String(n).length;
-      for (let i = 0; i < 3; i++) {
-        const el = this.spd.children[i], dim = i < lead || (i < 2 && n === 0);
-        this.set(el, 's' + i, s[i]);
-        if (this.cache['z' + i] !== dim) { this.cache['z' + i] = dim; el.classList.toggle('z', dim); }
-      }
+      const s = String(Math.min(999, Math.round(v.speed * 3.6 * (mph ? 0.6214 : 1)))).padStart(3, ' ');
+      for (let i = 0; i < 3; i++) this.set(this.spd.children[i], 's' + i, s[i].trim());
     }
     this.set(this.unitEl, 'unit', mph ? 'MPH' : 'KM/H');
-    // gear: neutral while the lights are on, R in reverse, D for an EV; a short pop when it changes
+    // gear: neutral while the lights are on, R in reverse, D for an EV; a short fade-in when it changes (no scale pop)
     const g = grid ? 'N' : gb.label;
     if (this.cache.gear !== g) {
       const first = this.cache.gear === undefined; this.cache.gear = g; this.gearTxt.textContent = g;
-      if (!first && !calm) this.gearEl.animate([{ transform: 'scale(1.14)' }, { transform: 'none' }], { duration: 220, easing: 'cubic-bezier(0.16,1,0.3,1)' });
+      if (!first && !calm) this.gearTxt.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 180, easing: 'cubic-bezier(0.22,1,0.36,1)' });
     }
     this.flag(this.gearEl, 'rev', g === 'R'); this.flag(this.gearEl, 'hot', !ev && rr > 0.95);
     // nitro

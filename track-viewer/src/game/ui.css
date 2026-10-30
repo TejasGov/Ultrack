@@ -402,8 +402,8 @@ kbd .icon { font-size: var(--icon-s); }
 .pause:has(> .m-layer) > .sfoot { visibility: hidden; }   /* its "Esc Resume" is wrong while the modal is up: Esc cancels */
 @keyframes m-fade { from { opacity: 0; } }
 @keyframes m-rise { from { opacity: 0; transform: translateY(var(--slide)); } }
-/* the camera label never shows over a screen (pause, settings from pause, results) */
-#ui:has(> .screen.on) > #cam-label { visibility: hidden; }
+/* the camera label never shows over a screen (pause, settings from pause, results); the HUD is a .screen too, and it shows over that */
+#ui:has(> .screen.on:not(.hud)) > #cam-label { visibility: hidden; }
 /* ---------------------------------------------------------------- garage: the list left, the car and team over a scrim, the detail panel right (tabs, a body that scrolls, the action bar) */
 .garage { --ga-list: calc(344 * var(--u)); --ga-detail: calc(520 * var(--u)); --ga-top: calc(var(--gutter) + 40 * var(--u) + var(--sp-6)); --ga-bottom: calc(var(--sp-5) + 56 * var(--u) + var(--sp-3)); }
 #ui .screen.garage { pointer-events: none; }   /* drags reach the canvas: the orbit camera turns the car */

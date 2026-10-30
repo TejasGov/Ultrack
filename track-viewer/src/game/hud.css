@@ -1,154 +1,183 @@
-/* The race HUD (hud.js, hud-gauge.js, hud-map.js). Authored on a 1600x900 canvas; hud.js sets --s so each corner group scales with the window.
-   One tile language, shared with the menus: dark translucent glass, a hairline, no shadows doing work. Two faces: Anton for the few big
-   numerals (position, speed, gear) and Barlow Condensed, tabular, for every other number, so a changing digit never moves its neighbours.
-   Red is for "yours" and warnings, gold for assists at work, cyan for nitro. Motion is transform and opacity; nothing blinks. */
-.hud { --s: 1; --tile: rgba(8, 12, 19, 0.68); --hair: rgba(255, 255, 255, 0.1); --glass: rgba(10, 15, 23, 0.74); pointer-events: none !important; font-variant-numeric: tabular-nums; }
+/* The race HUD (hud.js, hud-gauge.js, hud-map.js) on the UI tokens (ui-tokens.css, docs/ui-system.md "Race HUD"). Authored in design px
+   on a 1600x900 canvas; hud.js sets --s and each corner group scales by it, so sizes here are design px, never --u tokens (that would
+   scale twice). Labels are 15 design px: 12 px at 1280x720 (--s 0.8). One tile language with the menus: --c-panel, a 1 px --c-line,
+   --r-3, no blur (performance) and no shadows doing work. Anton for the few big numerals (position, speed, gear, count, drift score),
+   Barlow Condensed 700 tabular for every other number. One accent: "yours", the redline, nitro firing, invalid, wrong way. Team
+   colours are identity only (a bar with a line edge). Motion is transform and opacity, 150-250 ms ease-out; nothing blinks. */
+.hud { --s: 1; --hl: max(15px, calc(12px / var(--s))); pointer-events: none !important; font-family: var(--font-ui); font-weight: 700; color: var(--c-ink-1); font-variant-numeric: tabular-nums; }
 .hud .grp { position: absolute; transform: scale(var(--s)); }
-.hud .tl { left: 32px; top: 28px; transform-origin: 0 0; }
-.hud .tc { left: 50%; top: 28px; transform: translateX(-50%) scale(var(--s)); transform-origin: 50% 0; }
-.hud .tr { right: 32px; top: 28px; transform-origin: 100% 0; }
-.hud .bl { left: 32px; bottom: 28px; transform-origin: 0 100%; }
-.hud .br { right: 32px; bottom: 28px; transform-origin: 100% 100%; }
-.hud .bc { left: 50%; bottom: 22px; transform: translateX(-50%) scale(var(--s)); transform-origin: 50% 100%; }
+.hud .tl { left: var(--sp-6); top: var(--sp-5); transform-origin: 0 0; }
+.hud .tc { left: 50%; top: var(--sp-5); transform: translateX(-50%) scale(var(--s)); transform-origin: 50% 0; }
+.hud .tr { right: var(--sp-6); top: var(--sp-5); transform-origin: 100% 0; }
+.hud .bl { left: var(--sp-6); bottom: var(--sp-6); transform-origin: 0 100%; }
+.hud .br { right: var(--sp-6); bottom: var(--sp-6); transform-origin: 100% 100%; }
+.hud .bc { left: 50%; bottom: var(--sp-5); transform: translateX(-50%) scale(var(--s)); transform-origin: 50% 100%; }
 .hud .cc { left: 50%; top: 0; width: 1600px; height: 900px; margin-left: -800px; transform-origin: 50% 0; }
 
-.hud .tile { background: var(--tile); border: 1px solid var(--hair); border-radius: 12px; }
-.hud .k { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.24em; color: var(--ink-3); }
+.hud .tile { background: var(--c-panel); border: 1px solid var(--c-line); border-radius: var(--r-3); }
+/* a label: tracked caps in ink-3, an optional 16 px icon before it */
+.hud .k { display: flex; align-items: center; gap: 4px; font-size: var(--hl); line-height: 1.2; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); white-space: nowrap; }
+.hud .k .icon { font-size: 16px; }
+.hud .empty { color: var(--c-ink-3); }   /* the em dash: ink-3, not the menus' ink-4, which vanishes on a translucent tile over a lit gantry */
 
-/* ---- top left: position, lap, standings */
-.hud .tower { width: 252px; padding: 12px 14px 12px; }
-.hud .head { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 4px 10px; border-bottom: 1px solid var(--hair); }
-.hud .big { margin-top: 3px; font-family: var(--num); font-size: 46px; line-height: 1; letter-spacing: 0.01em; will-change: transform; }
-.hud .big small { font-size: 24px; color: var(--ink-3); margin-left: 3px; }
+/* ---- top left: position and lap (icons), the standings; race only */
+.hud .tower { width: 256px; padding: 12px 16px; }
+.hud .head { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 4px 12px; border-bottom: 1px solid var(--c-line); }
+.hud .lapblk .k { justify-content: flex-end; }
+.hud .big { margin-top: 4px; font-family: var(--font-num); font-size: 46px; line-height: 1; letter-spacing: var(--track-title); will-change: transform; }
+.hud .big small { margin-left: 4px; font-size: 24px; color: var(--c-ink-3); }
 .hud .lapblk { text-align: right; }
-.hud .big.lap { font-family: var(--label); font-weight: 700; font-size: 38px; line-height: 46px; margin-top: 0; }
-.hud .big.lap small { font-size: 24px; }
-.hud:not(.racing) .posblk, .hud:not(.racing) .standings { display: none; }
-.hud:not(.racing) .head { border-bottom: 0; padding-bottom: 0; }
-.hud:not(.racing) .tower { width: auto; min-width: 108px; padding: 10px 18px 12px; }
-.hud:not(.racing):not(.timed) .tl { display: none; }
-.hud .standings { position: relative; margin-top: 10px; }
-.hud .srow { position: absolute; left: 0; top: 0; width: 100%; height: 25px; display: grid; grid-template-columns: 22px 4px 1fr auto; align-items: center; gap: 10px; padding: 0 10px 0 4px;
-  background: rgba(255, 255, 255, 0.05); border-radius: 6px; font-size: 17px; letter-spacing: 0.06em; transition: transform 0.55s var(--ease); will-change: transform; }
-.hud .srow .n { font-size: 16px; text-align: center; color: var(--ink-2); }
-.hud .srow i { height: 14px; border-radius: 2px; background: var(--team); }
-.hud .srow .g { font-size: 15px; color: var(--ink-2); letter-spacing: 0.04em; }
-.hud .srow.me { background: rgba(255, 255, 255, 0.15); box-shadow: inset 3px 0 0 var(--red); }
-.hud .srow.me .n, .hud .srow.me .g { color: var(--ink); }
+.hud .big.lap { margin-top: 0; font-family: var(--font-ui); font-weight: 700; font-size: 38px; line-height: 50px; }
+.hud:not(.racing) .tl { display: none; }
+.hud .standings { position: relative; margin-top: 12px; }
+.hud .srow { position: absolute; left: 0; top: 0; width: 100%; height: 24px; display: grid; grid-template-columns: 24px 4px 1fr auto; align-items: center; gap: 8px; padding: 0 8px 0 4px;
+  background: var(--c-fill-1); border-radius: var(--r-1); font-size: 17px; letter-spacing: 0.06em; transition: transform var(--dur-3) var(--ease-out); will-change: transform; }
+.hud .srow .n { font-size: 16px; text-align: center; color: var(--c-ink-2); }
+.hud .srow i { height: 14px; border-radius: 1px; background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }   /* the edge: dark teams stay distinct */
+.hud .srow .g { font-size: 16px; color: var(--c-ink-2); letter-spacing: 0.04em; }
+.hud .srow .g.lead { font-size: var(--hl); letter-spacing: var(--track-label); color: var(--c-ink-3); }
+.hud .srow.me { background: var(--c-fill-3); box-shadow: inset var(--rule) 0 0 var(--c-accent); }
+.hud .srow.me .n, .hud .srow.me .g { color: var(--c-ink-1); }
 
-/* ---- top centre: timing */
-.hud .timing { position: relative; display: grid; grid-template-columns: 150px 250px 150px; align-items: start; padding: 12px 16px 20px; }
-.hud .timing .col { text-align: center; min-width: 0; }
-.hud .time { font-family: var(--label); font-weight: 700; font-size: 28px; line-height: 1.15; margin-top: 4px; white-space: nowrap; letter-spacing: 0.01em; }
-.hud .time em { font-style: normal; opacity: 0.5; }
-.hud .time.cur { font-size: 54px; line-height: 1; margin-top: 3px; }
-.hud .timing .main { border-left: 1px solid var(--hair); border-right: 1px solid var(--hair); }
-.hud .delta { height: 18px; margin-top: 1px; font-weight: 700; font-size: 17px; color: var(--ink-3); opacity: 0; transition: opacity 0.4s; }
+/* ---- top centre: timing. Race: last | lap time | best; trial: the lap joins it on the left. Empty times are the em dash */
+.hud .timing { position: relative; display: grid; grid-template-columns: 152px 248px 152px; align-items: start; padding: 12px 16px 24px; }
+.hud:not(.racing) .timing { grid-template-columns: 96px 152px 248px 152px; }
+.hud .timing .col { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.hud .lapcol { border-right: 1px solid var(--c-line); }
+.hud.racing .lapcol { display: none; }
+.hud .time { font-weight: 700; font-size: 28px; line-height: 1.15; margin-top: 4px; white-space: nowrap; letter-spacing: 0.01em; }
+.hud .time em { font-style: normal; color: var(--c-ink-3); }
+.hud .time.cur { font-size: 54px; line-height: 1; }
+.hud .time.empty { color: var(--c-ink-3); }
+.hud .timing .main { border-left: 1px solid var(--c-line); border-right: 1px solid var(--c-line); }
+.hud .timing .inv { display: none; color: var(--c-accent); }
+.hud .timing.inval .lt { display: none; }
+.hud .timing.inval .inv { display: flex; }
+.hud .delta { height: 20px; margin-top: 4px; font-size: 18px; line-height: 20px; letter-spacing: 0.02em; opacity: 0; transition: opacity var(--dur-3) var(--ease-out); }
 .hud .delta.good, .hud .delta.bad { opacity: 1; }
-.hud .delta.good { color: var(--good); } .hud .delta.bad { color: var(--bad); }
-.hud .invalid { position: absolute; left: 0; right: 0; bottom: 8px; width: 250px; margin: 0 auto; font-size: 12px; letter-spacing: 0.24em; color: var(--bad); opacity: 0; transition: opacity 0.3s; }
-.hud .invalid.inv { opacity: 1; }
-.hud .prog { position: absolute; left: 16px; right: 16px; bottom: 9px; height: 3px; display: flex; gap: 4px; }
-.hud .prog div { flex: 1 1 0; border-radius: 2px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
-.hud .prog i { display: block; height: 100%; background: var(--ink); transform-origin: left; transform: scaleX(0); transition: transform 0.25s linear; }
+.hud .delta.good { color: var(--c-pos); } .hud .delta.bad { color: var(--c-accent); }
+.hud .prog { position: absolute; left: 16px; right: 16px; bottom: 12px; height: 4px; display: flex; gap: 4px; }
+.hud .prog div { flex: 1 1 0; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
+.hud .prog i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transform: scaleX(0); transition: transform var(--dur-3) linear; }
 .hud:not(.timed) .timing { display: none; }
 
-/* ---- drift attack: the score takes the top centre */
-.hud .drift { display: none; min-width: 360px; padding: 12px 28px 16px; text-align: center; background: var(--tile); border: 1px solid var(--hair); border-radius: 12px; }
-.hud.driftmode .drift { display: block; }
-.hud .drift .total { font-family: var(--num); font-size: 60px; line-height: 1; margin-top: 3px; }
-.hud .drift .clock { margin-top: 3px; font-size: 15px; letter-spacing: 0.26em; color: var(--ink-2); }
-.hud .drift .chainrow { display: flex; justify-content: center; align-items: baseline; gap: 12px; height: 44px; margin: 6px 0 10px; }
-.hud .drift .chain { font-weight: 700; font-size: 40px; color: var(--gold); }
-.hud .drift .chain.idle { font-size: 14px; font-weight: 800; letter-spacing: 0.26em; color: var(--ink-3); }
-.hud .drift .mult { font-weight: 700; font-size: 26px; color: var(--ink); }
-.hud .drift .chainbar { height: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
-.hud .drift .chainbar i { display: block; height: 100%; background: var(--gold); transform-origin: left; transform: scaleX(0); transition: transform 0.2s linear; }
+/* ---- drift attack: a ring timer with the seconds | the score | the record; the chain and its multiplier (always shown) under them */
+.hud .drift { display: none; width: 448px; grid-template-columns: 64px 1fr 96px; align-items: start; column-gap: 24px; padding: 16px 24px; }
+.hud.driftmode .drift { display: grid; }
+.hud .dring { position: relative; align-self: center; width: 64px; height: 64px; display: grid; place-items: center; }
+.hud .dring::before { content: ''; position: absolute; inset: 0; border: 4px solid var(--c-fill-3); border-radius: 50%; }
+.hud .dring .half { position: absolute; top: 0; width: 50%; height: 100%; overflow: hidden; }
+.hud .dring .half.r { left: 50%; } .hud .dring .half.l { left: 0; }
+.hud .dring .half i { position: absolute; inset: 0; box-sizing: border-box; border: 4px solid var(--c-ink-1); will-change: transform; }
+.hud .dring .half.r i { border-left: 0; border-radius: 0 32px 32px 0; transform-origin: 0 50%; }
+.hud .dring .half.l i { border-right: 0; border-radius: 32px 0 0 32px; transform-origin: 100% 50%; }
+.hud .dring b { position: relative; font-size: 22px; line-height: 1; }
+.hud .dmain { display: flex; flex-direction: column; align-items: center; }
+.hud .drift .total { margin-top: 4px; font-family: var(--font-num); font-size: 56px; line-height: 1; }
+.hud .drec { display: flex; flex-direction: column; align-items: flex-end; }
+.hud .drec .rec { margin-top: 4px; font-size: 28px; line-height: 1.15; }
+.hud .drift .chainrow { grid-column: 1 / -1; display: flex; justify-content: center; align-items: baseline; gap: 12px; height: 40px; margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--c-line); }
+.hud .drift .chain { font-size: 32px; line-height: 32px; }
+.hud .drift .chain.idle { font-size: var(--hl); line-height: 32px; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
+.hud .drift .mult { font-size: 24px; color: var(--c-ink-1); }
+.hud .drift .chainbar { grid-column: 1 / -1; height: 4px; margin-top: 8px; border-radius: var(--r-1); background: var(--c-fill-1); overflow: hidden; }
+.hud .drift .chainbar i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transform: scaleX(0); transition: transform var(--dur-2) linear; }
 
 /* ---- top right: the frame-rate readout, when asked for */
-.hud .fps { text-align: right; font-size: 14px; letter-spacing: 0.2em; color: var(--ink-3); }
+.hud .fps { text-align: right; font-size: var(--hl); letter-spacing: var(--track-label); color: var(--c-ink-3); }
 
-/* ---- bottom left: the minimap. Radar is a disc, the overview a plate; both are one canvas (hud-map.js) */
-.hud .map { position: relative; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle closest-side, rgba(10, 15, 23, 0.84), rgba(10, 15, 23, 0.7)); box-shadow: inset 0 0 0 1px var(--hair), 0 8px 26px rgba(0, 0, 0, 0.2); }
-.hud .map.ov { width: 392px; height: 206px; border-radius: 18px; background: var(--glass); animation: hud-fade 0.25s ease-out; }
+/* ---- bottom left: the minimap. Radar is a disc, the overview a darker plate; both are one canvas (hud-map.js) */
+.hud .map { position: relative; width: 240px; height: 240px; border-radius: var(--r-round); background: radial-gradient(circle closest-side, rgba(9, 12, 17, 0.84), rgba(9, 12, 17, 0.7)); box-shadow: inset 0 0 0 1px var(--c-line); }
+.hud .map.ov { width: 432px; height: 240px; border-radius: var(--r-3); background: var(--c-panel-2); animation: hud-fade var(--dur-3) var(--ease-out); }
 .hud .map canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
 /* ---- bottom right: the instruments. Everything is placed on a 348 px wide box; the dial centre is (174, 158) */
 .hud .gauge { position: relative; width: 348px; height: 310px; }
 .hud .gauge::before { content: ''; position: absolute; left: -16px; top: 12px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle closest-side, rgba(6, 9, 14, 0.62) 0, rgba(6, 9, 14, 0.5) 60%, rgba(6, 9, 14, 0) 100%); }
-.hud .rail { position: absolute; left: 49px; right: 49px; top: 0; display: flex; gap: 4px; }
-.hud .rail i { flex: 1; height: 5px; border-radius: 2px; background: #f4f2ee; opacity: 0.12; transition: opacity 0.09s linear; }
-.hud .rail i:nth-child(n+7) { background: var(--gold); }
-.hud .rail i:nth-child(n+10) { background: #ff3b3f; }
+.hud .rail { position: absolute; left: 48px; right: 48px; top: 0; display: flex; gap: 4px; }
+.hud .rail i { flex: 1; height: 4px; border-radius: 2px; background: var(--c-ink-1); opacity: 0.12; transition: opacity 0.09s linear; }
+.hud .rail i:nth-child(n+10) { background: var(--c-accent); }
 .hud .gauge.ev .rail { display: none; }
 .hud .dial { position: absolute; left: 0; top: 10px; width: 348px; height: 300px; }
 .hud .scale { position: absolute; left: 0; top: 0; width: 348px; height: 240px; overflow: visible; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55)); }
 .hud .scale path { fill: none; }
-.hud .scale .ring { stroke: rgba(255, 255, 255, 0.3); stroke-width: 1.6; }
-.hud .scale .redband { stroke: #e3141b; stroke-width: 5; }
-.hud .scale .tick { stroke: rgba(244, 242, 238, 0.5); stroke-width: 1.3; }
-.hud .scale .tick.major { stroke: rgba(244, 242, 238, 0.92); stroke-width: 2.2; }
-.hud .scale .tick.red { stroke: #ff4a4f; }
-.hud .scale .num { fill: rgba(244, 242, 238, 0.8); font: 700 17px var(--label); text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0, 0, 0, 0.4); stroke-width: 3px; }
-.hud .scale .num.red { fill: #ff6a6e; }
-.hud .sub { position: absolute; left: 0; width: 348px; top: 86px; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.26em; color: var(--ink-3); }
+.hud .scale .ring { stroke: var(--c-line-2); stroke-width: 1.5; }
+.hud .scale .redband { stroke: var(--c-accent); stroke-width: 4; }
+.hud .scale .tick { stroke: var(--c-ink-3); stroke-width: 1.25; }
+.hud .scale .tick.major { stroke: var(--c-ink-1); stroke-width: 2; }
+.hud .scale .tick.red { stroke: var(--c-accent-hi); }
+.hud .scale .num { fill: var(--c-ink-2); font: 700 17px var(--font-ui); text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0, 0, 0, 0.4); stroke-width: 3px; }
+.hud .scale .num.red { fill: var(--c-accent-hi); }
+.hud .sub { position: absolute; left: 0; width: 348px; top: 84px; text-align: center; font-size: var(--hl); letter-spacing: var(--track-label); text-indent: var(--track-label); color: var(--c-ink-3); }
 .hud .needle { position: absolute; left: 174px; top: 158px; width: 0; height: 0; transform: rotate(-120deg); will-change: transform; }
-.hud .needle i { position: absolute; left: -1.6px; width: 3.2px; border-radius: 2px; background: linear-gradient(to bottom, #fff 0, #fff 40%, rgba(255, 255, 255, 0)); filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6)); }
-.hud .dial.redline .needle i { background: linear-gradient(to bottom, #ff4a4f 0, #ff4a4f 40%, rgba(255, 74, 79, 0)); }
-.hud .spd { position: absolute; left: 0; width: 348px; top: 106px; height: 90px; text-align: center; font-family: var(--num); font-size: 86px; line-height: 90px; white-space: nowrap; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45); }
+.hud .needle i { position: absolute; left: -1.5px; width: 3px; border-radius: 2px; background: linear-gradient(to bottom, var(--c-ink-1) 0, var(--c-ink-1) 40%, rgba(244, 242, 238, 0)); filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6)); }
+.hud .dial.redline .needle i { background: linear-gradient(to bottom, var(--c-accent-hi) 0, var(--c-accent-hi) 40%, rgba(255, 42, 49, 0)); }
+.hud .spd { position: absolute; left: 0; width: 348px; top: 104px; height: 92px; text-align: center; font-family: var(--font-num); font-size: 88px; line-height: 92px; white-space: nowrap; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45); }
 .hud .spd b { display: inline-block; width: 0.5em; font-weight: 400; text-align: center; }
-.hud .spd b.z { opacity: 0.16; }
-.hud .unit { position: absolute; left: 0; width: 348px; top: 204px; text-align: center; font-size: 14px; letter-spacing: 0.32em; color: var(--ink-2); text-indent: 0.32em; }
-.hud .gearcell { position: absolute; left: 146px; top: 232px; width: 56px; height: 60px; display: grid; place-items: center; font-family: var(--num); font-size: 42px; line-height: 1;
-  border: 1.5px solid rgba(255, 255, 255, 0.32); border-radius: 12px; background: rgba(8, 12, 19, 0.55); transition: color 0.18s, border-color 0.18s; }
-.hud .gearcell.hot { color: #ff4a4f; border-color: rgba(255, 74, 79, 0.85); }
-.hud .gearcell.rev { color: var(--gold); border-color: rgba(242, 193, 78, 0.7); }
-.hud .tags { position: absolute; left: 46px; width: 84px; top: 237px; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
-.hud .tag { display: block; width: 56px; height: 17px; line-height: 15px; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-indent: 0.16em; color: rgba(244, 242, 238, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 4px; transition: color 0.3s, background-color 0.3s, border-color 0.3s; }
-.hud .tag.on { color: #171003; background: var(--gold); border-color: var(--gold); transition-duration: 0.07s; }
-.hud .tag.off { opacity: 0.4; text-decoration: line-through; }
-.hud .nitro { position: absolute; left: 218px; width: 84px; top: 237px; }
-.hud .nitro .k { font-size: 11px; transition: color 0.2s; }
-.hud .nitro.on .k { color: var(--ink); }
-.hud .nitro .bar { position: relative; margin-top: 6px; height: 8px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
-.hud .nitro .bar i { display: block; height: 100%; background: var(--nitro-2); transform-origin: left; transition: transform 0.25s linear, background-color 0.2s; }
-.hud .nitro.on .bar i { background: #c5f1ff; }
-.hud .nitro.low:not(.on) .bar i { background: var(--ink-3); }
-.hud .nitro .bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent calc(100% - 2px), rgba(8, 12, 19, 0.92) calc(100% - 2px)) 0 0 / 20% 100%; }
+.hud .unit { position: absolute; left: 0; width: 348px; top: 204px; text-align: center; font-size: var(--hl); letter-spacing: var(--track-wide); text-indent: var(--track-wide); color: var(--c-ink-2); }
+.hud .gearcell { position: absolute; left: 144px; top: 232px; width: 60px; height: 60px; display: grid; place-items: center; font-family: var(--font-num); font-size: 38px; line-height: 1;
+  border: 2px solid var(--c-line-2); border-radius: var(--r-round); background: var(--c-panel); transition: color var(--dur-2), border-color var(--dur-2), background-color var(--dur-2); }
+.hud .gearcell.hot { color: var(--c-accent-hi); border-color: var(--c-accent); }
+.hud .gearcell.rev { color: var(--c-ink-inv); background: var(--c-ink-1); border-color: var(--c-ink-1); }
+.hud .tags { position: absolute; left: 44px; width: 88px; top: 234px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.hud .tag { display: block; width: 60px; height: 20px; line-height: 18px; text-align: center; font-size: var(--hl); letter-spacing: 0.12em; text-indent: 0.12em; color: var(--c-ink-3);
+  border: 1px solid var(--c-line-2); border-radius: var(--r-1); transition: color var(--dur-2), background-color var(--dur-2), border-color var(--dur-2); }
+.hud .tag.on { color: var(--c-ink-inv); background: var(--c-ink-1); border-color: var(--c-ink-1); transition-duration: 0.07s; }   /* lights at once, lets go calmly */
+.hud .tag.off { color: var(--c-ink-4); border-color: var(--c-line); text-decoration: line-through; }
+.hud .nitro { position: absolute; left: 216px; width: 92px; top: 234px; }
+.hud .nitro .k { transition: color var(--dur-2); }
+.hud .nitro.on .k { color: var(--c-ink-1); }
+.hud .nitro.on .k .icon { color: var(--c-accent); }
+.hud .nitro .bar { position: relative; margin-top: 8px; height: 8px; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
+.hud .nitro .bar i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transition: transform var(--dur-3) linear, background-color var(--dur-2); }
+.hud .nitro.on .bar i { background: var(--c-accent); }
+.hud .nitro.low:not(.on) .bar i { background: var(--c-ink-3); }
+.hud .nitro .bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent calc(100% - 2px), rgba(9, 12, 17, 0.92) calc(100% - 2px)) 0 0 / 20% 100%; }
 
-/* the camera-view label (game.js cycleCamera) flashes at the bottom left, where the minimap now sits: it goes bottom centre, above the hint */
-#cam-label { left: 50% !important; bottom: 74px !important; transform: translateX(-50%); }
+/* the camera-view label (game.js cycleCamera): the HUD tile, bottom left above the map, with the camera icon. Hidden while a screen is
+   up (ui.css). The !important beats game.js's inline style until engine patch H1 drops it (docs/ui-system.md) */
+#cam-label { position: absolute !important; left: var(--sp-6) !important; bottom: calc(var(--sp-6) + 256 * var(--u)) !important; display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4) !important; font: 700 max(12px, calc(15 * var(--u)))/1 var(--font-ui) !important; letter-spacing: var(--track-label) !important; text-transform: uppercase;
+  color: var(--c-ink-1) !important; background: var(--c-panel) !important; border: 1px solid var(--c-line) !important; border-radius: var(--r-3) !important; pointer-events: none; }
+#cam-label::before { content: ''; flex: none; width: var(--icon-s); height: var(--icon-s); background: currentColor; -webkit-mask: url(/assets/ui/icons/camera.svg) center / contain no-repeat; mask: url(/assets/ui/icons/camera.svg) center / contain no-repeat; }
 
-/* ---- bottom centre: controls hint (fades out by itself) */
-.hud .hint { padding: 7px 18px; font-size: 15px; letter-spacing: 0.16em; color: var(--ink-2); background: var(--tile); border: 1px solid var(--hair); border-radius: 10px; white-space: nowrap; }
-.hud .hint b { color: var(--ink); border: 1px solid var(--line-2); border-radius: 4px; padding: 0 6px; margin: 0 7px 0 16px; font-weight: 800; }
-.hud .hint b:first-child { margin-left: 0; }
+/* ---- bottom centre: the controls hint, prompt components (keycaps or pad glyphs by the last device), gone after 9 s */
+.hud .hint { display: flex; align-items: center; gap: 24px; padding: 8px 16px; background: var(--c-panel); border: 1px solid var(--c-line); border-radius: var(--r-3); transition: opacity var(--dur-3) var(--ease-in); }
+.hud .hint.gone { opacity: 0; }
+.hud .hint .prompt { gap: 8px; font-size: var(--hl); color: var(--c-ink-2); }
+.hud .hint kbd { min-width: 24px; height: 24px; padding: 0 4px; font-size: var(--hl); }
+.hud .hint kbd .icon { font-size: 16px; }
+.hud .hint .pp { font-size: 20px; }
 
-/* ---- centre: lights, count, messages, wrong way. One-shot pops and fades; the warning breathes slowly. */
-.hud .msg { position: absolute; left: 0; right: 0; top: 158px; text-align: center; transition: opacity 0.4s ease-out; }
+/* ---- centre: lights, count, messages, wrong way. One-shot fades; nothing pops above 1.04 or breathes */
+.hud .msg { position: absolute; left: 0; right: 0; top: 160px; display: flex; justify-content: center; transition: opacity var(--dur-3) var(--ease-in); }
 .hud .msg.out { opacity: 0; }
-.hud.driftmode .msg { top: 226px; }
-.hud .msg .m { font-style: italic; font-weight: 900; font-size: 58px; text-transform: uppercase; letter-spacing: 0.01em; text-shadow: 0 3px 24px rgba(0, 0, 0, 0.55); animation: hud-pop 0.5s var(--ease); }
-.hud .msg .s { font-weight: 700; font-size: 32px; margin-top: 2px; text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6); }
-.hud .msg .good { color: var(--good); } .hud .msg .bad { color: var(--bad); } .hud .msg .gold { color: var(--gold); }
-.hud .warn { position: absolute; left: 50%; top: 286px; margin-left: -140px; width: 280px; padding: 7px 0; text-align: center; background: rgba(227, 20, 27, 0.9); border-radius: 8px;
-  font-style: italic; font-weight: 900; font-size: 36px; text-transform: uppercase; opacity: 0; transform: translateY(-6px); transition: opacity 0.4s, transform 0.4s var(--ease); }
-.hud .warn.wrong { opacity: 1; transform: none; animation: hud-breathe 2s ease-in-out 0.4s infinite; }
-.hud .lights { position: absolute; left: 50%; top: 190px; transform: translateX(-50%); display: flex; gap: 14px; padding: 13px 18px; background: var(--tile); border: 1px solid var(--hair); border-radius: 14px; opacity: 0; transition: opacity 0.3s; }
+.hud.driftmode .msg { top: 232px; }
+.hud .strip { display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: var(--c-panel); border: 1px solid var(--c-line); border-radius: var(--r-3); animation: hud-in var(--dur-3) var(--ease-out); }
+.hud .strip .m { display: flex; align-items: center; gap: 12px; font-style: italic; font-weight: 900; font-size: 40px; line-height: 1; text-transform: uppercase; letter-spacing: var(--track-title); }
+.hud .strip .m .icon { font-size: 32px; }
+.hud .strip .s { display: flex; align-items: center; gap: 16px; padding-left: 24px; border-left: 1px solid var(--c-line); font-size: 28px; line-height: 1; color: var(--c-ink-2); }
+.hud .strip .s span { display: flex; align-items: center; gap: 4px; }
+.hud .strip .s .icon { font-size: 24px; color: var(--c-ink-1); }
+.hud .strip .up { color: var(--c-pos); } .hud .strip .dn { color: var(--c-accent); } .hud .strip .coin { color: var(--c-ink-1); }
+.hud .strip.bad .m { color: var(--c-accent); }
+.hud .warn { position: absolute; left: 50%; top: 286px; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; padding: 12px 32px 12px 24px; white-space: nowrap;
+  background: var(--c-panel-2); border: 1px solid var(--c-accent); border-radius: var(--r-3); font-style: italic; font-weight: 900; font-size: 36px; line-height: 1; text-transform: uppercase;
+  opacity: 0; transition: opacity var(--dur-3) var(--ease-out); }
+.hud .warn .icon { font-size: 40px; color: var(--c-accent); }
+.hud .warn.wrong { opacity: 1; }
+.hud .lights { position: absolute; left: 50%; top: 190px; transform: translateX(-50%); display: flex; gap: 16px; padding: 12px 16px; background: var(--c-panel); border: 1px solid var(--c-line); border-radius: var(--r-3); opacity: 0; transition: opacity var(--dur-3) var(--ease-out); }
 .hud .lights.on { opacity: 1; }
-.hud .lights i { width: 42px; height: 42px; border-radius: 50%; background: #22090c; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); transition: background-color 0.2s; }
-.hud .lights i.on { background: var(--red); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 0 0 3px rgba(227, 20, 27, 0.22); }
-.hud .count { position: absolute; left: 0; right: 0; top: 180px; text-align: center; font-family: var(--num); font-size: 190px; line-height: 1; text-shadow: 0 4px 36px rgba(0, 0, 0, 0.5); transition: opacity 0.3s; }
+.hud .lights i { width: 44px; height: 44px; border-radius: 50%; background: rgba(227, 20, 27, 0.1); box-shadow: inset 0 0 0 1px var(--c-line); transition: background-color var(--dur-2); }
+.hud .lights i.on { background: var(--c-accent); box-shadow: inset 0 0 0 1px var(--c-line-2); }
+.hud .count { position: absolute; left: 0; right: 0; top: 180px; text-align: center; font-family: var(--font-num); font-size: 190px; line-height: 1; color: var(--c-ink-1); text-shadow: 0 4px 36px rgba(0, 0, 0, 0.5); transition: opacity var(--dur-3) var(--ease-in); }
 .hud.driftmode .count { top: 236px; }
-.hud .count.in { animation: hud-pop 0.45s var(--ease); }
+.hud .count.in { animation: hud-in var(--dur-3) var(--ease-out); }
 .hud .count.out { opacity: 0; }
-.hud .count.go { color: var(--good); font-style: italic; }
 
-/* reduce motion: no glide, pop or breathing; the numbers and the lights still say everything */
-.hud.calm .srow, .hud.calm .prog i, .hud.calm .tag, .hud.calm .rail i { transition: none; }
-.hud.calm .msg .m, .hud.calm .count.in, .hud.calm .warn.wrong, .hud.calm .map.ov { animation: none; }
+/* reduce motion (the in-game setting, also covered globally by html[data-motion=reduce]): no glide or fade-in; the numbers say everything */
+.hud.calm .srow, .hud.calm .prog i, .hud.calm .tag, .hud.calm .rail i, .hud.calm .chainbar i, .hud.calm .nitro .bar i { transition: none; }
+.hud.calm .strip, .hud.calm .count.in, .hud.calm .map.ov { animation: none; }
 
-@keyframes hud-pop { 0% { transform: scale(1.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-@keyframes hud-breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.72; } }
-@keyframes hud-fade { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes hud-in { from { opacity: 0; transform: scale(0.96); } }
+@keyframes hud-fade { from { opacity: 0; } }

@@ -1,17 +1,20 @@
 // The minimap (hud.js owns it). Two views, M cycles them:
 //   radar     heading-up in a round disc, the car low so the road ahead has the room; the zoom eases out with speed
-//   overview  the whole circuit north-up on a wide plate, for seeing where the pack is
+//   overview  the whole circuit north-up on a darker plate, for seeing where the pack is (corner numbers and N at 15 design px:
+//             12 px at 1280x720)
 // The circuit is baked once into bitmaps (a road at its real width with a dark edge, the pit lane, the start line, sector
 // ticks, corner numbers in the overview). A frame is one rotated drawImage, an edge fade and a handful of markers.
 import { teamMark } from './ui.js';
 
-const D = 240, OW = 392, OH = 206;            // design size (px on the 1600x900 canvas) of the disc and of the overview plate
+const D = 240, OW = 432, OH = 240;            // design size (px on the 1600x900 canvas) of the disc and of the overview plate
+const LABEL = 15;                             // design px of the corner numbers and the N: 12 px at the smallest HUD scale of 1280x720
 const ZOOMS = [0.64, 0.46, 0.33];             // design px per metre of each radar bitmap, finest first; a frame uses the nearest one above its zoom
 const NEAR = 0.62, FAR = 0.3;                 // the radar zoom at a crawl and at speed
 const LOW = 0.32;                             // how far below the disc centre the car sits, as a fraction of the radius
 const TAU = Math.PI * 2, STORE = 'ultrack.hud.map';
 const PAD = 40;                               // metres of margin around the circuit in a bitmap
 const ROAD = '#cdd3dd', EDGE = '#05070b', PIT = '#555d6b';
+const N_FONT = `700 ${LABEL}px 'Barlow Condensed'`;
 
 const lum = (hex) => { const c = parseInt(hex.slice(1), 16); return 0.2126 * (c >> 16) + 0.7152 * ((c >> 8) & 255) + 0.0722 * (c & 255); };
 const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -73,7 +76,7 @@ export class Minimap {
     const g = cv.getContext('2d'), edge = 1.5 * bs, roadK = overview ? 1.9 : 1;     // the overview road is drawn fatter than true scale so it stays a line
     let ox = 0, oz = 0, kk = k;
     if (overview) {                                                           // centred on the plate
-      kk = Math.min((OW - 28) / (b.w - 2 * PAD), (OH - 30) / (b.h - 2 * PAD)) * bs;
+      kk = Math.min((OW - 64) / (b.w - 2 * PAD), (OH - 56) / (b.h - 2 * PAD)) * bs;   // room round the circuit for the corner numbers
       ox = (cv.width - (b.w - 2 * PAD) * kk) / 2 - PAD * kk; oz = (cv.height - (b.h - 2 * PAD) * kk) / 2 - PAD * kk;
       g.translate(ox, oz);
     }
@@ -103,20 +106,20 @@ export class Minimap {
   /** the overview's corner numbers, on the outside of each turn and never on top of one another */
   labels(g, k, X, Z) {
     const { c } = this, bs = this.bs, placed = [];
-    g.font = `700 ${Math.round(10 * bs)}px 'Barlow Condensed'`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = `700 ${LABEL * bs}px 'Barlow Condensed'`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round'; g.lineWidth = 3 * bs; g.strokeStyle = 'rgba(5,7,11,0.9)';
     const put = (text, p, nx, nz, off, color) => {
       const x = X(p) + nx * off * bs, y = Z(p) + nz * off * bs;
-      if (placed.some(([a, b]) => Math.hypot(a - x, b - y) < 13 * bs)) return;
-      placed.push([x, y]); g.fillStyle = color; g.fillText(text, x, y);
+      if (placed.some(([a, b]) => Math.hypot(a - x, b - y) < 19 * bs)) return;
+      placed.push([x, y]); g.strokeText(text, x, y); g.fillStyle = color; g.fillText(text, x, y);   // a dark edge: legible over the road too
     };
     for (const co of this.corners) {
       const i = co.apexIdx, p = c[i], a = c[(i - 10 + c.length) % c.length], q = c[(i + 10) % c.length];
       const t1x = p[0] - a[0], t1z = p[2] - a[2], t2x = q[0] - p[0], t2z = q[2] - p[2];
       const turn = Math.sign(t1x * t2z - t1z * t2x) || 1;                      // which way the track bends
       const l = Math.hypot(t1x + t2x, t1z + t2z) || 1, nx = -(t1z + t2z) / l * -turn, nz = (t1x + t2x) / l * -turn;   // out of the bend
-      put(co.id.replace(/\D/g, ''), p, nx, nz, 11, 'rgba(244,242,238,0.78)');
+      put(co.id.replace(/\D/g, ''), p, nx, nz, 15, '#f4f2ee');
     }
-    this.sectors.slice(1).forEach((i, k2) => { const p = c[i], q = c[(i + 1) % c.length], l = Math.hypot(q[0] - p[0], q[2] - p[2]) || 1; put('S' + (k2 + 2), p, -(q[2] - p[2]) / l, (q[0] - p[0]) / l, 12, '#f2c14e'); });
+    this.sectors.slice(1).forEach((i, k2) => { const p = c[i], q = c[(i + 1) % c.length], l = Math.hypot(q[0] - p[0], q[2] - p[2]) || 1; put('S' + (k2 + 2), p, -(q[2] - p[2]) / l, (q[0] - p[0]) / l, 16, 'rgba(244,242,238,0.56)'); });
   }
 
   bake() {
@@ -184,7 +187,7 @@ export class Minimap {
       this.marker(g, x, y, teamMark(s.driver(c).team), rank(c), out);
     }
     this.arrow(g, cx, cy, 0);
-    const nx = R + Math.sin(A) * (R - 9), ny = R - Math.cos(A) * (R - 9);                  // north, on the rim
-    g.fillStyle = 'rgba(244,242,238,0.62)'; g.fillText('N', nx, ny);
+    const nx = R + Math.sin(A) * (R - 12), ny = R - Math.cos(A) * (R - 12);                // north, on the rim
+    g.font = N_FONT; g.fillStyle = 'rgba(244,242,238,0.74)'; g.fillText('N', nx, ny);
   }
 }

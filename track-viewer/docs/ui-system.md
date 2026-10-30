@@ -386,6 +386,26 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - **Map overview:** a darker plate (`--c-panel-2`), corner numbers at least 12 px, N marker 12 px.
   - **Camera label:** the HUD tile style, bottom-left above the map, hidden while a screen is up.
   - Every label is at least 12 px at 1280x720.
+  - As built (`hud.js`, `hud.css`, `hud-gauge.js`, `hud-map.js`):
+    - The HUD's corner groups scale by its own `--s`, so `hud.css` sizes are design px, never `--u` tokens (they would scale
+      twice). Labels are `--hl`, 15 design px with a 12 px floor: 12 px at 1280x720. Colours, radii, durations and easing are
+      the tokens; there is no blur on HUD tiles.
+    - The standings' "Leader" is a label; your row is `--c-fill-3` with a 2 px accent inset bar.
+    - Empty times and an empty drift record are the em dash in `--c-ink-3`, not ink-4: on a translucent tile over a lit gantry
+      ink-4 vanishes. The running lap is the em dash too until the lap starts.
+    - Lap invalid swaps the LAP TIME label for the `invalid` icon and "Lap invalid" in accent, so the tile never changes size.
+    - Messages: the strip carries an icon by kind (`star` for a personal best, `invalid` for bad news, `trophy` for Winner,
+      `race` for Final lap). The sub line is split on double spaces (`msgParts`): a lap delta in `--c-pos` or accent by its sign,
+      and game.js's `+40 U` becomes the `coin` icon and `+40`.
+    - Gear changes fade the digit in (no scale), position changes slide 8 px over 220 ms; neither runs under reduce motion.
+    - The controls hint is `prompt()` components (keycaps or pad glyphs by the last device; Map is keyboard only) and fades
+      after 9 s.
+    - The camera label is placed by `#cam-label` in `hud.css` (with `!important` until H1), 12 design px above the 240-high map
+      (the radar and the 432x240 overview plate), with the `camera` icon as a CSS mask. `ui.css` hides it over any screen
+      but the HUD (`.screen.on:not(.hud)`: the HUD is a `.screen` too, and the old rule hid the label all race).
+    - The overview plate draws corner numbers and N at 15 design px with a dark edge; sector labels are ink-3, not gold.
+    - `qa-ui-tour.mjs s6` shoots every HUD state and measures each text's size as seen (font size times the group's scale),
+      plus any infinite animation.
 - **Pause**
   - A full scrim with a centre panel at 480 design px.
   - A context strip: mode, circuit, position, lap, time.
@@ -418,6 +438,10 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
     - "88 S" becomes a ring timer with seconds;
     - a chain multiplier `x1.0` always shown;
     - the chain bar on `--c-fill-1`.
+  - As built: trial shows a LAP column at the left of the timing tile (the tower is race only). Free drive hides the tower and
+    the timing tile (`timed` is off), so the HUD is the gauge, the map and the hint. The drift tile is a grid: the ring timer
+    (two clipped half rings turned by transforms, `ringTurns`, in 1.5° steps) with the seconds inside, the score, and the record
+    with the `trophy` label; the chain or "Drift to chain" and the multiplier sit under a hairline.
 - **Driver intro**
   - It is dead code. Archive `driver-intro.js` and its CSS to `_archive/2026-10-30/` with a MANIFEST line, and point
     `test-driver-intro.mjs` at nothing (it already only runs test-hoardings).
@@ -442,7 +466,7 @@ These are files the UI pass does not own. Each patch is exact text.
 
   - Why: the label matches the HUD tiles through `#cam-label` in `hud.css`. Until this lands, `hud.css` styles it with
     `!important`. It is hidden over screens without an engine change, through
-    `#ui:has(> .screen.on) #cam-label { visibility: hidden }`.
+    `#ui:has(> .screen.on:not(.hud)) > #cam-label { visibility: hidden }` in `ui.css`.
 - **H2. `src/game/game.js` `setBusy()`: add a kind and a timeout to the toast.**
   - Old: `setBusy(message){`
   - New: `setBusy(message,{kind='info',ms=kind==='error'?0:4000}={}){clearTimeout(this.busyT);`

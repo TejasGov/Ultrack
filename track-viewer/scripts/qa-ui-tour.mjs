@@ -15,6 +15,8 @@
 // s4: the garage (four tabs on another car, keyboard-only paint and a buy, the car stills, a car swap that moves nothing).
 // s5: race loading (on its own, then from Start) and results (a finished 1-lap race with its earnings, a trial, a drift); with
 // TRACK=tokyo|india only the loading (PART=all: the results too).
+// s6: the race HUD (grid lights, GO, nitro, a lap message, wrong way, the camera label, the map overview; trial, drift, free), with
+// the HUD's text measured as seen (12 px at 1280x720) and no animation that runs forever.
 //   OUT=qa/ui-tour/S1-primitives-small-screens node scripts/qa-lock.mjs -- node scripts/qa-ui-tour.mjs s1
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -374,6 +376,73 @@ async function s5() {
   await page.click('.results [data-id=menu]'); await settle();
 }
 
+const S6 = label === 's6';
+/** the HUD's text as the player sees it (the font size times the corner group's scale), the smallest, anything under 12 px, and
+ *  any animation that runs forever (canvas text, the minimap's corner numbers and N, is set in hud-map.js: LABEL) */
+const hudProbe = () => nav(() => {
+  const small = [], sizes = [];
+  for (const e of document.querySelectorAll('.hud *, #cam-label')) {
+    if (!e.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) continue;
+    const own = [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join('').trim(); if (!own) continue;
+    const g = e.closest('.grp'), k = g ? g.getBoundingClientRect().width / g.offsetWidth : 1, px = parseFloat(getComputedStyle(e).fontSize) * k;
+    sizes.push(px); if (px < 11.95) small.push(`${e.className?.baseVal ?? e.className} "${own.slice(0, 20)}" ${px.toFixed(1)}`);
+  }
+  const infinite = document.getAnimations().filter((a) => a.effect?.getComputedTiming().iterations === Infinity).map((a) => a.animationName ?? 'script');
+  return { minPx: sizes.length ? +Math.min(...sizes).toFixed(1) : null, small, infinite };
+});
+/** what s6 owns: the race HUD. Grid lights, the countdown and GO, the race HUD (normal, nitro, a lap message, wrong way, the camera
+ *  label, the map overview), the trial, drift and free HUDs; the label probe at every size, the camera label visible over the HUD,
+ *  free drive with no clock */
+async function s6() {
+  const quit = async () => { await key('Escape'); await settle(); await pauseOpt('Quit to menu'); await page.click('.modal .btn-primary'); await settle(); };
+  await start('race');
+  await page.waitForFunction(() => document.querySelectorAll('.hud .lights i.on').length >= 3, null, { timeout: 60000 }); await shot('race-grid-lights', false, hudProbe);
+  await page.waitForSelector('.hud .count.go', { timeout: 60000 }); await shot('race-go', false, hudProbe);
+  await page.keyboard.down('KeyW'); await page.keyboard.down('ShiftLeft');
+  const nitro = await page.waitForFunction(() => window.game.session.field.hero.vehicle.state.nitroOn, null, { timeout: 6000 }).then(() => true, () => false);
+  await page.waitForTimeout(300); await shot(nitro ? 'race-nitro' : 'race-throttle-no-nitro', false, hudProbe);   // past the 200 ms colour change
+  checks.nitroOn = await nav(() => document.querySelector('.hud .nitro').classList.contains('on'));
+  await page.keyboard.up('ShiftLeft'); await page.keyboard.up('KeyW');
+  await nav(() => window.game.session.field.setPlayer(false));                                   // the AI drives on: no wall stops the tour
+  await running(9); await settle(); await shot('race-hud', true, hudProbe);
+  await nav(() => { window.game.hud.lapDelta(-0.418, true); window.game.hud.message('Lap 1', '1:31.204  −0.418  +40 U', 'good', 30); }); await frames(); await page.waitForTimeout(300);
+  await shot('race-message-sample', true, hudProbe);
+  await nav(() => window.game.hud.message('Lap invalid', 'track limits', 'bad', 30)); await page.waitForTimeout(300); await shot('race-message-invalid-sample', false, hudProbe);
+  await nav(() => { window.game.hud.msgT = 0.01; });
+  await nav(() => { const S = window.game.session; Object.defineProperty(S, 'wrong', { configurable: true, get: () => 5, set() {} }); });
+  await page.waitForFunction(() => +getComputedStyle(document.querySelector('.hud .warn')).opacity > 0.99, null, { timeout: 5000 }); await shot('race-wrong-way-sample', true, hudProbe);
+  checks.wrongWayAnimations = await nav(() => document.querySelector('.hud .warn').getAnimations().length);
+  await nav(() => { const S = window.game.session; delete S.wrong; S.wrong = 0; });
+  await key('KeyC'); await page.waitForFunction(() => getComputedStyle(document.getElementById('cam-label')).opacity === '1', null, { timeout: 3000 });
+  checks.camLabel = await nav(() => { const c = document.getElementById('cam-label'), r = c.getBoundingClientRect(), m = document.querySelector('.hud .map').getBoundingClientRect();
+    return { visibility: getComputedStyle(c).visibility, text: c.textContent, aboveMap: r.bottom <= m.top, left: Math.round(r.left) }; });
+  await shot('race-camera-label', false, hudProbe);
+  for (let i = 0; i < 4; i++) await key('KeyC');                                                // five views: back to the chase view
+  await key('KeyM'); await frames(); await shot('race-map-overview', true, hudProbe); await key('KeyM');
+  await quit();
+
+  await start('trial');
+  await page.waitForFunction(() => /^[123]$/.test(document.querySelector('.hud .count')?.textContent ?? ''), null, { timeout: 30000 }); await page.waitForTimeout(260); await shot('trial-count', false, hudProbe);
+  await running(2);
+  await nav(() => { const g = window.game, T = g.session.trk.get(g.field.hero); T.laps.push({ t: 92.341, valid: true }, { t: 90.112, valid: true }, { t: 95.871, valid: false }); T.lastLap = 95.871; T.best = 90.112; T.valid = false; g.hud.lapDelta(5.759, false); });
+  await frames(); await settle(); await page.waitForTimeout(300); await shot('hud-trial-sample', true, hudProbe);
+  await quit();
+
+  await start('drift'); await running(2); await settle(); await shot('hud-drift', true, hudProbe);
+  await nav(() => { const D = window.game.session.drift; D.score = 18420; D.chain = 2350; D.mult = 2.5; D.chainT = 5; D.gap = -60; D.left = 31.4; }); await frames(); await frames();
+  await shot('hud-drift-chain-sample', false, hudProbe);
+  await quit();
+
+  await start('free'); await running(1); await settle(); await shot('hud-free', true, hudProbe);
+  await nav(() => { document.documentElement.dataset.input = 'pad'; }); await frames(); await shot('hud-free-pad-prompts', false, hudProbe);   // the hint in pad glyphs
+  await nav(() => { document.documentElement.dataset.input = 'keyboard'; });
+  checks.freeShows = await nav(() => [...document.querySelectorAll('.hud .grp > *')].filter((e) => e.checkVisibility({ checkOpacity: true })).map((e) => e.className));
+  await quit();
+  checks.labels1280 = shots.filter((s) => s.probe && s.file.includes('1280x720')).map((s) => ({ file: s.file, minPx: s.probe.minPx, small: s.probe.small }));
+  checks.infinite = [...new Set(shots.flatMap((s) => s.probe?.infinite ?? []))];
+  checks.iconGlyphs = [...new Set(shots.flatMap((s) => s.audit.iconGlyphs))];
+}
+
 try {
   await page.goto(base);
   await page.waitForSelector('.title-screen.on', { timeout: 60000 });
@@ -382,7 +451,7 @@ try {
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
   await settle(); await shot('title-ready', S1);
   await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
-  if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else if (S4) await s4(); else if (S5) await s5(); else {                                                             // the whole tour (not re-indented)
+  if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else if (S4) await s4(); else if (S5) await s5(); else if (S6) await s6(); else {                                                             // the whole tour (not re-indented)
   await shot('menu', true);
   await key('ArrowRight'); await shot('menu-focus-moved');                                    // keyboard focus on the second tile
   await key('ArrowLeft');
