@@ -72,27 +72,56 @@ export class AIDriver {
     let best = Infinity;
     for (let k = -3; k < 40; k++) { const j = (this.i + k + N) % N, d = line[j].distanceToSquared(p); if (d < best) { best = d; this.iNext = j; } }
     this.i = this.iNext;
+    // traffic (as the kinematic drive() does): a car ahead or alongside, under 2.4 m to the side, moves this one's lane 3 m
+    // out on the side it already holds and, 1.5-12 m behind it, holds that car's speed instead of pushing it. Without it neighbours
+    // on the +-0.6 m lanes locked together at full lock and slid into the outside wall as a pair. The offset is from the car's own
+    // lane, not from the other car: chasing a car that is itself moving aside walked pairs out to 9 m and into the barrier.
+    // Positions, not ai.i: a player-driven hero never updates its ai.i
+    const LL = F.lineLeft, lat = (q, k) => (q.x - line[k].x) * LL[k].x + (q.z - line[k].z) * LL[k].z;
+    const along = (q, k) => (q.z - line[k].z) * LL[k].x - (q.x - line[k].x) * LL[k].z;          // line tangent = (-left.z, left.x)
+    const myLat = lat(p, this.i), ds = line[this.i].distanceTo(line[(this.i + 1) % N]);
+    let blk = null, near = false;
+    for (const o of F.cars ?? []) {
+      const q = o.vehicle?.cur.pos;
+      if (o === this.car || !q || q.distanceToSquared(p) > 1600) continue;
+      let kb = 0, db = Infinity;
+      for (let n = -2; n <= 10; n++) { const d = line[(this.i + n + N) % N].distanceToSquared(q); if (d < db) { db = d; kb = n; } }
+      const k = (this.i + kb + N) % N, gap = kb * ds + along(q, k) - along(p, this.i), oLat = lat(q, k);
+      near ||= gap > -6 && gap < 30 && Math.abs(oLat - myLat) < 4.5;
+      if (gap > -4 && gap < 30 && Math.abs(oLat - myLat) < 2.4 && (!blk || Math.abs(gap) < Math.abs(blk.gap))) blk = { gap, lat: oLat, speed: o.vehicle.speed };
+    }
+    // the lane stays on the asphalt (track.json halfWidth around the centre line, racingLine = the line's offset from it)
+    const T = F.track, r = T?.halfWidth ? Math.floor(this.i / N * T.halfWidth.length) : -1;
+    const room = r < 0 ? 6 : T.halfWidth[r] - 1.6, rl = r < 0 ? 0 : T.racingLine?.[r] ?? 0, lo = -room - rl, hi = room - rl;
+    if (blk) { this.passSide ||= myLat >= blk.lat ? 1 : -1; const w = this.lane + this.passSide * 3; if (w > hi || w < lo) this.passSide = -this.passSide; }
+    else if (!near) this.passSide = 0;                                // hold the passing lane until the car is 6 m behind
+    const laneWant = this.passSide ? THREE.MathUtils.clamp(this.lane + this.passSide * 3, lo, hi) : this.lane;
+    this.laneNow = (this.laneNow ?? this.lane) + (laneWant - (this.laneNow ?? this.lane)) * (blk ? 0.02 : 0.01);   // 0.4 s out, 0.8 s back: the pursuit target never snaps
     const speed = v.speed, look = 6 + speed * 0.55;
     let j = this.i, acc = 0;
     while (acc < look) { const a = line[j], b = line[(j + 1) % N]; acc += a.distanceTo(b); j = (j + 1) % N; }
-    const target = line[j].clone().addScaledVector(F.lineLeft[j], this.lane);
+    const target = line[j].clone().addScaledVector(F.lineLeft[j], this.laneNow);
     const to = target.sub(p), left = new THREE.Vector3(0, 1, 0).cross(fwd).normalize();
     const ang = Math.atan2(to.dot(left), to.dot(fwd));                  // + = target is to the left
     // curvature feedback: the wheel angle that would hold the pursuit curve with no slip, corrected by the curvature the car
     // really has (yaw rate / speed), so understeer on a wet road does not carry it 3-4 m wide
     const kappa = 2 * Math.sin(ang) / Math.max(look, 1), kAct = v.rb.angvel().y / Math.max(speed, 8);
     const steerRad = Math.atan(v.wheelbase * kappa) + (1) * v.wheelbase * (kappa - kAct);
-    const steer = THREE.MathUtils.clamp(steerRad / v.steerLock(speed), -1, 1);
+    const want = steerRad / v.steerLock(speed), steer = THREE.MathUtils.clamp(want, -1, 1);
     // speed: the profile a little ahead (braking points), scaled by grip
     // the slowest point of the next ~45 m (linePts share vt's sampling): never on the power before the corner is done
     let vmin = Infinity; for (let k = 0; k <= 10; k++) vmin = Math.min(vmin, F.vt[(this.i + k) % N]);
-    const vt = vmin * this.pace * Math.sqrt(v.spec.grip / 1.15 * wetGrip()) * (1 - 0.04 * road.wet);   // a wet road lowers every corner speed with the grip, and a little more for the braking margin
+    let vt = vmin * this.pace * Math.sqrt(v.spec.grip / 1.15 * wetGrip()) * (1 - 0.04 * road.wet);   // a wet road lowers every corner speed with the grip, and a little more for the braking margin
+    if (blk && blk.gap > 1.5 && blk.gap < 12) vt = Math.min(vt, blk.speed * (blk.gap < 6 ? 0.9 : 1));   // follow, then pass once the lane is clear
     const e = vt - speed;
     // no progress for 4 s (stuck in a wall or a gravel trap): ask the field for a respawn
     this.stuck = speed < 3 ? (this.stuck ?? 0) + 1 / 120 : 0;
     if (this.stuck > 4) return { throttle: 0, brake: 0, steer: 0, handbrake: 0, nitro: 0, reset: true };
     // facing away from the line (after a spin): full lock toward it at low throttle, a U-turn
     if (Math.abs(ang) > 1.7) return { throttle: 0.35, brake: 0, steer: Math.sign(ang), handbrake: 0, nitro: 0 };
+    // past full lock and drifting off its lane (pushed wide by a car alongside): lift and brake a little rather than drive on
+    // at full lock into the outside wall; a clean lap never gets here, so its lap time is untouched
+    if (Math.abs(want) > 1.15 && speed > 12 && Math.abs(myLat - this.laneNow) > 1.5) return { throttle: 0, brake: THREE.MathUtils.clamp((Math.abs(want) - 1) * 0.6, 0, 0.5), steer, handbrake: 0, nitro: 0 };
     return { throttle: THREE.MathUtils.clamp(0.25 + e * 0.35, 0, 1), brake: THREE.MathUtils.clamp(-e * 0.18 - 0.05, 0, 1), steer, handbrake: 0, nitro: 0 };
   }
 }
