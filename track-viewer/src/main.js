@@ -839,6 +839,7 @@ function aimSun(look) {
   sky.uniforms.uSun.value.copy(SKY_SUN);
   sun.target.position.set(NaN, 0, NaN);
 }
+let appliedLook = null;   // the look whose sky is on screen (params.look names the new one while its HDR loads)
 async function setLook(name) {
   const look = LOOKS[name];
   let pending=hdriCache.get(look.hdri);
@@ -846,7 +847,10 @@ async function setLook(name) {
     pending=(async()=>{const hdr=await new HDRLoader().loadAsync(A+'hdri/'+look.hdri);hdr.mapping=THREE.EquirectangularReflectionMapping;if(look.hdriClamp)clampHalf(hdr.image.data,look.hdriClamp);return {bg:hdr,env:pmrem.fromEquirectangular(hdr).texture};})();
     hdriCache.set(look.hdri,pending);pending.catch(()=>hdriCache.delete(look.hdri));
   }
-  const tex=await pending;
+  // a failed HDR: params.look goes back to the look on screen (applyAll would mix its tone and fog with the new one's), and
+  // Settings, whose saved look now differs from params.look, calls setLook again on its next apply
+  let tex;
+  try{tex=await pending;}catch(error){if(name===params.look&&appliedLook)params.look=appliedLook;throw error;}
   if(name!==params.look)return; // A later menu choice wins over an older in-flight sky request.
   scene.background = tex.bg;
   scene.environment = tex.env;
@@ -856,6 +860,7 @@ async function setLook(name) {
   sky.setLook(name);
   aimSun(look);
   scene.environmentIntensity = look.env;
+  appliedLook = name;
   applyAll();
 }
 

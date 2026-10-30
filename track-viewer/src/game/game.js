@@ -251,7 +251,7 @@ export class Game {
     if (fx) { fx.damp = W.wet; fx.quality = ({ low: 0.5, medium: 0.75 })[S.quality === 'auto' ? this.ctx.device?.tier : S.quality] ?? 1; }
     params.speedBlur = BLUR[S.motionBlur] ?? 1;
     params.reduceMotion = S.reduceMotion;
-    if (params.look !== look) { params.look = look; this.ctx.setLook(look); } else this.ctx.applyAll();
+    if (params.look !== look) { params.look = look; this.ctx.setLook(look).catch((e) => console.warn('Time of day:', e)); } else this.ctx.applyAll();   // a failed sky reverts params.look: the next apply retries it
     if (this.field) this.field.assists = { ...ASSISTS[S.assists] };
     this.audio.setVolumes(S);
   }
