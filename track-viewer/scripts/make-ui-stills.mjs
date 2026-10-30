@@ -1,0 +1,153 @@
+// In-game stills for the UI's hero imagery (docs/ui-system.md, "Stills"): nothing painted or generated, every pixel is the game.
+//   tracks  the dev viewer (?dev=1&track=<id>) in orbit mode, the lil-gui panel and overlays hidden, dry, at each track's chosen look,
+//           from the views in VIEWS (camera + target in game coords; 'i' = a centreline index, so a view follows a rebuilt track)
+//           -> public/assets/ui/stills/tracks/<id>.webp, 1600x900
+//   cars    the game's own garage room (src/garage-room.js) with the car on its turntable: one frame of that room is caught on its
+//           way to the renderer and drawn again from one fixed front three-quarter camera (the same framing for every car), at
+//           1.5x, once over black and once over white with the room's walls, floor and turntable hidden; the two frames give exact
+//           alpha (the contact shadow and the glass come out semi-transparent) -> public/assets/ui/stills/cars/<key>.webp, 1600x900
+//           with alpha, the car centred, for any panel colour
+//   node scripts/qa-lock.mjs -- node scripts/make-ui-stills.mjs [tracks|cars|all=all] [url=http://127.0.0.1:5180]
+//   ONLY=marina,av12 limits the ids; PROBE=1 shoots candidate views instead (tracks: 8 around the lap; cars: 4 azimuths of the first
+//   car) into qa/ui-stills/probe/, to choose VIEWS / CAR_VIEW from.
+import { chromium } from 'playwright-core';
+import sharp from 'sharp';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const [what = 'all', base = 'http://127.0.0.1:5180'] = process.argv.slice(2);
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const OUT = join(root, 'public', 'assets', 'ui', 'stills'), PROBE = join(root, 'qa', 'ui-stills', 'probe');
+const only = process.env.ONLY?.split(','), probe = process.env.PROBE === '1';
+const W = 1600, H = 900, SS = 1.5;   // output size; cars render at 1.5x (2400x1350, under this PC's 2560x1440 ceiling) and downscale
+const WEBP = { quality: 82, alphaQuality: 90, effort: 5 };
+
+// ---- track views: look, camera and target; [i, up, side] = centreline point i, raised `up` m, `side` m to the left of travel
+const VIEWS = {
+  marina: { look: 'dusk', cam: [-8, 10, 8], tgt: [40, 3, -3] },      // the start straight: pit boxes left, the grandstand and the sun ahead
+  tokyo: { look: 'dusk', cam: [360, 7, 9], tgt: [400, 2, 0] },       // temple street, cherry blossom and Fuji
+  india: { look: 'day', cam: [786, 9, 3], tgt: [831, 0, -3] },       // the ghat road winding down into the valley
+};
+// ---- the car camera: around the car at the origin of the garage room (its long axis on x), fov, target height
+const CAR_VIEW = { az: 35, el: 9, dist: 6.2, fov: 30, ty: 0.6 };   // nose to the right; the longest car fills ~70 % of the width
+
+const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
+const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
+const errors = [];
+async function open(url, settings) {
+  const ctx = await browser.newContext({ viewport: { width: W, height: H } });
+  await ctx.addInitScript((s) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: s })); } catch { /* none */ } }, settings);
+  // Vite's HMR socket stubbed: another agent saving a file would otherwise reload the page mid-run
+  await ctx.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; Object.assign(F, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 }); window.WebSocket = F; });
+  const page = await ctx.newPage();
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text().slice(0, 200)); });
+  page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
+  await page.goto(url);
+  return { page, ctx };
+}
+const sel = (ids) => ids.filter((id) => !only || only.includes(id));
+
+// ------------------------------------------------------------------------------------------------ tracks
+async function tracks() {
+  for (const id of sel(Object.keys(VIEWS))) {
+    const C = JSON.parse(readFileSync(join(root, 'public', 'assets', ...(id === 'marina' ? [] : [id]), 'track.json'), 'utf8')).centerline;
+    const at = ([i, up = 0, side = 0]) => {   // a centreline point, raised and moved sideways (left of the direction of travel)
+      const n = C.length, k = ((Math.round(i) % n) + n) % n, p = C[k], a = C[(k + n - 1) % n], b = C[(k + 1) % n];
+      const tx = b[0] - a[0], tz = b[2] - a[2], l = Math.hypot(tx, tz) || 1;
+      return [p[0] + (tz / l) * side, p[1] + up, p[2] - (tx / l) * side];
+    };
+    const v = VIEWS[id];
+    const views = probe ? [...Array(8)].map((_, j) => { const i = Math.round((j / 8) * C.length); return { name: `${id}-${j}-i${i}`, cam: at([i, 7, 9]), tgt: at([i + 40, 2, 0]) }; })
+      : [{ name: id, cam: at(v.cam), tgt: at(v.tgt) }];
+    const { page, ctx } = await open(`${base}/?dev=1&track=${id}`, { track: id, look: v.look, weather: 'dry' });
+    await page.waitForFunction(() => window.viewer && !document.getElementById('loading'), null, { timeout: 300000 });
+    await page.addStyleTag({ content: '.lil-gui, #hud, .input-debug, #loading { display: none !important; }' });
+    await page.evaluate(async (look) => {
+      const w = window.viewer, p = w.params;
+      Object.assign(p, { mode: 'orbit', look, wet: 0.15, rain: 0, quality: 'high', dynamicRes: false, speedBlur: 0, aberration: 0, grain: 0 });
+      w.applyQuality(); await w.setLook(look); w.applyAll(); w.controls.autoRotate = false;
+    }, v.look);
+    for (const s of views) {
+      await page.evaluate((s) => { const w = window.viewer; w.camera.position.set(...s.cam); w.controls.target.set(...s.tgt); w.controls.update(); w.camera.lookAt(...s.tgt); }, s);
+      await page.waitForTimeout(3000);   // textures, the venue's LODs and the sky settle on the new view
+      const png = await page.screenshot({ timeout: 240000 });
+      const file = probe ? join(PROBE, `${s.name}.jpg`) : join(OUT, 'tracks', `${id}.webp`);
+      mkdirSync(dirname(file), { recursive: true });
+      await (probe ? sharp(png).resize(800).jpeg({ quality: 80 }) : sharp(png).webp(WEBP)).toFile(file);
+      console.log('track', s.name, JSON.stringify({ cam: s.cam.map((x) => +x.toFixed(1)), tgt: s.tgt.map((x) => +x.toFixed(1)) }));
+    }
+    await ctx.close();
+  }
+}
+
+// ------------------------------------------------------------------------------------------------ cars
+/** one garage-room frame of the current car, from the fixed camera, over black and over white: two PNG data URLs */
+const catchFrame = (o) => new Promise((resolve, reject) => {
+  const v = window.viewer, r = v.renderer, render = r.render, hero = window.game.field.hero.root;
+  const t0 = performance.now();
+  r.render = function (scene, cam) {
+    if (scene === v.scene || !scene.background?.isColor || !scene.children.includes(hero)) {   // not the room with the car in it (yet)
+      if (performance.now() - t0 > 20000) { r.render = render; reject(new Error('no garage-room frame in 20 s')); }
+      return render.call(this, scene, cam);
+    }
+    r.render = render;
+    const bg = scene.background.clone(), hidden = [], size = r.getSize(new v.THREE.Vector2()), pr = r.getPixelRatio();
+    try {
+      // the room's walls, floor, turntable and light bars go; the car, the lights and the soft contact shadow (a canvas texture) stay
+      for (const c of scene.children) if (c !== hero && c.isMesh && !c.material?.map?.isCanvasTexture && c.visible) { c.visible = false; hidden.push(c); }
+      const a = (o.az * Math.PI) / 180, e = (o.el * Math.PI) / 180, camera = new v.THREE.PerspectiveCamera(o.fov, o.w / o.h, 0.1, 100);
+      camera.position.set(Math.cos(a) * Math.cos(e) * o.dist, o.ty + Math.sin(e) * o.dist, Math.sin(a) * Math.cos(e) * o.dist); camera.lookAt(0, o.ty, 0);
+      r.setPixelRatio(1); r.setSize(o.w, o.h, false);
+      const out = [];
+      for (const col of [0x000000, 0xffffff]) { scene.background.set(col); render.call(this, scene, camera); out.push(r.domElement.toDataURL('image/png')); }
+      resolve(out);
+    } catch (err) { reject(err); } finally {
+      scene.background.copy(bg); hidden.forEach((c) => { c.visible = true; }); r.setPixelRatio(pr); r.setSize(size.x, size.y, false);
+    }
+    return render.call(this, scene, cam);
+  };
+});
+/** exact alpha from the same frame over black (B) and white (Wh): a = 1 - (Wh - B), colour = B / a; then downscale to W x H */
+async function matte([black, white]) {
+  const raw = (u) => sharp(Buffer.from(u.split(',')[1], 'base64')).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const [{ data: B, info }, { data: Wh }] = await Promise.all([raw(black), raw(white)]);
+  const px = info.width * info.height, rgba = Buffer.alloc(px * 4);
+  for (let i = 0; i < px; i++) {
+    let d = 0; for (let c = 0; c < 3; c++) d += Wh[i * 3 + c] - B[i * 3 + c];
+    const a = Math.max(0, Math.min(255, 255 - d / 3));
+    for (let c = 0; c < 3; c++) rgba[i * 4 + c] = a ? Math.min(255, Math.round((B[i * 3 + c] * 255) / a)) : 0;
+    rgba[i * 4 + 3] = Math.round(a);
+  }
+  return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).resize(W, H);
+}
+async function cars() {
+  const { page, ctx } = await open(base + '/', { track: 'marina', look: 'dusk', weather: 'dry', reduceMotion: true });
+  await page.waitForFunction(() => window.game?.loaded, null, { timeout: 300000 });
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('.bento-tile[data-id=garage]', { state: 'visible', timeout: 60000 });
+  await page.click('.bento-tile[data-id=garage]');
+  await page.waitForSelector('.garage button.car[data-key]', { state: 'visible' });
+  const keys = sel(await page.$$eval('.garage button.car[data-key]', (b) => b.map((x) => x.dataset.key)));   // every car the game offers
+  const views = probe ? [35, 145, 215, 325].map((az) => ({ ...CAR_VIEW, az })) : [CAR_VIEW];
+  for (const key of probe ? keys.slice(0, 1) : keys) {
+    await page.click(`.garage button.car[data-key="${key}"]`);
+    await page.waitForFunction((k) => window.game.field?.hero?.key === k && window.game.screenName === 'garage', key, { timeout: 180000 });
+    await page.waitForTimeout(1500);   // textures decode, the paint settles
+    for (const view of views) {
+      const frames = await page.evaluate(catchFrame, { ...view, w: W * SS, h: H * SS });
+      const file = probe ? join(PROBE, `car-${key}-az${view.az}.png`) : join(OUT, 'cars', `${key}.webp`);
+      mkdirSync(dirname(file), { recursive: true });
+      const img = await matte(frames);
+      await (probe ? img.flatten({ background: '#2a3038' }).png() : img.webp(WEBP)).toFile(file);
+      console.log('car', key, view.az);
+    }
+  }
+  await ctx.close();
+}
+
+try {
+  if (what === 'tracks' || what === 'all') await tracks();
+  if (what === 'cars' || what === 'all') await cars();
+} finally { await browser.close(); }
+console.log('errors:', errors.length ? errors : 'none');
