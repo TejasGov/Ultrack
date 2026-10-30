@@ -188,7 +188,7 @@ export function cheer() {
 
 /** Remove everyone (the venue they stood in is gone). The character library stays loaded; clones share its geometry and materials. */
 export function clear() {
-  for (const p of people) { p.mixer.stopAllAction(); p.mixer.uncacheRoot(p.root); }
+  for (const p of people) { p.mixer.stopAllAction(); p.mixer.uncacheRoot(p.root); p.root.traverse((o) => o.skeleton?.dispose()); }   // each clone owns a Skeleton + bone DataTexture; geometry/materials are the library's
   people.length = 0; group.clear();
 }
 
