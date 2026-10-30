@@ -99,7 +99,7 @@ const params = {
   emissive: 1.0, venueLights: 1.0, headlight: true,
   wet: 0.7, mirror: true, mirrorRes: 0.5, rain: 0.45, fog: 0.5,
   bloom: true, bloomStrength: 0.45, bloomRadius: 0.45, bloomThreshold: 1.4,
-  speedBlur: 1.0, aberration: 0.35, vignette: 0.45, grain: 0.05, grade: 1.0, flare: 1.0, smaa: true,
+  speedBlur: 1.0, aberration: 0.15, vignette: 0.45, grain: 0.05, grade: 1.0, flare: 1.0, smaa: true,
   toneMapping: 'auto', exposure: 1.0,
   mode: 'chase', speedKmh: 180, camHeight: 1.25, lateral: 0.0, jump: 'start/finish', paused: false,
   shadows: true, ao: true, aoIntensity: 1.0,
@@ -232,24 +232,25 @@ const finalPass = new ShaderPass({
     }
     void main() {
       vec2 c = vUv - 0.5; float r = length(c);
-      vec2 d = c * (uCA * 0.012 + uNitro * 0.05 * r * r);   // chromatic aberration (nitro: strong fringes toward the edges)
+      vec2 d = c * r * (uCA * 0.008 + uNitro * 0.02 * r);   // chromatic aberration, lens-like: none mid-frame, ~1 px in the corners (nitro: a few px more)
       vec3 col = vec3(texture2D(tDiffuse, vUv + d).r, texture2D(tDiffuse, vUv).g, texture2D(tDiffuse, vUv - d).b);
       // speed blur (after Project Endurance): streaks toward the point the car is heading for (uBlurC), clear around
-      // the car (the clear zone stretches downward, where the car sits), colour-fringed along each streak (red
-      // trailing, blue leading), jittered taps; plus a few faint speed lines racing outward at the edges
-      vec2 bg = vUv - uBlurC;
+      // the car (the clear zone sits on the car, not the heading point, and stretches downward), jittered taps that
+      // fade along the streak, the same weight in every channel (a per-tap spectrum split each board into a red and a
+      // blue copy); plus a few faint speed lines racing outward at the edges
+      vec2 bg = vUv - uBlurC, mk = vUv - vec2(0.5, uBlurC.y);
       // nitro (uNitro 0..1): the zoom blur reaches further and starts closer to the car, with more taps; soft white speed
       // lines stream outward in two layers (smooth scrolls, no flicker); violet tint toward the edges
-      float dd = length(bg * vec2(uAspect, bg.y < 0.0 ? 0.45 : 1.0)), edge = smoothstep(0.2 - 0.1 * uNitro, 0.7 - 0.08 * uNitro, dd), T = uBlur * edge * (1.0 + 0.15 * uNitro);   // nitro blur peak 0.6x of 0.23 * 1.25 (taps/edge/lines unchanged)
+      float dd = length(mk * vec2(uAspect, mk.y < 0.0 ? 0.45 : 1.0)), edge = smoothstep(0.2 - 0.1 * uNitro, 0.7 - 0.08 * uNitro, dd), T = uBlur * edge * (1.0 + 0.15 * uNitro);   // nitro blur peak 0.6x of 0.23 * 1.25 (taps/edge/lines unchanged)
       if (T > 0.002) {
         float jit = hash(gl_FragCoord.xy + fract(uTime * 7.31) * 64.0);
-        vec3 m = vec3(0.0); float N = 8.0 + 4.0 * uNitro;
+        vec3 m = vec3(0.0); float wsum = 0.0, N = 8.0 + 4.0 * uNitro;
         for (int i = 0; i < 12; i++) {
           if (float(i) >= N) break;
           float j = (float(i) + jit) / N;
-          m += texture2D(tDiffuse, vUv - bg * 0.15 * T * j).rgb * vec3(1.0 - j, 1.0 - abs(2.0 * j - 1.0), j);
+          float w = 1.0 - 0.6 * j; m += texture2D(tDiffuse, vUv - bg * 0.07 * T * j).rgb * w; wsum += w;
         }
-        col = mix(col, m / (N * 0.5), smoothstep(0.0, 0.2, T));
+        col = mix(col, m / wsum, smoothstep(0.0, 0.35, T) * 0.85);   // half the old streak, and some sharp frame stays
         float a = atan(bg.y, bg.x * uAspect) / 6.2832 * 96.0, k = hash(vec2(floor(a), 3.1)), fa = fract(a);
         float z = fract(length(bg * vec2(uAspect, 1.0)) * 1.4 - uPhase * (k + 0.6) + k * 7.0);
         col += vec3(0.75, 0.9, 1.0) * smoothstep(0.42, 0.5, fa) * smoothstep(0.58, 0.5, fa) * smoothstep(0.0, 0.08, z) * smoothstep(0.45, 0.1, z)
