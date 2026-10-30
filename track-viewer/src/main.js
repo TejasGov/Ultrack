@@ -180,8 +180,9 @@ const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), params.bloomStren
 // cap what one pixel feeds the bloom: the sky beside a low sun is ~40x the threshold and veiled the whole frame
 // and a pixel that overflowed the half-float target (Inf: a sharp sun glint on glass) or is NaN is dropped first: Inf * 0 above is
 // NaN, and the bloom's blur spread one such pixel over the whole frame (black frames on India's plateau)
+// tested on the exponent bits (all ones = NaN/Inf): D3D's FXC folds isnan() to false, and min(NaN, 6e4) is then a 3.0 bloom source
 bloom.materialHighPassFilter.fragmentShader = bloom.materialHighPassFilter.fragmentShader.replace(
-  'vec4 texel = texture2D( tDiffuse, vUv );', 'vec4 texel = texture2D( tDiffuse, vUv );\n\t\t\tif ( any( isnan( texel.rgb ) ) || any( isinf( texel.rgb ) ) ) texel.rgb = vec3( 0.0 );\n\t\t\ttexel.rgb = min( texel.rgb, vec3( 6e4 ) );').replace(
+  'vec4 texel = texture2D( tDiffuse, vUv );', 'vec4 texel = texture2D( tDiffuse, vUv );\n\t\t\tif ( any( equal( floatBitsToUint( texel.rgb ) & 0x7f800000u, uvec3( 0x7f800000u ) ) ) ) texel.rgb = vec3( 0.0 );\n\t\t\ttexel.rgb = min( texel.rgb, vec3( 6e4 ) );').replace(
   'gl_FragColor = mix( outputColor, texel, alpha );', 'gl_FragColor = mix( outputColor, vec4( texel.rgb * min( 1.0, 3.0 / max( v, 1e-4 ) ), texel.a ), alpha );');
 bloom.materialHighPassFilter.needsUpdate = true;
 composer.addPass(bloom);
