@@ -53,7 +53,7 @@ export async function compileVisible(renderer, scene, camera, { frustum = false,
 
 // WebGLShadowMap.getDepthMaterial, rebuilt (basic packing: the PCF map is a depth texture): one MeshDepthMaterial per distinct (alpha-cut source material, side) and object kind.
 const SHADOW_SIDE=[THREE.BackSide,THREE.FrontSide,THREE.DoubleSide];
-let depthBase;const depthVariants=new Map();
+let depthBase;const depthVariants=new Map(),cutVariants=new WeakMap();   // cut-out variants hold their source's textures: keyed by that material, they go with the venue that owns it
 const variantOf=m=>cutOut(m)?m.uuid:'plain'+!!m.map+!!m.alphaMap;   // the shared depth material takes each caster's map: with or without a uv set
 const cutOut=m=>(m.alphaMap&&m.alphaTest>0)||(m.map&&m.alphaTest>0)||m.alphaToCoverage===true||(m.displacementMap&&m.displacementScale!==0);
 function shadowCasters(objects){
@@ -69,13 +69,14 @@ function shadowCasters(objects){
 function depthClone(original){
   const source=[].concat(original.material)[0];
   depthBase??=new THREE.MeshDepthMaterial();
-  const id=variantOf(source)+'|'+(source.shadowSide??SHADOW_SIDE[source.side])+'|'+source.visible+source.wireframe;
-  let m=depthVariants.get(id);
+  const sub=(source.shadowSide??SHADOW_SIDE[source.side])+'|'+source.visible+source.wireframe,cut=cutOut(source);
+  const cache=cut?(cutVariants.get(source)??cutVariants.set(source,new Map()).get(source)):depthVariants,id=cut?sub:variantOf(source)+'|'+sub;
+  let m=cache.get(id);
   if(!m){
     m=depthBase.clone();m.visible=source.visible;m.wireframe=source.wireframe;m.side=source.shadowSide??SHADOW_SIDE[source.side];
     m.alphaMap=source.alphaMap;m.alphaTest=source.alphaToCoverage===true?0.5:source.alphaTest;m.map=source.map;
     m.displacementMap=source.displacementMap;m.displacementScale=source.displacementScale;m.displacementBias=source.displacementBias;
-    depthVariants.set(id,m);
+    cache.set(id,m);
   }
   const clone=original.clone(false);clone.material=m;return clone;
 }

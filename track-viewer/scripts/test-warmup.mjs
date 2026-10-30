@@ -19,4 +19,13 @@ assert.equal(await compileVisible(renderer,scene,camera,{frustum:true}),65);
 assert.equal(calls,3);assert.equal(count,65);assert.equal(target,originalTarget);
 assert.equal(scene.children[0].parent,scene,'Warm-up does not reparent live meshes');
 calls=0;await compileVisible(renderer,scene,camera,{isCancelled:()=>true});assert.equal(calls,0);
-console.log('PASS: visible/frustum selection, 32-object batches, shared resources, scene lighting, target restoration and cancellation.');
+// shadow variants: one depth material per cut-out source (reused across warm-ups, carrying its textures), one shared by plain casters
+const shadows=new THREE.Scene(),depthSeen=[],cut=()=>new THREE.MeshBasicMaterial({map:new THREE.Texture(),alphaTest:.5});
+const cutA=cut(),cutB=cut();
+for(const m of [cutA,cutA,cutB,material,material]){const mesh=new THREE.Mesh(geometry,m);mesh.castShadow=true;mesh.position.z=-5;shadows.add(mesh);}
+shadows.updateMatrixWorld(true);
+const depthRenderer={...renderer,async compileAsync(group){for(const mesh of group.children)if(mesh.material.isMeshDepthMaterial)depthSeen.push(mesh.material);}};
+await compileVisible(depthRenderer,shadows,camera,{depth:true});await compileVisible(depthRenderer,shadows,camera,{depth:true});
+assert.equal(depthSeen.length,6);assert.deepEqual(depthSeen.slice(3),depthSeen.slice(0,3),'Variants are reused across warm-ups');
+assert.equal(depthSeen[0].map,cutA.map);assert.equal(depthSeen[1].map,cutB.map);assert.notEqual(depthSeen[0],depthSeen[1]);assert.equal(depthSeen[2].alphaTest,0);
+console.log('PASS: visible/frustum selection, 32-object batches, shared resources, scene lighting, target restoration, cancellation and shadow variants.');
