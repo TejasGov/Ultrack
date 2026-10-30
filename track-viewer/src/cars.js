@@ -338,6 +338,9 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero, 
   // everyone else keeps only the emissive lamp geometry
   const beams = [];
   lamps.root.traverse((o) => { if (o.isLight) (hero && o.isSpotLight ? beams : []).push(o); });
+  // every car remembers where its own beams sit (shifted like the hero's below), so a car switch can hand them over
+  lamps.spots = [];
+  lamps.root.traverse((o) => { if (o.isSpotLight) lamps.spots.push({ pos: o.position.clone().setX(o.position.x - 0.6), target: o.target.position.clone().setX(o.target.position.x - 0.6) }); });
   [...lamps.root.children].forEach(function strip(o) { [...o.children].forEach(strip); if (o.isLight && !beams.includes(o)) { o.parent.remove(o); if (o.target) o.target.parent?.remove(o.target); } });
   beams.forEach((b) => {                                     // start the beams ahead of the nose: from inside the bumper
     b.castShadow = false;                                    // they lit the car's own bodywork at point-blank range
@@ -571,11 +574,14 @@ export class Field {
     const byKey = (k) => this.all.find((c) => c.key === k);
     const prev = this.hero, next = byKey(hero) ?? this.all[0];
     if (prev && prev !== next && prev.beams.length) {               // the two real spotlights follow the player's car
-      const dx = (next.profile.lights?.front?.[0]?.[0] ?? 0) - (prev.profile.lights?.front?.[0]?.[0] ?? 0);
-      const dy = (next.profile.lights?.front?.[0]?.[1] ?? 0) - (prev.profile.lights?.front?.[0]?.[1] ?? 0);
+      // each beam takes the new car's own spot on its side (lamp width, height and projector differ per car); a side
+      // with fewer spots than beams doubles them up
+      const used = {};
       for (const b of prev.beams) {
-        next.lamps.root.add(b); b.position.x += dx; b.position.y += dy;
-        if (b.target) { next.lamps.root.add(b.target); b.target.position.x += dx; b.target.position.y += dy; }
+        const side = Math.sign(b.position.z), own = next.lamps.spots.filter((s) => Math.sign(s.pos.z) === side);
+        const s = own[(used[side] = (used[side] ?? -1) + 1) % own.length];
+        next.lamps.root.add(b); if (s) b.position.copy(s.pos);
+        if (b.target) { next.lamps.root.add(b.target); if (s) b.target.position.copy(s.target); }
       }
       next.beams = prev.beams; prev.beams = [];
     }
