@@ -1,0 +1,256 @@
+{
+ "marina": {
+  "day": {
+   "road": {
+    "luma": 0.2497,
+    "clipPct": 0,
+    "flare": {
+     "energy": 224,
+     "areaPct": 0.183
+    }
+   },
+   "sky": {
+    "luma": 0.4515,
+    "clipPct": 0.003,
+    "flare": {
+     "energy": 829,
+     "areaPct": 0.853
+    }
+   },
+   "side": {
+    "luma": 0.2192,
+    "clipPct": 0,
+    "flare": {
+     "energy": 205,
+     "areaPct": 0.153
+    }
+   },
+   "away": {
+    "luma": 0.2071,
+    "clipPct": 0
+   },
+   "high": {
+    "luma": 0.3822,
+    "clipPct": 0,
+    "flare": {
+     "energy": 575,
+     "areaPct": 0.315
+    }
+   }
+  },
+  "dusk": {
+   "road": {
+    "luma": 0.1885,
+    "clipPct": 0,
+    "flare": {
+     "energy": 392,
+     "areaPct": 0.283
+    }
+   },
+   "sky": {
+    "luma": 0.1759,
+    "clipPct": 0,
+    "flare": {
+     "energy": 345,
+     "areaPct": 0.247
+    }
+   },
+   "side": {
+    "luma": 0.2103,
+    "clipPct": 0,
+    "flare": {
+     "energy": 460,
+     "areaPct": 0.327
+    }
+   },
+   "away": {
+    "luma": 0.1795,
+    "clipPct": 0
+   },
+   "high": {
+    "luma": 0.4274,
+    "clipPct": 0,
+    "flare": {
+     "energy": 1934,
+     "areaPct": 1.917
+    }
+   }
+  },
+  "bluehour": {
+   "road": {
+    "luma": 0.3758,
+    "clipPct": 0,
+    "flare": {
+     "energy": 770,
+     "areaPct": 0.596
+    }
+   },
+   "sky": {
+    "luma": 0.3776,
+    "clipPct": 0,
+    "flare": {
+     "energy": 208,
+     "areaPct": 0.099
+    }
+   },
+   "side": {
+    "luma": 0.4044,
+    "clipPct": 0,
+    "flare": {
+     "energy": 223,
+     "areaPct": 0.112
+    }
+   },
+   "away": {
+    "luma": 0.3784,
+    "clipPct": 0
+   },
+   "high": {
+    "luma": 0.5024,
+    "clipPct": 0,
+    "flare": {
+     "energy": 727,
+     "areaPct": 0.517
+    }
+   }
+  },
+  "night": {
+   "road": {
+    "luma": 0.304,
+    "clipPct": 0
+   },
+   "away": {
+    "luma": 0.4101,
+    "clipPct": 0
+   }
+  },
+  "errors": []
+ },
+ "tokyo": {
+  "day": {
+   "road": {
+    "luma": 0.4042,
+    "clipPct": 0,
+    "flare": {
+     "energy": 58,
+     "areaPct": 0.071
+    }
+   },
+   "sky": {
+    "luma": 0.5426,
+    "clipPct": 0.005,
+    "flare": {
+     "energy": 892,
+     "areaPct": 1.384
+    }
+   },
+   "side": {
+    "luma": 0.3986,
+    "clipPct": 0,
+    "flare": {
+     "energy": 56,
+     "areaPct": 0.062
+    }
+   },
+   "away": {
+    "luma": 0.2889,
+    "clipPct": 0
+   },
+   "high": {
+    "luma": 0.4988,
+    "clipPct": 0,
+    "flare": {
+     "energy": 60,
+     "areaPct": 0.066
+    }
+   }
+  },
+  "dusk": {
+   "road": {
+    "luma": 0.3943,
+    "clipPct": 0,
+    "flare": {
+     "energy": 199,
+     "areaPct": 0.197
+    }
+   },
+   "sky": {
+    "luma": 0.3758,
+    "clipPct": 0,
+    "flare": {
+     "energy": 158,
+     "areaPct": 0.15
+    }
+   },
+   "side": {
+    "luma": 0.3996,
+    "clipPct": 0,
+    "flare": {
+     "energy": 152,
+     "areaPct": 0.157
+    }
+   },
+   "away": {
+    "luma": 0.2216,
+    "clipPct": 0
+   },
+   "high": {
+    "luma": 0.5343,
+    "clipPct": 0,
+    "flare": {
+     "energy": 680,
+     "areaPct": 0.451
+    }
+   }
+  },
+  "bluehour": {
+   "road": {
+    "luma": 0.3206,
+    "clipPct": 0,
+    "flare": {
+     "energy": 2925,
+     "areaPct": 1.988
+    }
+   },
+   "sky": {
+    "luma": 0.3199,
+    "clipPct": 0,
+    "flare": {
+     "energy": 87,
+     "areaPct": 0.023
+    }
+   },
+   "side": {
+    "luma": 0.3297,
+    "clipPct": 0,
+    "flare": {
+     "energy": 82,
+     "areaPct": 0.016
+    }
+   },
+   "away": {
+    "luma": 0.2458,
+    "clipPct": 0
+   },
+   "high": {
+    "luma": 0.4082,
+    "clipPct": 0,
+    "flare": {
+     "energy": 413,
+     "areaPct": 0.168
+    }
+   }
+  },
+  "night": {
+   "road": {
+    "luma": 0.2921,
+    "clipPct": 0
+   },
+   "away": {
+    "luma": 0.2722,
+    "clipPct": 0
+   }
+  },
+  "errors": []
+ }
+}

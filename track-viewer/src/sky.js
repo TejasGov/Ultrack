@@ -45,7 +45,7 @@ export class Sky {
           float glow = exp(-max(e, 0.0) / uGlowH) * smoothstep(-0.08, 0.02, e);
           vec3 add = uHaze * glow + uZenith * smoothstep(0.1, 0.9, e);
           float sd = max(dot(d, uSun), 0.0);                                   // disc, then a wide warm bloom through the haze
-          add += uSunCol * (smoothstep(0.99985, 0.99993, sd) * 14.0 + pow(sd, 90.0) * 0.9 + pow(sd, 12.0) * 0.12);
+          add += uSunCol * (smoothstep(0.99985, 0.99993, sd) * 14.0 + pow(sd, 90.0) * 0.38 + pow(sd, 12.0) * 0.05);   // glow and haze at ~40 %: the old bloom hid half the sky
           vec3 cloud = vec3(0.0);
           float a = 0.0;
           if (e > 0.0) {

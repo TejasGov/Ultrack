@@ -48,14 +48,16 @@ const LOOKS = {
   // sunEl/skyEl: elevation (deg) of the sun light and of the visible sun (default: the low dusk sun); lamps: the cars' lamp
   // mode; hl: floor of the dev headlight (0 = off); glow: lamp-sprite gain (default follows `lights`); hdriClamp: cap on the
   // HDRI's sun disc (it is clipped at 65504 and would turn the paint's reflection into a white blot)
-  day: { hdri: 'qwantani_noon_puresky_2k.hdr', env: 0.9, bg: 1.0, exposure: 1.5, tm: 'Neutral', bloomGain: 0.4, bloomThr: 1.8, fog: 0xb4c8dc, fogDensity: 0.00045, emissive: 0.2, lights: 0.0, sun: 4.5, sunColor: 0xfff1de, trails: 0.1,
-    dn: 0, hdriRot: 2.82, fogSun: [0.1, 0.09, 0.07], flare: 0.4, glint: [1.8, 1.75, 1.6], sunEl: 50, skyEl: 49.8, lamps: 'running', hl: 0, glow: 0, hdriClamp: 64, steam: 0.2, steamCap: 0.55,
+  // Sun tone (2026-10-30, after Project Endurance's restraint): flare, sun haze (fogSun), glint and sun bloom at ~40 % of
+  // their old values; less hard sun and a little more sky light by day, so shade reads the sky and highlights stay soft.
+  day: { hdri: 'qwantani_noon_puresky_2k.hdr', env: 1.0, bg: 0.85, exposure: 1.3, tm: 'Neutral', bloomGain: 0.22, bloomThr: 1.8, fog: 0xb4c8dc, fogDensity: 0.00045, emissive: 0.2, lights: 0.0, sun: 3.6, sunColor: 0xfff1de, trails: 0.1,
+    dn: 0, hdriRot: 2.82, fogSun: [0.04, 0.036, 0.028], flare: 0.1, glint: [0.75, 0.73, 0.66], sunEl: 50, skyEl: 49.8, lamps: 'running', hl: 0, glow: 0, hdriClamp: 24, steam: 0.2, steamCap: 0.55,
     grade: { s: 0.3, black: 0.012, shadows: [0.93, 0.97, 1.05], highs: [1.03, 1.0, 0.95], sat: 1.06 } },
-  dusk: { dn: 0.35, lamps: 'running', hdri: 'belfast_sunset_puresky_2k.hdr', env: 0.8, bg: 0.5, exposure: 0.45, tm: 'Neutral', bloomGain: 0.67, bloomThr: 2.1, fog: 0x4a4658, fogDensity: 0.001, emissive: 0.5, lights: 0.0, sun: 2.4, sunColor: 0xffb27a, trails: 0.35,
-    hdriRot: 2.88, fogSun: [0.42, 0.23, 0.11], flare: 1.0, glint: [6.0, 3.4, 1.5],
+  dusk: { dn: 0.35, lamps: 'running', hdri: 'belfast_sunset_puresky_2k.hdr', env: 0.85, bg: 0.42, exposure: 0.42, tm: 'Neutral', bloomGain: 0.35, bloomThr: 2.1, fog: 0x4a4658, fogDensity: 0.001, emissive: 0.5, lights: 0.0, sun: 2.0, sunColor: 0xffb27a, trails: 0.35,
+    hdriRot: 2.88, fogSun: [0.17, 0.092, 0.044], flare: 0.38, glint: [2.4, 1.36, 0.6], hdriClamp: 24,
     grade: { s: 0.55, black: 0.03, shadows: [0.84, 0.93, 1.12], highs: [1.08, 1.0, 0.86], sat: 1.12 } },
   bluehour: { dn: 0.7, hdri: 'qwantani_dusk_1_puresky_2k.hdr', env: 0.22, bg: 0.3, exposure: 1.1, tm: 'AgX', fog: 0x26324a, fogDensity: 0.0009, emissive: 1.0, lights: 0.6, sun: 0.35, sunColor: 0x9fb6ff, trails: 0.9,
-    hdriRot: 3.17, fogSun: [0.22, 0.16, 0.16], flare: 0.25, glint: [0.5, 0.45, 0.55],
+    hdriRot: 3.17, fogSun: [0.09, 0.065, 0.065], flare: 0.1, glint: [0.2, 0.18, 0.22],
     grade: { s: 0.4, black: 0.02, shadows: [0.86, 0.95, 1.14], highs: [1.06, 1.0, 0.9], sat: 1.06 } },
   night: { dn: 1, hdri: 'qwantani_night_puresky_2k.hdr', env: 0.035, bg: 0.035, exposure: 1.25, tm: 'AgX', fog: 0x0a0f1a, fogDensity: 0.0012, emissive: 1.4, lights: 1.0, sun: 0.12, sunColor: 0x8ea4d6, trails: 1.3,
     hdriRot: 0, fogSun: [0, 0, 0], flare: 0, glint: [0, 0, 0],
@@ -201,7 +203,7 @@ const finalPass = new ShaderPass({
       float vis = 0.0;
       for (int i = 0; i < 5; i++) {
         vec2 o = vec2(float(i == 1) - float(i == 2), float(i == 3) - float(i == 4)) * 0.006;
-        vis += smoothstep(0.72, 0.95, luma(texture2D(tDiffuse, uSun.xy + o).rgb));
+        vis += smoothstep(0.85, 0.98, luma(texture2D(tDiffuse, uSun.xy + o).rgb));   // the clipped disc only: a sunlit wall over the sun fired it at .72
       }
       vis *= 0.2 * uSun.z * uFlare;
       if (vis <= 0.001) return vec3(0.0);
@@ -209,8 +211,9 @@ const finalPass = new ShaderPass({
       float d = length(p), ang = atan(p.y, p.x);
       vec3 warm = vec3(1.0, 0.78, 0.5);
       float rays = pow(abs(cos(ang * 6.0 + 0.4)), 40.0) + 0.6 * pow(abs(cos(ang * 9.0 + 1.3)), 70.0);
-      // on nitro the starburst and the anamorphic streak lengthen and brighten
-      vec3 f = warm * (rays * exp(-d * (10.0 - 4.5 * uNitro)) * (0.32 + 0.3 * uNitro) + exp(-d * 16.0) * 0.22 + exp(-abs(p.y) * (220.0 - 80.0 * uNitro)) * exp(-abs(p.x) * (3.5 - 1.6 * uNitro)) * (0.14 + 0.16 * uNitro));
+      // on nitro the starburst and the anamorphic streak lengthen and brighten (to the same reach as before the sun-tone pass;
+      // cruising, the rays, core and streak are ~2/3 as long: a small sun star, not a burst across the frame)
+      vec3 f = warm * (rays * exp(-d * (15.0 - 9.5 * uNitro)) * (0.32 + 0.3 * uNitro) + exp(-d * 24.0) * 0.22 + exp(-abs(p.y) * (220.0 - 80.0 * uNitro)) * exp(-abs(p.x) * (5.0 - 3.1 * uNitro)) * (0.14 + 0.16 * uNitro));
       vec2 axis = 0.5 - uSun.xy;
       float off = smoothstep(0.05, 0.3, length(axis * a));    // ghosts and halo only when the sun is off-centre
       for (int i = 0; i < 4; i++) {

@@ -27,9 +27,10 @@ export const TRACKS = {
     // the canopies keep the asphalt and stands in shade: more exposure and sky light by day; the baked skyline and signs follow `emissive`;
     // the neon blooms from a higher threshold at night. The steps day > dusk > evening > night only ever go down.
     looks: {
-      day: { exposure: 2.1, env: 1.25, emissive: 0.32, fogDensity: 0.0003, sun: 6, grade: { shadows: [1, 0.99, 0.97], sat: 1.02 } },
+      // sun tone (main.js LOOKS): the same ~20 % less hard sun and ~40 % flare / haze / glint as the base looks
+      day: { exposure: 1.75, env: 1.3, emissive: 0.32, fogDensity: 0.0003, sun: 4.8, grade: { shadows: [1, 0.99, 0.97], sat: 1.02 } },
       // the dusk sun sets straight down the neon street: a softer flare, sun haze and road glint than Marina's open bay
-      dusk: { exposure: 0.85, env: 1.0, flare: 0.35, fogSun: [0.2, 0.11, 0.05], glint: [2.4, 1.4, 0.6] },
+      dusk: { exposure: 0.65, env: 1.0, flare: 0.14, fogSun: [0.08, 0.044, 0.02], glint: [0.96, 0.56, 0.24] },
       bluehour: { exposure: 0.9, bg: 0.12, bloomGain: 0.4, bloomThr: 0.95, emissive: 0.9, fog: 0x1d2a4f, grade: { s: 0.5, black: 0.03, shadows: [0.84, 0.94, 1.16], sat: 1.12 } },
       night: { bloomGain: 0.4, bloomThr: 0.95, emissive: 1.2, fog: 0x0d0f24, fogDensity: 0.0014, fogSun: [0.03, 0.012, 0.02] },
     },
