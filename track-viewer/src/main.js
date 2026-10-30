@@ -490,7 +490,7 @@ const SCENERY_TEST = new URLSearchParams(location.search).get('scenery') === '1'
 const gpuTimer = new GpuTimer(renderer);
 const dynres = new DynamicResolution();
 const hdriCache = new Map();
-let gltfLoader, venuePromise, venueRoot = null;
+let gltfLoader, venuePromise, venueRoot = null, venueGen = 0;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
 const garageRoom = DEV ? null : new GarageRoom(renderer);
 
 const mark = (n) => performance.mark('ultrack:' + n);   // read with performance.getEntriesByType('mark')
@@ -536,14 +536,14 @@ function disposeTree(root) {
 }
 /** drop the venue (geometry, textures, glows, crowd, culler, hoardings) so another circuit can load without leaking */
 function unloadVenue() {
-  venuePromise = null; venueLights = null; culler = null; captureBoost = [];
+  venuePromise = null; venueLights = null; culler = null; captureBoost = []; venueGen++;
   venueFx?.dispose(); venueFx = null;
   if (venueRoot) { scene.remove(venueRoot); disposeTree(venueRoot); venueRoot = null; }
   if (glows) { scene.remove(glows.points); disposeTree(glows.points); glows = null; }
   sceneryExperiment?.dispose(); sceneryExperiment = null;
   people.clear(); driverHoardings.clear(); life.reset();
   allMats.clear(); wetMats.length = 0;
-  for (let i = glass.length - 1; i >= 0; i--) if (!glass[i].car) { if (glass[i].on) glassOn--; glass.splice(i, 1); }
+  for (let i = glass.length - 1; i >= 0; i--) if (!glass[i].car) { twins.delete(glass[i].real); if (glass[i].on) glassOn--; glass.splice(i, 1); }   // the twin map would keep every visited venue's glass and textures alive
   for (const light of [...pool.flood, ...pool.stand, ...pool.street]) { light.userData.lamp = null; light.userData.want = 0; light.intensity = 0; }   // not parked at the old lamps
 }
 /** Switch circuit: the old venue goes, the new track's data replaces the path and the grid; the venue itself loads on demand
@@ -559,14 +559,14 @@ async function setTrack(id) {
 }
 
 async function loadVenue() {
-  const T = TRACK, has = T.has;
+  const T = TRACK, has = T.has, gen = venueGen;
   T.venue?.().then((m) => m.prefetch?.({ renderer, ktx2: gltfLoader.ktx2Loader }), () => {});   // a venue module's own textures load alongside its GLB
   const [gltf, lightsJson] = await Promise.all([
     gltfLoader.loadAsync(import.meta.env.DEV&&T.id==='marina'&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:U('visual')),
     optionalJson(U('lights'), NO_LIGHTS),
     setLook(params.look),
   ]);
-  if (T !== TRACK) { disposeTree(gltf.scene); return; }   // another circuit was picked while this one loaded
+  if (gen !== venueGen) { disposeTree(gltf.scene); return; }   // another circuit was picked while this one loaded
   venueLights = lightsJson;
   venueRoot = gltf.scene;
   scene.add(gltf.scene);
@@ -638,6 +638,7 @@ async function loadVenue() {
   // lamp, LED and neon surfaces burn 3x brighter in the player car's reflection capture (their glow sprites can't be
   // in it): the paint then reflects bright light shapes after dark, the biggest cue of a premium finish
   captureBoost = [...allMats].filter((m) => /^M_Lamp|Neon|LED|M_VipGlow|M_VipEdge|M_GarageHeader|pylon board|^V8 (pink|ice|amber|paper)$|pagoda shoji|lantern (glow|paper)/.test(m.name) && m.emissiveIntensity > 0);
+  applyAll();     // emissive levels and wet gains were still the raw GLB values (setLook's applyAll ran before allMats filled); after the lit tests above, which read the raw values
   if(SCENERY_TEST&&has.yachts&&has.buildings){
     const {SceneryExperiment}=await import('./scenery-experiment.js');
     try{
@@ -653,7 +654,8 @@ async function loadVenue() {
   culler = new Culler(gltf.scene);
   if (T.venue) {
     const fx = await (await T.venue()).create({ scene, root: gltf.scene, track, renderer, camera, bloom, lights: lightsJson, allMats, wetUniforms, NO_MIRROR, ktx2: gltfLoader.ktx2Loader });
-    if (T !== TRACK) fx.dispose(); else { venueFx = fx; venueFx.setLook?.(LOOKS[params.look], params); }
+    if (gen !== venueGen) { fx.dispose(); return; }   // unloaded while the fx built: its root and glows are already gone
+    venueFx = fx; venueFx.setLook?.(LOOKS[params.look], params);
     // the venue effects add materials of their own: transmissive glass among them would bring the second scene render back
     const cars = new Set((field?.all ?? []).map((c) => c.root));
     scene.children.forEach((ch) => { if (!cars.has(ch)) ch.traverse((o) => { if (o.isMesh) noteGlass(o, false); }); });
