@@ -418,8 +418,9 @@ export class Field {
         const promise=this.queue.run(async()=>{
           const c=await this.loadCar(this.loader,key,KEYS.indexOf(key),key===this.firstKey);
           c.root.visible=false;this.all.push(c);
-          // The distant body is not needed for the first menu/showroom frame.
-          const timer=setTimeout(()=>this.queue.run(()=>c.lod.userData.loadFar(),{low:true}).catch(e=>console.warn('Distant car LOD:',e)),1800);timer.unref?.();
+          // The distant body is not needed for the first menu/showroom frame. Its meshes arrive casting; forgetting c.cast
+          // makes the next update re-apply the shadow band to them (a far car would otherwise cast past SHADOW_M).
+          const timer=setTimeout(()=>this.queue.run(()=>c.lod.userData.loadFar().then(()=>{c.cast=undefined;}),{low:true}).catch(e=>console.warn('Distant car LOD:',e)),1800);timer.unref?.();
           return c;
         }).catch(error=>{this.pending.delete(key);throw error;});
         this.pending.set(key,promise);
