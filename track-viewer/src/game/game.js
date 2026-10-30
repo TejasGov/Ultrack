@@ -365,8 +365,8 @@ export class Game {
   // ---------------------------------------------------------------------------------------------- per frame
   update(dt, fps) {
     this.inputDebug?.update(dt,this.field);
+    if(this.raceLoading?.active)return;   // first: the pad must not drive the Setup screen under the loading overlay
     this.nav.pad(dt);
-    if(this.raceLoading?.active)return;
     if (this.screenName === 'title' && navigator.getGamepads?.().some((g) => g?.buttons.some((b) => b.pressed))) this.screens.title.onKey();
     const s = this.session, F = this.field;
     if (!s) { if (this.state === 'menu' && this.ctx.params.mode === 'orbit') this.ctx.controls.update(); return; }
