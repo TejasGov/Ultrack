@@ -22,6 +22,7 @@ import { applyUpgrades } from './carinfo.js';
 import { canSelectCar, carProgression } from './progression.js';
 import { RaceLoading } from './race-loading.js';
 import { trackOf } from '../tracks.js';
+import { TIERS } from '../perf.js';
 
 export class Game {
   /** ctx: { params, camera, controls, track(), device, applyAll, applyQuality, setLook, resize, newTrails, collisionUrl } */
@@ -245,10 +246,10 @@ export class Game {
     const S = store.settings, { params } = this.ctx;
     const look = S.look;
     if (params.quality !== S.quality) { params.quality = S.quality; this.ctx.applyQuality(); }
-    const W = WEATHER[S.weather] ?? WEATHER.damp;
-    params.wet = W.wet; params.rain = W.rain; setWeather(W.wet);
+    const W = WEATHER[S.weather] ?? WEATHER.damp, tier = S.quality === 'auto' ? this.ctx.device?.tier : S.quality;
+    params.wet = W.wet; params.rain = Math.min(W.rain, TIERS[tier]?.rain ?? 1); setWeather(W.wet);   // the tier's rain cap here: applyQuality only runs on a quality change
     const fx = this.field?.fx;   // exhaust gas thickens in damp air; low tiers emit fewer particles
-    if (fx) { fx.damp = W.wet; fx.quality = ({ low: 0.5, medium: 0.75 })[S.quality === 'auto' ? this.ctx.device?.tier : S.quality] ?? 1; }
+    if (fx) { fx.damp = W.wet; fx.quality = ({ low: 0.5, medium: 0.75 })[tier] ?? 1; }
     params.speedBlur = BLUR[S.motionBlur] ?? 1;
     params.reduceMotion = S.reduceMotion;
     if (params.look !== look) { params.look = look; this.ctx.setLook(look).catch((e) => console.warn('Time of day:', e)); } else this.ctx.applyAll();   // a failed sky reverts params.look: the next apply retries it
