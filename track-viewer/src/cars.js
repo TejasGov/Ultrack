@@ -600,7 +600,15 @@ export class Field {
   }
 
   /** the hero is driven by the keyboard / gamepad (true) or by the AI (false: autopilot, benchmarks) */
-  setPlayer(on) { this.input?.clear();this.hero?.vehicle?.resetControls(); this.playerDrives = on; }
+  setPlayer(on) {
+    this.input?.clear();this.hero?.vehicle?.resetControls(); this.playerDrives = on;
+    // a player-driven hero never runs ai.read, so ai.i is stale (0 or the last respawn): AIDriver's windowed walk from there locked
+    // onto another leg of the track on the cool-down lap
+    const h = this.hero; if (!on && h?.vehicle && h.ai) { h.ai.i = this.nearestLine(h.vehicle.cur.pos); h.ai.stuck = 0; h.ai.laneNow = undefined; h.ai.passSide = 0; }
+  }
+
+  /** index of the racing-line point nearest p (a full scan) */
+  nearestLine(p) { let best = Infinity, bi = 0; this.linePts.forEach((q, i) => { const d = q.distanceToSquared(p); if (d < best) { best = d; bi = i; } }); return bi; }
 
   /** the player's driving aids: countersteer help, yaw stability, traction control (0 = off) */
   assists = { counter: 0.45, stability: 1.25, tcs: 0.8 };
@@ -608,8 +616,7 @@ export class Field {
   /** put a car back on the racing line at its nearest point, facing along it */
   respawn(c) {
     if(c.hero)this.input?.clear({preserveResetLatch:true});
-    const p = c.vehicle.cur.pos; let best = Infinity, bi = 0;
-    this.linePts.forEach((q, i) => { const d = q.distanceToSquared(p); if (d < best) { best = d; bi = i; } });
+    const bi = this.nearestLine(c.vehicle.cur.pos);
     const a = this.linePts[bi], b = this.linePts[(bi + 2) % this.N];
     c.vehicle.respawn(a, Math.atan2(-(b.z - a.z), b.x - a.x));
     if (c.hero) this.rig?.cut();                                      // the camera snaps behind the car; the speed that vanished is not a crash
