@@ -50,6 +50,10 @@ test('respawn clearing does not re-arm a held pad reset; releasing it does',()=>
  assert.equal(f.input.read(.01).reset,false);p.buttons[3]=button(0);f.input.read(.01);
  p.buttons[3]=button(1);assert.equal(f.input.read(.01).reset,true);f.input.dispose();
 });
+test('respawn keeps a held throttle key but resets steering',()=>{
+ const f=fixture();f.key('keydown','KeyW');f.key('keydown','KeyA');f.input.read(.3);f.input.clear({preserveResetLatch:true});
+ assert.equal(f.input.steer,0);assert.equal(f.input.read(1/60).throttle,1);f.input.dispose();
+});
 test('respawn resets steering, drift/controller history, velocities and wheel motion',()=>{
  const fake={state:{nitroTank:.4,steer:.5,beta:.8,driftDir:-1},controls:{steer:1},aBody:new THREE.Vector3(1,2,3),vPrevBody:new THREE.Vector3(3,2,1),wheels:[{omegaR:25,comp:.1}],
   rb:{setTranslation(){},setRotation(){},setLinvel(){},setAngvel(){}},prev:{pos:new THREE.Vector3(),quat:new THREE.Quaternion()},cur:{pos:new THREE.Vector3(),quat:new THREE.Quaternion()},capture(){},resetControls:Vehicle.prototype.resetControls};

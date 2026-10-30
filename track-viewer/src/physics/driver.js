@@ -28,7 +28,8 @@ export class PlayerInput {
     on(doc, 'visibilitychange', () => { if (doc.hidden) this.clear(); });
     on(doc, 'focusin', e => { if (e.target?.closest?.('input, textarea, select, button, [contenteditable]')) this.clear(); });
   }
-  clear({preserveResetLatch=false}={}) { this.keys.clear(); this.steer = 0; this.hold.t = 0; this.hold.dir = 0; this.brake = 0; this.reset = false; this.padActive = false; if(!preserveResetLatch)this.padResetHeld = false; this.debug = {}; }
+  // a respawn (preserveResetLatch) keeps held keys: the OS auto-repeats only the last-pressed key (R), so a held W would stay dead
+  clear({preserveResetLatch=false}={}) { if(!preserveResetLatch)this.keys.clear(); this.steer = 0; this.hold.t = 0; this.hold.dir = 0; this.brake = 0; this.reset = false; this.padActive = false; if(!preserveResetLatch)this.padResetHeld = false; this.debug = {}; }
   setEnabled(on) { if (this.enabled !== on) this.clear(); this.enabled = on; }
   dispose() { this.listeners.forEach(f => f()); this.clear(); }
   read(dt, speed = driving.speed) {
