@@ -1,6 +1,6 @@
 /* Ultrack UI tokens (docs/ui-system.md). The production system's values, one place: colour, type, spacing, radii, hairlines,
-   surfaces, motion, focus, icons. Prefixed names (--c-, --fs-, --sp-, ...) so nothing here collides with the older ui.css / hud.css
-   variables (--red, --ink, --glass, --tile ...): importing this file restyles nothing until a screen opts in.
+   surfaces, motion, focus, icons. Prefixed names (--c-, --fs-, --sp-, ...); the older unprefixed variables are gone, so these are
+   the only ones ui.css and hud.css use.
    Sizes are design px on the 1600x900 canvas times --u, so a layout scales with the window; type has a px floor so it never
    drops below legible at 1280x720. */
 :root {
@@ -58,7 +58,7 @@
   --sp-9: calc(96 * var(--u));
   --gutter: calc(64 * var(--u));                /* screen edge to content (safe area) */
 
-  /* ---- shape: rounded rectangles only, three radii; no clip-path slants */
+  /* ---- shape: rounded rectangles only, three radii; no slanted edges */
   --r-1: 4px;                                   /* chips, tags, keycaps, swatches, bars */
   --r-2: 8px;                                   /* buttons, list rows, segments, inputs */
   --r-3: 12px;                                  /* panels, tiles, toast, modal */

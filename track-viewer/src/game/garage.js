@@ -107,8 +107,8 @@ export function GarageScreen(game) {
     const [lo, hi] = range(field), mine = factsOf(store.data.car)[field], has = Number.isFinite(v), x = (n) => lerpPct(n, [lo, hi], invert);
     const better = has && Number.isFinite(up) && (invert ? up < v - 0.0005 : up > v + 0.0005);
     return h('div.ga-stat.ga-cmp', {}, h('span', {}, label, factsOf(key).estimatedFields.includes(field) ? h('small', {}, 'est.') : null),
-      h('i.bar6', {}, h('i', { style: { width: has ? `${x(v)}%` : '0%' } }), better ? h('i.up', { style: { left: `${x(v)}%`, width: `${Math.max(0, x(up) - x(v))}%` } }) : null,
-        key !== store.data.car && Number.isFinite(mine) ? h('u', { style: { left: `${x(mine)}%` } }) : null),
+      h('i.bar6', {}, css(h('i'), { '--w': has ? `${x(v)}%` : '0%' }), better ? css(h('i.up'), { '--l': `${x(v)}%`, '--w': `${Math.max(0, x(up) - x(v))}%` }) : null,
+        key !== store.data.car && Number.isFinite(mine) ? css(h('u'), { '--l': `${x(mine)}%` }) : null),
       h('b.tnum', {}, has ? fmt(better ? up : v, d) : empty(), has && unit ? h('small', {}, unit) : null, better ? h('em', {}, `${invert ? '−' : '+'}${Math.abs(up - v).toFixed(d)}`) : null));
   }
   const legend = (mark, text, cls = '') => h('span.lg' + cls, {}, mark, text);
@@ -119,7 +119,7 @@ export function GarageScreen(game) {
     const eng = [f.engine ?? (f.powertrain === 'EV' ? 'Electric motors' : null), f.torqueNm ? `${fmt(f.torqueNm)} N·m` : null, f.drive].filter(Boolean).join(', ');
     const src = f.sources?.length ? [].concat(f.sources)[0].replace(/^https?:\/\/(www\.)?/, '') : null;
     return [
-      h('strong.ga-model', { title: f.model ?? carName(key) }, f.model ?? carName(key)),
+      h('strong.ga-model' + ((f.model ?? carName(key)).length > 30 ? '.long' : ''), { title: f.model ?? carName(key) }, f.model ?? carName(key)),   // .long: the 36-letter names fit one line whole
       h('p.ga-bio.ga-eng', { title: eng }, h('span.tag', {}, icon(ptIcon), pt), eng || empty()),   // two lines kept free, so the size view never moves between cars
       h('h3.kick.ga-sec', {}, h('span', {}, 'Size'), other ? legend(icon('car'), 'Your car', '.ghost') : null),
       // both cutouts share one scale (make-ui-stills.mjs side: 200 px a metre, the ground on one line), so one height compares them

@@ -1,20 +1,12 @@
-/* Ultrack V1 interface: menus, garage, settings, HUD. Brand from the logo: white and race red on near-black; type is
-   Barlow Condensed (labels, italic for motion) and Anton (numbers). Panels are dark glass with a slanted edge. */
+/* Ultrack interface: menus, garage, settings, loading, results (the race HUD is hud.css). Every value is a token from
+   ui-tokens.css (docs/ui-system.md): white and race red on near-black, Barlow Condensed and Anton, rounded panels on hairlines. */
 @import './ui-tokens.css';   /* the production system's tokens (docs/ui-system.md); prefixed, so they restyle nothing on their own */
 @font-face { font-family: 'Anton'; src: url('/assets/fonts/anton-latin-400-normal.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; font-weight: 700; src: url('/assets/fonts/barlow-condensed-latin-700-normal.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; font-weight: 800; font-style: italic; src: url('/assets/fonts/barlow-condensed-latin-800-italic.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; font-weight: 900; font-style: italic; src: url('/assets/fonts/barlow-condensed-latin-900-italic.woff2') format('woff2'); font-display: swap; }
 
-:root {
-  --red: #e3141b; --red-deep: #9e0a10; --ink: #f4f2ee; --ink-2: rgba(244, 242, 238, 0.72); --ink-3: rgba(244, 242, 238, 0.45);
-  --glass: rgba(10, 11, 14, 0.62); --glass-2: rgba(18, 19, 24, 0.82); --line: rgba(255, 255, 255, 0.12); --line-2: rgba(255, 255, 255, 0.22);
-  --good: #3ddc84; --bad: #ff4d4f; --gold: #f2c14e; --nitro: #8f7bff; --nitro-2: #5ad1ff;
-  --slant: 14px; --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --label: 'Barlow Condensed', system-ui, sans-serif; --num: 'Anton', 'Barlow Condensed', sans-serif;
-}
-
-#ui { position: fixed; inset: 0; pointer-events: none; color: var(--ink); font-family: var(--label); font-weight: 700; user-select: none; z-index: 10; }
+#ui { position: fixed; inset: 0; pointer-events: none; color: var(--c-ink-1); font-family: var(--font-ui); font-weight: 700; user-select: none; z-index: 10; }
 :where(#ui) * { box-sizing: border-box; }
 #ui .screen { position: absolute; inset: 0; pointer-events: auto; opacity: 0; transition: opacity var(--dur-3) var(--ease-out); }   /* the 250 ms screen fade */
 #ui .screen.on { opacity: 1; }
@@ -39,7 +31,7 @@
 .bar4 { height: 4px; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
 .bar4 i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform var(--dur-3) var(--ease-out); }
 
-.team-logo { display:block; width:200px; max-width:100%; height:50px; object-fit:contain; object-position:left center; }
+.team-logo { display: block; width: calc(200 * var(--u)); max-width: 100%; height: calc(50 * var(--u)); object-fit: contain; object-position: left center; }   /* each place sets its own size */
 
 
 /* ---------------------------------------------------------------- panels (setup, settings) */
@@ -51,10 +43,11 @@
 
 :where(#ui) ::-webkit-scrollbar { width: 6px; }
 :where(#ui) ::-webkit-scrollbar-track { background: transparent; }
-:where(#ui) ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); }
+:where(#ui) ::-webkit-scrollbar-thumb { border-radius: var(--r-1); background: var(--c-line-2); }
 
 
-.input-debug { position:fixed;left:16px;bottom:58px;z-index:100;pointer-events:none;padding:14px;border:1px solid #748797;border-radius:10px;background:rgba(5,9,15,.9);color:#d3f7e1;font:12px/1.55 monospace;white-space:pre-wrap; }
+.input-debug { position: fixed; left: var(--sp-4); bottom: calc(56 * var(--u)); z-index: 100; pointer-events: none; padding: var(--sp-4); border: 1px solid var(--c-line-2); border-radius: var(--r-3);
+  background: var(--c-panel-2); color: var(--c-ink-1); font: 12px/1.55 monospace; white-space: pre-wrap; }   /* ?dev=1 / ?inputDebug only: a diagnostics readout, so monospace columns */
 /* reduce motion, the OS setting or the in-game one (html[data-motion=reduce], ui.js syncMotion): nothing in the UI moves, hard-coded durations included */
 @media(prefers-reduced-motion:reduce) { #ui, #ui *, #ui *::before, #ui *::after { animation:none!important;transition:none!important; } }
 :root[data-motion=reduce] :is(#ui, #ui *, #ui *::before, #ui *::after) { animation:none!important;transition:none!important; }
@@ -268,24 +261,6 @@ kbd .icon { font-size: var(--icon-s); }
 .earn .elines { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-5); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--c-line); font-size: var(--fs-body); color: var(--c-ink-2); }
 .earn .elines b { margin-left: var(--sp-2); font-size: var(--fs-body); }
 
-.driver-intro { position: fixed; inset: 0; z-index: 1000; background: #080b10; color: #f5f1e8; pointer-events: auto; }
-.driver-intro-frame { position: absolute; inset: 0 0 52px; overflow: hidden; display: grid; place-items: center; }
-.driver-intro-frame img { width: 100%; height: 100%; object-fit: contain; animation: intro-reveal .3s ease-out; }
-.driver-intro-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 52px; display: flex; align-items: center; gap: 24px; padding: 0 24px; font: 13px var(--label); letter-spacing: .06em; }
-.driver-intro-footer > span { flex: 1; }
-.driver-intro-footer button { color: #fff; border: 1px solid #677082; border-radius: 5px; padding: 7px 12px; background: #19202c; white-space: nowrap; }
-.driver-intro-footer button:focus-visible { outline: 2px solid #f2b705; outline-offset: 2px; }
-.driver-intro-progress { display: flex; gap: 5px; width: min(24vw, 280px); }
-.driver-intro-progress i { height: 3px; flex: 1; background: #354052; }
-.driver-intro-progress i.done { background: #f2b705; }
-.driver-intro-progress i.current { background: linear-gradient(to right, #f2b705 var(--progress), #354052 var(--progress)); }
-.driver-intro-fallback { width: 100%; height: 100%; padding: 10%; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(at top right, var(--intro-team), #080b10 80%); }
-.driver-intro-fallback h1 { font: 700 clamp(32px, 6vw, 90px) var(--label); margin: 20px 0; }
-.driver-intro.still img { animation: none; }
-@keyframes intro-reveal { from { opacity: .4; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-@media (prefers-reduced-motion: reduce) { .driver-intro-frame img { animation: none; } }
-@media (max-width: 650px) { .driver-intro-footer { gap: 10px; padding: 0 12px; font-size: 11px; } .driver-intro-progress { display: none; } }
-
 /* ---------------------------------------------------------------- controls: the row is the Nav stop; selected is ink, focus is the row's accent wash and bar */
 .row { display: grid; grid-template-columns: var(--row-label, calc(176 * var(--u))) minmax(0, 1fr); align-items: center; gap: var(--sp-2) var(--sp-4); padding: var(--sp-3);
   border-bottom: 1px solid var(--c-line); transition: background-color var(--dur-1) var(--ease-out); }
@@ -468,9 +443,9 @@ kbd .icon { font-size: var(--icon-s); }
 .ga-stat > b small { margin-left: var(--sp-1); font-size: var(--fs-micro); letter-spacing: var(--track-label); color: var(--c-ink-3); }
 .ga-stat em { margin-left: var(--sp-2); font-style: normal; font-size: var(--fs-micro); color: var(--c-pos); }
 .bar6 { position: relative; display: block; height: calc(6 * var(--u)); border-radius: var(--r-1); background: var(--c-fill-1); }
-.bar6 > i { position: absolute; top: 0; bottom: 0; left: 0; width: var(--w); border-radius: var(--r-1); background: var(--c-ink-1); }
+.bar6 > i { position: absolute; top: 0; bottom: 0; left: var(--l, 0%); width: var(--w); border-radius: var(--r-1); background: var(--c-ink-1); }   /* --l, --w: set per bar (garage.js cmp) */
 .bar6 > i.up { background: var(--c-pos); border-radius: 0 var(--r-1) var(--r-1) 0; }
-.bar6 > u { position: absolute; top: calc(-4 * var(--u)); bottom: calc(-4 * var(--u)); width: 2px; margin-left: -1px; background: var(--c-ink-1); box-shadow: 0 0 0 1px var(--c-panel-2); }   /* your car */
+.bar6 > u { position: absolute; left: var(--l); top: calc(-4 * var(--u)); bottom: calc(-4 * var(--u)); width: 2px; margin-left: -1px; background: var(--c-ink-1); box-shadow: 0 0 0 1px var(--c-panel-2); }   /* your car */
 .ga-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4) var(--sp-5); margin-top: var(--sp-2); padding-top: var(--sp-4); border-top: 1px solid var(--c-line); }
 .ga-who { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); margin: 0; }
 .ga-who b { font-size: var(--fs-value); }
@@ -479,6 +454,7 @@ kbd .icon { font-size: var(--icon-s); }
 .ga-note { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-3); }
 /* specs: the model and its powertrain tag, the side cutouts at true scale (yours a ghost behind), dimensions, the real figures */
 .ga-model { min-width: 0; padding-right: 0.1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
+.ga-model.long { font-size: calc(var(--fs-title) * 0.8); line-height: calc(var(--fs-title) * var(--lh-tight)); }   /* same line box, so nothing under it moves */
 .ga-eng { height: 2lh; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .ga-eng .tag { height: calc(20 * var(--u)); margin-right: var(--sp-2); vertical-align: middle; }   /* under the line's height: one line or two, the block is the same */
 .tag { flex: none; display: inline-flex; align-items: center; gap: var(--sp-1); height: calc(24 * var(--u)); padding: 0 var(--sp-2); border-radius: var(--r-1); background: var(--c-fill-1);

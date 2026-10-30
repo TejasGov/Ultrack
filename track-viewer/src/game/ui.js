@@ -27,8 +27,7 @@ export function h(sel, attrs = {}, ...kids) {   // null / false children are ski
   for (const [k, v] of Object.entries(attrs ?? {})) {
     if (v === undefined || v === null || v === false) continue;
     if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
-    else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);
-    else if (k === 'html') el.innerHTML = v;
+    else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);   // the HUD's rows and game.js's camera label; UI screens use css() custom properties
     else if (k in el && k !== 'list') el[k] = v; else el.setAttribute(k, v === true ? '' : v);
   }
   for (const c of kids.flat()) if (c !== null && c !== undefined && c !== false) el.append(c instanceof Node ? c : document.createTextNode(String(c)));

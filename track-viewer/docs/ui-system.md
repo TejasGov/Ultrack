@@ -20,8 +20,10 @@ Source of truth:
 All sizes are design px on the 1600x900 canvas multiplied by `--u`, so a layout scales with the window:
 `--u = clamp(0.8px, min(100vw/1600, 100vh/900), 1.35px)`. That gives 0.8 at 1280x720, 1 at 1600x900, 1.2 at 1920x1080, and a
 cap of 1.35. Type tokens also have a px floor, so text never drops below a legible size at 720p. Every token name is prefixed
-(`--c-`, `--fs-`, `--sp-`, `--r-`, `--dur-`). The older variables (`--red`, `--ink`, `--glass`, `--tile`, `--slant`) are retired
-screen by screen and deleted in the last step.
+(`--c-`, `--fs-`, `--sp-`, `--r-`, `--dur-`). The older unprefixed variables (`--red`, `--ink-*`, `--glass`, `--gold`, `--nitro*`,
+`--good`, `--slant`, `--label`, `--num`) are deleted (archived in `_archive/2026-10-30/driver-intro/ui-legacy-vars.css`); only
+game.js's camera label still names `--ink` and `--label` inline, and `hud.css` overrides both until H1 lands. Values that change
+per element (a bar's width, a team colour) are custom properties set with `css()` (`ui.js`), never inline style properties.
 
 ### Colour: one accent
 
@@ -334,7 +336,8 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
       rows over their own gradients, the hex beside), live on the car without a rebuild.
   - Specs: icon legends (`car` for your car's ghost, a 2 px ink tick for your car on the bars, `upgrade` in `--c-pos` for
     upgrades). The size view is the car's side cutout over your car's ink silhouette, at true scale. The model name is one
-    line and the engine line keeps two, so the size view never moves between cars.
+    line and the engine line keeps two, so the size view never moves between cars. A model name over 30 letters (the 36-letter
+    "Lamborghini Aventador SVJ (LP 770-4)") is set at 0.8 of the title size on the same line box, so it shows whole, never cut.
   - Upgrades: a card per category, three `chevrons-up` level steps (ink when owned, ink-4 when not), the before `arrow-right`
     after of the next level (the after in `--c-pos`), and a secondary Buy with the `coin` price; when it cannot be paid the
     button goes ink-4 with "Need 300 more" beside it.
@@ -444,8 +447,9 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
     (two clipped half rings turned by transforms, `ringTurns`, in 1.5° steps) with the seconds inside, the score, and the record
     with the `trophy` label; the chain or "Drift to chain" and the multiplier sit under a hairline.
 - **Driver intro**
-  - It is dead code. Archive `driver-intro.js` and its CSS to `_archive/2026-10-30/` with a MANIFEST line, and point
-    `test-driver-intro.mjs` at nothing (it already only runs test-hoardings).
+  - Retired. It was dead code (the roadside hoardings carry the drivers): `driver-intro.js` and its `.driver-intro` CSS are in
+    `_archive/2026-10-30/driver-intro/` with MANIFEST lines. `test-driver-intro.mjs` keeps its name for `package.json` and only
+    runs `test-hoardings.mjs`.
 
 ## 6. Engine handoff (patches the UI pass does not apply)
 
