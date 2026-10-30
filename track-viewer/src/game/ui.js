@@ -222,7 +222,8 @@ export function RecordsScreen(game) {
     onShow() {
       viewed = trackOf(store.settings.track); if (!tracks.includes(viewed)) tracks = [viewed];
       build(); nav.reset(tracks.indexOf(viewed));
-      availableTracks().then((list) => { if (list.length !== tracks.length) { tracks = list; build(); nav.reset(tracks.indexOf(viewed)); } });
+      // the first probe can resolve after Back: rebuild quietly then, never reset the Nav of the screen now showing
+      availableTracks().then((list) => { if (list.length !== tracks.length) { tracks = list; build(); if (game.screen?.el === el) nav.reset(tracks.indexOf(viewed)); } });
     },
     back() { game.show('menu'); },
   };
