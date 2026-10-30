@@ -14,7 +14,7 @@
 .hud .bc { left: 50%; bottom: var(--sp-5); transform: translateX(-50%) scale(var(--s)); transform-origin: 50% 100%; }
 .hud .cc { left: 50%; top: 0; width: 1600px; height: 900px; margin-left: -800px; transform-origin: 50% 0; }
 
-.hud .tile { background: var(--c-panel-2); border: 1px solid var(--c-line); border-radius: var(--r-3); }   /* raised (0.9): the lit start gantry showed through 0.74; still no blur */
+.hud .tile { background: rgba(14, 18, 25, 0.96); border: 1px solid var(--c-line); border-radius: var(--r-3); }   /* near opaque: the lit start gantry showed through 0.74 and still read as squares through --c-panel-2 (0.9); no blur */
 /* a label: tracked caps in ink-3, an optional 16 px icon before it */
 .hud .k { display: flex; align-items: center; gap: 4px; font-size: var(--hl); line-height: 1.2; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); white-space: nowrap; }
 .hud .k .icon { font-size: 16px; }
@@ -52,6 +52,7 @@
 .hud .time { font-weight: 700; font-size: 28px; line-height: 1.15; margin-top: 4px; white-space: nowrap; letter-spacing: 0.01em; }
 .hud .time em { font-style: normal; color: var(--c-ink-3); }
 .hud .time.cur { font-size: 54px; line-height: 1; }
+.hud .time.cur.empty { font-size: 28px; line-height: 1.15; padding-bottom: calc(54px - 28px * 1.15); }   /* the empty dash on LAST and BEST's line; the padding keeps the tile's height */
 .hud .time.empty { color: var(--c-ink-3); }
 .hud .timing .main { border-left: 1px solid var(--c-line); border-right: 1px solid var(--c-line); }
 .hud .timing .inv { display: none; color: var(--c-accent); }
@@ -126,9 +127,9 @@
 .hud .gearcell.rev { color: var(--c-ink-inv); background: var(--c-ink-1); border-color: var(--c-ink-1); }
 .hud .tags { position: absolute; left: 44px; width: 88px; top: 234px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .hud .tag { display: block; width: 60px; height: 20px; line-height: 18px; text-align: center; font-size: var(--hl); letter-spacing: 0.12em; text-indent: 0.12em; color: var(--c-ink-3);
-  border: 1px solid var(--c-line-2); border-radius: var(--r-1); transition: color var(--dur-2), background-color var(--dur-2), border-color var(--dur-2); }
-.hud .tag.on { color: var(--c-ink-inv); background: var(--c-ink-1); border-color: var(--c-ink-1); transition-duration: 0.07s; }   /* lights at once, lets go calmly */
-.hud .tag.off { color: var(--c-ink-4); border-color: var(--c-line); text-decoration: line-through; }
+  background: var(--c-fill-1); border-radius: var(--r-round); box-shadow: none; transition: color var(--dur-2), background-color var(--dur-2); }   /* a status pill, no keycap edge: the hint bar's keycaps sit right below */
+.hud .tag.on { color: var(--c-ink-inv); background: var(--c-ink-1); transition-duration: 0.07s; }   /* lights at once, lets go calmly */
+.hud .tag.off { color: var(--c-ink-4); background: none; text-decoration: line-through; }
 .hud .nitro { position: absolute; left: 216px; width: 92px; top: 234px; }
 .hud .nitro .k { transition: color var(--dur-2); }
 .hud .nitro.on .k { color: var(--c-ink-1); }

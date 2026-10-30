@@ -28,9 +28,9 @@ try {
   assert.deepEqual(ringTurns(0.5), [0, -180], 'half the time left: the right half only');
   assert.deepEqual(ringTurns(0.25), [-90, -180], 'a quarter left: the first quarter of the right half');
   assert.deepEqual(ringTurns(-1), [-180, -180], 'no time left: no ring');
-  assert.deepEqual(msgParts('1:31.204  −0.418  +40 U'), [{ kind: '', text: '1:31.204' }, { kind: 'up', text: '− 0.418' }, { kind: 'coin', text: '+40' }], 'a lap message: time, a faster delta (sign, thin space), coins without the U');
+  assert.deepEqual(msgParts('1:31.204  −0.418  +40 U'), [{ kind: '', text: '1:31.204' }, { kind: 'up', text: '−0.418' }, { kind: 'coin', text: '+40' }], 'a lap message: time, a faster delta (sign against the digits), coins without the U');
   assert.equal(msgParts('1:31.204  +0.120')[1].kind, 'dn', 'a slower delta');
-  assert.equal(msgParts('1:31.204  -0.120')[1].text, '− 0.120', 'a hyphen-minus delta shows a true minus');
+  assert.equal(msgParts('1:31.204  -0.120')[1].text, '−0.120', 'a hyphen-minus delta shows a true minus');
   assert.equal(msgParts('−1,234')[0].kind, '', 'a lost drift chain is points, not a delta');
   assert.deepEqual(msgParts(''), [], 'no sub line, no parts');
   console.log('HUD smoke: TCS, ABS and ESC light for the physics they stand for, and only then; the drift ring and the message parts add up.');

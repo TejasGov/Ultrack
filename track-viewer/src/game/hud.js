@@ -23,8 +23,8 @@ const label = (name, text, cls = '') => h('span.k' + cls, {}, name ? icon(name) 
 /** the drift timer ring as two half-ring turns (deg) for the time left, f 0..1: each half is clipped to its side and turned back
  *  out of it, so the ring shrinks from 12 o'clock clockwise with transforms only */
 export const ringTurns = (f) => { f = Math.min(1, Math.max(0, f)); return [Math.min(f, 0.5) * 360 - 180, Math.max(0, f - 0.5) * 360 - 180]; };
-/** a lap delta as the HUD shows it: a true sign (+ or U+2212, never a hyphen), a thin space, the seconds */
-const signed = (sign, digits) => (sign === '+' ? '+' : '−') + ' ' + digits;
+/** a lap delta as the HUD shows it: a true sign (+ or U+2212, never a hyphen) right against the seconds, as results and the garage write it */
+const signed = (sign, digits) => (sign === '+' ? '+' : '−') + digits;
 /** a message's sub line ("1:31.204  −0.418  +40 U") as parts: a lap delta coloured by its sign, coins with the coin icon, not a U */
 export function msgParts(sub) {
   return String(sub).split(/\s{2,}/).filter(Boolean).map((p) => {

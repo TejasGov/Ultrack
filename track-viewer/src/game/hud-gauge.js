@@ -1,6 +1,6 @@
 // The instrument cluster (hud.js owns it): a tachometer with a real scale (from the display gearbox: redline, gear), a shift-light
 // rail above it, the speed as three fixed digit cells (right-aligned, no ghost zeros), the gear on a round disc, a nitro bar and
-// the TCS / ABS / ESC tags. An electric car has no revs: the dial becomes a power gauge and the gear disc shows D. The static
+// the TCS / ABS / STAB tags. An electric car has no revs: the dial becomes a power gauge and the gear disc shows D. The static
 // scale is built once per car; a frame moves one needle (a transform), a few opacities and, only when they change, three digits.
 import { h } from './ui.js';
 import { icon } from './icons.js';
@@ -50,7 +50,7 @@ export class Gauge {
         this.needle = h('div.needle', {}, h('i')),
         this.spd = h('div.spd', {}, h('b'), h('b'), h('b')), this.unitEl = h('div.unit'),
         this.gearEl = h('div.gearcell', {}, this.gearTxt = h('span')),
-        this.tagBox = h('div.tags', {}, ...['TCS', 'ABS', 'ESC'].map((t) => h('span.tag', {}, t))),
+        this.tagBox = h('div.tags', {}, ...['TCS', 'ABS', 'STAB'].map((t) => h('span.tag', {}, t))),   // STAB, not ESC: it read as the Esc keycap in the hint bar below
         this.nitro = h('div.nitro', {}, h('span.k', {}, icon('nitro'), 'NITRO'), h('div.bar', {}, this.nFill = h('i')))));
     this.tags = [...this.tagBox.children].map((e) => new Tag(e));
     this.leds = [...this.rail.children];

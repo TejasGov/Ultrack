@@ -99,16 +99,18 @@ export class Minimap {
     for (const i of this.sectors.slice(1)) across(i, half(i) - 0.5 * bs, 1.1 * bs, '#fff');
     const f = overview ? 4 : 6;                                                // the start line: a chequered strip
     across(0, half(0) + 1.5 * bs, f * bs, '#f4f2ee'); across(0, half(0) + 1.5 * bs, f * bs, '#05070b', [f * bs * 0.5, f * bs * 0.5]);
-    if (overview) this.labels(g, mm, X, Z, ox, oz);
+    if (overview) this.labels(g, (i) => sc(i) * roadK * mm + edge, X, Z, ox, oz);   // the road's drawn half-width (with its edge) at index i
     return { cv, k: kk, z, ox, oz };
   }
 
   /** the overview's corner numbers, on the outside of each turn and never on top of one another, then its N (ox, oz: the plate offset) */
-  labels(g, k, X, Z, ox, oz) {
+  labels(g, rim, X, Z, ox, oz) {
     const { c } = this, bs = this.bs, placed = [];
     g.font = `700 ${LABEL * bs}px 'Barlow Condensed'`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round'; g.lineWidth = 3 * bs; g.strokeStyle = 'rgba(5,7,11,0.9)';
-    const put = (text, p, nx, nz, off, color) => {
-      const x = X(p) + nx * off * bs, y = Z(p) + nz * off * bs;
+    // on the plate and off every stroke: the outside of a bend can be another leg of the circuit (Marina's 5 sat on the top straight)
+    const free = (x, y) => x + ox > 10 * bs && x + ox < (OW - 10) * bs && y + oz > 10 * bs && y + oz < (OH - 10) * bs && c.every((q, j) => Math.hypot(X(q) - x, Z(q) - y) >= rim(j) + 9 * bs);
+    const put = (text, p, nx, nz, off, color) => {                             // off: device px from the centreline; farther out, then the inside, if that spot is taken
+      const f = [1, 1.5, 2, -1].find((f) => free(X(p) + nx * off * f, Z(p) + nz * off * f)) ?? 1, x = X(p) + nx * off * f, y = Z(p) + nz * off * f;
       if (placed.some(([a, b]) => Math.hypot(a - x, b - y) < 19 * bs)) return;
       placed.push([x, y]); g.strokeText(text, x, y); g.fillStyle = color; g.fillText(text, x, y);   // a dark edge: legible over the road too
     };
@@ -117,9 +119,9 @@ export class Minimap {
       const t1x = p[0] - a[0], t1z = p[2] - a[2], t2x = q[0] - p[0], t2z = q[2] - p[2];
       const turn = Math.sign(t1x * t2z - t1z * t2x) || 1;                      // which way the track bends
       const l = Math.hypot(t1x + t2x, t1z + t2z) || 1, nx = -(t1z + t2z) / l * -turn, nz = (t1x + t2x) / l * -turn;   // out of the bend
-      put(co.id.replace(/\D/g, ''), p, nx, nz, 15, '#f4f2ee');
+      put(co.id.replace(/\D/g, ''), p, nx, nz, rim(i) + 14 * bs, '#f4f2ee');   // 14 design px past the road's edge: a fixed 15 from the centreline sat on the stroke
     }
-    this.sectors.slice(1).forEach((i, k2) => { const p = c[i], q = c[(i + 1) % c.length], l = Math.hypot(q[0] - p[0], q[2] - p[2]) || 1; put('S' + (k2 + 2), p, -(q[2] - p[2]) / l, (q[0] - p[0]) / l, 16, 'rgba(244,242,238,0.56)'); });
+    this.sectors.slice(1).forEach((i, k2) => { const p = c[i], q = c[(i + 1) % c.length], l = Math.hypot(q[0] - p[0], q[2] - p[2]) || 1; put('S' + (k2 + 2), p, -(q[2] - p[2]) / l, (q[0] - p[0]) / l, rim(i) + 14 * bs, 'rgba(244,242,238,0.56)'); });
     for (const px of [OW - 18, 18]) {                                          // the plate is north-up: N in the first top corner the numbers left free
       const x = px * bs - ox, y = 18 * bs - oz;
       if (placed.some(([a, b]) => Math.hypot(a - x, b - y) < 19 * bs)) continue;
