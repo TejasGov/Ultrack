@@ -88,6 +88,7 @@ export class Game {
       await Promise.all([this.ensureVehicles(keys,{announce:false}),this.ctx.ensureVenue?.(),this.audio.preload(store.data.car)]);
       if(stop())return void(this.preloading===id&&(this.preloading=null));
       await (this.warmP=this.ctx.warmRace?.(keys,stop));
+      if(stop()&&this.preloading===id)this.preloading=null;   // cut short mid warm-up (the garage): lineup() retries it as above
     })().catch(error=>{console.warn('Race preload:',error);if(this.preloading===id)this.preloading=null;});
   }
   /** The circuit picked in the setup screen: saved, the old venue and collision world dropped, the new track's data loaded and the
