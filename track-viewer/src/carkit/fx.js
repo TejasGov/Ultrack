@@ -33,6 +33,7 @@ const FIRE_FRAG = /* glsl */`
   gl_FragColor = vec4(vCol * a, 1.0);`;
 
 const DEFAULT_ENGINE = { crackle: 0.8, size: 1, gap: 1, shift: 0.3, top: 85 };
+const VIOLET = new THREE.Color(0xa040ff), WARM = new THREE.Color(0xff9440);      // the nitro wash and the pop flash
 
 export class CarFx {
   constructor(scene) {
@@ -47,7 +48,7 @@ export class CarFx {
     // one shared light: a warm flash for pops, a violet wash behind the player's car on nitro (a single pooled light:
     // the lightest way to throw colour on the body and road, and the light count never changes)
     this.light = new THREE.PointLight(0xff9440, 0, 5, 2);
-    this.light.name = 'fx-pop-light'; scene.add(this.light);
+    this.light.name = 'fx-pop-light'; scene.add(this.light); this.popAt = new THREE.Vector3();
     this.scene = scene; this.sun = null; this.sunT = 0;
     this.flash = 0; this.lit = 0; this.nj = 0; this.time = 0; this.glow = 0;
     this.quality = 1;      // 0..1 scales emission (set from the quality tier)
@@ -160,7 +161,7 @@ export class CarFx {
       this.vapor.puff(this, c, p, d, v, sz * S2, turbo);
       if (q > 0.6) this.vapor.puff(this, c, p, d, v, sz * S2 * 0.8, turbo);
       this.flash = Math.max(this.flash, (0.55 - 0.15 * turbo) * sz * S2);
-      this.light.position.set(p.x + d.x * 0.35, p.y - 0.25, p.z + d.z * 0.5);     // low and behind the pipe: the road and bumper, not the whole deck
+      this.popAt.set(p.x + d.x * 0.35, p.y - 0.25, p.z + d.z * 0.5);     // low and behind the pipe: the road and bumper, not the whole deck
     }
   }
 
@@ -203,16 +204,15 @@ export class CarFx {
     if (!this.heroSeen) this.heroNitro *= Math.exp(-5 * dt);       // the player's car is not being driven (menu): the screen package lets go
     this.heroSeen = false;
     this.flash *= Math.exp(-dt / 0.06); this.lit += (this.flash - this.lit) * (1 - Math.exp(-dt / (this.flash > this.lit ? 0.02 : 0.08)));      // the light eases in and out: no strobe
-    // the light: a pop's warm flash, or the violet nitro wash low behind the player's car
-    const g = this.glow, hot = this.lit > 0.02;
+    // the light: a pop's warm flash plus the violet nitro wash low behind the player's car, blended by their intensities (a pop
+    // during the nitro fade-out must not swap one for the other: that was a 25x one-frame drop, a hard blink)
+    const g = this.glow, c = this.glowAt;
     this.glow *= 0;
-    if (g > 0.01 && this.glowAt && !hot) {
-      const c = this.glowAt, n = this.nitroFx.nozzles(c)[0];
-      if (n) { this.anchor(n.a); const { p, d } = this.tmp; this.light.position.set(p.x + d.x * 1.3, c.root.position.y + 0.3, p.z + d.z * 1.3); }
-      this.light.color.setHex(0xa040ff); this.light.distance = 9; this.light.intensity = g * 30;
-    } else {
-      this.light.color.setHex(0xff9440); this.light.distance = 5; this.light.intensity = hot ? this.lit * 4.5 : 0;
-    }
+    const iv = g > 0.01 && c ? g * 30 : 0, io = this.lit * 4.5, k = iv / (iv + io || 1);      // k: the nitro wash's share
+    this.light.position.copy(this.popAt);
+    const n = iv > 0 && this.nitroFx.nozzles(c)[0];
+    if (n) { this.anchor(n.a); const { p, d } = this.tmp; this.light.position.lerp(this.tmp.c.set(p.x + d.x * 1.3, c.root.position.y + 0.3, p.z + d.z * 1.3), k); }
+    this.light.color.copy(WARM).lerp(VIOLET, k); this.light.distance = 5 + 4 * k; this.light.intensity = iv + io;
   }
 
   get counts() {
