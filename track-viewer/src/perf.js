@@ -30,8 +30,14 @@ export function detectTier(renderer) {
 export class GpuTimer {
   constructor(renderer) {
     this.gl = renderer.getContext();
+    this.init();
+    // queries and extensions die with the context: drop them on restore, or poll() stalls forever on a dead head query
+    renderer.domElement.addEventListener('webglcontextrestored', () => this.init());
+  }
+  init() {
     this.ext = this.gl.getExtension('EXT_disjoint_timer_query_webgl2');
     this.pending = [];
+    this.active = null;
     this.ms = NaN;            // last measured GPU time of a frame
   }
   get supported() { return !!this.ext; }
