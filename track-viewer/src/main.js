@@ -788,7 +788,7 @@ function warmRace(keys,stop=()=>false){
       compilePost(),
     ]);
     // the first capture also builds the hero's envMap variants (the capture's PMREM has its own size) and the PMREM filters
-    if(!stop())await field.prepareReflection(renderer,hiddenForCapture(),stop);
+    if(!stop()&&!game?.session)await field.prepareReflection(renderer,hiddenForCapture(),stop);   // mid-session it has run at Start, and it hides the hero across frames
     console.info('Race shaders warmed:',Math.round(performance.now()-started),'ms,',renderer.info.programs.length,'programs');
   })().finally(()=>{if(stop()&&warming?.done===done)warming=null;});   // a cancelled warm-up may be retried
   warming={id,done};return done;
@@ -862,6 +862,9 @@ async function setLook(name) {
   scene.environmentIntensity = look.env;
   appliedLook = name;
   applyAll();
+  // mid-session (the pause menu's Settings): a look with another lamp count needs new variants of every lit program, which the
+  // first frame after Resume built synchronously (seconds). Build them now, while paused; Resume cancels what is left.
+  if(game?.session){warming=null;warmRace(field.all.map(c=>c.key),()=>!game.session||!params.paused);}
 }
 
 /** the track's optional day/night backdrop blend (tracks.js dayNight) for this look */
