@@ -1,0 +1,101 @@
+/* Ultrack UI tokens (docs/ui-system.md). The production system's values, one place: colour, type, spacing, radii, hairlines,
+   surfaces, motion, focus, icons. Prefixed names (--c-, --fs-, --sp-, ...) so nothing here collides with the older ui.css / hud.css
+   variables (--red, --ink, --glass, --tile ...): importing this file restyles nothing until a screen opts in.
+   Sizes are design px on the 1600x900 canvas times --u, so a layout scales with the window; type has a px floor so it never
+   drops below legible at 1280x720. */
+:root {
+  /* ---- scale: 1 design px. 1280x720 = 0.8px, 1600x900 = 1px, 1920x1080 = 1.2px, capped at 1.35 (2560x1440 and up) */
+  --u: clamp(0.8px, min(0.0625vw, 0.1111vh), 1.35px);
+
+  /* ---- colour: neutrals, ONE accent, one positive signal; team colours are identity only, never UI state */
+  --c-bg: #07090d;                              /* page behind the canvas, letterbox */
+  --c-ink-1: #f4f2ee;                           /* primary text, icons, selected values */
+  --c-ink-2: rgba(244, 242, 238, 0.74);         /* secondary text, descriptions */
+  --c-ink-3: rgba(244, 242, 238, 0.56);         /* labels, kickers, hints (>= 4.5:1 on --c-panel) */
+  --c-ink-4: rgba(244, 242, 238, 0.32);         /* disabled, placeholder digits, tick marks */
+  --c-ink-inv: #0b0d11;                         /* text on an ink fill (selected segment, primary-on-light) */
+  --c-accent: #e3141b;                          /* brand race red: focus, primary action, "yours", errors, redline */
+  --c-accent-hi: #ff2a31;                       /* accent hover/pressed */
+  --c-accent-wash: rgba(227, 20, 27, 0.14);     /* focused row/tile background tint */
+  --c-pos: #3fca7f;                             /* faster delta, upgrade gain: text and thin bars only */
+  --c-panel: rgba(9, 12, 17, 0.74);             /* default panel / tile surface over the live scene */
+  --c-panel-2: rgba(14, 18, 25, 0.9);           /* raised: modal, toast, dropdown */
+  --c-fill-1: rgba(255, 255, 255, 0.05);        /* control track, list row rest */
+  --c-fill-2: rgba(255, 255, 255, 0.10);        /* control hover */
+  --c-fill-3: rgba(255, 255, 255, 0.16);        /* control pressed, inactive bar */
+  --c-line: rgba(255, 255, 255, 0.10);          /* hairline: panel edges, row dividers */
+  --c-line-2: rgba(255, 255, 255, 0.20);        /* strong hairline: keycaps, unselected swatch edge, table head */
+  --c-scrim: rgba(4, 6, 9, 0.62);               /* full-screen scrim (pause, settings from pause, modal) */
+  --c-scrim-edge: rgba(4, 6, 9, 0.86);          /* the dark side of a directional menu scrim */
+
+  /* ---- type: Barlow Condensed (700 upright; 800/900 italic) for words, Anton for the few big numerals (>= 40 design px) */
+  --font-ui: 'Barlow Condensed', system-ui, sans-serif;
+  --font-num: 'Anton', 'Barlow Condensed', sans-serif;
+  --fs-micro: max(12px, calc(13 * var(--u)));   /* key hints, units, tags */
+  --fs-label: max(12px, calc(14 * var(--u)));   /* uppercase labels and kickers, tracked */
+  --fs-body: max(14px, calc(18 * var(--u)));    /* descriptions, notes */
+  --fs-value: max(16px, calc(22 * var(--u)));   /* control values, list rows, table cells, times */
+  --fs-title: max(20px, calc(32 * var(--u)));   /* panel titles, menu options */
+  --fs-display: max(30px, calc(56 * var(--u))); /* screen titles, hero tile word */
+  --fs-hero: max(48px, calc(96 * var(--u)));    /* results position, title-screen words */
+  --fs-num-l: max(32px, calc(46 * var(--u)));   /* HUD position, gear (Anton) */
+  --fs-num-xl: max(56px, calc(88 * var(--u)));  /* HUD speed (Anton) */
+  --lh-tight: 1;
+  --lh-body: 1.3;
+  --track-label: 0.2em;                         /* uppercase labels */
+  --track-wide: 0.28em;                         /* kickers, the tiny caps above a value */
+  --track-title: 0.01em;                        /* italic display words */
+
+  /* ---- spacing: one scale, 4-based */
+  --sp-1: calc(4 * var(--u));
+  --sp-2: calc(8 * var(--u));
+  --sp-3: calc(12 * var(--u));
+  --sp-4: calc(16 * var(--u));
+  --sp-5: calc(24 * var(--u));
+  --sp-6: calc(32 * var(--u));
+  --sp-7: calc(48 * var(--u));
+  --sp-8: calc(64 * var(--u));
+  --sp-9: calc(96 * var(--u));
+  --gutter: calc(64 * var(--u));                /* screen edge to content (safe area) */
+
+  /* ---- shape: rounded rectangles only, three radii; no clip-path slants */
+  --r-1: 4px;                                   /* chips, tags, keycaps, swatches, bars */
+  --r-2: 8px;                                   /* buttons, list rows, segments, inputs */
+  --r-3: 12px;                                  /* panels, tiles, toast, modal */
+  --r-round: 999px;                             /* toggle track, gauge discs */
+  --hair: 1px;
+  --rule: 2px;                                  /* the accent rule on a focused tile / active tab */
+
+  /* ---- surfaces */
+  --blur-panel: blur(16px) saturate(1.15);
+  --blur-scrim: blur(8px);
+  --shadow-raised: 0 16px 48px rgba(0, 0, 0, 0.38);
+
+  /* ---- motion: short and calm, ease-out, no overshoot */
+  --dur-1: 150ms;                               /* hover, press, focus move */
+  --dur-2: 200ms;                               /* control state, tab content */
+  --dur-3: 250ms;                               /* screen fade, panel slide, toast in */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);    /* exits only, at ~70 % of the entry */
+  --slide: calc(12 * var(--u));                 /* entry offset for slides */
+
+  /* ---- focus: accent ring for keyboard and pad focus; selected values use ink, never accent */
+  --focus-w: 2px;
+  --focus-offset: 2px;
+  --focus-color: var(--c-accent);
+
+  /* ---- icons (icons.js): 24 px grid, round stroke, currentColor */
+  --icon-s: max(14px, calc(16 * var(--u)));
+  --icon-m: max(16px, calc(20 * var(--u)));
+  --icon-l: max(20px, calc(24 * var(--u)));
+  --icon-xl: max(24px, calc(32 * var(--u)));
+  --icon-stroke: 1.75;
+}
+/* reduce motion: the OS setting, or the in-game one (html[data-motion=reduce], set by the UI from store.settings.reduceMotion) */
+@media (prefers-reduced-motion: reduce) { :root { --dur-1: 0ms; --dur-2: 0ms; --dur-3: 0ms; --slide: 0px; } }
+:root[data-motion=reduce] { --dur-1: 0ms; --dur-2: 0ms; --dur-3: 0ms; --slide: 0px; }
+
+/* the icon element icons.js makes: sized by font-size or a token, coloured by the text */
+.icon { display: inline-block; flex: none; width: 1em; height: 1em; vertical-align: -0.125em; fill: none; stroke: currentColor;
+  stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.tnum { font-variant-numeric: tabular-nums; }

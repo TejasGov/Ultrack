@@ -1,5 +1,6 @@
 /* Ultrack V1 interface: menus, garage, settings, HUD. Brand from the logo: white and race red on near-black; type is
    Barlow Condensed (labels, italic for motion) and Anton (numbers). Panels are dark glass with a slanted edge. */
+@import './ui-tokens.css';   /* the production system's tokens (docs/ui-system.md); prefixed, so they restyle nothing on their own */
 @font-face { font-family: 'Anton'; src: url('/assets/fonts/anton-latin-400-normal.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; font-weight: 700; src: url('/assets/fonts/barlow-condensed-latin-700-normal.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: 'Barlow Condensed'; font-weight: 800; font-style: italic; src: url('/assets/fonts/barlow-condensed-latin-800-italic.woff2') format('woff2'); font-display: swap; }
