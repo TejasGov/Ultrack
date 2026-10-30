@@ -326,7 +326,7 @@ export class Game {
     this.state = 'session'; this.quietT = 0; this.startPos = this.session.heroPos; this.racePb = false;
     this.hud.reset(); this.hud.show(true);
     // reply 0 in a race: lights out comes ~14 s in and would cut Alastair's answer mid-sentence
-    if (mode === 'race') setTimeout(() => this.say('intro_session', { priority: 3, force: true, reply: 0 }), 400);
+    if (mode === 'race') this.sayLater('intro_session', { priority: 3, force: true, reply: 0 }, 400);
     else this.say('intro_session', { priority: 3, force: true });
     } catch(error) {
       console.error('Session could not start:',error);this.raceLoading?.close();this.endSession();this.lineup();this.show('menu');this.setBusy('Session could not load. Try Start again.');
@@ -361,6 +361,8 @@ export class Game {
   get blurScale() { return this.session ? 1 : 0.2; }
 
   say(cat, opts = {}) { if (store.settings.commentaryOn) { const ok = this.audio.commentary?.say(cat, opts); if (ok) this.quietT = 0; return ok; } return false; }
+  /** a delayed line: dropped if its session has ended or been restarted by then (a new Session is a new object) */
+  sayLater(cat, opts, ms) { const s = this.session; setTimeout(() => { if (s && this.session === s) this.say(cat, opts); }, ms); }
 
   // ---------------------------------------------------------------------------------------------- per frame
   update(dt, fps) {
@@ -424,7 +426,7 @@ export class Game {
         if (s.mode === 'race' && e.fastest) this.say('fastest_lap', { priority: 2 });
         else if (e.pb || record) this.say('personal_best', { priority: 2 });
         else if (e.n === 1 && s.mode === 'race') this.say('lap_one_complete', { priority: 1 });
-        if (s.mode === 'race' && s.laps >= 3 && e.n === Math.floor(s.laps / 2)) setTimeout(() => this.say('halfway', { priority: 1 }), 3000);
+        if (s.mode === 'race' && s.laps >= 3 && e.n === Math.floor(s.laps / 2)) this.sayLater('halfway', { priority: 1 }, 3000);
         break;
       }
       case 'finalLap': H.message('Final lap', '', 'gold', 2.6); A.play('race/final-lap-bell.ogg'); this.say('final_lap', { priority: 3 }); break;
@@ -457,7 +459,7 @@ export class Game {
       this.hud.message(p === 1 ? 'Winner' : `P${p}`, `${fmtTime(s.raceT)}`, p === 1 ? 'gold' : '', 3.2);
       this.say(p === 1 ? 'player_wins' : p <= 3 ? 'player_podium' : p === s.order.length ? 'player_last' : 'player_midfield', { priority: 3, force: true });
       A.cheer(p <= 3);
-      if (p === 1) { A.play('fireworks/big-finale.ogg', { bus: 'crowd', gain: 0.9, delay: 0.6 }); setTimeout(() => this.say('winner_fireworks', { priority: 2 }), 7000); }
+      if (p === 1) { A.play('fireworks/big-finale.ogg', { bus: 'crowd', gain: 0.9, delay: 0.6 }); this.sayLater('winner_fireworks', { priority: 2 }, 7000); }
     } else if (s.mode === 'drift') {
       this.driftRecord = store.driftRecord(hero.key, e.score);
       this.pay({ mode: 'drift', score: e.score, record: this.driftRecord });
