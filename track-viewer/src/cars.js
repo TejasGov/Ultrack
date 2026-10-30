@@ -286,7 +286,7 @@ export async function assemble(loader, key, k, hero) {
       mesh.castShadow = mesh.receiveShadow = true;
       level.add(mesh);
     }
-    lod.addLevel(level, dist);
+    lod.addLevel(level, dist, 0.05);   // ~2 m hysteresis at 45 m: no body-LOD blinking for a car holding a gap there
   };
   await loadBodyLevel(0,0);
   let farPromise;lod.userData.loadFar=()=>farPromise??=loadBodyLevel(1,45).catch(error=>{farPromise=null;throw error;});
@@ -748,15 +748,16 @@ export class Field {
       // detail by distance: full wheels within DETAIL_M, spinning stand-ins to FAR_M, one static proxy beyond (and no
       // side mirrors); only cars within SHADOW_M cast into the sun's shadow map. Every car is drawn again in the
       // mirror, shadow and capture passes, so its draw calls count several times over.
-      const d = c.root.position.distanceTo(camera.position);
-      const band = d < DETAIL_M ? 0 : d < FAR_M ? 1 : 2;
+      // A 2-3 m margin keeps the current state, so a car holding a gap at a threshold does not blink between looks.
+      const d = c.root.position.distanceTo(camera.position), near = (on, thr, m) => on ? thr + m : thr - m, b = c.band ?? 0;
+      const band = d < near(b === 0, DETAIL_M, 2) ? 0 : d < near(b < 2, FAR_M, 3) ? 1 : 2;
       if (band !== c.band) {
         c.band = band;
         c.detail.forEach((o) => { o.visible = band === 0; });
         c.simple.forEach((o) => { o.visible = band === 1; });
         c.wheelRoot.visible = band < 2; c.proxy.visible = band === 2; c.sideMirrors.visible = band < 2;
       }
-      const cast = d < SHADOW_M;
+      const cast = d < near(c.cast, SHADOW_M, 3);
       if (cast !== c.cast) { c.cast = cast; c.lod.traverse((o) => { if (o.isMesh) o.castShadow = cast; }); }
       // car-lab tunes its lamps for a studio; setLamps puts them at venue levels (tail lamps dim until the brake)
       setLamps(c, this.lightMode, c.onGrid ? 0 : (c.brake ?? 0), t);
