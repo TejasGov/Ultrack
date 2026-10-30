@@ -28,7 +28,9 @@ export function loadAssets() {
     loadTeamExtras(),
     ...FONTS.map(([family, file, desc]) => new FontFace(family, `url(/assets/fonts/${file})`, desc).load().then((f) => document.fonts.add(f))),
     new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = logoUrl; }),
-  ]).then((r) => ({ logo: r[r.length - 1] }));
+  ]).then((r) => ({ logo: r[r.length - 1] }))
+    // a failed font or logo fetch must not stick: clear the cache so the next car retries, and still reject this caller
+    .catch((e) => { ready = null; throw e; });
   return ready;
 }
 
