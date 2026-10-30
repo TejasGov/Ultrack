@@ -7,12 +7,17 @@
 //           1.5x, once over black and once over white with the room's walls, floor and turntable hidden; the two frames give exact
 //           alpha (the contact shadow and the glass come out semi-transparent) -> public/assets/ui/stills/cars/<key>.webp, 1600x900
 //           with alpha, the car centred, for any panel colour
-//   node scripts/qa-lock.mjs -- node scripts/make-ui-stills.mjs [tracks|cars|all=all] [url=http://127.0.0.1:5180]
+//   thumbs  the car stills cropped to the car's box (the inset every car still shares) at 320 px wide, for list rows: no browser,
+//           sharp only -> public/assets/ui/stills/cars/thumbs/<key>.webp
+//   side    the same room, each car square from the side through an orthographic camera: one scale for every car (200 px a metre)
+//           and the ground on one line, trimmed to the car's length -> public/assets/ui/stills/cars/side/<key>.webp (alpha, 320 px
+//           tall), so two drawn at the same height compare at true scale (the garage's Specs tab)
+//   node scripts/qa-lock.mjs -- node scripts/make-ui-stills.mjs [tracks|cars|side|thumbs|all=all] [url=http://127.0.0.1:5180]
 //   ONLY=marina,av12 limits the ids; PROBE=1 shoots candidate views instead (tracks: 8 around the lap; cars: 4 azimuths of the first
 //   car) into qa/ui-stills/probe/, to choose VIEWS / CAR_VIEW from.
 import { chromium } from 'playwright-core';
 import sharp from 'sharp';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,11 +36,15 @@ const VIEWS = {
 };
 // ---- the car camera: around the car at the origin of the garage room (its long axis on x), fov, target height
 const CAR_VIEW = { az: 35, el: 9, dist: 6.2, fov: 30, ty: 0.6 };   // nose to the right; the longest car fills ~70 % of the width
+// the side view: camera on +z (nose, +x, to the right), 6 m across 1200 px; the frame runs from 5 cm under the ground to 1.55 m
+const SIDE = { az: 90, el: 0, dist: 12, ortho: 6, ty: 0.75, w: 1200, h: 320 }, SIDE_SS = 2;
+const BOX = { l: 0.19, t: 0.24, r: 0.08, b: 0.12 };   // the car's box in every car still (ui.css object-view-box: inset(24% 8% 12% 19%))
 
 const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
-const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
+let browser = null;   // launched on first use: thumbs needs none
 const errors = [];
 async function open(url, settings) {
+  browser ??= await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
   const ctx = await browser.newContext({ viewport: { width: W, height: H } });
   await ctx.addInitScript((s) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: s })); } catch { /* none */ } }, settings);
   // Vite's HMR socket stubbed: another agent saving a file would otherwise reload the page mid-run
@@ -96,7 +105,8 @@ const catchFrame = (o) => new Promise((resolve, reject) => {
     try {
       // the room's walls, floor, turntable and light bars go; the car, the lights and the soft contact shadow (a canvas texture) stay
       for (const c of scene.children) if (c !== hero && c.isMesh && !c.material?.map?.isCanvasTexture && c.visible) { c.visible = false; hidden.push(c); }
-      const a = (o.az * Math.PI) / 180, e = (o.el * Math.PI) / 180, camera = new v.THREE.PerspectiveCamera(o.fov, o.w / o.h, 0.1, 100);
+      const a = (o.az * Math.PI) / 180, e = (o.el * Math.PI) / 180, k = o.ortho / 2, camera = o.ortho
+        ? new v.THREE.OrthographicCamera(-k, k, (k * o.h) / o.w, (-k * o.h) / o.w, 0.1, 100) : new v.THREE.PerspectiveCamera(o.fov, o.w / o.h, 0.1, 100);
       camera.position.set(Math.cos(a) * Math.cos(e) * o.dist, o.ty + Math.sin(e) * o.dist, Math.sin(a) * Math.cos(e) * o.dist); camera.lookAt(0, o.ty, 0);
       r.setPixelRatio(1); r.setSize(o.w, o.h, false);
       const out = [];
@@ -109,7 +119,7 @@ const catchFrame = (o) => new Promise((resolve, reject) => {
   };
 });
 /** exact alpha from the same frame over black (B) and white (Wh): a = 1 - (Wh - B), colour = B / a; then downscale to W x H */
-async function matte([black, white]) {
+async function matte([black, white], w = W, h = H) {
   const raw = (u) => sharp(Buffer.from(u.split(',')[1], 'base64')).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const [{ data: B, info }, { data: Wh }] = await Promise.all([raw(black), raw(white)]);
   const px = info.width * info.height, rgba = Buffer.alloc(px * 4);
@@ -119,9 +129,17 @@ async function matte([black, white]) {
     for (let c = 0; c < 3; c++) rgba[i * 4 + c] = a ? Math.min(255, Math.round((B[i * 3 + c] * 255) / a)) : 0;
     rgba[i * 4 + 3] = Math.round(a);
   }
-  return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).resize(W, H);
+  return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).resize(w, h);
 }
-async function cars() {
+/** a side frame trimmed to the car: the columns whose alpha reaches half (the soft contact shadow's tails stay out), full height */
+async function trimSide(img) {
+  const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
+  let x0 = info.width, x1 = -1;
+  for (let x = 0; x < info.width; x++) for (let y = 0; y < info.height; y++) if (data[(y * info.width + x) * 4 + 3] >= 128) { x0 = Math.min(x0, x); x1 = x; break; }
+  if (x1 < 0) throw new Error('empty side frame');
+  return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).extract({ left: x0, top: 0, width: x1 - x0 + 1, height: info.height });
+}
+async function cars(side = false) {
   const { page, ctx } = await open(base + '/', { track: 'marina', look: 'dusk', weather: 'dry', reduceMotion: true });
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 300000 });
   await page.keyboard.press('Enter');
@@ -129,25 +147,39 @@ async function cars() {
   await page.click('.bento-tile[data-id=garage]');
   await page.waitForSelector('.garage button.car[data-key]', { state: 'visible' });
   const keys = sel(await page.$$eval('.garage button.car[data-key]', (b) => b.map((x) => x.dataset.key)));   // every car the game offers
-  const views = probe ? [35, 145, 215, 325].map((az) => ({ ...CAR_VIEW, az })) : [CAR_VIEW];
+  const views = side ? [SIDE] : probe ? [35, 145, 215, 325].map((az) => ({ ...CAR_VIEW, az })) : [CAR_VIEW];
   for (const key of probe ? keys.slice(0, 1) : keys) {
     await page.click(`.garage button.car[data-key="${key}"]`);
     await page.waitForFunction((k) => window.game.field?.hero?.key === k && window.game.screenName === 'garage', key, { timeout: 180000 });
     await page.waitForTimeout(1500);   // textures decode, the paint settles
     for (const view of views) {
-      const frames = await page.evaluate(catchFrame, { ...view, w: W * SS, h: H * SS });
-      const file = probe ? join(PROBE, `car-${key}-az${view.az}.png`) : join(OUT, 'cars', `${key}.webp`);
+      const [w, h, ss] = side ? [SIDE.w, SIDE.h, SIDE_SS] : [W, H, SS];
+      const frames = await page.evaluate(catchFrame, { ...view, w: w * ss, h: h * ss });
+      const file = side ? join(OUT, 'cars', 'side', `${key}.webp`) : probe ? join(PROBE, `car-${key}-az${view.az}.png`) : join(OUT, 'cars', `${key}.webp`);
       mkdirSync(dirname(file), { recursive: true });
-      const img = await matte(frames);
-      await (probe ? img.flatten({ background: '#2a3038' }).png() : img.webp(WEBP)).toFile(file);
+      const img = side ? await trimSide(await matte(frames, w, h)) : await matte(frames);
+      await (probe && !side ? img.flatten({ background: '#2a3038' }).png() : img.webp(WEBP)).toFile(file);
       console.log('car', key, view.az);
     }
   }
   await ctx.close();
 }
 
+/** list-row thumbnails: each car still cropped to the shared car box, so a row decodes 320 px, not a 1600x900 frame */
+async function thumbs() {
+  const dir = join(OUT, 'cars'), left = Math.round(W * BOX.l), top = Math.round(H * BOX.t);
+  const box = { left, top, width: W - left - Math.round(W * BOX.r), height: H - top - Math.round(H * BOX.b) };
+  mkdirSync(join(dir, 'thumbs'), { recursive: true });
+  for (const f of readdirSync(dir).filter((f) => f.endsWith('.webp') && (!only || only.includes(f.slice(0, -5))))) {
+    await sharp(join(dir, f)).extract(box).resize(320).webp(WEBP).toFile(join(dir, 'thumbs', f));
+    console.log('thumb', f);
+  }
+}
+
 try {
   if (what === 'tracks' || what === 'all') await tracks();
   if (what === 'cars' || what === 'all') await cars();
-} finally { await browser.close(); }
+  if (what === 'side' || what === 'all') await cars(true);
+  if (what === 'thumbs' || what === 'all') await thumbs();
+} finally { await browser?.close(); }
 console.log('errors:', errors.length ? errors : 'none');

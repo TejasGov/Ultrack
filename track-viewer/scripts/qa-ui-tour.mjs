@@ -12,6 +12,7 @@
 // one circuit switch in setup, which loads the other venue).
 // s3: setup (four modes), settings (four tabs; from the menu and from pause), pause (race, trial, free) and the confirm modal;
 // PART=setup|settings|pause runs one part.
+// s4: the garage (four tabs on another car, keyboard-only paint and a buy, the car stills, a car swap that moves nothing).
 //   OUT=qa/ui-tour/S1-primitives-small-screens node scripts/qa-lock.mjs -- node scripts/qa-ui-tour.mjs s1
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -270,6 +271,62 @@ async function s3() {
   await pauseOpt('Quit to menu'); await page.click('.modal .btn-primary'); await settle();
 }
 
+const S4 = label === 's4';
+/** what s4 owns: the garage. Every tab at three sizes on a car that is not yours (so the primary shows), its action bar on screen at
+ *  each size; keyboard only: a body colour, the custom HSV strip, a wheel and a caliper colour, then an upgrade bought; every car
+ *  still, thumbnail and side cutout answers 200 with an image; swapping cars moves nothing in the layout */
+async function s4() {
+  const imgs = () => page.waitForFunction(() => [...document.querySelectorAll('#ui .screen.on img')].every((i) => i.complete), null, { timeout: 20000 }).catch(() => {});
+  const shown = () => page.waitForFunction(() => window.game.field?.hero?.key === document.querySelector('.ga-rows .car.on')?.dataset.key, null, { timeout: 120000 });
+  const act = () => nav(() => { const b = document.querySelector('.ga-act .btn-primary'), r = b?.getBoundingClientRect();
+    return b ? { text: b.textContent, onScreen: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth } : null; });
+  const focusId = () => nav(() => { const g = window.game.nav, e = g.items()[g.i]; return e?.dataset.id ?? e?.dataset.key ?? e?.textContent; });
+  const tabName = () => nav(() => document.querySelector('.ga-tabs button.on')?.textContent);
+  await tile('garage'); await page.waitForFunction(() => window.viewer.params.mode === 'orbit', null, { timeout: 60000 });
+  await shown(); await imgs(); await shot('garage-yours');
+  await key('ArrowDown'); await shown(); await imgs();
+  for (const t of ['car', 'specs', 'upgrades', 'paint']) { await imgs(); await shot('garage-' + t, true, act); await key('KeyE'); }
+  // the same tab on three cars: nothing moves
+  const box = () => nav(() => Object.fromEntries(['.ga-list', '.ga-detail', '.ga-title', '.ga-tabs', '.ga-body', '.ga-act', '.ga-size', '.sfoot'].map((s) => {
+    const r = document.querySelector('.garage ' + s)?.getBoundingClientRect(); return [s, r ? [r.x, r.y, r.width, r.height].map(Math.round).join(',') : null]; })));
+  await key('KeyE'); const layouts = [];
+  for (let i = 0; i < 3; i++) { await key('ArrowDown'); await imgs(); layouts.push(await box()); }
+  checks.swapLayout = { tab: await tabName(), same: new Set(layouts.map((l) => JSON.stringify(l))).size === 1, layouts };
+  await shot('garage-specs-other-car');
+  checks.stills = await nav(async () => {
+    const keys = [...document.querySelectorAll('.ga-rows .car')].map((b) => b.dataset.key), bad = {};
+    for (const k of keys) for (const d of ['', 'thumbs/', 'side/']) {   // the dev server answers a missing file with index.html (200): the type says
+      const r = await fetch(`/assets/ui/stills/cars/${d}${k}.webp`), type = r.headers.get('content-type') ?? '';
+      if (r.status !== 200 || !type.startsWith('image/')) bad[d + k] = `${r.status} ${type}`;
+    }
+    return { cars: keys.length, files: keys.length * 3, bad, rowThumbsLoaded: [...document.querySelectorAll('.ga-rows .cut')].filter((i) => i.complete && i.naturalWidth > 0).length };
+  });
+  // keyboard only, from the car row: into the tabs, Paint, a body colour, the custom strip, a wheel, a caliper; Upgrades and a buy
+  const paint = () => nav(() => { const k = document.querySelector('.ga-rows .car.on').dataset.key, p = window.game.paintOf(k); return { key: k, color: p.color, rim: p.rim, caliper: p.caliper }; });
+  const k0 = await paint(), trail = [];
+  await key('ArrowRight'); trail.push(await focusId());
+  for (let i = 0; i < 4 && (await tabName()) !== 'Paint'; i++) await key('ArrowRight');
+  await key('ArrowDown'); await key('ArrowRight'); trail.push(await focusId()); await key('Enter');
+  const k1 = await paint();
+  await key('ArrowDown'); for (let i = 0; i < 9; i++) await key('ArrowRight');
+  trail.push(await focusId()); await key('Enter'); await key('ArrowDown'); trail.push(await focusId());
+  for (let i = 0; i < 6; i++) await key('ArrowRight');
+  const k2 = await paint(); await shot('garage-paint-custom', true);
+  for (let i = 0; i < 12 && !/^rim-/.test(await focusId()); i++) await key('ArrowDown');
+  await key('ArrowRight'); trail.push(await focusId()); await key('Enter');
+  for (let i = 0; i < 6 && !/^caliper-/.test(await focusId()); i++) await key('ArrowDown');
+  await key('ArrowRight'); await key('ArrowRight'); trail.push(await focusId()); await key('Enter');
+  const k3 = await paint();
+  const up = () => nav(() => ({ level: document.querySelector('.ga-up .ga-steps')?.getAttribute('aria-label'), coins: document.querySelector('.ga-coins')?.textContent }));
+  await key('KeyQ'); trail.push(await tabName(), await focusId()); await key('ArrowDown'); trail.push(await focusId());
+  const u0 = await up(); await key('Enter'); const u1 = await up(); trail.push(await focusId());
+  await shot('garage-upgrades-bought');
+  checks.keyboard = { trail, body: [k0.color, k1.color], custom: k2.color, rim: [k1.rim, k3.rim], caliper: [k1.caliper, k3.caliper], upgrade: [u0, u1],
+    ok: k1.color !== k0.color && k2.color !== k1.color && k3.rim !== k1.rim && k3.caliper !== k1.caliper && u0.level !== u1.level && u0.coins !== u1.coins,
+    input: await nav(() => document.documentElement.dataset.input) };
+  await key('Escape'); await settle(); checks.escGarage = await nav(() => window.game.screenName);
+}
+
 try {
   await page.goto(base);
   await page.waitForSelector('.title-screen.on', { timeout: 60000 });
@@ -278,7 +335,7 @@ try {
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
   await settle(); await shot('title-ready', S1);
   await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
-  if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else {                                                             // the whole tour (not re-indented)
+  if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else if (S4) await s4(); else {                                                             // the whole tour (not re-indented)
   await shot('menu', true);
   await key('ArrowRight'); await shot('menu-focus-moved');                                    // keyboard focus on the second tile
   await key('ArrowLeft');

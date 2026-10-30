@@ -49,13 +49,13 @@ export const still = (kind, id) => `/assets/ui/stills/${kind}/${id}.webp`;   // 
 export const empty = () => h('span.empty', { 'aria-label': 'None' }, '—');
 const cap = (k) => (k.startsWith('arrow-') ? h('kbd', { 'aria-label': k.slice(6) }, icon(k)) : h('kbd', {}, k));   // an arrow cap is its icon, named for screen readers
 /** a key hint: keyboard caps (an arrow is its icon) or the pad glyph, whichever device was used last, then the action */
-export const prompt = (keys, pad, label) => h('span.prompt', {}, h('span.pk', {}, [keys].flat().map(cap)), pad ? icon('pad-' + pad, { cls: 'pp' }) : null, label ? h('span.pl', {}, label) : null);
+export const prompt = (keys, pad, label) => h('span.prompt', {}, h('span.pk', {}, [keys].flat().map(cap)), pad ? [pad].flat().map((p) => icon('pad-' + p, { cls: 'pp' })) : null, label ? h('span.pl', {}, label) : null);   // pad: one glyph or several (['lb', 'rb'])
 /** the footer's Back: a ghost button with its Esc / B prompt, last in the band */
 export const backButton = (onclick) => h('button.btn.btn-ghost', { 'data-nav': '', onclick }, icon('back'), 'Back', prompt('Esc', 'b'));
 /** the shared header band: the logo, the screen title, an optional kicker on the right */
 const header = (title, kick) => h('header.shead', {}, h('i.logo'), h('h1', {}, title), kick ? h('span.kick', {}, kick) : null);
 /** a scroller's bottom fade while more is below (on scroll and on rebuild, never per frame) */
-const fadeMore = (el) => el.classList.toggle('more', el.scrollHeight - el.scrollTop - el.clientHeight > 1);
+export const fadeMore = (el) => el.classList.toggle('more', el.scrollHeight - el.scrollTop - el.clientHeight > 1);
 
 // ---------------------------------------------------------------------------------------------- navigation
 /** Keyboard / gamepad focus over a screen's [data-nav] elements: up/down move, left/right adjust, Enter clicks. */
@@ -70,28 +70,33 @@ export class Nav {
       if(game.raceLoading?.active)return;
       const s = game.screen;
       if (!s?.nav) { const a = globalThis.document?.activeElement; if (a?.closest?.('#ui .screen')) a.blur(); return; }   // a fading screen's button must not take Space / Enter from the race
-      if (e.target?.tagName === 'INPUT' && e.target.type === 'color') return;
       const k = e.code;
       if (k === 'ArrowDown') { this.moveSpatial(0,1); e.preventDefault(); }
       else if (k === 'ArrowUp') { this.moveSpatial(0,-1); e.preventDefault(); }
-      else if (k === 'ArrowLeft' || k === 'ArrowRight') { if(s.grid)this.moveSpatial(k==='ArrowLeft'?-1:1,0);else this.adjust(k === 'ArrowLeft' ? -1 : 1); e.preventDefault(); }
+      else if (k === 'ArrowLeft' || k === 'ArrowRight') { this.lr(k === 'ArrowLeft' ? -1 : 1); e.preventDefault(); }
       else if (k === 'Enter' || k === 'NumpadEnter') { this.items()[this.i]?.click(); e.preventDefault(); }
       else if (k === 'Escape' || k === 'Backspace') { s.back?.(); e.preventDefault(); }
     });
   }
   items() { const s = this.game.screen; return [...((s?.modal ?? s?.el)?.querySelectorAll('[data-nav]') ?? [])].filter((e) => e.offsetParent !== null); }   // an open modal traps focus
   reset(i = 0) { this.i = i; this.mark(); }
-  move(d) { const L = this.items(); if (!L.length) return; this.i = (this.i + d + L.length) % L.length; this.mark(true); this.game.audio.play('race/count-tick.ogg', { gain: 0.25 }); }
+  move(d) { const L = this.items(); if (!L.length || this.game.screen?.navMove?.(L[this.i], d)) return; this.i = (this.i + d + L.length) % L.length; this.mark(true); this.game.audio.play('race/count-tick.ogg', { gain: 0.25 }); }
+  /** a [data-grid] group inside a list screen (the garage's swatches): the arrows cross it spatially, Left/Right never adjust there */
+  group() { return this.game.screen?.grid ? null : this.items()[this.i]?.closest?.('[data-grid]'); }
+  lr(d) { if (this.game.screen?.grid || this.group()) this.moveSpatial(d, 0); else this.adjust(d); }
   moveSpatial(dx,dy) {
-    if(!this.game.screen?.grid){this.move(dy||dx);return;}
+    const g=this.group();
+    if(!this.game.screen?.grid&&!g){this.move(dy||dx);return;}
     const L=this.items(), current=L[this.i];if(!current)return;
     const box=current.getBoundingClientRect(),x=box.x+box.width/2,y=box.y+box.height/2;
     let best=-1,score=Infinity;
     L.forEach((e,i)=>{if(i===this.i)return;const b=e.getBoundingClientRect(),xx=b.x+b.width/2-x,yy=b.y+b.height/2-y;
       const ahead=xx*dx+yy*dy,cross=Math.abs(xx*dy-yy*dx);
+      if(g&&(!g.contains(e)||(dx&&cross>=ahead)))return;   // inside a group: only its own stops, and Left/Right stay on the row
       if(ahead>1&&ahead+cross*2<score-1){score=ahead+cross*2;best=i;}   // a tie within 1 px keeps the earlier stop: Right from Race is Time Trial, not Garage
     });
     if(best>=0){this.i=best;this.mark(true);}
+    else if(g&&dy){const G=L.filter((e)=>g.contains(e));this.i=(L.indexOf(dy<0?G[0]:G.at(-1))+dy+L.length)%L.length;this.mark(true);}   // Up/Down off its edge: the stop before or after the group
   }
   adjust(d) { this.items()[this.i]?.dispatchEvent(new CustomEvent('adjust', { detail: d })); }
   mark(byKey = false) {
@@ -106,7 +111,7 @@ export class Nav {
     this.game.screen?.onSel?.(el, byKey);
   }
   focusAt(t) { const el = t?.closest?.('[data-nav]'), k = el ? this.items().indexOf(el) : -1; if (k >= 0 && k !== this.i) { this.i = k; this.mark(); } }
-  hover() {}   // retired: hover is a --c-fill-2 style only (garage.js still calls it until its own pass)
+  hover() {}   // retired: hover is a --c-fill-2 style only (results still calls it until its own pass)
   /** gamepad: d-pad with key repeat, A = Enter, B = back */
   pad(dt) {
     const p = navigator.getGamepads?.().find((g) => g?.connected); if (!p) return;
@@ -114,7 +119,7 @@ export class Nav {
     const dir = b(13) || ax[1] > 0.6 ? 'd' : b(12) || ax[1] < -0.6 ? 'u' : b(14) || ax[0] < -0.6 ? 'l' : b(15) || ax[0] > 0.6 ? 'r' : null;
     if (dir || p.buttons.some((x) => x.pressed)) setInput('pad');            // prompts follow the pad; an attribute write only on a change
     this.rep = dir === this.dir ? this.rep - dt : 0; this.dir = dir;
-    if (dir && this.rep <= 0) { this.rep = this.rep === 0 ? 0.38 : 0.12; ({ d: () => this.moveSpatial(0,1), u: () => this.moveSpatial(0,-1), l: () => this.game.screen?.grid?this.moveSpatial(-1,0):this.adjust(-1), r: () => this.game.screen?.grid?this.moveSpatial(1,0):this.adjust(1) })[dir](); }
+    if (dir && this.rep <= 0) { this.rep = this.rep === 0 ? 0.38 : 0.12; ({ d: () => this.moveSpatial(0,1), u: () => this.moveSpatial(0,-1), l: () => this.lr(-1), r: () => this.lr(1) })[dir](); }
     const a = b(0), back = b(1), lb = b(4), rb = b(5);
     if (a && !this.a) this.items()[this.i]?.click();
     if (back && !this.b) this.game.screen?.back?.();
@@ -262,7 +267,7 @@ export function RecordsScreen(game) {
     }));
     fill(rows, ROSTER.map((k) => {
       const team = TEAM_OF[k], b = lap(viewed, k), d = drift(viewed, k);
-      return css(h('div.lrow.rec-cols', { 'data-nav': '', tabindex: 0 }, h('i.tbar'), h('img.cut', { src: still('cars', k), alt: '', decoding: 'async' }),
+      return css(h('div.lrow.rec-cols', { 'data-nav': '', tabindex: 0 }, h('i.tbar'), h('img.cut', { src: still('cars/thumbs', k), alt: '', decoding: 'async' }),
         h('span.c-name', {}, h('b', {}, carName(k)), h('small', {}, team.name), k === store.data.car ? icon('check', { label: 'Your car' }) : null),
         h('span.val', {}, b !== undefined ? fmtTime(b) : empty()), h('span.val', {}, d ? [d.toLocaleString('en'), h('small', {}, 'PTS')] : empty())), { '--team': teamMark(team) });
     }));

@@ -12,7 +12,7 @@ Source of truth:
 | Tokens | `src/game/ui-tokens.css` (imported first by `ui.css`) |
 | Icons | `scripts/make-ui-icons.mjs` writes `public/assets/ui/icons/<name>.svg`, the sprite `public/assets/ui/icons.svg` and `qa/ui-icons.png` |
 | Icon helper | `src/game/icons.js`: `icon(name, { cls, label })` |
-| Stills | `scripts/make-ui-stills.mjs` writes `public/assets/ui/stills/{tracks,cars}/<id>.webp` |
+| Stills | `scripts/make-ui-stills.mjs` writes `public/assets/ui/stills/{tracks,cars}/<id>.webp`, `cars/thumbs/<key>.webp` and `cars/side/<key>.webp` |
 | Checks | `scripts/qa-ui-icons.mjs` (icons and tokens in Chrome), `scripts/qa-ui-tour.mjs` (every screen, three sizes, DOM audit) |
 
 ## 1. Tokens
@@ -235,7 +235,8 @@ Rules:
 ## 4. Stills
 
 Everything is the game itself. Nothing is painted or generated. Regenerate with
-`node scripts/qa-lock.mjs -- node scripts/make-ui-stills.mjs [tracks|cars|all]`. `PROBE=1` shoots candidates to reframe from.
+`node scripts/qa-lock.mjs -- node scripts/make-ui-stills.mjs [tracks|cars|side|thumbs|all]`. `PROBE=1` shoots candidates to reframe from.
+`thumbs` needs no browser (sharp only), so it runs without the lock.
 
 - **Tracks** (`stills/tracks/<id>.webp`, 1600x900, opaque). These come from the dev viewer: orbit camera, dry, with the panel
   and overlays hidden. Views are centreline indices, so they follow a rebuilt track.
@@ -258,10 +259,15 @@ Everything is the game itself. Nothing is painted or generated. Regenerate with
 
   Uses:
   - The "Your car" tile.
-  - Garage list thumbnails (cropped through `object-position` to the car's box).
+  - Garage list and records rows, through **thumbnails** (`stills/cars/thumbs/<key>.webp`): the same stills cropped to the
+    car's box (`inset(24% 8% 12% 19%)`) at 320 px wide, so a list decodes 16 small images, not 16 full frames.
   - The results podium (P1 to P3 cutouts side by side).
   - Pause context.
   - Records rows (small).
+- **Side cutouts** (`stills/cars/side/<key>.webp`, alpha, 320 px tall). The same garage room, each car square from the side
+  through an orthographic camera: 200 px a metre for every car, the frame from 5 cm under the ground to 1.55 m, trimmed to
+  the car's length. Two drawn at the same height therefore compare at true scale: the garage's Specs tab draws the car over
+  your car's flat ink silhouette.
 - **Not stills.** Team logos (`/assets/teams/logos`), driver posters and the brand logo (`/assets/brand/ultrack-alpha.webp`) stay
   as they are.
 - **When to reshoot.** Reshoot when a car's livery or a circuit view changes. The QA tour shows a stale still next to the live
@@ -309,16 +315,29 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
   - Focus starts on the first row once the circuit row exists (unless a key or click moved it first).
   - Free Drive's HUD hides the clock, so "No clock" is true.
 - **Garage**
-  - The car list sits on the left: grouped by team (logo header), rows with a small cutout, name, class and level, and a
-    position indicator ("4 / 16").
+  - The car list sits on the left (344 design px): grouped by team (logo header with the 4 px team bar), rows with the
+    thumbnail, name, class and level, an ink `check` on your car and a `lock` on a locked one, and the position indicator
+    ("4 / 16") in the list head. The car on show keeps a `--c-fill-1` row while focus is in the panel. Up/Down browse and
+    show each car; Right goes into the panel, Up from the tab row comes back to the car on show (`navMove`).
   - Detail panel on the right:
     - Tabs with icons (Car, Specs, Upgrades, Paint) and LB/RB prompts.
     - A body that scrolls.
-    - A **sticky action bar** at the bottom, so "Drive this car" is always visible.
+    - A **sticky action bar** at the bottom, so "Drive this car" is always visible. On your own car it is a "Your car" state;
+      on a locked one the `lock` and "Unlocks at level 15" with your level beside it. Neither is a Nav stop.
+    - Rebuilding a tab keeps Nav focus on the same stop (`data-id`) and the body's scroll, so Enter on a swatch or Buy never
+      throws focus away.
   - The title is car and team, over a left-to-right scrim, never colliding with the scene.
   - Paint: swatch grids as Nav stops, the custom colour in-panel, wheels and calipers likewise.
-  - Specs: icon legends (yours dashed, upgraded `--c-pos`). The size silhouette becomes the car's real side-view cutout from
-    the still set, at true scale against yours.
+    - A grid is a `[data-grid]` group (Nav, ui.js): the arrows move spatially inside it (Left/Right stay on the row), and
+      Up/Down off its edge go to the stop before or after it. Rows keep Left/Right for their controls.
+    - The last body swatch is the hue wheel: Enter opens the HSV strip under the grid (hue, saturation, value as slider
+      rows over their own gradients, the hex beside), live on the car without a rebuild.
+  - Specs: icon legends (`car` for your car's ghost, a 2 px ink tick for your car on the bars, `upgrade` in `--c-pos` for
+    upgrades). The size view is the car's side cutout over your car's ink silhouette, at true scale. The model name is one
+    line and the engine line keeps two, so the size view never moves between cars.
+  - Upgrades: a card per category, three `chevrons-up` level steps (ink when owned, ink-4 when not), the before `arrow-right`
+    after of the next level (the after in `--c-pos`), and a secondary Buy with the `coin` price; when it cannot be paid the
+    button goes ink-4 with "Need 300 more" beside it.
   - "TEST BUILD" text goes.
   - Currency shows once, in the footer.
 - **Settings and settings from pause**
