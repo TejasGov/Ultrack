@@ -239,9 +239,8 @@ export function mirrorFit(c) {
       const h = hit([...shell, ...P.glass], from, dir, 1.0);
       if (h) best = Math.min(best, h.distance);
     }
-    if (best < Infinity) return +(best - halfW).toFixed(3);
-    const bodyZ = h ? Math.abs(h.point.clone().applyMatrix4(inv).z) : null, inner = s > 0 ? sides[s].min.z : -sides[s].max.z;
-    return bodyZ === null ? null : +(inner - bodyZ).toFixed(3);
+    // no ray reached the car within 1 m: null, which the sandbox check fails as "no gap"
+    return best < Infinity ? +(best - halfW).toFixed(3) : null;
   });
   restore();
   return { present: ok, asymmetry: asym === null ? null : +asym.toFixed(3), housingGap: gaps, size: ok ? sides[1].getSize(new THREE.Vector3()).toArray().map((x) => +x.toFixed(3)) : null };
