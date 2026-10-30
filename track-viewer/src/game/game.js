@@ -79,7 +79,7 @@ export class Game {
     const keys=this.racersFor(store.data.car,true),id=keys.join();
     if(this.preloading===id)return;this.preloading=id;
     const stop=()=>this.session||this.screenName==='garage'||this.preloading!==id;   // the garage changes the hero under us
-    (async()=>{
+    this.preloadP=(async()=>{   // Start awaits all of it: a warm-up that starts after Start would overlap race prep and be cut short
       await new Promise(r=>setTimeout(r,800));
       await new Promise(r=>globalThis.requestIdleCallback?requestIdleCallback(()=>r(),{timeout:2000}):setTimeout(r,200));
       if(stop())return void(this.preloading===id&&(this.preloading=null));   // retried by lineup() when the menu is back
@@ -279,7 +279,7 @@ export class Game {
       cancelled=true;this.raceLoading.close();this.ctx.clearDriverHoardings?.();this.lineup();this.show('menu');
     }});
     if(cancelled)return;
-    await this.warmP?.catch(()=>{});   // a menu warm-up in flight finishes first: it owns the renderer's shadow flag and the hero's visibility, and Start needs the same programs
+    await (this.preloadP??this.warmP)?.catch(()=>{});   // the whole menu preload, warm-up included, finishes first: it owns the renderer's shadow flag and the hero's visibility, and Start needs the same programs
     if(cancelled)return;
     this.endSession();
     // Independent work starts together. Static collision construction does not advance a race clock.
