@@ -520,7 +520,8 @@ const fetchTrack = () => fetch(U('track')).then((r) => { if (!r.ok) throw Error(
 const NO_LIGHTS = { floodlights: [], standLamps: [], streetLamps: [] };   // a track without lights.json is lit by the sky alone
 
 function ensureVenue() {
-  const p = venuePromise ??= loadVenue().catch((error) => { if (venuePromise === p) venuePromise = null; throw error; });
+  // a load that failed part-way may have installed the GLB and glows already: unload it, or the retry stacks a second copy
+  const p = venuePromise ??= loadVenue().catch((error) => { if (venuePromise === p) unloadVenue(); throw error; });
   return p;
 }
 
