@@ -50,8 +50,9 @@ const FILES = { track: () => 'track.json', lights: () => 'lights.json', vip: () 
 export const trackUrl = (t, what, tex = 'ktx2') => t.dir + FILES[what](t, tex);
 
 // A dev server (and a static host) answers a missing file with index.html, so "200" proves nothing: judge by type.
-// HEAD, not a 1-byte Range GET: Vite's dev server ignores Range and sent the whole 28 MB Tokyo venue for the probe.
-const real = (url, not) => fetch(url, { method: 'HEAD' }).then((r) => r.ok && !not.test(r.headers.get('content-type') ?? '')).catch(() => false);
+// Two bytes, not one: Vite's dev server (sirv) reads the end of "bytes=0-0" as "to the end of the file" and sent the whole 28 MB
+// Tokyo venue for each probe. (HEAD works too, but Chrome reports every HEAD as an aborted request, which the QA scripts flag.)
+const real = (url, not) => fetch(url, { headers: { Range: 'bytes=0-1' } }).then((r) => r.ok && !not.test(r.headers.get('content-type') ?? '')).catch(() => false);
 /** Fetch JSON that may not exist (lights.json, vip.json): the fallback when it is missing or is the SPA fallback page. */
 export const optionalJson = (url, fallback = null) => fetch(url).then((r) => (r.ok && /json/.test(r.headers.get('content-type') ?? '') ? r.json() : fallback)).catch(() => fallback);
 let probed = null;
