@@ -55,7 +55,7 @@ export class GameAudio {
   }
 
   buffer(path) {
-    if (!this.buffers.has(path)) this.buffers.set(path, fetch(A + path).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(path)))).then((b) => this.ctx.decodeAudioData(b)).catch((e) => { console.warn('audio:', e.message); return null; }));
+    if (!this.buffers.has(path)) this.buffers.set(path, fetch(A + path).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(path)))).then((b) => this.ctx.decodeAudioData(b)).catch((e) => { console.warn('audio:', e.message); this.buffers.delete(path); return null; })); // a failed load is not cached: the next race retries it
     return this.buffers.get(path);
   }
 
