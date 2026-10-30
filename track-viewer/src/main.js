@@ -1072,15 +1072,18 @@ const FX_LIGHT = { day: new THREE.Color(0.88, 0.9, 0.94), dusk: new THREE.Color(
 // Monotonic animation time without the deprecated THREE.Clock wrapper.
 const animationEpoch=performance.now();
 const clock = { getElapsedTime:()=> (performance.now()-animationEpoch)/1000 };
-let last = 0, acc = 0, frames = 0, fps = 0, fpsT = 0, lightT = 0;
+let last = 0, due = 0, acc = 0, frames = 0, fps = 0, fpsT = 0, lightT = 0;
 const up = new THREE.Vector3(0, 1, 0);
 function tick(now) {
   requestAnimationFrame(tick);
   if(benchmarking)return;
-  if (now - last < 1000 / params.fpsCap - 0.5) return;   // the cap keeps the GPU (and the room) cooler
+  if (now < due - 0.5) return;   // the cap keeps the GPU (and the room) cooler
   const wallDt = Math.max(0, (now - last) / 1000);
   const dt = Math.min(0.05, wallDt);
   last = now;
+  // the cap keeps its own schedule (now + interval threw the remainder away: 144 Hz ran 48 fps, 75 Hz 37.5), never more than one
+  // interval ahead (a 60.5 Hz screen still runs every frame) nor in the past (a stall is not repaid with a burst of frames)
+  due = Math.min(Math.max(due + 1000 / params.fpsCap, now), now + 1000 / params.fpsCap);
   const t = clock.getElapsedTime();
   const speed = params.paused ? 0 : params.speedKmh / 3.6;
   game?.update(dt, fps);inputDebug?.update(dt,field);
