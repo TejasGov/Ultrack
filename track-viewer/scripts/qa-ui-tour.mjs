@@ -1,0 +1,162 @@
+// The UI's screenshot tour: drives the real game through every screen and state a player can reach (title, menu, each setup
+// panel, garage tabs, settings tabs, records, credits, race loading, the grid lights and GO, the race HUD with nitro, a message,
+// wrong way, the camera label and the map overview, pause, settings from pause, results; time trial, drift attack and free drive
+// HUDs and their results; the busy toast) and saves a PNG of each, plus report.json with a DOM audit per shot (text off the
+// viewport, clipped text, the font families on screen, arrow / box / emoji glyphs standing in for icons) and console errors.
+//   node scripts/qa-lock.mjs -- node scripts/qa-ui-tour.mjs [label=latest] [url=http://127.0.0.1:5180]
+// Out: $OUT, or qa/ui-tour/<label>/. 1600x900; the menu, setup, garage, settings, a race HUD frame and results also at 1280x720
+// and 1920x1080. States the tour cannot reach in minutes (a lap time, a drift score, a finished race) are set on the live
+// session and say so in their file name ("sample"); results are the real session's results screen, opened mid-race.
+import { chromium } from 'playwright-core';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const [label = 'latest', base = 'http://127.0.0.1:5180'] = process.argv.slice(2);
+const root = join(dirname(fileURLToPath(import.meta.url)), '..'), out = resolve(root, process.env.OUT ?? join('qa', 'ui-tour', label));
+const track = process.env.TRACK ?? 'marina';
+mkdirSync(out, { recursive: true });
+const SIZES = [[1600, 900], [1280, 720], [1920, 1080]];   // never above 2560x1440 on this PC
+const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
+const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu', '--autoplay-policy=no-user-gesture-required'] });
+const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } });
+await ctx.addInitScript(([track]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look: 'dusk', weather: 'dry', laps: 1 } })); } catch { /* none */ } }, [track]);
+// Vite's HMR socket stubbed: another agent saving a file would otherwise reload the page mid-tour
+await ctx.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; Object.assign(F, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 }); window.WebSocket = F; });
+const page = await ctx.newPage(), errors = [], shots = [];
+page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(`${m.type()}: ${m.text()}`.slice(0, 300)); });
+page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
+
+const frames = () => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+/** the active screen (or the HUD, in a session with no screen up) fully faded in, and no other screen still fading out */
+const settle = () => page.waitForFunction(() => {
+  const g = window.game, el = g.screen?.el ?? (g.hud?.el.classList.contains('on') ? g.hud.el : null);
+  const open = [...document.querySelectorAll('#ui > .screen:not(.hidden)')].filter((e) => e !== el);
+  return (!el || getComputedStyle(el).opacity === '1') && !open.length;
+}, null, { timeout: 15000 });
+/** what a shot shows, from the DOM: text outside the viewport, text clipped by its box, the font families, glyphs used as icons */
+const audit = () => page.evaluate(() => {
+  const W = innerWidth, H = innerHeight, offscreen = [], clipped = [], fonts = new Set(), glyphs = new Set();
+  const vis = (e) => e.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) ?? true;
+  const say = (e) => `${e.tagName.toLowerCase()}${e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).join('.') : ''} "${(e.textContent ?? '').trim().slice(0, 40)}"`;
+  // off the viewport inside a scrolling panel is below the fold, not lost; mid-animation (a pop's scale) is transient: both say so
+  const scrolled = (e) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflowY; if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight) return true; } return false; };
+  const why = (e) => (scrolled(e) ? ' (in a scroller)' : '') + (e.getAnimations().length ? ' (animating)' : '');
+  for (const e of document.querySelectorAll('#ui *, .race-loading *')) {
+    if (!vis(e) || !e.textContent?.trim()) continue;
+    const own = [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join('').trim();
+    if (!own) continue;                                                   // judge text where it is written, not every ancestor
+    const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+    fonts.add(cs.fontFamily.split(',')[0].replace(/["']/g, '').trim());
+    if (r.width && (r.right > W + 1 || r.bottom > H + 1 || r.left < -1 || r.top < -1)) offscreen.length < 12 && offscreen.push(say(e) + why(e));
+    if (e.scrollWidth > e.clientWidth + 1 && cs.overflowX !== 'visible') clipped.length < 12 && clipped.push(say(e));
+    for (const ch of own.match(/[\u2190-\u21ff\u2500-\u25ff\u2600-\u27bf\u{1f300}-\u{1faff}]/gu) ?? []) glyphs.add(ch);
+  }
+  return { offscreen, clipped, fonts: [...fonts], iconGlyphs: [...glyphs] };
+});
+let n = 0;
+/** a PNG of the page now; multi: also at 1280x720 and 1920x1080, then back to 1600x900 */
+async function shot(name, multi = false) {
+  const id = String(++n).padStart(2, '0');
+  for (const [w, h] of multi ? SIZES : SIZES.slice(0, 1)) {
+    if (w !== 1600) { await page.setViewportSize({ width: w, height: h }); await frames(); await frames(); }
+    const file = `${id}-${name}-${w}x${h}.png`;
+    await page.screenshot({ path: join(out, file) });
+    shots.push({ file, audit: await audit() });
+  }
+  if (multi) { await page.setViewportSize({ width: 1600, height: 900 }); await frames(); await frames(); }
+  console.log('shot', id, name);
+}
+const key = async (code) => { await page.keyboard.press(code); await frames(); };
+const tile = async (id) => { await page.click(`.bento-tile[data-id=${id}]`); await settle(); };
+/** from the menu: a mode's setup panel, Start, the race loading screen, and the session ready (its HUD up) */
+async function start(mode, loadingShot) {
+  await tile(mode);
+  await page.click('.panel.setup button.cta');
+  if (loadingShot) { await page.waitForSelector('.race-loading', { state: 'visible', timeout: 60000 }); await frames(); await shot('race-loading'); }
+  await page.waitForFunction(() => window.game?.session && !window.game.raceLoading.active, null, { timeout: 300000 });
+  await page.waitForFunction(() => window.game.session.field.rig, null, { timeout: 120000 });   // Marina opens on an intro camera
+}
+const running = (t = 0) => page.waitForFunction((t) => window.game.session?.state === 'running' && window.game.session.raceT > t, t, { timeout: 60000 });
+const pauseOpt = async (text) => { await page.click(`.pause .opt:has-text("${text}")`); await frames(); await settle(); };
+
+try {
+  await page.goto(base);
+  await page.waitForSelector('.title-screen.on', { timeout: 60000 });
+  await page.evaluate(() => document.fonts.ready);
+  await shot('title-loading');
+  await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
+  await settle(); await shot('title-ready');
+  await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
+  await shot('menu', true);
+  await key('ArrowRight'); await shot('menu-focus-moved');                                    // keyboard focus on the second tile
+  await key('ArrowLeft');
+  for (const m of ['race', 'trial', 'drift', 'free']) {
+    await tile(m); await page.waitForTimeout(400);                                           // the circuit row lands after availableTracks()
+    await shot('setup-' + m, m === 'race'); await key('ArrowDown'); await shot('setup-' + m + '-row-focus');
+    await key('Escape'); await settle();
+  }
+  await tile('garage');
+  await page.waitForFunction(() => window.viewer.params.mode === 'orbit', null, { timeout: 60000 });
+  for (const t of ['car', 'specs', 'upgrades', 'paint']) { await shot('garage-' + t, t === 'car'); await key('KeyE'); }
+  await key('Escape'); await settle();
+  await tile('settings');
+  for (const t of ['display', 'driving', 'audio', 'controls']) { await shot('settings-' + t, t === 'display'); await key('KeyE'); await settle(); }
+  await key('Escape'); await settle();
+  await page.click('.bento-tile.records-tile'); await settle(); await shot('records'); await key('Escape'); await settle();
+  await tile('credits'); await shot('credits'); await key('Escape'); await settle();
+  await page.evaluate(() => window.game.setBusy('Session could not load. Try Start again.')); await frames(); await shot('toast-busy');
+  await page.evaluate(() => window.game.setBusy(''));
+
+  // ---- race: loading, lights, GO, nitro, the HUD, a lap message, wrong way, camera label, map overview, pause, results
+  await start('race', true);
+  await page.waitForFunction(() => document.querySelectorAll('.hud .lights i.on').length >= 3, null, { timeout: 60000 }); await shot('race-grid-lights');
+  await page.waitForSelector('.hud .count.go', { timeout: 60000 }); await shot('race-go');
+  await page.keyboard.down('KeyW'); await page.keyboard.down('ShiftLeft');
+  const nitro = await page.waitForFunction(() => window.game.session.field.hero.vehicle.state.nitroOn, null, { timeout: 6000 }).then(() => true, () => false);
+  await shot(nitro ? 'race-nitro' : 'race-throttle-no-nitro');
+  await page.keyboard.up('ShiftLeft'); await page.keyboard.up('KeyW');
+  await page.evaluate(() => window.game.session.field.setPlayer(false));                      // the AI drives on: no wall stops the tour
+  await running(9); await settle(); await shot('race-hud', true);
+  await page.evaluate(() => { window.game.hud.lapDelta(-0.418, true); window.game.hud.message('Lap 1', '1:31.204  −0.418', 'good', 3.2); }); await frames(); await shot('race-message-sample');
+  await page.evaluate(() => { const S = window.game.session; Object.defineProperty(S, 'wrong', { configurable: true, get: () => 5, set() {} }); });
+  await page.waitForFunction(() => +getComputedStyle(document.querySelector('.hud .warn')).opacity > 0.7, null, { timeout: 5000 }); await shot('race-wrong-way-sample');
+  await page.evaluate(() => { const S = window.game.session; delete S.wrong; S.wrong = 0; });
+  await key('KeyC'); await page.waitForFunction(() => getComputedStyle(document.getElementById('cam-label')).opacity === '1', null, { timeout: 3000 }); await shot('race-camera-label');
+  for (let i = 0; i < 4; i++) await key('KeyC');                                             // five views: back to the chase view
+  await key('KeyM'); await shot('race-map-overview'); await key('KeyM');
+  await key('Escape'); await settle(); await shot('pause-race');
+  await pauseOpt('Settings'); await shot('settings-from-pause'); await key('Escape'); await settle();
+  await pauseOpt('Resume'); await frames();
+  await page.evaluate(() => window.game.results()); await settle(); await shot('results-race-midrace', true);
+  await page.click('.results .cta.ghost'); await settle();
+
+  // ---- time trial: the countdown, the HUD with sample laps, pause with "End", the trial results
+  await start('trial');
+  await page.waitForFunction(() => /^[123]$/.test(document.querySelector('.hud .count')?.textContent ?? ''), null, { timeout: 30000 }); await shot('trial-count');
+  await running(2);
+  await page.evaluate(() => { const g = window.game, T = g.session.trk.get(g.field.hero); T.laps.push({ t: 92.341, valid: true }, { t: 90.112, valid: true }, { t: 95.871, valid: false }); T.lastLap = 95.871; T.best = 90.112; T.valid = false; });
+  await frames(); await settle(); await shot('hud-trial-sample');
+  await key('Escape'); await settle(); await shot('pause-trial');
+  await pauseOpt('End'); await shot('results-trial-sample');
+  await page.click('.results .cta.ghost'); await settle();
+
+  // ---- drift attack: the HUD, then its results with a sample score
+  await start('drift'); await running(2); await settle(); await shot('hud-drift');
+  await page.evaluate(() => { window.game.session.drift.score = 18420; window.game.results(); }); await settle(); await shot('results-drift-sample');
+  await page.click('.results .cta.ghost'); await settle();
+
+  // ---- free drive: the HUD, pause, quit
+  await start('free'); await running(2); await settle(); await shot('hud-free');
+  await key('Escape'); await settle(); await shot('pause-free');
+  await pauseOpt('Quit to menu'); await shot('menu-after-quit');
+} catch (e) {
+  errors.push('tour: ' + e.message.split('\n')[0]);
+  await page.screenshot({ path: join(out, 'zz-failure.png') }).catch(() => {});
+  process.exitCode = 1;
+} finally {
+  writeFileSync(join(out, 'report.json'), JSON.stringify({ base, track, shots, errors: [...new Set(errors)].slice(0, 60) }, null, 1));
+  await browser.close();
+}
+const flagged = shots.filter((s) => s.audit.offscreen.length || s.audit.clipped.length || s.audit.iconGlyphs.length);
+console.log(JSON.stringify({ out, shots: shots.length, flagged: flagged.map((s) => s.file), errors: [...new Set(errors)].slice(0, 20) }, null, 1));
