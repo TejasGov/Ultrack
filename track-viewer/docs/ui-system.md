@@ -403,7 +403,8 @@ Every screen fits 1280x720 to 2560x1440 with no clipping: panels clamp to the vi
     - The camera label is placed by `#cam-label` in `hud.css` (with `!important` until H1), 12 design px above the 240-high map
       (the radar and the 432x240 overview plate), with the `camera` icon as a CSS mask. `ui.css` hides it over any screen
       but the HUD (`.screen.on:not(.hud)`: the HUD is a `.screen` too, and the old rule hid the label all race).
-    - The overview plate draws corner numbers and N at 15 design px with a dark edge; sector labels are ink-3, not gold.
+    - The overview plate draws corner numbers and N at 15 design px with a dark edge (the plate is north-up: N sits in the first
+      top corner the corner numbers leave free); sector labels are ink-3, not gold. The radar keeps its N on the rim.
     - `qa-ui-tour.mjs s6` shoots every HUD state and measures each text's size as seen (font size times the group's scale),
       plus any infinite animation.
 - **Pause**

@@ -99,12 +99,12 @@ export class Minimap {
     for (const i of this.sectors.slice(1)) across(i, half(i) - 0.5 * bs, 1.1 * bs, '#fff');
     const f = overview ? 4 : 6;                                                // the start line: a chequered strip
     across(0, half(0) + 1.5 * bs, f * bs, '#f4f2ee'); across(0, half(0) + 1.5 * bs, f * bs, '#05070b', [f * bs * 0.5, f * bs * 0.5]);
-    if (overview) this.labels(g, mm, X, Z);
+    if (overview) this.labels(g, mm, X, Z, ox, oz);
     return { cv, k: kk, z, ox, oz };
   }
 
-  /** the overview's corner numbers, on the outside of each turn and never on top of one another */
-  labels(g, k, X, Z) {
+  /** the overview's corner numbers, on the outside of each turn and never on top of one another, then its N (ox, oz: the plate offset) */
+  labels(g, k, X, Z, ox, oz) {
     const { c } = this, bs = this.bs, placed = [];
     g.font = `700 ${LABEL * bs}px 'Barlow Condensed'`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round'; g.lineWidth = 3 * bs; g.strokeStyle = 'rgba(5,7,11,0.9)';
     const put = (text, p, nx, nz, off, color) => {
@@ -120,6 +120,11 @@ export class Minimap {
       put(co.id.replace(/\D/g, ''), p, nx, nz, 15, '#f4f2ee');
     }
     this.sectors.slice(1).forEach((i, k2) => { const p = c[i], q = c[(i + 1) % c.length], l = Math.hypot(q[0] - p[0], q[2] - p[2]) || 1; put('S' + (k2 + 2), p, -(q[2] - p[2]) / l, (q[0] - p[0]) / l, 16, 'rgba(244,242,238,0.56)'); });
+    for (const px of [OW - 18, 18]) {                                          // the plate is north-up: N in the first top corner the numbers left free
+      const x = px * bs - ox, y = 18 * bs - oz;
+      if (placed.some(([a, b]) => Math.hypot(a - x, b - y) < 19 * bs)) continue;
+      g.strokeText('N', x, y); g.fillStyle = 'rgba(244,242,238,0.74)'; g.fillText('N', x, y); break;
+    }
   }
 
   bake() {
