@@ -77,12 +77,13 @@ export async function create({ root, track, bloom }) {
     return 1 - THREE.MathUtils.smoothstep(d, HALF_W, HALF_W + 30);
   };
   let base = bloom?.strength, k = 1;             // base: the look's strength, set by main.js applyAll just before setLook (never compounds)
+  let lowered = false;                           // only an fx that wrote the bloom restores it (an aborted load's base is another track's stale value)
   console.info(`tokyo tunnel light: ${patched.length} materials, roof top ${box.max.y.toFixed(1)} m, centerline ${pts[0].i}-${pts.at(-1).i} under it`);
   return {
     setLook(look, params) { base = bloom?.strength; k = BLOOM_IN[params?.look] ?? 1; },
-    update(t, camera) { if (bloom && k < 1) bloom.strength = base * (1 - (1 - k) * camCover(camera.position)); },
+    update(t, camera) { if (bloom && k < 1) { lowered = true; bloom.strength = base * (1 - (1 - k) * camCover(camera.position)); } },
     dispose() {
-      if (bloom && base !== undefined) bloom.strength = base;   // a track switch never keeps the tunnel's value
+      if (bloom && lowered && base !== undefined) bloom.strength = base;   // a track switch never keeps the tunnel's value
       for (const p of patched) { p.m.onBeforeCompile = p.prev; p.m.customProgramCacheKey = p.prevKey; p.m.userData.tunnelLight = false; p.m.needsUpdate = true; }
     },
   };
