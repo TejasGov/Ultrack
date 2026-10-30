@@ -47,8 +47,8 @@ export class RaceLoading {
     this.pct = el('span', 'rl-pct tnum'); this.fillBar = el('i'); this.bar = el('div', 'bar4', this.fillBar);
     this.bar.setAttribute('aria-hidden', 'true');
     const status = el('div', 'rl-status', el('div', 'rl-row', this.detail, this.pct), this.bar);
-    // Esc only: the pad's B reaches this screen once the engine forwards it (docs/ui-system.md H7)
-    const back = el('button', 'btn btn-ghost', icon('back'), 'Back to menu', el('span', 'prompt', el('span', 'pk', el('kbd', '', 'Esc')))); back.type = 'button';
+    // Esc, or the pad's B (game.js update() forwards it to cancel while loading)
+    const back = el('button', 'btn btn-ghost', icon('back'), 'Back to menu', el('span', 'prompt', el('span', 'pk', el('kbd', '', 'Esc')), icon('pad-b', { cls: 'pp' }))); back.type = 'button';
     this.cancel = () => { if (!this.active) return; onCancel?.(); };
     back.onclick = this.cancel;
     this.onKey = e => { if (e.code === 'Escape') { e.preventDefault(); this.cancel(); } };

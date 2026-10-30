@@ -41,10 +41,10 @@ export class GarageRoom {
     this.savedPosition=new THREE.Vector3();this.savedQuaternion=new THREE.Quaternion();
   }
 
-  resize(width,height,garage) {
-    const key=`${width}:${height}:${garage}`;if(key===this.size)return;this.size=key;
+  resize(width,height,garage,shift=0) {
+    const key=`${width}:${height}:${garage}:${shift.toFixed(4)}`;if(key===this.size)return;this.size=key;
     this.camera.aspect=width/height;
-    this.camera.setViewOffset(width,height,garage?width*.05:0,0,width,height);
+    this.camera.setViewOffset(width,height,garage?width*.05:-width*shift,0,width,height);   // shift > 0: the car sits right of a left panel
     this.camera.updateProjectionMatrix();
   }
 
@@ -61,7 +61,7 @@ export class GarageRoom {
     return ready;
   }
 
-  render(car,dt,{garage=false,reduceMotion=false,draw}={}) {
+  render(car,dt,{garage=false,shift=0,reduceMotion=false,draw}={}) {this.shift=reduceMotion?shift:(this.shift??0)+(shift-(this.shift??0))*Math.min(1,dt*10);   // eased over ~250 ms, snapped under reduce motion
     if(!car)return;
     const renderer=this.renderer,root=car.root,parent=root.parent,visible=root.visible;
     this.savedPosition.copy(root.position);this.savedQuaternion.copy(root.quaternion);
@@ -79,7 +79,7 @@ export class GarageRoom {
       }
       setLamps(car,'running',0);car.beams.forEach(b=>{b.visible=false;});
       this.controls.enabled=garage;this.controls.autoRotate=!reduceMotion;this.controls.update(dt);
-      this.resize(innerWidth,innerHeight,garage);
+      this.resize(innerWidth,innerHeight,garage,this.shift);
       if(draw)draw();else{renderer.info.reset();renderer.render(this.scene,this.camera);}
     } finally {
       if(parent)parent.add(root);else this.scene.remove(root);

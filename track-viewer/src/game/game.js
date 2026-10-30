@@ -59,8 +59,7 @@ export class Game {
     field.onPop = (c) => { if (c.hero && this.session) this.audio.pop(); };
     this.lineup();
     this.loaded = true;this.resolveVenue(field);
-    this.preloadRace();
-    this.screens.title.progress(1); this.screens.title.ready();
+    this.preloadRace();   // the title says Ready from main.js once the frame loop polls the pad (a pad press before that was lost)
   }
 
   /** the first key or click: audio starts (browsers need a gesture), the menu opens */
@@ -101,7 +100,7 @@ export class Game {
       this.preloading = null;                                           // cancels a preload in flight (its stop() sees the change)
       await this.warmP?.catch(() => {});
       this.worldP?.then((w) => w.dispose(), () => {}); this.worldP = null;
-      this.setBusy(`Loading ${next.name}…`);
+      this.setBusy(`Loading ${next.name}…`,{ms:0});
       try {
         await this.ctx.setTrack(next.id);
         store.set('track', next.id); store.set('look', next.look);       // a circuit opens at its own hour; Time of day changes it
@@ -109,7 +108,7 @@ export class Game {
         this.setBusy(''); this.applySettings(); this.lineup();
       } catch (error) {
         console.warn('Track switch failed:', error);
-        store.set('track', prev); this.setBusy(`${next.name} could not load.`); this.lineup();   // setTrack unloaded the old venue: preload it again
+        store.set('track', prev); this.setBusy(`${next.name} could not load.`,{kind:'error'}); this.lineup();   // setTrack unloaded the old venue: preload it again
       }
     });
   }
@@ -118,7 +117,7 @@ export class Game {
   prepareWorld(){if(!this.worldP){this.worldP=PhysicsWorld.create(this.ctx.collisionUrl,this.ctx.physicsOpts);this.worldP.catch(()=>{this.worldP=null;});}}
   async ensureVehicles(keys,{announce=true}={}){
     const request=announce?(this.busyRequest=(this.busyRequest??0)+1):0;   // only shown requests count: a silent preload must not orphan the message
-    if(announce)this.setBusy('Preparing '+keys.length+' '+(keys.length===1?'car':'cars')+'…');
+    if(announce)this.setBusy('Preparing '+keys.length+' '+(keys.length===1?'car':'cars')+'…',{ms:0});
     try{
       await this.venueReady;
       const cars=await this.field.ensure(keys);
@@ -140,17 +139,19 @@ export class Game {
     for(const [label,v] of r.lines){const l=t.lines.find(x=>x[0]===label);if(l)l[1]+=v;else t.lines.push([label,v]);}
     return r;
   }
-  setBusy(message){
+  // kind 'error' (ui.css: accent edge, error icon) stays until replaced; an info toast goes after 4 s; ms 0 keeps a progress note up
+  setBusy(message,{kind='info',ms=kind==='error'?0:4000}={}){clearTimeout(this.busyT);
     this.busyEl??=h('div.asset-loading',{'role':'status','aria-live':'polite'});
     if(!this.busyEl.parentNode)this.root.append(this.busyEl);
     this.busyEl.textContent=message;this.busyEl.hidden=!message;
+    this.busyEl.dataset.kind=kind;if(message&&ms)this.busyT=setTimeout(()=>{if(this.busyEl.textContent===message)this.busyEl.hidden=true;},ms);
   }
 
   // ---------------------------------------------------------------------------------------------- screens
   show(name, arg) {
     this.field?.input?.setEnabled(false);
     const prev = this.screen;
-    if (prev && prev !== this.screens[name]) { prev.el.classList.remove('on'); const el = prev.el; setTimeout(() => { if (this.screen?.el !== el) el.classList.add('hidden'); }, 450); prev.onHide?.(); }
+    if (prev && prev !== this.screens[name]) { prev.el.classList.remove('on'); const el = prev.el; setTimeout(() => { if (this.screen?.el !== el) el.classList.add('hidden'); }, 260); prev.onHide?.(); }   // the 250 ms screen fade (ui-tokens --dur-3)
     this.screen = this.screens[name]; this.screenName = name;
     const el = this.screen.el; el.classList.remove('hidden'); requestAnimationFrame(() => el.classList.add('on'));
     if (prev === this.screens.menu) this.menuIdx = this.nav.i;
@@ -161,13 +162,13 @@ export class Game {
   }
 
   hideScreens() {
-    for (const s of Object.values(this.screens)) { s.el.classList.remove('on'); const el = s.el; setTimeout(() => { if (this.screen?.el !== el) el.classList.add('hidden'); }, 450); }
+    for (const s of Object.values(this.screens)) { s.el.classList.remove('on'); const el = s.el; setTimeout(() => { if (this.screen?.el !== el) el.classList.add('hidden'); }, 260); }
     this.screen = null; this.screenName = null;
   }
 
   key(e) {
     if(e.defaultPrevented)return;
-    if(this.raceLoading?.active){e.preventDefault();return;}
+    if(this.raceLoading?.active){if(e.code!=='Tab')e.preventDefault();return;}   // Tab reaches Back; Enter and the rest stay swallowed
     if (this.screenName === 'title') { this.screens.title.onKey(); return; }
     if (this.session && !this.screen) {
       if (e.code === 'Escape') { this.pause(); e.preventDefault(); }
@@ -200,8 +201,7 @@ export class Game {
   cycleCamera() {
     const rig = this.field.rig; if (!rig) return;
     this.camView = rig.view = nextView(this.camView ?? rig.view);
-    const el = this.camEl ??= this.root.appendChild(h('div', { id: 'cam-label', style: { position: 'absolute', left: '32px', bottom: '30px', padding: '9px 18px', font: 'italic 800 15px/1 var(--label)',
-      letterSpacing: '0.26em', color: 'var(--ink)', background: 'rgba(9, 14, 22, 0.74)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '10px', opacity: '0', pointerEvents: 'none' } }));
+    const el = this.camEl ??= this.root.appendChild(h('div', { id: 'cam-label', style: { opacity: '0' } }));   // styled as a HUD tile by #cam-label in hud.css
     el.textContent = VIEWS[this.camView].label;
     el.style.transition = 'opacity 0.12s'; el.style.opacity = '1';       // in at once, out slowly: opacity only, nothing blinks
     clearTimeout(this.camT); this.camT = setTimeout(() => { el.style.transition = 'opacity 0.7s ease-out'; el.style.opacity = '0'; }, 1100);
@@ -221,7 +221,7 @@ export class Game {
   /** the car on the showroom spot (a little past the start line, the grid lined up behind it) */
   async previewCar(key) {
     const request=this.previewRequest=(this.previewRequest??0)+1;
-    try{await this.ensureVehicles([key]);}catch(error){console.warn('Car preview:',error);if(request===this.previewRequest)this.setBusy('Car could not load. Select another car or retry.');return;}
+    try{await this.ensureVehicles([key]);}catch(error){console.warn('Car preview:',error);if(request===this.previewRequest)this.setBusy('Car could not load. Select another car or retry.',{kind:'error'});return;}
     if(request!==this.previewRequest||this.screenName!=='garage')return;
     const F = this.field; if (!F) return;
     F.configure({ hero: key, racers: [key] });
@@ -261,7 +261,7 @@ export class Game {
   // ---------------------------------------------------------------------------------------------- sessions
   async startSession(mode) {
     if (!canSelectCar(store.data.car, store.data)) {
-      this.setBusy(`This car requires level ${carProgression(store.data.car).level}. Choose an available car in the garage.`);
+      this.setBusy(`This car requires level ${carProgression(store.data.car).level}. Choose an available car in the garage.`,{kind:'error'});
       return;
     }
     if (this.starting) return; this.starting = true;
@@ -330,7 +330,7 @@ export class Game {
     if (mode === 'race') this.sayLater('intro_session', { priority: 3, force: true, reply: 0 }, 400);
     else this.say('intro_session', { priority: 3, force: true });
     } catch(error) {
-      console.error('Session could not start:',error);this.raceLoading?.close();this.endSession();this.lineup();this.show('menu');this.setBusy('Session could not load. Try Start again.');
+      console.error('Session could not start:',error);this.raceLoading?.close();this.endSession();this.lineup();this.show('menu');this.setBusy('Session could not load. Try Start again.',{kind:'error'});
     } finally {
       preparedWorld?.dispose();this.raceLoading?.close();
       if(!this.session){this.audio.engineOff();this.ctx.clearDriverHoardings?.();}
@@ -368,14 +368,14 @@ export class Game {
   // ---------------------------------------------------------------------------------------------- per frame
   update(dt, fps) {
     this.inputDebug?.update(dt,this.field);
-    if(this.raceLoading?.active)return;   // first: the pad must not drive the Setup screen under the loading overlay
+    if(this.raceLoading?.active){const b=navigator.getGamepads?.().find((g)=>g?.connected)?.buttons[1]?.pressed;if(b&&!this.loadB)this.raceLoading.cancel?.();this.loadB=b;return;}   // first: the pad must not drive the Setup screen under the loading overlay; B is its Back
     this.nav.pad(dt);
     if (this.screenName === 'title' && navigator.getGamepads?.().some((g) => g?.buttons.some((b) => b.pressed))) this.screens.title.onKey();
     const s = this.session, F = this.field;
     if (!s) { if (this.state === 'menu' && this.ctx.params.mode === 'orbit') this.ctx.controls.update(); return; }
     // start button on the pad pauses
     const pad = navigator.getGamepads?.().find((g) => g?.connected);
-    const startBtn = pad?.buttons[9]?.pressed; if (startBtn && !this.startBtn && !this.screen) this.pause(); this.startBtn = startBtn;
+    const startBtn = pad?.buttons[9]?.pressed; if (startBtn && !this.startBtn) { if (!this.screen) this.pause(); else if (this.screenName === 'pause' && !this.screen.modal) this.resume(); } this.startBtn = startBtn;   // Menu toggles pause
     const rb = pad?.buttons[5]?.pressed; if (rb && !this.rbBtn && !this.screen) this.cycleCamera(); this.rbBtn = rb;
     if (this.ctx.params.paused) return;
     if (F.rig) { F.rig.fovOffset = store.settings.fovOffset; F.rig.view = this.camView ?? 'near'; }

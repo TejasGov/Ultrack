@@ -180,7 +180,7 @@ export function TitleScreen(game) {
     h('i.logo'), h('div.t-status', {}, h('div.t-press', {}, h('span.prompt', {}, 'Press any key')), load));   // no keycap: an Enter cap beside "any key" contradicted it
   const go = () => game.boot();
   el.addEventListener('pointerdown', go);
-  // main.js reports 0.15 (garage and cars loading), 0.7 (shaders compiling) and game.attach() 1
+  // main.js reports 0.15 (garage and cars loading), 0.7 (shaders compiling) and ready() once the frame loop runs
   const progress = (p) => { bar.style.setProperty('--p', p); pct.textContent = `${Math.round(p * 100)} %`; stage.textContent = p < 0.7 ? 'Loading garage' : p < 1 ? 'Preparing cars' : 'Ready'; };
   progress(0);
   return { el, onKey: go, progress, ready: () => { progress(1); load.classList.add('done'); } };

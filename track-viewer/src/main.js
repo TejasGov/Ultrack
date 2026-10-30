@@ -1103,7 +1103,7 @@ function tick(now) {
     if(sceneryExperiment?.panel)sceneryExperiment.panel.hidden=true;
     controls.enabled=false;
     FINISH_RAIN.value=0;   // the showroom is indoors: no rain beads on the paint
-    garageRoom.render(field?.hero,dt,{garage:game.screenName==='garage',reduceMotion:params.reduceMotion});
+    garageRoom.render(field?.hero,dt,{garage:game.screenName==='garage',shift:{setup:.12,settings:.2}[game.screenName]??0,reduceMotion:params.reduceMotion});   // the car clears a left panel (setup 520u, settings 720u)
     return;
   }
   garageRoom?.suspend();
@@ -1298,5 +1298,5 @@ if (!DEV) {
 applyQuality();
 Promise.all([load(),DEV?setLook(params.look):Promise.resolve()])
   .then(() => { game?.screens.title.progress(0.7); return garageRoom?.compile(field.hero); })
-  .then(() => { loading.remove(); requestAnimationFrame(tick); })
-  .catch((e) => { loading.textContent = 'failed to load: ' + e.message; console.error(e);game?.rejectVenue(e);game?.setBusy('Circuit could not load. Reload to retry.'); });
+  .then(() => { loading.remove(); requestAnimationFrame(tick); game?.screens.title.ready(); })   // Ready once tick() polls the pad (ready() sets progress 1)
+  .catch((e) => { loading.textContent = 'failed to load: ' + e.message; console.error(e);game?.rejectVenue(e);game?.setBusy('Circuit could not load. Reload to retry.',{kind:'error'}); });

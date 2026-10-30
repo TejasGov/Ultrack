@@ -450,7 +450,7 @@ try {
   await page.waitForSelector('.title-screen.on', { timeout: 60000 });
   await page.evaluate(() => document.fonts.ready);
   await shot('title-loading');
-  await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
+  await page.waitForFunction(() => window.game?.loaded && document.querySelector('.title-screen .t-load.done'), null, { timeout: 180000 });   // Ready: main.js, once the frame loop runs
   await settle(); await shot('title-ready', S1);
   await key('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await settle();
   if (S1) await s1(); else if (S2) await s2(); else if (S3) await s3(); else if (S4) await s4(); else if (S5) await s5(); else if (S6) await s6(); else {                                                             // the whole tour (not re-indented)
