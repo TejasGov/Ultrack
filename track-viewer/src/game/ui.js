@@ -297,19 +297,22 @@ export function CreditsScreen(game) {
   const link = (label, url) => /^https?:\/\//.test(url ?? '') ? h('a.ink-link', { 'data-nav': '', href: url, target: '_blank', rel: 'noopener noreferrer' }, label, icon('arrow-up-right')) : h('span', {}, label);
   const links = (...l) => h('p.cr-links', {}, l);
   const item = (title, ...lines) => h('article.cr-item', {}, h('h3', {}, title), lines);
-  const note = (text) => (text ? h('p.cr-note', {}, text) : null);   // provenance and licence notes: shown verbatim, never reworded
+  // model.json's additionalCredits mixes provenance notes (they stay in the file, docs/ui-system.md risks) with a co-author: the player sees only the name.
+  // shortcut: reads the "credits <name>" phrase the notes use, upgrade to a credit field in model.json when one exists
+  const note = (text) => { const by = /\bcredits\s+(.+?)(?:\.\s|;|\.?$)/i.exec(text ?? '')?.[1]?.trim(); return by ? h('p.cr-note', {}, 'Also credited: ', by) : null; };
+  const licence = (text) => /^CC(?: Attribution|[ -][A-Z]+(?:-[A-Z]+)*)(?: \d\.\d)?/.exec(text ?? '')?.[0] ?? text;   // the licence's name; the notes after it are provenance
   const group = (name, items) => h('section.cr-group', {}, h('h2.kick', {}, name), h('div.cr-grid', {}, items));
   const scroll = h('div.lscroll.cr-scroll', { onscroll: (e) => fadeMore(e.currentTarget) },
-    group('Cars', [...MODEL_CREDITS.map((c) => item(c.title, h('p', {}, 'Created by ', link(c.author, c.authorUrl ?? c.url)), links(link('Original model', c.url), link(c.license, c.licenseUrl)),
+    group('Cars', [...MODEL_CREDITS.map((c) => item(c.title, h('p', {}, 'Created by ', link(c.author, c.authorUrl ?? c.url)), links(link('Original model', c.url), link(licence(c.license), c.licenseUrl)),
       note(c.additionalCredits), h('p.cr-dim', {}, 'Adapted for Ultrack: scale, orientation, wheel separation, materials and runtime LODs.'))),
     item('Additional Lamborghini exterior credit', links(link('Lambo_SC04', 'https://sketchfab.com/Lambo_SC04')), h('p', {}, 'Aventador SVJ Black-Ghost, CC BY-NC. Interior/combined model: blackcube4.'))]),
     group('Audio', [...ENGINE_CREDITS.map((c) => item(c.name + ' recording', links(link(c.title, c.url)), h('p', {}, 'Recorded by ', c.author), links(link(c.license, c.licenseUrl)), h('p.cr-dim', {}, c.changes))),
       item('Voices and effects', h('p', {}, 'Commentary voices and crash effects: ElevenLabs.'), h('p', {}, 'EV motor, wind and tyre layers: procedural Web Audio.'))]),
     group('Artwork', [item('Environment HDRIs', h('p', {}, 'Poly Haven (CC0).')),
-      item('Sponsor & marque artwork', h('p', {}, 'Simple Icons; Pirelli official artwork; Rolex wordmark via Wikimedia Commons; car-logos-dataset. Original marks remain with their owners. Source URLs and hashes: assets/sponsors/manifest.json.'))]),
+      item('Sponsor & marque artwork', h('p', {}, 'Simple Icons; Pirelli official artwork; Rolex wordmark via Wikimedia Commons; car-logos-dataset. Original marks remain with their owners.'))]),
     group('Fonts', FONT_CREDITS.map(([name, by, url]) => item(name, h('p', {}, by), links(link('Source', url), link('SIL Open Font License 1.1', 'https://openfontlicense.org'))))),
     group('Code', CODE_CREDITS.map(([name, by, url, lic, licUrl]) => item(name, h('p', {}, by), links(link('Project', url), link(lic, licUrl))))),
-    h('p.cr-notice', {}, icon('info'), h('span', {}, 'Local noncommercial fan project. Several models carry non-commercial or share-alike licenses (listed above), and any model with unresolved provenance must be replaced before public distribution.')));
+    h('p.cr-notice', {}, icon('info'), h('span', {}, 'Every model is shown with its creator and licence. Car names and marks belong to their owners.')));
   const el = screen('credits', h('div.sscrim'), header('Credits', 'The people behind the machines'), h('div.sbody', {}, h('div.pnl.cr-panel', {}, scroll)),
     h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Browse'), prompt('Enter', 'a', 'Open link'), h('div.sp'), backButton(() => game.show('menu'))));
   return { el, nav: true, onShow() { fadeMore(scroll); }, back() { game.show('menu'); } };
