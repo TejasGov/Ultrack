@@ -652,7 +652,7 @@ async function loadVenue() {
   }
   culler = new Culler(gltf.scene);
   if (T.venue) {
-    const fx = await (await T.venue()).create({ scene, root: gltf.scene, track, renderer, camera, lights: lightsJson, allMats, wetUniforms, NO_MIRROR, ktx2: gltfLoader.ktx2Loader });
+    const fx = await (await T.venue()).create({ scene, root: gltf.scene, track, renderer, camera, bloom, lights: lightsJson, allMats, wetUniforms, NO_MIRROR, ktx2: gltfLoader.ktx2Loader });
     if (T !== TRACK) fx.dispose(); else { venueFx = fx; venueFx.setLook?.(LOOKS[params.look], params); }
     // the venue effects add materials of their own: transmissive glass among them would bring the second scene render back
     const cars = new Set((field?.all ?? []).map((c) => c.root));

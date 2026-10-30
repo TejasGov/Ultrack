@@ -4,6 +4,8 @@
 // roof the sun, its glint on the wet road and the fog's sun-scatter are cut, and the sky light is cut to what bounces in, fading back over a few metres past
 // each portal. The roof is found from the geometry (the submerged tunnel's box) and the centerline through it; the road, kerbs and
 // tunnel liner get the term (their onBeforeCompile is chained, never replaced; the program key is extended).
+// At night the tunnel's strips fill so much of the view that the bloom averaged them into a beige veil (bloom feeds whole pixels, so
+// area counts, not intensity): with the camera under the roof the bloom eases down to BLOOM_IN of the look's strength.
 import * as THREE from 'three';
 import { TRACKS } from '../../tracks.js';
 
@@ -11,8 +13,9 @@ const MATS = new Set([...TRACKS.tokyo.wet.wet, 'M_TunnelTile']);
 const ROOF = /submerged_tunnel/i;                // V10 submerged tunnel | 24 m clear width
 const N = 16, HALF_W = 13, KEEP = { spec: 0.03, diff: 0.1 };     // segments; half width (m); what the sky light keeps inside
 const DIR_LIGHT = 'getDirectionalLightInfo( directionalLight, directLight );';
+const BLOOM_IN = { night: 0.35 };                // bloom strength kept with the camera fully in the tunnel, per look
 
-export async function create({ root, track }) {
+export async function create({ root, track, bloom }) {
   const box = new THREE.Box3();
   root.traverse((o) => { if (o.isMesh && ROOF.test(o.name)) box.expandByObject(o); });
   if (box.isEmpty() || !THREE.ShaderChunk.lights_fragment_begin.includes(DIR_LIGHT)) return { dispose() {} };
@@ -62,9 +65,24 @@ export async function create({ root, track }) {
       patched.push({ m, prev, prevKey });
     }
   });
+  // the camera's twin of tunnelCover, faded over 30 m past the portals so the bloom eases (~0.5 s at speed) instead of stepping
+  const camCover = (c) => {
+    if (c.y > box.max.y + 0.5) return 0;
+    let d = Infinity;
+    for (let i = 0; i < N; i++) {
+      const ax = line[i][0], az = line[i][2], bx = line[i + 1][0] - ax, bz = line[i + 1][2] - az, px = c.x - ax, pz = c.z - az;
+      const t = Math.min(1, Math.max(0, (px * bx + pz * bz) / Math.max(bx * bx + bz * bz, 1e-4)));
+      d = Math.min(d, Math.hypot(px - bx * t, pz - bz * t));
+    }
+    return 1 - THREE.MathUtils.smoothstep(d, HALF_W, HALF_W + 30);
+  };
+  let base = bloom?.strength, k = 1;             // base: the look's strength, set by main.js applyAll just before setLook (never compounds)
   console.info(`tokyo tunnel light: ${patched.length} materials, roof top ${box.max.y.toFixed(1)} m, centerline ${pts[0].i}-${pts.at(-1).i} under it`);
   return {
+    setLook(look, params) { base = bloom?.strength; k = BLOOM_IN[params?.look] ?? 1; },
+    update(t, camera) { if (bloom && k < 1) bloom.strength = base * (1 - (1 - k) * camCover(camera.position)); },
     dispose() {
+      if (bloom && base !== undefined) bloom.strength = base;   // a track switch never keeps the tunnel's value
       for (const p of patched) { p.m.onBeforeCompile = p.prev; p.m.customProgramCacheKey = p.prevKey; p.m.userData.tunnelLight = false; p.m.needsUpdate = true; }
     },
   };
