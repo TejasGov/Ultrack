@@ -63,8 +63,8 @@ export const store = {
 
 // driving aids per preset (src/physics/vehicle.js step(h, assist))
 export const ASSISTS = {
-  rookie: { counter: 0.45, stability: 1.25, tcs: 0.8, label: 'Rookie', note: 'Forgiving: the car follows the wheel, ABS and traction control help' },
-  pro: { counter: 0.1, stability: 0.35, tcs: 0, label: 'Pro', note: 'Less grip, looser alignment, minimal help: throttle and countersteer are yours' },
+  rookie: { counter: 0.45, stability: 1.25, tcs: 0.8, label: 'Rookie', note: 'Forgiving: the car follows the wheel, ABS and traction control help.' },
+  pro: { counter: 0.1, stability: 0.35, tcs: 0, label: 'Pro', note: 'Less grip, looser alignment, minimal help: throttle and countersteer are yours.' },
 };
 
 export const WEATHER = {
