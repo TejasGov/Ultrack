@@ -23,7 +23,9 @@ function load() {
     const d = JSON.parse(raw);
     const settings = { ...DEFAULT_SETTINGS, ...(d.settings ?? {}) };
     if (settings.assists !== 'pro') settings.assists = 'rookie';   // Casual and Sport merged into Rookie; Pro stays
-    return migrate({ ...fresh(), ...d, settings, coins: d.coins });   // old saves: coins undefined -> the starting balance
+    // records were keyed by car alone before tracks: marina was the only circuit then, so the old ones are its records
+    const perTrack = (o) => Object.fromEntries(Object.entries(o ?? {}).map(([k, v]) => [k.includes('/') ? k : `marina/${k}`, v]));
+    return migrate({ ...fresh(), ...d, settings, coins: d.coins, best: perTrack(d.best), drift: perTrack(d.drift) });   // old saves: coins undefined -> the starting balance
   } catch { return fresh(); }
 }
 
@@ -43,15 +45,18 @@ export const store = {
   buy(key, cat, hp) { const r = buyUpgrade(this.data, key, cat, hp); if (r.ok) this.save(); return r; },
   paintOf(key) { return this.data.paint[key] ?? null; },
   setPaint(key, p) { if (p) this.data.paint[key] = p; else delete this.data.paint[key]; this.save(); },
-  /** best lap for car + mode; returns true when `t` is a new record */
+  /** records are per circuit and car ('marina/av12'): lap lengths differ, so one track's time means nothing on another */
+  recKey(key) { return `${this.settings.track}/${key}`; },
+  bestOf(key) { return this.data.best[this.recKey(key)]; },
+  driftOf(key) { return this.data.drift[this.recKey(key)] ?? 0; },
+  /** best lap for car on the current track; returns true when `t` is a new record */
   bestLap(key, t) {
-    const cur = this.data.best[key];
-    if (t !== undefined && (cur === undefined || t < cur)) { this.data.best[key] = t; this.save(); return true; }
+    const cur = this.bestOf(key);
+    if (t !== undefined && (cur === undefined || t < cur)) { this.data.best[this.recKey(key)] = t; this.save(); return true; }
     return false;
   },
   driftRecord(key, score) {
-    const cur = this.data.drift[key] ?? 0;
-    if (score > cur) { this.data.drift[key] = Math.round(score); this.save(); return true; }
+    if (score > this.driftOf(key)) { this.data.drift[this.recKey(key)] = Math.round(score); this.save(); return true; }
     return false;
   },
 };

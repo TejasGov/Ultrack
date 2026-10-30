@@ -68,7 +68,7 @@ export function GarageScreen(game) {
 
   // ------------------------------------------------------------------------------------------ tabs
   function carTab() {
-    const t = TEAM_OF[key], e = ENTRY[key], d = e.driver, x = handling(key), f = factsOf(key), best = store.data.best[key];
+    const t = TEAM_OF[key], e = ENTRY[key], d = e.driver, x = handling(key), f = factsOf(key), best = store.bestOf(key);
     return h('div', {},
       h('div.stat', {}, 'TOP SPEED', css(h('div.bar', {}, h('i')), { '--w': pct(x.top, R.top) }), h('b', {}, `${Math.round(x.top * 3.6)}`)),
       h('div.stat', {}, 'ACCEL', css(h('div.bar', {}, h('i')), { '--w': pct(x.power / x.mass, R.acc) }), h('b', {}, `${x.t100.toFixed(1)}s`)),

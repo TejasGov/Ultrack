@@ -43,16 +43,18 @@ export class Session {
     return bi;
   }
 
-  /** progress for ordering: laps counted at the start/finish line, plus how far round the current lap */
-  score(c) {
+  /** progress round the race in racing-line samples: laps counted at the start/finish line, plus how far round the current lap */
+  progress(c) {
     const s = this.trk.get(c), L = this.field.linePts, a = L[s.idx], b = L[(s.idx + 1) % this.N], p = c.vehicle.cur.pos;
     const ab = b.clone().sub(a), frac = Math.min(1, Math.max(0, p.clone().sub(a).dot(ab) / Math.max(ab.lengthSq(), 1e-6)));   // between samples
     // the grid sits just before the line: lap 1 starts at the first crossing, so a car that has crossed once is at (idx), not (N + idx),
     // or the leader would read a whole lap ahead of the cars still waiting to cross
     // a car already past the line with no recorded crossing (a reset across it) is on lap 1, not a lap behind
     const lap = s.cross === 0 && s.idx < this.N / 2 ? 0 : s.cross - 1;
-    return lap * this.N + s.idx + frac + (s.finished ? 1e7 - s.finishT : 0);
+    return lap * this.N + s.idx + frac;
   }
+  /** for ordering: progress, with finished cars ahead of everyone, in finishing order */
+  score(c) { const s = this.trk.get(c); return this.progress(c) + (s.finished ? 1e7 - s.finishT : 0); }
 
   update(dt) {
     this.t += dt;
@@ -77,13 +79,14 @@ export class Session {
       const N = this.N;
       if (s.idx > N * 0.45 && s.idx < N * 0.55) s.mid = true;
       if (prev > N * 0.9 && s.idx < N * 0.1 && this.state !== 'grid') {                  // over the line, forwards
-        if (s.cross === 0 || s.mid) {
-          if (s.cross > 0) this.lapDone(c, s);
+        if (s.recross) { s.cross++; s.recross = false; }                                  // backed over it and forwards again: the same lap runs on
+        else if (s.cross === 0 || s.mid) {
+          if (s.cross > 0 && !s.finished) this.lapDone(c, s);                             // a finished car's cool-down lap is not a lap
           s.cross++; s.mid = false; s.lapStart = this.raceT; s.valid = true;
           if (this.M.laps && s.cross >= this.laps + 1 && !s.finished) this.finish(c, s);
           else if (this.M.laps && c === hero && s.cross === this.laps) this.emit('finalLap');
         }
-      } else if (prev < N * 0.1 && s.idx > N * 0.9 && s.cross > 0) { s.cross--; s.mid = true; }   // backwards over the line
+      } else if (prev < N * 0.1 && s.idx > N * 0.9 && s.cross > 0) { s.cross--; s.recross = true; }   // backwards over the line
       // track limits (time trial): the lap is void after a second with all four wheels off
       const surf = c.vehicle.wheels.filter((w) => w.contact).map((w) => w.surface?.name);
       const off = surf.length > 0 && surf.every((n) => !ON_TRACK.has(n));
@@ -164,9 +167,11 @@ export class Session {
     return rows;
   }
 
-  /** gap in seconds from each car to the leader, from track distance and the leader's pace */
+  /** gap in seconds from each car to the leader, from track distance and the leader's pace; between finishers, their finish times */
   gaps() {
-    const lead = this.order[0], ls = this.score(lead), pace = Math.max(20, lead.vehicle.speed || 40);
-    return this.order.map((c) => ({ car: c, gap: (ls - this.score(c)) / this.N * this.len / pace }));
+    const lead = this.order[0], L = this.trk.get(lead), pace = Math.max(20, lead.vehicle.speed || 40);
+    // a finished leader stays at the line (its cool-down lap is no lead), and the time since it finished counts
+    const lp = L.finished ? this.laps * this.N : this.progress(lead), since = L.finished ? this.raceT - L.finishT : 0;
+    return this.order.map((c) => { const s = this.trk.get(c); return { car: c, gap: s.finished ? s.finishT - (L.finishT ?? s.finishT) : since + (lp - this.progress(c)) / this.N * this.len / pace }; });
   }
 }

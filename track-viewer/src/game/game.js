@@ -103,7 +103,7 @@ export class Game {
       try {
         await this.ctx.setTrack(next.id);
         store.set('track', next.id); store.set('look', next.look);       // a circuit opens at its own hour; Time of day changes it
-        this.hud?.el.remove(); this.hud = new Hud(this.root, this.ctx.track());
+        this.hud?.dispose(); this.hud = new Hud(this.root, this.ctx.track());
         this.setBusy(''); this.applySettings(); this.lineup();
       } catch (error) {
         console.warn('Track switch failed:', error);
@@ -323,7 +323,7 @@ export class Game {
     this.cameraFor('chase');
     F.rig = null;                                // a fresh chase rig, snapped behind the car
     this.state = 'session'; this.quietT = 0; this.startPos = this.session.heroPos; this.racePb = false;
-    this.hud.show(true);
+    this.hud.reset(); this.hud.show(true);
     // reply 0 in a race: lights out comes ~14 s in and would cut Alastair's answer mid-sentence
     if (mode === 'race') setTimeout(() => this.say('intro_session', { priority: 3, force: true, reply: 0 }), 400);
     else this.say('intro_session', { priority: 3, force: true });
@@ -476,7 +476,7 @@ export class Game {
   trialResults() {
     this.hud.show(false);
     const T = this.session.trk.get(this.field.hero);
-    this.show('results', { mode: 'trial', laps: T.laps, best: T.best, record: T.best !== null && store.data.best[this.field.hero.key] === T.best, reward: this.earned });
+    this.show('results', { mode: 'trial', laps: T.laps, best: T.best, record: T.best !== null && store.bestOf(this.field.hero.key) === T.best, reward: this.earned });
   }
 }
 

@@ -152,13 +152,13 @@ export function MenuScreen(game) {
   const trackName=document.createTextNode('');
   const el=screen('menu.home',h('div.scrim'),h('i.logo.brand'),h('div.home-heading',{},trackName,h('span',{},'THE CIRCUIT IS YOURS'),coinChip),grid,
     h('div.footer',{},h('span',{},h('b',{},'ARROWS'),'SELECT'),h('span',{},h('b',{},'ENTER'),'GO'),h('div.sp'),h('span',{},'ULTRACK / V2')));
-  return {el,nav:true,grid:true,onShow(){trackName.textContent=trackOf(store.settings.track).name.toUpperCase();coinChip.textContent='U-COINS  '+store.coins.toLocaleString('en');fillCard(current,store.data.car);const best=store.data.best[store.data.car];record.textContent=(best?'BEST '+fmtTime(best):'Set your first lap')+' · '+carName(store.data.car);},back(){game.show('title');}};
+  return {el,nav:true,grid:true,onShow(){trackName.textContent=trackOf(store.settings.track).name.toUpperCase();coinChip.textContent='U-COINS  '+store.coins.toLocaleString('en');fillCard(current,store.data.car);const best=store.bestOf(store.data.car);record.textContent=(best?'BEST '+fmtTime(best):'Set your first lap')+' · '+carName(store.data.car);},back(){game.show('title');}};
 }
 
 export function RecordsScreen(game) {
   const body=h('div.records-list'),el=screen('records',h('div.scrim.full'),h('div.panel',{},h('h2',{},'Personal records'),h('div.sub',{},'SAVED ON THIS DEVICE'),body,
     h('button.cta',{'data-nav':'',onclick:()=>game.show('menu')},'Back')));
-  return {el,nav:true,onShow(){fill(body,...ROSTER.map(k=>h('div.record-row',{},h('strong',{},carName(k)),h('span',{},fmtTime(store.data.best[k])),h('span',{},(store.data.drift[k]??0).toLocaleString('en')+' PTS'))));},back(){game.show('menu');}};
+  return {el,nav:true,onShow(){fill(body,...ROSTER.map(k=>h('div.record-row',{},h('strong',{},carName(k)),h('span',{},fmtTime(store.bestOf(k))),h('span',{},store.driftOf(k).toLocaleString('en')+' PTS'))));},back(){game.show('menu');}};
 }
 
 const MODEL_CREDITS=Object.values(import.meta.glob('../../../assets/cars/*/model.json',{eager:true,import:'default'})).map(m=>m.source).filter(Boolean).sort((a,b)=>String(a.title).localeCompare(String(b.title)));
@@ -316,7 +316,7 @@ export function ResultsScreen(game) {
           h('div.note', { style: { fontSize: '14px', color: 'var(--ink-3)', margin: '8px 0 0' } }, rows.some((r) => !r.finished) ? '* still on track: gap estimated from pace' : ''), earnBlock(data.reward), acts);
       } else if (mode === 'drift') {
         fill(panel, h('h2', {}, 'Drift Attack'), h('div.sub', {}, `${carName(store.data.car)} · 90 seconds`),
-          h('div.big', {}, Math.round(score).toLocaleString('en'), h('small', {}, 'PTS')), record ? h('div.rec', {}, 'NEW RECORD') : h('div.sub', {}, `Record ${(store.data.drift[store.data.car] ?? 0).toLocaleString('en')}`), earnBlock(data.reward), acts);
+          h('div.big', {}, Math.round(score).toLocaleString('en'), h('small', {}, 'PTS')), record ? h('div.rec', {}, 'NEW RECORD') : h('div.sub', {}, `Record ${store.driftOf(store.data.car).toLocaleString('en')}`), earnBlock(data.reward), acts);
       } else {
         fill(panel, h('h2', {}, 'Time Trial'), h('div.sub', {}, `${carName(store.data.car)} · ${laps.length} ${laps.length === 1 ? 'lap' : 'laps'}`),
           h('div.big', {}, fmtTime(best)), record ? h('div.rec', {}, 'NEW PERSONAL BEST') : null,

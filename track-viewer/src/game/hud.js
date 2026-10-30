@@ -53,7 +53,18 @@ export class Hud {
     this.progs = [...this.progEl.children].map((e) => e.firstChild);
     this.fit = () => { const s = Math.max(0.68, Math.min(1.3, Math.min(innerWidth / 1600, innerHeight / 900))); this.el.style.setProperty('--s', s.toFixed(3)); this.map.fit(s); };
     this.fit(); this.map.bake(); addEventListener('resize', this.fit);                // baked now, while the menus still cover the screen
-    addEventListener('keydown', (e) => { if (e.code === 'KeyM' && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey && this.el.classList.contains('on')) this.map.toggle(); });
+    this.onKey = (e) => { if (e.code === 'KeyM' && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey && this.el.classList.contains('on')) this.map.toggle(); };
+    addEventListener('keydown', this.onKey);
+  }
+
+  /** a track switch builds a new Hud: the window listeners would keep this one (and its baked minimap) alive */
+  dispose() { removeEventListener('resize', this.fit); removeEventListener('keydown', this.onKey); this.el.remove(); }
+
+  /** a new session: nothing from the last one (lights, a message, the countdown, the lap delta) carries over */
+  reset() {
+    this.lights(0); this.lapDelta(null);
+    this.msgEl.replaceChildren(); this.msgEl.classList.remove('out'); this.msgT = 0;
+    this.countEl.className = 'count'; this.countEl.textContent = ''; this.countT = 0;
   }
 
   set(el, key, text) { if (this.cache[key] !== text) { this.cache[key] = text; el.textContent = text; } }
@@ -122,7 +133,7 @@ export class Hud {
     } else if (timed) { this.set(this.lapA, 'lap', String(Math.max(1, T.cross))); this.set(this.lapB, 'laps', ''); }
     if (timed) {
       const cur = T.lapStart !== null && s.state !== 'grid' ? s.raceT - T.lapStart : null;
-      const best = s.mode === 'trial' || s.mode === 'free' ? (store.data.best[hero.key] ?? T.best) : T.best;
+      const best = s.mode === 'trial' || s.mode === 'free' ? (store.bestOf(hero.key) ?? T.best) : T.best;
       this.curAge = (this.curAge ?? 0) + dt;
       if (this.curAge > 0.04 || cur === null) { this.curAge = 0; this.setTime(this.timeCur, 'tc', cur, true); }   // the running time repaints at ~25 Hz
       this.setTime(this.timeLast, 'tl', T.lastLap); this.setTime(this.timeBest, 'tb', best);
@@ -137,7 +148,7 @@ export class Hud {
     if (s.drift) {
       const D = s.drift;
       this.set(this.dTotal, 'dt', Math.round(D.score).toLocaleString('en'));
-      this.set(this.dClock, 'dc', `${Math.ceil(D.left)} S   ·   RECORD ${(store.data.drift[hero.key] ?? 0).toLocaleString('en')}`);
+      this.set(this.dClock, 'dc', `${Math.ceil(D.left)} S   ·   RECORD ${store.driftOf(hero.key).toLocaleString('en')}`);
       this.set(this.dChain, 'dch', D.chain > 0 ? `+${Math.round(D.chain).toLocaleString('en')}` : 'DRIFT TO CHAIN'); this.flag(this.dChain, 'idle', !(D.chain > 0));
       this.set(this.dMult, 'dm', D.chain > 0 ? `×${D.mult.toFixed(1)}` : '');
       const bw = Math.round((D.mult >= 5 ? 1 : Math.min(1, (D.chainT % 2) / 2)) * (D.chain > 0 ? 100 : 0));
