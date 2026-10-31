@@ -3,9 +3,11 @@
 The realistic tail-lamp treatment is opt-in per car: a car with a spec file, `src/carkit/tails/<key>.js`, gets it; every other car
 keeps the generic lamp in `src/carkit/lamps.js`, unchanged.
 
-Status (2026-10-30): **AV-12 (`av12`) approved by the user on 2026-10-30.** Rollout stage 1 is done: the per-car file layout and
-every shared capability the other 15 cars need (survey below). No other car is converted yet; stage 2 converts them in three
-parallel groups (end of this doc).
+Status (2026-10-31): **all 16 cars are on the treatment.** AV-12 (`av12`) was approved by the user on 2026-10-30; the other 15
+were converted in three groups (stage 2, end of this doc), then the shared code was made cheap (Performance, below) and given
+the keys the per-car agents asked for (`tex: false`, `flip`, `adopt.box`, `reverse.color`, `glowAlong`, `facing`, `bowl`), which
+10 specs now use or tried (Rollout results). Overview of all 16: `qa/taillights/rollout/all-16-overview.jpg` (night chase
+braking, dusk chase running, day close running, night close braking; shot with the fixed QA tool, see Checklist).
 
 ## Files
 
@@ -61,19 +63,26 @@ Seen in `qa/taillights/av12-before/` (and `av12-before-orig/`, shot with the cod
   meshes wear a copy of it with their model's map (see `tex`).
 - **The lens.** The rear part of the model's lens material moves onto the car's `rearLens`: smoked (`0x2a0d0e`, opacity 0.4),
   glossy (roughness 0.05, clearcoat). The player car's paint capture also reaches it (`Field.useHeroEnvironment`), so by day it
-  reflects the sky and the sun.
+  reflects the sky and the sun. It is double-sided in one pass (`forceSinglePass`): three.js draws a transparent double-sided
+  material twice and flags it `needsUpdate` before each draw, a full program lookup per lens per pass every frame.
 - **Dark lenses.** `dark` materials (the indicators) lose their emission and take `darkColor`: an unlit amber lens.
 - **Reverse.** A reverse cell (a material in a box, a `reverse` component, a reverse-role mesh) wears a copy of its material lit
   cool white, brightest where a facet faces the viewer (a lit reflector cell); a `tex` car's white texels light with it.
-- **Glow.** One `THREE.Points` per car (one draw): a point per element, 0.4 x its largest size, aimed back (no glow seen from
-  ahead), a tight profile with a faint wing, energy dimming below 3 px instead of popping (as `glow.js` does), fogged.
-  It replaces the cluster halo; it is drawn in the wet-road mirror too, so a wet road reflects the glare.
+- **Glow.** One `THREE.Points` per car (one draw, frustum-culled with a 0.5 m margin): a point per element, 0.4 x its largest
+  size, aimed back (no glow seen from ahead), a tight profile with a faint wing, energy dimming below 3 px instead of popping
+  (as `glow.js` does), fogged. With `glowAlong` an element glows along its largest side instead (points sized 0.4 x its
+  middle side, 0.6 of that apart so their cores join into a line, one per strand of each slab: a ring's top and bottom arcs;
+  each snapped to the element's surface). It replaces the cluster halo; it is drawn in the wet-road mirror too, so a wet road
+  reflects the glare.
 - **Pool.** The light on the road behind: an additive two-lobe quad riding the contact shadow (flat on the road under a leaning
-  body), after dark only (x `dn`), halved on a wet road (the mirror shows the lamps there), on layer `NO_MIRROR` (2).
+  body), after dark only (x `dn`), halved on a wet road (the mirror shows the lamps there), on layer `NO_MIRROR` (2). Not drawn
+  past `FAR_M` (60 m, the car's band 2): a pixel row on the road there.
 - **Spill light (player car only, `spill: true`).** One wide `SpotLight` (78 deg) just behind the body, aimed back and down: it
   lights the road (a red streak on a wet one), the diffuser tips and a car close behind. It is always present (black when off),
   so the light count and compiled shaders never change. A point light was tried first and rejected: it lit bodywork ahead of
-  the lenses (the deck above the lamps, the louvres), which a real lamp cannot reach. AI cars get no light.
+  the lenses (the deck above the lamps, the louvres), which a real lamp cannot reach. AI cars get no light. It costs ~0.5 % of
+  the race frame (in-race A/B, two laps), and its wet-road streak (a specular reflection broken up by the rain ripples) is
+  approved look a road decal could not reproduce, so it stays (Performance).
 - **Reaction.** A spec car's brake lamp is a switch: on past 6 % pedal, off under 2 % (hysteresis, so a pedal at the switch
   point never blinks), then the shared ramp (about 70 ms to 90 % on, 150 ms to 90 % off): fast, smooth, no hard blink.
   Reverse ramps the same way. `c.lampLevel` stays the ramped brake level, so `fx-vapor.js`'s lamp-lit spray still follows it.
@@ -96,13 +105,17 @@ export default {
     { material: /brake_1/, part: 'fill' },                          // by the model material's name
     { box: [[2.10, 0.55, 0], [2.13, 0.62, 0.06]], part: 'off' },     // by the component's centre
     { minTris: 500, part: 'guide', glow: 0.5 },                     // by size; glow: the element glow's size factor (0: none)
+    { box: [[1.3, 0.85, 0], [1.4, 0.95, 0.15]], part: 'fill', tex: false, glowAlong: true },   // lit whatever its texels; glow along it
+    { box: [[2.05, 0.57, 0.66], [2.12, 0.63, 0.76]], part: 'guide', flip: true },              // modelled facing forward: turned back
+    { part: 'guide', facing: [[1, 0, 0], 0.5] },                    // per triangle: only the faces looking back (a blade's edge)
     { part: 'fill' },
   ],
-  adopt: { material: /^keep\|Light$/, minX: 1.2 },  // model materials whose triangles behind minX join the tail lamp
+  adopt: { material: /^keep\|Light$/, minX: 1.2, box: [[1.5, 0, 0.3], [2.4, 1.2, 1.2]] },   // triangles behind minX (in the box) join
   tex: { lo: 0.02, hi: 0.4, hue: [0.2, 0.32], white: [0.3, 0.6], base: 0x8c8c8c, map: 'emissiveMap' },
   dark: /Orange_Lights/, darkColor: 0x6a2a04,
   lens: { material: /Glass_Lights/, minX: 1.5, color: 0x2a0d0e, opacity: 0.4, shell: 0.004 },
-  reverse: { material: /Aluminum/, box: [[2.13, 0.72, 0.455], [2.18, 0.83, 0.545]], minX: 2 },
+  reverse: { material: /Aluminum/, box: [[2.13, 0.72, 0.455], [2.18, 0.83, 0.545]], minX: 2, color: 0x1c1e22 },
+  bowl: true,                                                       // car-lab: a closed lamp's bowl fills on the brake
   spill: true,
   levels: { run: [0.1, 0.38] },
   qa: { macro: [2.08, 0.74, 0.62] },
@@ -115,12 +128,25 @@ export default {
   reversing. `indicator`: an unlit amber lens (`darkColor`): a combined indicator/brake unit whose amber part is its own
   component. `lens`: onto the smoked `rearLens` (a lens the model gave the `tail` role: `supra` red_glass, `blackbird`
   Material.008, `nissan-z` tail|mm_windiws).
-- **Rules** (`tail`): match keys are `material`, `box`, `minTris`; add a key to `tailRule` only when no combination of these
-  separates a car's elements. At LOD 1 the same rules run on the decimated mesh: `material` rules hold there, `box` and
+- **Rules** (`tail`): match keys are `material`, `box`, `minTris` and `facing`; add a key to `tailRule` only when no combination
+  of these separates a car's elements. At LOD 1 the same rules run on the decimated mesh: `material` rules hold there, `box` and
   `minTris` may misfire on merged components, so end the list with a catch-all rule.
+  - `facing: [[x, y, z], min]` matches per triangle (its normal . axis >= min, z mirrored like the boxes); the element's other
+    triangles fall through to the next rule (`{ part: 'off' }` after it). A mesh with a facing rule is de-indexed at fit, so no
+    vertex straddles the lit edge. For an element lit on every face whose top the chase camera sees (destrier, buggati).
+  - `tex: false`: the element lights whatever its texels on a `tex` car (aLamp is written as 1 + w; the shader drops the texel
+    weight where it is >= 1.5): a stop lamp the atlas paints unlit (mp1x).
+  - `flip: true`: an element modelled facing forward (back-face culled from behind) is turned to face back: reversed winding,
+    negated normals, on copies (jaguarxkjss's outer segment).
+  - `glowAlong: true`: the element glows along its largest side (see Glow) instead of one point at a centroid that lies off a
+    long, curved or ring-shaped element (a mid-blade dot, a red pupil in a ring, a dot on the paint beside a curved bar).
+- **`bowl: true`** (car-lab cars): the bowl behind a closed lamp's LED ring is a brake fill, with LED dots, a dark red reflector
+  when off (bentley-gt's ovals fill on the brake). cars.js merges car-lab's lamp group per material, so names are gone: a bowl
+  is found by its shape (a fan of lamp-housing triangles, both faces, all starting at the lamp's centre, behind x 1). No glow.
 - **`adopt`**: a model ('keep') material that is really part of the tail lamp (`furari-488` keep|Light, the round lamps' emitters,
-  today glowing at a constant level) becomes a tail mesh: its triangles behind `minX` (all of them without `minX`) are split off,
-  classified by the rules and, with `tex`, lit through its own map. Adopted at every LOD.
+  today glowing at a constant level) becomes a tail mesh: its triangles behind `minX` and inside `box` (all of them without
+  either) are split off, classified by the rules and, with `tex`, lit through its own map. Adopted at every LOD. Leaving a piece
+  out returns it to the model's own material, which may glow all the time (nissan-z's wing-mount plates: kept adopted, `off`).
 - **`tex`** (lamp detail that lives in a texture: the game's `taillight` material has no map, so these lamps were a flat
   red): a tail mesh whose model material has a map (`map`, else its `emissiveMap`; `map: 'emissiveMap'` prefers that one) and
   UVs wears a copy of the lamp material with it (one per model material, shared uniforms, built at assembly; LOD 1 reuses LOD
@@ -139,7 +165,8 @@ export default {
   lighter, more transparent one).
 - **`reverse`**: `material` with `box` as AV-12, or without `box` (every triangle behind `minX`, a glow point per component).
   Other ways: part `reverse` in the rules, `tex.white`, and a reverse-role mesh (car-lab's reverse tubes), which is lit
-  automatically. One reverse material per car (the first source wins).
+  automatically. One reverse material per car (the first source wins). `color`: its unlit colour (a part `reverse` otherwise
+  copies the white headlamp material, which reads as a lit lamp while driving); `{ color }` alone is a valid `reverse`.
 - **Car-lab cars** (`bentley-gt`, `mustang`: no model, lamps built by `car-lab/src/vehicle/lights.js` into `c.lamps.root`, outside
   the LOD levels): fitted automatically. Their LED tubes are the tail meshes (rules apply; default guide), the centre stop lamp
   (role `brake`, `m.brakeLight`) is lit as a fill on the brake, the reverse tubes (role `reverse`) as the reverse lamp, and the
@@ -202,7 +229,9 @@ wait on the same lock: do everything offline first and narrow every browser run.
 5. **After stills** (once, the full set): `node scripts/qa-lock.mjs -- node scripts/qa-taillights.mjs <car>` (to
    `qa/taillights/<car>-after`), then `node scripts/qa-taillights.mjs --sheet qa/taillights/<car>-before qa/taillights/<car>-after qa/taillights/<car>-before-after.jpg`
    (the full sheet and `-highlights.jpg`; its crops are AV-12's framing, so check the full stills too).
-6. **Check in the stills** (`<look>-<dry|wet>-<running|brake|reverse>-<view>`):
+6. **Check in the stills** (`<look>-<dry|wet>-<running|brake|reverse>-<view>`). Since 2026-10-31 the tool turns off the dev
+   viewer's camera headlight (on in orbit mode, off in the game's chase mode): every still shot before that has a large
+   white-yellow glare low on the car's rear at night, which the rollout groups took for exhaust glow. Compare like with like.
    - running (every look): only the guides lit, a dark smoked lens by day with sky and sun reflections, a clear red at dusk and
      night; no element brighter than AV-12's at the same look.
    - brake: the step from running is obvious at chase distance; the fills light with visible LED dots at macro; red, not pink,
@@ -216,9 +245,9 @@ wait on the same lock: do everything offline first and narrow every browser run.
      as one lamp at chase, red points with a little glare at 20 m, no blob.
    - drive frames (night rain, the AI braking): no flicker or blink between frames, no detached glow at speed.
    - nothing placeholder-looking, no neon, no hard blinking.
-7. **Frame rate** (once per group, after its cars are done; every car is in every race): through the lock
-   `qa-race-watch.mjs marina night 1` once with `http://127.0.0.1:5180/?tails=off` and once without: finished, no new errors,
-   darkFrames 0, mean fps within 5 % (run-to-run noise is about ±5 %, so compare the means).
+7. **Frame rate** (after a change to shared code; every car is in every race): see Performance. One race against another is
+   noisy (±5-10 %: the AI drives a different race each time), so alternate several `?tails=off` and on runs and compare the
+   means, and A/B a single feature inside one race (toggled every second) rather than across races.
 8. **Commit** the car's spec file only (`git add src/carkit/tails/<car>.js`); its QA notes in the file's header. A capability
    the spec keys cannot express goes to the orchestrator (`taillights.js` and this doc are shared), not into a car's commit.
 
@@ -231,6 +260,63 @@ Each group edits only its own `src/carkit/tails/<key>.js` files and its `qa/tail
   `lens.material`, `tex` with `map`, `dark`): `furari-488`, `blackbird`, `nissan-z`, `bmw1`, `jaguarxkjss`.
 - **C, geometry and car-lab lamps** (component rules by `material` / `box` / `minTris`, multi-material tails, rain lamps, the
   car-lab pair): `buggati`, `destrier`, `supra`, `bentley-gt`, `mustang`.
+
+All 15 were converted (per-car sheets `qa/taillights/<car>-before-after*.jpg`, group sheets `qa/taillights/rollout/group-*`).
+
+## Rollout results (2026-10-31): the new keys per car
+
+Each change re-shot (`qa/taillights/<car>-step2*`), compared with the car's approved `-after` stills, kept only where it reads
+better; the reasoning is in each spec's header.
+
+| Car | Change | Kept? |
+|---|---|---|
+| `mp1x` | centre stop lamp on the engine cover: a fill with `tex: false` and `glowAlong` (the atlas paints it unlit) | yes: a crisp red bar under the rear window on the brake |
+| `jaguarxkjss` | outer segment `flip`ped to face back, same glow as the others | yes: three lit segments per side (two before) |
+| `bmw1` | `adopt.box` (\|z\| > 0.3): the star badge and third brake light keep the model's material | yes: no visible change, the badge is no lamp element |
+| `nissan-z` | `adopt.box` leaving out the two plates under the wing | no: their model material glows red all the time |
+| `destrier` | blades lit at their rear edge (`facing`), `glowAlong`, AV-12's levels again; diffuser reverse lamp `reverse.color` + `glowAlong` | yes: a thin light blade with a line of glare; the reverse lamp no longer looks lit while driving |
+| `furari-488` | the clear centre disc as the reverse lamp with `reverse.color` | no: the reverse read right, but the brake lost its filled disc |
+| `bentley-gt` | `bowl: true`, ring `glowAlong` | yes: the oval fills red with LED dots on the brake, a glow along the ring |
+| `mustang` | bars `glowAlong` | yes: a tight glow hugging each bar (none before) |
+| `supra` | inboard bar `glowAlong` (was a small centroid glow) | yes: a line of glare along the bar on the brake |
+| `buggati` | fins lit at their rear edges (`facing`), AV-12's levels again | yes: the Divo's thin red lines between dark fins (the tops lit as orange-red slabs before) |
+
+## Performance (2026-10-31)
+
+Measured at Marina, night, dry, 1 lap, 8 cars, `buggati` as the player car, with throwaway copies of `qa-race-watch.mjs` (the car
+seeded, per-frame JS time, the app's own GPU timer query read back, draw calls, `getProgram` calls) and a held-grid benchmark
+(the race held on its grid, a fixed camera behind all eight rears). The race is CPU-bound in headless Chrome here: ~8 of
+~11.5 ms per frame is JS, the GPU ~4.5 ms.
+
+- **What cost what** (in-race A/B, the feature toggled every second, frame time): the lens 3.3 % (three.js's two-pass
+  double-sided transparent draw flags the material `needsUpdate` twice per lens per pass: ~7 full program lookups a frame), the
+  pools 1.2 %, the split-off parts (reverse, indicator, lens, adopted meshes) 1.0 %, the glow Points 0.6 %, the spill SpotLight
+  ~0.5 % (±1.6; it is not the 2.6 points group C read from single runs). The tail shader's LED dots and `fwidth` cost GPU only on
+  a few hundred lamp pixels, and the GPU is not the bottleneck: not separable from the noise.
+- **What changed**: the lens in one pass, the glows frustum-culled, no pool past 60 m, no per-frame closure in `driveTail`
+  (`5027aa9`). In-race A/B of the old lens and unculled glows against the new: +1.5 % ±0.6. Held grid: HEAD 104.7 / 99.2 fps,
+  after 112.6 / 112.2, `?tails=off` 112.9 / 105.9; program lookups per frame 97-102 / 83-88 / 83-88; draw calls 653 / 644 / 640.
+  AV-12's 39 dry stills against a fresh baseline: mean abs difference 3.34, lamp crops 3.83 (run-to-run noise 3.25 / 3.86).
+- **On against off, final** (all 16 specs as committed, 4 + 4 whole races alternating `?tails=off` / on, raw summaries in
+  `qa/taillights/rollout/perf-final.json`): the three races that ran normally with `?tails=off` averaged 113.7 fps, the two
+  with the lamps 109.2 fps: **-4.0 %**. Per frame: JS +0.6 ms (5.47 against 4.89), GPU +0.2 ms, draw calls equal (465; the
+  generic lamps' halo sprites cost what the glows and pools do). Three races (one off, two on) ran throttled from outside the
+  page (frame time 12-17 ms against 5-6 ms JS and 4.4 ms GPU, the race 150-180 s instead of 122 s, as the simulation slows with
+  the frame rate) and are left out; all eight averaged give -7.9 %. The held-grid benchmark, with all eight rears in view, is at
+  parity. Earlier the same day (the PC slower: ~8 ms JS a frame) three alternating pairs with the step-1 code gave 83.1
+  against 90.9 fps (-9 %; the off races 102.5, 85.1, 85.0: race-to-race spread larger than the difference). Group C's -15 % (95.2 / 81.2) was before this work and single runs.
+- **Found, not changed** (cars.js): every 4th frame the hero's cube capture renders with the hero hidden and shadows off, so the
+  light set changes and every lit material in the scene re-runs `getProgram` twice that frame (~60-80 calls a frame on
+  average, with or without the tail lamps; the hero's beams and spill drop out of the light set with it). A capture that keeps
+  the light set unchanged would likely remove most of it; not tried.
+
+## The "exhaust glow" in the rollout stills (2026-10-31)
+
+All three groups noted a large white-yellow glow low on the rear of stationary cars at night. It was the dev viewer's camera
+headlight (main.js `headlight`, on in orbit mode, where `qa-taillights.mjs` shoots; off in chase, where the game plays), now
+turned off by the tool. With it off, the night stills of all 16 idle cars (`qa/taillights/rollout/final/<car>/night-dry-running-*`)
+show nothing at the pipes: no constant glow from the exhaust fire (`fx-flame.js` spawns only on a pop, `fx.js`'s pop light is
+at zero between pops). What remains bright there is floodlight reflections on glossy lenses and chrome.
 
 ## AV-12 results
 
@@ -245,6 +331,9 @@ Each group edits only its own `src/carkit/tails/<key>.js` files and its `qa/tail
   materials, glow points, pool, spill and uniforms over three frames, LOD 1 included), all 100 outputs are identical. Re-shot
   (`qa/taillights/av12-after-rollout/`) against the approved set: mean absolute difference 3.255 over the 39 dry stills, where two
   runs of the same code differ by 3.248 (lamp crops 3.86 against 4.12): within run-to-run noise (grain, a sub-pixel pose shift).
+- The performance work (2026-10-31) left it unchanged: every spec fits offline to identical meshes, indices, aLamp and glow
+  items, and the one-pass lens re-shot against a fresh baseline differs by 3.34 (lamp crops 3.83) over the 39 dry stills, the
+  noise level, with no visible change in the lamp crops (`qa/_tails-perf` was throwaway and is deleted).
 
 ## What the models would need (not done; no GLB was edited)
 
