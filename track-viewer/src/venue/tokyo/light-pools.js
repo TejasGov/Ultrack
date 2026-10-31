@@ -12,6 +12,7 @@ import { TRACKS } from '../../tracks.js';
 import { analyseSigns, PALETTE } from './signs.js';
 
 const GROUND = new Set(TRACKS.tokyo.wet.wet);                 // the surfaces a pool may fall on: road, paint, kerbs, pavement, park
+const tokyoGround = (o) => GROUND.has(o.material.name);
 const LAMP = 0, NEON = 1, WARM = 2, TUNNEL = 3;                // gain groups (uGain.xyzw)
 const SODIUM = new THREE.Color('#ffb46b');
 // emissive sources: material name, gain group, cluster cell (m, 3D), strength, colour override (else the material's emissive colour)
@@ -28,20 +29,20 @@ const NEAR_ROAD = 30;            // m from the centerline: farther sources light
 const MAX_R = { [LAMP]: 26, [NEON]: 14, [WARM]: 12, [TUNNEL]: 15 };
 const H_REF = 6;                 // a source this high over its ground has the nominal peak; the peak goes as 1/h^2 (capped)
 
-/** Ground height lookup over the GROUND meshes: triangles binned on a 4 m grid (xz). height(x, z, below) = the highest ground under `below`.
- *  Built once per venue (neon-streaks uses it too). */
+/** Ground height lookup over the ground meshes (isGround(mesh); Tokyo's: the GROUND materials): triangles binned on a 4 m grid (xz).
+ *  height(x, z, below) = the highest ground under `below`. Built once per venue (neon-streaks uses it too; India's road light does, with its own meshes). */
 const fields = new WeakMap();
-export function groundField(root) {
-  if (!fields.has(root)) fields.set(root, buildGroundField(root));
+export function groundField(root, isGround = tokyoGround) {
+  if (!fields.has(root)) fields.set(root, buildGroundField(root, isGround));
   return fields.get(root);
 }
-function buildGroundField(root) {
+function buildGroundField(root, isGround) {
   const CELL = 4, cells = new Map(), big = [], T = [];
   const key = (ix, iz) => (ix + 30000) * 60000 + (iz + 30000);
   const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), m = new THREE.Matrix4(), w = new THREE.Matrix4();
   root.updateMatrixWorld(true);
   root.traverse((o) => {
-    if (!o.isMesh || Array.isArray(o.material) || !GROUND.has(o.material.name)) return;
+    if (!o.isMesh || Array.isArray(o.material) || !isGround(o)) return;
     const pos = o.geometry.attributes.position, idx = o.geometry.index, nt = (idx ? idx.count : pos.count) / 3;
     for (let k = 0, ni = o.isInstancedMesh ? o.count : 1; k < ni; k++) {
       if (o.isInstancedMesh) { o.getMatrixAt(k, m); w.multiplyMatrices(o.matrixWorld, m); } else w.copy(o.matrixWorld);

@@ -53,9 +53,10 @@ export const TRACKS = {
     brands: { 'DRESS | board sony-6000': 'jio-6000', 'DRESS | board sony-11818': 'jio-11818' },
     // the collision corridor ends ~40 m out while the terrain goes on: invisible walls where the ground stops (physics/world.js)
     voidWalls: true,
-    // the street lamps' light on the road (main.js pool.street): the heads hang 9 m up and 11 m out (Marina's 3.6 m), so at the
-    // common power the road between them stayed black
-    lampPower: 7,
+    // the six lamps nearest the camera are real lights (main.js pool.street): the heads hang 9 m up and 11 m out (Marina's 3.6 m), so
+    // the common power barely reached the road. The road itself is lit lap-long by venue/india/road-light.js; these add the close
+    // detail (car bodies, walls, poles) without doubling the pools' road light
+    lampPower: 2,
     venue: () => import('./venue/india.js'),
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },

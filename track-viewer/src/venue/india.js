@@ -1,7 +1,8 @@
 // India Ghat Circuit's runtime details, loaded by main.js through tracks.js `venue` after the venue GLB.
 //   barrier reflectors   amber retro-reflectors on the barrier face (track.json `reflectors`): a dull amber plate by day; at dusk and
 //                        night they shine back when the car's lights reach them (bright near the camera, facing it), never blinking
-//   bridge uplights      warm off-white fixtures at the foot of each portal leg (track.json `bridgeUplights`) with a soft wash up the leg
+//   night lights         the lit road (lamp pools and an edge band along both barriers, lap-long), the edge fixtures on the barriers and the
+//                        uplights that wash the bridge portals from the ground: venue/india/night.js (the six real lamp lights are main.js)
 //   tree canopies        the forest's canopy meshes (V5 forest / ... `_1`): matte, with leaf-clump shading in a clone of their shared
 //                        vertex-colour material. The ragged outline is in the mesh now (tracks/india/art_v56_trees.py): nothing moves
 //                        the vertices or cuts the edges here, so the two never double up and nothing shimmers
@@ -14,8 +15,9 @@
 // The lit windows and the warm lamp heads are in the GLB ('IN window glow night' via tracks.js dayNight, 'M_LampWarm' via glow.js).
 import * as THREE from 'three';
 import { create as mirrorHeight } from './tokyo/mirror-height.js';
+import { create as nightLights } from './india/night.js';
 
-const AMBER = new THREE.Color(0xffb347), WARM = new THREE.Color(0xffe2b8);
+const AMBER = new THREE.Color(0xffb347);
 const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 // ground, far ranges, cards and low scatter cast no shadow (main.js NO_CAST is Marina's names); trees, buildings, stands and walls do
@@ -63,12 +65,14 @@ const SHIRTS = [0xf2f2f0, 0xf2f2f0, 0x1f4fa8, 0x2a6fd6, 0xff8a1e, 0xd62828, 0xf5
 const SKINS = [0x8d5524, 0xa0673a, 0xb27148, 0xc68642, 0x7a4a2a, 0x96603a];
 const LEGS = [0x1f2a44, 0x2b2b2b, 0x3c4a5c, 0x5a4632, 0xd8d2c4];
 
-export async function create({ scene, root, track, NO_MIRROR }) {
+export async function create(ctx) {
+  const { scene, root, track, NO_MIRROR } = ctx;
   root.traverse((o) => { if (o.isMesh && (NO_CAST.test(o.name) || NO_CAST.test(o.parent?.name ?? ''))) o.castShadow = false; });
   const group = new THREE.Group(); group.name = 'india venue fx'; scene.add(group);
   const dispose = [];
   let night = 0;
   const mirror = await mirrorHeight({ scene, track }); dispose.push(mirror);
+  const lights = await nightLights(ctx); dispose.push(lights);
 
   // ---- the export's boards glow after dark with a flat white emissive (the glTF lost Blender's image-linked emission, so every board
   // turned into a white bar at night): they glow with their own print, at a third (a white print at full gain bloomed like a lamp).
@@ -104,23 +108,6 @@ export async function create({ scene, root, track, NO_MIRROR }) {
   R.forEach((r, i) => { q.setFromAxisAngle(up, Math.atan2(r[3], r[4])); m.compose(pos[i], q, s1); plates.setMatrixAt(i, m); plates.setColorAt(i, AMBER); });
   plates.frustumCulled = false; group.add(plates); dispose.push(plateGeo, plateMat);
   const c = new THREE.Color(), toCam = new THREE.Vector3();
-
-  // ---- bridge uplights: a fixture and an additive wash fading up each portal leg (night only)
-  const U = track.bridgeUplights?.items ?? [];
-  const fixGeo = new THREE.BoxGeometry(0.9, 0.35, 0.9), fixMat = new THREE.MeshBasicMaterial({ color: WARM.clone().multiplyScalar(0.4) });
-  const washMat = new THREE.ShaderMaterial({
-    uniforms: { uK: { value: 0 }, uColor: { value: WARM.clone() } },
-    vertexShader: 'varying float vH; void main(){ vH = uv.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: 'uniform float uK; uniform vec3 uColor; varying float vH; void main(){ float a = uK * pow(1.0 - vH, 2.2) * 0.55; gl_FragColor = vec4(uColor * a, a); }',
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
-  });
-  for (const u of U) {
-    const fix = new THREE.Mesh(fixGeo, fixMat); fix.position.set(u.pos[0], u.pos[1] + 0.18, u.pos[2]); group.add(fix);
-    const h = Math.max(6, u.top);
-    const washGeo = new THREE.CylinderGeometry(1.7, 2.3, h, 16, 1, true); washGeo.translate(0, h / 2, 0);
-    const wash = new THREE.Mesh(washGeo, washMat); wash.position.set(u.pos[0], u.pos[1], u.pos[2]); wash.renderOrder = 2; group.add(wash); dispose.push(washGeo);
-  }
-  dispose.push(fixGeo, fixMat, washMat);
 
   // ---- hoardings: a printed face on a dark steel frame; floodlit (a faint emissive) after dark
   const tl = new THREE.TextureLoader(), texs = new Map(), lit = [];
@@ -188,14 +175,14 @@ export async function create({ scene, root, track, NO_MIRROR }) {
   meshes.forEach((im) => { im.computeBoundingSphere(); group.add(im); });
 
   return {
-    setLook(look) {
+    setLook(look, params) {
       night = sstep(0.3, 0.9, look.dn ?? 0);
-      washMat.uniforms.uK.value = sstep(0.5, 0.9, look.dn ?? 0);
-      fixMat.color.copy(WARM).multiplyScalar(0.4 + 2.6 * washMat.uniforms.uK.value);
+      lights.setLook(look, params);
       for (const mat of lit) mat.emissiveIntensity = 0.3 * night;
     },
-    update(t, camera) {
+    update(t, camera, look) {
       mirror.update(t, camera);
+      lights.update(t, camera, look);
       // retro-reflection: brightest straight back at the light source (the car / camera), a few metres to ~150 m, smooth in distance
       for (let i = 0; i < pos.length; i++) {
         toCam.subVectors(camera.position, pos[i]); const d = toCam.length();
