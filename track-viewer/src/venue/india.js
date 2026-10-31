@@ -12,10 +12,14 @@
 //   crowd                a seated spectator on most stand seats: three instanced meshes (shirt, head, legs), no per-frame work
 //   wet-road mirror      Tokyo's mirror-height part: the plane follows the road under the camera (82% of the lap is over 3 m up,
 //                        where a mirror at y = 0 reflected the sky instead of the lamps and cars)
+//   surfaces             asphalt, paint, concrete, stone, plaster, ground, steel and leaves instead of one flat gloss each, the rubbered
+//                        line, the damp and the rain: venue/india/materials.js (its photo sets start loading with the GLB: prefetch)
 // The lit windows and the warm lamp heads are in the GLB ('IN window glow night' via tracks.js dayNight, 'M_LampWarm' via glow.js).
 import * as THREE from 'three';
 import { create as mirrorHeight } from './tokyo/mirror-height.js';
 import { create as nightLights } from './india/night.js';
+import { create as surfaces } from './india/materials.js';
+export { prefetch } from './india/materials.js';
 
 const AMBER = new THREE.Color(0xffb347);
 const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -68,11 +72,15 @@ const LEGS = [0x1f2a44, 0x2b2b2b, 0x3c4a5c, 0x5a4632, 0xd8d2c4];
 export async function create(ctx) {
   const { scene, root, track, NO_MIRROR } = ctx;
   root.traverse((o) => { if (o.isMesh && (NO_CAST.test(o.name) || NO_CAST.test(o.parent?.name ?? ''))) o.castShadow = false; });
+  // the far forest's impostor cards (210k alpha-tested tris) stay out of the wet-road mirror: a speckle on the hills there, blurred and
+  // streaked, for ~0.6 ms a frame in the rain (bench at night); the hero trees and the ground under the cards still reflect
+  if (NO_MIRROR !== undefined) root.traverse((o) => { if (o.isMesh && [o.name, o.parent?.name].some((n) => /^scatter_cards/.test(n ?? ''))) o.layers.set(NO_MIRROR); });
   const group = new THREE.Group(); group.name = 'india venue fx'; scene.add(group);
   const dispose = [];
   let night = 0;
   const mirror = await mirrorHeight({ scene, track }); dispose.push(mirror);
   const lights = await nightLights(ctx); dispose.push(lights);
+  const mats = await surfaces(ctx, lights.road); dispose.push(mats);     // the road takes the lamps' light from the road map
 
   // ---- the export's boards glow after dark with a flat white emissive (the glTF lost Blender's image-linked emission, so every board
   // turned into a white bar at night): they glow with their own print, at a third (a white print at full gain bloomed like a lamp).
@@ -177,11 +185,11 @@ export async function create(ctx) {
   return {
     setLook(look, params) {
       night = sstep(0.3, 0.9, look.dn ?? 0);
-      lights.setLook(look, params);
+      lights.setLook(look, params); mats.setLook(look, params);
       for (const mat of lit) mat.emissiveIntensity = 0.3 * night;
     },
     update(t, camera, look) {
-      mirror.update(t, camera);
+      mirror.update(t, camera); mats.update?.();
       lights.update(t, camera, look);
       // retro-reflection: brightest straight back at the light source (the car / camera), a few metres to ~150 m, smooth in distance
       for (let i = 0; i < pos.length; i++) {

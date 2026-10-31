@@ -148,3 +148,5 @@ if(existsSync(driverRoot)){
 
 // Tokyo photo textures (assets/polyhaven -> public/assets/tokyo/tex/*.ktx2) for src/venue/tokyo/materials.js; only sets that are new or changed
 await import("./pack-tokyo-tex.mjs");
+// India's photo textures (the same way, -> public/assets/india/tex/) for src/venue/india/materials.js
+await import("./pack-india-tex.mjs");

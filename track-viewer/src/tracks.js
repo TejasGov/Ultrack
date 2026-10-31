@@ -47,7 +47,7 @@ export const TRACKS = {
     dayNight: { day: /(?!)/, night: /^IN window glow night$/ },     // no day backdrop: `day` matches nothing
     // the baked vertex colours are albedo only: the same lift by day as Tokyo's, with the toned-down sun (main.js LOOKS)
     looks: { day: { exposure: 1.75, env: 1.3, sun: 4.2 }, dusk: { exposure: 0.6 } },
-    wet: { wet: ['India | asphalt'], puddles: ['India | asphalt'] },
+    wet: { wet: [], puddles: [] },     // the export shares its materials between the road and everything else: venue/india/materials.js wets its own road clones
     // location-specific brands: a GLB board material -> an image of the same aspect in `${dir}ads/` (main.js; sources in
     // assets/sponsors/manifest.json). India's long Sony boards and the gantry banner carry Jio; the 3:1 Sony boards stay.
     brands: { 'DRESS | board sony-6000': 'jio-6000', 'DRESS | board sony-11818': 'jio-11818' },

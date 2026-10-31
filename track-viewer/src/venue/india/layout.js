@@ -1,5 +1,5 @@
 // India's night-lighting layout, pure (track.json in, numbers out; scripts/test-india-lights.mjs checks it): the lap resampled at equal
-// arc length, the low fixtures on the barrier faces, and the grid of the lit band they throw across the road.
+// arc length, the low fixtures on the barrier faces, and the road map (the lamps' and fixtures' light on the road, its rubber and dust).
 // The two hairpins (centreline radius 11-14 m) are tighter than the road's half width: on their inside the barrier is not an offset
 // of the centreline, so there the offsets are clamped (no fold) and the fixtures and the band fade out (edgeWeight).
 export const FACE = 13.0;        // the barrier's inner face, m from the centreline on both sides (the concrete walls mesh: 13.0-13.1)
@@ -69,10 +69,27 @@ export function bandGrid(track, { ds = 3, us = [0.04, 0.5, 1.1, 1.9, 3, 4.4, 6.2
   return { cols: us.length, m: list.length, rows };
 }
 
-// ---- the lit road: one ribbon over the whole carriageway, its vertices carrying the light baked from the street lamps and the edge band
+/** (x, z) -> { lat, y }: the offset across the road (+ left) and the road's centreline height at the nearest point of the lap (1 m
+ *  steps), or null more than `reach` m from it */
+export function nearestOnLap(track, reach = 20) {
+  const { list } = stations(lapPath(track.centerline), 1), g = new Map(), key = (i, j) => i * 100003 + j;
+  list.forEach((f, j) => { const k = key(Math.floor(f.x / reach), Math.floor(f.z / reach)); (g.get(k) ?? g.set(k, []).get(k)).push(j); });
+  return (x, z) => {
+    let best = reach * reach, bj = -1;
+    const ci = Math.floor(x / reach), cj = Math.floor(z / reach);
+    for (let a = ci - 1; a <= ci + 1; a++) for (let b = cj - 1; b <= cj + 1; b++) for (const j of g.get(key(a, b)) ?? []) {
+      const d = (x - list[j].x) ** 2 + (z - list[j].z) ** 2; if (d < best) { best = d; bj = j; }
+    }
+    if (bj < 0) return null;
+    const f = list[bj];
+    return { lat: -(x - f.x) * f.tz + (z - f.z) * f.tx, y: f.y };
+  };
+}
 
-/** columns across the road (m from the centreline, + left): dense toward the barriers, where the edge band falls off fast */
-export const LATS = [-12.96, -12.5, -11.9, -11.1, -10, -8.6, -6.8, -4.6, -2.3, 0, 2.3, 4.6, 6.8, 8.6, 10, 11.1, 11.9, 12.5, 12.96];
+// ---- the road map: one lap-long texture over the carriageway, kerbs and edge lines, which the road's own material samples (materials.js):
+// the light the street lamps and the edge fixtures throw on it (irradiance: the surface's albedo takes it, so paint stays brighter than
+// asphalt), the rubbered racing line and the dust toward the edges
+
 export const LAMP_H = 0.72;       // the pool's effective height, as a share of the lamp's: a road luminaire is shielded, so its pool is tighter than a bare point's
 export const LAMP_SHIFT = 4.5;   // a cantilever luminaire throws toward the road: its pool centre sits this far in from the lamp head
 const RMAX = 44;                 // a lamp's pool is cut (smoothly) at this radius
@@ -91,9 +108,9 @@ export function lampPools(track, lamps, shift = LAMP_SHIFT) {
 export function lampLight(pools, x, z, out = [0, 0, 0]) {
   out[0] = out[1] = out[2] = 0;
   for (const p of pools) {
-    const r = Math.hypot(x - p.cx, z - p.cz);
-    if (r > RMAX) continue;
-    const e = (1 + (r / p.h) ** 2) ** -1.5 * (1 - sstep(0.55 * RMAX, RMAX, r));
+    const dx = x - p.cx, dz = z - p.cz, r2 = dx * dx + dz * dz;
+    if (r2 > RMAX * RMAX) continue;                 // (the road map asks this of ~100k texels: no hypot, no pow)
+    const q = 1 + r2 / (p.h * p.h), e = (1 - sstep(0.55 * RMAX, RMAX, Math.sqrt(r2))) / (q * Math.sqrt(q));
     out[0] += e * p.rgb[0]; out[1] += e * p.rgb[1]; out[2] += e * p.rgb[2];
   }
   return out;
@@ -103,13 +120,44 @@ export function lampLight(pools, x, z, out = [0, 0, 0]) {
 export const EDGE_H = 4;
 export const edgeLight = (u) => (1 + (u / EDGE_H) ** 2) ** -1.5 * (1 - sstep(9, 13.5, u));
 
-/** the ribbon's grid: a row every `ds` m along the lap, a vertex at each LATS across -> [{ x, z, yRoad, lat, w, s }] (row j, column c at j * LATS.length + c);
- *  w = edgeWeight on that side (1 at the centre) */
-export function roadGrid(track, { ds = 2 } = {}) {
-  const path = lapPath(track.centerline), { list } = stations(path, ds), rows = [];
-  for (const f of list) for (const lat of LATS) {
-    const side = lat < 0 ? -1 : 1, p = sidePoint(f, side, Math.abs(lat));
-    rows.push({ x: p.x, z: p.z, yRoad: f.y, lat, w: lat === 0 ? 1 : edgeWeight(f, side), s: f.s });
+/** The road map, a world-space grid of `cell` m over every point within `reach` m of the centreline (the lap never runs within 40 m
+ *  of itself, so one layer covers it): RGBA bytes, R = sqrt(lamp irradiance / 2) (the pools of lampLight, colour applied by the shader),
+ *  G = sqrt(edge band), B = rubber on the racing line, A = dust toward the edges. sqrt: the faint tail of a pool keeps its precision.
+ *  The racing line is the curvature smoothed over ~15 m minus over ~45 m (a difference of Gaussians): toward the inside at an apex, out
+ *  wide before and after, ~9 m at most. -> { data, w, h, x0, z0, cell, line(s) } (texel (i, j) covers x0 + i * cell, z0 + j * cell) */
+export function roadMap(track, pools, { cell = 1, reach = FACE + 6 } = {}) {
+  const path = lapPath(track.centerline), { list, step } = stations(path, 1), n = list.length;
+  const K = list.map((f) => f.k);
+  const blur = (sig) => {
+    const r = Math.ceil(3 * sig / step), w = Array.from({ length: 2 * r + 1 }, (_, i) => Math.exp(-(((i - r) * step) ** 2) / (2 * sig * sig))), sw = w.reduce((a, b) => a + b);
+    return K.map((_, j) => w.reduce((s, wi, i) => s + wi * K[(j + i - r + n) % n], 0) / sw);
+  };
+  const near = blur(15), wide = blur(45);
+  const line = near.map((k, j) => 9 * Math.tanh((k - wide[j]) * 260));                    // + left (the inside of a left-hander)
+  const heavy = near.map((k) => 0.4 + 0.6 * sstep(0.002, 0.012, Math.abs(k)));          // more rubber where the cars turn and brake
+  let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
+  for (const f of list) { x0 = Math.min(x0, f.x); z0 = Math.min(z0, f.z); x1 = Math.max(x1, f.x); z1 = Math.max(z1, f.z); }
+  x0 = Math.floor((x0 - reach - 2) / cell) * cell; z0 = Math.floor((z0 - reach - 2) / cell) * cell;
+  const w = Math.ceil((x1 + reach + 2 - x0) / cell) + 1, h = Math.ceil((z1 + reach + 2 - z0) / cell) + 1;
+  const best = new Float32Array(w * h).fill(reach * reach), owner = new Int32Array(w * h).fill(-1), lat = new Float32Array(w * h);
+  const rc = Math.ceil(reach / cell);
+  list.forEach((f, j) => {                                          // nearest station per texel, and the texel's offset across the road there
+    const ci = Math.round((f.x - x0) / cell), cj = Math.round((f.z - z0) / cell);
+    for (let b = Math.max(0, cj - rc); b <= Math.min(h - 1, cj + rc); b++) for (let a = Math.max(0, ci - rc); a <= Math.min(w - 1, ci + rc); a++) {
+      const px = x0 + a * cell - f.x, pz = z0 + b * cell - f.z, d = px * px + pz * pz, i = b * w + a;
+      if (d < best[i]) { best[i] = d; owner[i] = j; lat[i] = -px * f.tz + pz * f.tx; }     // the left normal is (-tz, tx)
+    }
+  });
+  const data = new Uint8Array(w * h * 4), rgb = [0, 0, 0];
+  for (let i = 0; i < w * h; i++) {
+    const j = owner[i]; if (j < 0) continue;
+    const f = list[j], l = lat[i], side = l < 0 ? -1 : 1, u = Math.max(0, FACE - Math.abs(l));
+    lampLight(pools, x0 + (i % w) * cell, z0 + Math.floor(i / w) * cell, rgb);
+    const edge = edgeLight(u) * edgeWeight(f, side), rub = Math.exp(-((l - line[j]) ** 2) / (2 * 1.3 * 1.3)) * heavy[j];
+    data[i * 4] = Math.round(255 * Math.sqrt(Math.min(1, rgb[0] / 2)));
+    data[i * 4 + 1] = Math.round(255 * Math.sqrt(Math.min(1, edge)));
+    data[i * 4 + 2] = Math.round(255 * rub);
+    data[i * 4 + 3] = Math.round(255 * sstep(9, 11.8, Math.abs(l)) * (1 - rub));
   }
-  return { cols: LATS.length, m: list.length, rows };
+  return { data, w, h, x0, z0, cell, line: (s) => line[Math.round(((s % path.length) + path.length) % path.length / step) % n] };
 }
