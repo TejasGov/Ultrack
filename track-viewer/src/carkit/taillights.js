@@ -299,11 +299,12 @@ function reverseItems(T, mesh) {
   if (mesh) for (const s of components(mesh.geometry.attributes.position, mesh.geometry.index).list) T.items.push({ p: s.centre.toArray(), s: Math.max(...s.box.getSize(new THREE.Vector3()).toArray()) * 0.4, d: [1, 0, 0], w: [0, 0, 1] });
 }
 
+const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
 /** The glow points of a fitted tail mesh's lit elements (tr: each triangle's rule): one at an element's centroid, sized by it. Under
  * a facing rule the element is the triangles it lights; with glowAlong a long or curved element (largest side over 3x the middle
  * one, or its centroid over 1 cm from any vertex: a ring, an arc) glows along its largest side instead: points sized 0.4 x its
  * middle side, 0.6 of that apart (5 cm at most), so their cores join into a line instead of beads, one per strand of each slab
- * (a ring's top and bottom arcs: triangle centres more than half the middle side apart across it). */
+ * (a ring's top and bottom arcs: the surface sampled per step, samples linked across the slab within 1.5 steps). */
 function glowItems(T, P, vi, tri, tr, list, face) {
   const byK = list.map(() => new Map()), v = new THREE.Vector3();
   tri.forEach((k, t) => { const r = tr[t]; if (r && (r.glow ?? 1) && ['guide', 'fill', 'reverse'].includes(r.part)) (byK[k].get(r) ?? byK[k].set(r, []).get(r)).push(t); });
@@ -313,18 +314,22 @@ function glowItems(T, P, vi, tri, tr, list, face) {
     const size = s.box.getSize(new THREE.Vector3()).toArray(), ax = [0, 1, 2].sort((a, b) => size[b] - size[a]), [a, b] = [size[ax[0]], size[ax[1]]];
     const verts = r.glowAlong ? ts.flatMap((t) => [0, 1, 2].map((j) => v.fromBufferAttribute(P, vi(t, j)).toArray())) : null;
     if (!verts || !(a > 3 * b || Math.min(...verts.map((q) => s.centre.distanceTo(v.fromArray(q)))) > 0.01)) return push(s.centre.toArray(), a * 0.4 * gl);
-    const sz = b * 0.4 * gl, n = Math.max(1, Math.round(a / THREE.MathUtils.clamp(0.6 * sz, 0.005, 0.05))), slabs = Array.from({ length: n }, () => []), gap = Math.max(0.02, b / 2);
-    for (let i = 0; i < verts.length; i += 3) {                // by triangle centre: a flat bar's triangles span it, a ring's do not
-      const q = [0, 1, 2].map((e) => (verts[i][e] + verts[i + 1][e] + verts[i + 2][e]) / 3);
-      slabs[Math.min(n - 1, Math.floor((q[ax[0]] - s.box.min.getComponent(ax[0])) / a * n))].push(q);
-    }
-    for (const sl of slabs) {
-      const strands = [];                                      // triangle centres within `gap` of a strand's running mean (across the slab, both other axes) join it
-      for (const q of sl) {
-        const st = strands.find((m) => Math.hypot(q[ax[1]] - m.c[ax[1]] / m.n, q[ax[2]] - m.c[ax[2]] / m.n) <= gap);
-        if (st) { st.n++; q.forEach((x, e) => { st.c[e] += x; }); } else strands.push({ n: 1, c: [...q] });
+    const sz = b * 0.4 * gl, step = THREE.MathUtils.clamp(0.6 * sz, 0.005, 0.05), n = Math.max(1, Math.round(a / step)), slabs = Array.from({ length: n }, () => []);
+    for (let i = 0; i < verts.length; i += 3) {                // the surface sampled every `step` (a long strip has few, long triangles)
+      const [A, B, C] = verts.slice(i, i + 3), k = Math.max(1, Math.ceil(Math.max(dist(A, B), dist(B, C), dist(C, A)) / step));
+      for (let u = 0; u < k; u++) for (let w = 0; w < k - u; w++) {
+        const q = [0, 1, 2].map((e) => A[e] + (B[e] - A[e]) * (u + 1 / 3) / k + (C[e] - A[e]) * (w + 1 / 3) / k);
+        slabs[Math.min(n - 1, Math.floor((q[ax[0]] - s.box.min.getComponent(ax[0])) / a * n))].push(q);
       }
-      for (const st of strands) push(st.c.map((x) => x / st.n), sz);
+    }
+    for (const sl of slabs) {                                  // strands: samples linked across the slab (both other axes) within 1.5 steps
+      const id = sl.map((_, i) => i), root = (x) => { while (id[x] !== x) x = id[x] = id[id[x]]; return x; }, link = Math.max(0.01, 1.5 * step), sum = new Map();
+      for (let i = 0; i < sl.length; i++) for (let j = i + 1; j < sl.length; j++) if (Math.hypot(sl[i][ax[1]] - sl[j][ax[1]], sl[i][ax[2]] - sl[j][ax[2]]) <= link) id[root(i)] = root(j);
+      sl.forEach((q, i) => { (sum.get(root(i)) ?? sum.set(root(i), []).get(root(i))).push(q); });
+      for (const qs of sum.values()) {                         // the strand's mean, snapped to its nearest sample: on the element (a hook's mean is off it)
+        const c = [0, 1, 2].map((e) => qs.reduce((x, q) => x + q[e], 0) / qs.length);
+        push(qs.reduce((best, q) => (dist(q, c) < dist(best, c) ? q : best)), sz);
+      }
     }
   }));
 }
