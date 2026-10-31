@@ -1,9 +1,9 @@
 // Car effects: tyre smoke, wet-road spray, exhaust steam, overrun pops and nitro. Five draw calls in all (soft particles, sparks,
-// flame tongues + fireballs, nitro flame), pooled GPU particles, no per-frame allocation.
+// flame tongues + fireballs, nitro streams), pooled GPU particles, no per-frame allocation.
 //   soft    tyre smoke, steam, pop soot, spray: one sorted pool, lit by the frame, depth-faded against the scene (SmokePass)  fx-smoke.js
 //   tongue  additive flame tongues and fireballs for the pops                                                                   fx-flame.js
 //   fire    hot sparks thrown by a hard pop                                                                                      fx-pool.js
-//   nitro   a steady flame cone at each pipe with a heat shimmer behind it                                                       fx-nitro.js
+//   nitro   soft wide violet plasma streams from the pipes + a few puffs, a heat shimmer behind                                  fx-nitro.js
 // Particles live in world space with the car's own velocity at emission plus their kick; air drag pulls them to the wind, hot gas
 // rises, so the car leaves its smoke behind at speed (nothing sticks to the body) and cars that pass through it drag it along.
 // Emitter anchors come from cars.js (exhaust.json: tips, nitro, fx = engine character).
@@ -29,7 +29,7 @@ const FIRE_FRAG = /* glsl */`
   gl_FragColor = vec4(vCol * a * uGain, 1.0);`;
 
 const DEFAULT_ENGINE = { crackle: 0.8, size: 1, gap: 1, shift: 0.3, top: 85 };
-const WARM = new THREE.Color(0xff8a3a), FLAME = new THREE.Color(0xff9a50);      // the pop flash; the nitro flame's light
+const WARM = new THREE.Color(0xff8a3a), VIOLET = new THREE.Color(0xa040ff);      // the pop flash; the nitro wash
 const BUDGET = { hero: 420, other: 240 };    // soft particles per car (an 8-car burnout start stays under the pool's 2600)
 
 export class CarFx {
@@ -42,7 +42,7 @@ export class CarFx {
     this.fire = new THREE.Group(); this.fire.name = 'fx-fire-group'; this.fire.add(this.flame.mesh, this.tongue.pool.mesh, this.tongue.glow.mesh, this.nitroFx.puffs.mesh);
     this.jet = this.nitroFx.mesh;
     scene.add(this.smoke, this.fire, this.jet);
-    // one shared light: a warm flash for pops, the nitro flame's glow behind the player's car (a single pooled light: the lightest
+    // one shared light: a warm flash for pops, a violet nitro wash behind the player's car (a single pooled light: the lightest
     // way to throw colour on the body and road, and the light count never changes)
     this.light = new THREE.PointLight(0xff9440, 0, 5, 2);
     this.light.name = 'fx-pop-light'; scene.add(this.light); this.popAt = new THREE.Vector3();
@@ -218,7 +218,7 @@ export class CarFx {
     }
   }
 
-  /** Nitro: a slow smooth ramp in (0.35 s) and out (0.65 s); the flames, shimmer and screen package all follow the level. */
+  /** Nitro: a slow smooth ramp in (0.35 s) and out (0.65 s); the streams, puffs, shimmer and screen package all follow the level. */
   nitro(c, S, dt, v, speed, on, q) {
     S.nitro = clamp(S.nitro + (on ? dt / 0.35 : -dt / 0.65), 0, 1);
     if (c.hero) { this.heroNitro = S.nitro; this.heroSeen = true; }
@@ -250,15 +250,15 @@ export class CarFx {
     if (!this.heroSeen) this.heroNitro *= Math.exp(-5 * dt);       // the player's car is not being driven (menu): the screen package lets go
     this.heroSeen = false;
     this.flash *= Math.exp(-dt / 0.05); this.lit += (this.flash - this.lit) * (1 - Math.exp(-dt / (this.flash > this.lit ? 0.015 : 0.07)));      // the light eases in and out: no strobe
-    // the light: a pop's warm flash plus the nitro flame's glow low behind the player's car, blended by their intensities (a pop
+    // the light: a pop's warm flash plus the violet nitro wash low behind the player's car, blended by their intensities (a pop
     // during the nitro fade-out must not swap one for the other: that was a 25x one-frame drop, a hard blink)
     const g = this.glow, c = this.glowAt;
     this.glow = 0;
-    const iv = g > 0.01 && c ? g * 2.2 : 0, io = this.lit * 4.5, k = iv / (iv + io || 1);      // k: the nitro flame's share
+    const iv = g > 0.01 && c ? g * 30 : 0, io = this.lit * 4.5, k = iv / (iv + io || 1);      // k: the nitro wash's share
     this.light.position.copy(this.popAt);
     const n = iv > 0 && this.nitroFx.nozzles(c)[0];
-    if (n) { this.anchor(n.a); const { p, d } = this.tmp; this.light.position.lerp(this.tmp.c.set(p.x + d.x * 0.6, c.root.position.y + 0.3, p.z + d.z * 0.6), k); }
-    this.light.color.copy(WARM).lerp(FLAME, k); this.light.distance = 5 - k; this.light.intensity = iv + io;
+    if (n) { this.anchor(n.a); const { p, d } = this.tmp; this.light.position.lerp(this.tmp.c.set(p.x + d.x * 1.3, c.root.position.y + 0.3, p.z + d.z * 1.3), k); }
+    this.light.color.copy(WARM).lerp(VIOLET, k); this.light.distance = 5 + 4 * k; this.light.intensity = iv + io;
   }
 
   /** the venue's lamps (floodlights, street lamps) 1 m over the player's car: what they give a white matte surface (three's falloff and

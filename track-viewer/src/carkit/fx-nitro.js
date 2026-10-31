@@ -1,22 +1,22 @@
-// Nitro: a steady, controlled flame cone at each pipe (the richer mixture burning in the exhaust), never a beam or a neon plume.
-//   ribbon  one camera-facing strip per nozzle, built from points the gas has left in the WORLD (so it bends with the airflow and
-//           in a corner instead of staying rigid on the car). About a metre long: a narrow blue-white core with faint shock
-//           diamonds near the nozzle inside a translucent yellow-orange envelope that reddens, thins and breaks up at the tip;
-//           turbulence rides down it with the gas. One draw call for every flame of every car.
-//   licks   a few small orange flame licks round the pipes (additive pool): the flame's ragged edge.
-// The heat shimmer behind each flame is SmokePass's (fx-smoke.js heat()). All follow the nitro level (a slow smooth ramp in and
-// out); electric cars use their nitro anchors.
+// Nitro: soft, wide plasma gas streams from the exhaust pipes (after Project Endurance's violet jets), never a solid beam.
+//   ribbon  one camera-facing strip per nozzle, built from points the gas has left in the WORLD (so it smears and curves
+//           in a corner instead of staying rigid on the car). Wide and Gaussian across, no core, a streaky noise that
+//           belongs to the gas, a tail that breaks into wisps. One draw call for every stream of every car.
+//   puffs   a few soft violet particles round the pipes (additive pool), the pre-boost sparkle and a little turbulence.
+// Both follow the nitro level (a slow smooth ramp in and out); electric cars use their nitro anchors.
 import * as THREE from 'three';
 import { Pool, NOISE, finish, gainFor, clamp, sstep, rnd } from './fx-pool.js';
 
 const RIB = 16, PTS = 26, VP = PTS + 1;     // streams in all; points a stream remembers; + the live head at the nozzle
 const STEP = 1 / 70, LIFE = 0.5;            // s between points; s a point lives
 
-const LICK = /* glsl */`
-  vec2 d = vUv - 0.5; float r = length(d) * 2.0, n = vn(d * 6.0 + vSeed * 19.0);
-  float a = exp(-r * r * 4.0) * (1.0 - smoothstep(0.55 + 0.3 * n, 1.0, r)) * (0.5 + 0.8 * n) * vAlpha;
+const PLASMA = /* glsl */`
+  float r = length(vUv - 0.5) * 2.0;
+  float n = vn(vUv * 3.0 + vSeed * 19.0);
+  float a = exp(-r * r * 3.2) * (1.0 - smoothstep(0.7, 1.0, r)) * (0.65 + 0.7 * n) * vAlpha;
   if (a < 0.004) discard;
-  gl_FragColor = vec4(vCol * a * uGain, 1.0);`;
+  vec3 c = mix(vCol, vec3(1.0, 0.72, 1.0), a * 0.25);
+  gl_FragColor = vec4(c * a * uGain, 1.0);`;
 
 function ribbonMesh() {
   const V = RIB * VP * 2, g = new THREE.BufferGeometry();
@@ -50,17 +50,16 @@ function ribbonMesh() {
       ${NOISE}
       void main() {
         float s = vSide, ax = abs(s);
-        float n = vn(vec2(s * 2.3 + vSeed * 13.0, vN * 0.9)) * 0.6 + vn(vec2(s * 5.1 + 4.1 + vSeed * 7.0, vN * 2.1 + 9.1)) * 0.4;   // turbulence riding down the flame
-        float tip = clamp((1.0 - vU) * 1.6 - n * 0.6 * vU, 0.0, 1.0);                  // thins and breaks up toward the tip
-        float head = smoothstep(0.0, 0.05, vU);                                         // grows out of the pipe, no hard start
-        float env = exp(-3.0 * s * s) * (1.0 - smoothstep(0.75, 1.0, ax)) * (0.45 + 1.0 * n);                          // the translucent envelope
-        float core = exp(-16.0 * s * s / max(0.2, 1.0 - vU * 1.5)) * (1.0 - smoothstep(0.0, 0.42, vU));                 // the hot core near the nozzle
-        float dia = 0.78 + 0.22 * cos(vU * 42.0);                                       // faint shock diamonds
-        vec3 env_c = mix(vec3(1.0, 0.55, 0.16), vec3(0.75, 0.17, 0.04), smoothstep(0.3, 0.95, vU));
-        vec3 col = env_c * env * 0.6 + mix(vec3(1.15, 1.05, 0.95), vec3(0.42, 0.6, 1.25), smoothstep(0.0, 0.3, vU)) * core * dia * 1.7;
-        float I = tip * tip * head * vA;
+        float prof = exp(-3.6 * s * s) * (1.0 - smoothstep(0.7, 1.0, ax));            // wide and soft: no core
+        float n = vn(vec2(s * 1.7 + vSeed * 13.0, vN * 0.34)) * 0.6 + vn(vec2(s * 3.9 + 4.1 + vSeed * 7.0, vN * 0.85 + 9.1)) * 0.4;   // streaks along the gas
+        float st = vn(vec2(s * 6.5 + vSeed * 9.0, vN * 0.10)) * 0.65 + vn(vec2(s * 14.0 + vSeed * 3.0, vN * 0.07 + 3.0)) * 0.35;   // fine streaks parallel to the flow
+        float tail = clamp((1.0 - vU) * 1.5 - n * 0.55 * vU, 0.0, 1.0);                // the end breaks into wisps
+        float head = smoothstep(0.0, 0.07, vU);                                         // grows out of the pipe, no hard start
+        float I = prof * (0.3 + 1.0 * n) * (0.55 + 1.0 * st) * tail * tail * head * vA;
         if (I < 0.004) discard;
-        gl_FragColor = vec4(col * I * uGain * 1.4, 1.0);
+        vec3 hot = vec3(0.86, 0.56, 1.0), mid = vec3(0.56, 0.23, 1.0), cold = vec3(0.26, 0.13, 0.92);
+        vec3 col = mix(mix(hot, mid, smoothstep(0.0, 0.22, vU)), cold, smoothstep(0.25, 0.85, vU));
+        gl_FragColor = vec4(col * I * uGain * 1.75, 1.0);
       }`,
   });
   const mesh = finish(g, mat, 'fx-jet', 6);
@@ -71,7 +70,7 @@ function ribbonMesh() {
 export class Nitro {
   constructor() {
     this.mesh = ribbonMesh();
-    this.puffs = new Pool({ blending: THREE.AdditiveBlending, fragment: LICK, name: 'fx-licks', order: 6, max: 400, gain: true, attack: 0.3 });
+    this.puffs = new Pool({ blending: THREE.AdditiveBlending, fragment: PLASMA, name: 'fx-plasma', order: 6, max: 600, gain: true });
     this.live = 0;                        // streams drawn this frame (for the counts)
     this.arr = {}; for (const k of ['x', 'y', 'z', 'vx', 'vy', 'vz', 'age', 'amp', 'noise']) this.arr[k] = new Float32Array(RIB * PTS);
     this.all = Object.values(this.arr);
@@ -85,8 +84,9 @@ export class Nitro {
   nozzles(c) {
     if (c._noz) return c._noz;
     const list = (c.nitro ?? []).slice().sort((a, b) => a.position.z - b.position.z);
-    const mk = (a, off = 0) => ({ a, off, side: Math.sign(off || a.position.z) || 1, rib: -1, wMax: 0.26 });     // a flame's width at its tip (m)
-    const out = list.length >= 2 ? [mk(list[0]), mk(list[list.length - 1])] : list.length ? [mk(list[0])] : [];      // a lone pipe: one flame
+    const mk = (a, off = 0) => ({ a, off, side: Math.sign(off || a.position.z) || 1, rib: -1, wMax: 0.7 });
+    const out = list.length >= 2 ? [mk(list[0]), mk(list[list.length - 1])] : list.length ? [mk(list[0], -0.14), mk(list[0], 0.14)] : [];
+    if (out.length === 2) { const sp = Math.abs(out[0].a.position.z + out[0].off - out[1].a.position.z - out[1].off); out[0].wMax = out[1].wMax = clamp(0.6 + 0.5 * sp, 0.68, 1.05); }
     return (c._noz = out);
   }
 
@@ -118,8 +118,8 @@ export class Nitro {
         r.acc = a0 + dt;
         while (t <= dt && spawned < 4) {
           const k = t / dt, age = dt - t;
-          const vx = v.x * 0.5 + d.x * (4 + 3 * Math.random()) + lat.x * sd * 0.15 * Math.random() + rnd(0.2);
-          const vy = v.y * 0.5 + d.y * 4 + 0.1 + rnd(0.15), vz = v.z * 0.5 + d.z * (4 + 3 * Math.random()) + lat.z * sd * 0.15 * Math.random() + rnd(0.2);
+          const vx = v.x * 0.5 + d.x * (4 + 3 * Math.random()) + lat.x * sd * (1.2 + Math.random()) + rnd(0.5);
+          const vy = v.y * 0.5 + d.y * 4 - 0.25 + rnd(0.35), vz = v.z * 0.5 + d.z * (4 + 3 * Math.random()) + lat.z * sd * (1.2 + Math.random()) + rnd(0.5);
           this.push(ri, r.prev.x + (px - r.prev.x) * k + vx * age, r.prev.y + (py - r.prev.y) * k + vy * age, r.prev.z + (pz - r.prev.z) * k + vz * age, vx, vy, vz, age, amp, r.dist + speed * t * 1.0);
           t += STEP; r.acc -= STEP; spawned++;
         }
@@ -127,14 +127,14 @@ export class Nitro {
       }
       r.dist += speed * dt + dt * 2.5;
       r.head.set(px, py, pz); r.prev.set(px, py, pz);
-      if (f > 0.01) fx.soft.heat(px, py, pz, d.x, d.y, d.z, amp);      // the hot gas bends the picture behind the flame (SmokePass)
-      // small flame licks round the pipe: the cone's ragged edge
-      nz.pa = (nz.pa ?? Math.random()) + 22 * amp * q * dt;
+      if (f > 0.01) fx.soft.heat(px, py, pz, d.x, d.y, d.z, amp);      // the hot gas bends the picture behind the stream (SmokePass)
+      // soft violet puffs round the pipe
+      nz.pa = (nz.pa ?? Math.random()) + 55 * amp * q * dt;
       for (let k = nz.pa | 0; k > 0; k--) {
         const off = Math.random() * 0.25;
         this.puffs.spawn(px + d.x * off, py + d.y * off, pz + d.z * off,
-          v.x * 0.9 + d.x * (2 + 3 * Math.random()) + rnd(0.4), v.y * 0.9 + 0.2 + rnd(0.3), v.z * 0.9 + d.z * (2 + 3 * Math.random()) + rnd(0.4), 0, 0, 0,
-          0.08 + Math.random() * 0.06, 0.06, 0.15 + 0.08 * Math.random(), 0.6 * amp, 1.0, 0.42, 0.1, 2.0, 0.6, 0);
+          v.x * 0.8 + d.x * (3 + 6 * Math.random()) + rnd(1.3), v.y * 0.8 + rnd(0.9), v.z * 0.8 + d.z * (3 + 6 * Math.random()) + rnd(1.3), 0, 0, 0,
+          0.3 + Math.random() * 0.25, 0.12, 0.34 + 0.2 * Math.random(), 0.55 * amp, 1.0, 0.32, 1.25, 2.6, 0.5, 0);
       }
       nz.pa -= nz.pa | 0;
     }
@@ -195,7 +195,7 @@ export class Nitro {
       X[m3] = A.x[j]; X[m3 + 1] = A.y[j]; X[m3 + 2] = A.z[j];
       TA[m] = A.amp[j] * (1 - sstep(LIFE * 0.45, LIFE, A.age[j])); TN[m] = A.noise[j];
     }
-    const L = (0.9 + 0.012 * r.speed) * (0.96 + 0.03 * Math.sin(this.time * 2.1 + r.seed) + 0.02 * Math.sin(this.time * 3.7 + r.seed * 2.3));   // ~1-1.4 m, steady: a slow flutter, no flicker
+    const L = (5 + 0.05 * r.speed) * (0.88 + 0.12 * Math.sin(this.time * 2.1 + r.seed) + 0.06 * Math.sin(this.time * 3.7 + r.seed * 2.3));   // the stream breathes a little
     let s = 0; TU[0] = 0;
     for (let j = 1; j < m; j++) { s += Math.hypot(X[j * 3] - X[j * 3 - 3], X[j * 3 + 1] - X[j * 3 - 2], X[j * 3 + 2] - X[j * 3 - 1]); TU[j] = s / L; }
     let last = m - 1;
@@ -210,7 +210,7 @@ export class Nitro {
         P[v3] = X[j3]; P[v3 + 1] = X[j3 + 1]; P[v3 + 2] = X[j3 + 2];           // dead points collapse onto the last live one: zero-area triangles
         if (k + 1 <= last) { NX[v3] = X[nj]; NX[v3 + 1] = X[nj + 1]; NX[v3 + 2] = X[nj + 2]; }
         else { NX[v3] = 2 * X[j3] - X[pj]; NX[v3 + 1] = 2 * X[j3 + 1] - X[pj + 1]; NX[v3 + 2] = 2 * X[j3 + 2] - X[pj + 2]; }
-        U[v] = u; W[v] = on ? 0.06 + (r.wMax - 0.06) * Math.pow(Math.min(u, 1), 0.8) : 0; AA[v] = TA[k] * fade; N[v] = TN[k]; S[v] = r.seed;
+        U[v] = u; W[v] = on ? 0.14 + (r.wMax - 0.14) * Math.pow(Math.min(u, 1), 0.65) : 0; AA[v] = TA[k] * fade; N[v] = TN[k]; S[v] = r.seed;
       }
     }
   }
