@@ -122,7 +122,7 @@ const heroKey = await page.evaluate(() => {
 console.log('hero', heroKey);
 const setView = (v) => page.evaluate(([cam, tgt]) => {
   const vw = window.viewer, h = window.game.session.field.hero, T = vw.THREE;
-  vw.params.mode = 'orbit'; vw.applyAll();
+  vw.params.mode = 'orbit'; vw.params.headlight = false; vw.applyAll();   // orbit lights the scene from the camera (main.js headlight): a white glare on every close rear; the game plays in chase, where it is off
   h.car.updateWorldMatrix(true, false);
   vw.camera.position.copy(h.car.localToWorld(new T.Vector3(...cam))); vw.controls.target.copy(h.car.localToWorld(new T.Vector3(...tgt)));
   vw.camera.fov = 50; vw.camera.updateProjectionMatrix(); vw.controls.update();
