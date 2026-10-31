@@ -5,20 +5,30 @@
 //   node scripts/qa-lock.mjs -- node scripts/qa-taillights.mjs [car=av12] [out=qa/taillights/<car>-after] [url=http://127.0.0.1:5180]
 //   TAILS=off ... qa/taillights/<car>-before   the same shots on the generic lamp (?tails=off), for the before set
 //   node scripts/qa-taillights.mjs --sheet <beforeDir> <afterDir> <out.jpg>   before/after contact sheet (no browser)
-// Shots: <look>-<dry|wet>-<running|brake|reverse>-<view>.jpg and drive-<n>.jpg.
-import { existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+// Shots: <look>-<dry|wet>-<running|brake|reverse>-<view>.jpg and drive-<n>.jpg. The macro shot frames the car's right rear lamp
+// (its spec's qa.macro, else model.json / the car-lab profile); the other views are the same for every car.
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..'), args = process.argv.slice(2);
+/** The lamp the macro shot frames (car frame): the spec's qa.macro, else the right rear lamp of the model or car-lab profile. */
+async function lampAt(car) {
+  const spec = join(root, 'src', 'carkit', 'tails', `${car}.js`), model = join(root, '..', 'assets', 'cars', car, 'model.json');
+  const macro = existsSync(spec) && (await import(pathToFileURL(spec))).default.qa?.macro;
+  if (macro) return macro;
+  if (existsSync(model)) return JSON.parse(readFileSync(model, 'utf8')).lights.rear.reduce((a, p) => (p[2] > a[2] ? p : a));
+  const p = JSON.parse(readFileSync(join(root, '..', 'car-lab', 'src', 'vehicle', 'profiles', `${car}.json`), 'utf8')), pts = p.lights.rear.filter((q) => q[2] > 0);
+  return [0, 1, 2].map((k) => pts.reduce((s, q) => s + q[k], 0) / pts.length + (k === 1 ? p.body?.lift ?? 0 : 0));   // a car-lab lamp sits on the lifted shell
+}
 // a quick iteration narrows the set: LOOKS=night WEATHER=dry STATES=brake VIEWS=macro,chase DRIVE=0
 const only = (k, all) => (process.env[k] ? all.filter((x) => process.env[k].split(',').includes(x)) : all);
 const LOOKS = only('LOOKS', ['day', 'dusk', 'night']), STATES = only('STATES', ['running', 'brake', 'reverse']);
 const WEATHER = Object.fromEntries(only('WEATHER', ['dry', 'wet']).map((w) => [w, { dry: { wet: 0.15, rain: 0 }, wet: { wet: 1, rain: 0.75 } }[w]]));
 // car frame (car-lab's): +x is the tail, y up, z to the side; [camera, target] in metres from the car's origin
 const VIEWS = {
-  macro: [[3.45, 0.86, 1.05], [2.08, 0.74, 0.62]],     // 1.4 m from the right lamp: the internal structure
+  macro: [[3.45, 0.86, 1.05], [2.08, 0.74, 0.62]],     // 1.4 m from the right lamp: the internal structure (moved onto the car's lamp below)
   chase: [[8.1, 1.85, 0], [1.6, 0.7, 0]],              // the player's own view (camera.js 'chase': 6 m behind the tail, 1.85 m up)
   rear34: [[5.2, 1.15, 2.9], [1.7, 0.6, 0.15]],        // 3/4 rear, close
   far: [[22.1, 1.6, 0], [2.0, 0.7, 0]],                // a car ~20 m ahead
@@ -79,6 +89,9 @@ if (args[0] === '--sheet') {
 
 const { chromium } = await import('playwright-core');
 const [car = 'av12', outArg, base = 'http://127.0.0.1:5180'] = args;
+const lamp = await lampAt(car);
+VIEWS.macro = [[lamp[0] + 1.37, lamp[1] + 0.12, lamp[2] + 0.43], lamp];   // AV-12's offset (qa.macro keeps its approved framing)
+console.log('macro lamp', lamp.join(', '));
 const out = outArg ? join(process.cwd(), outArg) : join(root, 'qa', 'taillights', `${car}-after`);
 mkdirSync(out, { recursive: true });
 if (process.env.DRIVE !== '0') for (const f of readdirSync(out)) if (f.startsWith('drive-')) rmSync(join(out, f));   // their names carry the speed: drop the last run's
