@@ -1,7 +1,7 @@
 // A full headless race on one track with the AI driving the player's car, to the flag, while the chase camera is watched:
 // every second it records the camera's height over the ground under it, whether static scenery hides the car from the lens,
 // where the car sits in the frame, the frame time, the race state and any console error; a still every 15 s.
-//   node scripts/qa-lock.mjs -- node scripts/qa-race-watch.mjs india [look=day] [laps=3] [url=http://127.0.0.1:5180]
+//   node scripts/qa-lock.mjs -- node scripts/qa-race-watch.mjs india [look=day] [laps=3] [url=http://127.0.0.1:5180]     (WEATHER=damp|rain: the weather)
 // Out: qa/race-watch/<track>-<look>/ (shot-<t>.png, report.json); the summary is printed.
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -9,12 +9,13 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const [track = 'india', look = 'day', laps = '3', base = 'http://127.0.0.1:5180'] = process.argv.slice(2);
-const root = join(dirname(fileURLToPath(import.meta.url)), '..'), out = join(root, 'qa', 'race-watch', `${track}-${look}`);
+const weather = process.env.WEATHER ?? 'dry';       // WEATHER=damp|rain (store.js WEATHER)
+const root = join(dirname(fileURLToPath(import.meta.url)), '..'), out = join(root, 'qa', 'race-watch', `${track}-${look}${weather === 'dry' ? '' : '-' + weather}`);
 mkdirSync(out, { recursive: true });
 const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
 const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu', '--autoplay-policy=no-user-gesture-required'] });
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } });
-await ctx.addInitScript(([track, look, laps]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look, weather: 'dry', laps } })); } catch { /* none */ } }, [track, look, +laps]);
+await ctx.addInitScript(([track, look, laps, weather]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look, weather, laps } })); } catch { /* none */ } }, [track, look, +laps, weather]);
 // Vite's HMR socket stubbed: another agent saving a file would otherwise reload the page mid-race
 await ctx.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; Object.assign(F, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 }); window.WebSocket = F; });
 const page = await ctx.newPage(), errors = [];

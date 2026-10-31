@@ -21,6 +21,10 @@ const UP = track.bridgeUplights.items.map((u) => u.pos), upc = [0, 1, 2].map((k)
 const kavi = track.landmarks[0].pos, ki = nearestIdx(kavi), bi = nearestIdx(upc);
 // views are anchored to world points on the centreline (nearestIdx), not to sample numbers, so they survive a re-routed lap (V5.6
 // added 110 samples after the river crossing); the boards come from track.json `venueBoards`, wherever the export placed them
+const off = (i, lat, up) => {     // `lat` m left (+) / right (-) of the centreline at sample i, `up` m over it
+  const p = at(i), a = at(i - 1), b = at(i + 1), tx = b[0] - a[0], tz = b[2] - a[2], l = Math.hypot(tx, tz) || 1;
+  return [p[0] - (tz / l) * lat, p[1] + up, p[2] + (tx / l) * lat];
+};
 const on = (q, ahead, up = 1.6, tup = 3) => { const i = nearestIdx(q); return { cam: at(i, up), tgt: at(i + ahead, tup) }; };
 const VB = track.venueBoards ?? { facades: [] }, F = VB.facades, HO = VB.hoarding;
 const facing = (b, back) => { const i = nearestIdx(b.pos); return { cam: at(i - back, 1.6), tgt: [b.pos[0], b.pos[1], b.pos[2]] }; };
@@ -45,6 +49,12 @@ const VIEWS = {
   '16-new-hairpin': on([335.2, 10.1, 100.3], 32, 2.2, 1),
   '17-new-climb': on([430.2, 20.3, 61.1], 36, 1.6, 4),
   '18-new-top-turn': on([394, 33.6, -47.2], 28, 1.6, 3),
+  // surfaces up close (venue/india/materials.js): the road at driver eye height and at the kerb, a cut wall, a stone wall, the barrier face
+  '19-road-eye': { cam: at(nearestIdx([261.3, 9, 13.3]), 1.05), tgt: at(nearestIdx([261.3, 9, 13.3]) + 9, 0.2) },
+  '20-road-kerb': { cam: off(nearestIdx([430.2, 20.3, 61.1]), 7.5, 0.75), tgt: off(nearestIdx([430.2, 20.3, 61.1]) + 3, 11.6, 0) },
+  '21-cut-wall': { cam: off(nearestIdx([652.7, 45.1, -106.8]), 5, 1.4), tgt: off(nearestIdx([652.7, 45.1, -106.8]) + 7, -16.5, 1.8) },
+  '22-stone-wall': { cam: off(nearestIdx([287.7, 41.1, -219.9]), 7, 1.6), tgt: off(nearestIdx([287.7, 41.1, -219.9]) + 4, 18, 0.8) },
+  '23-barrier-face': { cam: off(nearestIdx([622.7, 51.6, -192.3]), 6, 1.0), tgt: off(nearestIdx([622.7, 51.6, -192.3]) + 6, -13, 0.6) },
 };
 const only = process.env.ONLY?.split(',');
 for (const name of Object.keys(VIEWS)) if (only && !only.some((p) => name.startsWith(p))) delete VIEWS[name];
@@ -56,7 +66,7 @@ await ctx.addInitScript(([look, weather]) => { try { localStorage.setItem('ultra
 // a stub for Vite's HMR socket: any agent saving a file would otherwise reload this page mid-run and leave it on the title screen
 await ctx.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; Object.assign(F, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 }); window.WebSocket = F; });
 const page = await ctx.newPage();
-page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); else if (/^india |warn/.test(m.type() === 'warning' ? 'warn' : m.text())) console.log(`  [${m.type()}] ${m.text().slice(0, 300)}`); });   // the venue's own build lines and every warning
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 page.on('requestfailed', (r) => errors.push(`requestfailed: ${r.method()} ${r.url()} ${r.failure()?.errorText}`));
 const t0 = Date.now();
