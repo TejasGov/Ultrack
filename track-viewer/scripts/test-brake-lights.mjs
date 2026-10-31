@@ -74,8 +74,11 @@ try{
     const o=mock({tail:[{part:'guide',facing:[[1,0,0],.5]},{part:'off'}]},L).l0.children[0];
     assert.deepEqual([0,3,6,9].map(t=>lampAt(o,t)[0]),[1,1,0,0],'facing: only the triangles facing back light, the element\'s top stays dark');
     assert.equal(mock({tail:[{part:'guide'}]},L).l0.children[0].geometry.attributes.aLamp.getX(4),1,'Without facing the whole element lights');}
-  for(const bowl of [true,false]){const {kit}=mock({...(bowl?{bowl}:{}),tail:[{part:'guide'}]},({kit,add})=>add(kit,quads(A1),new THREE.MeshStandardMaterial({name:'housing'}),'rear-0-bowl-1'));const o=kit.children[0];
-    assert.equal(o.material.customProgramCacheKey?.()==='tail-lamp'&&lampAt(o,0)[1]===1,bowl,'bowl: a closed lamp\'s bowl fills on the brake only when asked');}
+  // a car-lab bowl as cars.js's merge leaves it: no name, de-indexed, a fan of housing triangles round the lamp's centre, both faces
+  const fan=()=>{const p=[];for(let i=0;i<8;i++){const a=i/8*Math.PI*2,b=(i+1)/8*Math.PI*2;p.push(2,.6,.6,2,.6+.05*Math.cos(a),.6+.1*Math.sin(a),2,.6+.05*Math.cos(b),.6+.1*Math.sin(b));}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.computeVertexNormals();return g;};
+  for(const [bowl,shape,want] of [[true,fan,true],[false,fan,false],[true,()=>quads(A1).toNonIndexed(),false]]){const {c,kit}=mock({...(bowl?{bowl}:{}),tail:[{part:'guide'}]},({m,kit,add})=>{m.lampHousing=new THREE.MeshStandardMaterial({color:0x111111});const h=m.lampHousing.clone();h.side=THREE.DoubleSide;add(kit,shape(),h,'');});const o=kit.children[0];
+    assert.equal(o.material.customProgramCacheKey?.()==='tail-lamp'&&lampAt(o,0)[1]===1,want,'bowl: a closed lamp\'s bowl (a housing fan) fills on the brake only when asked, nothing else of the housing');
+    if(want)assert.equal(c.tail.items.length,0,'A bowl adds no glow point (a blob over the whole lamp)');}
   assert.deepEqual(checkSpec({tail:[{part:'guide',facing:[1,0,0],tex:true}]}),['tail[0].facing: not [[x, y, z], min]','tail[0].tex: only false'],'Malformed facing / tex reported');
   console.log('PASS: grid release, stationary foot brake, brightening and brake release, lamp elements, tail specs and rules, the opt-in keys.');
 }finally{await server.close();}

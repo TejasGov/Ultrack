@@ -31,7 +31,7 @@
 //         qa-taillights.mjs frames up close (default: the right rear lamp of model.json / the car-lab profile)
 // A car-lab car (no model: bentley-gt, mustang) has its lamps in c.lamps.root: the LED tubes are its tail meshes, the centre
 // stop lamp (role brake) is lit as a fill, the reverse tubes (role reverse) as the reverse lamp, its lens covers become rearLens;
-// bowl: true lights a closed lamp's bowl (rear-*-bowl-*) as a brake fill.
+// bowl: true lights a closed rear lamp's bowl (the fan of housing behind its LED ring) as a brake fill.
 import * as THREE from 'three';
 import { wetUniforms } from '../wet-road.js';
 
@@ -240,11 +240,11 @@ function fitLevel(c, spec, T, level, full, kit = false) {
     const s = src(o), r = A.minX === undefined && !A.box ? Object.assign(o, { material: m.taillight }) : split(o, (v) => v.x > (A.minX ?? -Infinity) && (!A.box || inBox(A.box, v)), m.taillight, 'tail-adopted');
     if (r) { r.srcMaterial = s; if (r !== o) meshes.push(r); }
   }
-  if (kit && spec.bowl) for (const o of meshes) if (/^rear(-.*)?-bowl-/.test(o.name)) o.material = T.bowl ??= bowlMaterial(m.brakeLight, T.U);   // a closed lamp's bowl fills on the brake
+  if (kit && spec.bowl) for (const o of meshes) if (isBowl(o, m)) o.material = T.bowl ??= bowlMaterial(m.brakeLight, T.U);   // a closed lamp's bowl fills on the brake
   for (const o of meshes) {
     const nm = name(o);
     if (o.material === m.taillight || o.material === m.brakeLight || o.material === T.bowl) {
-      const brake = o.material !== m.taillight, fill = [{ part: 'fill' }];   // a brake-role lamp (car-lab's centre stop) and a bowl are all fill
+      const brake = o.material !== m.taillight, fill = [{ part: 'fill', glow: o.material === T.bowl ? 0 : 1 }];   // a brake-role lamp (car-lab's centre stop) and a bowl are all fill; a bowl's glow would be a blob over the whole lamp
       if (!brake && spec.tail?.some((r) => r.facing) && o.geometry.index) o.geometry = o.geometry.toNonIndexed();   // a facing rule lights part of an element: no vertex shared across its edge
       const g = o.geometry, P = g.attributes.position, w = new Float32Array(P.count * 2), vpart = [], vi = (t, j) => (g.index ? g.index.getX(3 * t + j) : 3 * t + j);
       const { tri, list } = components(P, g.index), rules = list.map((s) => (brake ? fill[0] : tailRule(spec, s, nm)));
@@ -301,8 +301,9 @@ function reverseItems(T, mesh) {
 
 /** The glow points of a fitted tail mesh's lit elements (tr: each triangle's rule): one at an element's centroid, sized by it. Under
  * a facing rule the element is the triangles it lights; with glowAlong a long or curved element (largest side over 3x the middle
- * one, or its centroid over 1 cm from any vertex: a ring, an arc) glows every ~5 cm along its largest side instead, a point per
- * strand of the slab (a ring's top and bottom), sized 0.4 x its middle side. */
+ * one, or its centroid over 1 cm from any vertex: a ring, an arc) glows along its largest side instead: points sized 0.4 x its
+ * middle side, 0.6 of that apart (5 cm at most), so their cores join into a line instead of beads, one per strand of each slab
+ * (a ring's top and bottom arcs: triangle centres more than half the middle side apart across it). */
 function glowItems(T, P, vi, tri, tr, list, face) {
   const byK = list.map(() => new Map()), v = new THREE.Vector3();
   tri.forEach((k, t) => { const r = tr[t]; if (r && (r.glow ?? 1) && ['guide', 'fill', 'reverse'].includes(r.part)) (byK[k].get(r) ?? byK[k].set(r, []).get(r)).push(t); });
@@ -312,17 +313,18 @@ function glowItems(T, P, vi, tri, tr, list, face) {
     const size = s.box.getSize(new THREE.Vector3()).toArray(), ax = [0, 1, 2].sort((a, b) => size[b] - size[a]), [a, b] = [size[ax[0]], size[ax[1]]];
     const verts = r.glowAlong ? ts.flatMap((t) => [0, 1, 2].map((j) => v.fromBufferAttribute(P, vi(t, j)).toArray())) : null;
     if (!verts || !(a > 3 * b || Math.min(...verts.map((q) => s.centre.distanceTo(v.fromArray(q)))) > 0.01)) return push(s.centre.toArray(), a * 0.4 * gl);
-    const n = Math.max(1, Math.round(a / 0.05)), slabs = Array.from({ length: n }, () => []);
+    const sz = b * 0.4 * gl, n = Math.max(1, Math.round(a / THREE.MathUtils.clamp(0.6 * sz, 0.005, 0.05))), slabs = Array.from({ length: n }, () => []), gap = Math.max(0.02, b / 2);
     for (let i = 0; i < verts.length; i += 3) {                // by triangle centre: a flat bar's triangles span it, a ring's do not
       const q = [0, 1, 2].map((e) => (verts[i][e] + verts[i + 1][e] + verts[i + 2][e]) / 3);
       slabs[Math.min(n - 1, Math.floor((q[ax[0]] - s.box.min.getComponent(ax[0])) / a * n))].push(q);
     }
     for (const sl of slabs) {
-      sl.sort((x, y) => x[ax[1]] - y[ax[1]]);
-      for (let i = 0, j = 0; i < sl.length; i = j) {          // strands: runs with no gap over half the middle side (2 cm at least) across the slab
-        while (++j < sl.length && sl[j][ax[1]] - sl[j - 1][ax[1]] <= Math.max(0.02, b / 2));
-        const run = sl.slice(i, j); push([0, 1, 2].map((e) => run.reduce((sum, q) => sum + q[e], 0) / run.length), b * 0.4 * gl);
+      const strands = [];                                      // triangle centres within `gap` of a strand's running mean (across the slab, both other axes) join it
+      for (const q of sl) {
+        const st = strands.find((m) => Math.hypot(q[ax[1]] - m.c[ax[1]] / m.n, q[ax[2]] - m.c[ax[2]] / m.n) <= gap);
+        if (st) { st.n++; q.forEach((x, e) => { st.c[e] += x; }); } else strands.push({ n: 1, c: [...q] });
       }
+      for (const st of strands) push(st.c.map((x) => x / st.n), sz);
     }
   }));
 }
@@ -347,6 +349,15 @@ function flip(g, tri, rules) {
   tri.forEach((k, t) => { if (rules[k]?.flip) { [I[3 * t + 1], I[3 * t + 2]] = [I[3 * t + 2], I[3 * t + 1]]; seen[I[3 * t]] = seen[I[3 * t + 1]] = seen[I[3 * t + 2]] = 1; } });
   g.setIndex(new THREE.BufferAttribute(I, 1));
   if (N) { seen.forEach((f, i) => { if (f) N.setXYZ(i, -N.getX(i), -N.getY(i), -N.getZ(i)); }); g.setAttribute('normal', N); }
+}
+
+/** A closed car-lab rear lamp's bowl as cars.js leaves it (merged per material: no name, de-indexed): a fan of lamp-housing
+ * triangles, both faces, every triangle starting at the lamp's centre (car-lab lights.js), behind x 1. */
+function isBowl(o, m) {
+  const P = o.geometry.attributes.position, n = o.geometry.index ? 0 : P.count;
+  if (n < 9 || o.material.side !== THREE.DoubleSide || !m.lampHousing || !o.material.color?.equals(m.lampHousing.color) || P.getX(0) < 1) return false;
+  for (let i = 3; i < n; i += 3) if (Math.abs(P.getX(i) - P.getX(0)) + Math.abs(P.getY(i) - P.getY(0)) + Math.abs(P.getZ(i) - P.getZ(0)) > 1e-3) return false;
+  return true;
 }
 
 /** A closed car-lab lamp's bowl (spec.bowl): the stop lamp's material, both faces (car-lab winds the two sides' bowls oppositely). */
