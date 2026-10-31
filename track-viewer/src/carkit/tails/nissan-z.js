@@ -9,7 +9,9 @@
 // Judgement calls: the insides of the loops and the inner bars as the brake fill (the RZ34's lozenges fill when braking); the
 // strip under the loops unlit (dark chrome in the atlas, no colour of a lamp); no reverse lamp (the GT4 model has none; white
 // `tex` texels would also light the rain light's LED rings). LOD 1 (45 m+) lights the loops only (its housings merge below the
-// fill rules' minTris). QA 2026-10-30 (qa/taillights/nissan-z-before|after, nissan-z-before-after[-highlights].jpg): day a dark
+// fill rules' minTris). The two pieces under the wing (2.02, 1.06, ±0.36; wing-mount plates in the lights atlas) stay adopted
+// as unlit parts: left out with `adopt.box` (tried 2026-10-31, qa/taillights/nissan-z-step2) their model material glows red all
+// the time, two dots atop the rear window while running. QA 2026-10-30 (qa/taillights/nissan-z-before|after, nissan-z-before-after[-highlights].jpg): day a dark
 // lens with the loops faint red, brake loops filled with LED dots; dusk and night red loops, a clear brake step at chase, red
 // points and the pool at 20 m, red streaks on a wet road; no pink, no halo. A large white glow low on the bumper at night is
 // in the before too (not the tail lamps). Plain data, no imports: qa-taillights.mjs reads it.
