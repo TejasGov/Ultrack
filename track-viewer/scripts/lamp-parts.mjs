@@ -50,14 +50,21 @@ for (const n of doc.getRoot().listNodes()) {
       if (name.startsWith('tail|') || adopt) {
         const M2 = p.getMaterial(), map = spec.tex?.map === 'emissiveMap' ? M2?.getEmissiveTexture() : M2?.getBaseColorTexture() ?? M2?.getEmissiveTexture();
         const tex = spec.tex && map && p.getAttribute('TEXCOORD_0') && (!spec.tex.material || spec.tex.material.test(name));
-        console.log(`\n${name}${adopt ? ` (adopted, x > ${spec.adopt.minX ?? '-'})` : ''}: ${tex ? 'tex (its map drives the elements)' : 'no tex'}`);
-        for (const s of components(pos, index).list.filter((s) => !adopt || behind(s.centre.x)(spec.adopt.minX)).sort((x, y) => x.centre.z - y.centre.z || x.centre.x - y.centre.x)) {
-          const r = tailRule(spec, s, name);
-          console.log(`  ${(r?.part ?? '(none: unlit)').padEnd(10)} ${r?.glow !== undefined ? `glow ${r.glow} ` : ''}tris ${String(s.tris).padStart(5)}  centre ${f(s.centre)}  size ${f(s.box.getSize(new THREE.Vector3()))}`);
+        console.log(`\n${name}${adopt ? ` (adopted, x > ${spec.adopt.minX ?? '-'}${spec.adopt.box ? ', in ' + JSON.stringify(spec.adopt.box) : ''}; by element centre here, by triangle in the game)` : ''}: ${tex ? 'tex (its map drives the elements)' : 'no tex'}`);
+        const inAdopt = (p) => !adopt || (behind(p.x)(spec.adopt.minX) && (!spec.adopt.box || (p.x >= spec.adopt.box[0][0] && p.x <= spec.adopt.box[1][0] && p.y >= spec.adopt.box[0][1] && p.y <= spec.adopt.box[1][1] && Math.abs(p.z) >= spec.adopt.box[0][2] && Math.abs(p.z) <= spec.adopt.box[1][2])));
+        const { tri, list } = components(pos, index), facing = spec.tail?.some((r) => r.facing), A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+        const byFace = list.map(() => new Map());      // a facing rule splits an element per triangle: the part of each triangle
+        if (facing) tri.forEach((k, t) => {
+          [A, B, C].forEach((p, j) => p.fromBufferAttribute(pos, index ? index.getX(3 * t + j) : 3 * t + j)); const zs = Math.sign(A.z + B.z + C.z) || 1;
+          B.sub(A).cross(C.sub(A)).normalize(); B.z *= zs; const p = tailRule(spec, list[k], name, B)?.part ?? 'unlit'; byFace[k].set(p, (byFace[k].get(p) ?? 0) + 1);
+        });
+        for (const k of list.map((s, k) => k).filter((k) => inAdopt(list[k].centre)).sort((x, y) => list[x].centre.z - list[y].centre.z || list[x].centre.x - list[y].centre.x)) {
+          const s = list[k], r = tailRule(spec, s, name), flags = ['glowAlong', 'flip'].filter((x) => r?.[x]).concat(r?.tex === false ? ['tex: false'] : []).join(' ');
+          console.log(`  ${(r?.part ?? '(none: unlit)').padEnd(10)} ${r?.glow !== undefined ? `glow ${r.glow} ` : ''}${flags ? flags + ' ' : ''}tris ${String(s.tris).padStart(5)}  centre ${f(s.centre)}  size ${f(s.box.getSize(new THREE.Vector3()))}${facing ? '  by facing: ' + [...byFace[k]].map(([p, n]) => `${p} ${n}`).join(', ') : ''}`);
         }
       } else if (spec.dark?.test(name)) console.log(`\n${name}: dark (an unlit lens, ${T} tris)`);
       else if (spec.lens?.material?.test(name)) console.log(`\n${name}: lens (${rearTris(spec.lens.minX)} of ${T} tris move onto the smoked rearLens)`);
-      else if (lod === '0' && spec.reverse?.material.test(name)) console.log(`\n${name}: reverse candidate (${rearTris(spec.reverse.minX)} tris behind minX; a box narrows it further)`);
+      else if (lod === '0' && spec.reverse?.material?.test(name)) console.log(`\n${name}: reverse candidate (${rearTris(spec.reverse.minX)} tris behind minX; a box narrows it further)`);
       continue;
     }
     if (mats) {

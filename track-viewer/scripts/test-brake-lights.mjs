@@ -46,5 +46,36 @@ try{
   const parts=components(g.attributes.position,g.index);
   assert.deepEqual([...parts.tri],[0,0,1,1]);assert.deepEqual(parts.list.map(s=>s.tris),[2,2]);
   assert(Math.abs(parts.list[1].centre.x-.55)<1e-6&&Math.abs(parts.list[0].area-.01)<1e-6,'Element centre and area');
-  console.log('PASS: grid release, stationary foot brake, brightening and brake release, lamp elements, tail specs and rules.');
+  // the opt-in rule and spec keys, on a mock car through fitTail: quads in the car frame (+x the tail), a quad facing back (+x) or forward
+  const {fitTail}=await server.ssrLoadModule('/src/carkit/taillights.js');
+  const quads=(qs)=>{const p=[],ix=[];for(const [x,y,z,s=.02,dir=1] of qs){const b=p.length/3;p.push(x,y-s,z-s,x,y+s,z-s,x,y+s,z+s,x,y-s,z+s);ix.push(...(dir>0?[0,1,2,0,2,3]:[0,2,1,0,3,2]).map(i=>b+i));}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();return g;};
+  const mock=(spec,build)=>{const m={taillight:new THREE.MeshStandardMaterial(),brakeLight:new THREE.MeshStandardMaterial(),reverseLight:new THREE.MeshStandardMaterial({color:0xffffff}),rearLens:new THREE.MeshPhysicalMaterial({transparent:true,opacity:.28})};
+    const l0=new THREE.Group(),kit=new THREE.Group(),body=new THREE.Group();body.add(l0);
+    const add=(parent,g,mat,name,src)=>{const o=new THREE.Mesh(g,mat);o.name=name;if(src)o.srcMaterial=src;parent.add(o);return o;};build({m,l0,kit,add});
+    const c={key:'mock',materials:m,body,shadow:new THREE.Group(),hero:false,lod:{levels:[{object:l0}],position:new THREE.Vector3()},lamps:{root:kit}};c.tail=fitTail(c,spec);return {c,m,l0,kit};};
+  const tailMesh=(qs)=>({m,l0,add})=>add(l0,quads(qs),m.taillight,'t',new THREE.MeshStandardMaterial({name:'tail|x'}));
+  const lampAt=(o,i)=>[o.geometry.attributes.aLamp.getX(i),o.geometry.attributes.aLamp.getY(i)];
+  const A1=[[2,.5,.5]],A2=[[2,.7,.5]],box1=[[1.9,.45,.4],[2.1,.55,.6]];
+  {const {l0}=mock({tail:[{box:box1,part:'fill',tex:false},{part:'guide'}]},tailMesh([...A1,...A2]));const o=l0.children[0];
+    assert.deepEqual([lampAt(o,0),lampAt(o,4)],[[0,2],[1,0]],'tex: false writes aLamp + 1 (lit whatever its texels), the rest as before');}
+  {const {l0}=mock({tail:[{box:box1,part:'guide',flip:true},{part:'guide'}]},tailMesh([[2,.5,.5,.02,-1],[2,.7,.5,.02,-1]])),g=l0.children[0].geometry,n=new THREE.Triangle().setFromAttributeAndIndices(g.attributes.position,...g.index.array.slice(0,3)).getNormal(new THREE.Vector3());
+    assert(n.x>.99&&g.attributes.normal.getX(0)>.99,'flip: a forward-facing element turns to face back');
+    const n2=new THREE.Triangle().setFromAttributeAndIndices(g.attributes.position,...g.index.array.slice(6,9)).getNormal(new THREE.Vector3());assert(n2.x<-.99&&g.attributes.normal.getX(4)<-.99,'flip touches only its own element');}
+  {const {l0}=mock({tail:[{part:'guide'}],adopt:{material:/^keep\|L$/,box:[[1.9,.45,.4],[2.1,.55,.6]]}},({l0,add})=>add(l0,quads([...A1,[2,.5,.1]]),new THREE.MeshStandardMaterial({name:'keep|L'}),'k'));
+    const ad=l0.children.find(o=>o.name==='tail-adopted');assert(ad&&ad.geometry.index.count===6&&l0.children[0].geometry.index.count===6,'adopt.box: only the triangles inside the box join the lamp');}
+  for(const [color,hex] of [[0x333333,0x333333],[undefined,0xffffff]]){const {l0}=mock({tail:[{box:box1,part:'reverse'},{part:'guide'}],...(color?{reverse:{color}}:{})},tailMesh([...A1,...A2]));
+    assert.equal(l0.children.find(o=>o.name==='tail-reverse').material.color.getHex(),hex,'reverse.color: the unlit reverse part takes it (else the white reverse material)');}
+  assert.deepEqual(checkSpec({reverse:{color:0x333333}}),[],'reverse: { color } alone is a spec');
+  const strip=Array.from({length:12},(_,i)=>[2,.5,.225+.05*i,.025]);
+  assert.equal(mock({tail:[{part:'guide'}]},tailMesh(strip)).c.tail.items.length,1,'Without glowAlong a long element keeps one glow point');
+  {const it=mock({tail:[{part:'guide',glowAlong:true}]},tailMesh(strip)).c.tail.items;assert(it.length>=10&&it.every(i=>Math.abs(i.s-.4*.05)<1e-6),'glowAlong: points along a long element, sized 0.4 x its middle side');}
+  {const L=({m,l0,add})=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([2,.48,.4,2,.52,.4,2,.52,.6,2,.48,.6,1.9,.52,.4,1.9,.52,.6],3));g.setIndex([0,1,2,0,2,3,1,4,5,1,5,2]);g.computeVertexNormals();add(l0,g,m.taillight,'t',new THREE.MeshStandardMaterial({name:'tail|x'}));};
+    const o=mock({tail:[{part:'guide',facing:[[1,0,0],.5]},{part:'off'}]},L).l0.children[0];
+    assert.deepEqual([0,3,6,9].map(t=>lampAt(o,t)[0]),[1,1,0,0],'facing: only the triangles facing back light, the element\'s top stays dark');
+    assert.equal(mock({tail:[{part:'guide'}]},L).l0.children[0].geometry.attributes.aLamp.getX(4),1,'Without facing the whole element lights');}
+  for(const bowl of [true,false]){const {kit}=mock({...(bowl?{bowl}:{}),tail:[{part:'guide'}]},({kit,add})=>add(kit,quads(A1),new THREE.MeshStandardMaterial({name:'housing'}),'rear-0-bowl-1'));const o=kit.children[0];
+    assert.equal(o.material.customProgramCacheKey?.()==='tail-lamp'&&lampAt(o,0)[1]===1,bowl,'bowl: a closed lamp\'s bowl fills on the brake only when asked');}
+  assert.deepEqual(checkSpec({tail:[{part:'guide',facing:[1,0,0],tex:true}]}),['tail[0].facing: not [[x, y, z], min]','tail[0].tex: only false'],'Malformed facing / tex reported');
+  console.log('PASS: grid release, stationary foot brake, brightening and brake release, lamp elements, tail specs and rules, the opt-in keys.');
 }finally{await server.close();}

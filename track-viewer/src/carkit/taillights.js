@@ -7,12 +7,17 @@
 // sprite), unchanged.
 //
 // A spec (car frame: +x is the tail, y up, z to the side; boxes use |z|, so one box covers both sides; every key optional):
-//   tail: [{ material, box, minTris, part, glow }]  rules over the connected components of the car's tail meshes (role `tail`,
-//         adopted ones and the car-lab LED tubes), first match wins; a rule matches when every key it has does: material (the
-//         model's own material name, a RegExp), box (the component's centre), minTris. part: guide (running light, brighter on
-//         the brake), fill (brake only), off (never lit), reverse (white, reversing), indicator (an unlit amber lens), lens
-//         (onto the smoked rearLens). glow: the element glow's size factor (0: none). Default: every component a guide.
-//   adopt: { material, minX }   model ('keep') materials whose triangles behind minX join the tail lamp, keeping their own map
+//   tail: [{ material, box, minTris, facing, part, glow, glowAlong, tex, flip }]  rules over the connected components of the
+//         car's tail meshes (role `tail`, adopted ones and the car-lab LED tubes), first match wins; a rule matches when every key
+//         it has does: material (the model's own material name, a RegExp), box (the component's centre), minTris, facing ([[x, y,
+//         z], min]: per triangle, its normal . axis >= min, z mirrored like the boxes: a blade's rear edge). part: guide (running
+//         light, brighter on the brake), fill (brake only), off (never lit), reverse (white, reversing), indicator (an unlit amber
+//         lens), lens (onto the smoked rearLens). glow: the element glow's size factor (0: none); glowAlong: a long or curved
+//         element glows along its length (points every ~5 cm) instead of at its centroid; tex: false lights it whatever its texels
+//         (a `tex` car's element painted unlit); flip: an element modelled facing forward is turned to face back. Default: every
+//         component a guide.
+//   adopt: { material, minX, box }   model ('keep') materials whose triangles behind minX (inside the box) join the tail lamp,
+//         keeping their own map
 //   tex: { material, lo, hi, hue, white, base, map }   tail meshes whose model material has a map keep it: its red texels light
 //         (by brightness, lo..hi), white ones are the reverse lamp (white: [lo, hi], off by default), amber ones stay unlit (hue:
 //         the g/r range where red turns amber; [0.6, 0.9] lets a lit orange-yellow LED core count as lamp); base: the unlit
@@ -20,11 +25,13 @@
 //   dark, darkColor   'keep' lamp materials that are unlit lenses (indicators)
 //   lens: { material, minX, color, opacity, shell }   the rear part of the model's lens material becomes the smoked rearLens;
 //         shell: a lens this far (m) out over the tail meshes, for a model with no lens of its own
-//   reverse: { material, box, minX }   triangles of a material (inside the box, behind minX) become the reverse lamp
+//   reverse: { material, box, minX, color }   triangles of a material (inside the box, behind minX) become the reverse lamp;
+//         color: its unlit colour (default: the material it copies, the white headlamp one for a `reverse` part)
 //   spill: true   the player's car lights the road behind; levels: { ...LV } per-car levels; qa: { macro: [x, y, z] } the lamp
 //         qa-taillights.mjs frames up close (default: the right rear lamp of model.json / the car-lab profile)
 // A car-lab car (no model: bentley-gt, mustang) has its lamps in c.lamps.root: the LED tubes are its tail meshes, the centre
-// stop lamp (role brake) is lit as a fill, the reverse tubes (role reverse) as the reverse lamp, its lens covers become rearLens.
+// stop lamp (role brake) is lit as a fill, the reverse tubes (role reverse) as the reverse lamp, its lens covers become rearLens;
+// bowl: true lights a closed lamp's bowl (rear-*-bowl-*) as a brake fill.
 import * as THREE from 'three';
 import { wetUniforms } from '../wet-road.js';
 
@@ -48,13 +55,17 @@ export function checkSpec(spec) {
   const bad = [], keys = (o, ok, at) => Object.keys(o ?? {}).forEach((k) => { if (!ok.includes(k)) bad.push(`${at}${k}: unknown key`); });
   const re = (x, at) => { if (x !== undefined && !(x instanceof RegExp)) bad.push(`${at}: not a RegExp`); };
   const box = (b, at) => { if (b !== undefined && !(b.length === 2 && b.every((p) => p.length === 3 && p.every(Number.isFinite)))) bad.push(`${at}: not [[x, y, z], [x, y, z]]`); };
-  keys(spec, ['tail', 'adopt', 'tex', 'dark', 'darkColor', 'lens', 'reverse', 'spill', 'levels', 'qa'], '');
-  (spec.tail ?? []).forEach((r, i) => { keys(r, ['material', 'box', 'minTris', 'part', 'glow'], `tail[${i}].`); if (!PARTS.includes(r.part)) bad.push(`tail[${i}].part: ${r.part}`); re(r.material, `tail[${i}].material`); box(r.box, `tail[${i}].box`); });
-  keys(spec.adopt, ['material', 'minX'], 'adopt.'); keys(spec.tex, ['material', 'lo', 'hi', 'hue', 'white', 'base', 'map'], 'tex.');
-  keys(spec.lens, ['material', 'minX', 'color', 'opacity', 'shell'], 'lens.'); keys(spec.reverse, ['material', 'box', 'minX'], 'reverse.'); keys(spec.levels, Object.keys(LV), 'levels.');
+  keys(spec, ['tail', 'adopt', 'tex', 'dark', 'darkColor', 'lens', 'reverse', 'spill', 'bowl', 'levels', 'qa'], '');
+  (spec.tail ?? []).forEach((r, i) => {
+    keys(r, ['material', 'box', 'minTris', 'facing', 'part', 'glow', 'glowAlong', 'tex', 'flip'], `tail[${i}].`); if (!PARTS.includes(r.part)) bad.push(`tail[${i}].part: ${r.part}`); re(r.material, `tail[${i}].material`); box(r.box, `tail[${i}].box`);
+    if (r.facing !== undefined && !(r.facing.length === 2 && r.facing[0]?.length === 3 && [...r.facing[0], r.facing[1]].every(Number.isFinite))) bad.push(`tail[${i}].facing: not [[x, y, z], min]`);
+    if (r.tex !== undefined && r.tex !== false) bad.push(`tail[${i}].tex: only false`);
+  });
+  keys(spec.adopt, ['material', 'minX', 'box'], 'adopt.'); keys(spec.tex, ['material', 'lo', 'hi', 'hue', 'white', 'base', 'map'], 'tex.');
+  keys(spec.lens, ['material', 'minX', 'color', 'opacity', 'shell'], 'lens.'); keys(spec.reverse, ['material', 'box', 'minX', 'color'], 'reverse.'); keys(spec.levels, Object.keys(LV), 'levels.');
   if (spec.adopt && !(spec.adopt.material instanceof RegExp)) bad.push('adopt.material: not a RegExp');
-  if (spec.reverse && !(spec.reverse.material instanceof RegExp)) bad.push('reverse.material: not a RegExp');
-  re(spec.dark, 'dark'); re(spec.tex?.material, 'tex.material'); re(spec.lens?.material, 'lens.material'); box(spec.reverse?.box, 'reverse.box');
+  if (spec.reverse && !(spec.reverse.material instanceof RegExp) && (spec.reverse.material !== undefined || spec.reverse.color === undefined)) bad.push('reverse.material: not a RegExp');   // { color } alone styles a `reverse` part
+  re(spec.dark, 'dark'); re(spec.tex?.material, 'tex.material'); re(spec.lens?.material, 'lens.material'); box(spec.reverse?.box, 'reverse.box'); box(spec.adopt?.box, 'adopt.box');
   return bad;
 }
 
@@ -91,10 +102,12 @@ export function components(pos, index) {
   return { tri, list };
 }
 
-/** The first rule of a spec's `tail` that matches a component (stats from components()) of a mesh whose model material is `name`. */
-export function tailRule(spec, s, name) {
-  const inBox = (b, p) => p.x >= b[0][0] && p.x <= b[1][0] && p.y >= b[0][1] && p.y <= b[1][1] && Math.abs(p.z) >= b[0][2] && Math.abs(p.z) <= b[1][2];
-  return (spec.tail ?? GUIDE).find((r) => s.tris >= (r.minTris ?? 0) && (!r.material || r.material.test(name)) && (!r.box || inBox(r.box, s.centre)));
+const inBox = (b, p) => p.x >= b[0][0] && p.x <= b[1][0] && p.y >= b[0][1] && p.y <= b[1][1] && Math.abs(p.z) >= b[0][2] && Math.abs(p.z) <= b[1][2];
+/** The first rule of a spec's `tail` that matches a component (stats from components()) of a mesh whose model material is `name`;
+ * n: a triangle's unit normal with z mirrored to the +z side (a `facing` rule matches only per triangle, never without it). */
+export function tailRule(spec, s, name, n) {
+  return (spec.tail ?? GUIDE).find((r) => s.tris >= (r.minTris ?? 0) && (!r.material || r.material.test(name)) && (!r.box || inBox(r.box, s.centre))
+    && (!r.facing || (n && n.x * r.facing[0][0] + n.y * r.facing[0][1] + n.z * r.facing[0][2] >= r.facing[1])));
 }
 
 /** Move the triangles that pass `pick(centroid, first vertex index)` (car frame) out of `mesh` into a new mesh wearing `material`. */
@@ -136,11 +149,11 @@ function tailShader(mat, U, base = 0x4a0306) {
         vec2 q = vLampP.yz / uPitch, cell = fract( q ) - 0.5;                    // the LED grid on the lamp's rear-facing plane
         float led = smoothstep( 0.3, 0.1, length( cell ) );
         float pat = mix( 0.5 + 1.9 * led, 0.75, smoothstep( 0.25, 0.7, length( fwidth( q ) ) ) );   // dots on a lit diffuser up close, their mean once a pitch nears a pixel
-        vec2 lampW = vLamp;
+        vec2 lampX = step( 1.5, vLamp ), lampW = vLamp - lampX;                 // aLamp + 1: a tex: false element, lit whatever its texels
         #ifdef USE_MAP
           vec3 lt = texture2D( map, vMapUv ).rgb;                                // texLamp() in JS: red texels are the lamp (by brightness), white ones the reverse
           float lmx = max( lt.r, max( lt.g, lt.b ) ), lsat = ( lmx - min( lt.r, min( lt.g, lt.b ) ) ) / max( lmx, 1e-4 ), lhue = lt.g / max( lt.r, 1e-4 );
-          lampW *= smoothstep( 0.35, 0.6, lsat ) * ( 1.0 - smoothstep( uTexHue.x, uTexHue.y, lhue ) ) * step( max( lt.g, lt.b ), lt.r ) * smoothstep( uTex.x, uTex.y, lmx );
+          lampW *= mix( vec2( smoothstep( 0.35, 0.6, lsat ) * ( 1.0 - smoothstep( uTexHue.x, uTexHue.y, lhue ) ) * step( max( lt.g, lt.b ), lt.r ) * smoothstep( uTex.x, uTex.y, lmx ) ), vec2( 1.0 ), lampX );
         #endif
         float lampE = lampW.x * uGuide * ( 0.75 + 0.6 * rim * rim ) + lampW.y * uFill * pat;
         totalEmissiveRadiance = mix( vec3( 1.0, 0.012, 0.002 ), vec3( 1.0, 0.05, 0.006 ), uHot * clamp( lampE, 0.0, 1.0 ) ) * lampE;
@@ -221,40 +234,51 @@ function glowPoints(items) {
 function fitLevel(c, spec, T, level, full, kit = false) {
   const m = c.materials, meshes = [], src = (o) => o.srcMaterial ?? o.material, name = (o) => src(o).name ?? '';   // cars.js keeps the model's material before the role swap
   level.traverse((o) => { if (o.isMesh) meshes.push(o); });
-  for (const o of [...meshes]) {                  // adopted model materials join the tail lamp (behind minX), their own material kept as the source
-    if (!spec.adopt || o.material === m.taillight || !spec.adopt.material.test(name(o))) continue;
-    const s = src(o), r = spec.adopt.minX === undefined ? Object.assign(o, { material: m.taillight }) : split(o, (v) => v.x > spec.adopt.minX, m.taillight, 'tail-adopted');
+  for (const o of [...meshes]) {                  // adopted model materials join the tail lamp (behind minX, inside the box), their own material kept as the source
+    const A = spec.adopt;
+    if (!A || o.material === m.taillight || !A.material.test(name(o))) continue;
+    const s = src(o), r = A.minX === undefined && !A.box ? Object.assign(o, { material: m.taillight }) : split(o, (v) => v.x > (A.minX ?? -Infinity) && (!A.box || inBox(A.box, v)), m.taillight, 'tail-adopted');
     if (r) { r.srcMaterial = s; if (r !== o) meshes.push(r); }
   }
+  if (kit && spec.bowl) for (const o of meshes) if (/^rear(-.*)?-bowl-/.test(o.name)) o.material = T.bowl ??= bowlMaterial(m.brakeLight, T.U);   // a closed lamp's bowl fills on the brake
   for (const o of meshes) {
     const nm = name(o);
-    if (o.material === m.taillight || o.material === m.brakeLight) {
-      const brake = o.material === m.brakeLight, g = o.geometry, P = g.attributes.position, w = new Float32Array(P.count * 2), vpart = [];
-      const { tri, list } = components(P, g.index), rules = list.map((s) => (brake ? { part: 'fill' } : tailRule(spec, s, nm)));   // a brake-role lamp (car-lab's centre stop) is all fill
-      if (brake && !T.brake) { tailShader(m.brakeLight, T.U); T.brake = true; }
+    if (o.material === m.taillight || o.material === m.brakeLight || o.material === T.bowl) {
+      const brake = o.material !== m.taillight, fill = [{ part: 'fill' }];   // a brake-role lamp (car-lab's centre stop) and a bowl are all fill
+      if (!brake && spec.tail?.some((r) => r.facing) && o.geometry.index) o.geometry = o.geometry.toNonIndexed();   // a facing rule lights part of an element: no vertex shared across its edge
+      const g = o.geometry, P = g.attributes.position, w = new Float32Array(P.count * 2), vpart = [], vi = (t, j) => (g.index ? g.index.getX(3 * t + j) : 3 * t + j);
+      const { tri, list } = components(P, g.index), rules = list.map((s) => (brake ? fill[0] : tailRule(spec, s, nm)));
+      if (o.material === m.brakeLight && !T.brake) { tailShader(m.brakeLight, T.U); T.brake = true; }
+      if (rules.some((r) => r?.flip)) flip(g, tri, rules);
+      // per triangle: a facing rule picks by the triangle's normal (z mirrored to the +z side), the rest by the element
+      const face = !brake && spec.tail?.some((r) => r.facing), tr = new Array(tri.length), A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
       tri.forEach((k, t) => {
-        const p = rules[k]?.part;
+        let r = rules[k];
+        if (face) {
+          A.fromBufferAttribute(P, vi(t, 0)); B.fromBufferAttribute(P, vi(t, 1)); C.fromBufferAttribute(P, vi(t, 2));
+          const zs = Math.sign(A.z + B.z + C.z) || 1; B.sub(A).cross(C.sub(A)).normalize(); B.z *= zs;
+          r = tailRule(spec, list[k], nm, B);
+        }
+        tr[t] = r;
+        const p = r?.part, u = r?.tex === false ? 1 : 0;   // tex: false writes aLamp + 1 (the shader skips the texel weight)
         for (let j = 0; j < 3; j++) {
-          const v = g.index ? g.index.getX(3 * t + j) : 3 * t + j;
+          const v = vi(t, j);
           vpart[v] = p;
-          if (full) { w[2 * v] = p === 'guide' ? 1 : 0; w[2 * v + 1] = p === 'fill' ? 1 : 0; } else if (p === 'guide' || p === 'fill') { w[2 * v] = 0.7; w[2 * v + 1] = 0.5; }   // 45 m+: one blend, no structure to show
+          if (full) { w[2 * v] = p === 'guide' ? 1 + u : 0; w[2 * v + 1] = p === 'fill' ? 1 + u : 0; } else if (p === 'guide' || p === 'fill') { w[2 * v] = 0.7 + u; w[2 * v + 1] = 0.5 + u; }   // 45 m+: one blend, no structure to show
         }
       });
       g.setAttribute('aLamp', new THREE.BufferAttribute(w, 2));
-      if (full) list.forEach((s, k) => {
-        const p = rules[k]?.part, gl = rules[k]?.glow ?? 1;
-        if (gl && ['guide', 'fill', 'reverse'].includes(p)) T.items.push({ p: s.centre.toArray(), s: Math.max(...s.box.getSize(new THREE.Vector3()).toArray()) * 0.4 * gl, d: p === 'reverse' ? [1, 0, 0] : [1, 0, 0.3 * Math.sign(s.centre.z)], w: p === 'guide' ? [1, 1, 0] : p === 'fill' ? [0, 1, 0] : [0, 0, 1] });
-      });
+      if (full) glowItems(T, P, vi, tri, tr, list, face);
       if (!brake && spec.tex && src(o) !== o.material && (src(o).map || src(o).emissiveMap) && g.attributes.uv && (!spec.tex.material || spec.tex.material.test(nm))) o.material = texMaterial(c, T, src(o));
-      const mats = { reverse: () => (T.rev ??= reverseMaterial(m.reverseLight)), indicator: () => (T.ind ??= new THREE.MeshStandardMaterial({ color: spec.darkColor ?? 0x502008, roughness: 0.3 })), lens: () => m.rearLens };
-      for (const p of Object.keys(mats)) if (rules.some((r) => r?.part === p)) split(o, (v, a) => vpart[a] === p, mats[p](), `tail-${p}`);
+      const mats = { reverse: () => (T.rev ??= reverseMaterial(m.reverseLight, spec.reverse?.color)), indicator: () => (T.ind ??= new THREE.MeshStandardMaterial({ color: spec.darkColor ?? 0x502008, roughness: 0.3 })), lens: () => m.rearLens };
+      for (const p of Object.keys(mats)) if (tr.some((r) => r?.part === p)) split(o, (v, a) => vpart[a] === p, mats[p](), `tail-${p}`);
       if (spec.lens?.shell) shell(o, spec.lens.shell, m.rearLens);
     } else if (spec.dark?.test(nm)) {
       o.material.emissive?.setScalar(0); o.material.color.set(spec.darkColor ?? 0x502008); o.material.roughness = 0.3;   // an unlit indicator lens
     } else if (spec.lens?.material?.test(nm)) {
       split(o, (v) => v.x > (spec.lens.minX ?? -Infinity), m.rearLens, 'rear-lens');
-    } else if (full && spec.reverse?.material.test(nm)) {
-      T.rev ??= reverseMaterial(o.material);
+    } else if (full && spec.reverse?.material?.test(nm)) {
+      T.rev ??= reverseMaterial(o.material, spec.reverse.color);
       if (spec.reverse.box) {
         const box = new THREE.Box3(new THREE.Vector3(...spec.reverse.box[0]), new THREE.Vector3(...spec.reverse.box[1]));
         const r = split(o, (v) => v.x > (spec.reverse.minX ?? -Infinity) && box.containsPoint(new THREE.Vector3(v.x, v.y, Math.abs(v.z))), T.rev, 'reverse-lamp');
@@ -275,9 +299,66 @@ function reverseItems(T, mesh) {
   if (mesh) for (const s of components(mesh.geometry.attributes.position, mesh.geometry.index).list) T.items.push({ p: s.centre.toArray(), s: Math.max(...s.box.getSize(new THREE.Vector3()).toArray()) * 0.4, d: [1, 0, 0], w: [0, 0, 1] });
 }
 
-/** The reverse cell: its own copy of the reflector material, lit white, brightest where a facet faces the viewer. */
-function reverseMaterial(src) {
+/** The glow points of a fitted tail mesh's lit elements (tr: each triangle's rule): one at an element's centroid, sized by it. Under
+ * a facing rule the element is the triangles it lights; with glowAlong a long or curved element (largest side over 3x the middle
+ * one, or its centroid over 1 cm from any vertex: a ring, an arc) glows every ~5 cm along its largest side instead, a point per
+ * strand of the slab (a ring's top and bottom), sized 0.4 x its middle side. */
+function glowItems(T, P, vi, tri, tr, list, face) {
+  const byK = list.map(() => new Map()), v = new THREE.Vector3();
+  tri.forEach((k, t) => { const r = tr[t]; if (r && (r.glow ?? 1) && ['guide', 'fill', 'reverse'].includes(r.part)) (byK[k].get(r) ?? byK[k].set(r, []).get(r)).push(t); });
+  byK.forEach((rules, k) => rules.forEach((ts, r) => {
+    const s = face ? subset(P, vi, ts) : list[k], p = r.part, gl = r.glow ?? 1;
+    const push = (c, size) => T.items.push({ p: c, s: size, d: p === 'reverse' ? [1, 0, 0] : [1, 0, 0.3 * Math.sign(s.centre.z)], w: p === 'guide' ? [1, 1, 0] : p === 'fill' ? [0, 1, 0] : [0, 0, 1] });
+    const size = s.box.getSize(new THREE.Vector3()).toArray(), ax = [0, 1, 2].sort((a, b) => size[b] - size[a]), [a, b] = [size[ax[0]], size[ax[1]]];
+    const verts = r.glowAlong ? ts.flatMap((t) => [0, 1, 2].map((j) => v.fromBufferAttribute(P, vi(t, j)).toArray())) : null;
+    if (!verts || !(a > 3 * b || Math.min(...verts.map((q) => s.centre.distanceTo(v.fromArray(q)))) > 0.01)) return push(s.centre.toArray(), a * 0.4 * gl);
+    const n = Math.max(1, Math.round(a / 0.05)), slabs = Array.from({ length: n }, () => []);
+    for (let i = 0; i < verts.length; i += 3) {                // by triangle centre: a flat bar's triangles span it, a ring's do not
+      const q = [0, 1, 2].map((e) => (verts[i][e] + verts[i + 1][e] + verts[i + 2][e]) / 3);
+      slabs[Math.min(n - 1, Math.floor((q[ax[0]] - s.box.min.getComponent(ax[0])) / a * n))].push(q);
+    }
+    for (const sl of slabs) {
+      sl.sort((x, y) => x[ax[1]] - y[ax[1]]);
+      for (let i = 0, j = 0; i < sl.length; i = j) {          // strands: runs with no gap over half the middle side (2 cm at least) across the slab
+        while (++j < sl.length && sl[j][ax[1]] - sl[j - 1][ax[1]] <= Math.max(0.02, b / 2));
+        const run = sl.slice(i, j); push([0, 1, 2].map((e) => run.reduce((sum, q) => sum + q[e], 0) / run.length), b * 0.4 * gl);
+      }
+    }
+  }));
+}
+
+/** The box and area-weighted centre of some triangles (vi: triangle, corner -> vertex), as components() gives an element's. */
+function subset(P, vi, ts) {
+  const s = { box: new THREE.Box3(), centre: new THREE.Vector3() }, A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3(), N = new THREE.Vector3();
+  let area = 0;
+  for (const t of ts) {
+    A.fromBufferAttribute(P, vi(t, 0)); B.fromBufferAttribute(P, vi(t, 1)); C.fromBufferAttribute(P, vi(t, 2));
+    const a = N.subVectors(B, A).cross(C.clone().sub(A)).length() / 2; area += a;
+    s.box.expandByPoint(A).expandByPoint(B).expandByPoint(C); s.centre.addScaledVector(A.add(B).add(C), a / 3);
+  }
+  s.centre.divideScalar(Math.max(area, 1e-9));
+  return s;
+}
+
+/** Turn the elements whose rule says flip to face back: reversed winding, negated normals (copies: loaded arrays may be shared). */
+function flip(g, tri, rules) {
+  if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]);
+  const I = g.index.array.slice(), N = g.attributes.normal?.clone(), seen = new Uint8Array(g.attributes.position.count);
+  tri.forEach((k, t) => { if (rules[k]?.flip) { [I[3 * t + 1], I[3 * t + 2]] = [I[3 * t + 2], I[3 * t + 1]]; seen[I[3 * t]] = seen[I[3 * t + 1]] = seen[I[3 * t + 2]] = 1; } });
+  g.setIndex(new THREE.BufferAttribute(I, 1));
+  if (N) { seen.forEach((f, i) => { if (f) N.setXYZ(i, -N.getX(i), -N.getY(i), -N.getZ(i)); }); g.setAttribute('normal', N); }
+}
+
+/** A closed car-lab lamp's bowl (spec.bowl): the stop lamp's material, both faces (car-lab winds the two sides' bowls oppositely). */
+function bowlMaterial(src, U) {
+  const mat = src.clone(); mat.side = THREE.DoubleSide; tailShader(mat, U);
+  return mat;
+}
+
+/** The reverse cell: its own copy of the reflector material (unlit in `color` if given), lit white, brightest where a facet faces the viewer. */
+function reverseMaterial(src, color) {
   const mat = src.clone();
+  if (color !== undefined) mat.color.set(color);
   mat.emissive = WHITE.clone(); mat.emissiveIntensity = 0;
   mat.onBeforeCompile = (s) => { s.fragmentShader = s.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance *= 0.3 + 0.7 * pow( abs( dot( normal, normalize( vViewPosition ) ) ), 4.0 );'); };
   mat.customProgramCacheKey = () => 'reverse-lamp';
