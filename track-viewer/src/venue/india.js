@@ -2,10 +2,12 @@
 //   barrier reflectors   amber retro-reflectors on the barrier face (track.json `reflectors`): a dull amber plate by day; at dusk and
 //                        night they shine back when the car's lights reach them (bright near the camera, facing it), never blinking
 //   bridge uplights      warm off-white fixtures at the foot of each portal leg (track.json `bridgeUplights`) with a soft wash up the leg
-//   tree canopies        the forest's canopy meshes (V5 forest / ... `_1`) get lumpy, per-tree silhouettes and leaf-clump shading
-//                        in their vertex/fragment shaders (a clone of their shared vertex-colour material): no new geometry
-//   hoardings            OPPO / vivo boards on four city façades and one BJP roadside hoarding on the city approach (images in
-//                        assets/india/ads, sources in assets/sponsors/manifest.json); Sony -> Jio is tracks.js `brands`
+//   tree canopies        the forest's canopy meshes (V5 forest / ... `_1`): matte, with leaf-clump shading in a clone of their shared
+//                        vertex-colour material. The ragged outline is in the mesh now (tracks/india/art_v56_trees.py): nothing moves
+//                        the vertices or cuts the edges here, so the two never double up and nothing shimmers
+//   hoardings            OPPO / vivo boards on four city façades and one BJP roadside hoarding on the city approach, where the export
+//                        found them (track.json `venueBoards`, tracks/india/game_india_boards.py; images in assets/india/ads, sources in
+//                        assets/sponsors/manifest.json); Sony -> Jio is tracks.js `brands`
 //   crowd                a seated spectator on most stand seats: three instanced meshes (shirt, head, legs), no per-frame work
 //   wet-road mirror      Tokyo's mirror-height part: the plane follows the road under the camera (82% of the lap is over 3 m up,
 //                        where a mirror at y = 0 reflected the sky instead of the lamps and cars)
@@ -19,11 +21,10 @@ const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a)
 // ground, far ranges, cards and low scatter cast no shadow (main.js NO_CAST is Marina's names); trees, buildings, stands and walls do
 const NO_CAST = /^(V5_terrain|V5_far|V5_river|water|India_racing_surface|Alternating_painted_kerbs|Edge_paint|scatter_cards|scatter_veg|IN_night_windows|Kavi_Chowk_clipped)/;
 
-// ---- canopies: value noise on the canopy's own position (offset per tree by its instance origin), so a vertex shared by two faces
-// moves the same way and the mesh stays closed. Radial in/out (from the trunk axis) plus a little up/down: the smooth pads and
-// blobs become irregular clumps. The shading darkens the hollows and adds a fine speckle; noise tilts the shading normal so light
-// breaks into clumps, and where the surface turns away from the eye its edge frays into tufts. Speckle and tufts fade out by
-// ~70-90 m, so far trees stay solid and nothing sparkles. Foliage is matte (the glossy sheen read as smooth plastic).
+// ---- canopies: value noise on the canopy's own position (offset per tree by its instance origin) tints each clump and darkens the
+// hollows; a coarse noise tilts the shading normal so light breaks into clumps near the camera. No vertex moves and no fragment is
+// discarded (the clumps are modelled: moving them again doubled the lumps, and the frayed edges sparkled in motion); the clump-sized
+// detail (~0.6 m and up) fades out by 60 m, so far trees stay solid. Foliage is matte (the glossy sheen read as smooth plastic).
 const NOISE = `float smH3(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
 float smN3(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(mix(smH3(i), smH3(i + vec3(1, 0, 0)), f.x), mix(smH3(i + vec3(0, 1, 0)), smH3(i + vec3(1, 1, 0)), f.x), f.y),
@@ -37,11 +38,7 @@ function canopy(src) {
         #ifdef USE_INSTANCING
           seed += instanceMatrix[3].xyz * 0.37;
         #endif
-        float n1 = smN3(seed * 0.9), n2 = smN3(seed * 2.3 + 7.1), k = (n1 - 0.5) * 0.9 + (n2 - 0.5) * 0.45;
-        float rl = length(position.xz);
-        if (rl > 1e-3) transformed.xz += position.xz / rl * k * 0.95 * min(rl, 1.0);
-        transformed.y += (n2 - 0.5) * 0.6;
-        vLeaf = n1 * 0.6 + n2 * 0.4;`)
+        vLeaf = smN3(seed * 0.9) * 0.6 + smN3(seed * 2.3 + 7.1) * 0.4;`)
       .replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
         vec4 tw = vec4(transformed, 1.0);
         #ifdef USE_INSTANCING
@@ -50,28 +47,16 @@ function canopy(src) {
         vTreeW = (modelMatrix * tw).xyz;`);
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>\n${NOISE}\nvarying float vLeaf; varying vec3 vTreeW;`)
       .replace('#include <color_fragment>', `#include <color_fragment>
-        float leafFade = 1.0 - smoothstep(30.0, 90.0, length(vViewPosition)), tuftFade = 1.0 - smoothstep(35.0, 70.0, length(vViewPosition));
-        float rim = 0.0;
-        #ifndef FLAT_SHADED
-          rim = 1.0 - abs(dot(normalize(vNormal), normalize(vViewPosition)));
-        #endif
-        float tuft = smN3(vTreeW * 4.5) * 0.6 + smN3(vTreeW * 11.0) * 0.4;
-        if (tuft < (rim - 0.2) * 1.5 * tuftFade) discard;
-        diffuseColor.rgb *= (0.72 + 0.5 * vLeaf) * mix(1.0, 0.8 + 0.38 * smN3(vTreeW * 5.0), leafFade);`)
+        float leafFade = 1.0 - smoothstep(20.0, 60.0, length(vViewPosition));
+        diffuseColor.rgb *= (0.78 + 0.4 * vLeaf) * mix(1.0, 0.86 + 0.26 * smN3(vTreeW * 1.6), leafFade);`)
       .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
-        vec3 leafN = normal + 1.1 * leafFade * (vec3(smN3(vTreeW * 3.5), smN3(vTreeW * 3.5 + 3.1), smN3(vTreeW * 3.5 + 5.7)) - 0.5);
+        vec3 leafN = normal + 0.6 * leafFade * (vec3(smN3(vTreeW * 1.8), smN3(vTreeW * 1.8 + 3.1), smN3(vTreeW * 1.8 + 5.7)) - 0.5);
         if (dot(leafN, leafN) > 1e-6) normal = normalize(leafN);`);
   };
   m.customProgramCacheKey = () => 'india-canopy';
   return m;
 }
 
-// ---- hoardings (placed once against the export: flat wall under the whole board and a clear view from the road)
-// city façades: [brand, centre x, y, z, wall normal x, z]; the roadside hoarding stands 17 m out from centreline station 485, on
-// level ground, turned half toward the oncoming cars
-const FACADES = [['vivo', 401.60, 49.35, -143.35, -0.05, 1], ['oppo', 424.07, 57.35, -199.94, -0.13, 0.99],
-  ['vivo', 390.45, 57.55, -170.35, 0.19, -0.98], ['oppo', 328.25, 51.25, -263.11, -0.26, 0.97]];
-const HOARDING = { station: 485, side: 1, out: 17, ground: -0.5, w: 9, h: 3, lift: 4, toward: 0.5 };
 
 // ---- crowd: shirts, skin tones and trousers of an Indian race crowd (cricket blue and saffron among them)
 const SHIRTS = [0xf2f2f0, 0xf2f2f0, 0x1f4fa8, 0x2a6fd6, 0xff8a1e, 0xd62828, 0xf5c518, 0x1e8c4e, 0x7a1f3d, 0x222222, 0x8c8c8c, 0xe86fa0, 0x5bb3e0];
@@ -142,17 +127,16 @@ export async function create({ scene, root, track, NO_MIRROR }) {
     const front = new THREE.Mesh(faceGeo, mat), back = new THREE.Mesh(backGeo, frameMat); front.position.z = 0.065;
     back.castShadow = true; g.add(back, front); lit.push(mat); dispose.push(mat, faceGeo, backGeo); return g;
   };
-  for (const [b, x, y, z, nx, nz] of FACADES) {
-    const g = board(tex(`${b}-1600`), 5.6, 3.5); g.position.set(x + nx * 0.07, y, z + nz * 0.07); g.rotation.y = Math.atan2(nx, nz); group.add(g);
+  // façades: the board centre on the wall and the wall's normal; the hoarding: its foot on level ground and the printed face's normal
+  const VB = track.venueBoards ?? {};
+  for (const { brand, pos: [x, y, z], normal: [nx, nz], size: [w, h] } of VB.facades ?? []) {
+    const g = board(tex(`${brand}-1600`), w, h); g.position.set(x + nx * 0.07, y, z + nz * 0.07); g.rotation.y = Math.atan2(nx, nz); group.add(g);
   }
-  {
-    const C = track.centerline, N = C.length, H = HOARDING, P = (i) => new THREE.Vector3(...C[((i % N) + N) % N]);
-    const tg = P(H.station + 2).sub(P(H.station - 2)).setY(0).normalize(), side = new THREE.Vector3(tg.z, 0, -tg.x).multiplyScalar(H.side);
-    const base = P(H.station).addScaledVector(side, H.out); base.y += H.ground;
-    const n = tg.clone().multiplyScalar(-Math.sqrt(1 - H.toward ** 2)).addScaledVector(side, -H.toward).normalize();
-    const g = board(tex('bjp-3000'), H.w, H.h); g.position.copy(base).setY(base.y + H.lift + H.h / 2); g.rotation.y = Math.atan2(n.x, n.z);
-    const tall = H.lift + H.h * 0.75, poleGeo = new THREE.CylinderGeometry(0.13, 0.16, tall, 10); poleGeo.translate(0, tall / 2 - H.lift - H.h / 2, -0.2);
-    for (const sx of [-0.32, 0.32]) { const pole = new THREE.Mesh(poleGeo, frameMat); pole.position.x = sx * H.w; pole.castShadow = true; g.add(pole); }
+  if (VB.hoarding) {
+    const { brand, pos: [x, y, z], normal: [nx, nz], size: [w, h], lift } = VB.hoarding;
+    const g = board(tex(`${brand}-3000`), w, h); g.position.set(x, y + lift + h / 2, z); g.rotation.y = Math.atan2(nx, nz);
+    const tall = lift + h * 0.75, poleGeo = new THREE.CylinderGeometry(0.13, 0.16, tall, 10); poleGeo.translate(0, tall / 2 - lift - h / 2, -0.2);
+    for (const sx of [-0.32, 0.32]) { const pole = new THREE.Mesh(poleGeo, frameMat); pole.position.x = sx * w; pole.castShadow = true; g.add(pole); }
     dispose.push(poleGeo); group.add(g);
   }
 
