@@ -143,8 +143,8 @@ async function cars(side = false) {
   const { page, ctx } = await open(base + '/', { track: 'marina', look: 'dusk', weather: 'dry', reduceMotion: true });
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 300000 });
   await page.keyboard.press('Enter');
-  await page.waitForSelector('.bento-tile[data-id=garage]', { state: 'visible', timeout: 60000 });
-  await page.click('.bento-tile[data-id=garage]');
+  await page.waitForSelector('.bento-tile.current-car', { state: 'visible', timeout: 60000 });   // the Your car tile opens the garage
+  await page.click('.bento-tile.current-car');
   await page.waitForSelector('.garage button.car[data-key]', { state: 'visible' });
   const keys = sel(await page.$$eval('.garage button.car[data-key]', (b) => b.map((x) => x.dataset.key)));   // every car the game offers
   const views = side ? [SIDE] : probe ? [35, 145, 215, 325].map((az) => ({ ...CAR_VIEW, az })) : [CAR_VIEW];

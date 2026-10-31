@@ -195,7 +195,7 @@ Rules:
 | `time-trial` | Time Trial mode |
 | `drift` | Drift Attack mode |
 | `free-drive` | Free Drive mode |
-| `garage` | Garage tile |
+| `garage` | The garage (its screen and tabs) |
 | `track` | Circuit row, the circuit in records |
 | `map` | Map overview (M) |
 | `car` | Your car, the car list |
@@ -208,12 +208,12 @@ Rules:
 | `nitro` | Nitro meter, the nitro key |
 | `energy` | EV powertrain, battery |
 | `bolt` | Fastest lap, ELECTRIC badge, acceleration |
-| `lock` `unlock` | Locked car or upgrade, unlocked |
+| `lock` `unlock` | Locked car or upgrade, unlocked; a tile not built yet (Career Mode) |
 | `coin` | U-coins everywhere (replaces the "U" prefix and gold) |
 | `upgrade` | Upgrades tab, buy an upgrade |
 | `specs` | Specs tab |
 | `paint` | Paint tab |
-| `helmet` | Driver |
+| `helmet` | Driver, the Career Mode tile |
 | `keyboard` `gamepad` `mouse` | Controls tab sections, the input-device hint, Drag to turn |
 | `picture` | Picture tab |
 | `steering` | Driving tab, Steer |

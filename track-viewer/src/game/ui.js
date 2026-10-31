@@ -92,7 +92,7 @@ export class Nav {
     L.forEach((e,i)=>{if(i===this.i)return;const b=e.getBoundingClientRect(),xx=b.x+b.width/2-x,yy=b.y+b.height/2-y;
       const ahead=xx*dx+yy*dy,cross=Math.abs(xx*dy-yy*dx);
       if(g&&(!g.contains(e)||(dx&&cross>=ahead)))return;   // inside a group: only its own stops, and Left/Right stay on the row
-      if(ahead>1&&ahead+cross*2<score-1){score=ahead+cross*2;best=i;}   // a tie within 1 px keeps the earlier stop: Right from Race is Time Trial, not Garage
+      if(ahead>1&&ahead+cross*2<score-1){score=ahead+cross*2;best=i;}   // a tie within 1 px keeps the earlier stop: Right from Race is Time Trial, not Career Mode
     });
     if(best>=0){this.i=best;this.mark(true);}
     else if(g&&dy){const G=L.filter((e)=>g.contains(e));this.i=(L.indexOf(dy<0?G[0]:G.at(-1))+dy+L.length)%L.length;this.mark(true);}   // Up/Down off its edge: the stop before or after the group
@@ -195,7 +195,7 @@ const stat = (label, value, unit) => h('span.stat-r', {}, h('small', {}, label),
 /** the bento home: the Race tile on the selected circuit's still, the modes, your car, records, settings and credits. Every tile
  *  is a Nav stop with one look: a kicker, a word, an arrow-up-right go mark; focus is a ring plus a wash that never hides a still. */
 export function MenuScreen(game) {
-  const go = (id) => () => (MODES[id] ? game.show('setup', id) : game.show(id));
+  const go = (id) => () => (MODES[id] ? game.show('setup', id) : id === 'career' ? game.setBusy('Career Mode is coming in a later update.') : game.show(id));
   const tile = (id, ic, word, kicker, desc, cls = '', extra = null, bg = null) => h('button.bento-tile.' + cls, { 'data-nav': '', 'data-id': id, onclick: go(id) }, bg,
     h('span.tile-top', {}, icon(ic, { cls: 'tile-icon' }), icon('arrow-up-right', { cls: 'tile-go' })),
     h('span.tile-text', {}, h('span.tile-kicker', {}, kicker), h('strong', {}, word), desc ? h('span.tile-desc', {}, desc) : null, extra));
@@ -204,12 +204,14 @@ export function MenuScreen(game) {
   const race = tile('race', 'race', 'Race', 'The main event', MODES.race.desc, 'race-tile', facts, raceStill);
   const best = h('span.tile-desc.tile-best');
   const current = h('button.bento-tile.current-car', { 'data-nav': '', 'aria-label': 'Your car: open the garage', onclick: () => game.show('garage') });
-  const garageCars = h('span.tile-cars');   // three other cars of the roster between the Garage tile's icon and its words
+  // Career Mode holds the Garage tile's place until it is built (the garage is the Your car tile); a lock, not a go mark, on it
+  const career = tile('career', 'helmet', 'Career Mode', 'Coming soon', 'Your season, race by race. In a later update.', 'career-tile');
+  career.querySelector('.tile-go').replaceWith(icon('lock', { cls: 'tile-go' }));
   const grid = h('div.bento-grid', {}, race,
     tile('trial', 'time-trial', 'Time Trial', 'Chase your best', MODES.trial.desc, 'trial-tile'),
     tile('drift', 'drift', 'Drift Attack', 'Find the limit', MODES.drift.desc, 'drift-tile'),
     tile('free', 'free-drive', 'Free Drive', 'Your circuit', MODES.free.desc, 'free-tile'),
-    tile('garage', 'garage', 'Garage', 'The collection', ROSTER.length + ' cars. Your colours. Your upgrades.', 'garage-tile', null, garageCars),
+    career,
     current,
     tile('records', 'trophy', 'Records', 'Personal records', null, 'records-tile', best),
     tile('settings', 'settings', 'Settings', 'Make it yours', 'Picture, driving and sound.', 'settings-tile'),
@@ -228,7 +230,6 @@ export function MenuScreen(game) {
       trackName.textContent = t.name; coins.textContent = store.coins.toLocaleString('en');
       fillCarTile(current, store.data.car);
       const k = store.data.car, b = store.bestOf(k), d = store.driftOf(k);   // this circuit, your car
-      if (garageCars.dataset.car !== k) { garageCars.dataset.car = k; fill(garageCars, ROSTER.filter((x) => x !== k).slice(0, 3).map((x) => h('img', { src: still('cars/thumbs', x), alt: '', decoding: 'async' }))); }
       fill(best, stat('Best lap', b ? fmtTime(b) : empty()), stat('Best drift', d ? d.toLocaleString('en') : empty(), d ? 'PTS' : null), stat('Car', carName(k)));
       if (shown === t.id + mph) return; shown = t.id + mph;
       raceStill.src = still('tracks', t.id); raceStill.dataset.track = t.id; circuit.textContent = t.name; fill(len, empty()); fill(corners, empty());
