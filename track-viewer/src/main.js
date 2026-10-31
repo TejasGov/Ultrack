@@ -705,7 +705,7 @@ async function prepareRaceRenderer({isCancelled=()=>false}={}) {
   const look=LOOKS[params.look],power=look.lights*params.venueLights;
   placeNearest(pool.flood,venueLights.floodlights,camera.position,1400*power);
   placeNearest(pool.stand,venueLights.standLamps,camera.position,700*power);
-  placeNearest(pool.street,venueLights.streetLamps,camera.position,45*power);
+  placeNearest(pool.street,venueLights.streetLamps,camera.position,45*power*(TRACK.lampPower??1));
   fadeLights(1);
   for(const car of field.cars){car.root.visible=true;car.beams.forEach(b=>{b.visible=true;});}
   scene.updateMatrixWorld(true);camera.updateMatrixWorld();
@@ -1130,7 +1130,7 @@ function tick(now) {
     const k = look.lights * params.venueLights;
     placeNearest(pool.flood, venueLights.floodlights, camera.position, 1400 * k);
     placeNearest(pool.stand, venueLights.standLamps, camera.position, 700 * k);
-    placeNearest(pool.street, venueLights.streetLamps, camera.position, 45 * k);
+    placeNearest(pool.street, venueLights.streetLamps, camera.position, 45 * k * (TRACK.lampPower ?? 1));
   }
   fadeLights(dt);
   const fwd = camera.getWorldDirection(new THREE.Vector3());

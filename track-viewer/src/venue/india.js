@@ -74,6 +74,14 @@ export async function create({ scene, root, track, NO_MIRROR }) {
   // turned into a white bar at night): they glow with their own print, at a third (a white print at full gain bloomed like a lamp).
   // main.js `brands` swaps follow the emissive map too.
   root.traverse((o) => { if (o.isMesh) for (const mm of [].concat(o.material)) if (/^DRESS \| board /.test(mm.name) && mm.map && !mm.emissiveMap) { mm.emissiveMap = mm.map; mm.emissive.multiplyScalar(0.3); mm.needsUpdate = true; } });
+  // ---- the city after dark at half its export level: the lit windows bloomed into white slabs; the shop signs (the same lost image
+  // emission as the boards: flat white) glow with their own print. Set on emissive0 too, which main.js applyAll scales by the look.
+  const city = new Set();
+  root.traverse((o) => { if (o.isMesh) for (const mm of [].concat(o.material)) if (/^(IN window glow night|City \| bilingual sign atlas)$/.test(mm.name)) city.add(mm); });
+  for (const mm of city) {
+    if (mm.map && !mm.emissiveMap && mm.name.startsWith('City')) { mm.emissiveMap = mm.map; mm.needsUpdate = true; }
+    mm.userData.emissive0 = (mm.userData.emissive0 ?? 1) * 0.5; mm.emissiveIntensity *= 0.5;
+  }
 
   // ---- tree canopies: the second primitive of each forest tree (the first is the trunk)
   const canopies = new Map();

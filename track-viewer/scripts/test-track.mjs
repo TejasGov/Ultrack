@@ -129,7 +129,15 @@ let pitBad = 0;
   if (!h || !(ROAD.has(h.surface) || (end && h.surface === 'col_runoff_tarmac'))) { pitBad++; console.log(`pit lane point ${k}/${(track.pitLane?.polyline.length ?? 0)}: ${h ? h.surface : 'no ground'}`); }
 });
 if (pitBad) fail(`pit lane: ${pitBad}/${(track.pitLane?.polyline.length ?? 0)} polyline points not on asphalt/pit`);
-console.log(`static: ground ${groundBad} bad, height ${heightBad} off, walls intruding ${intrude}, grid ${track.start.gridSlots.length} slots, pit ${pitBad} bad`);
+// lights.json street lamps stand by the road (their glows and road light go where they say): India's export once put them 11-250 m off
+let lampsOff = 0;
+try {
+  for (const s of JSON.parse(readFileSync(join(out, 'lights.json'), 'utf8')).streetLamps ?? []) {
+    const d = Math.min(...track.centerline.map((p) => Math.hypot(p[0] - s.pos[0], p[2] - s.pos[2])));
+    if (d > 25) { lampsOff++; if (lampsOff <= 5) fail(`street lamp at ${s.pos.join(', ')}: ${d.toFixed(1)} m from the centreline`); }
+  }
+} catch (e) { if (e.code !== 'ENOENT') throw e; }   // a track without lights.json is lit by the sky alone
+console.log(`static: ground ${groundBad} bad, height ${heightBad} off, walls intruding ${intrude}, grid ${track.start.gridSlots.length} slots, pit ${pitBad} bad, street lamps off the road ${lampsOff}`);
 
 // ------------------------------------------------------------------------------------------------ 4: a lap
 
