@@ -27,5 +27,12 @@ try{
   car.vehicle.state.serviceBrake=0;car.vehicle.controls.brake=1;
   Field.prototype.drivePhysics.call(field,1/60);setLamps(car,'running',car.brake);
   assert.equal(materials.brakeLight.emissiveIntensity,0,'S driving backwards is not service braking');
-  console.log('PASS: grid release, stationary foot brake, brightening and brake release.');
+  // taillights.js splits a lamp mesh into its elements by connected component: two separate quads are two elements
+  const {components}=await server.ssrLoadModule('/src/carkit/taillights.js');
+  const quad=x=>[x,0,0,x+.1,0,0,x+.1,.1,0,x,.1,0],g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute([...quad(0),...quad(.5)],3));g.setIndex([0,1,2,0,2,3,4,5,6,4,6,7]);
+  const parts=components(g.attributes.position,g.index);
+  assert.deepEqual([...parts.tri],[0,0,1,1]);assert.deepEqual(parts.list.map(s=>s.tris),[2,2]);
+  assert(Math.abs(parts.list[1].centre.x-.55)<1e-6&&Math.abs(parts.list[0].area-.01)<1e-6,'Element centre and area');
+  console.log('PASS: grid release, stationary foot brake, brightening and brake release, lamp elements.');
 }finally{await server.close();}

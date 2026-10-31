@@ -37,7 +37,7 @@ import { buildMirrors } from './carkit/mirrors.js';
 import { Chassis } from './carkit/chassis.js';
 import { shedBodywork } from './carkit/loose-parts.js';
 import { ActiveAero } from './carkit/aero.js';
-import { setLamps } from './carkit/lamps.js';
+import { setLamps, fitLamps } from './carkit/lamps.js';
 import { Vehicle } from './physics/vehicle.js';
 import { handling } from './physics/handling.js';
 import { yawFade } from './physics/arcade.js';
@@ -392,7 +392,7 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero, 
   // exhausts / nitro: Object3D anchors on the body for exhaust smoke, pops and nitro flames (electric: no exhaust)
   const chassis = new Chassis(body, tuning.suspension);
   chassis.reach = { x: Math.max(0.8, Math.abs(pf.x - pr.x) / 2), z: Math.max(0.5, (pf.track + pr.track) / 4) };
-  return { key, profile, tuning, finish, team, root, car, body, chassis, shadow, wheelbase: Math.abs(pf.x - pr.x), track: (pf.track + pr.track) / 2, aero, lod, wheels: wheelSet.wheels, wheelRoot: wheelSet.root, proxy, sideMirrors, lamps, beams, materials: m, hero, detail, simple, dist: 0, speed: 0, lat: 0, steer: 0, ...fx };
+  return fitLamps({ key, profile, tuning, finish, team, root, car, body, chassis, shadow, wheelbase: Math.abs(pf.x - pr.x), track: (pf.track + pr.track) / 2, aero, lod, wheels: wheelSet.wheels, wheelRoot: wheelSet.root, proxy, sideMirrors, lamps, beams, materials: m, hero, detail, simple, dist: 0, speed: 0, lat: 0, steer: 0, ...fx });   // realistic tail lamps (opt-in) built before the shader warm-up
 }
 
 // ------------------------------------------------------------------------------------------------ the field
@@ -776,7 +776,7 @@ export class Field {
       const cast = d < near(c.cast, SHADOW_M, 3);
       if (cast !== c.cast) { c.cast = cast; c.lod.traverse((o) => { if (o.isMesh) o.castShadow = cast; }); }
       // car-lab tunes its lamps for a studio; setLamps puts them at venue levels (tail lamps dim until the brake)
-      setLamps(c, this.lightMode, c.onGrid ? 0 : (c.brake ?? 0), t);
+      setLamps(c, this.lightMode, c.onGrid ? 0 : (c.brake ?? 0), t, look);
     }
     // after every car's lamps, absolute (not *=): after a car switch the beams ride the new hero, but the old car's
     // lamps.update still writes them (650 cd, visible = on), and it may run after the hero or not at all
