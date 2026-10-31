@@ -500,6 +500,7 @@ async function load() {
   // The garage needs only the selected car and small track metadata. Venue geometry is deferred until Start.
   field = new Field(scene, { loadCar: async (...a) => { const c = await assemble(...a); applyRainGlass(c.materials.glass); return c; } });   // rain beads on the glass (finish.js)
   field.fx = new CarFx(scene);                 // exhaust, pops, nitro, tyre smoke (carkit/fx.js)
+  field.fx.attach(composer, camera);           // its smoke and spray: a soft-particle pass after the scene (fx-smoke.js SmokePass)
   const carsReady = field.load(gltfLoader, game ? [game.startupCar] : undefined);
   carsReady.catch(() => {});                   // handled where it is consumed
   // a saved circuit whose files are gone (Tokyo before its export, or removed later) falls back to Marina

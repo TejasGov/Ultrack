@@ -81,8 +81,10 @@ export class Pool {
   /** cool: fire colour cooling (0..1) / vapor turbulence (m/s2) */
   spawn(px, py, pz, vx, vy, vz, rx, ry, rz, life, s0, s1, a0, r, g, b, drag, rise, cool) {
     if (this.n >= this.max) return;
-    const i = this.n++, i3 = i * 3, P = this.at.aPos.array;
-    P[i3] = px; P[i3 + 1] = py; P[i3 + 2] = pz;
+    // born at the anchor as the frame draws it: the step that runs before the draw moves it on by its velocity first, which put a
+    // flame riding with the car 0.5 m (at 120 km/h) inside the bumper, hidden
+    const i = this.n++, i3 = i * 3, P = this.at.aPos.array, L = this.lead ?? 0;
+    P[i3] = px - vx * L; P[i3 + 1] = py - vy * L; P[i3 + 2] = pz - vz * L;
     this.vel[i3] = vx; this.vel[i3 + 1] = vy; this.vel[i3 + 2] = vz;
     this.rel[i3] = rx; this.rel[i3 + 1] = ry; this.rel[i3 + 2] = rz;
     this.col[i3] = r; this.col[i3 + 1] = g; this.col[i3 + 2] = b;
@@ -93,6 +95,7 @@ export class Pool {
 
   /** wx, wz: wind (m/s) smoke and vapor relax toward */
   step(dt, mode, wx = 0, wz = 0) {
+    this.lead = dt;      // the next frame's step is about as long
     const at = this.at, P = at.aPos.array, V = this.vel, C = at.aCol.array, R = at.aRel.array, S = at.aSeed.array;
     for (let i = 0; i < this.n;) {
       const age = (this.age[i] += dt), life = this.life[i];

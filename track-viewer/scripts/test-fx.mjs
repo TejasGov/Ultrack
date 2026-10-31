@@ -3,10 +3,27 @@
 // Writes qa/<car>/fx-idle.png, fx-lift.png (one frame per tile through the overrun), fx-nitro.png, fx-wet.png (rain, at speed) and
 // prints particle counts and the worst per-frame cost of the FX update. Exits 1 if:
 //   an electric car pops, makes steam or crackles; a combustion car never pops / shows steam;
-//   nitro makes no plasma streams or puffs (every car, electric ones from their nitro anchors);
+//   nitro makes no flame streams or licks (every car, electric ones from their nitro anchors);
 //   the wet drive (fx.damp 1) throws no tyre spray, or the dry drive (fx.damp 0.15) throws any.
+// First, without a browser, the soft-particle pool (fx-smoke.js): 2000 particles stepped and uploaded for a second must come out
+// sorted far to near from the camera, with no NaN, the step + sort + upload under 2 ms.
 import { chromium } from 'playwright-core';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
+import * as THREE from 'three';
+import { Soft } from '../src/carkit/fx-smoke.js';
+
+{
+  const so = new Soft(), s = so.s, cam = new THREE.PerspectiveCamera();
+  for (let i = 0; i < 2000; i++) { Object.assign(s, { x: Math.random() * 200 - 100, y: Math.random() * 3, z: Math.random() * 200 - 100, vx: 1, vy: 0, vz: 0, life: 1 + Math.random() * 3, s0: 0.2, s1: 1.5, grow: 0.5, a0: 0.5, kind: i % 3, own: i % 8, gnd: 0 }); so.emit(); }
+  cam.position.set(0, 2, 0); cam.lookAt(10, 1, 3);
+  const t0 = performance.now(); for (let k = 0; k < 60; k++) { so.step(1 / 60, 0.3, 0); so.upload(cam); } const ms = (performance.now() - t0) / 60;
+  const P = so.at.aPS.array, f = new THREE.Vector3(0, 0, -1).applyQuaternion(cam.quaternion);
+  let prev = Infinity, sorted = true;
+  for (let j = 0; j < so.n; j++) { const z = Math.max(0, Math.min(1023, P[j * 4] * f.x + (P[j * 4 + 1] - 2) * f.y + P[j * 4 + 2] * f.z)); if (z > prev + 1 / 32) sorted = false; prev = z; }
+  const nan = so.at.aMisc.array.subarray(0, so.n * 4).some(Number.isNaN) || P.subarray(0, so.n * 4).some(Number.isNaN);
+  console.log(`soft pool: ${so.n} alive, sorted far-first ${sorted}, NaN ${nan}, ${ms.toFixed(2)} ms per step + upload`);
+  if (!sorted || nan || ms > 2 || so.n < 500) { console.log('FAIL: soft pool'); process.exit(1); }
+}
 
 const cars = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 if (!cars.length) { console.log('usage: node scripts/test-fx.mjs <car ...>'); process.exit(2); }
