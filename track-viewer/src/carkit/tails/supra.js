@@ -9,7 +9,8 @@
 // QA (qa/taillights/supra-before, -after, supra-before-after*.jpg): the loop, bar and dotted fill read through a dark smoked
 // lens by day (sky reflections), a clear red at dusk, a clear brake step at chase (the fill lights inside the loop), a red pool
 // and wet streak after dark. At night (AgX) the brake reads orange-red at macro, as AV-12's does; brake is a little lower than
-// AV-12's for that. The bar's glow is small (a full-size one sat mid-bar as a blob).
+// AV-12's for that. The bar glows along its length (`glowAlong`, 2026-10-31; a full-size centroid glow sat mid-bar as a blob,
+// so it had been cut to a small one): QA qa/taillights/supra-step2b, a soft line of glare along the bar on the brake at night.
 // Plain data, no imports: qa-taillights.mjs reads it.
 export default {
   tail: [
@@ -17,7 +18,7 @@ export default {
     { box: [[1.99, 0.72, 0.49], [2.01, 0.75, 0.51]], part: 'off' },    // a stray 1-tri bit
     { material: /red_glass/, part: 'lens' },
     { material: /brake_3/, part: 'fill' },
-    { material: /brake_2/, part: 'guide', glow: 0.25 },                // the inboard bar
+    { material: /brake_2/, part: 'guide', glowAlong: true },           // the inboard bar: glows along it
     { part: 'guide' },                                                 // brake_1's loop
   ],
   spill: true,
