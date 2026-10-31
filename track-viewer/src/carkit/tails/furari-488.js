@@ -8,8 +8,10 @@
 // ring is the bowl seen round the centre tube), Red_LG becomes the smoked lens.
 // Judgement calls: no reverse lamp. The lens is clear over the centre disc (the only clear lamp area), so it may be the reverse
 // lamp, but part 'reverse' wears the white headlamp material unlit: a flat white disc by day, which looked placeholder; as the
-// brake fill it reads as the real lamp's dark centre and gives the brake its structure. Levels: the ring is a fraction of AV-12's
-// guide area and sits on red paint, so it runs brighter (run, glowRun) with a slightly stronger brake glow at night.
+// brake fill it reads as the real lamp's dark centre and gives the brake its structure. Tried again on 2026-10-31 with
+// `reverse.color` (an unlit dark clear centre, qa/taillights/furari-488-step2c): the reverse read right (dark, then white
+// when reversing), but the brake lost its filled disc and read much weaker at chase, so the centre stays the fill.
+// Levels: the ring is a fraction of AV-12's guide area and sits on red paint, so it runs brighter (run, glowRun) with a slightly stronger brake glow at night.
 // QA 2026-10-30 (qa/taillights/furari-488-before|after, furari-488-before-after[-highlights].jpg): day a dark smoked lens with
 // the ring faint, brake a red ring and LED-dotted centre; dusk and night a red ring, brake filled discs and the stop bar; wet
 // roads streak red; no pink, no halo. The night stills' warm haze and a warm glow at the left rear vent are in the before too.
