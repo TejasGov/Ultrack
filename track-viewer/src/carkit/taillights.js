@@ -40,6 +40,7 @@ const LV = {
   poolRun: [0, 0.03], poolBrake: [0, 0.14], poolRev: [0, 0.22],
   spillRun: 0.6, spillBrake: 6, spillRev: 5,       // cd, the hero's spill light, times dn
 };
+const at = (p, dn, k) => (p[0] + (p[1] - p[0]) * dn) * k;   // a [day, night] level at darkness dn, over the exposure (no closure per frame)
 const RED = new THREE.Color(1, 0.012, 0.002), WHITE = new THREE.Color(0.86, 0.92, 1), _c = new THREE.Color();   // a 625 nm LED; a cool white LED
 
 /** A spec's mistakes (unknown keys, parts, malformed boxes and regexes), as messages; none: []. */
@@ -205,7 +206,8 @@ function glowPoints(items) {
         gl_FragColor = vec4( vCol * ( exp( -r2 * 9.0 ) + 0.12 * exp( -r2 * 3.0 ) ), 1.0 );   // tight to the element, a faint wing
       }`,
   });
-  const pts = new THREE.Points(g, mat); pts.name = 'tail_glows'; pts.frustumCulled = false; pts.renderOrder = 5; pts.raycast = () => {};
+  g.computeBoundingSphere(); g.boundingSphere.radius += 0.5;   // culled with the car (a point moves 0.12 m to the camera; 2 px at 100 m)
+  const pts = new THREE.Points(g, mat); pts.name = 'tail_glows'; pts.renderOrder = 5; pts.raycast = () => {};
   const size = new THREE.Vector2();
   pts.onBeforeRender = (renderer, scene, camera) => {
     const rt = renderer.getRenderTarget();         // the composer's buffer, or the half-size wet-road mirror
@@ -292,7 +294,10 @@ export function fitTail(c, spec) {
   tailShader(m.taillight, T.U);
   Object.assign(m.rearLens, { opacity: spec.lens?.opacity ?? 0.4, roughness: 0.05, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.03, depthWrite: false });
   m.rearLens.color.set(spec.lens?.color ?? 0x2a0d0e);   // smoked: the elements read through it, the sun and sky reflect off it
-  m.rearLens.side = THREE.DoubleSide;
+  // one pass: three.js draws a transparent double-sided material twice and flags it needsUpdate before each draw, a full
+  // program lookup per lens per pass every frame (~3 % of the race frame); a lens is a sheet over its elements, so the order
+  // of its own faces hardly shows
+  Object.assign(m.rearLens, { side: THREE.DoubleSide, forceSinglePass: true });
   fitLevel(c, spec, T, c.lod.levels[0].object, true);
   if (c.lamps?.root) fitLevel(c, spec, T, c.lamps.root, true, true);   // a car-lab car's own lamps (a model's group holds only lights)
   if (!T.items.length) console.warn(`tail spec ${c.key}: no lamp element matched`);
@@ -308,7 +313,8 @@ export function fitTail(c, spec) {
   // the player's car only: one wide spot just behind the body, aimed back and down (a lamp lights nothing ahead of its
   // lens: a point light reddened the deck above the lamps, and one inside the tail lit the bodywork around it), for the
   // road (a streak on a wet one), the diffuser tips and a car close behind; always present (black when off), so the light
-  // count and the compiled shaders never change
+  // count and the compiled shaders never change. Measured in a race (A/B every second, two laps): ~0.5 % of the frame, and
+  // its wet streak (a specular reflection broken by the rain ripples) is the approved look a road decal could not match
   if (spec.spill && c.hero) {
     const box = new THREE.Box3();                  // the body's own frame (the level's meshes carry baked positions)
     c.lod.levels[0].object.traverse((o) => { if (o.isMesh) { o.geometry.computeBoundingBox(); box.union(o.geometry.boundingBox); } });
@@ -322,17 +328,17 @@ export function fitTail(c, spec) {
 
 /** Per frame: b = brake level (0..1, ramped), r = reverse level, look = the look (dn, exposure; missing: a lit room). */
 export function driveTail(c, b, r, look) {
-  const T = c.tail, L = T.L, dn = look?.dn ?? 0.35, k = 1 / (look?.exposure ?? 1), at = (p) => (p[0] + (p[1] - p[0]) * dn) * k;
-  c.lod.levels.forEach((l, i) => { if (!l.object.userData.tailFit) fitLevel(c, T.spec, T, l.object, i === 0); });
-  T.U.uGuide.value = at(L.run) + b * at(L.brake);
-  T.U.uFill.value = b * at(L.fill);
+  const T = c.tail, L = T.L, dn = look?.dn ?? 0.35, k = 1 / (look?.exposure ?? 1), lv = c.lod.levels;
+  for (let i = 0; i < lv.length; i++) if (!lv[i].object.userData.tailFit) fitLevel(c, T.spec, T, lv[i].object, i === 0);
+  T.U.uGuide.value = at(L.run, dn, k) + b * at(L.brake, dn, k);
+  T.U.uFill.value = b * at(L.fill, dn, k);
   T.U.uHot.value = b;
-  T.U.uTexRev.value = r * at(L.rev);
-  if (T.rev) T.rev.emissiveIntensity = r * at(L.rev);
-  T.glow.uG.value = at(L.glowRun) + b * at(L.glowBrake); T.glow.uF.value = b * at(L.glowBrake) * 0.6; T.glow.uR.value = r * at(L.glowRev);
+  T.U.uTexRev.value = r * at(L.rev, dn, k);
+  if (T.rev) T.rev.emissiveIntensity = r * at(L.rev, dn, k);
+  T.glow.uG.value = at(L.glowRun, dn, k) + b * at(L.glowBrake, dn, k); T.glow.uF.value = b * at(L.glowBrake, dn, k) * 0.6; T.glow.uR.value = r * at(L.glowRev, dn, k);
   const wet = (1 - 0.5 * wetUniforms.uWet.value) * (T.spill ? 0.5 : 1);   // a wet road mirrors the lamps (the planar mirror) more than it scatters them; the spill light lights the road too
-  T.pool.material.color.copy(RED).multiplyScalar((at(L.poolRun) + b * at(L.poolBrake)) * wet).add(_c.copy(WHITE).multiplyScalar(r * at(L.poolRev) * wet));
-  T.pool.visible = T.pool.material.color.r > 0.002;
+  T.pool.material.color.copy(RED).multiplyScalar((at(L.poolRun, dn, k) + b * at(L.poolBrake, dn, k)) * wet).add(_c.copy(WHITE).multiplyScalar(r * at(L.poolRev, dn, k) * wet));
+  T.pool.visible = T.pool.material.color.r > 0.002 && c.band !== 2;   // past FAR_M (60 m) a pool is a pixel row on the road: not drawn
   // the spill light is physical (candela, under the look's exposure like every other light): only after dark
   if (T.spill) T.spill.color.copy(RED).multiplyScalar((L.spillRun + b * L.spillBrake) * dn).add(_c.copy(WHITE).multiplyScalar(r * L.spillRev * dn));
 }
