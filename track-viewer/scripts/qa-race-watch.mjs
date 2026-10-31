@@ -62,7 +62,8 @@ while (Date.now() - t0 < maxMs) {
     }
     const ndc = p.clone().add(new T.Vector3(0, 0.6, 0)).project(cam); r.ndc = [+ndc.x.toFixed(2), +ndc.y.toFixed(2)];
     const ft = window.__ft.splice(0); r.fps = ft.length ? Math.round(1000 / (ft.reduce((a, b) => a + b, 0) / ft.length)) : 0; r.worstMs = Math.round(Math.max(0, ...ft));
-    r.y = +p.y.toFixed(2); r.camY = +c.y.toFixed(2); r.clear = +(S.field.rig.s?.clear ?? 1).toFixed(2);   // < 0.5: pulled in over the car
+    r.y = +p.y.toFixed(2); r.camY = +c.y.toFixed(2); r.xz = [+p.x.toFixed(1), +p.z.toFixed(1)];   // where on the lap (a section's samples)
+    r.clear = +(S.field.rig.s?.clear ?? 1).toFixed(2);   // < 0.5: pulled in over the car
     return r;
   });
   samples.push(s);

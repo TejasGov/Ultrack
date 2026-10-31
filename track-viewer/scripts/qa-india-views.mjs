@@ -19,22 +19,32 @@ const at = (i, up = 0) => { const p = C[((i % C.length) + C.length) % C.length];
 const nearestIdx = (q) => C.reduce((b, p, i) => (Math.hypot(p[0] - q[0], p[2] - q[2]) < Math.hypot(C[b][0] - q[0], C[b][2] - q[2]) ? i : b), 0);
 const UP = track.bridgeUplights.items.map((u) => u.pos), upc = [0, 1, 2].map((k) => UP.reduce((s, p) => s + p[k], 0) / UP.length);
 const kavi = track.landmarks[0].pos, ki = nearestIdx(kavi), bi = nearestIdx(upc);
+// views are anchored to world points on the centreline (nearestIdx), not to sample numbers, so they survive a re-routed lap (V5.6
+// added 110 samples after the river crossing); the boards come from track.json `venueBoards`, wherever the export placed them
+const on = (q, ahead, up = 1.6, tup = 3) => { const i = nearestIdx(q); return { cam: at(i, up), tgt: at(i + ahead, tup) }; };
+const VB = track.venueBoards ?? { facades: [] }, F = VB.facades, HO = VB.hoarding;
+const facing = (b, back) => { const i = nearestIdx(b.pos); return { cam: at(i - back, 1.6), tgt: [b.pos[0], b.pos[1], b.pos[2]] }; };
 const VIEWS = {
   '1-start-straight': { cam: at(-4, 1.7), tgt: at(40, 5) },
-  '2-city': { cam: at(597, 1.6), tgt: at(640, 7) },
+  '2-city': on([274.7, 38.7, -215], 43, 1.6, 7),
   '3-bridge': { cam: at(bi - 45, 1.6), tgt: [upc[0], upc[1] + 18, upc[2]] },
   '4-kavi-chowk': { cam: at(ki - 20, 2), tgt: [kavi[0], kavi[1] + 8, kavi[2]] },
-  '5-barrier-reflectors': { cam: at(300, 1.1), tgt: at(336, 0.6) },
-  '6-hairpin': { cam: at(826, 1.6), tgt: at(850, 0) },
+  '5-barrier-reflectors': on([843.6, 49.8, -200.3], 36, 1.1, 0.6),
+  '6-hairpin': on([-222.1, 20.9, -211.4], 24, 1.6, 0),
   // venue/india.js dressing: Jio boards (tracks.js `brands`), the city's OPPO / vivo façades, the BJP hoarding, the stands' crowd
   '7-jio-boards': { cam: at(nearestIdx([288, 16, -8]) - 14, 1.6), tgt: [288, 16.5, -8] },
   '8-jio-gantry': { cam: at(nearestIdx([477, 60, -178]) - 28, 1.6), tgt: [477, 59, -178] },
-  '9-city-boards': { cam: at(505, 1.6), tgt: [424, 56, -200] },
-  '10-city-boards-2': { cam: at(150, 1.6), tgt: [401.6, 49, -143.4] },
-  '11-hoarding': { cam: at(458, 1.6), tgt: (() => { const p = at(485), q = at(487), r = at(483), tx = q[0] - r[0], tz = q[2] - r[2], l = Math.hypot(tx, tz); return [p[0] + tz / l * 17, p[1] + 5, p[2] - tx / l * 17]; })() },
+  ...(F[0] ? { '9-city-boards': facing(F[F.length - 1], 22) } : {}),
+  ...(F[1] ? { '10-city-boards-2': facing(F[0], 30) } : {}),
+  ...(HO ? { '11-hoarding': { cam: at(HO.station - 27, 1.6), tgt: [HO.pos[0], HO.pos[1] + HO.lift + HO.size[1] / 2, HO.pos[2]] } } : {}),
   '12-kavi-crowd': { cam: at(nearestIdx([756, 55, -91]), 1.6), tgt: [756, 51, -91] },
   '13-west-crowd': { cam: at(nearestIdx([-113, 9, 60]), 1.6), tgt: [-113, 6, 60] },
-  '14-pines': { cam: at(856, 1.6), tgt: at(880, 3) },
+  '14-pines': on([-194.6, 14.1, -168], 24, 1.6, 3),
+  // V5.6: the longer first climb (valley straight, hairpin, climbing straight, right-hander onto the plateau)
+  '15-new-valley-straight': on([261.3, 9, 13.3], 40, 1.6, 2),
+  '16-new-hairpin': on([335.2, 10.1, 100.3], 32, 2.2, 1),
+  '17-new-climb': on([430.2, 20.3, 61.1], 36, 1.6, 4),
+  '18-new-top-turn': on([394, 33.6, -47.2], 28, 1.6, 3),
 };
 const only = process.env.ONLY?.split(',');
 for (const name of Object.keys(VIEWS)) if (only && !only.some((p) => name.startsWith(p))) delete VIEWS[name];

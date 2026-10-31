@@ -16,7 +16,10 @@ const files = [
   ...['qwantani_noon_puresky', 'belfast_sunset_puresky', 'qwantani_dusk_1_puresky', 'qwantani_night_puresky'].map((id) =>
     [join(root, 'assets', 'polyhaven', id, `${id}_2k.hdr`), `hdri/${id}_2k.hdr`]),
 ];
-for (const [original, rel] of files) {
+// SYNC_ONLY=india (comma list of track ids): copy only those circuits' built files and stop (tracks/india/build-game.mjs), so a track
+// build never refreshes other people's assets (Marina, cars, audio, ...) as a side effect
+const ONLY = process.env.SYNC_ONLY?.split(',').filter(Boolean);
+for (const [original, rel] of ONLY ? [] : files) {
   const shell=original.replace(/\.glb$/,'_shell.glb');
   const src=rel.startsWith('marina_visual')&&existsSync(shell)&&statSync(shell).mtimeMs>=statSync(original).mtimeMs?shell:original;
   if (!existsSync(src)) throw new Error(`missing ${src}: build the track first (see tracks/marina/README.md)`);
@@ -25,7 +28,7 @@ for (const [original, rel] of files) {
 }
 // the other circuits (src/tracks.js) go to public/assets/<id>/ under the same names. Built from tracks/<id>/out/web/ (else out/), and only
 // once the track is usable (track.json, collision and a venue): an unbuilt track is skipped, which keeps it out of the menu.
-for (const id of ['tokyo', 'india']) {
+for (const id of ['tokyo', 'india'].filter((id) => !ONLY || ONLY.includes(id))) {
   const out = join(root, 'tracks', id, 'out'), find = (name) => [join(out, 'web', name), join(out, name)].find(existsSync);
   const names = ['track.json', `${id}_collision.glb`, `${id}_visual.glb`, `${id}_visual_ktx2.glb`, 'lights.json', 'vip.json'];
   const found = Object.fromEntries(names.map((n) => {
@@ -36,6 +39,7 @@ for (const id of ['tokyo', 'india']) {
   mkdirSync(join(dest, id), { recursive: true });
   for (const [n, src] of Object.entries(found)) if (src) copyFileSync(src, join(dest, id, n));
 }
+if (ONLY) { console.log(`synced ${ONLY.join(', ')} only`); process.exit(0); }
 // characters (Mixamo + Meshy, compressed): assets/characters/web/*.glb -> /assets/characters/
 const chars = join(root, 'assets', 'characters', 'web');
 if (existsSync(chars)) {
