@@ -285,6 +285,7 @@ export async function assemble(loader, key, k, hero) {
       geo.computeBoundingSphere();
       const mesh = new THREE.Mesh(geo, model ? roleMaterial(o.material, m) : m.body);
       mesh.castShadow = mesh.receiveShadow = true;
+      if (model) mesh.srcMaterial = o.material;   // the model's own material before the role swap: tail specs read its name and map (taillights.js)
       level.add(mesh);
     }
     lod.addLevel(level, dist, 0.05);   // ~2 m hysteresis at 45 m: no body-LOD blinking for a car holding a gap there

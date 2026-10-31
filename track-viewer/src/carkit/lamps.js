@@ -7,9 +7,13 @@
 // Tone mapping desaturates anything above ~1 toward white, so the lens stays low enough to stay saturated red and the
 // halo is a soft additive red sprite per lamp cluster (LDR, so it stays red) instead of bloom from a huge emissive.
 // Ramp: about 70 ms to reach 90% on, 150 ms to 90% off (LED / filament), proportional to brake pressure.
-// Cars in taillights.js's TAIL_SPECS take the realistic lamp instead (docs/tail-lights.md); the rest stay as above.
+// Cars with a tail spec (src/carkit/tails/<key>.js) take taillights.js's realistic lamp instead (docs/tail-lights.md); the rest
+// stay as above.
 import * as THREE from 'three';
-import { TAIL_SPECS, fitTail, driveTail } from './taillights.js';
+import { fitTail, driveTail } from './taillights.js';
+// one file per car, so each car's spec is edited alone; the file name is the car's key
+export const TAIL_SPECS = Object.fromEntries(Object.entries(import.meta.glob('./tails/*.js', { eager: true, import: 'default' }))
+  .map(([p, v]) => [p.split('/').pop().slice(0, -3), v]));
 // ?tails=off puts every car on the generic lamp: the A/B for a spec car's before/after stills and its fps check
 const SPECS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('tails') === 'off' ? {} : TAIL_SPECS;
 
@@ -68,7 +72,7 @@ function addHalos(c) {
   }
 }
 
-/** At assembly (cars.js): a TAIL_SPECS car's lamps are built now, so the race's shader warm-up sees their programs. */
+/** At assembly (cars.js): a spec car's lamps are built now, so the race's shader warm-up sees their programs. */
 export function fitLamps(c) {
   if (typeof document !== 'undefined' && SPECS[c.key]) c.tail = fitTail(c, SPECS[c.key]);
   return c;

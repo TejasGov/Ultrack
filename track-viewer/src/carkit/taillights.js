@@ -1,27 +1,35 @@
-// Realistic tail lamps, opt-in per car (docs/tail-lights.md): a car listed in TAIL_SPECS gets its tail-lamp mesh split into
-// the elements a real unit has (light guides lit for the running light, brake fills that light only on the brake, a
-// reverse cell, unlit indicator lenses) under a smoked glossy lens, an LED-dot structure that resolves up close and fades
-// to its mean before it can shimmer, a tight glow per element (one draw per car) and a red pool on the road behind after
-// dark. Levels are set per look (lamps.js passes it): a lamp reads as a near-dark lens by day and a clear red after dark.
-// Every other car keeps lamps.js's generic lamp (one emissive for the whole cluster and a halo sprite), unchanged.
+// Realistic tail lamps, opt-in per car (docs/tail-lights.md): a car with a spec file (src/carkit/tails/<key>.js, collected by
+// lamps.js) gets its tail-lamp mesh split into the elements a real unit has (light guides lit for the running light, brake
+// fills that light only on the brake, a reverse cell, unlit indicator lenses) under a smoked glossy lens, an LED-dot structure
+// that resolves up close and fades to its mean before it can shimmer, a tight glow per element (one draw per car) and a red
+// pool on the road behind after dark. Levels are set per look (lamps.js passes it): a lamp reads as a near-dark lens by day
+// and a clear red after dark. Every other car keeps lamps.js's generic lamp (one emissive for the whole cluster and a halo
+// sprite), unchanged.
+//
+// A spec (car frame: +x is the tail, y up, z to the side; boxes use |z|, so one box covers both sides; every key optional):
+//   tail: [{ material, box, minTris, part, glow }]  rules over the connected components of the car's tail meshes (role `tail`,
+//         adopted ones and the car-lab LED tubes), first match wins; a rule matches when every key it has does: material (the
+//         model's own material name, a RegExp), box (the component's centre), minTris. part: guide (running light, brighter on
+//         the brake), fill (brake only), off (never lit), reverse (white, reversing), indicator (an unlit amber lens), lens
+//         (onto the smoked rearLens). glow: the element glow's size factor (0: none). Default: every component a guide.
+//   adopt: { material, minX }   model ('keep') materials whose triangles behind minX join the tail lamp, keeping their own map
+//   tex: { material, lo, hi, hue, white, base, map }   tail meshes whose model material has a map keep it: its red texels light
+//         (by brightness, lo..hi), white ones are the reverse lamp (white: [lo, hi], off by default), amber ones stay unlit (hue:
+//         the g/r range where red turns amber; [0.6, 0.9] lets a lit orange-yellow LED core count as lamp); base: the unlit
+//         lamp's colour (the map times it); map: 'emissiveMap' to read that instead (texLamp is the same test in JS)
+//   dark, darkColor   'keep' lamp materials that are unlit lenses (indicators)
+//   lens: { material, minX, color, opacity, shell }   the rear part of the model's lens material becomes the smoked rearLens;
+//         shell: a lens this far (m) out over the tail meshes, for a model with no lens of its own
+//   reverse: { material, box, minX }   triangles of a material (inside the box, behind minX) become the reverse lamp
+//   spill: true   the player's car lights the road behind; levels: { ...LV } per-car levels; qa: { macro: [x, y, z] } the lamp
+//         qa-taillights.mjs frames up close (default: the right rear lamp of model.json / the car-lab profile)
+// A car-lab car (no model: bentley-gt, mustang) has its lamps in c.lamps.root: the LED tubes are its tail meshes, the centre
+// stop lamp (role brake) is lit as a fill, the reverse tubes (role reverse) as the reverse lamp, its lens covers become rearLens.
 import * as THREE from 'three';
 import { wetUniforms } from '../wet-road.js';
 
-// rules (first match wins) classify each connected component of the car's tail-material mesh at full detail; LOD 1 (45 m+)
-// is one blend. dark: 'keep' lamp materials that are unlit lenses. lens: the rear part (x > minX, car frame: +x is the
-// tail) of the model's lamp-lens material becomes the car's smoked rearLens. reverse: triangles of a material inside a box
-// (car-frame metres) become the reverse lamp.
-export const TAIL_SPECS = {
-  // AV-12 (Aventador SVJ): per side three hexagonal cells, each an amber indicator over a red Y light guide and a lower
-  // red fill, then an inner red arrow and an aluminium honeycomb cell, read as the reverse lamp (a clear reflector cell)
-  av12: {
-    tail: [{ minTris: 500, part: 'guide' }, { part: 'fill' }],
-    dark: /Orange_Lights/, darkColor: 0x6a2a04,
-    lens: { material: /Glass_Lights/, minX: 1.5 },
-    reverse: { material: /Aluminum/, box: [[2.13, 0.72, 0.455], [2.18, 0.83, 0.545]] },
-    spill: true,
-  },
-};
+const PARTS = ['guide', 'fill', 'off', 'reverse', 'indicator', 'lens'], GUIDE = [{ part: 'guide' }];
+const TEX = { lo: 0.02, hi: 0.4, hue: [0.2, 0.32], white: false, base: 0x8c8c8c };
 
 // Levels, linear and divided by the look's exposure, as [day, night] mixed by the look's darkness (dn: day 0 .. night 1).
 // run: the guides' running light; brake: what the brake adds to them; fill: the brake fills; rev: the reverse cell;
@@ -33,6 +41,29 @@ const LV = {
   spillRun: 0.6, spillBrake: 6, spillRev: 5,       // cd, the hero's spill light, times dn
 };
 const RED = new THREE.Color(1, 0.012, 0.002), WHITE = new THREE.Color(0.86, 0.92, 1), _c = new THREE.Color();   // a 625 nm LED; a cool white LED
+
+/** A spec's mistakes (unknown keys, parts, malformed boxes and regexes), as messages; none: []. */
+export function checkSpec(spec) {
+  const bad = [], keys = (o, ok, at) => Object.keys(o ?? {}).forEach((k) => { if (!ok.includes(k)) bad.push(`${at}${k}: unknown key`); });
+  const re = (x, at) => { if (x !== undefined && !(x instanceof RegExp)) bad.push(`${at}: not a RegExp`); };
+  const box = (b, at) => { if (b !== undefined && !(b.length === 2 && b.every((p) => p.length === 3 && p.every(Number.isFinite)))) bad.push(`${at}: not [[x, y, z], [x, y, z]]`); };
+  keys(spec, ['tail', 'adopt', 'tex', 'dark', 'darkColor', 'lens', 'reverse', 'spill', 'levels', 'qa'], '');
+  (spec.tail ?? []).forEach((r, i) => { keys(r, ['material', 'box', 'minTris', 'part', 'glow'], `tail[${i}].`); if (!PARTS.includes(r.part)) bad.push(`tail[${i}].part: ${r.part}`); re(r.material, `tail[${i}].material`); box(r.box, `tail[${i}].box`); });
+  keys(spec.adopt, ['material', 'minX'], 'adopt.'); keys(spec.tex, ['material', 'lo', 'hi', 'hue', 'white', 'base', 'map'], 'tex.');
+  keys(spec.lens, ['material', 'minX', 'color', 'opacity', 'shell'], 'lens.'); keys(spec.reverse, ['material', 'box', 'minX'], 'reverse.'); keys(spec.levels, Object.keys(LV), 'levels.');
+  if (spec.adopt && !(spec.adopt.material instanceof RegExp)) bad.push('adopt.material: not a RegExp');
+  if (spec.reverse && !(spec.reverse.material instanceof RegExp)) bad.push('reverse.material: not a RegExp');
+  re(spec.dark, 'dark'); re(spec.tex?.material, 'tex.material'); re(spec.lens?.material, 'lens.material'); box(spec.reverse?.box, 'reverse.box');
+  return bad;
+}
+
+/** What a lamp texture's texel is (linear rgb 0..1), the `tex` test of the tail shader below (keep the two in step):
+ * lamp: red (not amber, not pink-white), weighted by brightness lo..hi; white: unsaturated and bright (the reverse lamp). */
+export function texLamp(r, g, b, tex = {}) {
+  const t = { ...TEX, ...tex }, w = t.white || [2, 3], ss = (e0, e1, x) => { const k = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return k * k * (3 - 2 * k); };
+  const mx = Math.max(r, g, b), sat = (mx - Math.min(r, g, b)) / Math.max(mx, 1e-4), hue = g / Math.max(r, 1e-4);
+  return { lamp: ss(0.35, 0.6, sat) * (1 - ss(t.hue[0], t.hue[1], hue)) * (r >= Math.max(g, b) ? 1 : 0) * ss(t.lo, t.hi, mx), white: (1 - ss(0.12, 0.25, sat)) * ss(w[0], w[1], mx) };
+}
 
 /** Connected components of a triangle mesh (vertices welded at 1 mm): a component id per triangle and each one's stats. */
 export function components(pos, index) {
@@ -59,12 +90,18 @@ export function components(pos, index) {
   return { tri, list };
 }
 
-/** Move the triangles whose centroid passes `pick` (car frame) out of `mesh` into a new mesh wearing `material`. */
+/** The first rule of a spec's `tail` that matches a component (stats from components()) of a mesh whose model material is `name`. */
+export function tailRule(spec, s, name) {
+  const inBox = (b, p) => p.x >= b[0][0] && p.x <= b[1][0] && p.y >= b[0][1] && p.y <= b[1][1] && Math.abs(p.z) >= b[0][2] && Math.abs(p.z) <= b[1][2];
+  return (spec.tail ?? GUIDE).find((r) => s.tris >= (r.minTris ?? 0) && (!r.material || r.material.test(name)) && (!r.box || inBox(r.box, s.centre)));
+}
+
+/** Move the triangles that pass `pick(centroid, first vertex index)` (car frame) out of `mesh` into a new mesh wearing `material`. */
 function split(mesh, pick, material, name) {
   const g = mesh.geometry, P = g.attributes.position, idx = g.index ? Array.from(g.index.array) : [...Array(P.count).keys()], a = [], b = [], v = new THREE.Vector3();
   for (let t = 0; t < idx.length; t += 3) {
     v.fromBufferAttribute(P, idx[t]).add(new THREE.Vector3().fromBufferAttribute(P, idx[t + 1])).add(new THREE.Vector3().fromBufferAttribute(P, idx[t + 2])).divideScalar(3);
-    (pick(v) ? a : b).push(idx[t], idx[t + 1], idx[t + 2]);
+    (pick(v, idx[t]) ? a : b).push(idx[t], idx[t + 1], idx[t + 2]);
   }
   if (!a.length) return null;
   g.setIndex(b);                                  // new arrays: the loaded geometry's index may be shared
@@ -76,24 +113,53 @@ function split(mesh, pick, material, name) {
   return m;
 }
 
-/** The tail material's shader: per-vertex element weights (aLamp: guide, fill) drive the emission; fills get LED dots. */
-function tailShader(mat, U) {
-  mat.color.set(0x4a0306); mat.roughness = 0.32; mat.metalness = 0;     // an unlit red light guide / reflector under the lens
+/** A lens `d` metres out over a mesh along its normals (a model with no lens of its own): the smoked rearLens over the elements. */
+function shell(mesh, d, material) {
+  const g = mesh.geometry, P = g.attributes.position, N = g.attributes.normal, p = new Float32Array(P.count * 3);
+  for (let i = 0; i < P.count; i++) for (let k = 0; k < 3; k++) p[3 * i + k] = P.getComponent(i, k) + N.getComponent(i, k) * d;
+  const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.BufferAttribute(p, 3)); g2.setAttribute('normal', N); g2.setIndex(g.index); g2.computeBoundingSphere();
+  const m = new THREE.Mesh(g2, material); m.name = 'tail-lens-shell'; m.castShadow = false; m.renderOrder = 3; mesh.parent.add(m);
+}
+
+/** The tail material's shader: per-vertex element weights (aLamp: guide, fill) drive the emission; fills get LED dots. With a map
+ * (a `tex` car) the map's red texels weight the elements by brightness and its white texels light with the reverse. */
+function tailShader(mat, U, base = 0x4a0306) {
+  mat.color.set(base); mat.roughness = 0.32; mat.metalness = 0;     // an unlit red light guide / reflector under the lens
   mat.onBeforeCompile = (s) => {
     Object.assign(s.uniforms, U);
     s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nattribute vec2 aLamp;\nvarying vec2 vLamp;\nvarying vec3 vLampP;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLamp = aLamp; vLampP = position;');
-    s.fragmentShader = s.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uGuide, uFill, uHot, uPitch;\nvarying vec2 vLamp;\nvarying vec3 vLampP;')
+    s.fragmentShader = s.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uGuide, uFill, uHot, uPitch, uTexRev;\nuniform vec4 uTex;\nuniform vec2 uTexHue;\nvarying vec2 vLamp;\nvarying vec3 vLampP;')
       .replace('#include <emissivemap_fragment>', `
         float rim = 1.0 - abs( dot( normal, normalize( vViewPosition ) ) );      // a light guide glows brightest along its edges
         vec2 q = vLampP.yz / uPitch, cell = fract( q ) - 0.5;                    // the LED grid on the lamp's rear-facing plane
         float led = smoothstep( 0.3, 0.1, length( cell ) );
         float pat = mix( 0.5 + 1.9 * led, 0.75, smoothstep( 0.25, 0.7, length( fwidth( q ) ) ) );   // dots on a lit diffuser up close, their mean once a pitch nears a pixel
-        float lampE = vLamp.x * uGuide * ( 0.75 + 0.6 * rim * rim ) + vLamp.y * uFill * pat;
-        totalEmissiveRadiance = mix( vec3( 1.0, 0.012, 0.002 ), vec3( 1.0, 0.05, 0.006 ), uHot * clamp( lampE, 0.0, 1.0 ) ) * lampE;`);
+        vec2 lampW = vLamp;
+        #ifdef USE_MAP
+          vec3 lt = texture2D( map, vMapUv ).rgb;                                // texLamp() in JS: red texels are the lamp (by brightness), white ones the reverse
+          float lmx = max( lt.r, max( lt.g, lt.b ) ), lsat = ( lmx - min( lt.r, min( lt.g, lt.b ) ) ) / max( lmx, 1e-4 ), lhue = lt.g / max( lt.r, 1e-4 );
+          lampW *= smoothstep( 0.35, 0.6, lsat ) * ( 1.0 - smoothstep( uTexHue.x, uTexHue.y, lhue ) ) * step( max( lt.g, lt.b ), lt.r ) * smoothstep( uTex.x, uTex.y, lmx );
+        #endif
+        float lampE = lampW.x * uGuide * ( 0.75 + 0.6 * rim * rim ) + lampW.y * uFill * pat;
+        totalEmissiveRadiance = mix( vec3( 1.0, 0.012, 0.002 ), vec3( 1.0, 0.05, 0.006 ), uHot * clamp( lampE, 0.0, 1.0 ) ) * lampE;
+        #ifdef USE_MAP
+          totalEmissiveRadiance += vec3( 0.86, 0.92, 1.0 ) * ( 1.0 - smoothstep( 0.12, 0.25, lsat ) ) * smoothstep( uTex.z, uTex.w, lmx ) * uTexRev;
+        #endif`);
   };
   mat.customProgramCacheKey = () => 'tail-lamp';
   mat.needsUpdate = true;
+}
+
+/** A tail material wearing a model material's map (a `tex` car), one per model material, sharing the car's uniforms. */
+function texMaterial(c, T, src) {
+  if (!T.tex.has(src.name)) {
+    const mat = c.materials.taillight.clone(), t = { ...TEX, ...T.spec.tex };
+    mat.map = t.map === 'emissiveMap' ? src.emissiveMap : src.map ?? src.emissiveMap;
+    tailShader(mat, T.U, t.base);
+    T.tex.set(src.name, mat);
+  }
+  return T.tex.get(src.name);
 }
 
 let poolTex;
@@ -149,32 +215,62 @@ function glowPoints(items) {
   return { pts, U };
 }
 
-/** Fit one LOD level of a spec car (the far level loads later, so this runs whenever a new level appears). */
-function fitLevel(c, spec, T, level, full) {
-  const m = c.materials, meshes = [];
+/** Fit one LOD level of a spec car (the far level loads later, so this runs whenever a new level appears); kit: car-lab's lamp group. */
+function fitLevel(c, spec, T, level, full, kit = false) {
+  const m = c.materials, meshes = [], src = (o) => o.srcMaterial ?? o.material, name = (o) => src(o).name ?? '';   // cars.js keeps the model's material before the role swap
   level.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  for (const o of [...meshes]) {                  // adopted model materials join the tail lamp (behind minX), their own material kept as the source
+    if (!spec.adopt || o.material === m.taillight || !spec.adopt.material.test(name(o))) continue;
+    const s = src(o), r = spec.adopt.minX === undefined ? Object.assign(o, { material: m.taillight }) : split(o, (v) => v.x > spec.adopt.minX, m.taillight, 'tail-adopted');
+    if (r) { r.srcMaterial = s; if (r !== o) meshes.push(r); }
+  }
   for (const o of meshes) {
-    const name = o.material.name ?? '';
-    if (o.material === m.taillight) {
-      const g = o.geometry, P = g.attributes.position, w = new Float32Array(P.count * 2);
-      if (full) {
-        const { tri, list } = components(P, g.index), part = list.map((s) => spec.tail.find((r) => s.tris >= (r.minTris ?? 0))?.part);
-        tri.forEach((k, t) => { for (let j = 0; j < 3; j++) { const v = g.index ? g.index.getX(3 * t + j) : 3 * t + j; w[2 * v] = part[k] === 'guide' ? 1 : 0; w[2 * v + 1] = part[k] === 'fill' ? 1 : 0; } });
-        list.forEach((s, k) => { if (part[k]) T.items.push({ p: s.centre.toArray(), s: Math.max(...s.box.getSize(new THREE.Vector3()).toArray()) * 0.4, d: [1, 0, 0.3 * Math.sign(s.centre.z)], w: part[k] === 'guide' ? [1, 1, 0] : [0, 1, 0] }); });
-      } else for (let i = 0; i < P.count; i++) { w[2 * i] = 0.7; w[2 * i + 1] = 0.5; }   // 45 m+: one blend, no structure to show
+    const nm = name(o);
+    if (o.material === m.taillight || o.material === m.brakeLight) {
+      const brake = o.material === m.brakeLight, g = o.geometry, P = g.attributes.position, w = new Float32Array(P.count * 2), vpart = [];
+      const { tri, list } = components(P, g.index), rules = list.map((s) => (brake ? { part: 'fill' } : tailRule(spec, s, nm)));   // a brake-role lamp (car-lab's centre stop) is all fill
+      if (brake && !T.brake) { tailShader(m.brakeLight, T.U); T.brake = true; }
+      tri.forEach((k, t) => {
+        const p = rules[k]?.part;
+        for (let j = 0; j < 3; j++) {
+          const v = g.index ? g.index.getX(3 * t + j) : 3 * t + j;
+          vpart[v] = p;
+          if (full) { w[2 * v] = p === 'guide' ? 1 : 0; w[2 * v + 1] = p === 'fill' ? 1 : 0; } else if (p === 'guide' || p === 'fill') { w[2 * v] = 0.7; w[2 * v + 1] = 0.5; }   // 45 m+: one blend, no structure to show
+        }
+      });
       g.setAttribute('aLamp', new THREE.BufferAttribute(w, 2));
-    } else if (spec.dark?.test(name)) {
+      if (full) list.forEach((s, k) => {
+        const p = rules[k]?.part, gl = rules[k]?.glow ?? 1;
+        if (gl && ['guide', 'fill', 'reverse'].includes(p)) T.items.push({ p: s.centre.toArray(), s: Math.max(...s.box.getSize(new THREE.Vector3()).toArray()) * 0.4 * gl, d: p === 'reverse' ? [1, 0, 0] : [1, 0, 0.3 * Math.sign(s.centre.z)], w: p === 'guide' ? [1, 1, 0] : p === 'fill' ? [0, 1, 0] : [0, 0, 1] });
+      });
+      if (!brake && spec.tex && src(o) !== o.material && (src(o).map || src(o).emissiveMap) && g.attributes.uv && (!spec.tex.material || spec.tex.material.test(nm))) o.material = texMaterial(c, T, src(o));
+      const mats = { reverse: () => (T.rev ??= reverseMaterial(m.reverseLight)), indicator: () => (T.ind ??= new THREE.MeshStandardMaterial({ color: spec.darkColor ?? 0x502008, roughness: 0.3 })), lens: () => m.rearLens };
+      for (const p of Object.keys(mats)) if (rules.some((r) => r?.part === p)) split(o, (v, a) => vpart[a] === p, mats[p](), `tail-${p}`);
+      if (spec.lens?.shell) shell(o, spec.lens.shell, m.rearLens);
+    } else if (spec.dark?.test(nm)) {
       o.material.emissive?.setScalar(0); o.material.color.set(spec.darkColor ?? 0x502008); o.material.roughness = 0.3;   // an unlit indicator lens
-    } else if (spec.lens?.material.test(name)) {
-      split(o, (v) => v.x > spec.lens.minX, m.rearLens, 'rear-lens');
-    } else if (full && spec.reverse?.material.test(name)) {
-      const box = new THREE.Box3(new THREE.Vector3(...spec.reverse.box[0]), new THREE.Vector3(...spec.reverse.box[1]));
+    } else if (spec.lens?.material?.test(nm)) {
+      split(o, (v) => v.x > (spec.lens.minX ?? -Infinity), m.rearLens, 'rear-lens');
+    } else if (full && spec.reverse?.material.test(nm)) {
       T.rev ??= reverseMaterial(o.material);
-      const r = split(o, (v) => box.containsPoint(new THREE.Vector3(v.x, v.y, Math.abs(v.z))), T.rev, 'reverse-lamp');
-      if (r) for (const s of [-1, 1]) T.items.push({ p: [box.max.x, (box.min.y + box.max.y) / 2, s * (box.min.z + box.max.z) / 2], s: (box.max.z - box.min.z) * 0.6, d: [1, 0, 0], w: [0, 0, 1] });
+      if (spec.reverse.box) {
+        const box = new THREE.Box3(new THREE.Vector3(...spec.reverse.box[0]), new THREE.Vector3(...spec.reverse.box[1]));
+        const r = split(o, (v) => v.x > (spec.reverse.minX ?? -Infinity) && box.containsPoint(new THREE.Vector3(v.x, v.y, Math.abs(v.z))), T.rev, 'reverse-lamp');
+        if (r) for (const s of [-1, 1]) T.items.push({ p: [box.max.x, (box.min.y + box.max.y) / 2, s * (box.min.z + box.max.z) / 2], s: (box.max.z - box.min.z) * 0.6, d: [1, 0, 0], w: [0, 0, 1] });
+      } else reverseItems(T, split(o, (v) => v.x > (spec.reverse.minX ?? -Infinity), T.rev, 'reverse-lamp'));
+    } else if (o.material === m.reverseLight) {    // a reverse-role lamp (car-lab's reverse tubes)
+      o.material = T.rev ??= reverseMaterial(m.reverseLight);
+      if (full) reverseItems(T, o);
+    } else if (kit && o.material !== m.rearLens && o.material.transparent && o.material.color?.getHex() === T.lens0[0] && o.material.opacity === T.lens0[1]) {
+      o.material = m.rearLens;                     // car-lab's closed lamp covers are clones of its rear lens
     }
   }
   level.userData.tailFit = true;
+}
+
+/** A glow point per connected part of a reverse-lamp mesh. */
+function reverseItems(T, mesh) {
+  if (mesh) for (const s of components(mesh.geometry.attributes.position, mesh.geometry.index).list) T.items.push({ p: s.centre.toArray(), s: Math.max(...s.box.getSize(new THREE.Vector3()).toArray()) * 0.4, d: [1, 0, 0], w: [0, 0, 1] });
 }
 
 /** The reverse cell: its own copy of the reflector material, lit white, brightest where a facet faces the viewer. */
@@ -188,16 +284,22 @@ function reverseMaterial(src) {
 
 /** Build a spec car's tail lamps: materials, the lens, the reverse cell, the glows and the pool. Returns the per-car state. */
 export function fitTail(c, spec) {
-  const m = c.materials, T = { spec, L: { ...LV, ...spec.levels }, items: [], U: { uGuide: { value: 0 }, uFill: { value: 0 }, uHot: { value: 0 }, uPitch: { value: 0.0075 } } };
+  const bad = checkSpec(spec);
+  if (bad.length) console.warn(`tail spec ${c.key}: ${bad.join('; ')}`);
+  const m = c.materials, tx = { ...TEX, ...spec.tex }, wt = tx.white || [2, 3];
+  const T = { spec, L: { ...LV, ...spec.levels }, items: [], tex: new Map(), lens0: [m.rearLens.color.getHex(), m.rearLens.opacity],
+    U: { uGuide: { value: 0 }, uFill: { value: 0 }, uHot: { value: 0 }, uPitch: { value: 0.0075 }, uTex: { value: new THREE.Vector4(tx.lo, tx.hi, wt[0], wt[1]) }, uTexRev: { value: 0 }, uTexHue: { value: new THREE.Vector2(...tx.hue) } } };
   tailShader(m.taillight, T.U);
-  Object.assign(m.rearLens, { opacity: 0.4, roughness: 0.05, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.03, depthWrite: false });
-  m.rearLens.color.set(0x2a0d0e);                 // smoked: the elements read through it, the sun and sky reflect off it
+  Object.assign(m.rearLens, { opacity: spec.lens?.opacity ?? 0.4, roughness: 0.05, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.03, depthWrite: false });
+  m.rearLens.color.set(spec.lens?.color ?? 0x2a0d0e);   // smoked: the elements read through it, the sun and sky reflect off it
   m.rearLens.side = THREE.DoubleSide;
   fitLevel(c, spec, T, c.lod.levels[0].object, true);
+  if (c.lamps?.root) fitLevel(c, spec, T, c.lamps.root, true, true);   // a car-lab car's own lamps (a model's group holds only lights)
+  if (!T.items.length) console.warn(`tail spec ${c.key}: no lamp element matched`);
   const { pts, U } = glowPoints(T.items);
   pts.position.copy(c.lod.position); c.body.add(pts); T.glow = U;
   // the pool rides the contact shadow (flat on the road under a leaning body; car-lab frame turned: the tail is -x here)
-  const tail = Math.max(...T.items.map((it) => it.p[0])), pool = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.6).rotateX(-Math.PI / 2),
+  const tail = Math.max(1.5, ...T.items.map((it) => it.p[0])), pool = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.6).rotateX(-Math.PI / 2),
     new THREE.MeshBasicMaterial({ map: poolTexture(), color: 0, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 }));
   pool.geometry.rotateY(Math.PI);                 // +u (the lamps' side of the texture) toward the car
   pool.position.set(-tail - 1.5 - c.shadow.position.x, 0.003, 0); pool.name = 'tail_pool'; pool.renderOrder = 2; pool.raycast = () => {};
@@ -225,6 +327,7 @@ export function driveTail(c, b, r, look) {
   T.U.uGuide.value = at(L.run) + b * at(L.brake);
   T.U.uFill.value = b * at(L.fill);
   T.U.uHot.value = b;
+  T.U.uTexRev.value = r * at(L.rev);
   if (T.rev) T.rev.emissiveIntensity = r * at(L.rev);
   T.glow.uG.value = at(L.glowRun) + b * at(L.glowBrake); T.glow.uF.value = b * at(L.glowBrake) * 0.6; T.glow.uR.value = r * at(L.glowRev);
   const wet = (1 - 0.5 * wetUniforms.uWet.value) * (T.spill ? 0.5 : 1);   // a wet road mirrors the lamps (the planar mirror) more than it scatters them; the spill light lights the road too
