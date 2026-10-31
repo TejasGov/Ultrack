@@ -301,8 +301,9 @@ function reverseItems(T, mesh) {
 
 const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
 /** The glow points of a fitted tail mesh's lit elements (tr: each triangle's rule): one at an element's centroid, sized by it. Under
- * a facing rule the element is the triangles it lights; with glowAlong a long or curved element (largest side over 3x the middle
- * one, or its centroid over 1 cm from any vertex: a ring, an arc) glows along its largest side instead: points sized 0.4 x its
+ * a facing rule the element is the triangles it lights; with glowAlong (the spec's call: a long or curved element, a ring, an
+ * arc; a shape test missed one of mustang's mirrored bars, whose car-lab tube bulges 5 cm deep, and left a blob beside it)
+ * the element glows along its largest side instead: points sized 0.4 x its
  * middle side, 0.6 of that apart (5 cm at most), so their cores join into a line instead of beads, one per strand of each slab
  * (a ring's top and bottom arcs: the surface sampled per step, samples linked across the slab within 1.5 steps). */
 function glowItems(T, P, vi, tri, tr, list, face) {
@@ -313,7 +314,7 @@ function glowItems(T, P, vi, tri, tr, list, face) {
     const push = (c, size) => T.items.push({ p: c, s: size, d: p === 'reverse' ? [1, 0, 0] : [1, 0, 0.3 * Math.sign(s.centre.z)], w: p === 'guide' ? [1, 1, 0] : p === 'fill' ? [0, 1, 0] : [0, 0, 1] });
     const size = s.box.getSize(new THREE.Vector3()).toArray(), ax = [0, 1, 2].sort((a, b) => size[b] - size[a]), [a, b] = [size[ax[0]], size[ax[1]]];
     const verts = r.glowAlong ? ts.flatMap((t) => [0, 1, 2].map((j) => v.fromBufferAttribute(P, vi(t, j)).toArray())) : null;
-    if (!verts || !(a > 3 * b || Math.min(...verts.map((q) => s.centre.distanceTo(v.fromArray(q)))) > 0.01)) return push(s.centre.toArray(), a * 0.4 * gl);
+    if (!verts) return push(s.centre.toArray(), a * 0.4 * gl);
     const sz = b * 0.4 * gl, step = THREE.MathUtils.clamp(0.6 * sz, 0.005, 0.05), n = Math.max(1, Math.round(a / step)), slabs = Array.from({ length: n }, () => []);
     for (let i = 0; i < verts.length; i += 3) {                // the surface sampled every `step` (a long strip has few, long triangles)
       const [A, B, C] = verts.slice(i, i + 3), k = Math.max(1, Math.ceil(Math.max(dist(A, B), dist(B, C), dist(C, A)) / step));
