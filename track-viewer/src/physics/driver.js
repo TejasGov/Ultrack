@@ -89,7 +89,7 @@ export class AIDriver {
       for (let n = -2; n <= 10; n++) { const d = line[(this.i + n + N) % N].distanceToSquared(q); if (d < db) { db = d; kb = n; } }
       const k = (this.i + kb + N) % N, gap = kb * ds + along(q, k) - along(p, this.i), oLat = lat(q, k);
       near ||= gap > -6 && gap < 30 && Math.abs(oLat - myLat) < 4.5;
-      if (gap > -4 && gap < 30 && Math.abs(oLat - myLat) < 2.4 && (!blk || Math.abs(gap) < Math.abs(blk.gap))) blk = { gap, lat: oLat, speed: o.vehicle.speed };
+      if (gap > -4 && gap < 30 && Math.abs(oLat - myLat) < 2.4 && (!blk || Math.abs(gap) < Math.abs(blk.gap))) blk = { gap, lat: oLat, speed: o.vehicle.speed, car: o };
     }
     const speed = v.speed, look = 6 + speed * 0.55;
     let j = this.i, acc = 0;
@@ -98,8 +98,10 @@ export class AIDriver {
     // the pursuit target: Marina's line swings edge to edge in 30-50 m, so a lane legal under the car is in the wall 20 m on
     const T = F.track, r = T?.halfWidth ? Math.floor(j / N * T.halfWidth.length) : -1;
     const room = r < 0 ? 6 : T.halfWidth[r] - 1.6, rl = r < 0 ? 0 : T.racingLine?.[r] ?? 0, lo = Math.min(-room - rl, this.lane), hi = Math.max(room - rl, this.lane);
-    // the side is picked once per pass: flipping it mid-pass swerved the car across the one it was passing
-    if (blk) { if (!this.passSide) { this.passSide = myLat >= blk.lat ? 1 : -1; const w = this.lane + this.passSide * 3; if (w > hi || w < lo) this.passSide = -this.passSide; } }
+    // the side is picked once per pass: flipping it mid-pass swerved the car across the one it was passing. A side kept for another
+    // car that points at this one is picked again: from the grid it steered a follower into the car it touched, and the two crawled
+    // locked together for 20 s (India V5.6)
+    if (blk) { if (!this.passSide || (this.passCar !== blk.car && Math.sign(blk.lat - myLat) === this.passSide)) { this.passCar = blk.car; this.passSide = myLat >= blk.lat ? 1 : -1; const w = this.lane + this.passSide * 3; if (w > hi || w < lo) this.passSide = -this.passSide; } }
     else if (!near) this.passSide = 0;                                // hold the passing lane until the car is 6 m behind
     const laneWant = this.passSide ? this.lane + this.passSide * 3 : this.lane;   // passSide is unset until a first car is near
     // 0.4 s out, 0.8 s back: the pursuit target never snaps; clamped as eased, so the way back never runs off the asphalt either
