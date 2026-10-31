@@ -197,7 +197,7 @@ const stat = (label, value, unit) => h('span.stat-r', {}, h('small', {}, label),
 export function MenuScreen(game) {
   const go = (id) => () => (MODES[id] ? game.show('setup', id) : id === 'career' ? game.setBusy('Career Mode is coming in a later update.') : game.show(id));
   const tile = (id, ic, word, kicker, desc, cls = '', extra = null, bg = null) => h('button.bento-tile.' + cls, { 'data-nav': '', 'data-id': id, onclick: go(id) }, bg,
-    h('span.tile-top', {}, icon(ic, { cls: 'tile-icon' }), icon('arrow-up-right', { cls: 'tile-go' })),
+    h('span.tile-top', {}, icon(ic, { cls: 'tile-icon' }), icon(id === 'career' ? 'lock' : 'arrow-up-right', { cls: 'tile-go' })),
     h('span.tile-text', {}, h('span.tile-kicker', {}, kicker), h('strong', {}, word), desc ? h('span.tile-desc', {}, desc) : null, extra));
   const raceStill = h('img.tile-still', { alt: '', decoding: 'async' }), circuit = h('b'), len = h('b.tnum'), corners = h('b.tnum');
   const facts = h('span.tile-facts', {}, h('span.stat-r', {}, h('small', {}, 'Circuit'), circuit), h('span.stat-r', {}, h('small', {}, 'Length'), len), h('span.stat-r', {}, h('small', {}, 'Corners'), corners));
@@ -206,7 +206,6 @@ export function MenuScreen(game) {
   const current = h('button.bento-tile.current-car', { 'data-nav': '', 'aria-label': 'Your car: open the garage', onclick: () => game.show('garage') });
   // Career Mode holds the Garage tile's place until it is built (the garage is the Your car tile); a lock, not a go mark, on it
   const career = tile('career', 'helmet', 'Career Mode', 'Coming soon', 'Your season, race by race. In a later update.', 'career-tile');
-  career.querySelector('.tile-go').replaceWith(icon('lock', { cls: 'tile-go' }));
   const grid = h('div.bento-grid', {}, race,
     tile('trial', 'time-trial', 'Time Trial', 'Chase your best', MODES.trial.desc, 'trial-tile'),
     tile('drift', 'drift', 'Drift Attack', 'Find the limit', MODES.drift.desc, 'drift-tile'),

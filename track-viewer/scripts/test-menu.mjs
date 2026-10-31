@@ -17,12 +17,13 @@ globalThis.Node=Element;globalThis.document={createElement:t=>new Element(t),cre
 globalThis.addEventListener=()=>{};
 const server=await createServer({root:new URL('../',import.meta.url).pathname.replace(/^\/([A-Za-z]:)/,'$1'),configFile:false,server:{middlewareMode:true,hmr:false},appType:'custom'});
 try{
- const UI=await server.ssrLoadModule('/src/game/ui.js'),routes=[],game={audio:{play(){}},show:(...args)=>routes.push(args)};
+ const UI=await server.ssrLoadModule('/src/game/ui.js'),routes=[],busy=[],game={audio:{play(){}},show:(...args)=>routes.push(args),setBusy:(msg)=>busy.push(msg)};
  const nav=new UI.Nav(game);UI.setNav(nav);const menu=UI.MenuScreen(game);game.screen=menu;menu.onShow();
  const buttons=menu.el.querySelectorAll('[data-nav]');
  assert.equal(buttons.length,9);assert.ok(menu.el.textContent.includes('YOUR CAR'));
  for(const b of buttons)b.click();
  assert.ok(routes.some(([name,id])=>name==='setup'&&id==='race'));assert.ok(routes.some(([name])=>name==='garage'));assert.ok(routes.some(([name])=>name==='credits'));assert.ok(routes.some(([name])=>name==='records'));
+ assert.ok(!routes.some(([name])=>name==='career')&&busy.some(m=>/Career Mode/.test(m)),'Career Mode is a locked tile: a toast, never a screen');
  buttons.forEach((b,i)=>b.rect={x:(i%3)*110,y:Math.floor(i/3)*110,width:100,height:100});
  nav.reset(0);nav.moveSpatial(1,0);assert.equal(nav.i,1);nav.moveSpatial(0,1);assert.equal(nav.i,4);
  const credits=UI.CreditsScreen(game);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));
