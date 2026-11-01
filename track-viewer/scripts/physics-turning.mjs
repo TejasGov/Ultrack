@@ -1,5 +1,5 @@
 // Turning measurements: does the car turn like it is on a road? (permanent check, see PHYSICS.md "Turning")
-//   node scripts/physics-turning.mjs [--cars av12,mustang,bentley-gt,porsche1] [--tiers casual,sport,pro] [--wx dry,rain]
+//   node scripts/physics-turning.mjs [--cars av12,ford-gt,bentley-gt,porsche1] [--tiers casual,sport,pro] [--wx dry,rain]
 //        [--only steady,turnin,ice,lift,trail,rwd,handbrake,slalom,abuse,hairpin,aids,bench,assert]   `assert` turns the rows into pass/fail (exit 1)
 //        [--tune '{"engineBrake":0.06}']   driving.json overrides for an experiment (applied to every car)
 // Drives the real Vehicle on a flat world with the game's keyboard filters (player-controls.js). "Tyre limit" values come from
@@ -158,7 +158,7 @@ function corner(key, tier, wx, R, kmh, mode) {
 }
 function maxCornerSpeed(key, tier, wx, R, mode) { let lo = 20, hi = 120; while (hi - lo > 2) { const m = (lo + hi) / 2; if (corner(key, tier, wx, R, m, mode)) lo = m; else hi = m; } return lo; }
 
-const cars = arg('cars', 'av12,mustang,bentley-gt,porsche1').split(','), tiers = arg('tiers', 'rookie,pro').split(','), wxs = arg('wx', 'dry,rain').split(',');
+const cars = arg('cars', 'av12,ford-gt,bentley-gt,porsche1').split(','), tiers = arg('tiers', 'rookie,pro').split(','), wxs = arg('wx', 'dry,rain').split(',');
 const only = arg('only', 'arcade,steady,turnin,ice,lift,trail,rwd,handbrake,slalom,abuse,hairpin,assert').split(',');
 const A = only.includes('assert'), fails = [];
 const check = (ok, msg) => { if (A && !ok) { fails.push(msg); console.log('  FAIL ' + msg); } };

@@ -7,7 +7,7 @@ export const SLOTS = 3;
 
 function read() {
   try {
-    const d = JSON.parse(localStorage.getItem(KEY));
+    const d = JSON.parse(localStorage.getItem(KEY)?.replace(/"mustang"/g, '"ford-gt"') ?? null);   // the Mustang became the Ford GT (2026-11-01)
     return { slots: Array.from({ length: SLOTS }, (_, i) => d?.slots?.[i] ?? null), active: d?.active ?? 0 };
   } catch { return { slots: Array(SLOTS).fill(null), active: 0 }; }
 }

@@ -21,7 +21,7 @@ try {
   // ---- pace and levels
   assert.equal(R.paceOf(94).toFixed(3), '1.011'); assert.equal(R.paceOf(76).toFixed(3), '0.974');
   assert.equal(R.xpForLevel(2), 90); assert.equal(R.levelOf(89), 1); assert.equal(R.levelOf(90), 2); assert.equal(R.levelOf(1e9), 25);
-  assert.ok(R.parLap('india', 'mustang') > R.parLap('india', 'destrier'), 'a slower car has a slower par');
+  assert.ok(R.parLap('india', 'nissan-z') > R.parLap('india', 'destrier'), 'a slower car has a slower par');
   assert.ok(R.parLap('india', 'av12', 'rain') > R.parLap('india', 'av12'), 'rain is slower');
 
   // ---- calendar: the world's rounds, finale last, no back-to-back track, the track's own looks, dry-only tracks dry, round 1 dry
@@ -170,10 +170,12 @@ try {
   assert.deepEqual(S.listCareers().map((x) => x?.seed ?? null), [115, null, 116]);
   S.saveCareer(null); assert.deepEqual(S.listCareers().map((x) => x?.seed ?? null), [null, null, 116], 'only the active slot is erased');
   mem['ultrack.career.v1'] = '{broken'; assert.equal(S.loadCareer(), null, 'a broken save reads as none');
+  mem['ultrack.career.v1'] = JSON.stringify({ active: 0, slots: [{ schema: C.SCHEMA, contract: { car: 'mustang' } }] }); assert.equal(S.loadCareer().contract.car, 'ford-gt', 'a Mustang career moves to the Ford GT');
   // ---- the game closed mid-career: the next boot gives free play its own car and conditions back, before the circuit loads
-  mem['ultrack.v1'] = JSON.stringify({ car: 'bmw1', settings: { track: 'india', look: 'day', weather: 'rain', laps: 8, master: 0.5 }, freePlay: { car: 'av12', track: 'marina', look: 'night', weather: 'dry', laps: 3 } });
+  mem['ultrack.v1'] = JSON.stringify({ car: 'bmw1', settings: { track: 'india', look: 'day', weather: 'rain', laps: 8, master: 0.5 }, freePlay: { car: 'av12', track: 'marina', look: 'night', weather: 'dry', laps: 3 }, best: { 'marina/mustang': 90 }, upgrades: { mustang: { engine: 1 } } });
   const { store } = await server.ssrLoadModule('/src/game/store.js');
   assert.equal(store.data.car, 'av12'); assert.equal(store.settings.track, 'marina'); assert.equal(store.settings.look, 'night'); assert.equal(store.settings.weather, 'dry'); assert.equal(store.settings.laps, 3);
+  assert.equal(store.data.best['marina/ford-gt'], 90, 'records and upgrades move from the Mustang to the Ford GT'); assert.equal(store.data.upgrades['ford-gt'].engine, 1);
   assert.equal(store.settings.master, 0.5, 'other settings are untouched'); assert.equal(store.data.freePlay, undefined, 'the snapshot is used up');
   assert.equal(JSON.parse(mem['ultrack.v1']).car, 'av12', 'and the restored profile is on disk at once'); assert.equal(JSON.parse(mem['ultrack.v1']).freePlay, undefined);
   delete globalThis.localStorage;

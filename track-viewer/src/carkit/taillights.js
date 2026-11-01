@@ -29,7 +29,7 @@
 //         color: its unlit colour (default: the material it copies, the white headlamp one for a `reverse` part)
 //   spill: true   the player's car lights the road behind; levels: { ...LV } per-car levels; qa: { macro: [x, y, z] } the lamp
 //         qa-taillights.mjs frames up close (default: the right rear lamp of model.json / the car-lab profile)
-// A car-lab car (no model: bentley-gt, mustang) has its lamps in c.lamps.root: the LED tubes are its tail meshes, the centre
+// A car-lab car (no model: bentley-gt) has its lamps in c.lamps.root: the LED tubes are its tail meshes, the centre
 // stop lamp (role brake) is lit as a fill, the reverse tubes (role reverse) as the reverse lamp, its lens covers become rearLens;
 // bowl: true lights a closed rear lamp's bowl (the fan of housing behind its LED ring) as a brake fill.
 import * as THREE from 'three';
@@ -302,7 +302,7 @@ function reverseItems(T, mesh) {
 const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
 /** The glow points of a fitted tail mesh's lit elements (tr: each triangle's rule): one at an element's centroid, sized by it. Under
  * a facing rule the element is the triangles it lights; with glowAlong (the spec's call: a long or curved element, a ring, an
- * arc; a shape test missed one of mustang's mirrored bars, whose car-lab tube bulges 5 cm deep, and left a blob beside it)
+ * arc; a shape test missed one of the Mustang's mirrored bars (since replaced), whose car-lab tube bulges 5 cm deep, and left a blob beside it)
  * the element glows along its largest side instead: points sized 0.4 x its
  * middle side, 0.6 of that apart (5 cm at most), so their cores join into a line instead of beads, one per strand of each slab
  * (a ring's top and bottom arcs: the surface sampled per step, samples linked across the slab within 1.5 steps). */

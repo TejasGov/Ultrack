@@ -400,7 +400,7 @@
     "sha256": "13e01384a990158af68cf03e4829b4c96a6bfd103c6b44f6420cb87e90b77f70"
   },
   {
-    "car": "mustang",
+    "car": "blackbird",
     "layer": "idle",
     "start": 25,
     "seconds": 1.4,
@@ -420,7 +420,7 @@
     "sha256": "516863044f058f96d1c9d8e0cd3bc5ff0e67fb8169aef432cf1e19b74a1bdb54"
   },
   {
-    "car": "mustang",
+    "car": "blackbird",
     "layer": "low",
     "start": 16.2,
     "seconds": 0.3,
@@ -440,7 +440,7 @@
     "sha256": "998fc0cab407e4d6430a73a0b0163303efe77596342893e501ac5ace3ddaf745"
   },
   {
-    "car": "mustang",
+    "car": "blackbird",
     "layer": "mid",
     "start": 18.1,
     "seconds": 0.24,
@@ -460,7 +460,7 @@
     "sha256": "2b8dd80419f91e7cbcee7d0f15c140e7b74a4263d44db65a8740a382558511c6"
   },
   {
-    "car": "mustang",
+    "car": "blackbird",
     "layer": "high",
     "start": 20.5,
     "seconds": 0.22,
@@ -480,7 +480,7 @@
     "sha256": "c54c5e8677b9683379d6ca2af8166856bc4452122fd93ab7571ac7f6a9443ec8"
   },
   {
-    "car": "mustang",
+    "car": "blackbird",
     "layer": "decel",
     "start": 21.9,
     "seconds": 0.3,

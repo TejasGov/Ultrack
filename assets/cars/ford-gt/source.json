@@ -1,0 +1,43 @@
+{
+  "name": "Ford GT Mk II",
+  "src": "../../../sources/sketchfab/Ffordgt-mk2/prepared.glb",
+  "credit": {
+    "title": "2019 Ford GT MKII Track",
+    "author": "Ddiaz Design (ddiaz-design)",
+    "authorUrl": "https://sketchfab.com/ddiaz-design",
+    "url": "https://sketchfab.com/3d-models/2019-ford-gt-mkii-track-bffecac59a6b4bc49534be85b5b501c0",
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "modelId": "bffecac59a6b4bc49534be85b5b501c0",
+    "replacement": false,
+    "nonCommercialOnly": true,
+    "additionalCredits": "Asphalt 9 Legends rip (the page says \"Based on an Asphalt 9 Legends 3d model\"; credits 3dmodelsdestination.blogspot.com). Non-commercial and share-alike licence: fine for this local fan project, replace before any public release."
+  },
+  "rotateZ": -90,
+  "length": 5.07,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Tyre_",
+      "Spin_"
+    ],
+    "tyre": [
+      "Tyre_"
+    ],
+    "caliper": [
+      "Caliper_"
+    ]
+  },
+  "roles": {},
+  "interior": [
+    "INT:"
+  ],
+  "exhaust": [
+    "EXHAUST_pipes"
+  ],
+  "budget": {
+    "body0": 70000,
+    "body1": 20000,
+    "wheel": 5000
+  }
+}

@@ -174,49 +174,6 @@
       "pops": [],
       "shifts": []
     },
-    "mustang": {
-      "name": "Ford Mustang GT V8",
-      "redline": 7400,
-      "cars": [
-        "mustang"
-      ],
-      "loops": {
-        "idle": {
-          "file": "engines/recorded/mustang-idle.ogg",
-          "rpm": 850
-        },
-        "low": {
-          "file": "engines/recorded/mustang-low.ogg",
-          "rpm": 2000
-        },
-        "mid": {
-          "file": "engines/recorded/mustang-mid.ogg",
-          "rpm": 3800
-        },
-        "high": {
-          "file": "engines/recorded/mustang-high.ogg",
-          "rpm": 6100
-        },
-        "decel": {
-          "file": "engines/recorded/mustang-decel.ogg",
-          "rpm": 2800
-        }
-      },
-      "source": {
-        "author": "Next-Gen Speed",
-        "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
-        "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
-        "license": "CC BY 3.0",
-        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-        "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
-        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
-      },
-      "match": "2018 Mustang GT, active exhaust Track mode",
-      "quality": "recording-derived-preview",
-      "preview": "engines/recorded/mustang-source.ogg",
-      "pops": [],
-      "shifts": []
-    },
     "bmw1": {
       "name": "Mercedes-AMG GT4 twin-turbo V8 (the Ferrari 488 GTB twin-turbo V8 recording)",
       "redline": 7000,
@@ -607,8 +564,7 @@
       "quality": "recording-derived-preview",
       "preview": "engines/recorded/mustang-source.ogg",
       "pops": [],
-      "shifts": [],
-      "sharedWith": "mustang"
+      "shifts": []
     },
     "huracan": {
       "name": "Lamborghini Huracan STO V10 (the Aventador SV V12 recording)",
@@ -697,6 +653,50 @@
       "pops": [],
       "shifts": [],
       "sharedWith": "aston-martin-valk"
+    },
+    "ford-gt": {
+      "name": "Ford GT Mk II twin-turbo V6 (the Mercedes-AMG ONE V6 recording)",
+      "redline": 7000,
+      "cars": [
+        "ford-gt"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/jaguarxkjss-idle.ogg",
+          "rpm": 1300
+        },
+        "low": {
+          "file": "engines/recorded/jaguarxkjss-low.ogg",
+          "rpm": 1800
+        },
+        "mid": {
+          "file": "engines/recorded/jaguarxkjss-mid.ogg",
+          "rpm": 2500
+        },
+        "high": {
+          "file": "engines/recorded/jaguarxkjss-high.ogg",
+          "rpm": 3200
+        },
+        "decel": {
+          "file": "engines/recorded/jaguarxkjss-decel.ogg",
+          "rpm": 1800
+        }
+      },
+      "source": {
+        "author": "Dan Outside",
+        "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+        "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "Actual AMG ONE at Goodwood. Low-speed recording; high-RPM anchors are pitch-transposed from this take and need a better full-load recording.",
+      "quality": "limited-rpm-source",
+      "preview": "engines/recorded/jaguarxkjss-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "jaguarxkjss"
     }
   }
 }

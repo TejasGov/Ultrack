@@ -71,19 +71,19 @@
    "bopGrip": 1,
    "brakeK": 1.033
   },
-  "mustang": {
-   "hp": 460,
-   "zeroTo100": 4.5,
-   "topKmh": 249,
+  "ford-gt": {
+   "hp": 700,
+   "zeroTo100": 3,
+   "topKmh": 300,
    "drive": "RWD",
-   "massKg": 1720,
-   "grip": 1.03,
-   "downforce": 0.35,
-   "cogM": 0.5,
-   "weightFront": 0.53,
-   "bop": 1.07,
-   "bopGrip": 1.12,
-   "brakeK": 0.925
+   "massKg": 1390,
+   "grip": 1.25,
+   "downforce": 1.2,
+   "cogM": 0.42,
+   "weightFront": 0.43,
+   "bop": 1,
+   "bopGrip": 1,
+   "brakeK": 1.131
   },
   "bmw1": {
    "hp": 503,

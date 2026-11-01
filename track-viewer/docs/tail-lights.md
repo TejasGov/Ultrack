@@ -167,7 +167,7 @@ export default {
   Other ways: part `reverse` in the rules, `tex.white`, and a reverse-role mesh (car-lab's reverse tubes), which is lit
   automatically. One reverse material per car (the first source wins). `color`: its unlit colour (a part `reverse` otherwise
   copies the white headlamp material, which reads as a lit lamp while driving); `{ color }` alone is a valid `reverse`.
-- **Car-lab cars** (`bentley-gt`, `mustang`: no model, lamps built by `car-lab/src/vehicle/lights.js` into `c.lamps.root`, outside
+- **Car-lab cars** (`bentley-gt`: no model, lamps built by `car-lab/src/vehicle/lights.js` into `c.lamps.root`, outside
   the LOD levels): fitted automatically. Their LED tubes are the tail meshes (rules apply; default guide), the centre stop lamp
   (role `brake`, `m.brakeLight`) is lit as a fill on the brake, the reverse tubes (role `reverse`) as the reverse lamp, and the
   closed lamp covers (clones of car-lab's rear lens) become the smoked `rearLens` like the ribbon lenses. Brake-role meshes on
@@ -194,7 +194,7 @@ map. What each car could not get before stage 1 is now a spec key (last column).
 | `bmw1` (Mercedes-AMG GT4) | texture strips, layered | `tail\|emiss_Lights` 38 tris: two thin LED strips per side (10 and 9 tris), 28 % alpha, map + emissive map | `keep\|Lights` atlas: housings (268 tris/side), a centre piece (2.13, 0.85, 0; 22 tris), a lower pair (2.16, 0.43, ±0.54), a centre unit (2.21, 0.78, 0; 198 tris); `keep\|light_glass` lens (44 %, 137 tris/side) | check the Lights atlas / unknown (lower pair?) / keep\|light_glass | 38 (same) | `tex` (map or emissiveMap), `lens.material` /^keep\|light_glass/, `adopt` + `box` for a centre or reverse unit if the atlas shows one |
 | `buggati` (Divo-X) | geometry | `tail\|Material.003` 652 tris, emissive red, 51 components: the Divo's fin array (10-tri fins) | `keep\|Material.005` grey pieces (2.15, 0.93, ±0.45) | none / none / none | 168 (fins merged) | `box` / `minTris` rules (fins as guides, a band as fills), `lens.shell` optional; a catch-all last rule for LOD 1 |
 | `destrier` (Destrier-X) | geometry, flat | `tail\|Material.001` 1476 tris, emissive (1, 0.26, 0.26) (pinkish); its map is one flat 8x8-texel corner (no detail): a flat panel per side (532 tris, 0.72 x 0.32 m, facing +x), a low centre piece (2.22, 0.15, 0; 244 tris), a high centre bar on the wing (2.47, 0.82, 0; 168 tris) | none | none / none / none | 502 | `box` rules (wing bar → `fill`, a stop lamp; low centre → `fill` or `off`), `lens.shell`; no `tex` (the map is flat): the panel's structure has to come from the LED dots of a fill |
-| `mustang` | car-lab procedural | three open fitted LED bars per side under ribbon lenses, centre stop lamp, reverse tubes | lamp housings | none / reverse tubes / car-lab rear lens | outside the LOD | as `bentley-gt` |
+| `ford-gt` (Ford GT Mk II, added 2026-11-01) | texture | `tail\|car_ford_gt_mkiiDefault1`: the round afterburner rings, 585 tris per side, red in the atlas around a dark centre | - | none / none / `keep\|glas` | model; replaced the Mustang, the car-lab lamp car in this row before; outside the LOD | as `bentley-gt` |
 | `blackbird` (Blackbird-X) | layered | `tail\|Material.008`: a 66 % red lens (544 tris/side); `tail\|Material.009`: the emitter, base red with an emissive map (448 tris/side) | `keep\|Material.006`: an opaque red lower bar (2.39, 0.43, ±0.53; 376 tris/side); `keep\|Material.014`: amber side markers (x 1.85, z ±1.06) | side markers only / none / Material.008 (tail role) | 335 + 276 | `material` rules: Material.008 → `lens`, Material.009 → `guide` with `tex` `map: 'emissiveMap'`; `adopt` Material.006 (a fill) or `dark` it; `dark` the side markers |
 | `mp1x` (720S model) | texture, very low poly | `tail\|lights` 44 tris: per side a C-lamp (9 tris) whose lit line is a thin red stripe painted on a dark lens in the 512 atlas; a centre bar (2.15, 0.72, 0; 4 tris), side markers (1.73, 0.66, ±0.94), a lower pair (2.20, 0.46, ±0.44; 2 tris) | `keep\|mesh` (a grille with alpha over the lamps, 10 tris/side) | none in the tail / lower pair? / none | 44 (same) | `tex` (the stripe), `box` rules for the small pieces, `lens.shell`; `glow` < 1 on the C-lamps (their glow point sits on the lens centre, not on the stripe) |
 | `porsche1` (918–S) | texture (body atlas) | `tail\|Bodyunrefunblend1_diff` 324 tris: the lamp (153 tris/side) painted in the body's 1024 atlas, lower strips (2.04, 0.62, ±0.73; 8 tris), 1-tri bits | none at the lamp | read from the atlas / none / none | 324 (same) | `tex`, `lens.shell`, `box` rules for the strips (and the 1-tri bits `off`) |
@@ -203,7 +203,7 @@ map. What each car could not get before stage 1 is now a spec key (last column).
 
 Patterns: texture lamps (8: laferrari, huracan, aston-martin-valk, porsche1, mp1x, nissan-z, bmw1, furari-488), a lens or emitter in
 a material of its own or with the `tail` role (furari-488, blackbird, nissan-z, supra, jaguarxkjss, bmw1), no lens at all (7),
-pure geometry (buggati, destrier, supra, jaguarxkjss), car-lab lamps (bentley-gt, mustang), centre stop / rain lamps (laferrari,
+pure geometry (buggati, destrier, supra, jaguarxkjss), car-lab lamps (bentley-gt), centre stop / rain lamps (laferrari,
 furari-488, destrier, supra, nissan-z, bmw1, mp1x, the car-lab pair). Not found on any model: a reverse lamp of its own (only
 texture white or a judgement call on a lower lamp pair). Amber inside a red element exists only as texture (furari-488's orange
 spots), which `tex` leaves unlit; a separate amber component would take part `indicator`.
@@ -259,7 +259,7 @@ Each group edits only its own `src/carkit/tails/<key>.js` files and its `qa/tail
 - **B, layered models** (a lens or emitter in a separate or tail-role material, emissive maps: `adopt`, `lens` part and
   `lens.material`, `tex` with `map`, `dark`): `furari-488`, `blackbird`, `nissan-z`, `bmw1`, `jaguarxkjss`.
 - **C, geometry and car-lab lamps** (component rules by `material` / `box` / `minTris`, multi-material tails, rain lamps, the
-  car-lab pair): `buggati`, `destrier`, `supra`, `bentley-gt`, `mustang`.
+  car-lab pair): `buggati`, `destrier`, `supra`, `bentley-gt`, and the Mustang (replaced by `ford-gt` on 2026-11-01).
 
 All 15 were converted (per-car sheets `qa/taillights/<car>-before-after*.jpg`, group sheets `qa/taillights/rollout/group-*`).
 
@@ -277,7 +277,6 @@ better; the reasoning is in each spec's header.
 | `destrier` | blades lit at their rear edge (`facing`), `glowAlong`, AV-12's levels again; diffuser reverse lamp `reverse.color` + `glowAlong` | yes: a thin light blade with a line of glare; the reverse lamp no longer looks lit while driving |
 | `furari-488` | the clear centre disc as the reverse lamp with `reverse.color` | no: the reverse read right, but the brake lost its filled disc |
 | `bentley-gt` | `bowl: true`, ring `glowAlong` | yes: the oval fills red with LED dots on the brake, a glow along the ring |
-| `mustang` | bars `glowAlong` | yes: a tight glow hugging each bar (none before) |
 | `supra` | inboard bar `glowAlong` (was a small centroid glow) | yes: a line of glare along the bar on the brake |
 | `buggati` | fins lit at their rear edges (`facing`), AV-12's levels again | yes: the Divo's thin red lines between dark fins (the tops lit as orange-red slabs before) |
 

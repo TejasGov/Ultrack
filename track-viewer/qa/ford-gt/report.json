@@ -1,98 +1,118 @@
 {
-  "car": "mustang",
-  "date": "2026-10-21T23:29:15.572Z",
+  "car": "ford-gt",
+  "date": "2026-11-01T19:46:47.621Z",
   "tuning": {
-    "car": "mustang",
+    "car": "ford-gt",
     "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
-    "mirrors": {
-      "style": "gt",
-      "housing": "paint"
-    },
     "suspension": {
-      "pitch": 0.6,
+      "pitch": 0.4,
       "roll": 0.85,
       "freq": 1.6,
-      "ride": 0.029
+      "ride": 0.06
     },
     "aero": [],
     "log": [
-      "run 1 (all cars): mirrors -> gt/paint (muscle coupe: large body-colour housings); ride 0.029 m from the measured arch gaps (front top gap >= 3 cm for the brake dive); pitch 0.6",
-      "run 2: brake lamps under 110 at dusk -> brake 5.5",
-      "run 4: see-through traced to real openings (daylight under the rear spoiler) -> waived in qa.waive"
+      "2026-11-01: new complete model replacing the Mustang (Sketchfab, see assets/cars/ford-gt/source.json); first QA run",
+      "run 2: tyres dug 1.5 cm into the rear arches, 4.9 cm with the nose down -> ride 0.06 m, pitch 0.4",
+      "run 3: the tuning was ignored (source.replacement reads a replacement block) -> replacement false; the 11 see-through gaps traced to the real flying buttresses, the wing and a window -> waived; door decals and haunch emblems removed from the model (they overprinted the number roundel)"
     ],
     "qa": {
       "waive": [
         {
+          "view": "front",
+          "at": [
+            0.37,
+            0.55
+          ],
+          "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-front-0.png)"
+        },
+        {
+          "view": "front",
+          "at": [
+            0.62,
+            0.55
+          ],
+          "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-front-1.png)"
+        },
+        {
+          "view": "rear",
+          "at": [
+            0.37,
+            0.55
+          ],
+          "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-2.png)"
+        },
+        {
+          "view": "rear",
+          "at": [
+            0.62,
+            0.55
+          ],
+          "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-3.png)"
+        },
+        {
           "view": "front-left",
           "at": [
-            0.72,
-            0.67
+            0.74,
+            0.65
           ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
+          "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
+        },
+        {
+          "view": "front-left",
+          "at": [
+            0.77,
+            0.64
+          ],
+          "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
         },
         {
           "view": "front-right",
           "at": [
-            0.28,
-            0.67
+            0.26,
+            0.65
           ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
+          "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
         },
         {
-          "view": "front-left",
+          "view": "front-right",
+          "at": [
+            0.23,
+            0.64
+          ],
+          "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
+        },
+        {
+          "view": "rear-left",
           "at": [
             0.66,
-            0.67
+            0.52
           ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
+          "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-left-6.png)"
         },
         {
-          "view": "front-left",
-          "at": [
-            0.69,
-            0.68
-          ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
-        },
-        {
-          "view": "front-right",
+          "view": "rear-right",
           "at": [
             0.34,
-            0.67
+            0.52
           ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
+          "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-right-9.png)"
         },
         {
-          "view": "front-right",
+          "view": "rear-right",
           "at": [
-            0.31,
-            0.68
+            0.47,
+            0.6
           ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
-        },
-        {
-          "view": "front-right",
-          "at": [
-            0.33,
-            0.68
-          ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
-        },
-        {
-          "view": "low-left",
-          "at": [
-            0.85,
-            0.57
-          ],
-          "why": "daylight under the rear spoiler (traced: trace-front-left-0.png)"
+          "why": "over the rear deck and out through the side window (traced: trace-rear-right-10.png)"
         }
       ]
     }
   },
   "summary": {
     "pass": 8,
-    "warn": 3,
-    "fail": 0,
+    "warn": 2,
+    "fail": 1,
     "review": 1,
     "info": 1
   },
@@ -101,7 +121,7 @@
       "id": "see-through",
       "title": "No see-through gaps (every part in place)",
       "status": "pass",
-      "value": "0 gaps ≥ 20 cm², 0 of 5-20 cm², 8 waived (daylight under the rear spoiler (traced: trace-front-left-0.png))",
+      "value": "0 gaps ≥ 20 cm², 0 of 5-20 cm², 11 waived (daylight through the flying-buttress tunnel, open on the real car (traced: trace-front-0.png); daylight through the flying-buttress tunnel, open on the real car (traced: trace-front-1.png); daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-2.png); daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-3.png); daylight under the wing, between its struts (traced: trace-front-left-4.png); daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-left-6.png); daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-right-9.png); over the rear deck and out through the side window (traced: trace-rear-right-10.png))",
       "expect": "none",
       "fix": "automatic interior fills (carkit/interior.js: floor, keel, bays, bulkheads, arch liners, cabin); trace a gap that survives them (masks.png, then a magenta-background render) and add a fill or a tuning.glass scale",
       "detail": []
@@ -110,75 +130,75 @@
       "id": "glass-cover",
       "title": "Glass fills the window openings (advisory)",
       "status": "warn",
-      "value": "72% of opening pixels covered",
+      "value": "0% of opening pixels covered",
       "expect": "≥ 90%",
       "fix": "car-lab profile glass polygons (read-only) or tuning.glass { push, offset } here",
       "detail": [
         {
           "name": "left",
           "all": 0,
-          "uncoveredPx": 312,
-          "openingsPx": 1077
+          "uncoveredPx": 0,
+          "openingsPx": 0
         },
         {
           "name": "right",
           "all": 0,
-          "uncoveredPx": 312,
-          "openingsPx": 1077
+          "uncoveredPx": 0,
+          "openingsPx": 0
         },
         {
           "name": "front",
-          "all": 0,
-          "uncoveredPx": 0,
-          "openingsPx": 419
+          "all": 2,
+          "uncoveredPx": 168,
+          "openingsPx": 168
         },
         {
           "name": "rear",
-          "all": 0,
-          "uncoveredPx": 0,
-          "openingsPx": 419
+          "all": 2,
+          "uncoveredPx": 168,
+          "openingsPx": 168
         },
         {
           "name": "top",
           "all": 0,
-          "uncoveredPx": 2170,
-          "openingsPx": 7569
+          "uncoveredPx": 172,
+          "openingsPx": 172
         },
         {
           "name": "front-left",
-          "all": 3,
-          "uncoveredPx": 184,
-          "openingsPx": 275
+          "all": 2,
+          "uncoveredPx": 475,
+          "openingsPx": 475
         },
         {
           "name": "rear-left",
-          "all": 0,
-          "uncoveredPx": 60,
-          "openingsPx": 106
+          "all": 1,
+          "uncoveredPx": 50,
+          "openingsPx": 50
         },
         {
           "name": "front-right",
-          "all": 4,
-          "uncoveredPx": 201,
-          "openingsPx": 285
+          "all": 2,
+          "uncoveredPx": 472,
+          "openingsPx": 472
         },
         {
           "name": "rear-right",
-          "all": 0,
+          "all": 2,
           "uncoveredPx": 58,
-          "openingsPx": 104
+          "openingsPx": 58
         },
         {
           "name": "low-left",
-          "all": 1,
-          "uncoveredPx": 50,
-          "openingsPx": 430
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
         },
         {
           "name": "low-right",
           "all": 0,
-          "uncoveredPx": 31,
-          "openingsPx": 361
+          "uncoveredPx": 0,
+          "openingsPx": 0
         }
       ]
     },
@@ -186,37 +206,37 @@
       "id": "wheels",
       "title": "Tyres sit in the arches: a visible gap, no clipping, flush with the body",
       "status": "warn",
-      "value": "front: clear -0.007 top 0.03 poke 0.023; front: clear -0.006 top 0.03 poke 0.02; rear: clear 0.003 top 0.034 poke 0.025; rear: clear 0.004 top 0.034 poke 0.025",
+      "value": "front: clear 0.039 top 0.059 poke 0.348; front: clear 0.036 top 0.058 poke 0.338; rear: clear 0.01 top 0.057 poke 0.346; rear: clear 0.011 top 0.057 poke 0.354",
       "expect": "clearance ≥ 0 (lip overlap under 2 cm warns), top gap 1.2-12 cm, poke -10..+4 cm",
       "fix": "tuning.suspension { ride } raises the body off the wheels (m); arch lips that dip into the tyre need a shell fix",
       "detail": [
         {
           "wheel": "wheel_FL",
           "axle": "front",
-          "minClearance": -0.007,
-          "topGap": 0.03,
-          "poke": 0.023
+          "minClearance": 0.039,
+          "topGap": 0.059,
+          "poke": 0.348
         },
         {
           "wheel": "wheel_FR",
           "axle": "front",
-          "minClearance": -0.006,
-          "topGap": 0.03,
-          "poke": 0.02
+          "minClearance": 0.036,
+          "topGap": 0.058,
+          "poke": 0.338
         },
         {
           "wheel": "wheel_RL",
           "axle": "rear",
-          "minClearance": 0.003,
-          "topGap": 0.034,
-          "poke": 0.025
+          "minClearance": 0.01,
+          "topGap": 0.057,
+          "poke": 0.346
         },
         {
           "wheel": "wheel_RR",
           "axle": "rear",
-          "minClearance": 0.004,
-          "topGap": 0.034,
-          "poke": 0.025
+          "minClearance": 0.011,
+          "topGap": 0.057,
+          "poke": 0.354
         }
       ]
     },
@@ -224,74 +244,34 @@
       "id": "glass-fit",
       "title": "Glass sits in the openings, not on top of the paint or under it",
       "status": "pass",
-      "value": "floating 3%, buried 21%, over openings 73%",
+      "value": "floating 1%, buried 28%, over openings 1%",
       "expect": "floating ≤ 5%, buried ≤ 30%",
       "fix": "tuning.glass { push } (m, along the pane normal)",
       "detail": {
-        "samples": 577,
-        "floating": 0.026,
-        "buried": 0.211,
-        "overOpening": 0.728,
+        "samples": 320,
+        "floating": 0.013,
+        "buried": 0.278,
+        "overOpening": 0.006,
         "floatingAt": [
           [
-            -0.65,
-            1.25,
-            0.29
+            0.4,
+            1.07,
+            -0.24
           ],
           [
-            -0.65,
-            1.25,
-            0.22
+            0.43,
+            1.07,
+            -0.1
           ],
           [
-            -0.65,
-            1.25,
-            0.15
+            0.43,
+            1.07,
+            0.1
           ],
           [
-            -0.65,
-            1.25,
-            0.07
-          ],
-          [
-            -0.65,
-            1.25,
-            0
-          ],
-          [
-            -0.65,
-            1.25,
-            -0.07
-          ],
-          [
-            -0.65,
-            1.25,
-            -0.15
-          ],
-          [
-            -0.65,
-            1.25,
-            -0.22
-          ],
-          [
-            -0.65,
-            1.25,
-            -0.29
-          ],
-          [
-            -0.72,
-            1.24,
-            0.3
-          ],
-          [
-            -0.72,
-            1.24,
-            0.23
-          ],
-          [
-            -0.72,
-            1.24,
-            0.15
+            0.4,
+            1.07,
+            0.24
           ]
         ]
       }
@@ -300,7 +280,7 @@
       "id": "exhaust",
       "title": "Exhaust and nitro points sit on the rear surface with a clear exit",
       "status": "pass",
-      "value": "4 points, 0 off the body or blocked, asymmetry 0 m",
+      "value": "2 points, 0 off the body or blocked, asymmetry 0 m",
       "expect": "on the surface (−4..+8 cm), unblocked, mirror-symmetric",
       "fix": "assets/cars/exhaust.json tips [y, z] (and up for top exits); ?debug=exhaust shows them",
       "detail": [
@@ -309,28 +289,14 @@
           "name": "exhaust_0",
           "onBody": 0.02,
           "blocked": false,
-          "z": -0.74
+          "z": -0.099
         },
         {
           "kind": "exhaust",
           "name": "exhaust_1",
           "onBody": 0.02,
           "blocked": false,
-          "z": -0.62
-        },
-        {
-          "kind": "exhaust",
-          "name": "exhaust_2",
-          "onBody": 0.02,
-          "blocked": false,
-          "z": 0.62
-        },
-        {
-          "kind": "exhaust",
-          "name": "exhaust_3",
-          "onBody": 0.02,
-          "blocked": false,
-          "z": 0.74
+          "z": 0.099
         }
       ]
     },
@@ -338,66 +304,54 @@
       "id": "mirrors",
       "title": "Side mirrors: real-style housings, both sides, symmetric, on short arms",
       "status": "pass",
-      "value": "gt, asymmetry 0 m, housing gap 0.175 / 0.175 m",
+      "value": "the model's own, asymmetry 0.001 m, housing gap 0.122 / 0.122 m",
       "expect": "tuned style, asymmetry ≤ 2 cm, gap 1.5-32 cm",
       "fix": "tuning.mirrors { style: blade|gt|bullet, scale, offset, housing }",
       "detail": {
         "present": true,
-        "asymmetry": 0,
+        "asymmetry": 0.001,
         "housingGap": [
-          0.175,
-          0.175
+          0.122,
+          0.122
         ],
         "size": [
-          0.012,
-          0.082,
-          0.202
+          0.067,
+          0.11,
+          0.194
         ]
       }
     },
     {
       "id": "lamps",
       "title": "Tail lamps: red but unlit off the brake, bright and blooming on it",
-      "status": "pass",
-      "value": "area 189 cm2; dusk b0: 43.8, dusk b1: 112.5, night b0: 31.4, night b1: 127.8",
+      "status": "fail",
+      "value": "area 10000 cm2; dusk b0: undefined, dusk b1: undefined, night b0: undefined, night b1: undefined",
       "expect": "off: lum < 125, red; on: ≥ 90 and ≥ off + 40 (saturated red has low luminance; glossy lenses mirror the sky when off)",
       "fix": "carkit/lamps.js (levels are shared; area-normalised); tuning.lamps only for a real exception",
       "detail": [
         {
           "look": "dusk",
           "brake": 0,
-          "area": 0.0189,
-          "px": 615,
-          "lum": 43.8,
-          "redOverGreen": 4.29,
-          "peak": 117
+          "area": 1,
+          "px": 0
         },
         {
           "look": "dusk",
           "brake": 1,
-          "area": 0.0189,
-          "px": 615,
-          "lum": 112.5,
-          "redOverGreen": 1.81,
-          "peak": 172
+          "area": 1,
+          "px": 0
         },
         {
           "look": "night",
           "brake": 0,
-          "area": 0.0189,
-          "px": 615,
-          "lum": 31.4,
-          "redOverGreen": 16.88,
-          "peak": 110
+          "area": 1,
+          "px": 0
         },
         {
           "look": "night",
           "brake": 1,
-          "area": 0.0189,
-          "px": 615,
-          "lum": 127.8,
-          "redOverGreen": 1.4,
-          "peak": 199
+          "area": 1,
+          "px": 0
         }
       ]
     },
@@ -414,7 +368,7 @@
       "id": "pitch",
       "title": "Body dips under braking (1 g)",
       "status": "pass",
-      "value": "1.28°",
+      "value": "0.85°",
       "expect": "0.8-3.2°",
       "fix": "tuning.suspension { pitch, freq, damping }"
     },
@@ -429,8 +383,8 @@
     {
       "id": "travel",
       "title": "Tyres stay clear of the arches with the nose down",
-      "status": "warn",
-      "value": "-0.019 m",
+      "status": "pass",
+      "value": "0.018 m",
       "expect": "≥ 0",
       "fix": "tuning.suspension { pitch } lower, or { ride } higher"
     },
@@ -446,19 +400,19 @@
       "id": "fx",
       "title": "Exhaust smoke, pops, nitro flames and drift smoke all show",
       "status": "pass",
-      "value": "idle smoke 61, pop fire 47, nitro fire 53, drift smoke 312",
+      "value": "idle smoke 17, pop fire 15, nitro fire 52, drift smoke 410",
       "expect": "all > 0 (drift > 20)",
       "fix": "exhaust.json points; carkit/fx.js rates"
     }
   ],
   "metric": {
-    "pitch": 1.278130702802966,
+    "pitch": 0.8520871352019772,
     "roll": 1.9657665604507406,
     "aero": 0,
-    "smokeIdle": 61,
-    "fireLift": 47,
-    "fireNitro": 53,
-    "smokeDrift": 312,
-    "clearBrake": -0.019
+    "smokeIdle": 17,
+    "fireLift": 15,
+    "fireNitro": 52,
+    "smokeDrift": 410,
+    "clearBrake": 0.018
   }
 }

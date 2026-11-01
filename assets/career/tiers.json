@@ -17,15 +17,15 @@
     "corvid":  { "tier": "maestro", "expPos": 5, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "clean races", "side": "test" },
     "hayate":  { "tier": "rookie",  "expPos": 6, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "side": "sponsor" },
     "mojave":  { "tier": "rookie",  "expPos": 7, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "side": "test" },
-    "liberty": { "tier": "rookie",  "expPos": 8, "A": "blackbird",         "B": "mustang",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "side": "sponsor" }
+    "liberty": { "tier": "rookie",  "expPos": 8, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "side": "sponsor" }
   },
   "carZ": {
     "destrier": 0.69, "buggati": 0.66, "laferrari": 0.50, "furari-488": 0.24, "av12": 0.19, "huracan": 0.09, "porsche1": 0.37, "mp1x": 0.18,
-    "aston-martin-valk": 0.55, "bentley-gt": -0.95, "supra": 0.42, "nissan-z": -1.07, "jaguarxkjss": 0.22, "bmw1": -0.92, "blackbird": 0.40, "mustang": -1.58
+    "aston-martin-valk": 0.55, "bentley-gt": -0.95, "supra": 0.42, "nissan-z": -1.07, "jaguarxkjss": 0.22, "bmw1": -0.92, "blackbird": 0.40, "ford-gt": -0.03
   },
   "firstJob": {
     "hayate":  { "salary": 300, "signing": 600,  "pitch": "Precision and qualifying. The best of the three cars.", "difficulty": "Medium" },
     "mojave":  { "salary": 300, "signing": 900,  "pitch": "The underdog garage from the desert. A balanced deal.", "difficulty": "Medium" },
-    "liberty": { "salary": 250, "signing": 1500, "pitch": "American muscle and the slowest car in the series. A big signing bonus and the underdog bonus.", "difficulty": "Hard", "underdog": true }
+    "liberty": { "salary": 250, "signing": 1500, "pitch": "A track-only Ford GT and the team everyone writes off. A big signing bonus and the underdog bonus.", "difficulty": "Hard", "underdog": true }
   }
 }

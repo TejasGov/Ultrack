@@ -47,7 +47,7 @@ Read from the code on 2026-10-31. File references are to `track-viewer/` unless 
 | # | Constraint | Consequence for the career |
 |---|---|---|
 | C1 | **One car per team on the grid, 8 slots.** `racersFor()` returns the hero plus each other team's `cars[0]`; `Field.grid()` puts the hero in the last slot (`cars.js` 532-545) | The teammate cannot be on track. The teammate duel is a qualifying-lap duel plus a team-trust number (section 6.3). Grid order needs one small engine change (section 10.3). A 16-car grid is a stretch goal, not a dependency |
-| C2 | **Balance of performance flattens the cars.** Per-car `bop` / `bopGrip` push AI solo laps on Marina into a ~144-153 s band, 4% apart (`PHYSICS.md`). A 255 km/h Mustang and a 346 km/h Destrier end up close in lap time | The gap between tiers cannot come from stock cars alone. It comes from upgrade levels on the AI cars, driver ratings (AI pace) and the player's own upgrades (section 2.3) |
+| C2 | **Balance of performance flattens the cars.** Per-car `bop` / `bopGrip` push AI solo laps on Marina into a ~144-153 s band, 4% apart (`PHYSICS.md`). A 268 km/h Nissan Z and a 346 km/h Destrier end up close in lap time | The gap between tiers cannot come from stock cars alone. It comes from upgrade levels on the AI cars, driver ratings (AI pace) and the player's own upgrades (section 2.3) |
 | C3 | **AI pace today is the grid index, not the driver**: `new AIDriver(this, c, c.hero ? 1 : 0.93 + 0.012 * k)` (`cars.js` 563), so rivals run 0.942 to 1.014 in the order of `teams.json`. | The career needs a per-entry pace override (one line) driven by driver rating |
 | C4 | **AI cars are never upgraded** at race start (GAME.md; `applyUpgrades(..., store.data.car)`) | See C2: the career sets AI levels from a team-development table |
 | C5 | **The AI does not defend or choose lines** (GAME.md "Not done") | Overtaking is easier than it should be; keep the AI-pace spread modest and let qualifying matter (section 4.3) |
@@ -72,7 +72,7 @@ Method (reproducible, Appendix C): for each of the 16 cars, take the numbers `ha
 | **Corvid** | `aston-martin-valk` Valkyrie-X (318, 2.60, 183) | `bentley-gt` Bentley Continental (307, 3.35, 170) | +0.55 | -0.95 | **-0.20** | S+ 25, C 5 | **15.0** | Former champions |
 | **Hayate** | `supra` GR Supra GT (286, 2.75, 186) | `nissan-z` Nissan Z GT4 (268, 3.50, 165) | +0.42 | -1.07 | **-0.32** | S 20, C 5 | **12.5** | Precision newcomers |
 | **Mojave** | `jaguarxkjss` Mercedes-AMG ONE (317, 2.83, 178) | `bmw1` Mercedes-AMG GT4 (277, 3.35, 172) | +0.22 | -0.92 | **-0.35** | S 20, D 1 | **10.5** | Fallen greats |
-| **Liberty** | `blackbird` Blackbird-X (318, 2.68, 187) | `mustang` Ford Mustang (255, 4.03, 144) | +0.40 | -1.58 | **-0.59** | A 15, D 1 | **8.0** | Rookie team |
+| **Liberty** | `blackbird` Blackbird-X (318, 2.68, 187) | `ford-gt` Ford GT Mk II (286, 2.90, 186) | +0.40 | -0.03 | **+0.19** | A 15, B 10 | **12.5** | Rookie team |
 
 Top speed in km/h, 0-100 in seconds and power-to-weight in W/kg are the game's compressed numbers, not the real cars' (the real Destrier is 400 km/h; the game's is 346). The key names are the `teams.json` keys; always show `carName(key)` in the UI. `TEAMS.md` still describes some teams with older car names; `teams.json` is the truth the game reads.
 
@@ -93,7 +93,7 @@ Rank both metrics, break ties with the lore status line, and cut the table 2 / 3
 
 Mean z by tier: Legends +0.52, Maestros +0.07, Rookies -0.42. The two metrics agree on both ends and swap only inside the Maestros, where the lore breaks the tie (Toro "Eternal challengers" ahead of Sarab "Rising contenders", who are expected to climb). This order is the **opening expected finish** (`expPos` 1 to 8) that every objective is judged against; `expPos` is data and moves each season (section 6.1).
 
-Inside a team the two cars are not equal (Liberty: Blackbird +0.40 vs. Mustang -1.58). That is a feature: the **A seat** (higher composite z) is the senior drive, the **B seat** is the junior drive, and the jump from B to A inside one team is the biggest single car step in the game (Mustang to Blackbird, Nissan Z to Supra). Aurum's two cars are 0.03 apart, so it has no junior seat: its second seat is a full drive.
+Inside a team the two cars are not equal (Liberty: Blackbird +0.40 vs. Ford GT -0.03). That is a feature: the **A seat** (higher composite z) is the senior drive, the **B seat** is the junior drive, and the jump from B to A inside one team is the biggest single car step in the game (AMG GT4 to AMG ONE, Nissan Z to Supra). Aurum's two cars are 0.03 apart, so it has no junior seat: its second seat is a full drive.
 
 ### 2.3 What a tier means
 
@@ -102,7 +102,7 @@ Inside a team the two cars are not equal (Liberty: Blackbird +0.40 vs. Mustang -
 | Teams | Hayate, Mojave, Liberty | Toro, Sarab, Corvid | Aurum, Saetta |
 | Class table | Rookie Cup (3 teams) | Maestro Cup (3 teams) | Legend Cup (2 teams) |
 | Opening expected finish | P6-P8 | P3-P5 | P1-P2 |
-| B-seat cars | Mustang D, AMG GT4 D, Nissan Z C | HU-10 A, 720S A, Bentley C | 488-R A, Divo S |
+| B-seat cars | Ford GT B, AMG GT4 D, Nissan Z C | HU-10 A, 720S A, Bentley C | 488-R A, Divo S |
 | A-seat cars | Blackbird A, AMG ONE S, Supra S | AV-12 A, 918-S B, Valkyrie S+ | La Furari S, Destrier S+ |
 | **Upgrade cap** per category | **1** | **2** | **3** |
 | AI cars' development levels, season 1 (engine / tyres / brakes) | 0 / 0 / 0 | 1 / 1 / 1 | 2 / 2 / 2 |
@@ -144,7 +144,7 @@ Invented for the career, chosen to match the lore in `TEAMS.md` and to fit the t
 | Lindqvist | Mojave / `jaguarxkjss` | 29 | 82 | rally convert |
 | Mizuno | Hayate / `nissan-z` | 29 | 80 | drift king |
 | Quintero | Mojave / `bmw1` | 20 | 79 | the rookie, grows +2 a season |
-| Maddox | Liberty / `mustang` | 30 | 77 | the brawler |
+| Maddox | Liberty / `ford-gt` | 30 | 77 | the brawler |
 | Hollis | Liberty / `blackbird` | 37 | 76 | the Colonel |
 
 ### 2.5 Team lore the career uses
@@ -175,7 +175,7 @@ Each offer is the **B seat** of one Rookie team.
 
 | | **Hayate** | **Mojave** | **Liberty** |
 |---|---|---|---|
-| Seat and car | #23, `nissan-z` Nissan Z GT4 (400 hp, 268 km/h sim, C) | #9, `bmw1` AMG GT4 (503 hp, 277 km/h sim, D) | #66, `mustang` Mustang (460 hp, 255 km/h sim, D; the slowest car in the game) |
+| Seat and car | #23, `nissan-z` Nissan Z GT4 (400 hp, 268 km/h sim, C) | #9, `bmw1` AMG GT4 (503 hp, 277 km/h sim, D) | #66, `ford-gt` Ford GT Mk II (700 hp, 286 km/h sim, B; replaced the Mustang on 2026-11-01; the slowest car in the game) |
 | Teammate (A seat) | Rina Kuroda, `supra` (83) | Freya Lindqvist, `jaguarxkjss` (82) | Wade Hollis, `blackbird` (76) |
 | Pitch | Precision, qualifying, drift events (Sony) | The underdog garage, balanced deal | American muscle, a first-season team with no history to protect |
 | Contract | 2 seasons, 300 U a round, signing bonus 600 U | 2 seasons, 300 U a round, signing bonus 900 U | 2 seasons, 250 U a round, signing bonus 1,500 U |
@@ -207,7 +207,7 @@ Same record for every contract in the game (the save schema holds it, 10.2):
 
 ### 3.4 What the rookie expects and gets
 
-- The car is the team's B-seat car at **stock**, upgradable to cap 1 in each category (section 5.4). All three Rookie B cars are in the `tourer` / `sports` price classes (Nissan Z and Mustang x0.8, AMG GT4 x1).
+- The car is the team's B-seat car at **stock**, upgradable to cap 1 in each category (section 5.4). All three Rookie B cars are in the `tourer` / `sports` price classes (Nissan Z x0.8, AMG GT4 and Ford GT x1).
 - Opening wallet: 1,000 U plus the signing bonus. Upgrades unlock at Career Level 2 (90 XP), which the Shootout alone reaches.
 - Probation: the player cannot be dropped before round 4 of season 1.
 
@@ -326,7 +326,7 @@ The "level by level" climb is seven rungs. A rung is a tier plus a seat; moving 
 
 | Rung | Tier / seat | Cars (examples) | Typical CL | Upgrade cap | Gate to the next rung |
 |---|---|---|---|---|---|
-| 1 | Rookie, B seat | Mustang, AMG GT4, Nissan Z | 1-4 | 1 | Season duel won (6.3), trust >= 60: **promotion to the A seat** in the same team (or a Rookie offer) |
+| 1 | Rookie, B seat | Ford GT, AMG GT4, Nissan Z | 1-4 | 1 | Season duel won (6.3), trust >= 60: **promotion to the A seat** in the same team (or a Rookie offer) |
 | 2 | Rookie, A seat | Blackbird, AMG ONE, Supra | 4-8 | 1 (+1 team package) | REP >= 200, form rating >= 6.5, CL >= 6: **Maestro offers** |
 | 3 | Maestro, B seat | HU-10, 720S | 6-11 | 2 | Promotion to A seat |
 | 4 | Maestro, A seat | AV-12, 918-S, Valkyrie | 10-15 | 2 | REP >= 600, form rating >= 7.3, CL >= 14: **Legend offers** |
@@ -350,7 +350,7 @@ What a maxed car costs, from `economy.js` (3 categories x 3 levels):
 
 | Class (hp) | Level 1 / 2 / 3 per category | All three categories at 1 | at 2 | at 3 | Max out |
 |---|---|---|---|---|---|
-| Tourer, under 500 hp (Nissan Z, Mustang) | 550 / 1,350 / 2,900 | 1,650 | 4,050 | 8,700 | 14,400 |
+| Tourer, under 500 hp (Nissan Z) | 550 / 1,350 / 2,900 | 1,650 | 4,050 | 8,700 | 14,400 |
 | Sports, 500-800 hp (AMG GT4, HU-10, 720S, 488-R, AV-12, Supra) | 700 / 1,700 / 3,600 | 2,100 | 5,100 | 10,800 | 18,000 |
 | Super, 800-1,100 hp (Blackbird, 918-S, La Furari, AMG ONE) | 950 / 2,300 / 4,850 | 2,850 | 6,900 | 14,550 | 24,300 |
 | Hyper, 1,100 hp and up (Valkyrie, Divo, Destrier) | 1,250 / 3,050 / 6,500 | 3,750 | 9,150 | 19,500 | 32,400 |

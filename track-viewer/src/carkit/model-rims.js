@@ -6,6 +6,7 @@ const RIMS={
   bmw1:['wheel'],
   'nissan-z':['mm_wheel'],
   supra:['material_13'],
+  'ford-gt':['rimpaint'],
   jaguarxkjss:['tyre','crbnfibre'],
 };
 export function isModelRim(key,name='') {return RIMS[key]?.includes(name.replace(/^[^|]*\|/,''))??false;}

@@ -192,7 +192,7 @@ if (tests.includes('upgrades')) {                                   // the upgra
   H.setUpgrades('av12', { engine: 0, tyres: 0, brakes: 0 });
   const base = H.handling('av12'); H.setUpgrades('av12', { engine: 3, tyres: 3, brakes: 3 }); const top = H.handling('av12');
   assert(Math.abs(top.power / base.power - 1.16 * top.mass / base.mass) < 1e-9 && Math.abs(top.grip / base.grip - 1.09) < 1e-9 && Math.abs(top.brakeK / base.brakeK - 1.16) < 1e-9 && top.mass === base.mass + 10, 'level 3 multipliers');
-  assert.equal(H.handling('furari-488').power, H.handling('furari-488').power); assert.deepEqual(H.getUpgrades('mustang'), { engine: 0, tyres: 0, brakes: 0 }, 'other cars stay stock');
+  assert.equal(H.handling('furari-488').power, H.handling('furari-488').power); assert.deepEqual(H.getUpgrades('ford-gt'), { engine: 0, tyres: 0, brakes: 0 }, 'other cars stay stock');
   H.setUpgrades('av12', { engine: 0, tyres: 0, brakes: 0 });
   // retune a live car: mass, power and brakes change at once and the car keeps driving
   const v = mk('av12'); settle(v); const m0 = v.rb.mass(); H.setUpgrades('av12', { engine: 3 }); v.retune(H.handling('av12'));

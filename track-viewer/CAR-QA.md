@@ -107,7 +107,7 @@ Results go to `qa/<car>/`:
 | av12 (model) | 9 / 2 / 0 | its own | 0.015 | - | daylight under the rear wing; diffuser fins |
 | aston-martin-valk (model: Valkyrie) | 8 / 2 / 1 | its own (camera pods) | 0.03 | - | see-through gaps accepted |
 | porsche1 (model: 918 Spyder) | 8 / 2 / 1 | its own | 0.01 | - | see-through gaps accepted |
-| mustang | 8 / 3 / 0 | gt paint | 0.029 | - | daylight under the rear spoiler |
+| ford-gt (model: GT Mk II, replaced the Mustang 2026-11-01) | 8 / 2 / 1 (the lamp check, see below) | its own | 0.06 | - | flying-buttress tunnels, daylight under the wing |
 | buggati (model: Divo) | 10 / 1 / 0 | its own | 0.01 | - | daylight through the open rear wing and behind the tail |
 | mp1x | 8 / 4 / 0 | blade carbon | 0.034 | wing, airbrake | waist channel end-on; daylight under the wing |
 | jaguarxkjss | 9 / 2 / 0 | bullet paint | 0.05 | - | - |
@@ -187,6 +187,20 @@ Four more complete Sketchfab models. **All four are game rips** (credits carry t
 - **Engine sound.** `aston-martin-valk` keeps its own Valkyrie V12 recording. `porsche1` plays the Ferrari 488 V8 recording (a high-revving flat-plane V8; the 911 flat-six recording is no longer mapped, its files stay), `huracan` the Aventador SV V12 (a Lamborghini naturally aspirated screamer, no V10 recording exists), `laferrari` the Valkyrie V12 (a naturally aspirated V12 hybrid hypercar). All three are `sharedWith` profiles in `recorded-engine-bank.json`; `verify_recorded_engines.py` now counts own recordings and mapped cars itself (9 own, 5 mapped). `build_recorded_engines.py` would drop the shared profiles: re-add them after a rebuild.
 - **New keys need a dev-server restart.** The cars are found with `import.meta.glob`, which the running server does not re-scan for a new folder (`laferrari`, `huracan`: "Cannot read properties of undefined (reading 'glassMaterial')"). The QA for them ran against a second Vite instance (`npm run qa -- --url=http://127.0.0.1:5181 laferrari`).
 - **Texture packing:** `npm --prefix track-viewer run pack:cars -- porsche1 huracan laferrari aston-martin-valk`, then `node scripts/sync-assets.mjs`.
+
+### Ford GT Mk II (2026-11-01)
+
+The Mustang's slot on Liberty (#66, Maddox), as a new key `ford-gt`. The Meshy shell, tuning and tail spec are in `_archive/2026-11-01/` (see its `MANIFEST.md`); saves are moved over on load (`store.js`, `career/save.js`).
+
+| Key | Model | Author, licence | Triangles (body / wheel) | Length used | Rip verdict |
+|---|---|---|---|---|---|
+| `ford-gt` | 2019 Ford GT MKII Track, "Ford GT Mk II" | Ddiaz Design (ddiaz-design), CC BY-NC-SA 4.0 | 73.1k / 5.1k | 5.07 m (with the splitter and wing; scale 1.03, so the wheelbase is 2.72 m against the real 2.71 and the painted width 2.01 m against 2.004) | Certain: the page says "Based on an Asphalt 9 Legends 3d model"; parts are `car_ford_gt_mkii:<part>_LOD2_UV2_...` |
+
+- **Prepare:** `blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- fordgt` (the model has its own `carpaint`; the rest is one atlas). The model's right mirror sat 10 cm behind the left: moved to match. Door decals and the haunch emblems overprinted the team's number roundel: removed. The white spokes are `keep|rimpaint` (`model-rims.js`): they take the finish's rim colour.
+- **Warnings left:** the advisory glass count, and the poke reading (0.34 m, the ride-height artefact described above).
+- **Lamp check:** fails on every car with a tail spec, not just this one (`maskNow(partsOf(car).tail)` finds no pixels since the spec treatment, so `lum` is undefined; `nissan-z` reads the same). Judge lamps with `qa-taillights.mjs` until it is fixed. QA: `qa/taillights/ford-gt-step2/`.
+- **Handling:** `grip` 1.25 and `downforce` 1.2 are the 488's, not the real car's 400% downforce claim: at 1.3 / 1.6 a 250 ms tap at 135 km/h turned 4.8 degrees against the 4.6 limit. `bop` 1 and `bopGrip` 1 (`--cars ford-gt`, target 118: 117.3 s).
+- **Engine sound:** `ford-gt` plays the AMG ONE turbo V6 recording (`sharedWith`) with a 7,000 rpm redline. The Mustang recording's profile, receipts and plan entry moved to `blackbird`, the only car that still plays it; its files keep the name `mustang-*.ogg`.
 
 ## The AV-12 Meshy shell, the first worked example (`tuning/av12.json` → `log`)
 

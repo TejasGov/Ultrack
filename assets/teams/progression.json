@@ -10,9 +10,9 @@
     "S+": {"label": "Apex", "level": 25}
   },
   "cars": {
-    "mustang": "D", "bmw1": "D",
+    "bmw1": "D",
     "bentley-gt": "C", "nissan-z": "C",
-    "porsche1": "B", "furari-488": "A", "mp1x": "A", "av12": "A", "blackbird": "A", "huracan": "A",
+    "porsche1": "B", "ford-gt": "B", "furari-488": "A", "mp1x": "A", "av12": "A", "blackbird": "A", "huracan": "A",
     "jaguarxkjss": "S", "supra": "S", "buggati": "S", "laferrari": "S",
     "aston-martin-valk": "S+", "destrier": "S+"
   },
@@ -22,7 +22,7 @@
     "corvid": {"status": "Former champions", "story": "The old benchmark, rebuilding its claim to the front. Precision and experience meet a hungry new generation."},
     "mojave": {"status": "Fallen greats", "story": "Once a fixture at the sharp end, now chasing a revival with grit, inventive engineering and an underdog garage."},
     "aurum": {"status": "Defending champions", "story": "The reigning title holders. A formidable hypercar stable and the pressure of being the team everyone wants to beat."},
-    "liberty": {"status": "Rookie team", "story": "A first-season outfit with veteran drivers, American muscle and an ambitious supercar programme. No history to protect."},
+    "liberty": {"status": "Rookie team", "story": "A first-season outfit with veteran drivers, a track-only Ford GT and an ambitious supercar programme. No history to protect."},
     "hayate": {"status": "Precision newcomers", "story": "A Shizuoka outfit built around two Super GT-bred Japanese cars and a drift champion. Quiet in the garage, loud on the first lap, and sponsored by Sony."},
     "sarab": {"status": "Rising contenders", "story": "The breakthrough team climbing toward its first crown. Balanced machinery, bold racecraft and growing belief."}
   }

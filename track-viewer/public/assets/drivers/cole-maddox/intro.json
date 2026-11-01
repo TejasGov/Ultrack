@@ -17,7 +17,7 @@
   },
   "team": "liberty",
   "raceNumber": 66,
-  "carKey": "mustang",
+  "carKey": "ford-gt",
   "titleSponsor": "Coca-Cola",
   "font": {
     "family": "Graduate",
@@ -26,7 +26,7 @@
     "bold": 0.05
   },
   "manufacturer": "Ford",
-  "car": "Mustang GT (2018)",
+  "car": "GT Mk II (2019)",
   "style": "Original fictional adult driver in inked, cel-shaded GTA V loading-screen-inspired illustration; no real driver likeness.",
   "illustration": "illustration-v1.webp",
   "sourceIllustration": "source/illustration-v1.png",

@@ -1,0 +1,108 @@
+{
+  "car": "ford-gt",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "suspension": {
+    "pitch": 0.4,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.06
+  },
+  "aero": [],
+  "log": [
+    "2026-11-01: new complete model replacing the Mustang (Sketchfab, see assets/cars/ford-gt/source.json); first QA run",
+    "run 2: tyres dug 1.5 cm into the rear arches, 4.9 cm with the nose down -> ride 0.06 m, pitch 0.4",
+    "run 3: the tuning was ignored (source.replacement reads a replacement block) -> replacement false; the 11 see-through gaps traced to the real flying buttresses, the wing and a window -> waived; door decals and haunch emblems removed from the model (they overprinted the number roundel)"
+  ],
+  "qa": {
+    "waive": [
+      {
+        "view": "front",
+        "at": [
+          0.37,
+          0.55
+        ],
+        "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-front-0.png)"
+      },
+      {
+        "view": "front",
+        "at": [
+          0.62,
+          0.55
+        ],
+        "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-front-1.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.37,
+          0.55
+        ],
+        "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-2.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.62,
+          0.55
+        ],
+        "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-3.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.74,
+          0.65
+        ],
+        "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.77,
+          0.64
+        ],
+        "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.26,
+          0.65
+        ],
+        "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.23,
+          0.64
+        ],
+        "why": "daylight under the wing, between its struts (traced: trace-front-left-4.png)"
+      },
+      {
+        "view": "rear-left",
+        "at": [
+          0.66,
+          0.52
+        ],
+        "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-left-6.png)"
+      },
+      {
+        "view": "rear-right",
+        "at": [
+          0.34,
+          0.52
+        ],
+        "why": "daylight through the flying-buttress tunnel, open on the real car (traced: trace-rear-right-9.png)"
+      },
+      {
+        "view": "rear-right",
+        "at": [
+          0.47,
+          0.6
+        ],
+        "why": "over the rear deck and out through the side window (traced: trace-rear-right-10.png)"
+      }
+    ]
+  }
+}

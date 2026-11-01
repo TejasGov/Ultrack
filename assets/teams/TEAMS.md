@@ -23,7 +23,7 @@ cards reuse these assets. Sponsor artwork is separate from the team identities.
 | **Corvid** | COR | the raven and crow family | Silverstone | Sir Hugo Ravensworth | V12 (Valkyrie) / W12 (Bentley) |
 | **Mojave** | MOJ | the desert it was built in | Barstow, CA | Cal Beaumont | F1 hybrid V6 (AMG One) / twin-turbo V8 (AMG GT4) |
 | **Aurum** | AUR | Latin: gold | Monaco | Helene Aurelle | W16 (the two Bugattis) |
-| **Liberty** | LIB | English: freedom; the cracked bell of Philadelphia | Philadelphia, PA | Harlan Whitfield | V8 / W16 (Mustang and Blackbird) |
+| **Liberty** | LIB | English: freedom; the cracked bell of Philadelphia | Philadelphia, PA | Harlan Whitfield | V6 / V8 (Ford GT Mk II and Blackbird) |
 | **Sarab** | SRB | Arabic: a mirage (the home team) | Corniche Marina | Rashid Al-Mansouri | V8 / flat-six |
 | **Hayate** | HYT | Japanese: 疾風, a sudden gale | Oyama, Shizuoka | Tatsuo Hamamoto | twin-turbo V6 (Nissan Z GT4) / turbo four (Supra Super GT) |
 
@@ -67,7 +67,7 @@ Rivalries: Mizuno and Lindqvist argue about who is the better sideways; Kuroda w
 | 33 | Layla Qasimi | QAS | OMN | Sarab | 911–T | the overtaker |
 | 44 | Kai Whitlow | WHI | NZL | Corvid | Continental GT | the grid's veteran |
 | 63 | Paloma Ortega | ORT | ESP | Toro | HU–10 | the matador |
-| 66 | Cole Maddox | MAD | USA | Liberty | Mustang ST–6 | the brawler |
+| 66 | Cole Maddox | MAD | USA | Liberty | Ford GT Mk II | the brawler |
 | 76 | Wade Hollis | HOL | USA | Liberty | Hennessey Blackbird | the Colonel |
 
 The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Sixteen drivers, fourteen nations (two Americans at Liberty, two Japanese at Hayate).
@@ -105,7 +105,7 @@ Giallo yellow (#ffd60a), nero black (#0d0e10) and bone white (#f4f1e8), in **Unb
 
 ### Liberty (the American team)
 
-Royal blue (#1f46b8), Old Glory red (#bf0a30) and white, in **Graduate**, a varsity slab (SIL OFL, `track-viewer/public/assets/fonts/graduate-OFL.txt`). On the car: a red-white-red stripe trio streams back from the front wheel on each flank like a flag in wind, a field of seven white stars on the front fender, red and white racing stripes over the roof, and a thin royal-blue light line along the beltline. Its `light` colour, royal blue (#3d6bff), is the team's lighting: the garage header is a lit panel with a glowing blue edge, the pit box floor is bordered in it, and the Corniche Club banner has glowing blue side strips (`track-viewer/src/teamdress.js`). The team's cars: the Mustang (#66) and the Hennessey Blackbird (#76).
+Royal blue (#1f46b8), Old Glory red (#bf0a30) and white, in **Graduate**, a varsity slab (SIL OFL, `track-viewer/public/assets/fonts/graduate-OFL.txt`). On the car: a red-white-red stripe trio streams back from the front wheel on each flank like a flag in wind, a field of seven white stars on the front fender, red and white racing stripes over the roof, and a thin royal-blue light line along the beltline. Its `light` colour, royal blue (#3d6bff), is the team's lighting: the garage header is a lit panel with a glowing blue edge, the pit box floor is bordered in it, and the Corniche Club banner has glowing blue side strips (`track-viewer/src/teamdress.js`). The team's cars: the Ford GT Mk II (#66) and the Hennessey Blackbird (#76).
 
 Mojave now runs both Mercedes: Lindqvist (#8) in the AMG One and Quintero (#9) in the AMG GT4, in desert orange and navy sunburst; the Bentley went home to Silverstone as Whitlow's Corvid car (#44), so Corvid is all-British; the two Bugattis (Divo #1 and Destrier #16) are **Aurum**'s.
 

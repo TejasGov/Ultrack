@@ -134,31 +134,38 @@
         "brake100To0M"
       ]
     },
-    "mustang": {
-      "model": "Ford Mustang GT (2018)",
-      "lengthM": 4.788,
-      "widthM": 1.915,
-      "heightM": 1.39,
-      "wheelbaseM": 2.72,
-      "massKg": 1720,
+    "ford-gt": {
+      "model": "Ford GT Mk II (2019)",
+      "lengthM": 4.779,
+      "widthM": 2.004,
+      "heightM": 1.11,
+      "wheelbaseM": 2.71,
+      "massKg": 1390,
       "powertrain": "ICE",
-      "engine": "5.0 L Coyote V8, naturally aspirated, front-mounted",
-      "powerHp": 460,
-      "torqueNm": 569,
+      "engine": "3.5 L EcoBoost V6, twin-turbocharged, mid-mounted",
+      "powerHp": 700,
+      "torqueNm": 746,
       "drive": "RWD",
-      "topSpeedKmh": 249,
-      "zeroTo100S": 4.5,
-      "brake100To0M": 37,
-      "brakeBasis": "estimated from 60-0 mph road tests (about 105-110 ft)",
+      "topSpeedKmh": 300,
+      "zeroTo100S": 3,
+      "brake100To0M": 30,
+      "brakeBasis": "estimated: track car on slicks with carbon-ceramic brakes; no published figure",
       "sources": [
-        "https://en.wikipedia.org/wiki/Ford_Mustang_(sixth_generation)",
-        "https://www.ford.com/cars/mustang/"
+        "https://www.thetruthaboutcars.com/2019/07/ford-celebrates-independence-day-with-track-only-gt-mk-ii/",
+        "https://newatlas.com/ford-gt-mk-ii-limited-edition-track/60450/",
+        "https://www.motorsportmagazine.com/articles/single-seaters/hill-climb/ford-unveils-its-no-limits-gt-mk-ii-700bhp-track-only-supercar/"
       ],
       "estimatedFields": [
-        "brake100To0M",
-        "massKg"
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "torqueNm",
+        "topSpeedKmh",
+        "zeroTo100S",
+        "brake100To0M"
       ],
-      "notes": "420 lb-ft = 569 N.m; top speed is the electronic limiter (155 mph); 0-60 mph 4.4 s per the wiki; mass is an estimate of the GT with Performance Pack",
+      "notes": "700 hp and 3,064 lb from the launch coverage; body dimensions and torque are the road GT's (the model's wheelbase and paint width match them); Ford published no top speed or 0-100 for the Mk II, so those are estimates",
       "estimated": false
     },
     "bmw1": {

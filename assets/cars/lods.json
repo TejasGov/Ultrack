@@ -2,21 +2,6 @@
   "generated": "scripts/derive-car-lods.mjs",
   "note": "derived from car-lab body shells; car-lab profiles apply unchanged. Shell cars only: cars that became complete models (car_lod*.glb + model.json) were removed on 2026-10-21, their entries are in _archive/2026-10-21/assets/cars/lods.json",
   "cars": {
-    "mustang": {
-      "name": "ST–6",
-      "sourceTriangles": 1151696,
-      "sourceSha256": "EEF46B74E5F8B8C78CD1E27A603E44AAE81BDA716495EA8D7BF6CA3BD056B074",
-      "lods": {
-        "body_lod0": {
-          "triangles": 79980,
-          "kb": 445
-        },
-        "body_lod1": {
-          "triangles": 19998,
-          "kb": 121
-        }
-      }
-    },
     "bentley-gt": {
       "name": "Continental GT",
       "sourceTriangles": 948020,

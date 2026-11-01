@@ -22,7 +22,7 @@ import { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const profiles = join(root, 'car-lab', 'src', 'vehicle', 'profiles');
 // shell cars only: the others became complete models (car_lod*.glb, scripts/model-car.py) and their body_lod shells were archived (_archive/2026-10-21/MANIFEST.md)
-const CARS = ['mustang', 'bentley-gt', 'bmw1'];
+const CARS = ['bentley-gt', 'bmw1'];
 const LODS = [{ name: 'body_lod0', tris: 80000 }, { name: 'body_lod1', tris: 20000 }];
 
 await MeshoptDecoder.ready; await MeshoptEncoder.ready; await MeshoptSimplifier.ready;

@@ -69,14 +69,14 @@
       "caliper": "#2a2c2f",
       "why": "XKSS: 1950s deep solid enamel gloss, silver wire wheels, no carbon"
     },
-    "mustang": {
+    "ford-gt": {
       "paint": "metallic",
-      "flake": 0.75,
-      "flakeMm": 0.9,
+      "flake": 0.3,
+      "flakeMm": 0.5,
       "carbonBelow": 0,
       "rim": "#23262b",
       "caliper": "#c41e1e",
-      "why": "modern muscle: punchy grainy metallic, red calipers"
+      "why": "Ford GT Mk II: track car in fine-flake gloss over the model's own carbon aero and decals, dark race wheels, red calipers"
     },
     "porsche1": {
       "paint": "metallic",

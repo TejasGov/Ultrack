@@ -52,7 +52,7 @@ Console: `window.viewer.params`, then `viewer.applyAll()`. Also `viewer.setLook(
 ## Scripts
 ```bash
 npm run pack         # all web GLBs from the Blender output (WebP, collision, KTX2): see scripts/pack-web.mjs for the flags that matter
-npm run derive:cars  # game meshes for the car-lab bodies -> assets/cars/<key>/body_lod0|1.glb for the four shell cars (mustang, bentley-gt, bmw1; read-only use of car-lab)
+npm run derive:cars  # game meshes for the car-lab bodies -> assets/cars/<key>/body_lod0|1.glb for the shell cars (bentley-gt, bmw1; read-only use of car-lab)
 npm run test:track   # the engine contract: collision vs track.json, plus a Rapier raycast-vehicle lap (prints PASS)
 ```
 

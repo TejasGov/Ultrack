@@ -337,7 +337,7 @@
    "line": "Stars. Stripes. Full throttle.",
    "cars": [
     {
-     "key": "mustang",
+     "key": "ford-gt",
      "number": 66,
      "driver": {
       "name": "Cole Maddox",
@@ -375,7 +375,7 @@
    "pitBoxes": [
     12
    ],
-   "engine": "v8-crossplane / w16-quadturbo",
+   "engine": "v6-twin-turbo / v8-crossplane",
    "finish": "metallic",
    "sponsor": "Coca-Cola",
    "font": {

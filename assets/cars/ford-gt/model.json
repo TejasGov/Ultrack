@@ -1,0 +1,100 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Ford GT Mk II",
+ "source": {
+  "title": "2019 Ford GT MKII Track",
+  "author": "Ddiaz Design (ddiaz-design)",
+  "authorUrl": "https://sketchfab.com/ddiaz-design",
+  "url": "https://sketchfab.com/3d-models/2019-ford-gt-mkii-track-bffecac59a6b4bc49534be85b5b501c0",
+  "license": "CC BY-NC-SA 4.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "modelId": "bffecac59a6b4bc49534be85b5b501c0",
+  "replacement": false,
+  "nonCommercialOnly": true,
+  "additionalCredits": "Asphalt 9 Legends rip (the page says \"Based on an Asphalt 9 Legends 3d model\"; credits 3dmodelsdestination.blogspot.com). Non-commercial and share-alike licence: fine for this local fan project, replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3384,
+   "width": 0.2681,
+   "x": -1.3776,
+   "track": 1.6827
+  },
+  "rear": {
+   "radius": 0.348,
+   "width": 0.3225,
+   "x": 1.3427,
+   "track": 1.6757
+  }
+ },
+ "size": {
+  "length": 5.07,
+  "width": 2.251,
+  "height": 1.088
+ },
+ "lights": {
+  "front": [
+   [
+    -1.894,
+    0.593,
+    0.733
+   ],
+   [
+    -1.894,
+    0.593,
+    -0.733
+   ]
+  ],
+  "rear": [
+   [
+    2.053,
+    0.635,
+    0.757
+   ],
+   [
+    2.054,
+    0.635,
+    -0.758
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.254,
+    0.703,
+    0.545
+   ],
+   [
+    -1.254,
+    1.025,
+    0.545
+   ],
+   [
+    0.35,
+    1.025,
+    0.545
+   ],
+   [
+    0.35,
+    0.703,
+    0.545
+   ]
+  ]
+ },
+ "exhaust": [
+  [
+   0.624,
+   -0.099
+  ],
+  [
+   0.624,
+   0.099
+  ]
+ ],
+ "triangles": {
+  "body0": 73100,
+  "body1": 20553,
+  "wheel": 5055
+ }
+}

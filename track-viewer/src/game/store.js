@@ -18,7 +18,7 @@ const fresh = () => ({ settings: { ...DEFAULT_SETTINGS }, car: 'av12', paint: {}
 
 function load() {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY)?.replace(/(["/])mustang"/g, '$1ford-gt"');   // the Mustang became the Ford GT (2026-11-01): a save keeps its car, upgrades and records
     if (!raw) return fresh();
     const d = JSON.parse(raw);
     if (d.freePlay) {                            // the game closed mid-career (game.careerSession): free play gets its own car and conditions back

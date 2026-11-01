@@ -194,5 +194,19 @@
     "originalBytes": 1506624,
     "compressedBytes": 440540,
     "textures": 1
+  },
+  {
+    "key": "ford-gt",
+    "lod": 0,
+    "originalBytes": 4220808,
+    "compressedBytes": 1969496,
+    "textures": 10
+  },
+  {
+    "key": "ford-gt",
+    "lod": 1,
+    "originalBytes": 1292008,
+    "compressedBytes": 731908,
+    "textures": 6
   }
 ]

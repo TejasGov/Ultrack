@@ -1,5 +1,5 @@
 # Prepares the four 2026-10-21 Sketchfab cars for scripts/model-car.py (track-viewer): game-rip structure -> role-tagged parts.
-#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4|nissanz|supra>
+#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4|nissanz|supra|fordgt>
 # Reads <folder>/model.glb, writes <folder>/prepared.glb with
 #   - every mesh un-parented, in world space (the pipeline measures and scales it itself),
 #   - object names the pipeline's wheel patterns find ("Tyre_", "Spin_" = rim + disc, "Caliper_", "INT:" = cabin),
@@ -13,7 +13,7 @@ from mathutils import Vector, Matrix
 
 key = sys.argv[sys.argv.index('--') + 1]
 HERE = os.path.dirname(os.path.abspath(__file__))
-FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4', 'nissanz': 'Nnissan-z-gt4', 'supra': 'Tsupra-gt'}[key]
+FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4', 'nissanz': 'Nnissan-z-gt4', 'supra': 'Tsupra-gt', 'fordgt': 'Ffordgt-mk2'}[key]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=os.path.join(HERE, FOLDER, 'model.glb'))
 
@@ -246,6 +246,85 @@ def supra():
             continue
         put(o, base + '_' + mn, 'keep')
 if key == 'supra': supra()
+
+# ================= the Ford GT Mk II (Asphalt 9 rip: car_ford_gt_mkii:<part>_LOD2_UV2_...; centimetre file, nose -Y, left +X; carpaint is its own material) =================
+def islands(bm):
+    seen = set()
+    for f in bm.faces:
+        if f.index in seen: continue
+        st, fs = [f], []; seen.add(f.index)
+        while st:
+            g = st.pop(); fs.append(g)
+            for e in g.edges:
+                for h in e.link_faces:
+                    if h.index not in seen: seen.add(h.index); st.append(h)
+        yield fs
+
+def fordgt():
+    at = lambda f: f.calc_center_median() * 100                                    # metres: the file is in centimetres
+    mirror = lambda p: abs(p.x) > 0.86 and -0.7 < p.y < -0.3 and p.z > 0.68         # the head and arm of a door mirror
+    # the right mirror sits 10 cm behind the left on identical doors: moved forward to match, so the pair is symmetric
+    for o in bpy.context.scene.objects:
+        if o.type != 'MESH' or 'door_R' not in PART[o.name]: continue
+        bm = bmesh.new(); bm.from_mesh(o.data)
+        for fs in islands(bm):
+            vs = {v for f in fs for v in f.verts}
+            if mirror(sum((v.co for v in vs), Vector()) / len(vs) * 100):
+                for v in vs: v.co.y -= 0.00102
+        bm.to_mesh(o.data); bm.free()
+    for o in list(bpy.context.scene.objects):
+        if o.type != 'MESH': continue
+        mat = o.material_slots[0].material if o.material_slots else None
+        mn = mat.name if mat else ''
+        base = PART[o.name].replace('car_ford_gt_mkii:', '').split('_LOD2')[0]
+        arr = pixels(image_of(mat)) if mat and image_of(mat) else None
+        if 'licenseplate' in base or ('door' in base and 'stickers' in base): bpy.data.objects.remove(o); continue   # the door decals overprint the team's number roundel
+        if base == 'chassis_details':                                                   # so does the white gear emblem on each rear haunch
+            g = split(o, lambda f, uvl: abs(at(f).x) > 0.85 and 0.5 < at(f).y < 1.5 and at(f).z > 0.3 and lum(face_rgb(arr, f, uvl)) > 0.7)
+            if g: bpy.data.objects.remove(g)
+        if base.startswith('wheel'):
+            if 'caliper' in base: put(o, 'Caliper_' + base, 'caliper')
+            elif 'tire_tires' in base: put(o, 'Tyre_' + base, 'keep')
+            else:
+                g = split(o, lambda f, uvl: lum(face_rgb(arr, f, uvl)) > 0.7) if 'rims' in base else None    # the atlas's white spokes take the finish's rim colour; disc and hub stay
+                if g:
+                    m = bpy.data.materials.get('rimpaint') or mat.copy(); m.name = 'rimpaint'      # one material for all four: the game matches it by name
+                    g.material_slots[0].material = m
+                    put(g, 'Spin_' + base + '_paint', 'keep')
+                if g is not o: put(o, 'Spin_' + base, 'keep')
+            continue
+        if mn == 'carpaint':
+            g = split(o, lambda f, uvl: mirror(at(f)))
+            if g: put(g, base + '_mirrorcap', 'mirrorPaint')
+            if g is not o: put(o, base, 'paint')
+            continue
+        if mn == 'glas':
+            t = split(o, lambda f, uvl: at(f).y > 1.5)                                  # the tail lamps' lenses
+            if t: put(t, base + '_taillens', 'keep')
+            for sgn, n in ((1, 'L'), (-1, 'R')):                                        # one headlamp lens per side: one beam each
+                h = split(o, lambda f, uvl: at(f).y < -1.5 and at(f).x * sgn > 0)
+                if h: put(h, base + '_head' + n, 'headkeep')
+            put(o, base, 'glass')
+            continue
+        if base.startswith('steering_wheel') or base == 'glass_details': put(o, 'INT:' + base, 'keep'); continue
+        if base == 'chassis_emissive_ID_rear':
+            t = split(o, lambda f, uvl: at(f).y > 1.9 and abs(at(f).x) > 0.55)          # the round afterburner lamps: red rings in the atlas, dark centres
+            if t: put(t, base, 'tail')
+        if 'door' in base and 'details_normal' in base:
+            g = split(o, lambda f, uvl: mirror(at(f)) and lum(face_rgb(arr, f, uvl)) > 0.8 and (f.normal.y > 0.5))   # white rear-facing atlas plate
+            if g: put(g, base + '_mirrorglass', 'mirror')
+        if base == 'chassis_details_normal':
+            g = split(o, lambda f, uvl: abs(at(f).x) < 0.2 and 2.03 < at(f).y < 2.25 and 0.53 < at(f).z < 0.68)     # the twin high pipes
+            if g: put(g, 'EXHAUST_pipes', 'keep')
+            for sgn, n in ((1, 'L'), (-1, 'R')):
+                g = split(o, lambda f, uvl: at(f).y < -1.6 and at(f).x * sgn > 0.45 and at(f).z > 0.45 and lum(face_rgb(arr, f, uvl)) > 0.78)   # the lamp's lit modules
+                if g: put(g, base + '_lamp' + n, 'head')
+        if base in ('chassis_details', 'chassis_details_normal', 'chassis_emissive_ID_rear', 'chassis_tiled_carbon', 'chassis_details_tiled_carbon'):
+            g = split(o, lambda f, uvl: abs(at(f).x) < 0.62 and -1.05 < at(f).y < 0.35 and 0.2 < at(f).z < 1.0)      # the cabin decimates harder
+            if g: put(g, 'INT:' + base, 'keep')
+            if g is o: continue
+        put(o, base + '_' + mn, 'keep')
+if key == 'fordgt': fordgt()
 
 # ================= export =================
 def export():
