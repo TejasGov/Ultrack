@@ -62,6 +62,13 @@ Our own place, not a copy: no real building, brand, logo or real landmark is rep
 - **Landmarks:** the temple and the dargah; a small white mosque across the water; and on the Necklace, at the user's request, a grand seafront hotel modelled on the user's reference of the Taj Mahal Palace (grey block stone, round arches, hemispherical ribbed red domes on round corner towers, long red roofs, sand bay columns with red eaves): built here in Blender, not a measured copy.
 - **The horizon:** towers cover at most 60 % of each far shore (`SKYLINE`, asserted in the build); the rest is low city and wooded hills. One hill carries a big white BOLLYWOOD sign (`tex/bollywood.png`, alpha cut, lit from evening on).
 
+**10. The road's own furniture (researched 2026-11-01; figures from secondary sources, see the session brief).**
+- **Ads:** steel unipoles beside the road at least 70 m apart, 3:1 art inside the 40 x 40 ft cap, top under 60 ft, frames overbuilt and visible behind the face. Never on a gantry.
+- **Gantries:** only green direction signs, white on green with a white border, Marathi then Hindi then English.
+- **Welcome boards:** at the two ways into the city. No real "Welcome to Mumbai" board was found: the wording is ours.
+- **Political:** the party's boards (the India map's own) on unipoles, poles and tied railings, thickest on the sea front and through the lanes, as reported. The brief's "no political slogans" rule above was overridden by the user for this.
+- **Mini hoardings:** brand boards on thin poles by the wall, about every 85 m.
+
 ## Night
 - Lit windows in every district (the lit-window shell, already in place).
 - The necklace of seafront lamps, the bridge's deck and cable lights, shop signs glowing.
@@ -71,7 +78,7 @@ Our own place, not a copy: no real building, brand, logo or real landmark is rep
 - **Built here in Blender (kits, procedural, our own):** chawls, art-deco blocks, the fishing village, towers, the toll plaza, the tetrapods, overhead wires, water tanks, the temple, the dargah, the metro viaduct, the bridge details, the tunnel portals.
 - **Generated here:** facade textures per building type, the Marathi/Hindi/English sign atlas, hoardings with invented brands, the crowd cards.
 - **Downloaded (CC0 / CC BY, each with your OK):** palms and a broad tree, an auto-rickshaw, a taxi, a bus, a scooter, a fishing boat, where a good model exists. The asset search lists the candidates.
-- **Not used:** real brands or logos, real buildings, political or religious slogans.
+- **Not used (unless the user asks, as with the road's ads, the Taj and the tunnel's film posters):** real brands or logos, real buildings, political or religious slogans.
 
 ## Budget
 - **Frame time:** inside India Ghat's day bench (8-9 ms at 1600x900 here).

@@ -203,9 +203,10 @@ pm.node_tree.links.new(it.outputs['Color'], P1.inputs['Base Color']); P1.inputs[
 gt = pm.node_tree.nodes.new('ShaderNodeMath'); gt.operation = 'GREATER_THAN'; gt.inputs[1].default_value = 0.5
 pm.node_tree.links.new(it.outputs['Alpha'], gt.inputs[0]); pm.node_tree.links.new(gt.outputs[0], P1.inputs['Alpha'])
 MAT.update({'hoard': hm, 'people': pm})
-for key_, file_, name_ in (('posters', 'tunnel_posters.png', 'IF | film posters'), ('tname', 'tunnel_name.png', 'IF | tunnel name')):      # lit boxes: readable at speed in a dim tube
+for key_, file_, name_, em_ in (('posters', 'tunnel_posters.png', 'IF | film posters', 0.85), ('tname', 'tunnel_name.png', 'IF | tunnel name', 0.85),      # lit boxes: readable at speed in a dim tube
+                                ('roadads', 'road_ads.png', 'IF | road ads', 0.55), ('roadsigns', 'road_signs.png', 'IF | road signs', 0.3)):                   # front-lit ads; signs only catch headlights
     m_ = material(name_, rough=0.5); it = m_.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / file_); P_ = m_.node_tree.nodes['Principled BSDF']
-    m_.node_tree.links.new(it.outputs['Color'], P_.inputs['Base Color']); m_.node_tree.links.new(it.outputs['Color'], P_.inputs['Emission Color']); P_.inputs['Emission Strength'].default_value = 0.85
+    m_.node_tree.links.new(it.outputs['Color'], P_.inputs['Base Color']); m_.node_tree.links.new(it.outputs['Color'], P_.inputs['Emission Color']); P_.inputs['Emission Strength'].default_value = em_
     MAT[key_] = m_
 MAT.update({'signs': sm,
     'shutter': material('IF | shutter', tex='rusted_shutter'),
@@ -232,7 +233,7 @@ KEYS = list(TYPES)
 # ------------------------------------------------------------------------------------------------ builders (merged per material)
 FB = bmesh.new(); FUV = FB.loops.layers.uv.verify(); GB = bmesh.new(); GUV = GB.loops.layers.uv.verify()
 PB = bmesh.new(); PVC = vcol_layer(PB); PUV = PB.loops.layers.uv.verify()       # props: one bmesh, material slots by PROPK
-PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete', 'paving', 'hoard', 'people', 'drum', 'tyre', 'dome', 'posters', 'tname']
+PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete', 'paving', 'hoard', 'people', 'drum', 'tyre', 'dome', 'posters', 'tname', 'roadads', 'roadsigns']
 def pmi(k): return PROPK.index(k)
 def pbox(c, size, yaw=0.0, k='slab', col=(1, 1, 1)):
     n0 = len(PB.faces); box(PB, c, size, yaw=yaw, mi=pmi(k))

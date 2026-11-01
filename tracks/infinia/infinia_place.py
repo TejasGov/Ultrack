@@ -243,6 +243,87 @@ for k, j in enumerate(TOW[::40]):
 for j in sorted(range(N - 300, N - 160, 70)):           # the start's approach: two big hoardings
     p = off(j % N, -(BD[-1][j % N] + 9)); hoarding(Vector((p.x, p.y, 0)), 6.0, 14.0, 5.2, facing(j % N, -1) + 0.5)
 
+# ------------------------------------------------------------------------------------------------ the road's own furniture, as Mumbai's (IDENTITY.md section 10): ads on steel unipoles beside the
+# road, never on a gantry; gantries carry only green direction signs, Marathi first; political and brand banners tied along the lanes; mini boards on poles
+ROAD_ADS = ['bjp', 'cocacola', 'emirates', 'jio', 'oppo', 'pirelli', 'rolex', 'sony', 'vivo']      # make_road_ads.mjs, 2 x 5
+def ad_uv(name): i_ = ROAD_ADS.index(name); u0 = (i_ % 2) / 2; v0 = 1 - (i_ // 2 + 1) / 5; return u0, u0 + 0.5, v0, v0 + 0.2
+def toward_traffic(j, sd, turn=0.5):
+    """a board's yaw so its face looks back up the road and in over the kerb: out = (sin yaw, -cos yaw)"""
+    t_ = T[j].to_3d(); o_ = (-t_ * math.cos(turn) - NL[j] * sd * math.sin(turn)).normalized(); return math.atan2(o_.x, -o_.y)
+def ad_face(c, w, h, yaw, name):
+    fwd_ = Vector((math.cos(yaw), math.sin(yaw), 0)); out_ = Vector((math.sin(yaw), -math.cos(yaw), 0)); u0, u1, v0, v1 = ad_uv(name); a_, b_ = c - fwd_ * w / 2 + out_ * 0.12, c + fwd_ * w / 2 + out_ * 0.12
+    pquad([a_, b_, b_ + Vector((0, 0, h)), a_ + Vector((0, 0, h))], 'roadads', uv=[(u0, v0), (u1, v0), (u1, v1), (u0, v1)])
+    return fwd_, out_
+def unipole(p, w, h, z, yaw, name):
+    """one steel mast, a head frame overbuilt the way Mumbai's are: a walkway, ribs and bracing behind the face"""
+    Z = Vector((0, 0, 1)); fwd_, out_ = ad_face(p + Z * z, w, h, yaw, name)
+    mast = p - out_ * 0.8; cyl(PB, mast, 0.62, 0.42, z + h * 0.6, n=8, mi=pmi('steel'), cap=True)      # behind the face, never through it
+    for f_ in (0.0, 0.5, 1.0): pbox(p + Z * (z + h * f_) - out_ * 0.15, (w + 0.2, 0.18, 0.18), yaw=yaw, k='steel')
+    for q in range(int(w / 2.0) + 1):
+        x_ = -w / 2 + q * w / int(w / 2.0); pbox(p + fwd_ * x_ + Z * (z + h / 2) - out_ * 0.15, (0.14, 0.14, h), k='steel')
+    pbox(p + Z * (z - 0.25) + out_ * 0.45, (w + 0.4, 0.9, 0.08), yaw=yaw, k='rail')                         # the lamp and poster walkway
+    for x_ in (-w / 2, -w / 4, w / 4, w / 2): leg(PB, mast + Z * (z - 2.2), p + fwd_ * x_ + Z * (z - 0.1) - out_ * 0.15, 0.14, pmi('steel'))      # brackets out to the frame's ends
+def road_z(j, p): return max(0.0, CL[j].z) if is_land(p.x, p.y) else CL[j].z
+n_uni = 0
+def place_unipole(j, sd, name, big=True):
+    global n_uni
+    p = off(j, sd * (BD[sd][j] + 2.0)); p = Vector((p.x, p.y, road_z(j, p) + (0.3 if j in NECK and sd < 0 else 0.0)))
+    if not is_land(p.x, p.y) or tun_kd.find((p.x, p.y, 0))[2] < HW + 10: return log('unipole skipped, no ground at', j)
+    w, h, z = (13.5, 4.5, 13.0) if big else (9.0, 3.0, 9.0)      # 3:1 art inside the 40 x 40 ft cap, its top under 60 ft (research brief)
+    unipole(p, w, h, z, toward_traffic(j, sd), name); n_uni += 1
+# at least 70 m apart (28 stations, the 2024 BMC draft's minimum), on the outside of the sea front (their backs to the sea) and in gaps along the lanes and towers
+for j, sd, name, big in ((1815, -1, 'bjp', True), (1885, -1, 'jio', False), (1932, -1, 'cocacola', True), (560, -1, 'cocacola', True), (662, 1, 'oppo', False), (720, -1, 'bjp', True), (790, 1, 'vivo', True), (850, 1, 'sony', False),
+                         (915, 1, 'emirates', True), (1400, -1, 'pirelli', False), (1470, 1, 'cocacola', True), (1505, -1, 'rolex', True), (1680, -1, 'bjp', True), (1745, -1, 'emirates', True)):
+    place_unipole(j, sd, name, big)
+log('unipoles', n_uni)
+def gantry(j, panels):
+    """steel posts behind both walls, a truss over the road 6 m clear (direction signs only: research brief), green panels from tex/road_signs.png facing the traffic"""
+    Zv = Vector((0, 0, 1)); lat_l, lat_r = BD[1][j] + 1.2, -(BD[-1][j] + 1.2); pl, pr = off(j, lat_l), off(j, lat_r)
+    for q in (pl, pr):
+        for dx in (-0.5, 0.5): pbox(q + T[j].to_3d() * dx + Zv * 4.6, (0.28, 0.28, 9.4), k='steel')
+    for dz, dx in ((6.4, 0.5), (6.4, -0.5), (9.0, 0.5), (9.0, -0.5)):
+        leg(PB, pl + Zv * dz + T[j].to_3d() * dx, pr + Zv * dz + T[j].to_3d() * dx, 0.16, pmi('steel'))
+    L = lat_l - lat_r
+    for q in range(int(L / 2.2)):
+        s0, s1 = pl.lerp(pr, q / int(L / 2.2)), pl.lerp(pr, (q + 1) / int(L / 2.2)); leg(PB, s0 + Zv * 6.4, s1 + Zv * 9.0, 0.08, pmi('steel')); leg(PB, s0 + Zv * 9.0, s1 + Zv * 6.4, 0.08, pmi('steel'))
+    W_ = 5.2; H2 = W_ * 384 / 682.67; xs = [(k - (len(panels) - 1) / 2) * (W_ + 0.35) for k in range(len(panels))]
+    for x_, cell in zip(xs, panels):      # left to right as the driver sees them: + lateral is the driver's left
+        c0 = off(j, -x_) - T[j].to_3d() * 0.75; a_, b_ = c0 + NL[j] * (W_ / 2), c0 - NL[j] * (W_ / 2); u0 = (cell % 3) / 3; v0 = 1 - (cell // 3 + 1) / 4; z0 = 6.5
+        pquad([a_ + Zv * z0, b_ + Zv * z0, b_ + Zv * (z0 + H2), a_ + Zv * (z0 + H2)], 'roadsigns', uv=[(u0, v0), (u0 + 1 / 3, v0), (u0 + 1 / 3, v0 + 0.25), (u0, v0 + 0.25)])
+        pquad([b_ + Zv * z0 + T[j].to_3d() * 0.04, a_ + Zv * z0 + T[j].to_3d() * 0.04, a_ + Zv * (z0 + H2) + T[j].to_3d() * 0.04, b_ + Zv * (z0 + H2) + T[j].to_3d() * 0.04], 'steel')      # its grey back
+for j, cells in ((1962, [0, 1, 2]), (930, [3, 4, 5])): gantry(j, cells)      # before the sea link, before the tunnel
+def welcome(j, sd):
+    """the big green welcome, on two posts behind the wall, 2.5 m clear; its wording is ours: no real board was found"""
+    p = off(j, sd * (BD[sd][j] + 3.2)); p = Vector((p.x, p.y, road_z(j, p))); y_ = toward_traffic(j, sd, 0.32); fwd_ = Vector((math.cos(y_), math.sin(y_), 0)); out_ = Vector((math.sin(y_), -math.cos(y_), 0)); w = 7.2; h = 5.4; Zv = Vector((0, 0, 1))
+    a_, b_ = p - fwd_ * w / 2 + out_ * 0.1, p + fwd_ * w / 2 + out_ * 0.1
+    pquad([a_ + Zv * 2.6, b_ + Zv * 2.6, b_ + Zv * (2.6 + h), a_ + Zv * (2.6 + h)], 'roadsigns', uv=[(0, 0), (0.5, 0), (0.5, 0.5), (0, 0.5)])
+    pquad([b_ - out_ * 0.14 + Zv * 2.6, a_ - out_ * 0.14 + Zv * 2.6, a_ - out_ * 0.14 + Zv * (2.6 + h), b_ - out_ * 0.14 + Zv * (2.6 + h)], 'steel')
+    for sx in (-0.3, 0.3): pbox(p + fwd_ * sx * w - out_ * 0.22 + Zv * (1.3 + h / 2), (0.24, 0.24, 2.6 + h), k='steel')      # behind the board
+welcome(486, -1); welcome(1394, -1)       # where the bridge lands and where the tunnel comes up: the two ways into the city
+n_mini = 0
+def mini(j, sd, name):
+    """a mini hoarding on its own pole by the wall, the kind that lines Mumbai's medians: 2.7 x 0.9 m at 3.2 m"""
+    global n_mini
+    bridge_ = BRIDGE[j] and CL[j].z > 0.8; p = off(j, sd * (BD[sd][j] + (0.5 if bridge_ else 1.0))); p = Vector((p.x, p.y, CL[j].z if bridge_ else road_z(j, p)))
+    if TUNNEL[j] and CL[j].z < -0.3: return
+    y_ = toward_traffic(j, sd, 0.25); fwd_ = Vector((math.cos(y_), math.sin(y_), 0)); Zv = Vector((0, 0, 1)); cyl(PB, p, 0.07, 0.06, 4.15, n=6, mi=pmi('steel'), cap=True)
+    ad_face(p + Zv * 3.2, 2.7, 0.9, y_, name); pbox(p + Zv * 3.65, (2.8, 0.05, 0.98), yaw=y_, k='steel'); n_mini += 1
+BRANDS = [n_ for n_ in ROAD_ADS if n_ != 'bjp']
+for k, j in enumerate(range(20, N, 34)):      # about every 85 m, sides turn about; the party's boards thickest on the sea front and through the lanes
+    name = 'bjp' if (j in NECK or j in LANE_SET) and k % 3 == 0 else BRANDS[k % len(BRANDS)]
+    mini(j, 1 if k % 2 else -1, name)
+log('mini hoardings', n_mini)
+n_ban = 0
+for lanes in (LANES_E, LANES_W, NECKS[::2]):      # banners tied along the walls where the street life is: two short poles, 3 x 1 m, some the party's, some brands
+    for k, j in enumerate(lanes[11::23]):
+        sd = 1 if k % 2 else -1
+        if lanes is not LANES_E and lanes is not LANES_W: sd = 1
+        p = off(j, sd * (BD[sd][j] + 0.5)); p = Vector((p.x, p.y, road_z(j, p) + 0.25)); y_ = toward_traffic(j, sd, 0.12); fwd_ = Vector((math.cos(y_), math.sin(y_), 0))
+        if not is_land(p.x, p.y): continue
+        ad_face(p + Vector((0, 0, 0.95)), 3.0, 1.0, y_, 'bjp' if k % 2 == 0 else BRANDS[(k * 3) % len(BRANDS)]); n_ban += 1
+        for sx in (-1.5, 1.5): cyl(PB, p + fwd_ * sx, 0.04, 0.035, 2.0, n=5, mi=pmi('wire'), cap=False)
+log('tied banners', n_ban)
+
 # ------------------------------------------------------------------------------------------------ the tunnel: film posters and lit ads along both walls, a name over its mouth
 TUBE = [j for j in TS if CL[j].z < -4.4]; n_post = n_ad = 0; PA = json.loads((H / 'tex' / 'tunnel_posters.json').read_text())      # the sheet, make_poster_atlas.mjs
 def wall_panel(j0, j1, sd, z0, z1, k, u0, u1, v0, v1):
@@ -432,7 +513,7 @@ mesh_obj('IF buildings', FB, [f'f_{k}' for k in KEYS], planar=False)
 mesh_obj('IF window glow night', GB, [f'g_{k}' for k in KEYS], planar=False)
 PB.normal_update()
 for f in PB.faces:
-    if PROPK[f.material_index] in ('signs', 'shutter', 'hoard', 'people', 'posters', 'tname'): continue
+    if PROPK[f.material_index] in ('signs', 'shutter', 'hoard', 'people', 'posters', 'tname', 'roadads', 'roadsigns'): continue
     sz = UVS.get(PROPK[f.material_index], 3.0); n_ = f.normal
     for l in f.loops:
         c = l.vert.co; l[PUV].uv = (c.x / sz, c.y / sz) if abs(n_.z) > 0.6 else ((c.y if abs(n_.x) > abs(n_.y) else c.x) / sz, c.z / sz)
