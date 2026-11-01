@@ -9,7 +9,9 @@ its own facade texture (generated here, monsoon grime included), geometry detail
   dargah     a white dargah on an islet in the bay, reached by a causeway
   lanes      Dharavi-style stretches (the old city's second half, the west loop after the tunnel): stacked one- to three-storey homes of
              plaster, brick and tin, tarps and tin roofs held down by tyres, blue drums and tyre stacks in the lanes, tin fences
-  mosque     a white mosque with a green onion dome and two minarets on the Necklace's land side, a smaller one across the water
+  hotel      a grand seafront hotel on the Necklace's land side, modelled on the user's reference of the Taj Mahal Palace: grey block stone,
+             round arches, ribbed red domes on round corner towers, long red roofs, twelve sand bay columns with red eaves
+  mosque     a white mosque with a green onion dome and two minarets across the water
 Night: each facade type has a lit-window copy on a shell 6 cm out ('IF window glow night ...', tracks.js dayNight)."""
 import numpy as np
 
@@ -102,6 +104,23 @@ def slum_draw(wall, door):
             for b in range(3): rect(a, x0 + 8 + b * 20, 170, x0 + 12 + b * 20, 310, (0.26, 0.26, 0.28))
             if rr.random() < 0.5: n[170:310, x0:x0 + 62] = WARM()
     return d
+def taj_draw(wall, trim, w_px=66):
+    def d(a, n):             # one tile = 2 bays x 2 floors: round-headed windows in a pale stone surround, a sill across; lit in a checker, softly, so a palace at night is not a grid
+        a[..., :3] = wall; yy, xx = np.mgrid[0:FS, 0:FS]; soft = np.array((0.62, 0.47, 0.27, 1.0), np.float32)
+        def arch(cx, y0, w, sp, sill): return (((np.abs(xx - cx) < w) & (yy > y0 + sill) & (yy < y0 + sp)) | (((xx - cx) ** 2 + (yy - y0 - sp) ** 2) < w ** 2))
+        for row in range(2):
+            y0 = row * FS // 2
+            for k in range(2):
+                cx = (k + 0.5) * FS / 2; m = arch(cx, y0, w_px, 138, 24); a[arch(cx, y0, w_px + 10, 138, 14), :3] = trim; a[m, :3] = (0.09, 0.11, 0.14)
+                a[(np.abs(xx - cx) < 3) & m, :3] = trim; a[(np.abs(yy - y0 - 138) < 3) & m, :3] = trim      # the glazing bars
+                if (k + row) % 2 == 0: n[m] = soft
+            rect(a, 0, y0 + 6, FS, y0 + 14, trim); rect(a, 0, y0 + FS // 2 - 10, FS, y0 + FS // 2, trim)
+    return d
+def sand_draw(wall, trim):
+    def d(a, n):             # one facet of a bay column: one tall window, framed, on sand stone
+        a[..., :3] = wall; rect(a, 110, 90, FS - 110, 440, trim); rect(a, 134, 112, FS - 134, 418, (0.08, 0.1, 0.13)); rect(a, 250, 112, 262, 418, trim); rect(a, 134, 260, FS - 134, 270, trim)
+        if rr.random() < 0.6: n[112:418, 134:FS - 134] = WARM()
+    return d
 TYPES = {   # key: draw, tile (m wide, m high), roughness
     'chawl_ochre': (chawl_draw((0.78, 0.6, 0.38), (0.12, 0.3, 0.22)), 6.4, 3.2, 0.85, 'yellow_plaster', (0.78, 0.6, 0.38)),
     'chawl_blue': (chawl_draw((0.55, 0.68, 0.74), (0.45, 0.22, 0.12)), 6.4, 3.2, 0.85, 'blue_plaster_weathered', (0.55, 0.68, 0.74)),
@@ -119,6 +138,9 @@ TYPES = {   # key: draw, tile (m wide, m high), roughness
     'house_yellow': (house_draw((0.95, 0.8, 0.35)), 4.0, 3.0, 0.85, 'yellow_plaster', (0.95, 0.8, 0.35)),
     'house_teal': (house_draw((0.3, 0.65, 0.65)), 4.0, 3.0, 0.85, 'blue_plaster_weathered', (0.3, 0.65, 0.65)),
     'house_lilac': (house_draw((0.7, 0.6, 0.85)), 4.0, 3.0, 0.85, 'worn_plaster_wall', (0.7, 0.6, 0.85)),
+    'taj_stone': (taj_draw((0.58, 0.58, 0.6), (0.82, 0.82, 0.8)), 8.0, 7.2, 0.85, 'seaworn_stone_tiles', (0.58, 0.58, 0.6)),
+    'taj_tower': (taj_draw((0.58, 0.58, 0.6), (0.82, 0.82, 0.8), 60), 7.6, 8.0, 0.85, 'seaworn_stone_tiles', (0.58, 0.58, 0.6)),
+    'taj_sand': (sand_draw((0.86, 0.72, 0.46), (0.95, 0.88, 0.7)), 2.2, 4.2, 0.8, 'worn_plaster_wall', (0.86, 0.72, 0.46)),
     'slum_brick': (slum_draw((0.54, 0.36, 0.3), (0.2, 0.24, 0.26)), 7.2, 2.7, 0.9, 'red_plaster_weathered', (0.54, 0.36, 0.3)),
     'slum_tin': (slum_draw((0.46, 0.44, 0.42), (0.26, 0.16, 0.14)), 7.2, 2.7, 0.8, 'rusty_corrugated_iron', (0.46, 0.44, 0.42)),
     'slum_blue': (slum_draw((0.42, 0.55, 0.64), (0.3, 0.24, 0.16)), 7.2, 2.7, 0.9, 'blue_plaster_weathered', (0.42, 0.55, 0.64)),
@@ -181,6 +203,10 @@ pm.node_tree.links.new(it.outputs['Color'], P1.inputs['Base Color']); P1.inputs[
 gt = pm.node_tree.nodes.new('ShaderNodeMath'); gt.operation = 'GREATER_THAN'; gt.inputs[1].default_value = 0.5
 pm.node_tree.links.new(it.outputs['Alpha'], gt.inputs[0]); pm.node_tree.links.new(gt.outputs[0], P1.inputs['Alpha'])
 MAT.update({'hoard': hm, 'people': pm})
+for key_, file_, name_ in (('posters', 'tunnel_posters.png', 'IF | film posters'), ('tname', 'tunnel_name.png', 'IF | tunnel name')):      # lit boxes: readable at speed in a dim tube
+    m_ = material(name_, rough=0.5); it = m_.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / file_); P_ = m_.node_tree.nodes['Principled BSDF']
+    m_.node_tree.links.new(it.outputs['Color'], P_.inputs['Base Color']); m_.node_tree.links.new(it.outputs['Color'], P_.inputs['Emission Color']); P_.inputs['Emission Strength'].default_value = 0.85
+    MAT[key_] = m_
 MAT.update({'signs': sm,
     'shutter': material('IF | shutter', tex='rusted_shutter'),
     'slab': material('IF | slab', tex='dirty_concrete', vcol=True),
@@ -206,7 +232,7 @@ KEYS = list(TYPES)
 # ------------------------------------------------------------------------------------------------ builders (merged per material)
 FB = bmesh.new(); FUV = FB.loops.layers.uv.verify(); GB = bmesh.new(); GUV = GB.loops.layers.uv.verify()
 PB = bmesh.new(); PVC = vcol_layer(PB); PUV = PB.loops.layers.uv.verify()       # props: one bmesh, material slots by PROPK
-PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete', 'paving', 'hoard', 'people', 'drum', 'tyre', 'dome']
+PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete', 'paving', 'hoard', 'people', 'drum', 'tyre', 'dome', 'posters', 'tname']
 def pmi(k): return PROPK.index(k)
 def pbox(c, size, yaw=0.0, k='slab', col=(1, 1, 1)):
     n0 = len(PB.faces); box(PB, c, size, yaw=yaw, mi=pmi(k))
@@ -218,13 +244,13 @@ def pquad(pts, k, uv=None, col=(1, 1, 1)):
         l[PVC] = (*col, 1)
         if uv: l[PUV].uv = uv[j]
     return f
-def facade(a, b, h, key, z0=0.0, shell=True):
+def facade(a, b, h, key, z0=0.0, shell=True, u0=0.0):
     """a wall from a to b (ground points), z0..h, facing out to the right of a->b; textured in metres; a lit-window shell 6 cm out"""
     _, tw, th, _, _, _ = TYPES[key]; mi = KEYS.index(key); L = (b - a).length; nrm = Vector(((b - a).y, -(b - a).x, 0)).normalized()
     for bmx, uvl, push in ((FB, FUV, 0.0),) + (((GB, GUV, 0.06),) if shell else ()):
         f = bmx.faces.new([bmx.verts.new(p + nrm * push) for p in (a + Vector((0, 0, z0)), b + Vector((0, 0, z0)), b + Vector((0, 0, h)), a + Vector((0, 0, h)))])
         f.material_index = mi
-        for l, (u, v) in zip(f.loops, ((0, z0), (L, z0), (L, h), (0, h))): l[uvl].uv = (u / tw, v / th)
+        for l, (u, v) in zip(f.loops, ((0, z0), (L, z0), (L, h), (0, h))): l[uvl].uv = ((u + u0) / tw, v / th)
 def footprint(c, w, d, yaw):
     Mx = Matrix.Translation(c) @ Matrix.Rotation(yaw, 4, 'Z')
     return [Mx @ Vector((x, y, 0)) for x, y in ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2))]
@@ -415,13 +441,13 @@ def tin_fence(a, b, h=2.6):
         p0, p1 = a.lerp(b, q / n_), a.lerp(b, (q + 1) / n_); hh = h * rr.uniform(0.88, 1.06)
         pquad([p0, p1, p1 + Vector((0, 0, hh)), p0 + Vector((0, 0, hh))], 'tin', col=rr.choice([(0.8, 0.76, 0.7), (0.55, 0.32, 0.26), (0.32, 0.45, 0.58), (0.4, 0.55, 0.42), (0.75, 0.62, 0.3)]))
 # ------------------------------------------------------------------------------------------------ the mosque: our own, a type not a copy
-def lathe(c, prof, k, col=(1, 1, 1), n=16):
-    """a surface of revolution: prof is [(radius, height)], bottom to top"""
+def lathe(c, prof, k, col=(1, 1, 1), n=16, rib=None, ribs=2):
+    """a surface of revolution: prof is [(radius, height)], bottom to top; rib: every `ribs`-th segment in this colour"""
     v = [[PB.verts.new(c + Vector((r * math.cos(2 * math.pi * a / n), r * math.sin(2 * math.pi * a / n), z))) for a in range(n)] for r, z in prof]
     for q in range(len(prof) - 1):
         for a in range(n):
             f = PB.faces.new([v[q][a], v[q][(a + 1) % n], v[q + 1][(a + 1) % n], v[q + 1][a]]); f.material_index = pmi(k); f.smooth = True
-            for l in f.loops: l[PVC] = (*col, 1)
+            for l in f.loops: l[PVC] = (*(rib if rib and a % ribs == 0 else col), 1)
 def onion(r, h):
     return [(r * x, h * y) for x, y in ((0.74, 0.0), (0.98, 0.16), (1.0, 0.3), (0.86, 0.52), (0.56, 0.72), (0.22, 0.88), (0.07, 0.96), (0.015, 1.0))]
 GREEN = (0.16, 0.52, 0.34)
@@ -464,3 +490,102 @@ def mosque(c, yaw, s=1.0):
         pbox(c + out * (9 * s) + fwd * sx * (W_ / 2 + 1 * s) + up * 2.0 * s, (0.8 * s, 16 * s, 2.4 * s), yaw=yaw, k='white')
         pbox(c + out * (17 * s) + fwd * sx * (W_ / 4 + 3.0 * s) + up * 2.0 * s, (W_ / 2 - 3.5 * s, 0.8 * s, 2.4 * s), yaw=yaw, k='white')
         pbox(c + out * (17 * s) + fwd * sx * 3.2 * s + up * 3.5 * s, (1.6 * s, 1.6 * s, 5.5 * s), yaw=yaw, k='white')
+# ------------------------------------------------------------------------------------------------ the grand hotel: modelled on the user's reference of the Taj Mahal Palace
+# grey block stone and round arches, hemispherical ribbed red domes on round corner towers, a great ribbed dome and lantern, long red roofs, twelve sand bay columns with red eaves
+RED = (0.8, 0.13, 0.09); RIB = (0.66, 0.58, 0.56); STONE = (0.58, 0.58, 0.6); PALE = (0.84, 0.84, 0.82); SAND = (0.86, 0.72, 0.46); DARK = (0.06, 0.07, 0.09); WARM_IN = (0.42, 0.34, 0.25)
+def dome_prof(r, h): return [(r * math.cos(t), h * math.sin(t)) for t in (0.0, 0.26, 0.52, 0.78, 1.02, 1.24, 1.42, 1.56)]
+def red_dome(c, r, h, ribs=8, n=48): lathe(c, dome_prof(r, h), 'dome', RED, n=n, rib=RIB if ribs else None, ribs=max(1, n // max(ribs, 1)))      # n >> ribs: thin ribs
+def scyl(p, r0, r1, h, n=16, col=STONE, cap=False, k='stone'):
+    n0 = len(PB.faces); cyl(PB, p, r0, r1, h, n=n, mi=pmi(k), cap=cap); paint(n0, col)
+def finial(p, s=1.0):
+    """the grey spire on every dome: a collar, a bulb and a needle"""
+    lathe(p, [(0.5 * s, 0), (0.42 * s, 0.5 * s), (0.2 * s, 0.9 * s), (0.34 * s, 1.5 * s), (0.2 * s, 2.0 * s), (0.08 * s, 3.2 * s), (0.01 * s, 4.4 * s)], 'stone', (0.46, 0.46, 0.48), n=8)
+def arch_poly(c, fwd_, w, z0, spring, up=Vector((0, 0, 1)), steps=6):
+    """a round-headed opening: its outline, from the sill round the arc, on the plane of fwd_ and up"""
+    pts = [c - fwd_ * w + up * z0, c + fwd_ * w + up * z0]
+    pts += [c + fwd_ * (w * math.cos(math.pi * q / steps)) + up * (spring + w * math.sin(math.pi * q / steps)) for q in range(steps + 1)]
+    return pts
+def round_tower(c, r, z0, h, floors=True):
+    """a round stone tower as facade strips (windows run continuously round it), courses and a cornice"""
+    n = 18; pts = [c + Vector((r * math.cos(2 * math.pi * k / n), r * math.sin(2 * math.pi * k / n), 0)) for k in range(n)]; u = 0.0
+    for k in range(n):
+        a = pts[k]; b = pts[(k + 1) % n]; facade(Vector((a.x, a.y, 0)), Vector((b.x, b.y, 0)), z0 + h, 'taj_tower', z0=z0, u0=u); u += (a - b).length
+    return pts
+def taj(c, yaw):
+    """the palace of the seafront, its front on -d, toward the road and the sea: 126 m wide over all, seven floors, 58 m to the top of the great dome"""
+    fwd = Vector((math.cos(yaw), math.sin(yaw), 0)); out = Vector((math.sin(yaw), -math.cos(yaw), 0)); up = Vector((0, 0, 1)); FH = 3.6; Y = 12.0
+    def P(x, y, z=0.0): return c + fwd * x + out * y + up * z
+    def block(x, y, w, d, h):
+        ctr = P(x, y); c4 = footprint(Vector((ctr.x, ctr.y, 0)), w, d, yaw)
+        for k in range(4): facade(c4[k], c4[(k + 1) % 4], h, 'taj_stone', z0=1.0)
+        pquad([q + up * h for q in c4], 'slab', col=(0.46, 0.46, 0.46))
+    H_ = 1.0 + 7 * FH; HC = 1.0 + 8 * FH
+    pbox(c + up * 0.5, (128, 44, 1.0), yaw=yaw, k='stone', col=(0.56, 0.56, 0.56))
+    block(0, 0, 108, 24, H_); block(0, 1.5, 18, 28, HC)
+    for sx in (-1, 1): block(sx * 44, 1, 12, 26, H_)
+    # the ground floor's arcade, warm inside; a balustraded terrace over it; another balustrade under the top floors
+    for k in range(19):
+        x = -50.4 + k * 5.6
+        if abs(x) < 9.2 or abs(abs(x) - 44) < 6.2: continue
+        q = P(x, Y + 0.06); pquad(arch_poly(q, fwd, 2.1, 1.0, 3.6), 'slab', col=WARM_IN)
+    for x in (-44, -41, -47, 44, 41, 47, -5.2, 0, 5.2):
+        y_ = 15.06 if abs(x) < 8 else 14.06; pquad(arch_poly(P(x, y_), fwd, 1.25 if abs(x) > 8 else 2.2, 1.0, 3.2 if abs(x) > 8 else 4.6), 'slab', col=WARM_IN)
+    for z, y_, w_ in ((6.6, Y, 108.0), (23.2, Y, 108.0)):
+        pbox(P(0, y_ + 0.6, z - 0.08), (w_, 1.2, 0.16), yaw=yaw, k='stone', col=PALE); pbox(P(0, y_ + 1.15, z + 0.45), (w_, 0.08, 0.1), yaw=yaw, k='white');
+        for q in range(int(w_ / 1.6)): pbox(P(-w_ / 2 + 0.8 + q * 1.6, y_ + 1.15, z + 0.2), (0.1, 0.1, 0.5), k='white')
+    pbox(P(0, Y + 0.25, H_ - 0.15), (109, 0.7, 0.4), yaw=yaw, k='stone', col=PALE); pbox(P(0, Y + 0.62, H_ - 0.42), (104, 0.05, 0.08), yaw=yaw, k='glow')
+    # the twelve bay columns: three tiers of sand hexagon, each with a red eave, under a stone-and-red pyramid
+    for sx in (-1, 1):
+        for k in range(6):
+            b = P(sx * (12.6 + k * 4.9), Y + 0.7); r = 2.15
+            for t in range(3):
+                z0 = 7.6 + t * 4.7; pts = [b + fwd * (r * math.cos(math.pi * q / 3 + math.pi / 6)) + out * (r * math.sin(math.pi * q / 3 + math.pi / 6)) for q in range(6)]
+                for q in range(6): facade(Vector((pts[(q + 1) % 6].x, pts[(q + 1) % 6].y, 0)), Vector((pts[q].x, pts[q].y, 0)), z0 + 4.2, 'taj_sand', z0=z0)
+                n0 = len(PB.faces); cyl(PB, b + up * (z0 + 3.95), r + 1.1, r + 0.05, 0.75, n=6, mi=pmi('dome'), cap=False); paint(n0, RED)
+            scyl(b + up * (7.6 + 3 * 4.7 - 0.5), r + 0.45, 0.3, 2.7, n=6, col=(0.55, 0.53, 0.5))
+            n0 = len(PB.faces); cyl(PB, b + up * (7.6 + 3 * 4.7 + 1.1), 1.35, 0.1, 1.7, n=6, mi=pmi('dome'), cap=False); paint(n0, RED)
+            scyl(b + up * (7.6 - 1.3), 0.5, r, 1.3, n=6, col=SAND)                                  # the corbel it grows from
+    # the long red roofs: a hip over each wing, behind the balustrade
+    for sx in (-1, 1):
+        x0, x1 = sx * 9.2, sx * 49.5; hr = H_ + 4.2
+        a, b, d_, e = P(x0, Y, H_), P(x1, Y, H_), P(x1, -Y, H_), P(x0, -Y, H_); m0, m1 = P(x0, 0, hr), P(x1 - sx * 6, 0, hr)
+        for q in ([a, b, m1, m0], [d_, e, m0, m1], [b, d_, m1]): pquad(q, 'dome', col=(0.84, 0.2, 0.14))
+        # the gable over each wing's end bay, stacked pale balconies under it
+        g = P(sx * 44, 14.1); w = 6.4
+        for off_, wid, zb, zt in ((0.06, w, H_, H_ + 2.2), (0.08, w * 0.62, H_ + 2.2, H_ + 3.7)):
+            q0 = g + out * off_; pquad([q0 - fwd * wid + up * zb, q0 + fwd * wid + up * zb, q0 + fwd * (wid * 0.55) + up * zt, q0 - fwd * (wid * 0.55) + up * zt], 'dome', col=RED)
+        q0 = g + out * 0.1; pquad([q0 - fwd * (w * 0.34) + up * (H_ + 3.7), q0 + fwd * (w * 0.34) + up * (H_ + 3.7), q0 + up * (H_ + 5.0)], 'dome', col=RED)
+        for f in range(1, 7):
+            z = 1.0 + f * FH; pbox(g + out * 0.5 + up * z, (9.6, 1.0, 0.14), yaw=yaw, k='stone', col=PALE); pbox(g + out * 0.98 + up * (z + 0.9), (9.6, 0.05, 0.08), yaw=yaw, k='white')
+            for bx in range(-4, 5, 2): pbox(g + out * 0.98 + fwd * (bx * 1.15) + up * (z + 0.45), (0.08, 0.08, 0.9), k='white')
+        # behind the roofs: a wide low dome, a small one, a chimney stack
+        wd = P(sx * 34, -3.5, H_ + 2.6); scyl(wd - up * 0.2, 9.8, 9.8, 0.5, n=24, col=PALE, cap=True); red_dome(wd + up * 0.3, 9.4, 6.6, ribs=8); finial(wd + up * 6.8, 1.0)
+        sd_ = P(sx * 21, -5, H_ + 2.4); scyl(sd_ - up * 2.4, 3.4, 3.4, 2.4, n=12); red_dome(sd_, 3.4, 3.6, ribs=6, n=36); finial(sd_ + up * 3.6, 0.65)
+        pbox(P(sx * 27.5, -6, H_ + 5.0), (4.4, 3.0, 10.0), yaw=yaw, k='slab', col=(0.56, 0.56, 0.58))
+        # the great round corner tower, its dark arched base, its courses, its ribbed dome
+        t_ = P(sx * 56.5, 7.0); rt = 6.6; TH = 31.0; round_tower(t_, rt, 7.0, TH - 7.0)
+        scyl(t_ + up * 0.0, rt + 0.9, rt + 0.7, 7.0, n=18)
+        for q in range(9):
+            a_ = 2 * math.pi * q / 9; o_ = Vector((math.cos(a_), math.sin(a_), 0)); tg = Vector((-o_.y, o_.x, 0)); q0 = t_ + o_ * (rt + 0.78)
+            pquad(arch_poly(q0, tg, 1.15, 1.2, 3.6), 'slab', col=DARK)
+        for z, dr in ((7.0, 0.5), (15.0, 0.35), (25.0, 0.35), (TH, 0.7)): scyl(t_ + up * (z - 0.2), rt + dr, rt + dr, 0.55, n=18, col=PALE, cap=z == TH)
+        red_dome(t_ + up * (TH + 0.35), rt + 0.1, 8.2, ribs=8); finial(t_ + up * (TH + 8.4), 1.15)
+        # the two round towers beside the great dome, open colonnades at their tops
+        f_ = P(sx * 12.8, 9.0); scyl(f_ + up * (HC - 4.0), 3.4, 3.4, 4.0 + 2.6, n=14)
+        scyl(f_ + up * (HC + 2.6), 3.8, 3.8, 0.4, n=14, col=PALE, cap=True)
+        for q in range(8):
+            a_ = 2 * math.pi * q / 8; pbox(f_ + Vector((math.cos(a_) * 2.9, math.sin(a_) * 2.9, HC + 4.2)), (0.4, 0.4, 2.8), k='stone', col=PALE)
+        scyl(f_ + up * (HC + 5.6), 3.5, 3.5, 0.35, n=14, col=PALE, cap=True); red_dome(f_ + up * (HC + 5.95), 3.3, 4.2, ribs=6, n=36); finial(f_ + up * (HC + 10.1), 0.75)
+    # the central bay: a little sand pediment on the front
+    q0 = P(0, 15.6); pquad([q0 - fwd * 4.2 + up * HC, q0 + fwd * 4.2 + up * HC, q0 + up * (HC + 3.6)], 'stone', col=SAND); pquad([q0 + out * 0.05 - fwd * 2.8 + up * (HC + 0.4), q0 + out * 0.05 + fwd * 2.8 + up * (HC + 0.4), q0 + out * 0.05 + up * (HC + 2.8)], 'dome', col=RED)
+    # the great dome: a stone drum with round-headed windows, a pale cornice, the ribbed red dome, a lantern, its own small dome
+    d0 = P(0, -1, HC); RD = 10.8
+    scyl(d0, RD, RD, 6.6, n=24)
+    for q in range(12):
+        a_ = 2 * math.pi * q / 12; o_ = Vector((math.cos(a_), math.sin(a_), 0)); tg = Vector((-o_.y, o_.x, 0)); pquad(arch_poly(d0 + o_ * (RD + 0.05), tg, 1.25, 1.2, 3.8), 'slab', col=DARK)
+    scyl(d0 + up * 6.6, RD + 0.7, RD + 0.7, 0.6, n=24, col=PALE, cap=True)
+    red_dome(d0 + up * 7.2, RD + 0.2, 13.6, ribs=8, n=64); top = d0 + up * (7.2 + 13.6)
+    scyl(top - up * 0.2, 2.9, 2.9, 0.4, n=12, col=PALE, cap=True)
+    for q in range(8):
+        a_ = 2 * math.pi * q / 8; pbox(top + Vector((math.cos(a_) * 2.3, math.sin(a_) * 2.3, 1.7)), (0.34, 0.34, 3.2), k='stone', col=PALE)
+    scyl(top + up * 3.3, 2.9, 2.9, 0.35, n=12, col=PALE, cap=True); red_dome(top + up * 3.65, 2.6, 3.0, ribs=6, n=36); finial(top + up * 6.65, 0.95)

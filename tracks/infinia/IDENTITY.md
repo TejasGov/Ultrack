@@ -41,7 +41,7 @@ Our own place, not a copy: no real building, brand, logo or real landmark is rep
 
 **6. The tunnel.**
 - Portal faces with a cut-stone facade and a name band.
-- Inside: tiled walls with a coloured stripe, a continuous light line, emergency niches, lane markings.
+- Inside: a stone dado, truck-art bands ("Horn OK Please"), mural panels in sea teal, marigold, rose and indigo, lit film posters and ads along both walls, dark concrete above, one continuous warm light line.
 
 **7. The Necklace (the west loop's seafront arc).**
 - **Sea wall:** concrete tetrapods piled along the water.
@@ -59,7 +59,7 @@ Our own place, not a copy: no real building, brand, logo or real landmark is rep
 - **Where:** the old city's second half, and the west loop just after the tunnel.
 - **Homes:** Dharavi-style stacked one- to three-storey homes in plaster, brick and tin, each storey its own size and offset; tarps and tin roofs held down by tyres; ladders and washing.
 - **In the lanes:** blue drums, tyre stacks, planks, runs of tin fence, wires overhead.
-- **Faith:** a white mosque with a green onion dome and two minarets on the Necklace's land side (a type, not a copy of any building), with the temple and the dargah.
+- **Landmarks:** the temple and the dargah; a small white mosque across the water; and on the Necklace, at the user's request, a grand seafront hotel modelled on the user's reference of the Taj Mahal Palace (grey block stone, round arches, hemispherical ribbed red domes on round corner towers, long red roofs, sand bay columns with red eaves): built here in Blender, not a measured copy.
 - **The horizon:** towers cover at most 60 % of each far shore (`SKYLINE`, asserted in the build); the rest is low city and wooded hills. One hill carries a big white BOLLYWOOD sign (`tex/bollywood.png`, alpha cut, lit from evening on).
 
 ## Night

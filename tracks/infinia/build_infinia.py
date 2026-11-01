@@ -5,9 +5,10 @@ undersea tunnel (12 m down) in mid-bay; an old seafront (the Necklace arc of str
 city and a towers district the east loop.
   land      each loop's inside plus a 45 m seafront round it; the rest is the bay and the open sea ('water': main.js gives it Marina's sea)
   bridge    box-girder deck on piers, a diamond inverted-Y main tower (about 120 m) and a smaller portal tower straddling the deck, stay cables in two planes
-  tunnel    open cutting from the shore, then a roofed tube under the bay, one continuous light line (no spaced lamps: no strobe)
+  tunnel    open cutting from the shore, then a roofed tube under the bay, dressed with truck-art bands, mural panels, film posters and ads,
+            one continuous light line (no spaced lamps: no strobe)
   city      infinia_city.py + infinia_place.py: the districts of IDENTITY.md (chawls, shop rows with Marathi signs, art deco on the
-            Necklace, towers, koliwada, Dharavi-style lanes, a temple, a mosque, a dargah, the toll plaza, tetrapods, wires, a hill sign), a night-only lit-window shell
+            Necklace, towers, koliwada, Dharavi-style lanes, a temple, a grand seafront hotel, a dargah, the toll plaza, tetrapods, wires, a hill sign), a night-only lit-window shell
   lamps     lights.json street lamps round the lap, closer along the Necklace; heads 'M_LampWarm' (glow.js)
 All four looks (a main circuit, like Marina, Tokyo and India Ghat)."""
 import bpy
@@ -41,8 +42,10 @@ MAT.update({
     'tower': material('IF | bridge concrete', tex='brushed_concrete', vcol=False),
     'cable': material('IF | stay cable', (0.85, 0.85, 0.86), 0.35, 0.6),
     'steel': material('IF | steel', (0.36, 0.37, 0.39), 0.45, 0.7),
-    'tile': material('IF | tunnel tile', (0.72, 0.72, 0.68), 0.35),
-    'tlight': material('IF | tunnel light', (0.9, 0.85, 0.7), 0.4, emit=((1.0, 0.82, 0.55), 12.0)),
+    'tdado': material('IF | tunnel dado', tex='seaworn_stone_tiles', vcol=True),
+    'tmural': material('IF | tunnel mural', tex='worn_plaster_wall', vcol=True),
+    'tupper': material('IF | tunnel upper', tex='dirty_concrete', vcol=True),
+    'tlight': material('IF | tunnel light', (0.9, 0.85, 0.7), 0.4, emit=((1.0, 0.82, 0.55), 1.5)),
     'lamp': material('M_LampWarm', (0.95, 0.9, 0.8), 0.4, emit=((1.0, 0.89, 0.72), 5.0)),
     'water': material('IF | water', (0.01, 0.035, 0.045), 0.04),
     'roof': material('IF | roof', (0.32, 0.31, 0.3), 0.85, vcol=True),
@@ -182,20 +185,47 @@ mesh_obj('IF bridge', bm, ['tower'], planar=True)
 mesh_obj('IF cables', cb, ['cable'], planar=False)
 
 # ------------------------------------------------------------------------------------------------ the tunnel: cutting walls, the tube's roof, the light line
-bm = bmesh.new()
+# Dressed, not white tile: a stone dado, a truck-art band (tex/tunnel_band.png, make_tunnel_art.ps1), painted mural panels in Mumbai's colours under the
+# posters (infinia_place.py), dark concrete above and overhead, so the lit posters and the warm light line carry the place
+bm = bmesh.new(); tvc = vcol_layer(bm); tuv = bm.loops.layers.uv.verify()
+tb = material('IF | tunnel band', rough=0.6); it_ = tb.node_tree.nodes.new('ShaderNodeTexImage'); it_.image = image(H / 'tex' / 'tunnel_band.png'); P_tb = tb.node_tree.nodes['Principled BSDF']
+tb.node_tree.links.new(it_.outputs['Color'], P_tb.inputs['Base Color']); tb.node_tree.links.new(it_.outputs['Color'], P_tb.inputs['Emission Color']); P_tb.inputs['Emission Strength'].default_value = 0.35
+MAT['tband'] = tb
+MURAL = [(0.14, 0.42, 0.46), (0.74, 0.36, 0.12), (0.62, 0.17, 0.3), (0.2, 0.3, 0.54)]      # sea teal, marigold, festival rose, indigo: a new colour every 40 m
+# under the roof nothing lights a wall but the light line (the game's lamps stop at the mouths): these copies carry their own soft glow, by day and night
+for k_, tex_, col_, em_ in (('tdado_in', 'seaworn_stone_tiles', (0.46, 0.27, 0.2), 0.18), ('tupper_in', 'dirty_concrete', (0.3, 0.27, 0.24), 0.05)):
+    MAT[k_] = material(f'IF | tunnel {k_}', tex=tex_, vcol=True, emit=(col_, em_))
+for q_, col_ in enumerate(MURAL): MAT[f'tmural_{q_}'] = material(f'IF | tunnel mural {q_}', tex='worn_plaster_wall', vcol=True, emit=(col_, 0.26))
+MAT['tfloor'] = material('IF | tunnel floor', tex='asphalt_track', rough=0.72, diff=ROOT / 'tracks' / 'drylake' / 'tex' / 'asphalt_track_bleached_diff_2k.jpg', emit=((0.95, 0.8, 0.6), 0.03))      # the light line on the road: a car must see the road at night
+UVS['tfloor'] = 3.5
+TM = ['tdado', 'tband', 'tmural', 'tupper', 'tlight', 'tdado_in', 'tupper_in', 'tmural_0', 'tmural_1', 'tmural_2', 'tmural_3', 'tfloor']
+def tquad(pts, uvs, k, col=(1, 1, 1)):
+    f = bm.faces.new([bm.verts.new(p) for p in pts]); f.material_index = TM.index(k)
+    for l, u in zip(f.loops, uvs): l[tuv].uv = u; l[tvc] = (*col, 1)
 TS = [i for i in range(N) if TUNNEL[i] and CL[i].z < -0.3]
 for a, b in zip(TS, TS[1:]):
     if b != (a + 1) % N: continue
+    wall_h = lambda j: max(1.2 - CL[j].z, 6.4 if CL[j].z < -5.0 else 1.2)     # retaining walls: up past the aprons (and the roof), a parapet on top
     for sd in (1, -1):
-        h = lambda j: max(1.2 - CL[j].z, 6.4 if CL[j].z < -5.0 else 1.2)     # retaining walls: up past the aprons (and the roof), a parapet on top
-        q = [off(a, sd * (HW + 1.7), -0.3), off(b, sd * (HW + 1.7), -0.3), off(b, sd * (HW + 1.7), h(b)), off(a, sd * (HW + 1.7), h(a))]
-        f = bm.faces.new([bm.verts.new(p) for p in (q if sd < 0 else q[::-1])]); f.material_index = 0
+        lat = sd * (HW + 1.7)
+        roofed = CL[a].z < -5.0 and CL[b].z < -5.0
+        for z0, z1, k, sz, col in ((-0.3, 1.0, 'tdado_in' if roofed else 'tdado', 2.5, (0.46, 0.27, 0.2)), (1.0, 1.36, 'tband', 0, (1, 1, 1)),
+                                   (1.36, 5.0, f'tmural_{(a // 16) % 4}' if roofed else 'tmural', 3.0, MURAL[(a // 16) % 4]), (5.0, 99.0, 'tupper_in' if roofed else 'tupper', 3.0, (0.2, 0.19, 0.18))):
+            za0, za1, zb0, zb1 = min(z0, wall_h(a)), min(z1, wall_h(a)), min(z0, wall_h(b)), min(z1, wall_h(b))
+            if za1 <= za0 and zb1 <= zb0: continue
+            ua, ub = sd * a * STEP / (8.0 if k == 'tband' else sz), sd * (a + 1) * STEP / (8.0 if k == 'tband' else sz)      # left to right as seen from the road, on both walls
+            vv = (lambda z: (z - z0) / (z1 - z0)) if k == 'tband' else (lambda z: z / sz)
+            q = [(off(a, lat, za0), (ua, vv(za0))), (off(b, lat, zb0), (ub, vv(zb0))), (off(b, lat, zb1), (ub, vv(zb1))), (off(a, lat, za1), (ua, vv(za1)))]
+            if sd > 0: q = q[::-1]
+            tquad([p for p, _ in q], [u for _, u in q], k, col)
     if CL[a].z < -5.0 and CL[b].z < -5.0:
         q = [off(a, -(HW + 1.7), 6.4), off(b, -(HW + 1.7), 6.4), off(b, HW + 1.7, 6.4), off(a, HW + 1.7, 6.4)]
-        f = bm.faces.new([bm.verts.new(p) for p in q[::-1]]); f.material_index = 0       # the roof, facing down
+        tquad(q[::-1], [(a * STEP / 3, 5.6), (a * STEP / 3, 0), ((a + 1) * STEP / 3, 0), ((a + 1) * STEP / 3, 5.6)], 'tupper_in', (0.16, 0.15, 0.14))       # the roof, facing down
         q = [off(a, -0.3, 6.35), off(b, -0.3, 6.35), off(b, 0.3, 6.35), off(a, 0.3, 6.35)]
-        f = bm.faces.new([bm.verts.new(p) for p in q[::-1]]); f.material_index = 1       # the light line
-mesh_obj('IF tunnel', bm, ['tile', 'tlight'], planar=False)
+        tquad(q[::-1], [(0, 0)] * 4, 'tlight')       # the light line
+        q = [off(a, -HW, 0.02), off(b, -HW, 0.02), off(b, HW, 0.02), off(a, HW, 0.02)]      # under the painted lines (3 cm), over the road
+        tquad(q, [(a * STEP / 3.5, 0), ((a + 1) * STEP / 3.5, 0), ((a + 1) * STEP / 3.5, 2 * HW / 3.5), (a * STEP / 3.5, 2 * HW / 3.5)], 'tfloor')
+mesh_obj('IF tunnel', bm, TM, planar=False)
 # concrete aprons along the cutting on land, 20 cm over the ground: they cover the ground cells' ragged edge at the walls
 bm = bmesh.new(); APRON = []
 for a, b in zip(TS, TS[1:]):
@@ -210,13 +240,13 @@ if bm.faces: mesh_obj('IF aprons', bm, ['concrete'])
 NECK = set(range(TU1 + int(len(WEST) * 0.18), TU1 + int(len(WEST) * 0.75)))      # the west loop's long seafront arc
 for part in ('infinia_city.py', 'infinia_place.py'): exec(compile((H / part).read_text(encoding='utf8'), str(H / part), 'exec'))
 
-# ------------------------------------------------------------------------------------------------ street lamps: every 40 m round the lap, every 24 m both sides along the Necklace; none in the tunnel
+# ------------------------------------------------------------------------------------------------ street lamps: every 40 m round the lap, every 24 m both sides along the Necklace; none under the tunnel's roof (the open cuttings need them: they are dark at night)
 bm = bmesh.new(); LAMPS = []
 i = 0
 while i < N:
     sides = (1, -1) if i in NECK else ((1,) if (i // 16) % 2 == 0 else (-1,))
     for sd in sides:
-        if TUNNEL[i] and CL[i].z < -0.5: continue
+        if TUNNEL[i] and CL[i].z < -5.0: continue
         lat = sd * (BD[sd][i] + (0.6 if (BRIDGE[i] and CL[i].z > 1) else 1.5)); p = off(i, lat)
         foot = Vector((p.x, p.y, (CL[i].z if (BRIDGE[i] and CL[i].z > 1) else max(0.0, CL[i].z)) - 0.1))
         cyl(bm, foot, 0.16, 0.1, 9.2, n=6, mi=0, cap=False)

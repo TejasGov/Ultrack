@@ -72,12 +72,14 @@ if placed_temple:
     pquad([f0 + Vector((0, 0, 7.2)), f0 + side * 2.0 + Vector((0, 0, 6.6)), f0 + side * 2.0 + Vector((0, 0, 5.6)), f0 + Vector((0, 0, 6.0))], 'saffron')   # the flag
     log('temple at station', tj)
 
-# the mosque: on the Necklace's land side, facing the road and the sea (placed before the deco row closes the frontage)
-placed_mosque = False
-for mj in NECKS[int(len(NECKS) * 0.72):int(len(NECKS) * 0.9):5]:
-    mc = off(mj, BD[1][mj] + 26); mc = Vector((mc.x, mc.y, 0)); myaw = facing(mj, 1)
-    if free(footprint(mc, 38, 42, myaw), pad=1.0): placed_mosque = True; mosque(mc, myaw); log('mosque at station', mj); break
-if not placed_mosque: log('mosque: no room on the Necklace')
+# the grand hotel: on the Necklace's land side, facing the road and the sea, with room around it (placed before the deco row closes the frontage)
+placed_hotel = False
+for back in (28, 36, 44, 54, 66, 80):       # the frontage curves: the chord of a 128 m block needs more room on the arc's inside
+    for mj in NECKS[int(len(NECKS) * 0.3):int(len(NECKS) * 0.95):5]:
+        mc = off(mj, BD[1][mj] + back); mc = Vector((mc.x, mc.y, 0)); myaw = facing(mj, 1)
+        if free(footprint(mc, 128, 46, myaw), pad=1.0, tight=0.8): placed_hotel = True; taj(mc, myaw); log('hotel at station', mj, 'set back', back); break
+    if placed_hotel: break
+assert placed_hotel, 'no room for the hotel on the Necklace'
 
 line_street(CHAWL_ROW, 1, old_pick, 3.0, rows=3); line_street(CHAWL_ROW, -1, old_pick, 3.0, rows=3)
 for sd in (1, -1):
@@ -241,6 +243,34 @@ for k, j in enumerate(TOW[::40]):
 for j in sorted(range(N - 300, N - 160, 70)):           # the start's approach: two big hoardings
     p = off(j % N, -(BD[-1][j % N] + 9)); hoarding(Vector((p.x, p.y, 0)), 6.0, 14.0, 5.2, facing(j % N, -1) + 0.5)
 
+# ------------------------------------------------------------------------------------------------ the tunnel: film posters and lit ads along both walls, a name over its mouth
+TUBE = [j for j in TS if CL[j].z < -4.4]; n_post = n_ad = 0; PA = json.loads((H / 'tex' / 'tunnel_posters.json').read_text())      # the sheet, make_poster_atlas.mjs
+def wall_panel(j0, j1, sd, z0, z1, k, u0, u1, v0, v1):
+    """a lit board on the tunnel wall from station j0 to j1; u runs left to right as seen from the road (with the lap on the left wall, against it on the right)"""
+    lat = sd * (HW + 1.62); a, b = off(j0, lat), off(j1, lat); ua, ub = (u0, u1) if sd > 0 else (u1, u0)
+    fa, fb = off(j0, sd * (HW + 1.67)), off(j1, sd * (HW + 1.67))
+    pquad([fa + Vector((0, 0, z0 - 0.12)), fb + Vector((0, 0, z0 - 0.12)), fb + Vector((0, 0, z1 + 0.12)), fa + Vector((0, 0, z1 + 0.12))], 'slab', col=(0.05, 0.05, 0.05))      # the frame
+    pquad([a + Vector((0, 0, z0)), b + Vector((0, 0, z0)), b + Vector((0, 0, z1)), a + Vector((0, 0, z1))], k, uv=[(ua, v0), (ub, v0), (ub, v1), (ua, v1)])
+for sd in (1, -1):
+    k = 0 if sd > 0 else 5; q = 0
+    while q + 3 < len(TUBE):
+        j = TUBE[q]
+        if (TUBE[q + 3] - j) != 3: q += 1; continue
+        if k % 3 == 2:            # every third board an ad, three stations wide, from the hoarding atlas
+            i_ = n_ad % 8; u0, v0 = (i_ % 2) / 2, 1 - (i_ // 2 + 1) / 4; wall_panel(j, j + 3, sd, 1.9, 4.7, 'hoard', u0, u0 + 0.5, v0, v0 + 0.25); q += 6; n_ad += 1
+        else:                     # a film poster, one cell of the sheet
+            i_ = n_post % PA['count']; u0, v0 = (i_ % PA['cols']) / PA['cols'], 1 - (i_ // PA['cols'] + 1) / PA['rows']; wall_panel(j, j + 1, sd, 1.55, 4.95, 'posters', u0, u0 + 1 / PA['cols'], v0, v0 + 1 / PA['rows']); q += 4; n_post += 1
+        k += 1
+log('tunnel: posters', n_post, 'ads', n_ad)
+mouths = [j for j, nx in zip(TS, TS[1:]) if CL[j].z >= -5.0 > CL[nx].z]       # where the roof begins, entering
+for j in mouths:
+    j1 = (j + 1) % N; a_, b_ = off(j1, -(HW + 2.4)), off(j1, HW + 2.4); Z = lambda z: Vector((0, 0, z))
+    pquad([a_ + Z(6.3), b_ + Z(6.3), b_ + Z(9.6), a_ + Z(9.6)], 'stone', col=(0.72, 0.62, 0.5))                      # the cut-stone face over the mouth
+    for sd in (1, -1): pbox(off(j1, sd * (HW + 2.3), 4.8), (1.4, 1.4, 9.8), yaw=HEAD[j1], k='stone', col=(0.66, 0.56, 0.45))
+    m_a, m_b = off(j1, -7.2) - T[j1].to_3d() * 0.06, off(j1, 7.2) - T[j1].to_3d() * 0.06
+    pquad([m_a + Z(6.8), m_b + Z(6.8), m_b + Z(8.6), m_a + Z(8.6)], 'tname', uv=[(1, 0), (0, 0), (0, 1), (1, 1)])
+log('tunnel mouths', len(mouths))
+
 # ------------------------------------------------------------------------------------------------ downloaded models (CREDITS.md): coconut palms, kaali-peeli taxis
 def load_model(path, height=None, length=None, decimate=None):
     """the glTF's meshes baked to one bmesh in metres, standing on z = 0 and centred; its materials in slot order"""
@@ -402,7 +432,7 @@ mesh_obj('IF buildings', FB, [f'f_{k}' for k in KEYS], planar=False)
 mesh_obj('IF window glow night', GB, [f'g_{k}' for k in KEYS], planar=False)
 PB.normal_update()
 for f in PB.faces:
-    if PROPK[f.material_index] in ('signs', 'shutter', 'hoard', 'people'): continue
+    if PROPK[f.material_index] in ('signs', 'shutter', 'hoard', 'people', 'posters', 'tname'): continue
     sz = UVS.get(PROPK[f.material_index], 3.0); n_ = f.normal
     for l in f.loops:
         c = l.vert.co; l[PUV].uv = (c.x / sz, c.y / sz) if abs(n_.z) > 0.6 else ((c.y if abs(n_.x) > abs(n_.y) else c.x) / sz, c.z / sz)
