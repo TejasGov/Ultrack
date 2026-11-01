@@ -1,0 +1,68 @@
+{
+  "_": "Concept centrelines for the career's new tracks. Waypoints [x, y, z] in metres (y north, z up) are drafts: scripts/sketch-layouts.mjs closes them with a centripetal Catmull-Rom, scales x/y to lapTarget, then measures corners, straights, grades and clearance. Waypoint 0 is the start line; the lap runs in waypoint order.",
+  "tracks": [
+    {
+      "id": "drylake", "name": "Mojave Dry Lake", "world": 1, "lapTarget": 1700, "width": 16,
+      "waypoints": [
+        [130, 0, 0], [460, 0, 0], [525, -35, 0], [505, -100, 0], [430, -105, 0], [375, -85, 0], [320, -115, 0],
+        [250, -125, 0], [190, -105, 0], [140, -145, 0], [130, -210, 1], [170, -262, 1], [235, -275, 1], [262, -318, 1],
+        [222, -352, 1], [100, -340, 1], [-60, -320, 1], [-130, -262, 2], [-150, -160, 3], [-118, -105, 5], [-120, -50, 3],
+        [-60, -6, 0]
+      ],
+      "labels": [[230, 25, "runway (main straight)"],
+                 [560, -60, "airliner tail"],
+                 [300, -195, "boneyard rows"],
+                 [-20, -215, "water tower"],
+                 [60, -390, "hangar line"],
+                 [-300, -110, "berm crest"],
+                 [110, -55, "hangar pits"]]
+    },
+    {
+      "id": "ironworks", "name": "Keystone Ironworks", "world": 1, "lapTarget": 1900, "width": 13,
+      "waypoints": [
+        [60, 0, 0], [290, 0, 0], [345, 25, 0], [355, 90, 0], [355, 200, 0], [335, 255, -1], [270, 270, -2],
+        [130, 268, -2], [80, 262, -2], [52, 240, -2], [48, 212, -1], [70, 194, 0], [110, 188, 0], [195, 185, 1],
+        [228, 176, 2], [240, 152, 2], [228, 130, 3], [195, 124, 4], [110, 124, 6], [0, 120, 11], [-40, 95, 13],
+        [-55, 40, 6], [-25, 3, 1]
+      ],
+      "labels": [[400, 145, "casting shed (indoor)"],
+                 [190, 310, "river"],
+                 [200, 290, "truss rail bridge overhead"],
+                 [180, 245, "cobbled quay"],
+                 [190, 60, "blast furnaces"],
+                 [-95, 125, "slag heap summit"]]
+    },
+    {
+      "id": "kestrel", "name": "Kestrel Downs", "world": 2, "lapTarget": 2500, "width": 16,
+      "waypoints": [
+        [100, 0, 10], [420, 0, 6], [690, 10, 1], [760, -20, -1], [770, -85, -4], [720, -160, -12], [740, -240, -15],
+        [700, -310, -13], [640, -390, -10], [540, -420, -8], [420, -400, -5], [330, -350, -2], [270, -330, 0], [235, -370, 1],
+        [180, -400, 3], [100, -380, 8], [50, -320, 14], [40, -240, 20], [0, -160, 25], [-40, -90, 22], [-20, -25, 15],
+        [30, 0, 11]
+      ],
+      "labels": [[350, 40, "grandstand and pits"],
+                 [800, -200, "valley dip"],
+                 [560, -500, "wind turbines on the ridge"],
+                 [-200, -260, "chalk kestrel hill figure"],
+                 [300, -290, "manor"],
+                 [-120, -150, "blind crest"],
+                 [200, -180, "downland pasture"]]
+    },
+    {
+      "id": "lago", "name": "Lago Serena", "world": 3, "lapTarget": 2400, "width": 13,
+      "waypoints": [
+        [100, 0, 2], [330, 0, 2], [400, 0, 2], [540, 0, 2], [640, 10, 3], [690, 60, 5], [680, 115, 7],
+        [620, 128, 8], [480, 128, 11], [440, 138, 13], [425, 160, 14], [440, 182, 15], [480, 192, 17], [600, 196, 21],
+        [635, 205, 22], [648, 228, 23], [635, 250, 24], [600, 260, 26], [450, 262, 29], [300, 262, 32], [150, 250, 32],
+        [70, 225, 30], [25, 175, 24], [55, 115, 16], [15, 60, 9], [40, 15, 3]
+      ],
+      "labels": [[60, -30, "harbour"],
+                 [470, -30, "lakeside tunnel"],
+                 [300, -70, "lake"],
+                 [700, 160, "villa switchbacks"],
+                 [300, 290, "stone bridge over the ravine"],
+                 [180, 290, "campanile"],
+                 [-170, 120, "descent esses"]]
+    }
+  ]
+}
