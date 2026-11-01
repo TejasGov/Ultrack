@@ -1,6 +1,6 @@
 # Ultrack Career Mode: design
 
-Status: P0 and P1 built 2026-11-01 (`src/game/career/`, `src/game/career-ui.js`, `assets/career/*.json`; tests `scripts/test-career.mjs`, sim `scripts/career-sim.mjs`, in-game `scripts/qa-career-round.mjs`). Not yet built: the P0 measurements (par laps are estimates), three save slots, negotiation, W1 poaching, drops, events, sponsor and test days, the team package, Mail and Contract tabs (the contract sits in Profile). Design first written 2026-10-31. It is written for the people who will build it: decisions first, the reason in a line, open questions at the end (section 12).
+Status: P0, P1 and P2 built 2026-11-01 (`src/game/career/`, `src/game/career-ui.js`, `assets/career/*.json`; tests `scripts/test-career.mjs`, sim `scripts/career-sim.mjs`, in-game `scripts/qa-career-round.mjs`). Not yet built: the P0 measurements (par laps are estimates), P3 and later (events, perks, press, living tiers), Mail and Contract tabs (the contract sits in Profile). Design first written 2026-10-31. It is written for the people who will build it: decisions first, the reason in a line, open questions at the end (section 12).
 
 Every number here is a starting value for a data file (section 10.5), not a promise. Numbers marked **(assumed)** are guesses that a measurement must confirm before they are trusted; section 10.4 lists the measurements.
 
@@ -734,6 +734,15 @@ Effort: S about 1-3 days, M about a week, L two weeks or more (rough, **assumed*
 | **P3 Texture** | events E01-E14, driving style and perks, press, achievements, living tiers, pace coach, the weather hook, the new tracks in the calendar (8-round seasons) | L | event pacing and fairness rules pass the sim harness; new tracks slot in by data only |
 | **P4 Principal (M1)** | ownership buy-in, development budget, second-driver hire, sponsor picks, board | M-L | a Legend can buy a team and run it for a season |
 | **P5 Stretch** | 16-car grid (teammate on track), career voice lines naming drivers, replays of key moments | L | only if the user wants it |
+
+**P2 as built, where it differs from this document** (each is a smaller version that does the job; change them after a playtest):
+
+- **W1 signs for next season.** A mid-season move would change tier, circuits and tables halfway through a championship, so the player finishes the season, gets his cut of the release clause at once, and joins the new team at the season end.
+- **Drops happen at the finale only.** The middle round gives the warning, with its recovery objective; a mid-season drop has the same problem as a mid-season move. So the round 4 shield (3.4) has nothing left to protect.
+- **The status lever never changes the car.** It moves junior to second, or lead to Number One. The A seat comes from the duel, an offer or a counter-offer, or a rookie could haggle his way into it on day one. Second driver starts trust at 60; Number One at 65, with two package levels.
+- **An A seat in the same tier** needs an average rating of 7.0 and a half roll. With the Rookie gates at 0, the other two Rookie teams would otherwise offer one after any season.
+- **The reserve target goes down to P8** ("just finish"), because P7 is no easier for a driver already expected last.
+- **Not built:** the livery clause (nothing in the game reads it yet), the exit fee (every move is an offer from a team that pays the release clause, so nobody would pay to leave), Iron Career, and the rule that interest rises with other offers in hand (they raise leverage instead). `testingUnlockAll` stays true so free play is not locked during testing; `playerLevel` is written, and `canSelectCar` gates on it the moment that flag flips.
 
 **The smallest fun career** is P1. It is fun if the first Rookie round already has a goal that is not "win": the briefing says "Finish P7 or better" and the report says "Outstanding: 8.4, sixth place from a slower car". If a playtest of P1 does not feel good, do not build P2 until it does.
 

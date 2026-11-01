@@ -38,6 +38,42 @@ try{
   const rep=CU.CareerReportScreen(g);g.screen=rep;
   while(g.career.clock.phase!=='review'){if(g.career.clock.phase==='paddock')C.finishQuali(g.career,60);const q=g.career.season.current.quali.grid;rep.onShow(C.finishRace(g.career,{order:q,best:Object.fromEntries(q.map((k,i)=>[k,60+i])),crashes:0,spins:0}));ok(rep,'round report');}
   g.screen=hub;hub.onShow('paddock');assert.ok(hub.el.textContent.includes('Season review'));g.screen=start;start.onShow();ok(start,'season review');assert.ok(start.el.textContent.includes('Season 1 review'));}
+ // ---- the ladder's views: save slots, negotiation, W1, side events, rivals, the team package, a dropped season, a moved driver
+ {const CU=await server.ssrLoadModule('/src/game/career-ui.js'),C=await server.ssrLoadModule('/src/game/career/career.js'),S=await server.ssrLoadModule('/src/game/career/save.js'),mem={};
+  globalThis.localStorage={getItem:k=>mem[k]??null,setItem:(k,v)=>{mem[k]=v;}};
+  const avail={india:null,drylake:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null},shows=[],busy=[];
+  const g={...game,career:null,screens:{},setBusy:(m)=>busy.push(m),leaveCareer(){},careerSession(...a){g.sessions.push(a);},sessions:[],show:(...a)=>shows.push(a)},start=CU.CareerStartScreen(g),hub=CU.CareerHubScreen(g),rep=CU.CareerReportScreen(g);
+  const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN')&&!t.includes('null'),what+': '+t.slice(0,300));return t;};
+  const click=(scr,re)=>{const walk=(e)=>[e,...e.children.flatMap(walk)],b=walk(scr.el).filter(e=>Object.hasOwn(e.attrs,'data-nav')&&re.test(e.textContent)).pop();assert.ok(b,'no button '+re);b.click();};
+  // slots: all empty goes straight to create; a saved career shows the picker, an empty slot creates into that slot
+  g.screen=start;start.onShow();assert.ok(ok(start,'create').includes('You are 21'));
+  const a=C.newCareer({name:'Slot One',seed:21,now:'x'});S.saveCareer(a,0);start.onShow();let t=ok(start,'slots');assert.ok(t.includes('Slot One')&&t.includes('Empty')&&t.includes('Slot 3'));
+  click(start,/Slot 2/);assert.ok(start.el.textContent.includes('You are 21'),'an empty slot opens the create form');click(start,/Create driver/);
+  assert.equal(S.activeSlot(),1,'the new career went into the slot picked');assert.deepEqual(S.listCareers().map(c=>c?.seed!==undefined),[true,true,false]);assert.equal(g.career.clock.phase,'shootout');
+  // offers: the picked card has its levers; a refused demand counters, and the card signs
+  C.finishShootout(g.career,null);start.onShow();t=ok(start,'offers with negotiation');assert.ok(t.includes('Negotiate with')&&t.includes('Their limit'));
+  g.career.pending.offers.forEach(o=>{o.interest=0;});click(start,/Propose terms/);t=ok(start,'accepted');assert.ok(t.includes('Terms agreed'),'nothing asked is accepted');assert.ok(!t.includes('Propose terms')||t.includes('Negotiate with')===false,'an agreed card has no levers');
+  C.acceptOffer(g.career,g.career.pending.offers[0].id,avail);const save=g.career;g.screen=hub;
+  // garage: the team package; paddock: no side event in round 1
+  hub.onShow('garage');t=ok(hub,'garage package');assert.ok(t.includes('Team package')&&t.includes('Free'));
+  hub.onShow('paddock');assert.ok(!/optional/.test(ok(hub,'round 1')));
+  const round=(p=4)=>{if(save.clock.phase==='paddock')C.finishQuali(save,60);const me=save.contract.car,o=save.season.current.quali.grid.filter(k=>k!==me);o.splice(p-1,0,me);return C.finishRace(save,{order:o,best:{},crashes:0,spins:0});};
+  round();hub.onShow('paddock');t=ok(hub,'side event');assert.ok(/optional/.test(t)&&t.includes('Gold'));click(hub,/optional/);assert.equal(g.sessions.at(-1)[0],C.sideSpec(save).kind,'the row starts the session');
+  g.sessions.at(-1)[2]({best:null,score:0});t=(hub.onShow('paddock'),ok(hub,'side result'));assert.ok(t.includes('No medal'));
+  // rivals, a seat review warning and W1 in the Paddock and Profile; a moved driver shows his own name
+  save.career.heat={LIN:50,MAD:90};save.contract.warning={left:1,met:1};save.season.w1={offer:{id:'w',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,w1:true,why:'They want you.'},state:'open'};
+  hub.onShow('paddock');t=ok(hub,'w1 and rivals');assert.ok(t.includes('Mid-season offer')&&t.includes('Seat review')&&t.includes('Rivals')&&t.includes('Feud'));
+  click(hub,/Sign for next season/);t=ok(hub,'signed w1');assert.ok(t.includes('Signed for next season')&&!t.includes('Mid-season offer'));
+  hub.onShow('profile');t=ok(hub,'profile');assert.ok(t.includes('Rivals')&&t.includes('Other careers')&&t.includes('Erase this career'));
+  save.world.seats[save.season.current.entries[0]]='OKA';save.world.academy.OKA={name:'Tobi Okafor',nation:'NGA'};save.world.ratings.OKA=72;
+  C.finishQuali(save,60);hub.onShow('paddock');assert.ok(ok(hub,'academy on the grid').includes('OKA'));
+  const r=round(1);g.screen=rep;rep.onShow(r);assert.ok(ok(rep,'report').includes('Tobi Okafor'));
+  // a dropped season: the review says so, and the reserve seat cannot be haggled
+  delete save.contract.next;save.contract.warning={left:0,met:0};while(save.clock.phase!=='review'){save.contract.trust=5;if(save.clock.phase==='paddock')C.finishQuali(save,999);round(8);}
+  g.screen=start;start.onShow();t=ok(start,'dropped review');assert.ok(save.pending.review.dropped&&t.includes('let you go'));const ro=save.pending.offers.find(o=>o.reserve);assert.ok(ro);
+  click(start,/Reserve|reserve seat at reduced/);t=ok(start,'reserve card');assert.ok(!t.includes('Negotiate with'),'a reserve seat has no levers');
+  delete globalThis.localStorage;
+ }
  const credits=UI.CreditsScreen(game);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));assert.ok(credits.el.textContent.includes('Airbus A320 Airliner')&&credits.el.textContent.includes('Kyaie'),'the Dry Lake airliner (CC BY) is credited');assert.ok(['Modular Stadium','Stadium Light','davi.pereira.souza.0001','thundermind'].every(t=>credits.el.textContent.includes(t)),'the Shajawa stands and towers (CC BY) are credited');
  const records=UI.RecordsScreen(game);records.onShow();const rosterSize=JSON.parse((await import('node:fs')).readFileSync(new URL('../../assets/teams/teams.json',import.meta.url))).teams.flatMap(t=>t.cars).length;
  const recordRows=records.el.children[2].children[1].children[1].children;   // screen > body > table panel > rows

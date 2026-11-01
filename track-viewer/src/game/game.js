@@ -459,7 +459,7 @@ export class Game {
     const s = this.session, A = this.audio, hero = this.field.hero;
     A.play('race/horn-long.ogg', { gain: 0.6 });
     this.field.setPlayer(false);                 // the AI brings the car round on a cool-down lap
-    if (s.mode === 'quali') this.hud.message('Qualifying done', fmtTime(e.best), 'gold', 3);
+    if (s.mode === 'quali') this.hud.message(this.careerRun?.kind === 'test' ? 'Test day done' : 'Qualifying done', fmtTime(e.best), 'gold', 3);
     if (s.mode === 'race') {
       const p = e.pos, rows = s.results(), fastest = rows.find((r) => r.hero)?.best;
       if (!this.careerRun) this.pay({ mode: 'race', pos: p, cars: rows.length, laps: s.laps, finished: true, pb: this.racePb,
@@ -469,8 +469,10 @@ export class Game {
       A.cheer(p <= 3);
       if (p === 1) { A.play('fireworks/big-finale.ogg', { bus: 'crowd', gain: 0.9, delay: 0.6 }); this.sayLater('winner_fireworks', { priority: 2 }, 7000); }
     } else if (s.mode === 'drift') {
-      this.driftRecord = store.driftRecord(hero.key, e.score);
-      this.pay({ mode: 'drift', score: e.score, record: this.driftRecord });
+      if (!this.careerRun) {                     // a sponsor day pays by its own targets (career.finishSide)
+        this.driftRecord = store.driftRecord(hero.key, e.score);
+        this.pay({ mode: 'drift', score: e.score, record: this.driftRecord });
+      }
       this.hud.message('Time', `${Math.round(e.score).toLocaleString('en')} pts`, 'gold', 3);
     }
   }
@@ -486,7 +488,7 @@ export class Game {
   }
 
   // ---------------------------------------------------------------------------------------------- career (docs/career-mode.md)
-  /** a career session (career-ui.js): kind 'shootout' | 'quali' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
+  /** a career session (career-ui.js): kind 'shootout' | 'quali' | 'test' | 'sponsor' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
    *  car and conditions are kept aside and leaveCareer puts them back (R12); done(data) gets the outcome */
   async careerSession(kind, spec, done) {
     this.freePlay ??= { car: store.data.car, track: store.settings.track, look: store.settings.look, weather: store.settings.weather, laps: store.settings.laps };
@@ -494,13 +496,13 @@ export class Game {
     if (this.ctx.trackId() !== spec.track) return;                       // the circuit would not load: selectTrack has said so
     store.data.car = spec.car; Object.assign(store.settings, { look: spec.look, weather: spec.weather, laps: spec.laps ?? store.settings.laps }); store.save();
     this.applySettings();
-    await this.startSession(kind === 'race' ? 'race' : 'quali', { ...spec.session, kind, done, home: spec.home });
+    await this.startSession(kind === 'race' ? 'race' : kind === 'sponsor' ? 'drift' : 'quali', { ...spec.session, kind, done, home: spec.home });
   }
   /** a career session ends (the flag, the last qualifying lap, End qualifying, Retire): its numbers go back to the career screens */
   careerDone(retired = false) {
     const run = this.careerRun, s = this.session; if (!run || !s) return;
     const T = s.trk.get(this.field.hero), rows = s.mode === 'race' ? s.results() : null;
-    const data = { kind: run.kind, best: T.best, dnf: retired, crashes: run.crashes, spins: run.spins, pro: store.settings.assists === 'pro',
+    const data = { kind: run.kind, best: T.best, score: s.drift?.score ?? null, dnf: retired, crashes: run.crashes, spins: run.spins, pro: store.settings.assists === 'pro',
       order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])) };
     this.careerRun = null; this.hideScreens(); this.endSession(); this.lineup(); this.state = 'menu'; this.cameraFor('menu');
     run.done(data);

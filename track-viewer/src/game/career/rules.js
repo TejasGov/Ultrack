@@ -138,10 +138,10 @@ export const OBJECTIVES = {
 };
 export const objectiveText = (o) => OBJECTIVES[o.kind](o);
 /** the round's objectives (6.4): one mandatory from the expected finish, two optional from a seeded pool */
-export function objectivesFor(r, expPos) {
-  const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 1) }];
+export function objectivesFor(r, expPos, easier = false) {
+  const target = easier ? Math.min(expPos + 1, 8) : Math.min(expPos, 7), pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 1) }];
   if (expPos <= 4) pool.push({ kind: 'podium' });
-  return [{ kind: 'finish', n: Math.min(expPos, 7), mandatory: true }, ...shuffle(r, pool).slice(0, 2)];   // P8 of 8 is no target: last expected asks for P7
+  return [{ kind: 'finish', n: target, mandatory: true }, ...shuffle(r, pool).slice(0, 2)];   // P8 of 8 is no target: last expected asks for P7; a Raw or reserve driver gets one place easier, down to just finishing (3.1, 6.7)
 }
 export function objectiveMet(o, x) {
   return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n,
@@ -150,9 +150,42 @@ export function objectiveMet(o, x) {
 
 // ---------------------------------------------------------------------------------------------- offers
 /** a team's interest in the player (6.5) and whether its seeded roll makes an offer */
-export function interestOf(team, { rep, rrs, cl, form }) {
+export function interestOf(team, { rep, rrs, cl, form }, { extraRep = 0, declined = 0 } = {}) {
   const g = TIERS.teams[team].gate, a = avg(rrs.slice(-6));
-  if (rep < g.rep || a < g.rr || cl < g.cl) return null;
-  return clamp((0.5 * (rep - g.rep)) / Math.max(g.rep, 100) + 0.15 * (a - g.rr) + 0.05 * form, 0, 1);
+  if (rep < g.rep + extraRep || a < g.rr || cl < g.cl) return null;
+  return clamp((0.5 * (rep - g.rep)) / Math.max(g.rep, 100) + 0.15 * (a - g.rr) + 0.05 * form - (declined >= T.offers.declineAfter ? T.offers.declinePenalty : 0), 0, 1);
 }
-export const offerRoll = (seed, season, team, interest) => rng(seed, 'offer', season, team)() < T.offers.base + T.offers.slope * interest;
+/** the seeded roll (6.5): window 'W1' (mid-season poaching, halved) or 'W2' (the season-end market) */
+export const offerRoll = (seed, season, window, team, interest, scale = 1) => rng(seed, 'offer', season, window, team)() < (T.offers.base + T.offers.slope * interest) * scale;
+
+// ---------------------------------------------------------------------------------------------- contracts and negotiation
+/** status ladder (3.3): junior and second sit in the B car, lead and number1 in the A car; Number One is a Legend seat */
+export const STATUS = ['junior', 'second', 'lead', 'number1'];
+export const STATUS_LABEL = { junior: 'Junior', second: 'Second driver', lead: 'Lead driver', number1: 'Number One' };
+/** what the status lever can reach from an offer: it never changes the car (the A seat is earned on track, 6.3) */
+export const statusChoices = (o) => (o.seat === 'A' ? (o.tier === 'legend' ? ['lead', 'number1'] : ['lead']) : ['junior', 'second']).filter((s) => STATUS.indexOf(s) >= STATUS.indexOf(o.status));
+/** demand points of a counter-proposal (6.5): salary +10 % = 1, status up = 2 a step, a shorter contract = 0.5 a season */
+export function demandOf(o, ask) {
+  const D = T.offers.demand;
+  return Math.round(ask.salary / D.salaryStep) * D.perSalaryStep + Math.max(0, STATUS.indexOf(ask.status) - STATUS.indexOf(o.status)) * D.perStatus
+    + Math.max(0, o.seasons - ask.seasons) * D.perSeasonCut;
+}
+/** the nearest terms the team accepts: give up salary first, then status, then length (6.5) */
+export function nearestTerms(o, ask, leverage) {
+  const t = { ...ask }, D = T.offers.demand;
+  while (demandOf(o, t) > leverage) {
+    if (t.salary > 0) t.salary = Math.round((t.salary - D.salaryStep) * 10) / 10;
+    else if (STATUS.indexOf(t.status) > STATUS.indexOf(o.status)) t.status = STATUS[STATUS.indexOf(t.status) - 1];
+    else if (t.seasons < o.seasons) t.seasons++;
+    else break;
+  }
+  return t;
+}
+
+// ---------------------------------------------------------------------------------------------- side events
+/** a test-day or sponsor-day result against its targets (4.2): 0 none, 1 bronze, 2 silver, 3 gold */
+export function sideMedal(kind, value, par) {
+  const S = T.side;
+  if (kind === 'test') return Number.isFinite(value) ? S.test.filter((x) => value <= par * x).length : 0;
+  return S.sponsor.filter((x) => value >= x).length;
+}

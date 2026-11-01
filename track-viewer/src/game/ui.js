@@ -501,7 +501,9 @@ export function PauseScreen(game) {
       fill(opts, opt('play', 'Resume', () => game.resume()),
         career ? null : opt('restart', 'Restart', () => ask('Restart?', mode === 'race' ? 'The race starts again from the grid.' : 'The session starts again from the beginning.', 'restart', 'Restart', () => game.restart())),
         mode === 'trial' && laps ? opt('lap', 'End and see laps', () => game.trialResults()) : null,
-        career && mode === 'quali' ? opt('lap', 'End qualifying', () => ask('End qualifying?', 'Your best valid lap so far sets your grid slot. With none, you start last.', 'lap', 'End', () => game.careerDone())) : null,
+        career && mode === 'quali' ? (game.careerRun.kind === 'test'
+          ? opt('lap', 'End test day', () => ask('End the test day?', 'Your best valid lap so far is measured against the targets.', 'lap', 'End', () => game.careerDone()))
+          : opt('lap', 'End qualifying', () => ask('End qualifying?', 'Your best valid lap so far sets your grid slot. With none, you start last.', 'lap', 'End', () => game.careerDone()))) : null,
         opt('settings', 'Settings', () => game.show('settings', 'pause')),
         career ? (mode === 'race' ? opt('quit', 'Retire', () => ask('Retire from the race?', 'You are classified last and the round counts as a retirement.', 'quit', 'Retire', () => game.careerDone(true))) : null)
           : opt('quit', 'Quit to menu', () => ask('Quit to menu?', 'This session ends and you go back to the main menu.', 'quit', 'Quit', () => game.quit())));
