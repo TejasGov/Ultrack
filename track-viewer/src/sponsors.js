@@ -5,7 +5,7 @@ let ready;
 export const sponsorOf=name=>lookup.get(name?.toUpperCase());
 export function loadSponsorLogos(){
   return ready??=Promise.all(SPONSOR_BRANDS.map(b=>new Promise(resolve=>{
-    const im=new Image();im.onload=()=>{images.set(b.id,im);resolve();};im.onerror=()=>{console.warn('Sponsor logo unavailable:',b.name);resolve();};im.src='/assets/sponsors/'+b.file;
+    const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{images.set(b.id,im);resolve();};im.onerror=()=>{console.warn('Sponsor logo unavailable:',b.name);resolve();};im.src='/assets/sponsors/'+b.file;
   })));
 }
 export function drawSponsor(g,name,x,y,w,h){

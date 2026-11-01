@@ -9,7 +9,7 @@ export function loadTeamLogo(team,variant='onTeam',kind='lockup'){
  const key=keyOf(team,variant,kind);
  if(!pending.has(key))pending.set(key,new Promise(resolve=>{
   const url=teamLogoUrl(team,variant,kind);if(!url){resolve(null);return;}
-  const im=new Image();im.onload=()=>{images.set(key,im);resolve(im);};
+  const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{images.set(key,im);resolve(im);};
   im.onerror=()=>{console.warn('Team logo unavailable:',key);resolve(null);};im.src=url;
  }));
  return pending.get(key);
