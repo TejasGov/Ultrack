@@ -35,17 +35,17 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 | | Mojave Dry Lake | Infinia Track | Shajawa Stadium | Morro Noturno |
 |---|---|---|---|---|
 | World | 1 | 1 | 2 | 3 |
-| Archetype (career-mode.md 4.5) | Short technical | Figure-eight: straight legs, angular loops, a bridge over a tunnel | Stadium speedway: flat oval sweeps plus an infield section | Night street circuit: a rounded square of drag-strip straights round a hill |
-| Lap | 1.70 km, ~53 s | 2.10 km, ~58 s | 2.20 km, ~55 s | 1.65 km, ~50 s |
-| Corners (measured) | 8 | 8 (four 90°, four 30° kinks; the east loop all rights, the west all lefts) | 6 (two long flat sweeps, four 90° infield corners) | 4 tight 90° lefts (r ~21 m), one per block corner |
-| Longest straight | 314 m (runway) | 424 m (the climb to the bridge) | 484 m | 284 m |
-| Width | 16 m | 13 m | 15 m | 12 m (city streets) |
-| Elevation | 0 to 5 m | -4 to +6 m (10 m at the crossing), 3.8 % max | flat (no banking, by design) | 0 to 12 m: one street climbs, the opposite one descends; 3.4 % max |
-| Race laps at 7.5 min | 8 | 8 | 8 | 9 |
+| Archetype (career-mode.md 4.5) | Short technical | Figure-eight across a bay: a cable-stayed sea bridge over an immersed tunnel | Stadium speedway: flat oval sweeps plus an infield section | Night street circuit: a rounded square of drag-strip straights round a hill |
+| Lap | 1.70 km, ~53 s | 3.30-3.50 km, ~80 s | 2.20 km, ~55 s | 1.65 km, ~50 s |
+| Corners (measured) | 8 | 5-6, mostly fast; two shore loops | 6 (two long flat sweeps, four 90° infield corners) | 4 tight 90° lefts (r ~21 m), one per block corner |
+| Longest straight | 314 m (runway) | 700-800 m (the sea legs) | 484 m | 284 m |
+| Width | 16 m | 14 m | 15 m | 12 m (city streets) |
+| Elevation | 0 to 5 m | -12 m (tunnel) to +24 m (bridge), 8 % max | flat (no banking, by design) | 0 to 12 m: one street climbs, the opposite one descends; 3.4 % max |
+| Race laps at 7.5 min | 8 | 5-6 | 8 | 9 |
 | Looks | day, dusk | day, dusk | day, dusk | night only (the exception) |
 | Weather | dry; rain only at dusk (desert storm) | all | all | wet streets every round (damp or rain) |
 | Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | +0.4 / +0.3 / +0.6 | +0.8 / -0.2 / +0.4 | +0.6 / +0.4 / +0.6 |
-| Hero shot | Driving under airliner wings at dusk | Cresting the bridge at dusk with the other leg diving into the tunnel below | Down the main straight at dusk, 360° of packed stands and the lights coming on | Launching down the drag strip at night, neon and wet tarmac, the lit hill above |
+| Hero shot | Driving under airliner wings at dusk | Dusk on the sea bridge, cable lights on, the tunnel portals far below | Down the main straight at dusk, 360° of packed stands and the lights coming on | Launching down the drag strip at night, neon and wet tarmac, the lit hill above |
 
 ## 3. Mojave Dry Lake (World 1, Mojave's home)
 
@@ -65,21 +65,24 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **Watch.** The runway is wider than the track. Paint the 16 m edges clearly and make the rest run-off so the AI keeps a racing line.
 
-## 4. Infinia Track (World 1, Liberty's home)
+## 4. Infinia Track (World 1): the sea link
 
-![Infinia Track plan](career-worlds/infinia.svg)
+![Infinia Track, variant A](career-worlds/infinia.svg)
+![Infinia Track, variant B](career-worlds/infinia_b.svg)
 
-**The idea.** An infinity sign drawn with a ruler: a purpose-built modern test track with two angular loops joined by two long straight legs that cross in the middle. At the crossing one leg climbs onto a bridge and the other drops into a short tunnel under it, as on Tokyo's crossover. The style is clean and modern: white and grey concrete, sharp chevron kerbs, a sculptural bridge, glass and steel buildings in the loops. It is Liberty's new proving ground.
+**The idea.** A figure-eight across a bay, inspired by Mumbai's Bandra-Worli Sea Link: one leg of the eight is a long cable-stayed sea bridge, the other dives into an immersed tunnel under the bay, and the two cross in mid-bay, the bridge 36 m above the tunnel. The bridge is our own design in that family (tall inverted-Y towers, fans of stay cables, a slender deck, a gentle curve over the water), not a copy of the real one. Two shores close the eight: an old seafront on one side (promenade, sea wall, art-deco blocks), a cluster of new towers on the other. Bigger than before: 3.3-3.5 km.
 
-**The lap.** The start is on the south-west leg, already climbing. The straight rises 6 m onto the bridge and over the crossing, then drops into the east loop, all right-handers: a 30° kink (1), a hard 90° (2), the long east side, another 90° (3), and a kink (4) that points you back at the crossing. That leg dips 4 m into the tunnel under the bridge you crossed half a minute earlier. Then comes the west loop, the mirror image in left-handers (5-8), back onto the start straight.
+**Two layouts to choose from.**
+- **A, the Sea Link eight (3.30 km).** Symmetric. The start is on the old seafront, straight onto the bridge, which climbs to 24 m over the bay and lands among the towers. The east loop (rights) brings you back down into the tunnel, 12 m under the water, then the west loop (lefts) along the seafront. Two 800 m legs, each with one big curve-free run: the fastest lap in the career.
+- **B, the long curve (3.50 km).** The bridge is one long S over the water, the way the real link sweeps across the bay; the tunnel leg stays straight, so the two cross at an angle. The east loop is a big fast arc round the towers, the west loop tighter seafront streets. Fewer corners, more commitment: the bridge curve is taken flat out with the water on both sides.
 
-**Signature moments.** The bridge crest with the other leg visible below. The tunnel under the crossing: daylight, dark, daylight. The two 90° corners at the far end of each loop, where braking from the long legs makes the overtakes.
+**Signature moments.** Climbing onto the bridge with the towers' cables flashing past (slow and steady, never a strobe: the cables are far apart and thin). Cresting mid-bay and seeing the tunnel portals below. The tunnel: down under the water, lit by one continuous light line, up into the other shore.
 
-**Surfaces.** New smooth asphalt, white painted concrete run-off, chevron kerbs, crash barriers with a clean modern face. The tunnel is short (about 60 m) and lit by a continuous light line, no spaced lamps that would strobe.
+**Surfaces.** New asphalt on the bridge deck with expansion joints, concrete parapets and crash barriers, the tunnel's tiled walls, seafront paving. Water around everything: Marina's sea material.
 
-**What it needs.** The bridge (deck, piers, parapets) and the tunnel cut, both Blender kit pieces; the elevation is in the centreline already. Modern pavilions and a control building in the loops (Blender boxes with glass and steel). Day and dusk only.
+**What it needs.** The bridge kit (deck, towers, cables, parapets), the tunnel (portals, tiled walls, light line, collision as a closed tube), the sea, two shore districts (Blender kit buildings; the far skyline as photographed arcs, as at Dry Lake). Day and dusk only: dusk with the bridge's cable lights on is the hero look.
 
-**Watch.** The crossing needs its collision in two levels: the bridge deck over the tunnel road, with the tunnel walls and roof solid. The checker treats a pass under 6 m apart in height as a fault. AI cars must not mistake the other leg for theirs, which is solved by the centreline order.
+**Watch.** The crossing needs collision in two levels (deck over tunnel); the checker allows legs 6 m or more apart in height. The bridge stays inside 8 % grades (A: 8.0 %, B: 6.8 %). Thin cables alias at distance: they fade with distance.
 
 ## 5. Shajawa Stadium (World 2, the only stadium)
 
