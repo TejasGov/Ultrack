@@ -1,6 +1,6 @@
-// In-game look check of Mojave Dry Lake (tracks/drylake): ten views in its two looks, console errors, load time and draw stats.
-//   node scripts/qa-drylake-views.mjs [url=http://127.0.0.1:5180] [looks=day,dusk]      WEATHER=damp|rain, ONLY=1-,3- (view prefixes)
-// Shots go to qa/drylake-views/<view>-<look>.png. Views are anchored on track.json corners, so they follow a re-routed lap.
+// In-game look check of a career track (TRACK=drylake default, or shajawa, ...: tracks/<id>): ten views in its two looks, console errors,
+// load time and draw stats.   node scripts/qa-drylake-views.mjs [url=http://127.0.0.1:5180] [looks=day,dusk]      WEATHER=damp|rain, ONLY=1-,3-
+// Shots go to qa/<track>-views/<view>-<look>.png. Views are anchored on track.json corners, so they follow a re-routed lap.
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -10,9 +10,9 @@ const args = process.argv.slice(2);
 const base = args[0] ?? 'http://127.0.0.1:5180';
 const looks = (args[1] ?? 'day,dusk').split(',');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const out = process.env.OUT ?? join(root, 'qa', 'drylake-views');
+const TRACK = process.env.TRACK ?? 'drylake', out = process.env.OUT ?? join(root, 'qa', `${TRACK}-views`);
 mkdirSync(out, { recursive: true });
-const track = JSON.parse(readFileSync(join(root, '..', 'tracks', 'drylake', 'out', 'track.json'), 'utf8'));
+const track = JSON.parse(readFileSync(join(root, '..', 'tracks', TRACK, 'out', 'track.json'), 'utf8'));
 const C = track.centerline, n = C.length, T = track.corners.map((c) => c.apexIdx);
 const at = (i, up = 0) => { const p = C[((i % n) + n) % n]; return [p[0], p[1] + up, p[2]]; };
 const off = (i, lat, up) => {     // `lat` m left (+) / right (-) of the centreline at sample i, `up` m over it
@@ -38,7 +38,7 @@ const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(ex
 const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } });
 const errors = [];
-await ctx.addInitScript(([look, weather]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track: 'drylake', look, weather } })); } catch { /* none */ } }, [looks[0], process.env.WEATHER ?? 'dry']);
+await ctx.addInitScript(([look, weather, track]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look, weather } })); } catch { /* none */ } }, [looks[0], process.env.WEATHER ?? 'dry', TRACK]);
 // a stub for Vite's HMR socket: another agent saving a file would otherwise reload this page mid-run
 await ctx.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; window.WebSocket = F; });
 const page = await ctx.newPage();

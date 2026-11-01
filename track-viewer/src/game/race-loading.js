@@ -9,6 +9,7 @@ export const LOADING_SLIDES = [
   { track: 'marina', title: 'The city\nholds its breath.', text: 'The cafés stay open on race night. Mechanics lean over the pit wall, and for the people who live along the Corniche the first engine note is the start of the evening.' },
   { track: 'tokyo', title: 'Old city,\nnew city.', text: 'A temple street under the cherry blossom, then the neon straight with Fuji on the horizon. Every lap runs through both halves of Tokyo.' },
   { track: 'india', title: 'Down the ghat\ninto the valley.', text: 'The road falls off the ridge in tight bends, the city below and the far ranges sharp in the thin mountain air. Commit to the line before the bend, not in it.' },
+  { track: 'shajawa', title: 'The whole bowl\nis on its feet.', text: 'Stands on every side, flat sweeps at both ends and an infield that bites into the back straight. Brake hard off the back straight; the overtake is there, under the screen.' },
   { track: 'drylake', title: 'Under the wings\nof the boneyard.', text: 'A test airfield on the edge of a dry lake. The main straight is a runway; the infield is rows of retired airliners. Brake hard at the end of the runway for the hairpin round the parked tail.' },
 ].map((s) => ({ ...s, image: `/assets/ui/stills/tracks/${s.track}.webp` }));
 const TIP = 'Brake before the corner. Ease off the pedal as you turn, then build throttle on the exit.';
