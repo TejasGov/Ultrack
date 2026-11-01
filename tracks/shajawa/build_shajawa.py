@@ -2,8 +2,9 @@
     powershell -File ../india/run_blender_locked.ps1 -Script D:/RaceUltimate/tracks/shajawa/build_shajawa.py   (`-- --no-export`: the blend only)
 Shared pieces (centreline, materials, road, walls, collision, track.json, export): tracks/career_lib.py. Here:
   track     flat (no banking, by design), 15 m, white edge lines, kerbs only in the four infield corners, a white speedway wall 16 m out
-  bowl      the CC BY Modular Stadium's straight stand section (source/modular_stadium) bent along a stadium-shaped path round the oval, so the
-            ends curve instead of leaving wedges, at 2x (about 25 m); a second tier along both straights. Light towers (CC BY Stadium Light, decimated) on the rim
+  bowl      a raked bowl of 40 seat rows (seats in colour blocks) swept along a stadium-shaped path round the oval, 14 more rows behind
+            the main straight, a back wall and roof; a crowd card per row (people generated here, gaps for empty seats); the CC BY
+            Modular Stadium's section (source/modular_stadium: boxes over a concourse) along the top of the main straight Light towers (CC BY Stadium Light, decimated) on the rim
   infield   grass, a paved paddock with a garage block, a four-sided screen on legs
 Day and dusk only (the career's small tracks follow the story): no lights.json; the tower lamps are emissive."""
 import bpy
@@ -76,23 +77,102 @@ for m in KIT_MATS:
 for o in kit: bpy.data.objects.remove(o, do_unlink=True)
 for o in list(bpy.data.objects):
     if o.type == 'EMPTY': bpy.data.objects.remove(o, do_unlink=True)
-SCALE = 2.0; NSEC = round(PER / (SW * SCALE)); SA = PER / (NSEC * SW)      # along: stretched a little so the ring closes
-log('stand section', round(SW, 1), 'x', round(SD, 1), 'x', round(SH, 1), 'm (depth axis', 'xy'[DAX], DSG, '), sections', NSEC)
+# ---- the rake: concrete seat rows swept round the whole bowl (the kit section has no seating, only stairs, a concourse and boxes)
+NR, TREAD, RISE, H0 = 40, 0.85, 0.42, 1.6        # rows, tread depth, riser height, the front parapet over the service road
+NR2 = 14                                         # an upper rake behind the main straight
+def rake_profile(rows, d0, h0):
+    pr = [(d0, -0.2), (d0, h0)]
+    for k in range(rows): d, h = d0 + k * TREAD, h0 + k * RISE; pr += [(d + TREAD, h), (d + TREAD, h + RISE)]
+    return pr
+SEAT_BLOCKS = [(0.62, 0.05, 0.04), (0.82, 0.8, 0.76), (0.05, 0.16, 0.42), (0.62, 0.05, 0.04), (0.06, 0.06, 0.07), (0.82, 0.8, 0.76)]
+def along(s0, s1, prof):
+    """rows of points: the profile (depth outward, height) at stations every ~3 m from s0 to s1 along the bowl path"""
+    m = max(2, int((s1 - s0) / 3.0)); out = []
+    for q in range(m + 1):
+        p, nn = path(s0 + (s1 - s0) * q / m); out.append([p + nn * d + Vector((0, 0, h)) for d, h in prof])
+    return out
+def sweep(name, prof, s0, s1):
+    """treads take seat colours in 40 m blocks, risers and the parapet are concrete"""
+    b = bmesh.new(); vc = vcol_layer(b); R_ = along(s0, s1, prof); V = [[b.verts.new(p) for p in r] for r in R_]; m = len(R_) - 1
+    for q in range(m):
+        blk = SEAT_BLOCKS[int((s0 + (s1 - s0) * (q + 0.5) / m) / 40) % len(SEAT_BLOCKS)]
+        for k in range(len(prof) - 1):
+            f = b.faces.new([V[q][k], V[q][k + 1], V[q + 1][k + 1], V[q + 1][k]])
+            tread = abs(prof[k + 1][1] - prof[k][1]) < 1e-6 and k > 1
+            f.material_index = 0 if tread else 1
+            for l in f.loops:
+                t = 0.9 + 0.1 * fbm(l.vert.co.x / 7, l.vert.co.y / 7, 2)
+                l[vc] = (blk[0] * t, blk[1] * t, blk[2] * t, 1) if tread else (t, t, t, 1)
+    return mesh_obj(name, b, ['seats', 'stand'], planar=True)
+MAT['seats'] = material('SJ | seats', rough=0.55, vcol=True)
+MAT['stand'] = material('SJ | stand concrete', tex='concrete_wall_009', vcol=True); UVS.update({'stand': 3.0, 'seats': 3.0})
+sweep('SJ rake', rake_profile(NR, 0.0, H0), 0.0, PER)
+D1, H1 = NR * TREAD, H0 + NR * RISE                         # the top of the ring rake
+sweep('SJ upper rake', rake_profile(NR2, D1 + 2.0, H1 + 2.5), 0.0, 2 * Lb)
+D2, H2 = D1 + 2.0 + NR2 * TREAD, H1 + 2.5 + NR2 * RISE
+# a back wall and a cantilevered roof round the top of the ring (the main straight's over its upper rake)
+bm = bmesh.new()
+strip(bm, along(2 * Lb, PER, [(D1, H1), (D1, H1 + 6), (D1 - 14, H1 + 9)]), 0, closed=False)
+strip(bm, along(0.0, 2 * Lb, [(D2, H2), (D2, H2 + 6), (D2 - 16, H2 + 9)]), 0, closed=False)
+mesh_obj('SJ roof', bm, ['concrete'])
+# ---- the crowd: one card of seated people per row (generated here), on every tread facing the track; gaps in the texture are empty seats
+import numpy as np
+CW, CH, VAR = 2048, 168, 4                         # one variant: 2048 x 168 px = 14 m x 1.15 m; four variants stacked
+img = np.zeros((CH * VAR, CW, 4), np.float32); rr = random.Random(5)
+SHIRTS = [(0.92, 0.92, 0.9), (0.85, 0.1, 0.08), (0.1, 0.22, 0.6), (0.95, 0.75, 0.1), (0.1, 0.45, 0.2), (0.15, 0.15, 0.16), (0.55, 0.1, 0.35), (0.3, 0.6, 0.85), (0.95, 0.45, 0.1)]
+SKINS = [(0.55, 0.36, 0.25), (0.75, 0.55, 0.42), (0.36, 0.22, 0.14), (0.85, 0.67, 0.55), (0.46, 0.3, 0.2)]
+yy, xx = np.mgrid[0:CH, 0:CW]; PXM = CW / 14.0
+for v in range(VAR):
+    band = img[v * CH:(v + 1) * CH]; x = rr.uniform(0, 10)
+    while x < CW - 30:
+        if rr.random() < 0.82:                     # else an empty seat
+            sh, sk = rr.choice(SHIRTS), rr.choice(SKINS); up = rr.random() < 0.12
+            px = x + rr.uniform(-4, 4); bw = 0.21 * PXM * rr.uniform(0.9, 1.15); top = (0.62 + (0.18 if up else 0)) * PXM
+            body = (np.abs(xx - px) < bw) & (yy < top) & (yy > 0.02 * PXM)
+            hr = 0.105 * PXM; hy = top + hr * 0.9; head = (xx - px) ** 2 + (yy - hy) ** 2 < hr * hr
+            shade = 0.55 + 0.45 * np.clip(yy[body] / top, 0, 1)
+            band[body] = np.stack([sh[0] * shade, sh[1] * shade, sh[2] * shade, np.ones_like(shade)], 1)
+            band[head] = (*sk, 1.0)
+            if up:                                  # arms up
+                for sx in (-1, 1):
+                    arm = (np.abs(xx - (px + sx * bw * 1.1)) < 0.04 * PXM) & (yy > top * 0.7) & (yy < top + 0.35 * PXM); band[arm] = (*sk, 1.0)
+        x += 0.58 * PXM * rr.uniform(0.95, 1.05)
+cimg = bpy.data.images.new('crowd_rows', CW, CH * VAR, alpha=True); cimg.pixels[:] = img.ravel()     # row 0 is the bottom: people stand on it
+(H / 'tex').mkdir(exist_ok=True); cimg.filepath_raw = str(H / 'tex' / 'crowd_rows.png'); cimg.file_format = 'PNG'; cimg.save()
+cm = bpy.data.materials.new('SJ | crowd')
+try: cm.use_nodes = True
+except AttributeError: pass
+nt = cm.node_tree; P = nt.nodes['Principled BSDF']; it = nt.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / 'crowd_rows.png')
+nt.links.new(it.outputs['Color'], P.inputs['Base Color']); P.inputs['Roughness'].default_value = 0.9
+gt = nt.nodes.new('ShaderNodeMath'); gt.operation = 'GREATER_THAN'; gt.inputs[1].default_value = 0.5      # alpha clip: glTF MASK (alpha to coverage, main.js)
+nt.links.new(it.outputs['Alpha'], gt.inputs[0]); nt.links.new(gt.outputs[0], P.inputs['Alpha'])
+MAT['crowd'] = cm
+cb = bmesh.new(); uv = cb.loops.layers.uv.verify()
+def crowd_rows(s0, s1, rows, d0, h0):
+    for k in range(rows):
+        d, h = d0 + k * TREAD + 0.3, h0 + k * RISE; var = (k * 3 + int(s0)) % VAR
+        rows_ = along(s0, s1, [(d, h), (d, h + 1.15)]); m = len(rows_) - 1
+        vs = [(cb.verts.new(r[0]), cb.verts.new(r[1])) for r in rows_]
+        for q in range(m):
+            f = cb.faces.new([vs[q][0], vs[q + 1][0], vs[q + 1][1], vs[q][1]]); f.material_index = 0
+            u0, u1 = (s0 + (s1 - s0) * q / m) / 14.0 + k * 0.37, (s0 + (s1 - s0) * (q + 1) / m) / 14.0 + k * 0.37
+            for l, (u, vv) in zip(f.loops, ((u0, 0), (u1, 0), (u1, 1), (u0, 1))): l[uv].uv = (u, (var + vv) / VAR)
+crowd_rows(0.0, PER, NR, 0.0, H0); crowd_rows(0.0, 2 * Lb, NR2, D1 + 2.0, H1 + 2.5)
+mesh_obj('SJ crowd', cb, ['crowd'], planar=False)
+# the kit's hospitality boxes along the top of the main straight's upper rake (its section is boxes over a concourse)
+SCALE = 1.0; NSEC = max(1, round(2 * Lb / SW)); SA = 2 * Lb / (NSEC * SW)
 stands = bmesh.new()
 def place(s0, dd=0.0, dz=0.0):
     b = base.copy()
     for v in b.verts:
         a, d, z = v.co; p, n = path(s0 + a * SA); v.co = p + n * (d * SCALE + dd) + Vector((0, 0, z * SCALE + dz - 0.2))
     me = bpy.data.meshes.new('tmp'); b.to_mesh(me); b.free(); stands.from_mesh(me); bpy.data.meshes.remove(me)
-for k in range(NSEC):
-    s0 = (k + 0.5) * PER / NSEC; place(s0)
-    if s0 < 2 * Lb or 2 * Lb + math.pi * Rb < s0 < 4 * Lb + math.pi * Rb: place(s0, SD * SCALE * 0.55, SH * SCALE * 0.95)      # upper tiers along both straights
+for k in range(NSEC): place((k + 0.5) * 2 * Lb / NSEC, D2 - 6.0, H2 - 2.0)
 base.free()
-for f in stands.faces: f.smooth = False
-me = bpy.data.meshes.new('SJ stands'); stands.to_mesh(me); stands.free()
+me = bpy.data.meshes.new('SJ boxes'); stands.to_mesh(me); stands.free()
 for m in KIT_MATS: me.materials.append(m)
-ob = bpy.data.objects.new('SJ stands', me); VIS.objects.link(ob)
-OUTER = SD * SCALE * 1.55      # the stands' depth with the upper tier
+VIS.objects.link(bpy.data.objects.new('SJ boxes', me))
+OUTER = D1 + 4.0      # the ring rake's back wall
 
 # ------------------------------------------------------------------------------------------------ light towers on the rim (decimated: the kit's lamps are 66k triangles)
 bpy.ops.import_scene.gltf(filepath=str(H / 'source' / 'stadium_light' / 'stadium_light.glb'))
