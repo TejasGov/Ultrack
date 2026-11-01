@@ -12,8 +12,8 @@ A world is a chapter of the career: a region with its own look, venues and spons
 |---|---|---|---|
 | Tier | Rookies | Maestros | Legends |
 | Idea | Working places turned into circuits for a weekend: a hill road, an airfield, a steel mill | Permanent circuits with history, press and name sponsors | Prestige venues, night races, the whole world watching |
-| Tracks | India Ghat (built), **Mojave Dry Lake**, **Infinia Track** | Corniche Marina (built), **Shajawa Stadium** | Tokyo Hiragana (built), **Lago Serena** |
-| Home teams | Mojave (Dry Lake), Liberty (Infinia) | Sarab (Marina); Shajawa is neutral, the series' showpiece | Hayate (Tokyo), Saetta, Toro and Aurum (Lago) |
+| Tracks | India Ghat (built), **Mojave Dry Lake**, **Infinia Track** | Corniche Marina (built), **Shajawa Stadium** | Tokyo Hiragana (built), **Morro Noturno** |
+| Home teams | Mojave (Dry Lake), Liberty (Infinia) | Sarab (Marina); Shajawa is neutral, the series' showpiece | Hayate (Tokyo); Morro Noturno is the Legends' night, no home team |
 | Venue dressing | Tyre walls, temporary stands, local sponsors | Permanent grandstands, pit buildings, hoardings | Big screens, title sponsors |
 | Colour | Ochre, rust, sodium orange | Green, grey sky, sea blue | Neon, lake blue, villa gold |
 | Season finale | Infinia at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
@@ -24,7 +24,7 @@ A world is a chapter of the career: a region with its own look, venues and spons
 |---|---|---|
 | 1 | 6 | India, Dry Lake, Infinia x2 each |
 | 2 | 7 | Marina, Shajawa x2 each; India, Dry Lake, Infinia once |
-| 3 | 8 | Tokyo, Lago x2 each; 4 of the 5 earlier tracks once (seeded) |
+| 3 | 8 | Tokyo, Morro x2 each; 4 of the 5 earlier tracks once (seeded) |
 
 Until Dry Lake and Infinia exist, the MVP season stays as written in career-mode.md 4.1.
 
@@ -32,20 +32,20 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 ## 2. The four tracks at a glance
 
-| | Mojave Dry Lake | Infinia Track | Shajawa Stadium | Lago Serena |
+| | Mojave Dry Lake | Infinia Track | Shajawa Stadium | Morro Noturno |
 |---|---|---|---|---|
 | World | 1 | 1 | 2 | 3 |
-| Archetype (career-mode.md 4.5) | Short technical | Figure-eight: straight legs, angular loops, a bridge over a tunnel | Stadium speedway: flat oval sweeps plus an infield section | Legends showcase: fast lakeside, then switchbacks |
-| Lap | 1.70 km, ~53 s | 2.10 km, ~58 s | 2.20 km, ~55 s | 2.40 km, ~68 s |
-| Corners (measured) | 8 | 8 (four 90°, four 30° kinks; the east loop all rights, the west all lefts) | 6 (two long flat sweeps, four 90° infield corners) | 6 (two hairpins) |
-| Longest straight | 314 m (runway) | 424 m (the climb to the bridge) | 484 m | 480 m (through the tunnel) |
-| Width | 16 m | 13 m | 15 m | 13 m |
-| Elevation | 0 to 5 m | -4 to +6 m (10 m at the crossing), 3.8 % max | flat (no banking, by design) | 2 to 32 m, 11.5 % max |
-| Race laps at 7.5 min | 8 | 8 | 8 | 6-7 |
-| Looks | day, dusk | day, dusk | day, dusk | day, dusk |
-| Weather | dry; rain only at dusk (desert storm) | all | all | all |
-| Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | +0.4 / +0.3 / +0.6 | +0.8 / -0.2 / +0.4 | +0.3 / +0.5 / +0.3 |
-| Hero shot | Driving under airliner wings at dusk | Cresting the bridge at dusk with the other leg diving into the tunnel below | Down the main straight at dusk, 360° of packed stands and the lights coming on | Villa lights coming on over the lake at dusk |
+| Archetype (career-mode.md 4.5) | Short technical | Figure-eight: straight legs, angular loops, a bridge over a tunnel | Stadium speedway: flat oval sweeps plus an infield section | Night street circuit: a rounded square of drag-strip straights round a hill |
+| Lap | 1.70 km, ~53 s | 2.10 km, ~58 s | 2.20 km, ~55 s | 1.65 km, ~50 s |
+| Corners (measured) | 8 | 8 (four 90°, four 30° kinks; the east loop all rights, the west all lefts) | 6 (two long flat sweeps, four 90° infield corners) | 4 tight 90° lefts (r ~21 m), one per block corner |
+| Longest straight | 314 m (runway) | 424 m (the climb to the bridge) | 484 m | 284 m |
+| Width | 16 m | 13 m | 15 m | 12 m (city streets) |
+| Elevation | 0 to 5 m | -4 to +6 m (10 m at the crossing), 3.8 % max | flat (no banking, by design) | 0 to 12 m: one street climbs, the opposite one descends; 3.4 % max |
+| Race laps at 7.5 min | 8 | 8 | 8 | 9 |
+| Looks | day, dusk | day, dusk | day, dusk | night only (the exception) |
+| Weather | dry; rain only at dusk (desert storm) | all | all | wet streets every round (damp or rain) |
+| Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | +0.4 / +0.3 / +0.6 | +0.8 / -0.2 / +0.4 | +0.6 / +0.4 / +0.6 |
+| Hero shot | Driving under airliner wings at dusk | Cresting the bridge at dusk with the other leg diving into the tunnel below | Down the main straight at dusk, 360° of packed stands and the lights coming on | Launching down the drag strip at night, neon and wet tarmac, the lit hill above |
 
 ## 3. Mojave Dry Lake (World 1, Mojave's home)
 
@@ -97,34 +97,32 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **Watch.** A closed bowl is a lot of geometry in view at once, the main performance risk of the four tracks: the stands are one mesh per material, the crowd is cards, and far tiers drop detail. The flat sweeps must still read as fast; kerbs and run-off sized for 160 km/h, not hairpins.
 
-## 6. Lago Serena (World 3, the Italian teams' home)
+## 6. Morro Noturno (World 3, the Legends' night)
 
-![Lago Serena plan](career-worlds/lago.svg)
+![Morro Noturno plan](career-worlds/morro.svg)
 
-**The idea.** An Alpine lake in northern Italy: a lakeside promenade, a rock tunnel, villas stepping up the hill in terraced gardens, cypress and stone pines, a campanile, a stone arch bridge over a ravine, and mahogany runabouts in the harbour. Steep mountains drop into the water behind. It is the Legends' prestige stop.
+**The idea.** The career's one night race and its finale: an illegal-street-race feel made official, on the streets round a hillside neighbourhood. The houses are stacked up the hill in the middle, the city glows below, and the streets are always wet. The grammar is the night street-race scene of the films set in São Paulo and Rio (neon, wet asphalt, crowds on the kerb and on the rooftops, a drag start between the cars' headlights), rebuilt as our own place. No real neighbourhood or film set is copied.
 
-**The lap.** The lap starts by the harbour and runs flat out along the lake through the tunnel, then brakes into a 170° left (1) at the tunnel mouth. Three switchbacks climb through the villas: a right hairpin (2) and a left hairpin (3), each leg climbing. The top leg runs fast across the hillside, over the stone bridge and past the campanile. The left (4) at the far end starts the descent esses (5), and the left (6) drops back onto the promenade.
+**The lap.** A rounded square, about 400 m a side, run anticlockwise. It starts on the bottom street, a 284 m drag strip under strings of lights and neon: the launch matters. A tight left (1) turns up the climbing street (+12 m), a left (2) onto the top road with the view over the city lights, a left (3) down the descending street, and a left (4) back onto the drag strip. Four straights and four braking zones: it is about launches, braking and the slipstream.
 
-**Signature moments.** The tunnel exit into the hard stop with the lake on your right. The switchbacks between villa walls. Dusk: villa windows and string lights doubled in the lake.
+**Signature moments.** The drag-strip start in the middle of a crowd. Cresting onto the top road with the city spread below. Braking into the bottom left on wet tarmac with the neon in the puddles.
 
-**Surfaces.** Smooth asphalt, stone setts at the harbour, stone walls and balustrades, plaster villas with terracotta roofs, rock faces.
+**Look and light.** Night only, the exception to the day-and-dusk rule for the new tracks. Wet streets every round: the shared wet shader with puddles and mirror reflections carries the look. Street lamps, neon signs, strings of bulbs over the drag strip, lit windows climbing the hill. These need lights.json street lamps (India's lamp system) and a lit-window night material (India's `IN window glow night` method).
 
-**Dusk.** Villa windows and promenade lamps coming on, harbour lights on the water. Rain at dusk is the hero look: the lake and the road both reflect.
+**What it needs.** A kit of stacked hillside houses (painted concrete and brick, flat roofs, water tanks, satellite dishes, washing lines), built in Blender and scattered up the hill; neon signs (our own words); shopfronts on the drag strip; spectators on the kerbs and rooftops (cards). Photographed city lights for the distant view, cut into arcs as Dry Lake's mountains are.
 
-**What it needs.** A villa kit in Blender (plaster, shutters, roof tiles, balustrades) dressed in many combinations; cypress and pine tree cards (India's tree method); Marina's water for the lake; India's terrain method for the mountains. Runabout boats need a model (download OK needed).
-
-**Watch.** **The tunnel stays closed with a continuous light line.** Arched windows or spaced lamps would strobe at 250 km/h, the hard-blinking look we've ruled out. Lake reflections are the main performance risk (section 8).
+**Watch.** Night with many lights is the performance risk: the lamps are glow sprites plus the few nearest real lights (main.js pool), the windows one emissive material, no light per window. No hard blinking: neon is steady.
 
 ## 7. Build order
 
 1. **Mojave Dry Lake.** Flat, open and small: the fastest way to prove the new-track pipeline end to end (Blender build, `track.json` with centreline, `lapLength`, `corners`, 8 `gridSlots`, `sectors` and `weather.looks`, a `TRACKS` entry in `src/tracks.js`, collision, AI laps). Only the airliner model is a real asset question.
 2. **Infinia Track.** It completes World 1, so the career MVP gets its own calendar.
 3. **Shajawa Stadium.** The bowl is one big asset (a CC stand kit, cut and arrayed); the track itself is flat and simple.
-4. **Lago Serena.** The most assets and the hardest lighting; last, when the pipeline is proven.
+4. **Morro Noturno.** The house kit and the night lighting; last, when the pipeline is proven.
 
 ## 8. Budgets every new track meets
 
-- **Day and dusk only.** The new tracks have two looks, chosen by the career story for each round; no night lighting to build or pay for (decided 2026-11-01).
+- **Day and dusk only**, except Morro Noturno. The new tracks have two looks, chosen by the career story for each round; no night lighting to build or pay for (decided 2026-11-01). Morro Noturno is the one night track (night only, always wet).
 - Frame time within India's measured day bench (1600x900, dynamic resolution off): ≤ 9.9 ms. These tracks are smaller, so they should come in under.
 - Materials through the India material layer (`src/venue/india/materials.js`, per-surface rules, KTX2 CC0 sets) rather than plain vertex colours; that is what fixed India's plastic look. Every road gets the shared wet shader.
 - Race-watch: one lap per look and weather with 0 dark frames and no stops, pull-ins or hidden cars; `test-track` static checks and the lamp check pass.
@@ -135,6 +133,6 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 1. Should worlds follow the player's tier (my recommendation), or should seasons visit the worlds in a fixed order whatever his seat?
 2. Shajawa has no home team (Corvid's was Kestrel Downs): give it one, or keep it the neutral showpiece?
-3. Airliners for Dry Lake and boats for Lago: download free models (each with your OK) or try Meshy (paid)?
+3. Morro Noturno is World 3 with Tokyo: should it be the career finale instead of Tokyo?
 4. Poly Haven CC0 texture sets the new surfaces need (lake bed, brick, setts, rusty metal, terracotta, rock): OK to download them when each build starts?
-5. Are the names right (Mojave Dry Lake, Infinia Track, Shajawa Stadium, Lago Serena; The Proving Grounds, The Grand Tour, The Crown)?
+5. Are the names right (Mojave Dry Lake, Infinia Track, Shajawa Stadium, Morro Noturno; The Proving Grounds, The Grand Tour, The Crown)?
