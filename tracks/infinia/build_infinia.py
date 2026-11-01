@@ -4,10 +4,10 @@ Shared pieces: tracks/career_lib.py. A figure-eight across a bay: the sea link (
 undersea tunnel (12 m down) in mid-bay; an old seafront (the Necklace arc of streetlights, art-deco blocks) closes the west loop, the old
 city and a towers district the east loop.
   land      each loop's inside plus a 45 m seafront round it; the rest is the bay and the open sea ('water': main.js gives it Marina's sea)
-  bridge    box-girder deck on piers, a diamond inverted-Y main tower (about 120 m) and a smaller I tower, stay cables in two planes
+  bridge    box-girder deck on piers, a diamond inverted-Y main tower (about 120 m) and a smaller portal tower straddling the deck, stay cables in two planes
   tunnel    open cutting from the shore, then a roofed tube under the bay, one continuous light line (no spaced lamps: no strobe)
   city      infinia_city.py + infinia_place.py: the districts of IDENTITY.md (chawls, shop rows with Marathi signs, art deco on the
-            Necklace, towers, koliwada, a temple, a dargah, the toll plaza, tetrapods, wires), a night-only lit-window shell
+            Necklace, towers, koliwada, Dharavi-style lanes, a temple, a mosque, a dargah, the toll plaza, tetrapods, wires, a hill sign), a night-only lit-window shell
   lamps     lights.json street lamps round the lap, closer along the Necklace; heads 'M_LampWarm' (glow.js)
 All four looks (a main circuit, like Marina, Tokyo and India Ghat)."""
 import bpy
@@ -148,16 +148,21 @@ def leg(bm, p0, p1, w, mi):       # a square leg from p0 to p1
     q = d.to_track_quat('Z', 'X'); Mx = Matrix.Translation(c) @ q.to_matrix().to_4x4()
     v = [bm.verts.new(Mx @ Vector((x * w / 2, y * w / 2, z * L / 2))) for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)]
     for qd in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)): f = bm.faces.new([v[k] for k in qd]); f.material_index = mi
+PORTAL = DECKW + 1.7      # the small tower's legs: clear of the deck on both sides, nothing stands on the road
 def tower(i, top, diamond):
     base = CL[i]; nl = NL[i]; deck = base.z - 2.6
-    apex = Vector((base.x, base.y, base.z + top)); feet = []
+    apex = Vector((base.x, base.y, base.z + top))
+    if not diamond:           # a portal: two legs outside the deck, its beams far over the traffic
+        for sd in (1, -1):
+            foot = Vector((base.x, base.y, -12)) + nl * sd * PORTAL
+            leg(bm, foot, Vector((foot.x, foot.y, base.z + top)), 3.0, 0)
+        for z in (deck - 1.0, base.z + top * 0.62, base.z + top - 1.5): box(bm, Vector((base.x, base.y, z)), (2.6, 2 * PORTAL, 2.2), yaw=HEAD[i], mi=0)
+        return apex
     for sd in (1, -1):
-        foot = Vector((base.x, base.y, -12)) + nl * sd * (2.5 if diamond else 0.8)
-        at_deck = Vector((base.x, base.y, deck)) + nl * sd * (DECKW + 3.0 if diamond else 1.2)
-        if diamond: leg(bm, foot, at_deck, 3.4, 0); leg(bm, at_deck, apex, 3.0, 0)
-        else: leg(bm, foot, at_deck + Vector((0, 0, top)), 3.0, 0)
-        feet.append(at_deck)
-    if diamond: leg(bm, apex, apex + Vector((0, 0, 28)), 2.2, 0); box(bm, Vector((base.x, base.y, deck - 1.0)), (3.0, 2 * (DECKW + 3.0), 2.0), yaw=HEAD[i] + math.pi / 2 * 0, mi=0)
+        foot = Vector((base.x, base.y, -12)) + nl * sd * 2.5
+        at_deck = Vector((base.x, base.y, deck)) + nl * sd * (DECKW + 3.0)
+        leg(bm, foot, at_deck, 3.4, 0); leg(bm, at_deck, apex, 3.0, 0)
+    leg(bm, apex, apex + Vector((0, 0, 28)), 2.2, 0); box(bm, Vector((base.x, base.y, deck - 1.0)), (3.0, 2 * (DECKW + 3.0), 2.0), yaw=HEAD[i], mi=0)
     return apex
 cb = bmesh.new()
 def cables(i, apex, n, spacing, zlo, zhi, spread):
@@ -171,7 +176,7 @@ def cables(i, apex, n, spacing, zlo, zhi, spread):
                 leg(cb, top, anchor, 0.28, 0)
 aA = tower(TA, 110, True); cables(TA, aA, 14, 5, 52, 104, 0.8)
 aB = tower(TB, 58, False)
-cables(TB, aB, 8, 5, 30, 56, 0.9)
+cables(TB, aB, 8, 5, 30, 56, PORTAL)
 UVS['tower'] = 3.0
 mesh_obj('IF bridge', bm, ['tower'], planar=True)
 mesh_obj('IF cables', cb, ['cable'], planar=False)
@@ -224,9 +229,19 @@ while i < N:
 mesh_obj('IF lamps', bm, ['steel', 'lamp'], planar=False)
 log('lamps', len(LAMPS))
 
+def closed(i): return (BRIDGE[i] and CL[i].z > 0.8) or (TUNNEL[i] and CL[i].z < -0.3)
 walk = [[off(i, sd * HW), off((i + 1) % N, sd * HW), off((i + 1) % N, sd * BD[sd][(i + 1) % N]), off(i, sd * BD[sd][i])][::sd]
-        for sd in (1, -1) for i in range(N) if (BRIDGE[i] and CL[i].z > 0.8) or (TUNNEL[i] and CL[i].z < -0.3)]     # the bridge's and tunnel's walkways
-collision(ground_col, walk + APRON)
+        for sd in (1, -1) for i in range(N) if closed(i)]     # the bridge's and tunnel's walkways
+# everywhere else a paved shoulder, flush with the road out to the wall: the ground stays 40 cm under the road (a 10 m cell sags on a grade),
+# which without this left the road standing on a visible step with its skirt showing
+SHOULDER = [[off(i, sd * HW, -0.01), off((i + 1) % N, sd * HW, -0.01), off((i + 1) % N, sd * BD[sd][(i + 1) % N], -0.01), off(i, sd * BD[sd][i], -0.01)][::sd]
+            for sd in (1, -1) for i in range(N) if not closed(i)]
+bm = bmesh.new(); vc = vcol_layer(bm)
+for q in SHOULDER:
+    f = bm.faces.new([bm.verts.new(p) for p in q]); f.material_index = 0
+    for l in f.loops: t = 0.85 + 0.15 * fbm(l.vert.co.x / 50, l.vert.co.y / 50, 3); l[vc] = (t, t, t * 0.96, 1)
+mesh_obj('IF shoulders', bm, ['paving'])
+collision(ground_col, walk + APRON + SHOULDER)
 write_track('Infinia', ['Textures: Poly Haven (CC0); see tracks/infinia/CREDITS.md'], ['day', 'dusk', 'bluehour', 'night'], 'dusk',
             [{'name': 'Sea link tower', 'pos': to_game(aA)}])
 (OUT / 'lights.json').write_text(json.dumps({'floodlights': [], 'standLamps': [], 'streetLamps': [{'pos': to_game(p), 'color': '#ffe2b8'} for p in LAMPS]},

@@ -55,6 +55,13 @@ Our own place, not a copy: no real building, brand, logo or real landmark is rep
 - **Water:** the bay is Marina's sea shader.
 - **Skyline:** a far skyline band of our own towers rendered in Blender, as Tokyo's skyline arc was baked: dusk and night copies with lit windows.
 
+**9. The lanes (added at the user's request, 2026-11-01): not all skyline.**
+- **Where:** the old city's second half, and the west loop just after the tunnel.
+- **Homes:** Dharavi-style stacked one- to three-storey homes in plaster, brick and tin, each storey its own size and offset; tarps and tin roofs held down by tyres; ladders and washing.
+- **In the lanes:** blue drums, tyre stacks, planks, runs of tin fence, wires overhead.
+- **Faith:** a white mosque with a green onion dome and two minarets on the Necklace's land side (a type, not a copy of any building), with the temple and the dargah.
+- **The horizon:** towers cover at most 60 % of each far shore (`SKYLINE`, asserted in the build); the rest is low city and wooded hills. One hill carries a big white BOLLYWOOD sign (`tex/bollywood.png`, alpha cut, lit from evening on).
+
 ## Night
 - Lit windows in every district (the lit-window shell, already in place).
 - The necklace of seafront lamps, the bridge's deck and cable lights, shop signs glowing.

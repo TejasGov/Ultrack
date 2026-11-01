@@ -2,33 +2,36 @@
 See IDENTITY.md for what each district is."""
 # ------------------------------------------------------------------------------------------------ placement: streets are lined, then the blocks behind fill in
 PLACED = []        # (x, y, radius)
-def free(c4, pad=2.0):
+def free(c4, pad=2.0, tight=1.0):
     for p in c4:
         i, d = near(p.x, p.y)
         if d < max(BD[1][i], BD[-1][i]) + pad or not is_land(p.x, p.y) or tun_kd.find((p.x, p.y, 0))[2] < HW + 24: return False
     cx_, cy_ = sum(p.x for p in c4) / 4, sum(p.y for p in c4) / 4; r = max((p - Vector((cx_, cy_, 0))).length for p in c4)
-    if any(math.hypot(cx_ - x, cy_ - y) < r + q + 1.0 for x, y, q in PLACED): return False
+    r *= tight            # tight < 1: lane homes shoulder into each other, walls touching, no gaps
+    if any(math.hypot(cx_ - x, cy_ - y) < r + q + (1.0 if tight == 1.0 else 0.0) for x, y, q in PLACED): return False
     PLACED.append((cx_, cy_, r)); return True
 def facing(j, sd): nl = NL[j]; return math.atan2(-sd * nl.x, sd * nl.y)      # the building's front (its -d side) toward the road
-def line_street(stations, sd, pick, setback=4.0, rows=1):
+def line_street(stations, sd, pick, setback=4.0, rows=1, gap=6.0, tight=1.0):
     """buildings shoulder to shoulder along one side of the road over a run of stations; `pick` gives (builder, w, d, floors, key)"""
     for row in range(rows):
         k = 0
         while k < len(stations):
             b, w, d, fl, key = pick()
             j = stations[min(len(stations) - 1, k + int(w / 2 / STEP))]
-            off_ = BD[sd][j] + setback + d / 2 + row * (d + 6)
+            off_ = BD[sd][j] + setback + d / 2 + row * (d + gap)
             c = off(j, sd * off_); c = Vector((c.x, c.y, 0)); yaw = facing(j, sd)
-            if free(footprint(c, w, d, yaw)): b(c, w, d, yaw, fl, key)
-            k += int((w + rr.uniform(0.3, 1.5)) / STEP) + 1
-def fill(poly, pick, tries):
+            if free(footprint(c, w, d, yaw), tight=tight): b(c, w, d, yaw, fl, key)
+            k += int((w + (rr.uniform(0.3, 1.5) if tight == 1.0 else -1.0)) / STEP) + 1
+def fill(poly, pick, tries, pad=4.0, where=None, tight=1.0):
     xmin, ymin = poly.min(0); xmax, ymax = poly.max(0)
     for _ in range(tries):
         x, y = rr.uniform(xmin, xmax), rr.uniform(ymin, ymax)
         if not inside(np.array([x]), np.array([y]), poly)[0]: continue
-        b, w, d, fl, key = pick(); yaw = HEAD[near(x, y)[0]]
+        j_ = near(x, y)[0]
+        if where and j_ not in where: continue
+        b, w, d, fl, key = pick(); yaw = HEAD[j_]
         c = Vector((x, y, 0))
-        if free(footprint(c, w, d, yaw), pad=4.0): b(c, w, d, yaw, fl, key)
+        if free(footprint(c, w, d, yaw), pad=pad, tight=tight): b(c, w, d, yaw, fl, key)
 CHAWLS = [k for k in KEYS if k.startswith('chawl')]; DECOS = [k for k in KEYS if k.startswith('deco')]
 GLASS = [k for k in KEYS if k.startswith('glass')]; HOUSES = [k for k in KEYS if k.startswith('house')]; RES = [k for k in KEYS if k.startswith('res')]
 def old_pick():
@@ -37,9 +40,12 @@ def old_pick():
 def deco_pick(): return (deco, rr.uniform(18, 30), rr.uniform(14, 20), rr.randint(4, 7), rr.choice(DECOS))
 def tower_pick(): return (lambda c, w, d, yaw, fl, key: tower(c, w, d, yaw, fl, key), rr.uniform(24, 36), rr.uniform(24, 34), rr.uniform(70, 190), rr.choice(GLASS + RES + RES))     # mostly residential concrete, some glass
 def house_pick(): return (house, rr.uniform(6, 9), rr.uniform(6, 8), rr.randint(1, 3), rr.choice(HOUSES))
+def slum_pick(): return (slum, rr.uniform(4.5, 7.5), rr.uniform(4.5, 7.0), rr.choice((1, 2, 2, 2, 3, 3)), rr.choice(SLUM))
 n_e = len(EAST); OLD, TOW = EAST[int(n_e * 0.06):int(n_e * 0.55)], EAST[int(n_e * 0.55):int(n_e * 0.95)]
 KOLI = EAST[:int(n_e * 0.12)]
 NECKS = sorted(NECK)
+n_w = len(WEST); LANES_E, LANES_W = EAST[int(n_e * 0.3):int(n_e * 0.55)], WEST[int(n_w * 0.015):int(n_w * 0.17)]     # the Dharavi-style stretches
+CHAWL_ROW = EAST[int(n_e * 0.06):int(n_e * 0.3)]; LANE_SET = set(LANES_E) | set(LANES_W)
 placed_temple = False
 for tj in sorted(OLD, key=lambda i: R[i])[::7]:          # the tightest corner that has room, on its inside or its outside
     for tsd in ((1, -1) if K[tj] > 0 else (-1, 1)):
@@ -66,13 +72,39 @@ if placed_temple:
     pquad([f0 + Vector((0, 0, 7.2)), f0 + side * 2.0 + Vector((0, 0, 6.6)), f0 + side * 2.0 + Vector((0, 0, 5.6)), f0 + Vector((0, 0, 6.0))], 'saffron')   # the flag
     log('temple at station', tj)
 
-line_street(OLD, 1, old_pick, 3.0, rows=3); line_street(OLD, -1, old_pick, 3.0, rows=3)
+# the mosque: on the Necklace's land side, facing the road and the sea (placed before the deco row closes the frontage)
+placed_mosque = False
+for mj in NECKS[int(len(NECKS) * 0.72):int(len(NECKS) * 0.9):5]:
+    mc = off(mj, BD[1][mj] + 26); mc = Vector((mc.x, mc.y, 0)); myaw = facing(mj, 1)
+    if free(footprint(mc, 38, 42, myaw), pad=1.0): placed_mosque = True; mosque(mc, myaw); log('mosque at station', mj); break
+if not placed_mosque: log('mosque: no room on the Necklace')
+
+line_street(CHAWL_ROW, 1, old_pick, 3.0, rows=3); line_street(CHAWL_ROW, -1, old_pick, 3.0, rows=3)
+for sd in (1, -1):
+    line_street(LANES_E, sd, slum_pick, 3.2, rows=7, gap=0.4, tight=0.66); line_street(LANES_W, sd, slum_pick, 3.2, rows=7, gap=0.4, tight=0.66)
 line_street(KOLI, 1, house_pick, 6.0, rows=3)
 line_street(TOW, -1, tower_pick, 14.0)
 line_street(NECKS, 1, deco_pick, 4.0, rows=3)
-fill(PE, lambda: old_pick() if rr.random() < 0.75 else tower_pick(), 9000)
+n0_lanes = len(PLACED)
+fill(PE, slum_pick, 7000, pad=1.2, where=LANE_SET, tight=0.66); fill(PW, slum_pick, 7000, pad=1.2, where=LANE_SET, tight=0.66)
+log('lane homes behind the street rows', len(PLACED) - n0_lanes)
+fill(PE, lambda: old_pick() if rr.random() < 0.88 else tower_pick(), 9000)       # low city inside the loops: the towers keep to their own arc
 fill(PW, lambda: deco_pick() if rr.random() < 0.5 else old_pick(), 9000)
 log('buildings', len(PLACED))
+# the lanes' edges: drums, tyre stacks and planks behind the walls, runs of tin fence, nothing on the road side of a wall
+n_pile = 0
+for lanes in (LANES_E, LANES_W):
+    for j in lanes[::3]:
+        for sd in (1, -1):
+            p = off(j, sd * (BD[sd][j] + rr.uniform(0.7, 2.4)))
+            if rr.random() < 0.8 and is_land(p.x, p.y) and tun_kd.find((p.x, p.y, 0))[2] > 30: scrap_pile(Vector((p.x, p.y, 0.0)), HEAD[j] + rr.uniform(-0.25, 0.25)); n_pile += 1
+    for j0 in lanes[8::46]:
+        sd = rr.choice((1, -1)); k_ = lanes.index(j0); run = lanes[k_:k_ + 16]; a_ = off(run[0], sd * (BD[sd][run[0]] + 2.9))
+        for j in run[4::4]:
+            b_ = off(j, sd * (BD[sd][j] + 2.9))
+            if is_land(a_.x, a_.y) and is_land(b_.x, b_.y): tin_fence(Vector((a_.x, a_.y, 0.0)), Vector((b_.x, b_.y, 0.0)))
+            a_ = b_
+log('lane piles', n_pile)
 
 # ------------------------------------------------------------------------------------------------ the necklace: promenade, sea wall, tetrapods (the sea side of the arc)
 for j in NECKS:
@@ -96,21 +128,22 @@ for j in NECKS[::2]:
         tetrapod(Vector((p.x, p.y, rr.uniform(-1.6, 0.2))), rr.uniform(0.9, 1.15), Matrix.Rotation(rr.uniform(0, 6.28), 3, Vector((rr.random(), rr.random(), rr.random() + 0.1)).normalized()))
 
 # ------------------------------------------------------------------------------------------------ overhead wires in the old city: poles both sides, wires along the street and across it, 8 m up
-prev = {}
-for k, j in enumerate(OLD[::12]):
-    for sd in (1, -1):
-        base_ = off(j, sd * (BD[sd][j] + 1.5)); base_ = Vector((base_.x, base_.y, 0))
-        cyl(PB, base_, 0.13, 0.1, 9.0, n=6, mi=pmi('concrete'), cap=False)
-        pbox(base_ + Vector((0, 0, 8.6)), (0.1, 1.6, 0.1), yaw=HEAD[j], k='rail')
-        top = base_ + Vector((0, 0, 8.6))
-        if sd in prev and (prev[sd] - top).length < 60:
-            for dz in (0.0, -0.4):          # along the street, with sag
-                a, b = prev[sd] + Vector((0, 0, dz)), top + Vector((0, 0, dz)); m = (a + b) / 2 - Vector((0, 0, 0.9))
-                leg(PB, a, m, 0.05, pmi('wire')); leg(PB, m, b, 0.05, pmi('wire'))
-        prev[sd] = top
-    a, b = off(j, BD[1][j] + 1.5), off(j, -(BD[-1][j] + 1.5))
-    a, b = Vector((a.x, a.y, 8.3)), Vector((b.x, b.y, 8.3)); m = (a + b) / 2 - Vector((0, 0, 1.2))
-    if k % 2 == 0: leg(PB, a, m, 0.05, pmi('wire')); leg(PB, m, b, 0.05, pmi('wire'))
+for street in (OLD, LANES_W):
+    prev = {}
+    for k, j in enumerate(street[::12]):
+        for sd in (1, -1):
+            base_ = off(j, sd * (BD[sd][j] + 1.5)); base_ = Vector((base_.x, base_.y, 0))
+            cyl(PB, base_, 0.13, 0.1, 9.0, n=6, mi=pmi('concrete'), cap=False)
+            pbox(base_ + Vector((0, 0, 8.6)), (0.1, 1.6, 0.1), yaw=HEAD[j], k='rail')
+            top = base_ + Vector((0, 0, 8.6))
+            if sd in prev and (prev[sd] - top).length < 60:
+                for dz in (0.0, -0.4):          # along the street, with sag
+                    a, b = prev[sd] + Vector((0, 0, dz)), top + Vector((0, 0, dz)); m = (a + b) / 2 - Vector((0, 0, 0.9))
+                    leg(PB, a, m, 0.05, pmi('wire')); leg(PB, m, b, 0.05, pmi('wire'))
+            prev[sd] = top
+        a, b = off(j, BD[1][j] + 1.5), off(j, -(BD[-1][j] + 1.5))
+        a, b = Vector((a.x, a.y, 8.3)), Vector((b.x, b.y, 8.3)); m = (a + b) / 2 - Vector((0, 0, 1.2))
+        if k % 2 == 0: leg(PB, a, m, 0.05, pmi('wire')); leg(PB, m, b, 0.05, pmi('wire'))
 
 # ------------------------------------------------------------------------------------------------ the temple: a shikhara at the old city's tightest corner
 # ------------------------------------------------------------------------------------------------ the dargah on its islet, a causeway to the necklace
@@ -145,7 +178,8 @@ pbox(dc_ + Vector((0, 0, 20.5)), (0.25, 0.25, 3.0), k='rail')
 pj = (N - 150) % N; pc = off(pj, 0); yaw_r = HEAD[pj]
 fwd = Vector((math.cos(yaw_r), math.sin(yaw_r), 0)); lat = NL[pj]
 pbox(Vector((pc.x, pc.y, pc.z + 8.2)) + lat * 4, (14, 64, 1.0), yaw=yaw_r, k='canopy')
-pbox(Vector((pc.x, pc.y, pc.z + 7.6)) + lat * 4, (13.5, 63, 0.15), yaw=yaw_r, k='glow')
+for q in range(-3, 4):      # a lit box over each lane, not a whole glowing ceiling: at night the old one bloomed across the road
+    pbox(Vector((pc.x, pc.y, pc.z + 7.62)) + lat * (4 + q * 9), (1.6, 5.0, 0.12), yaw=yaw_r, k='glow')
 for sx in (-1, 1):
     for q in (-3, -2, -1, 1, 2, 3):
         sdq = 1 if q > 0 else -1; col_l = BD[sdq][pj] + 1.5 + (abs(q) - 1) * 9.0
@@ -190,7 +224,7 @@ if is_land(cp.x, cp.y) and free(footprint(cp, 30, 30, 0.0)):
 
 # ------------------------------------------------------------------------------------------------ street life: people on the pavements and the promenade,
 # a row seated on the sea wall, pole hoardings in the towers district
-for j in OLD[::7]:
+for j in (OLD + LANES_W)[::7]:
     for sd in (1, -1):
         if rr.random() < 0.6:
             for _ in range(rr.randint(1, 4)):
@@ -265,6 +299,7 @@ log('hero palms', scatter('IF hero palms', hero, hs, 'IF palm hero '))
 taxi = load_model(SRCM / 'taxi' / 'taxi.glb', length=3.75, decimate=0.012)
 ts = []
 for j in OLD[::16]:                                        # parked at the kerb behind the walls, nose either way
+    if j in LANE_SET: continue                             # the lanes' edge is drums and tyre stacks, no room to park
     for sd in (1, -1):
         if rr.random() < 0.55:
             p = off(j, sd * (BD[sd][j] + 1.3)); ts.append((Vector((p.x, p.y, max(0.0, CL[j].z))), HEAD[j] + (math.pi if rr.random() < 0.5 else 0), 1.0))
@@ -272,6 +307,69 @@ log('taxis', scatter('IF taxis', taxi, ts, 'IF taxi '))
 
 # ------------------------------------------------------------------------------------------------ the far shores: city across the open water, north and south
 # (no collision; land 2 m up so the sea under it stays 6 m away for the depth buffer at 2 km)
+# The towers stand in clusters that cover at most 60 % of each shore's length; between them low city, lanes and wooded hills, one with the sign.
+FX0, FX1 = X0 - 850, X1 + 850
+def fx(f): return FX0 + f * (FX1 - FX0)
+SKYLINE = {1: ((0.0, 0.29), (0.68, 0.94)), -1: ((0.2, 0.48), (0.72, 1.0))}       # fractions of the shore
+for sgn_, spans in SKYLINE.items():
+    share = sum(b - a for a, b in spans); log('skyline share of the shore', sgn_, round(share, 2)); assert share <= 0.6, 'the skyline covers at most 60 % of a shore'
+HILLS = {1: [(fx(0.49), Y1 + 260 + 470, 640, 300, 235), (fx(0.99), Y1 + 260 + 620, 420, 260, 150)], -1: [(fx(0.6), Y0 - 260 - 520, 520, 300, 180), (fx(0.08), Y0 - 260 - 600, 460, 280, 140)]}     # (x, y, x radius, y radius, height)
+def hill_h(x, y, sgn):
+    """height of a shore's hills above its land, fading out at the waterline"""
+    yb_ = Y1 + 260 if sgn > 0 else Y0 - 260
+    return ss(40, 200, sgn * (y - yb_)) * sum(top * math.exp(-((x - hx) / rx) ** 2 - ((y - hy) / ry) ** 2) for hx, hy, rx, ry, top in HILLS[sgn]) * (0.82 + 0.36 * max(0.0, fbm(x / 170, y / 170, 3)))
+MAT['hill'] = material('IF | wooded hill', tex='leafy_grass', vcol=True); UVS['hill'] = 30.0
+hb = bmesh.new(); hvc = vcol_layer(hb); nhill = 0
+for sgn in (1, -1):
+    yb_ = Y1 + 260 if sgn > 0 else Y0 - 260
+    for hx, hy, rx, ry, top in HILLS[sgn]:
+        CH = 26.0; nx, ny = int(2.3 * rx / CH), int(2.3 * ry / CH); grid = {}
+        for a in range(-nx, nx + 1):
+            for b in range(-ny, ny + 1):
+                x, y = hx + a * CH, hy + b * CH
+                if sgn * (y - yb_) >= 30 and sgn * (y - yb_) <= 960: grid[a, b] = hb.verts.new((x, y, 2.0 + hill_h(x, y, sgn) - 0.05))
+        for a in range(-nx, nx):
+            for b in range(-ny, ny):
+                q = [grid.get((a, b)), grid.get((a + 1, b)), grid.get((a + 1, b + 1)), grid.get((a, b + 1))]
+                if None in q or max(v.co.z for v in q) < 2.3: continue
+                f = hb.faces.new(q); nhill += 1
+                for l in f.loops:
+                    g = 0.5 + 0.5 * fbm(l.vert.co.x / 90, l.vert.co.y / 90, 3); bare = ss(0.72, 0.9, 0.5 + 0.5 * fbm(l.vert.co.x / 60 + 9, l.vert.co.y / 60, 2))     # scrub, with patches of bare laterite
+                    l[hvc] = (0.2 + 0.1 * g + 0.32 * bare, 0.3 + 0.1 * g - 0.04 * bare, 0.14 + 0.04 * g - 0.02 * bare, 1)
+        for _ in range(int(rx * ry / 70)):        # a canopy of broad, low crowns: at 1.5 km a wooded tropical slope, not single trees and not pines
+            x, y = rr.uniform(hx - 2 * rx, hx + 2 * rx), rr.uniform(hy - 2 * ry, hy + 2 * ry); z = hill_h(x, y, sgn)
+            if z < 7 or sgn * (y - yb_) > 950: continue
+            if sgn > 0 and abs(x - HILLS[1][0][0]) < 190 and -95 < y - (HILLS[1][0][1] - 0.72 * HILLS[1][0][3]) < 20: continue      # the sign's slope stays bare, so the letters read
+            n0_ = len(hb.faces); cyl(hb, Vector((x, y, z - 1.0)), rr.uniform(12, 19), 2.5, rr.uniform(8, 13), n=6, mi=0, cap=True); g = rr.uniform(0.16, 0.36)
+            for f in list(hb.faces)[n0_:]:
+                for l in f.loops: l[hvc] = (g * 0.75, g * 1.05, g * 0.55, 1)
+mesh_obj('IF hills', hb, ['hill'], planar=True, smooth=True)
+# the sign: nine letters from tex/bollywood.png (alpha cut), each standing on the slope at its own height, facing the bay; a lit copy from evening on
+hx, hy, rx, ry, top = HILLS[1][0]; sy = hy - 0.72 * ry; LW, LH = 36.0, 48.0
+sg = bmesh.new(); sguv = sg.loops.layers.uv.verify(); gl = bmesh.new(); gluv = gl.loops.layers.uv.verify()
+for q in range(9):
+    x0 = hx + (q - 4.5) * (LW + 3.0); x1 = x0 + LW; z0 = 2.0 + hill_h((x0 + x1) / 2, sy, 1) - 3.0
+    for bmx, uvl, dy in ((sg, sguv, 0.0), (gl, gluv, -0.5)):
+        f = bmx.faces.new([bmx.verts.new((x0, sy + dy, z0)), bmx.verts.new((x1, sy + dy, z0)), bmx.verts.new((x1, sy + dy, z0 + LH)), bmx.verts.new((x0, sy + dy, z0 + LH))])
+        for l, (u, v) in zip(f.loops, ((q / 9, 0), ((q + 1) / 9, 0), ((q + 1) / 9, 1), (q / 9, 1))): l[uvl].uv = (u, v)
+sm_ = bpy.data.materials.new('IF | hill sign')
+try: sm_.use_nodes = True
+except AttributeError: pass
+it = sm_.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / 'bollywood.png'); P2 = sm_.node_tree.nodes['Principled BSDF']
+sm_.node_tree.links.new(it.outputs['Color'], P2.inputs['Base Color']); P2.inputs['Roughness'].default_value = 0.8
+sm_.node_tree.links.new(it.outputs['Color'], P2.inputs['Emission Color']); P2.inputs['Emission Strength'].default_value = 0.3      # painted white, it stays white in haze
+gt2 = sm_.node_tree.nodes.new('ShaderNodeMath'); gt2.operation = 'GREATER_THAN'; gt2.inputs[1].default_value = 0.5
+sm_.node_tree.links.new(it.outputs['Alpha'], gt2.inputs[0]); sm_.node_tree.links.new(gt2.outputs[0], P2.inputs['Alpha'])
+gm_ = bpy.data.materials.new('IF window glow night sign')
+try: gm_.use_nodes = True
+except AttributeError: pass
+it = gm_.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / 'bollywood.png'); P3 = gm_.node_tree.nodes['Principled BSDF']; P3.inputs['Base Color'].default_value = (0, 0, 0, 1)
+gm_.node_tree.links.new(it.outputs['Color'], P3.inputs['Emission Color']); P3.inputs['Emission Strength'].default_value = 0.7; gm_.node_tree.links.new(it.outputs['Alpha'], P3.inputs['Alpha'])
+try: gm_.surface_render_method = 'BLENDED'
+except AttributeError: pass
+MAT['sign_day'] = sm_; MAT['sign_night'] = gm_
+mesh_obj('IF hill sign', sg, ['sign_day'], planar=False); mesh_obj('IF window glow night hill sign', gl, ['sign_night'], planar=False)
+log('hills: faces', nhill, 'sign at y', round(sy), 'x', round(hx))
 fs = bmesh.new(); nfar = 0
 for sgn, yb in ((1, Y1 + 260), (-1, Y0 - 260)):
     xs_ = [X0 - 900 + k * 40 for k in range(int((X1 - X0 + 1800) / 40) + 1)]
@@ -280,13 +378,20 @@ for sgn, yb in ((1, Y1 + 260), (-1, Y0 - 260)):
         q = [Vector((xs_[k], edge[k], 2.0)), Vector((xs_[k + 1], edge[k + 1], 2.0)), Vector((xs_[k + 1], back, 2.0)), Vector((xs_[k], back, 2.0))]
         fs.faces.new([fs.verts.new(v) for v in (q if sgn < 0 else q[::-1])])
         fs.faces.new([fs.verts.new(v) for v in ((q[0], q[1], q[1] - Vector((0, 0, 9)), q[0] - Vector((0, 0, 9))) if sgn > 0 else (q[1], q[0], q[0] - Vector((0, 0, 9)), q[1] - Vector((0, 0, 9))))])
-    for _ in range(700):
-        x = rr.uniform(X0 - 850, X1 + 850); y = yb + sgn * rr.uniform(70, 880)
-        tall = rr.random() < 0.3; w, d = (rr.uniform(26, 40), rr.uniform(24, 36)) if tall else (rr.uniform(14, 30), rr.uniform(12, 22))
-        h = rr.uniform(60, 210) if tall else rr.uniform(10, 28)
+    # a mosque across the water, in a low stretch clear of the hills, before the buildings take the ground
+    spot = next(((f_, o_) for f_ in ((0.3, 0.33, 0.36, 0.62, 0.66) if sgn > 0 else (0.48, 0.5, 0.71, 0.2)) for o_ in (90, 130, 170)
+                 if max(hill_h(fx(f_) + a * 40, yb + sgn * o_ + b * 40, sgn) for a in (-1, 1) for b in (-1, 1)) < 1.0), None)
+    if spot:
+        fm_x, fm_y = fx(spot[0]), yb + sgn * spot[1]; mosque(Vector((fm_x, fm_y, 2.0)), 0.0 if sgn > 0 else math.pi, 1.5); PLACED.append((fm_x, fm_y, 46.0)); log('far mosque at', spot)
+    for _ in range(760):
+        x = rr.uniform(FX0, FX1); y = yb + sgn * rr.uniform(70, 880); f_ = (x - FX0) / (FX1 - FX0)
+        if hill_h(x, y, sgn) > 5: continue
+        tall = any(a <= f_ <= b for a, b in SKYLINE[sgn]) and rr.random() < 0.55
+        w, d = (rr.uniform(26, 40), rr.uniform(24, 36)) if tall else (rr.uniform(10, 24), rr.uniform(9, 18))
+        h = rr.uniform(60, 210) if tall else rr.uniform(6, 20)
         c4 = footprint(Vector((x, y, 0.0)), w, d, rr.choice((0.0, 0.0, math.pi / 2, rr.uniform(0, 3.14))))
         if any(math.hypot(x - px, y - py) < max(w, d) * 0.7 + q for px, py, q in PLACED): continue
-        PLACED.append((x, y, max(w, d) * 0.7)); key = rr.choice(RES + RES + GLASS) if tall else rr.choice(CHAWLS + DECOS + RES)
+        PLACED.append((x, y, max(w, d) * 0.7)); key = rr.choice(RES + RES + GLASS) if tall else rr.choice(SLUM + SLUM + CHAWLS + HOUSES + DECOS)
         for k in range(4): facade(c4[k] + Vector((0, 0, 0)), c4[(k + 1) % 4], h + 2.0, key, z0=2.0)
         pquad([p + Vector((0, 0, h + 2.0)) for p in c4], 'slab', col=(0.5, 0.49, 0.47)); nfar += 1
 mesh_obj('IF far shores', fs, ['paving'], planar=True)

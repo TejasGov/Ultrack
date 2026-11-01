@@ -32,6 +32,11 @@ const VIEWS = {
   '9-road-eye': { cam: at(20, 1.05), tgt: at(29, 0.2) },
   '10-kerb': { cam: off(T[0] - 6, 6.5, 0.75), tgt: off(T[0] - 2, 10.5, 0) },
 };
+// VIEWS=<file.json>: the track's own views, { name: { cam: [station, up, left], tgt: [station, up, left] } } on its centreline
+if (process.env.VIEWS) {
+  for (const k of Object.keys(VIEWS)) delete VIEWS[k];
+  for (const [k, v] of Object.entries(JSON.parse(readFileSync(process.env.VIEWS, 'utf8')))) VIEWS[k] = { cam: off(v.cam[0], v.cam[2] ?? 0, v.cam[1]), tgt: v.at ?? off(v.tgt[0], v.tgt[2] ?? 0, v.tgt[1]) };   // at: [x, y, z], a target off the lap
+}
 const only = process.env.ONLY?.split(',');
 for (const name of Object.keys(VIEWS)) if (only && !only.some((p) => name.startsWith(p))) delete VIEWS[name];
 const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
