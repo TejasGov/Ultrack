@@ -19,10 +19,36 @@ def grime(arr, k=0.35):
     ramp = np.linspace(1.0, 1 - k, h, dtype=np.float32)[:, None]                 # row 0 is the bottom: the top rows darker
     arr[..., :3] *= (ramp * (1 - k * 0.6 * (1 - col[None, :])))[..., None]
 def rect(a, x0, y0, x1, y1, c): a[int(y0):int(y1), int(x0):int(x1), :3] = c
-def tex_pair(name, draw):
+PHOTO = {}
+def photo(name):
+    """a Poly Haven set's diffuse / GL normal / ARM as arrays (raw values, as stored), loaded once"""
+    if name not in PHOTO:
+        out = []
+        for tag in ('diff', 'nor_gl', 'arm'):
+            f = next((PH / name).glob(f'{name}_{tag}_2k.*')); im = bpy.data.images.load(str(f), check_existing=True)
+            if tag != 'diff': im.colorspace_settings.name = 'Non-Color'
+            w_, h_ = im.size; out.append(np.array(im.pixels[:], np.float32).reshape(h_, w_, 4))
+        d = out[0]; out[0] = d / max(1e-3, float(d[..., :3].mean()))        # the diffuse around 1: a texture under the tint, not a colour
+        PHOTO[name] = out
+    return PHOTO[name]
+def sample(arr, tw, th, metres=2.5):
+    """the photo laid at its real size over one facade tile (tw x th metres in FS x FS pixels)"""
+    h_, w_ = arr.shape[:2]; yy_, xx_ = np.mgrid[0:FS, 0:FS]
+    u = ((xx_ / FS) * (tw / metres) % 1.0 * (w_ - 1)).astype(np.int32); v = ((yy_ / FS) * (th / metres) % 1.0 * (h_ - 1)).astype(np.int32)
+    return arr[v, u]
+def tex_pair(name, draw, wall=None, base=None, tw=6.0, th=3.0):
+    """a facade tile: the photo `base` tinted to `wall` with its own relief, the generated window / door layout painted over it, monsoon
+    grime; writes <name>.png (colour), _n.png (normal), _arm.png and _night.png (lit windows)"""
     day = np.zeros((FS, FS, 4), np.float32); day[..., 3] = 1; night = np.zeros((FS, FS, 4), np.float32)
-    draw(day, night); grime(day)
-    for arr, tag in ((day, ''), (night, '_night')):
+    draw(day, night)
+    nrm = np.zeros((FS, FS, 4), np.float32); nrm[...] = (0.5, 0.5, 1.0, 1.0); arm = np.zeros((FS, FS, 4), np.float32); arm[...] = (1.0, 0.35, 0.0, 1.0)
+    if base:
+        pd, pn, pa = (sample(x, tw, th) for x in photo(base))
+        is_wall = np.all(np.abs(day[..., :3] - np.array(wall, np.float32)) < 1e-4, axis=-1)
+        day[..., :3] = np.where(is_wall[..., None], np.clip(pd[..., :3] * np.array(wall, np.float32), 0, 1), day[..., :3] * (0.85 + 0.15 * pd[..., :3]))
+        nrm = np.where(is_wall[..., None], pn, nrm); arm = np.where(is_wall[..., None], pa, arm)
+    grime(day)
+    for arr, tag in ((day, ''), (night, '_night'), (nrm, '_n'), (arm, '_arm')):
         im = bpy.data.images.new(f'{name}{tag}', FS, FS, alpha=True); im.pixels[:] = arr.ravel()
         im.filepath_raw = str(H / 'tex' / f'{name}{tag}.png'); im.file_format = 'PNG'; im.save()
 WARM = lambda: (1.0, 0.78 * rr.uniform(0.9, 1.05), 0.46 * rr.uniform(0.8, 1.15), 1.0)
@@ -63,25 +89,29 @@ def house_draw(wall):
         if rr.random() < 0.5: n[150:330, 260:420] = WARM()
     return d
 TYPES = {   # key: draw, tile (m wide, m high), roughness
-    'chawl_ochre': (chawl_draw((0.78, 0.6, 0.38), (0.12, 0.3, 0.22)), 6.4, 3.2, 0.85),
-    'chawl_blue': (chawl_draw((0.55, 0.68, 0.74), (0.45, 0.22, 0.12)), 6.4, 3.2, 0.85),
-    'chawl_salmon': (chawl_draw((0.85, 0.58, 0.5), (0.1, 0.2, 0.4)), 6.4, 3.2, 0.85),
-    'chawl_green': (chawl_draw((0.5, 0.7, 0.58), (0.4, 0.15, 0.12)), 6.4, 3.2, 0.85),
-    'deco_cream': (deco_draw((0.88, 0.83, 0.7), (0.6, 0.55, 0.45)), 9.0, 3.4, 0.75),
-    'deco_rose': (deco_draw((0.88, 0.72, 0.66), (0.62, 0.48, 0.42)), 9.0, 3.4, 0.75),
-    'deco_mint': (deco_draw((0.74, 0.84, 0.76), (0.48, 0.58, 0.5)), 9.0, 3.4, 0.75),
-    'glass_blue': (glass_draw((0.12, 0.2, 0.28)), 6.0, 7.2, 0.25),
-    'glass_bronze': (glass_draw((0.24, 0.2, 0.15)), 6.0, 7.2, 0.25),
-    'house_pink': (house_draw((0.9, 0.5, 0.6)), 4.0, 3.0, 0.85),
-    'house_yellow': (house_draw((0.95, 0.8, 0.35)), 4.0, 3.0, 0.85),
-    'house_teal': (house_draw((0.3, 0.65, 0.65)), 4.0, 3.0, 0.85),
-    'house_lilac': (house_draw((0.7, 0.6, 0.85)), 4.0, 3.0, 0.85),
+    'chawl_ochre': (chawl_draw((0.78, 0.6, 0.38), (0.12, 0.3, 0.22)), 6.4, 3.2, 0.85, 'yellow_plaster', (0.78, 0.6, 0.38)),
+    'chawl_blue': (chawl_draw((0.55, 0.68, 0.74), (0.45, 0.22, 0.12)), 6.4, 3.2, 0.85, 'blue_plaster_weathered', (0.55, 0.68, 0.74)),
+    'chawl_salmon': (chawl_draw((0.85, 0.58, 0.5), (0.1, 0.2, 0.4)), 6.4, 3.2, 0.85, 'red_plaster_weathered', (0.85, 0.58, 0.5)),
+    'chawl_green': (chawl_draw((0.5, 0.7, 0.58), (0.4, 0.15, 0.12)), 6.4, 3.2, 0.85, 'peeling_painted_wall', (0.5, 0.7, 0.58)),
+    'deco_cream': (deco_draw((0.88, 0.83, 0.7), (0.6, 0.55, 0.45)), 9.0, 3.4, 0.75, 'white_stucco', (0.88, 0.83, 0.7)),
+    'deco_rose': (deco_draw((0.88, 0.72, 0.66), (0.62, 0.48, 0.42)), 9.0, 3.4, 0.75, 'white_stucco', (0.88, 0.72, 0.66)),
+    'deco_mint': (deco_draw((0.74, 0.84, 0.76), (0.48, 0.58, 0.5)), 9.0, 3.4, 0.75, 'worn_plaster_wall', (0.74, 0.84, 0.76)),
+    'glass_blue': (glass_draw((0.12, 0.2, 0.28)), 6.0, 7.2, 0.25, None, None),
+    'glass_bronze': (glass_draw((0.24, 0.2, 0.15)), 6.0, 7.2, 0.25, None, None),
+    'house_pink': (house_draw((0.9, 0.5, 0.6)), 4.0, 3.0, 0.85, 'peeling_painted_wall', (0.9, 0.5, 0.6)),
+    'house_yellow': (house_draw((0.95, 0.8, 0.35)), 4.0, 3.0, 0.85, 'yellow_plaster', (0.95, 0.8, 0.35)),
+    'house_teal': (house_draw((0.3, 0.65, 0.65)), 4.0, 3.0, 0.85, 'blue_plaster_weathered', (0.3, 0.65, 0.65)),
+    'house_lilac': (house_draw((0.7, 0.6, 0.85)), 4.0, 3.0, 0.85, 'worn_plaster_wall', (0.7, 0.6, 0.85)),
 }
-for k, (draw, tw, th, rough) in TYPES.items():
-    tex_pair(f'facade_{k}', draw)
-    fm = material(f'IF | facade {k}', rough=rough, metal=0.4 if k.startswith('glass') else 0.0)
-    it = fm.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / f'facade_{k}.png')
-    fm.node_tree.links.new(it.outputs['Color'], fm.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
+for k, (draw, tw, th, rough, base, wall) in TYPES.items():
+    tex_pair(f'facade_{k}', draw, wall, base, tw, th)
+    fm = material(f'IF | facade {k}', rough=rough, metal=0.4 if k.startswith('glass') else 0.0); nt_ = fm.node_tree; P0 = nt_.nodes['Principled BSDF']
+    it = nt_.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / f'facade_{k}.png'); nt_.links.new(it.outputs['Color'], P0.inputs['Base Color'])
+    if base:        # the photo's relief and roughness under the painted layout
+        ia = nt_.nodes.new('ShaderNodeTexImage'); ia.image = image(H / 'tex' / f'facade_{k}_arm.png', True)
+        sp = nt_.nodes.new('ShaderNodeSeparateColor'); nt_.links.new(ia.outputs['Color'], sp.inputs['Color']); nt_.links.new(sp.outputs['Green'], P0.inputs['Roughness'])
+        inn = nt_.nodes.new('ShaderNodeTexImage'); inn.image = image(H / 'tex' / f'facade_{k}_n.png', True)
+        nm = nt_.nodes.new('ShaderNodeNormalMap'); nt_.links.new(inn.outputs['Color'], nm.inputs['Color']); nt_.links.new(nm.outputs['Normal'], P0.inputs['Normal'])
     gm = bpy.data.materials.new(f'IF window glow night {k}')
     try: gm.use_nodes = True
     except AttributeError: pass
@@ -96,22 +126,22 @@ sm = material('IF | shop signs', rough=0.6); it = sm.node_tree.nodes.new('Shader
 sm.node_tree.links.new(it.outputs['Color'], sm.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
 sm.node_tree.links.new(it.outputs['Color'], sm.node_tree.nodes['Principled BSDF'].inputs['Emission Color']); sm.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 0.6
 MAT.update({'signs': sm,
-    'shutter': material('IF | shutter', tex='painted_metal_shutter'),
-    'slab': material('IF | slab', (0.62, 0.6, 0.56), 0.85, vcol=True),
+    'shutter': material('IF | shutter', tex='rusted_shutter'),
+    'slab': material('IF | slab', tex='dirty_concrete', vcol=True),
     'rail': material('IF | rail', (0.18, 0.2, 0.2), 0.5, 0.6),
     'tank': material('IF | water tank', (0.08, 0.09, 0.1), 0.6),
-    'tin': material('IF | tin roof', tex='grey_roof_01', vcol=True),
+    'tin': material('IF | tin roof', tex='rusty_corrugated_iron', vcol=True),
     'cloth': material('IF | laundry', rough=0.9, vcol=True),
     'wire': material('IF | wire', (0.03, 0.03, 0.03), 0.6),
     'white': material('IF | white marble', (0.9, 0.89, 0.86), 0.35),
     'saffron': material('IF | saffron', (0.95, 0.45, 0.05), 0.8),
-    'stone': material('IF | temple stone', (0.74, 0.62, 0.48), 0.8, vcol=True),
-    'tetra': material('IF | tetrapod', tex='brushed_concrete', vcol=True),
-    'hull': material('IF | boat', rough=0.7, vcol=True),
+    'stone': material('IF | temple stone', tex='seaworn_stone_tiles', vcol=True),
+    'tetra': material('IF | tetrapod', tex='dirty_concrete', vcol=True),
+    'hull': material('IF | boat', tex='weathered_planks', vcol=True),
     'canopy': material('IF | canopy', (0.85, 0.86, 0.88), 0.4, 0.5),
     'glow': material('IF | plaza lights', (0.9, 0.95, 1.0), 0.4, emit=((0.9, 0.96, 1.0), 6.0)),
 })
-UVS.update({'shutter': 3.0, 'tin': 3.0, 'tetra': 2.0})
+UVS.update({'shutter': 3.0, 'tin': 2.5, 'tetra': 2.0, 'slab': 3.0, 'stone': 2.5, 'hull': 2.0})
 KEYS = list(TYPES)
 
 # ------------------------------------------------------------------------------------------------ builders (merged per material)
@@ -131,7 +161,7 @@ def pquad(pts, k, uv=None, col=(1, 1, 1)):
     return f
 def facade(a, b, h, key, z0=0.0, shell=True):
     """a wall from a to b (ground points), z0..h, facing out to the right of a->b; textured in metres; a lit-window shell 6 cm out"""
-    _, tw, th, _ = TYPES[key]; mi = KEYS.index(key); L = (b - a).length; nrm = Vector(((b - a).y, -(b - a).x, 0)).normalized()
+    _, tw, th, _, _, _ = TYPES[key]; mi = KEYS.index(key); L = (b - a).length; nrm = Vector(((b - a).y, -(b - a).x, 0)).normalized()
     for bmx, uvl, push in ((FB, FUV, 0.0),) + (((GB, GUV, 0.06),) if shell else ()):
         f = bmx.faces.new([bmx.verts.new(p + nrm * push) for p in (a + Vector((0, 0, z0)), b + Vector((0, 0, z0)), b + Vector((0, 0, h)), a + Vector((0, 0, h)))])
         f.material_index = mi

@@ -188,6 +188,69 @@ if is_land(cp.x, cp.y) and free(footprint(cp, 30, 30, 0.0)):
     pbox(cp + Vector((32, 0, 89)), (60, 1.4, 1.4), k='saffron'); pbox(cp + Vector((18, 0, 92)), (2, 2, 4), k='saffron')
     pbox(cp + Vector((4, 0, 88.5)), (6, 3, 2.5), k='concrete')
 
+# ------------------------------------------------------------------------------------------------ downloaded models (CREDITS.md): coconut palms, kaali-peeli taxis
+def load_model(path, height=None, length=None, decimate=None):
+    """the glTF's meshes baked to one bmesh in metres, standing on z = 0 and centred; its materials in slot order"""
+    bpy.ops.import_scene.gltf(filepath=str(path)); objs = [o for o in bpy.context.selected_objects if o.type == 'MESH']
+    if decimate:
+        for o in objs: dm = o.modifiers.new('dec', 'DECIMATE'); dm.ratio = decimate
+    bpy.context.view_layer.update(); dg = bpy.context.evaluated_depsgraph_get(); out = bmesh.new(); mats = []
+    for o in objs:
+        me = bpy.data.meshes.new_from_object(o.evaluated_get(dg)); b = bmesh.new(); b.from_mesh(me); b.transform(o.matrix_world)
+        for f in b.faces:
+            m = o.data.materials[f.material_index] if o.data.materials else None
+            if m not in mats: mats.append(m)
+            f.material_index = mats.index(m)
+        b.to_mesh(me); b.free(); out.from_mesh(me); bpy.data.meshes.remove(me)
+    for o in objs: bpy.data.objects.remove(o, do_unlink=True)
+    for o in list(bpy.data.objects):
+        if o.type == 'EMPTY': bpy.data.objects.remove(o, do_unlink=True)
+    ps = [v.co for v in out.verts]; lo = Vector([min(q[d] for q in ps) for d in range(3)]); hi = Vector([max(q[d] for q in ps) for d in range(3)])
+    k = height / (hi.z - lo.z) if height else length / max(hi.x - lo.x, hi.y - lo.y)
+    if length and hi.y - lo.y > hi.x - lo.x: bmesh.ops.rotate(out, verts=out.verts, cent=Vector(), matrix=Matrix.Rotation(math.pi / 2, 3, 'Z'))     # long axis on x
+    ps = [v.co for v in out.verts]; lo = Vector([min(q[d] for q in ps) for d in range(3)]); hi = Vector([max(q[d] for q in ps) for d in range(3)])
+    for v in out.verts: v.co = (v.co - Vector(((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, lo.z))) * k
+    return out, mats
+def scatter(name, model, spots, prefix):
+    """copies of `model` at (position, yaw, scale) merged into one mesh, its materials kept and renamed"""
+    b0, mats = model; acc = bmesh.new()
+    for pos, yaw, sc_ in spots:
+        b = b0.copy(); b.transform(Matrix.Translation(pos) @ Matrix.Rotation(yaw, 4, 'Z') @ Matrix.Scale(sc_, 4))
+        me = bpy.data.meshes.new('tmp'); b.to_mesh(me); b.free(); acc.from_mesh(me); bpy.data.meshes.remove(me)
+    me = bpy.data.meshes.new(name); acc.to_mesh(me); acc.free()
+    for m in mats:
+        if m and not m.name.startswith(prefix): m.name = f'{prefix}{m.name}'
+        me.materials.append(m)
+    VIS.objects.link(bpy.data.objects.new(name, me)); return len(spots)
+SRCM = H / 'source'
+palm = load_model(SRCM / 'palm_lowpoly' / 'palm_lowpoly.glb', height=12.0)
+spots = []
+for j in NECKS[::8]:                                       # the Necklace: a palm every 20 m on the promenade
+    p = off(j, -(BD[-1][j] + 13)); spots.append((Vector((p.x, p.y, 0.3)), rr.uniform(0, 6.28), rr.uniform(0.85, 1.2)))
+for j in TOW[::14]:                                        # the towers' kerb
+    p = off(j, BD[1][j] + 4.5)
+    if is_land(p.x, p.y) and tun_kd.find((p.x, p.y, 0))[2] > 30: spots.append((Vector((p.x, p.y, 0)), rr.uniform(0, 6.28), rr.uniform(0.85, 1.15)))
+for j in KOLI[::5]:                                        # the koliwada shore
+    p = off(j, rr.uniform(26, 40))
+    if is_land(p.x, p.y): spots.append((Vector((p.x, p.y, 0)), rr.uniform(0, 6.28), rr.uniform(0.8, 1.3)))
+for k in range(6):                                         # the dargah's islet
+    a = k * 1.05; spots.append((dc_ + Vector((math.cos(a) * 24, math.sin(a) * 24, 0.6)), rr.uniform(0, 6.28), rr.uniform(0.8, 1.1)))
+log('palms', scatter('IF palms', palm, spots, 'IF palm '))
+hero = load_model(SRCM / 'palm_hero' / 'palm_hero.glb', height=15.0)
+hs = []
+for j in list(range(N - 120, N, 20)) + NECKS[len(NECKS) // 3::40][:6]:      # the start and the Necklace's middle: the big palms
+    for sd in (1, -1):
+        p = off(j % N, sd * (BD[sd][j % N] + 9)); z = 0.3 if j in NECK else 0.0
+        if is_land(p.x, p.y): hs.append((Vector((p.x, p.y, z)), rr.uniform(0, 6.28), rr.uniform(0.9, 1.15)))
+log('hero palms', scatter('IF hero palms', hero, hs, 'IF palm hero '))
+taxi = load_model(SRCM / 'taxi' / 'taxi.glb', length=3.75, decimate=0.012)
+ts = []
+for j in OLD[::16]:                                        # parked at the kerb behind the walls, nose either way
+    for sd in (1, -1):
+        if rr.random() < 0.55:
+            p = off(j, sd * (BD[sd][j] + 1.3)); ts.append((Vector((p.x, p.y, max(0.0, CL[j].z))), HEAD[j] + (math.pi if rr.random() < 0.5 else 0), 1.0))
+log('taxis', scatter('IF taxis', taxi, ts, 'IF taxi '))
+
 # ------------------------------------------------------------------------------------------------ the far shores: city across the open water, north and south
 # (no collision; land 2 m up so the sea under it stays 6 m away for the depth buffer at 2 km)
 fs = bmesh.new(); nfar = 0
@@ -213,5 +276,11 @@ log('far shores: buildings', nfar)
 # ------------------------------------------------------------------------------------------------ out
 mesh_obj('IF buildings', FB, [f'f_{k}' for k in KEYS], planar=False)
 mesh_obj('IF window glow night', GB, [f'g_{k}' for k in KEYS], planar=False)
+PB.normal_update()
+for f in PB.faces:
+    if PROPK[f.material_index] in ('signs', 'shutter'): continue
+    sz = UVS.get(PROPK[f.material_index], 3.0); n_ = f.normal
+    for l in f.loops:
+        c = l.vert.co; l[PUV].uv = (c.x / sz, c.y / sz) if abs(n_.z) > 0.6 else ((c.y if abs(n_.x) > abs(n_.y) else c.x) / sz, c.z / sz)
 mesh_obj('IF city props', PB, PROPK, planar=False)
 log('city: buildings', len(PLACED))

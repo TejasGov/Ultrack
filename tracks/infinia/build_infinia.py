@@ -36,8 +36,8 @@ MAT.update({
     'kerb_w': material('IF | kerb white', (0.66, 0.66, 0.63), 0.6),
     'barrier': material('IF | barrier', tex='concrete_wall_009'),
     'concrete': material('IF | concrete', tex='brushed_concrete', vcol=True),
-    'paving': material('IF | paving', tex='pavement_01', vcol=True),
-    'ground': material('IF | ground', tex='aerial_sand', vcol=True, diff=ROOT / 'tracks' / 'drylake' / 'tex' / 'aerial_sand_pale_diff_1k.jpg'),     # packed earth and dust between the blocks, no lawns
+    'paving': material('IF | paving', tex='interlocking_concrete_pavers', vcol=True),
+    'ground': material('IF | ground', tex='red_laterite_soil_stones', vcol=True),     # laterite earth and dust between the blocks, no lawns
     'tower': material('IF | bridge concrete', (0.78, 0.77, 0.74), 0.7),
     'cable': material('IF | stay cable', (0.85, 0.85, 0.86), 0.35, 0.6),
     'steel': material('IF | steel', (0.36, 0.37, 0.39), 0.45, 0.7),
@@ -47,7 +47,7 @@ MAT.update({
     'water': material('IF | water', (0.01, 0.035, 0.045), 0.04),
     'roof': material('IF | roof', (0.32, 0.31, 0.3), 0.85, vcol=True),
 })
-UVS.update({'asphalt': 3.5, 'concrete': 4.0, 'paving': 2.5, 'ground': 4.0})
+UVS.update({'asphalt': 3.5, 'concrete': 4.0, 'paving': 2.0, 'ground': 3.0})
 
 # ------------------------------------------------------------------------------------------------ road and walls: parapets close on the bridge and in the tunnel
 road(7.5, 70)
@@ -105,7 +105,7 @@ for r_ in range(GY):
         if max(info[v][2] for v in q) < HW - 0.6: continue                # under the road
         f = bm.faces.new(q); f.material_index = 0 if all(info[v][0] for v in q) and min(info[v][2] for v in q) > HW + 6 else 1
         for l in f.loops:
-            t = 0.85 + 0.15 * fbm(l.vert.co.x / 50, l.vert.co.y / 50, 3); l[vc] = (t * 0.62, t * 0.52, t * 0.42, 1) if f.material_index == 0 else (t, t, t * 0.96, 1)
+            t = 0.85 + 0.15 * fbm(l.vert.co.x / 50, l.vert.co.y / 50, 3); l[vc] = (t * 0.9, t * 0.86, t * 0.82, 1) if f.material_index == 0 else (t, t, t * 0.96, 1)
 mesh_obj('IF ground', bm, ['ground', 'paving'], smooth=True)
 # the sea: the grid's sea cells and a frame out to 8.5 km, one plane at -4 m (no surface under another: the land is 4 m above it)
 bm = bmesh.new()
