@@ -21,6 +21,11 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return fresh();
     const d = JSON.parse(raw);
+    if (d.freePlay) {                            // the game closed mid-career (game.careerSession): free play gets its own car and conditions back
+      const { car, ...conditions } = d.freePlay;
+      d.car = car; d.settings = { ...d.settings, ...conditions }; delete d.freePlay;
+      localStorage.setItem(KEY, JSON.stringify(d));
+    }
     const settings = { ...DEFAULT_SETTINGS, ...(d.settings ?? {}) };
     if (settings.assists !== 'pro') settings.assists = 'rookie';   // Casual and Sport merged into Rookie; Pro stays
     // records were keyed by car alone before tracks: marina was the only circuit then, so the old ones are its records

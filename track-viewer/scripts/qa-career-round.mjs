@@ -103,6 +103,7 @@ try {
   await page.click('.cs-slot >> nth=1'); await page.fill('.cs-input', 'Second Driver'); await page.click('.cs-go'); await page.waitForSelector('text=Open Shootout');
   report.slots = await page.evaluate(() => JSON.parse(localStorage.getItem('ultrack.career.v1')).slots.map((s) => s?.player.name ?? null));
   await page.reload(); await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
+  report.freePlayAfterReload = await page.evaluate(() => ({ car: window.game.ctx && JSON.parse(localStorage.getItem('ultrack.v1')).car, track: window.game.ctx.trackId() }));
   report.afterReload = await page.evaluate(() => JSON.parse(localStorage.getItem('ultrack.career.v1')).slots.map((s) => s?.player.name ?? null));
   await page.keyboard.press('Enter'); await page.waitForSelector('.bento-tile[data-id=career]', { state: 'visible' }); await page.click('.bento-tile[data-id=career]'); await onScreen('career-start'); await shot('16-second-career');
   await page.evaluate(() => { window.game.career = null; window.game.screens.careerStart.onShow(); }); await page.click('.cs-slot >> nth=0'); await onScreen('career-hub'); await shot('17-first-career-back');

@@ -489,9 +489,9 @@ export class Game {
 
   // ---------------------------------------------------------------------------------------------- career (docs/career-mode.md)
   /** a career session (career-ui.js): kind 'shootout' | 'quali' | 'test' | 'sponsor' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
-   *  car and conditions are kept aside and leaveCareer puts them back (R12); done(data) gets the outcome */
+   *  car and conditions are saved aside, and leaveCareer (or store.js, if the game closes first) puts them back (R12); done(data) gets the outcome */
   async careerSession(kind, spec, done) {
-    this.freePlay ??= { car: store.data.car, track: store.settings.track, look: store.settings.look, weather: store.settings.weather, laps: store.settings.laps };
+    if (!store.data.freePlay) { store.data.freePlay = { car: store.data.car, track: store.settings.track, look: store.settings.look, weather: store.settings.weather, laps: store.settings.laps }; store.save(); }
     await this.selectTrack(spec.track);
     if (this.ctx.trackId() !== spec.track) return;                       // the circuit would not load: selectTrack has said so
     store.data.car = spec.car; Object.assign(store.settings, { look: spec.look, weather: spec.weather, laps: spec.laps ?? store.settings.laps }); store.save();
@@ -509,9 +509,9 @@ export class Game {
   }
   /** out of the career to the main menu: the free-play car, circuit and conditions as they were */
   leaveCareer() {
-    const f = this.freePlay; this.freePlay = null;
+    const f = store.data.freePlay; delete store.data.freePlay;
     if (f) {
-      store.data.car = f.car; Object.assign(store.settings, { look: f.look, weather: f.weather, laps: f.laps }); store.save();
+      store.data.car = f.car; Object.assign(store.settings, { track: f.track, look: f.look, weather: f.weather, laps: f.laps }); store.save();
       this.selectTrack(f.track).then(() => { store.set('look', f.look); this.applySettings(); });
     }
     this.lineup(); this.applySettings(); this.show('menu');

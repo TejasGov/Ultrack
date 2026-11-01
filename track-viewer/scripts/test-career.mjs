@@ -169,7 +169,14 @@ try {
   assert.equal(S.activeSlot(), 2); assert.equal(S.loadCareer().seed, 116); assert.equal(S.loadCareer(0).seed, 115); assert.equal(S.activeSlot(), 0, 'loading a slot makes it active');
   assert.deepEqual(S.listCareers().map((x) => x?.seed ?? null), [115, null, 116]);
   S.saveCareer(null); assert.deepEqual(S.listCareers().map((x) => x?.seed ?? null), [null, null, 116], 'only the active slot is erased');
-  mem['ultrack.career.v1'] = '{broken'; assert.equal(S.loadCareer(), null, 'a broken save reads as none'); delete globalThis.localStorage;
+  mem['ultrack.career.v1'] = '{broken'; assert.equal(S.loadCareer(), null, 'a broken save reads as none');
+  // ---- the game closed mid-career: the next boot gives free play its own car and conditions back, before the circuit loads
+  mem['ultrack.v1'] = JSON.stringify({ car: 'bmw1', settings: { track: 'india', look: 'day', weather: 'rain', laps: 8, master: 0.5 }, freePlay: { car: 'av12', track: 'marina', look: 'night', weather: 'dry', laps: 3 } });
+  const { store } = await server.ssrLoadModule('/src/game/store.js');
+  assert.equal(store.data.car, 'av12'); assert.equal(store.settings.track, 'marina'); assert.equal(store.settings.look, 'night'); assert.equal(store.settings.weather, 'dry'); assert.equal(store.settings.laps, 3);
+  assert.equal(store.settings.master, 0.5, 'other settings are untouched'); assert.equal(store.data.freePlay, undefined, 'the snapshot is used up');
+  assert.equal(JSON.parse(mem['ultrack.v1']).car, 'av12', 'and the restored profile is on disk at once'); assert.equal(JSON.parse(mem['ultrack.v1']).freePlay, undefined);
+  delete globalThis.localStorage;
 
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays
   assert.equal(JSON.stringify(play(M, 11, 1.0, 9).save), JSON.stringify(play(M, 11, 1.0, 9).save), 'nine seasons replay identically');
