@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "note": "Every career formula constant (track-viewer/docs/career-mode.md 10.5). featureMinutes is 6, not the doc's 7.5: R5 says lower it if races feel long; tune from play.",
+  "series": { "featureMinutes": 6, "lapsMin": 3, "lapsMax": 12, "qualiValidLaps": 3,
+              "points": [25, 18, 15, 12, 10, 8, 6, 4], "pole": 2, "fastestLap": 1, "finaleMult": 1.5 },
+  "pace": { "base": 0.94, "perRating": 0.0021, "min": 0.94, "max": 1.02, "jitter": 0.003, "perDevLevel": 0.01, "carZ": 0.012,
+            "wet": { "dry": 1.0, "damp": 1.04, "rain": 1.08 }, "difficulty": { "easy": 0.97, "normal": 1.0, "hard": 1.02 } },
+  "entries": { "aSeat": { "rookie": 0.7, "maestro": 0.7, "legend": 0.8 } },
+  "weather": { "damp": 0.15, "rain": 0.1, "maxWet": 2 },
+  "quali": { "noiseSigma": 0.004, "duelLevel": 0.0015, "duelBig": 0.003 },
+  "shootout": { "standout": 0.03, "solid": 0.06, "standoutXp": 300, "baseXp": 100 },
+  "xp": { "curve": [90, 1.7], "maxLevel": 25, "place": [120, 95, 75, 60, 45, 35, 25, 20], "perPlaceOverExp": 25, "overExpMax": 100,
+          "pole": 30, "qualiPerPlace": 10, "duel": 25, "fastest": 20, "clean": 20, "mandatory": 60, "optional": 40, "proAssist": 1.15 },
+  "rating": { "base": 6.0, "pos": 0.7, "quali": 0.3, "fastest": 0.4, "clean": 0.3, "duel": 0.4, "duelBig": 0.6,
+              "underdog": 0.3, "dnf": -1.5, "min": 2.0, "max": 10.0, "posClamp": 5, "qualiClamp": 4 },
+  "rep": { "perRR": 14, "win": 12, "podium": 6, "pole": 3, "fastest": 2, "giantKill": 4, "giantKillMax": 8, "dnf": -6, "cup": 40, "teams": 80, "drivers": 150 },
+  "trust": { "start": 55, "perRR": 4, "mandatory": 8, "optional": 3, "duel": 3, "package": 50, "promote": 60, "renew": 50 },
+  "form": [[8.5, 3], [8.0, 2], [7.2, 1], [5.8, 0], [5.0, -1], [4.2, -2], [0, -3]],
+  "money": { "startWallet": 1000, "buyback": 0.6 },
+  "upgrades": { "clGate": [2, 8, 15] },
+  "offers": { "base": 0.30, "slope": 0.55, "maxCarDropZ": 0.3, "promoteDuelShare": 0.5, "reserveSalary": 0.6 }
+}

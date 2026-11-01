@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "note": "Career tiers, seats and team data (track-viewer/docs/career-mode.md sections 2, 3, 5.5, 6.5). Starting values, not measurements.",
+  "tiers": {
+    "rookie": { "rank": 1, "name": "Rookies", "cup": "Rookie Cup", "world": 1, "cap": 1, "dev": [0, 0, 0], "xp": 1.0, "rep": 1.0, "prize": 0.7,
+                "salary": { "B": 300, "A": 400 }, "objective": [100, 50], "bonus": { "podium": 100, "win": 250, "cup": 800 } },
+    "maestro": { "rank": 2, "name": "Maestros", "cup": "Maestro Cup", "world": 2, "cap": 2, "dev": [1, 1, 1], "xp": 1.3, "rep": 0.8, "prize": 1.2,
+                 "salary": { "B": 600, "A": 900 }, "objective": [200, 100], "bonus": { "podium": 200, "win": 500, "cup": 1600 } },
+    "legend": { "rank": 3, "name": "Legends", "cup": "Legend Cup", "world": 3, "cap": 3, "dev": [2, 2, 2], "xp": 1.6, "rep": 0.6, "prize": 2.0,
+                "salary": { "B": 1200, "A": 1800 }, "objective": [400, 200], "bonus": { "podium": 400, "win": 1000, "cup": 3200 } }
+  },
+  "teams": {
+    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 650, "rr": 7.5, "cl": 15 }, "wants": "titles" },
+    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 600, "rr": 7.3, "cl": 14 }, "wants": "wins and poles" },
+    "toro":    { "tier": "maestro", "expPos": 3, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.6, "cl": 7 }, "wants": "overtakes and giant-killing" },
+    "sarab":   { "tier": "maestro", "expPos": 4, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "loyalty" },
+    "corvid":  { "tier": "maestro", "expPos": 5, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "clean races" },
+    "hayate":  { "tier": "rookie",  "expPos": 6, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision" },
+    "mojave":  { "tier": "rookie",  "expPos": 7, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement" },
+    "liberty": { "tier": "rookie",  "expPos": 8, "A": "blackbird",         "B": "mustang",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit" }
+  },
+  "carZ": {
+    "destrier": 0.69, "buggati": 0.66, "laferrari": 0.50, "furari-488": 0.24, "av12": 0.19, "huracan": 0.09, "porsche1": 0.37, "mp1x": 0.18,
+    "aston-martin-valk": 0.55, "bentley-gt": -0.95, "supra": 0.42, "nissan-z": -1.07, "jaguarxkjss": 0.22, "bmw1": -0.92, "blackbird": 0.40, "mustang": -1.58
+  },
+  "firstJob": {
+    "hayate":  { "salary": 300, "signing": 600,  "pitch": "Precision and qualifying. The best of the three cars.", "difficulty": "Medium" },
+    "mojave":  { "salary": 300, "signing": 900,  "pitch": "The underdog garage from the desert. A balanced deal.", "difficulty": "Medium" },
+    "liberty": { "salary": 250, "signing": 1500, "pitch": "American muscle and the slowest car in the series. A big signing bonus and the underdog bonus.", "difficulty": "Hard", "underdog": true }
+  }
+}

@@ -1,0 +1,158 @@
+// The career's formulas (docs/career-mode.md 2-6), pure functions over plain data, economy.js style: no DOM, no save, runs in node.
+// Every constant comes from assets/career/*.json; career.js strings them into a season.
+import TUNING from '../../../../assets/career/tuning.json';
+import TIERS from '../../../../assets/career/tiers.json';
+import CAL from '../../../../assets/career/calendar.json';
+import DRIVERS from '../../../../assets/career/drivers.json';
+import TEAMS from '../../../../assets/teams/teams.json';
+import { rng, gauss, weighted, shuffle } from './rng.js';
+
+export { TUNING, TIERS, CAL, DRIVERS };
+const T = TUNING;
+export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const avg = (l) => (l.length ? l.reduce((s, v) => s + v, 0) / l.length : 0);
+
+// ---------------------------------------------------------------------------------------------- teams, seats, drivers
+export const TEAM_IDS = Object.keys(TIERS.teams);
+export const teamInfo = (id) => TIERS.teams[id];
+export const tierOf = (id) => TIERS.tiers[TIERS.teams[id].tier];
+const LORE = Object.fromEntries(TEAMS.teams.map((t) => [t.id, t]));
+export const loreOf = (id) => LORE[id];
+/** car key -> { team, driver (teams.json), seat 'A' | 'B' } */
+export const CAR = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, { team: t.id, driver: c.driver, number: c.number, seat: TIERS.teams[t.id].A === c.key ? 'A' : 'B' }])));
+export const seatCar = (team, seat) => TIERS.teams[team][seat];
+export const otherSeat = (seat) => (seat === 'A' ? 'B' : 'A');
+/** expected finish of an entry: the team's expPos, one place lower in its B seat (6.1) */
+export const expOf = (expPos, seat) => clamp(expPos + (seat === 'B' ? 1 : 0), 1, 8);
+
+// ---------------------------------------------------------------------------------------------- levels
+export const xpForLevel = (L) => Math.round(T.xp.curve[0] * (L - 1) ** T.xp.curve[1]);
+export function levelOf(xp) { let L = 1; while (L < T.xp.maxLevel && xp >= xpForLevel(L + 1)) L++; return L; }
+export const formOf = (rrs) => { const a = avg(rrs.slice(-3)); return rrs.length ? T.form.find(([min]) => a >= min)[1] : 0; };
+
+// ---------------------------------------------------------------------------------------------- pace, laps
+/** AI pace from a driver rating (2.3): 94 -> 1.011, 76 -> 0.974 */
+export const paceOf = (rating, difficulty = 'normal') => clamp(T.pace.base + (rating - 60) * T.pace.perRating, T.pace.min, T.pace.max) * (T.pace.difficulty[difficulty] ?? 1);
+/** an AI flying lap at pace 1.00 in this car, these conditions and these upgrade levels [engine, tyres, brakes] */
+export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
+  CAL.tracks[track].parLap * (1 - T.pace.carZ * (TIERS.carZ[car] ?? 0)) * (T.pace.wet[weather] ?? 1) * (1 - T.pace.perDevLevel * avg(dev));
+/** feature-race laps from a target duration (4.1) */
+export const lapsFor = (track) => clamp(Math.round((T.series.featureMinutes * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
+
+// ---------------------------------------------------------------------------------------------- calendar
+/**
+ * A season's rounds for a world (career-worlds.md): its home tracks twice, guests once, cut to the world's round count, the finale
+ * last, never the same track twice in a row. `available` maps track id -> its `times` (null: every look) for the tracks the game has.
+ */
+export function buildCalendar(seed, season, world, available) {
+  const W = CAL.worlds[world], has = (id) => id in available && CAL.tracks[id];
+  const fin = W.finale.find((f) => has(f.track)) ?? { track: W.home.find(has) ?? Object.keys(available).find(has), look: null };
+  const r = rng(seed, 'cal', season);
+  let pool = [...W.home.filter(has).flatMap((id) => [id, id]), ...shuffle(r, W.guests.filter(has))].slice(0, W.rounds);
+  pool.splice(pool.lastIndexOf(fin.track) >= 0 ? pool.lastIndexOf(fin.track) : pool.length - 1, 1);   // the finale takes one of its track's slots
+  let order = pool;
+  for (let k = 0; k < 60; k++) {                                       // reshuffle until no back-to-back track (a small pool may never manage)
+    order = shuffle(r, pool);
+    if ([...order, fin.track].every((t, i, l) => i === 0 || t !== l[i - 1])) break;
+  }
+  const seen = {}, wet = { n: 0 };
+  return [...order, fin.track].map((track, i, all) => {
+    const C = CAL.tracks[track], times = available[track], finale = i === all.length - 1;
+    const looks = Object.entries(C.looks).filter(([l]) => !times || times.includes(l));
+    const look = finale && fin.look && (!times || times.includes(fin.look)) ? fin.look : weighted(r, looks.length ? looks : [[times?.[0] ?? 'day', 1]]);
+    let weather = 'dry', x = r();
+    if (i > 0 && !C.dryOnly && wet.n < T.weather.maxWet) weather = x < T.weather.rain ? 'rain' : x < T.weather.rain + T.weather.damp ? 'damp' : 'dry';
+    if (weather !== 'dry') wet.n++;
+    const n = (seen[track] = (seen[track] ?? -1) + 1);
+    return { round: i + 1, track, look, weather, laps: lapsFor(track), name: finale ? 'Season Finale' : C.names[Math.min(n, C.names.length - 1)], finale };
+  });
+}
+
+// ---------------------------------------------------------------------------------------------- qualifying
+/** a computed qualifying lap for an entry (4.3): par / pace, with seeded noise */
+export function aiLap({ seed, season, round, key, rating, track, weather, dev, difficulty }) {
+  const r = rng(seed, 'ai', season, round, key);
+  return (parLap(track, key, weather, dev) / paceOf(rating, difficulty)) * (1 + T.quali.noiseSigma * gauss(r));
+}
+/** the teammate duel on the clock (6.3): won / lost / level by the margin, `big` beyond 0.3 % */
+export function duelOf(mine, mate) {
+  if (!Number.isFinite(mine)) return { result: 'lost', big: true, margin: null };
+  const m = (mate - mine) / mate;
+  return { result: Math.abs(m) < T.quali.duelLevel ? 'level' : m > 0 ? 'won' : 'lost', big: Math.abs(m) > T.quali.duelBig, margin: m };
+}
+
+// ---------------------------------------------------------------------------------------------- the round rating, XP, REP, trust
+export const RR_LABELS = [[9, 'Masterclass'], [8, 'Outstanding'], [7, 'Strong'], [6, 'Solid'], [5, 'Poor'], [0, 'Bad']];
+export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
+/** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
+export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf }) {
+  const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); };
+  const pos = clamp(expPos - finish, -R.posClamp, R.posClamp), q = clamp(expPos - grid, -R.qualiClamp, R.qualiClamp);
+  add(pos >= 0 ? `Finished ${pos} ${pos === 1 ? 'place' : 'places'} above expected` : `Finished ${-pos} ${pos === -1 ? 'place' : 'places'} below expected`, R.pos * pos);
+  add(q >= 0 ? `Qualified ${q} above expected` : `Qualified ${-q} below expected`, R.quali * q);
+  if (fastest) add('Fastest lap of the field', R.fastest);
+  if (clean && !dnf) add('Clean race', R.clean);
+  if (duel) add(duel.result === 'won' ? 'Beat your teammate' : duel.result === 'lost' ? 'Lost to your teammate' : null, (duel.result === 'won' ? 1 : duel.result === 'lost' ? -1 : 0) * (duel.big ? R.duelBig : R.duel));
+  if (underdog && pos >= 0 && !dnf) add('Underdog seat', R.underdog);
+  if (dnf) add('Retired', R.dnf);
+  return { rr: Math.round(clamp(R.base + lines.reduce((s, l) => s + l[1], 0), R.min, R.max) * 10) / 10, lines };
+}
+/** XP for a round (5.2) before nothing: the tier, assist and underdog multipliers are applied here */
+export function xpFor({ finish, expPos, grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog }) {
+  const X = T.xp, lines = [], add = (label, v) => { if (v > 0) lines.push([label, v]); };
+  add(`Finished P${finish}`, dnf ? 0 : X.place[finish - 1] ?? 0);
+  add('Above expected', dnf ? 0 : Math.min(X.overExpMax, Math.max(0, expPos - finish) * X.perPlaceOverExp));
+  add('Pole position', pole ? X.pole : 0);
+  add('Qualified above expected', Math.max(0, expPos - grid) * X.qualiPerPlace);
+  add('Teammate duel', duel?.result === 'won' ? X.duel : 0);
+  add('Fastest lap', fastest ? X.fastest : 0);
+  add('Clean race', clean && !dnf ? X.clean : 0);
+  add('Round objective', mandatory ? X.mandatory : 0);
+  add('Bonus objectives', optional * X.optional);
+  const mult = TIERS.tiers[tier].xp * (pro ? X.proAssist : 1) * (underdog ? 1.1 : 1);
+  return { xp: Math.round(lines.reduce((s, l) => s + l[1], 0) * mult), lines, mult };
+}
+/** reputation change for a round (6.2) */
+export function repFor({ rr, tier, finish, pole, fastest, giantKills, dnf }) {
+  const P = T.rep, base = (rr - T.rating.base) * P.perRR, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v)]); };
+  add('Round rating', base > 0 ? base * TIERS.tiers[tier].rep : base);
+  if (!dnf && finish === 1) add('Win', P.win); else if (!dnf && finish <= 3) add('Podium', P.podium);
+  if (pole) add('Pole', P.pole);
+  if (fastest) add('Fastest lap', P.fastest);
+  if (giantKills) add('Giant-killing', Math.min(P.giantKillMax, giantKills * P.giantKill));
+  if (dnf) add('Retired', P.dnf);
+  return { rep: lines.reduce((s, l) => s + l[1], 0), lines };
+}
+/** team trust change for a round (6.2) */
+export const trustFor = ({ rr, mandatory, optional, duel }) => Math.round((rr - T.rating.base) * T.trust.perRR + (mandatory ? T.trust.mandatory : -T.trust.mandatory) + optional * T.trust.optional + (duel?.result === 'won' ? T.trust.duel : duel?.result === 'lost' ? -T.trust.duel : 0));
+
+// ---------------------------------------------------------------------------------------------- objectives
+export const OBJECTIVES = {
+  finish: (o) => `Finish P${o.n} or better`,
+  duel: () => 'Out-qualify your teammate',
+  clean: () => 'Race clean: no spins, at most one hit',
+  gain: (o) => `Gain ${o.n} places from your grid slot`,
+  fastest: () => 'Set the fastest lap of the race',
+  podium: () => 'Finish on the podium',
+  quali: (o) => `Qualify P${o.n} or better`,
+};
+export const objectiveText = (o) => OBJECTIVES[o.kind](o);
+/** the round's objectives (6.4): one mandatory from the expected finish, two optional from a seeded pool */
+export function objectivesFor(r, expPos) {
+  const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 1) }];
+  if (expPos <= 4) pool.push({ kind: 'podium' });
+  return [{ kind: 'finish', n: Math.min(expPos, 7), mandatory: true }, ...shuffle(r, pool).slice(0, 2)];   // P8 of 8 is no target: last expected asks for P7
+}
+export function objectiveMet(o, x) {
+  return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n,
+    fastest: () => !!x.fastest, podium: () => !x.dnf && x.finish <= 3, quali: () => x.grid <= o.n })[o.kind]();
+}
+
+// ---------------------------------------------------------------------------------------------- offers
+/** a team's interest in the player (6.5) and whether its seeded roll makes an offer */
+export function interestOf(team, { rep, rrs, cl, form }) {
+  const g = TIERS.teams[team].gate, a = avg(rrs.slice(-6));
+  if (rep < g.rep || a < g.rr || cl < g.cl) return null;
+  return clamp((0.5 * (rep - g.rep)) / Math.max(g.rep, 100) + 0.15 * (a - g.rr) + 0.05 * form, 0, 1);
+}
+export const offerRoll = (seed, season, team, interest) => rng(seed, 'offer', season, team)() < T.offers.base + T.offers.slope * interest;

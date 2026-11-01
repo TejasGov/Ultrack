@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "note": "Career ratings of the 16 drivers (track-viewer/docs/career-mode.md 2.4), invented to fit the lore and the tier bands. Ages come from teams.json.",
+  "ratings": {
+    "VAL": 94, "CAL": 90, "VAR": 88, "BEA": 87, "BAR": 86, "ORT": 86, "QAS": 85, "KAR": 84,
+    "WHI": 84, "KUR": 83, "ASH": 82, "LIN": 82, "MIZ": 80, "QUI": 79, "MAD": 77, "HOL": 76
+  },
+  "drift": [[24, 2], [30, 1], [34, 0], [38, -1], [99, -2]]
+}
