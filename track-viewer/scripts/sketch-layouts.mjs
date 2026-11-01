@@ -54,10 +54,11 @@ function measure(t) {
   let straight = 0, run = 0;
   for (let i = 0; i < 2 * n; i++) { run = Math.abs(curv[i % n]) < 1 / 600 ? run + STEP : 0; straight = Math.max(straight, Math.min(run, lap)); }
   let grade = 0; for (let i = 0; i < n; i++) { const a = pts[i], b = pts[(i + 10) % n]; grade = Math.max(grade, Math.abs(b[2] - a[2]) / (10 * STEP)); }
-  // clearance: closest approach of two parts of the lap more than 150 m apart along it (walls between them below ~2 widths)
+  // clearance: closest approach of two parts of the lap more than 150 m apart along it and at one level (walls between them below ~2 widths)
   let clear = Infinity, where = null;
   for (let i = 0; i < n; i += 2) for (let j = i + 2; j < n; j += 2) {
     const along = Math.min(j - i, n - j + i) * STEP; if (along < 150) continue;
+    if (Math.abs(pts[i][2] - pts[j][2]) >= 6) continue;      // a crossing: one leg on a bridge, the other in the tunnel under it
     const d = Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]); if (d < clear) { clear = d; where = [i * STEP, j * STEP]; }
   }
   const zs = pts.map((p) => p[2]);
@@ -68,7 +69,7 @@ function svg(m) {
   const { t, pts, corners, k } = m, xs = pts.map((p) => p[0]), ys = pts.map((p) => -p[1]);
   const lab = t.labels.map(([x, y, s]) => [x * k, -y * k, s]), u0 = Math.max(1, (Math.max(...xs) - Math.min(...xs)) / 760);
   const pad = 70 * u0, x0 = Math.min(...xs, ...lab.map((l) => l[0])) - pad, x1 = Math.max(...xs, ...lab.map((l) => l[0] + l[2].length * 7.5 * u0)) + pad;
-  const y0 = Math.min(...ys, ...lab.map((l) => l[1])) - pad - 40 * u0, y1 = Math.max(...ys, ...lab.map((l) => l[1])) + pad;
+  const y0 = Math.min(...ys, ...lab.map((l) => l[1])) - pad - 80 * u0, y1 = Math.max(...ys, ...lab.map((l) => l[1])) + pad;
   const W = x1 - x0, H = y1 - y0, u = Math.max(1, W / 900), PH = 150 * u, f = (v) => v.toFixed(1);   // u: type and marks grow with the plan
   const d = 'M' + pts.map((p) => f(p[0]) + ' ' + f(-p[1])).join('L') + 'Z';
   const s0 = pts[0], s1 = pts[3], hx = s1[0] - s0[0], hy = -(s1[1] - s0[1]), hl = Math.hypot(hx, hy), nx = -hy / hl, ny = hx / hl, w = t.width;

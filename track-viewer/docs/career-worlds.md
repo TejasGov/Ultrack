@@ -12,40 +12,40 @@ A world is a chapter of the career: a region with its own look, venues and spons
 |---|---|---|---|
 | Tier | Rookies | Maestros | Legends |
 | Idea | Working places turned into circuits for a weekend: a hill road, an airfield, a steel mill | Permanent circuits with history, press and name sponsors | Prestige venues, night races, the whole world watching |
-| Tracks | India Ghat (built), **Mojave Dry Lake**, **Keystone Ironworks** | Corniche Marina (built), **Shajawa Stadium** | Tokyo Hiragana (built), **Lago Serena** |
-| Home teams | Mojave (Dry Lake), Liberty (Ironworks) | Sarab (Marina); Shajawa is neutral, the series' showpiece | Hayate (Tokyo), Saetta, Toro and Aurum (Lago) |
+| Tracks | India Ghat (built), **Mojave Dry Lake**, **Infinia Track** | Corniche Marina (built), **Shajawa Stadium** | Tokyo Hiragana (built), **Lago Serena** |
+| Home teams | Mojave (Dry Lake), Liberty (Infinia) | Sarab (Marina); Shajawa is neutral, the series' showpiece | Hayate (Tokyo), Saetta, Toro and Aurum (Lago) |
 | Venue dressing | Tyre walls, temporary stands, local sponsors | Permanent grandstands, pit buildings, hoardings | Big screens, title sponsors |
 | Colour | Ochre, rust, sodium orange | Green, grey sky, sea blue | Neon, lake blue, villa gold |
-| Season finale | Ironworks at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
+| Season finale | Infinia at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
 
 **Calendar rule** (replaces career-mode.md 4.1's "6 rounds on all tracks" once these tracks exist): the current world's tracks run twice each, every track from earlier worlds runs once, and a season is capped at 8 rounds.
 
 | World | Rounds | Calendar |
 |---|---|---|
-| 1 | 6 | India, Dry Lake, Ironworks x2 each |
-| 2 | 7 | Marina, Shajawa x2 each; India, Dry Lake, Ironworks once |
+| 1 | 6 | India, Dry Lake, Infinia x2 each |
+| 2 | 7 | Marina, Shajawa x2 each; India, Dry Lake, Infinia once |
 | 3 | 8 | Tokyo, Lago x2 each; 4 of the 5 earlier tracks once (seeded) |
 
-Until Dry Lake and Ironworks exist, the MVP season stays as written in career-mode.md 4.1.
+Until Dry Lake and Infinia exist, the MVP season stays as written in career-mode.md 4.1.
 
 Every team has a home round (India stays the Open Shootout venue): a hook for the event deck (career-mode.md 7.4), such as a home crowd or a home team's push to win.
 
 ## 2. The four tracks at a glance
 
-| | Mojave Dry Lake | Keystone Ironworks | Shajawa Stadium | Lago Serena |
+| | Mojave Dry Lake | Infinia Track | Shajawa Stadium | Lago Serena |
 |---|---|---|---|---|
 | World | 1 | 1 | 2 | 3 |
-| Archetype (career-mode.md 4.5) | Short technical | Slide track | Stadium speedway: flat oval sweeps plus an infield section | Legends showcase: fast lakeside, then switchbacks |
-| Lap | 1.70 km, ~53 s | 1.90 km, ~65 s | 2.20 km, ~55 s | 2.40 km, ~68 s |
-| Corners (measured) | 8 | 5 (two hairpins, a long left over the summit) | 6 (two long flat sweeps, four 90° infield corners) | 6 (two hairpins) |
-| Longest straight | 314 m (runway) | 224 m (casting shed) | 484 m | 480 m (through the tunnel) |
+| Archetype (career-mode.md 4.5) | Short technical | Figure-eight: straight legs, angular loops, a bridge over a tunnel | Stadium speedway: flat oval sweeps plus an infield section | Legends showcase: fast lakeside, then switchbacks |
+| Lap | 1.70 km, ~53 s | 2.10 km, ~58 s | 2.20 km, ~55 s | 2.40 km, ~68 s |
+| Corners (measured) | 8 | 8 (four 90°, four 30° kinks; the east loop all rights, the west all lefts) | 6 (two long flat sweeps, four 90° infield corners) | 6 (two hairpins) |
+| Longest straight | 314 m (runway) | 424 m (the climb to the bridge) | 484 m | 480 m (through the tunnel) |
 | Width | 16 m | 13 m | 15 m | 13 m |
-| Elevation | 0 to 5 m | -2 to 13 m, 11.7 % max | flat (no banking, by design) | 2 to 32 m, 11.5 % max |
-| Race laps at 7.5 min | 8 | 7 | 8 | 6-7 |
+| Elevation | 0 to 5 m | -4 to +6 m (10 m at the crossing), 3.8 % max | flat (no banking, by design) | 2 to 32 m, 11.5 % max |
+| Race laps at 7.5 min | 8 | 8 | 8 | 6-7 |
 | Looks | day, dusk | day, dusk | day, dusk | day, dusk |
-| Weather | dry; rain only at dusk (desert storm) | damp and rain common | all | all |
-| Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | -0.5 / +0.8 / +0.3 | +0.8 / -0.2 / +0.4 | +0.3 / +0.5 / +0.3 |
-| Hero shot | Driving under airliner wings at dusk | Dusk through the casting shed, furnace glow | Down the main straight at dusk, 360° of packed stands and the lights coming on | Villa lights coming on over the lake at dusk |
+| Weather | dry; rain only at dusk (desert storm) | all | all | all |
+| Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | +0.4 / +0.3 / +0.6 | +0.8 / -0.2 / +0.4 | +0.3 / +0.5 / +0.3 |
+| Hero shot | Driving under airliner wings at dusk | Cresting the bridge at dusk with the other leg diving into the tunnel below | Down the main straight at dusk, 360° of packed stands and the lights coming on | Villa lights coming on over the lake at dusk |
 
 ## 3. Mojave Dry Lake (World 1, Mojave's home)
 
@@ -65,23 +65,21 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **Watch.** The runway is wider than the track. Paint the 16 m edges clearly and make the rest run-off so the AI keeps a racing line.
 
-## 4. Keystone Ironworks (World 1, Liberty's home)
+## 4. Infinia Track (World 1, Liberty's home)
 
-![Keystone Ironworks plan](career-worlds/ironworks.svg)
+![Infinia Track plan](career-worlds/infinia.svg)
 
-**The idea.** A shut riverside steel mill in the East-coast rust belt, opened up for one weekend: blast furnaces, conveyor gantries, brick sheds with broken windows, a truss rail bridge over the river and a slag heap with the city across the water. Grit is the theme, and Liberty "tolerates grit".
+**The idea.** An infinity sign drawn with a ruler: a purpose-built modern test track with two angular loops joined by two long straight legs that cross in the middle. At the crossing one leg climbs onto a bridge and the other drops into a short tunnel under it, as on Tokyo's crossover. The style is clean and modern: white and grey concrete, sharp chevron kerbs, a sculptural bridge, glass and steel buildings in the loops. It is Liberty's new proving ground.
 
-**The lap.** The start straight runs between brick sheds. The left (1) at the shed corner sends you **through the casting shed**: an indoor straight under hanging lamps and crane rails, shafts of light by day. A fast left (2) drops onto the riverside quay, which is cobbled and low grip and runs under the rail bridge. The left hairpin (3) wraps around a crane base, and after a short leg the right hairpin (4) starts the climb up the slag heap ramp. At the top, a long left (5) goes over the summit with the skyline ahead, then down to the start.
+**The lap.** The start is on the south-west leg, already climbing. The straight rises 6 m onto the bridge and over the crossing, then drops into the east loop, all right-handers: a 30° kink (1), a hard 90° (2), the long east side, another 90° (3), and a kink (4) that points you back at the crossing. That leg dips 4 m into the tunnel under the bridge you crossed half a minute earlier. Then comes the west loop, the mirror image in left-handers (5-8), back onto the start straight.
 
-**Signature moments.** The shed (light changes, sound echoes). Two hairpins stacked on top of each other, the drift section and the host for Drift Attack sponsor days. The summit with the city across the river.
+**Signature moments.** The bridge crest with the other leg visible below. The tunnel under the crossing: daylight, dark, daylight. The two 90° corners at the far end of each loop, where braking from the long legs makes the overtakes.
 
-**Surfaces.** Old concrete slabs with expansion joints, cobbled setts on the quay (meant to be the lowest grip in the game), asphalt patches. Rust, brick, oil-stained concrete, puddles that stay in Damp.
+**Surfaces.** New smooth asphalt, white painted concrete run-off, chevron kerbs, crash barriers with a clean modern face. The tunnel is short (about 60 m) and lit by a continuous light line, no spaced lamps that would strobe.
 
-**Dusk (the hero look).** The sodium lamps just on, one furnace lit for show, steam from the quench tower against the sunset. In the rain the concrete shines.
+**What it needs.** The bridge (deck, piers, parapets) and the tunnel cut, both Blender kit pieces; the elevation is in the centreline already. Modern pavilions and a control building in the loops (Blender boxes with glass and steel). Day and dusk only.
 
-**What it needs.** Industrial geometry suits Blender kit-building: furnace, stacks, gantries, cranes, truss bridge, sheds. New textures: brick, setts, rusty metal and worn concrete slabs (CC0 sets, download OK needed).
-
-**Watch.** Indoors the sky light must not leak in; give the shed its own lighting. The hairpin stack has 74 m between legs, so it needs walls, not open run-off.
+**Watch.** The crossing needs its collision in two levels: the bridge deck over the tunnel road, with the tunnel walls and roof solid. The checker treats a pass under 6 m apart in height as a fault. AI cars must not mistake the other leg for theirs, which is solved by the centreline order.
 
 ## 5. Shajawa Stadium (World 2, the only stadium)
 
@@ -120,7 +118,7 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 ## 7. Build order
 
 1. **Mojave Dry Lake.** Flat, open and small: the fastest way to prove the new-track pipeline end to end (Blender build, `track.json` with centreline, `lapLength`, `corners`, 8 `gridSlots`, `sectors` and `weather.looks`, a `TRACKS` entry in `src/tracks.js`, collision, AI laps). Only the airliner model is a real asset question.
-2. **Keystone Ironworks.** It completes World 1, so the career MVP gets its own calendar.
+2. **Infinia Track.** It completes World 1, so the career MVP gets its own calendar.
 3. **Shajawa Stadium.** The bowl is one big asset (a CC stand kit, cut and arrayed); the track itself is flat and simple.
 4. **Lago Serena.** The most assets and the hardest lighting; last, when the pipeline is proven.
 
@@ -139,4 +137,4 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 2. Shajawa has no home team (Corvid's was Kestrel Downs): give it one, or keep it the neutral showpiece?
 3. Airliners for Dry Lake and boats for Lago: download free models (each with your OK) or try Meshy (paid)?
 4. Poly Haven CC0 texture sets the new surfaces need (lake bed, brick, setts, rusty metal, terracotta, rock): OK to download them when each build starts?
-5. Are the names right (Mojave Dry Lake, Keystone Ironworks, Shajawa Stadium, Lago Serena; The Proving Grounds, The Grand Tour, The Crown)?
+5. Are the names right (Mojave Dry Lake, Infinia Track, Shajawa Stadium, Lago Serena; The Proving Grounds, The Grand Tour, The Crown)?
