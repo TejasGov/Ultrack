@@ -11,7 +11,7 @@ from mathutils import Vector, Matrix, noise
 from mathutils.kdtree import KDTree
 
 ROOT = Path(r'D:/RaceUltimate'); OUT = H / 'out'; OUT.mkdir(exist_ok=True); PH = ROOT / 'assets' / 'polyhaven'
-SRC = json.loads((ROOT / 'track-viewer' / 'docs' / 'career-worlds' / f'{ID}.json').read_text(encoding='utf8'))
+SRC = json.loads((ROOT / 'track-viewer' / 'docs' / 'career-worlds' / f"{globals().get('SRC_ID', ID)}.json").read_text(encoding='utf8'))     # SRC_ID: a concept variant
 ARGS = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 EXPORT = '--no-export' not in ARGS
 RNG = random.Random(17)
@@ -171,13 +171,15 @@ def road(hw, kerb_radius):
     else: bm.free()
 PROF = [(0, 0), (0.05, 0.075), (0.2, 0.33), (0.225, 0.81), (0.375, 0.81), (0.4, 0.33), (0.55, 0.075), (0.6, 0)]     # jersey barrier
 def barriers(base, prof=PROF, height=1.2):
-    """walls `base` m out on both sides (closer on the inside of tight corners, so the offset never folds); BD[side][station]"""
+    """walls `base` m out on both sides (a number, or a function of the station), closer on the inside of tight corners so the offset
+    never folds; BD[side][station]"""
     global BD
     def offsets(sd):
         D = []
         for i in range(N):
             inside = (K[i] > 0) == (sd > 0) and RW[i] < 60
-            D.append(min(base, max(HW + 2.6, 0.62 * RW[i])) if inside else base)
+            b0 = base(i) if callable(base) else base
+            D.append(min(b0, max(min(b0, HW + 2.6), 0.62 * RW[i])) if inside else b0)
         for _ in range(4): D = [sum(D[(i + d) % N] for d in range(-6, 7)) / 13 for i in range(N)]
         return D
     BD = {1: offsets(1), -1: offsets(-1)}
@@ -223,7 +225,7 @@ def write_track(name, credits, looks, default_look, landmarks, extra=None):
     slots = [dict(slot=k + 1, centerlineIdx=i, pos=to_game(off(i, lat)), headingYawRad=yaw_of(HEAD[i])) for k, (i, lat) in enumerate(SLOTS)]
     track = {
         'name': name, 'units': 'metres; game coords: Y up (absolute), x east, -z north; origin = start/finish line centre; start heading +X',
-        'direction': f'waypoint order of track-viewer/docs/career-worlds/{ID}.json', 'lapLength': round(LAP, 1), 'credits': credits,
+        'direction': f"waypoint order of track-viewer/docs/career-worlds/{globals().get('SRC_ID', ID)}.json", 'lapLength': round(LAP, 1), 'credits': credits,
         'spacing': round(STEP, 3), 'centerline': [to_game(p) for p in CL], 'halfWidth': [HW] * N, 'racingLine': [0.0] * N, 'slope': slope,
         'banking': [0.0] * N, 'headingYawRad': [yaw_of(h) for h in HEAD], 'sectors': [0, N // 3, 2 * N // 3], 'checkpoints': list(range(0, N, 25)),
         'corners': corners, 'start': {'pos': to_game(CL[0]), 'headingYawRad': yaw_of(HEAD[0]), 'gridSlots': slots}, 'pitLane': None, 'zones': [],
