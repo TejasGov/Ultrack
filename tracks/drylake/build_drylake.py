@@ -15,7 +15,8 @@ The scene is built in the game frame: start line at the origin, start heading +X
             no lights.json, no masts, no night lamps
   boneyard  the A320 (Kyaie, CC BY, source/a320_kyaie) in bare metal, white, primer and sun-faded paint: wings over the track edge
             through T2-T3, a parked field in the infield and one at the T1 hairpin; all of them one mesh (three materials, three draws)
-  dressing  rocks and creosote scrub, one mesh each"""
+  dressing  rocks and creosote scrub, one mesh each
+  backdrop  the distant range photographed (goegap HDRI, make_backdrop.py) on five arcs 6.5 km out, day and dusk copies"""
 import bpy, bmesh, json, math, random, struct, sys
 from pathlib import Path
 from mathutils import Vector, Matrix, noise
@@ -288,10 +289,10 @@ ground = mesh_obj('DL ground', bm, ['sand'], smooth=True)
 CX, CY = (X0 + X1) / 2, (Y0 + Y1) / 2
 radii = [700 * (8500 / 700) ** (k / 70) for k in range(71)]; NA = 192
 def far_z(x, y, r):
-    m = ss(0.32, 0.4, fbm(x / 1700 + 11, y / 1700, 3)) * (90 + 60 * fbm(x / 900, y / 900, 2))
-    ridge = (260 + 260 * fbm(x / 2600 + 3, y / 2600, 4)) * ss(5200, 7400, r)
+    m = 6 * fbm(x / 1700 + 11, y / 1700, 3) * ss(1500, 3000, r)      # low dunes: the photographed range (backdrop arcs) is the relief
+    ridge = 0.0
     inside = min(x - X0, X1 - x, y - Y0, Y1 - y)          # under the near ground the ring dives out of sight
-    return -0.9 + m * ss(2600, 3400, r) + max(0.0, ridge) - 19 * ss(100, 140, inside)
+    return -0.9 + max(0.0, m) + ridge - 19 * ss(100, 140, inside)
 bm = bmesh.new(); vc = vcol_layer(bm)
 ring = [[bm.verts.new((CX + r * math.cos(a), CY + r * math.sin(a), 0)) for a in (2 * math.pi * k / NA for k in range(NA))] for r in radii]
 for rr, row in zip(radii, ring):
@@ -307,6 +308,35 @@ for k in range(len(radii) - 1):
             sand = tuple(sand[c] + ((0.56, 0.53, 0.46)[c] - sand[c]) * lw for c in range(3))
             t = ss(4, 30, z); l[vc] = (*(sand[c] + (rock[c] - sand[c]) * t for c in range(3)), 1)
 far = mesh_obj('DL far terrain', bm, ['far'], smooth=True, planar=False)
+# the distant range (make_backdrop.py: 55 degrees of the goegap photo, sky cut to alpha, ends faded) on five arcs 6.5 km out at 0.45 of its
+# angular size (the photo was taken a few km from the range; 25 degrees wide, peaks at ~3.5 degrees), alternate ones mirrored; the day arc 2 m inside the dusk one (tracks.js dayNight fades it out by dusk). Emissive at 1 / the look's
+# emissive level (main.js LOOKS day 0.2, dusk 0.5), so the photo shows at its own exposure; fog off (main.js: 'Backdrop |')
+def backdrop(name, png, gain, r):
+    m = bpy.data.materials.new(name)
+    try: m.use_nodes = True
+    except AttributeError: pass
+    nt = m.node_tree; P = nt.nodes['Principled BSDF']; it = nt.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / png)
+    P.inputs['Base Color'].default_value = (0, 0, 0, 1); P.inputs['Roughness'].default_value = 1
+    nt.links.new(it.outputs['Color'], P.inputs['Emission Color']); P.inputs['Emission Strength'].default_value = gain
+    nt.links.new(it.outputs['Alpha'], P.inputs['Alpha'])
+    try: m.surface_render_method = 'BLENDED'
+    except AttributeError: m.blend_method = 'BLEND'
+    b = bmesh.new(); uv = b.loops.layers.uv.verify(); SEG, K = 24, 0.45; SPAN = math.radians(55 * K)
+    for k_, deg in enumerate((8, 77, 148, 218, 290)):
+        mid, flip = math.radians(deg), k_ % 2 == 1
+        z0, z1 = 1.5 + r * math.tan(math.radians(-4 * K)), 1.5 + r * math.tan(math.radians(14 * K))
+        rows = []
+        for q in range(SEG + 1):
+            a_ = mid + SPAN / 2 - SPAN * q / SEG      # left to right as seen from the centre
+            rows.append([b.verts.new((CX + r * math.cos(a_), CY + r * math.sin(a_), z)) for z in (z0, z1)])
+        for q in range(SEG):
+            f = b.faces.new([rows[q][0], rows[q + 1][0], rows[q + 1][1], rows[q][1]])
+            for l, (uq, vq) in zip(f.loops, ((q, 0), (q + 1, 0), (q + 1, 1), (q, 1))):
+                u = uq / SEG; l[uv].uv = (1 - u if flip else u, vq)
+    me = bpy.data.meshes.new(name); b.to_mesh(me); b.free(); me.materials.append(m)
+    ob = bpy.data.objects.new(name, me); VIS.objects.link(ob); return ob
+backdrop('Backdrop | goegap dusk', 'backdrop_dusk.png', 2.0, 6502.0)
+backdrop('Backdrop | goegap day', 'backdrop_day.png', 5.0, 6500.0)
 
 # ------------------------------------------------------------------------------------------------ 7. venue: hangars, tower, water tower, masts
 def gz(x, y): return ground_z(x, y)[0]
@@ -435,8 +465,8 @@ k = 0
 chic = int(SRC['corners'][1]['at'] / STEP)        # T2 of the concept (scripts/sketch-layouts.mjs), the same curve and start
 for sd in (1, -1):
     i = (chic - 20) % N
-    for n in range(5):
-        j = (i + n * 17) % N; lat = sd * (max(BD[sd][j], 15.5) + 7.6); p = off(j, lat); yaw = HEAD[j] + (math.pi if (n + k) % 2 else 0)
+    for n in range(3):
+        j = (i + 6 + n * 17) % N; lat = sd * (max(BD[sd][j], 15.5) + 7.6); p = off(j, lat); yaw = HEAD[j] + (math.pi if (n + k) % 2 else 0)
         if free_spot(p.x, p.y, yaw, 17.5, skip=j): place_plane(p.x, p.y, yaw, k); PLACED.append((p.x, p.y)); k += 1
 # the field: rows at 25 degrees in the infield and south of the hangar line
 rows_yaw = math.radians(25); c, s = math.cos(rows_yaw), math.sin(rows_yaw)
@@ -446,7 +476,7 @@ for a in range(-14, 15):
         x = (min(xs) + max(xs)) / 2 + c * a * 48 - s * b * 52; y = (min(ys) + max(ys)) / 2 + s * a * 48 + c * b * 52
         cand.append((near(x, y)[1], x, y))
 for d, x, y in sorted(cand):
-    if k >= 22: break
+    if k >= 9: break
     if d < 40 or y > RY0 - 30: continue
     if free_spot(x, y, rows_yaw, 26): place_plane(x, y, rows_yaw, k); PLACED.append((x, y)); k += 1
 # the T1 hairpin: one parked beyond its outside, tail to the track

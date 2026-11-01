@@ -8,7 +8,7 @@
 //   fog        multiplies the look's fog density (a bigger or hazier venue)
 //   sun        [x, z] bearing of the sun over the track; its height comes from the look
 //   tag        the commentary tag for lines about this circuit (null: none)
-//   dayNight   optional: { day: RegExp on the name of the day skyline's materials, night: RegExp on materials that only show from evening on (off at dusk; opacity = nightK[name]) } for a backdrop of two coincident bands (the night one
+//   dayNight   optional: { day: RegExp on the name of the day skyline's materials, night: RegExp on materials that only show from evening on (off at dusk; opacity = nightK[name]), dayEnd: the dn by which the day one is gone (default 1) } for a backdrop of two coincident bands (the night one
 //              opaque, the day one just inside it); main.js fades the day band's opacity per look (LOOKS dn: 0 = day .. 1 = night, opacity 1 - dn). Marina has none.
 //   looks      optional per-look overrides merged over main.js LOOKS while this track is active (grade merges key by key); Marina has none
 //   wet        optional { wet, puddles }: the track's material names that go wet in the rain / that also pool (default: Marina's names in main.js)
@@ -63,6 +63,7 @@ export const TRACKS = {
   },
   drylake: {     // career World 1 (docs/career-worlds.md, tracks/drylake/build_drylake.py): a desert airfield and its boneyard
     id: 'drylake', name: 'Mojave Dry Lake', stem: 'drylake', dir: '/assets/drylake/', look: 'day', times: ['day', 'dusk'], fog: 0.6, sun: [-0.55, -0.77], tag: null,
+    dayNight: { day: /^Backdrop \| goegap day$/, dayEnd: 0.35 },     // the photographed range: the day copy over the dusk one, gone by dusk
     wet: { wet: ['DL | asphalt', 'DL | runway concrete', 'DL | line white', 'DL | kerb red', 'DL | kerb white', 'DL | runway paint'], puddles: ['DL | asphalt'] },
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },

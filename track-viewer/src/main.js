@@ -586,6 +586,8 @@ async function loadVenue() {
       m.userData.emissive0 = m.emissiveIntensity ?? 1;
       // the supertalls stand 3-5 km out: exponential fog would erase them, so they keep their own (baked-in) depth
       if (m.name.startsWith('M_Supertall')) m.fog = false;
+      // photographed ranges (tracks/drylake): no fog, and their cut-out sky and faded ends blend (the glTF export leaves them opaque)
+      if (m.name.startsWith('Backdrop |')) Object.assign(m, { fog: false, transparent: true, depthWrite: false });
       // Cut-out materials shimmered as the camera moved (the chain-link fence was 67% of all unstable pixels; lit at
       // night it read as flickering lights). The fence blends its mipmapped alpha so a distant fence fades to a soft
       // mesh; fronds, crowd cards and neon use alpha-to-coverage with the MSAA target.
@@ -873,7 +875,7 @@ function applyDayNight(look) {
   const d = TRACK.dayNight; if (!d) return;
   const nk = THREE.MathUtils.smoothstep(look.dn, 0.5, 0.7);     // night-only: off through dusk (dn .35), full from evening (dn .7)
   for (const m of allMats) {
-    if (d.day.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = 1 - look.dn; }
+    if (d.day.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = 1 - Math.min(1, look.dn / (d.dayEnd ?? 1)); }     // dayEnd: gone by that dn (0.35: by dusk)
     else if (d.night?.test(m.name)) { m.transparent = true; m.depthWrite = false; m.opacity = nk * (d.nightK?.[m.name] ?? 1); m.visible = nk > 0; }
   }
 }
