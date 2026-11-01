@@ -188,6 +188,25 @@ if is_land(cp.x, cp.y) and free(footprint(cp, 30, 30, 0.0)):
     pbox(cp + Vector((32, 0, 89)), (60, 1.4, 1.4), k='saffron'); pbox(cp + Vector((18, 0, 92)), (2, 2, 4), k='saffron')
     pbox(cp + Vector((4, 0, 88.5)), (6, 3, 2.5), k='concrete')
 
+# ------------------------------------------------------------------------------------------------ street life: people on the pavements and the promenade,
+# a row seated on the sea wall, pole hoardings in the towers district
+for j in OLD[::7]:
+    for sd in (1, -1):
+        if rr.random() < 0.6:
+            for _ in range(rr.randint(1, 4)):
+                p = off(j, sd * (BD[sd][j] + rr.uniform(0.6, 2.4))) + T[j].to_3d() * rr.uniform(-3, 3); person(Vector((p.x, p.y, max(0.0, CL[j].z) + 0.02)), facing(j, sd) + rr.uniform(-0.5, 0.5))
+for j in NECKS[::6]:
+    if rr.random() < 0.7:
+        p = off(j, -(BD[-1][j] + rr.uniform(3, 26))); person(Vector((p.x, p.y, 0.32)), facing(j, -1) + rr.uniform(-0.8, 0.8))
+for j in NECKS[::3]:          # seated along the sea wall, looking out to sea (their backs to the road)
+    if rr.random() < 0.55:
+        p = off(j, -30.2); person(Vector((p.x, p.y, 1.1)), facing(j, -1) + math.pi, seated=True)
+for k, j in enumerate(TOW[::40]):
+    p = off(j, BD[1][j] + 7); yaw_h = facing(j, 1) + 0.6
+    if is_land(p.x, p.y) and tun_kd.find((p.x, p.y, 0))[2] > 30: hoarding(Vector((p.x, p.y, 0)), 7.0, 12.0, 4.5, yaw_h)
+for j in sorted(range(N - 300, N - 160, 70)):           # the start's approach: two big hoardings
+    p = off(j % N, -(BD[-1][j % N] + 9)); hoarding(Vector((p.x, p.y, 0)), 6.0, 14.0, 5.2, facing(j % N, -1) + 0.5)
+
 # ------------------------------------------------------------------------------------------------ downloaded models (CREDITS.md): coconut palms, kaali-peeli taxis
 def load_model(path, height=None, length=None, decimate=None):
     """the glTF's meshes baked to one bmesh in metres, standing on z = 0 and centred; its materials in slot order"""
@@ -278,7 +297,7 @@ mesh_obj('IF buildings', FB, [f'f_{k}' for k in KEYS], planar=False)
 mesh_obj('IF window glow night', GB, [f'g_{k}' for k in KEYS], planar=False)
 PB.normal_update()
 for f in PB.faces:
-    if PROPK[f.material_index] in ('signs', 'shutter'): continue
+    if PROPK[f.material_index] in ('signs', 'shutter', 'hoard', 'people'): continue
     sz = UVS.get(PROPK[f.material_index], 3.0); n_ = f.normal
     for l in f.loops:
         c = l.vert.co; l[PUV].uv = (c.x / sz, c.y / sz) if abs(n_.z) > 0.6 else ((c.y if abs(n_.x) > abs(n_.y) else c.x) / sz, c.z / sz)

@@ -81,7 +81,7 @@ def glass_draw(tint):
         for k in range(2): rect(a, 0, k * FS / 2 + 200, FS, k * FS / 2 + 250, [c * 1.6 for c in tint])
         for cI in range(4):
             for f in range(2):
-                if rr.random() < 0.5: n[int(f * FS / 2):int(f * FS / 2 + 200), int(cI * FS / 4 + 4):int((cI + 1) * FS / 4 - 4)] = (0.95, 0.92, 0.85, 1.0)
+                if rr.random() < 0.3: n[int(f * FS / 2):int(f * FS / 2 + 200), int(cI * FS / 4 + 4):int((cI + 1) * FS / 4 - 4)] = (0.82, 0.76, 0.62, 1.0)
     return d
 def house_draw(wall):
     def d(a, n):             # one tile = one small house front (4 m x 3 m): a door and a window with shutters
@@ -101,8 +101,8 @@ TYPES = {   # key: draw, tile (m wide, m high), roughness
     'res_grey': (deco_draw((0.72, 0.71, 0.68), (0.42, 0.42, 0.4)), 9.0, 3.2, 0.8, 'dirty_concrete', (0.72, 0.71, 0.68)),
     'res_white': (deco_draw((0.86, 0.85, 0.82), (0.5, 0.5, 0.48)), 9.0, 3.2, 0.8, 'white_stucco', (0.86, 0.85, 0.82)),
     'res_sand': (deco_draw((0.82, 0.74, 0.6), (0.5, 0.45, 0.38)), 9.0, 3.2, 0.8, 'worn_plaster_wall', (0.82, 0.74, 0.6)),
-    'glass_blue': (glass_draw((0.12, 0.2, 0.28)), 6.0, 7.2, 0.25, None, None),
-    'glass_bronze': (glass_draw((0.24, 0.2, 0.15)), 6.0, 7.2, 0.25, None, None),
+    'glass_blue': (glass_draw((0.3, 0.42, 0.52)), 6.0, 7.2, 0.15, None, None),
+    'glass_bronze': (glass_draw((0.46, 0.4, 0.32)), 6.0, 7.2, 0.15, None, None),
     'house_pink': (house_draw((0.9, 0.5, 0.6)), 4.0, 3.0, 0.85, 'peeling_painted_wall', (0.9, 0.5, 0.6)),
     'house_yellow': (house_draw((0.95, 0.8, 0.35)), 4.0, 3.0, 0.85, 'yellow_plaster', (0.95, 0.8, 0.35)),
     'house_teal': (house_draw((0.3, 0.65, 0.65)), 4.0, 3.0, 0.85, 'blue_plaster_weathered', (0.3, 0.65, 0.65)),
@@ -122,7 +122,7 @@ for k, (draw, tw, th, rough, base, wall) in TYPES.items():
     except AttributeError: pass
     P_ = gm.node_tree.nodes['Principled BSDF']; P_.inputs['Base Color'].default_value = (0, 0, 0, 1)
     it = gm.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / f'facade_{k}_night.png')
-    gm.node_tree.links.new(it.outputs['Color'], P_.inputs['Emission Color']); P_.inputs['Emission Strength'].default_value = 3.0
+    gm.node_tree.links.new(it.outputs['Color'], P_.inputs['Emission Color']); P_.inputs['Emission Strength'].default_value = 0.9     # x night 1.4: lit rooms, not a bloom fog
     gm.node_tree.links.new(it.outputs['Alpha'], P_.inputs['Alpha'])
     try: gm.surface_render_method = 'BLENDED'
     except AttributeError: pass
@@ -130,6 +130,37 @@ for k, (draw, tw, th, rough, base, wall) in TYPES.items():
 sm = material('IF | shop signs', rough=0.6); it = sm.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / 'signs.png')
 sm.node_tree.links.new(it.outputs['Color'], sm.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
 sm.node_tree.links.new(it.outputs['Color'], sm.node_tree.nodes['Principled BSDF'].inputs['Emission Color']); sm.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 0.6
+hm = material('IF | hoardings', rough=0.55); it = hm.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / 'hoardings.png')
+hm.node_tree.links.new(it.outputs['Color'], hm.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
+hm.node_tree.links.new(it.outputs['Color'], hm.node_tree.nodes['Principled BSDF'].inputs['Emission Color']); hm.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 0.8
+# people: 8 standing and 8 seated figures drawn here (kurta, shirt, saree, salwar; skin, black hair), alpha cut; 2048 x 1024, row 0 at the bottom
+PW_, PH_ = 256, 512; ppl = np.zeros((1024, 2048, 4), np.float32); yy2, xx2 = np.mgrid[0:PH_, 0:PW_]
+CLOTH = [(0.92, 0.92, 0.88), (0.85, 0.15, 0.2), (0.15, 0.3, 0.7), (0.95, 0.6, 0.1), (0.2, 0.55, 0.35), (0.6, 0.15, 0.5), (0.95, 0.85, 0.3), (0.3, 0.3, 0.32), (0.9, 0.45, 0.55)]
+SKN = [(0.55, 0.36, 0.25), (0.68, 0.48, 0.34), (0.42, 0.27, 0.18), (0.75, 0.56, 0.42)]
+for row, seated in ((1, False), (0, True)):
+    for k in range(8):
+        c = np.zeros((PH_, PW_, 4), np.float32); top, bot, legs = rr.choice(CLOTH), rr.choice(CLOTH), rr.choice([(0.2, 0.2, 0.25), (0.3, 0.25, 0.2), (0.85, 0.82, 0.75)])
+        sk = rr.choice(SKN); saree = (k % 3 == 1)
+        if seated:       # a seated figure from behind / the front: torso and head over a wall line
+            body = (np.abs(xx2 - 128) < 52) & (yy2 > 40) & (yy2 < 250); c[body] = (*top, 1)
+            c[((xx2 - 128) ** 2 + (yy2 - 290) ** 2) < 38 ** 2] = (*sk, 1); c[(((xx2 - 128) ** 2 + (yy2 - 302) ** 2) < 36 ** 2) & (yy2 > 300)] = (0.05, 0.04, 0.04, 1)
+        else:
+            if saree: c[(np.abs(xx2 - 128) < 30 + (300 - yy2) * 0.12) & (yy2 < 300)] = (*bot, 1)       # a saree's fall to the ground
+            else:
+                for sx in (-1, 1): c[(np.abs(xx2 - 128 - sx * 18) < 14) & (yy2 < 250) & (yy2 > 8)] = (*legs, 1)
+            c[(np.abs(xx2 - 128) < 40) & (yy2 >= 230) & (yy2 < 400)] = (*top, 1)                    # kurta / shirt
+            for sx in (-1, 1): c[(np.abs(xx2 - 128 - sx * 50) < 10) & (yy2 > 250) & (yy2 < 390)] = (*sk, 1)
+            c[((xx2 - 128) ** 2 + (yy2 - 440) ** 2) < 34 ** 2] = (*sk, 1); c[(((xx2 - 128) ** 2 + (yy2 - 452) ** 2) < 33 ** 2) & (yy2 > 448)] = (0.05, 0.04, 0.04, 1)
+        ppl[row * PH_:(row + 1) * PH_, k * PW_:(k + 1) * PW_] = c
+pimg = bpy.data.images.new('people', 2048, 1024, alpha=True); pimg.pixels[:] = ppl.ravel(); pimg.filepath_raw = str(H / 'tex' / 'people.png'); pimg.file_format = 'PNG'; pimg.save()
+pm = bpy.data.materials.new('IF | people')
+try: pm.use_nodes = True
+except AttributeError: pass
+it = pm.node_tree.nodes.new('ShaderNodeTexImage'); it.image = image(H / 'tex' / 'people.png'); P1 = pm.node_tree.nodes['Principled BSDF']
+pm.node_tree.links.new(it.outputs['Color'], P1.inputs['Base Color']); P1.inputs['Roughness'].default_value = 0.9
+gt = pm.node_tree.nodes.new('ShaderNodeMath'); gt.operation = 'GREATER_THAN'; gt.inputs[1].default_value = 0.5
+pm.node_tree.links.new(it.outputs['Alpha'], gt.inputs[0]); pm.node_tree.links.new(gt.outputs[0], P1.inputs['Alpha'])
+MAT.update({'hoard': hm, 'people': pm})
 MAT.update({'signs': sm,
     'shutter': material('IF | shutter', tex='rusted_shutter'),
     'slab': material('IF | slab', tex='dirty_concrete', vcol=True),
@@ -152,7 +183,7 @@ KEYS = list(TYPES)
 # ------------------------------------------------------------------------------------------------ builders (merged per material)
 FB = bmesh.new(); FUV = FB.loops.layers.uv.verify(); GB = bmesh.new(); GUV = GB.loops.layers.uv.verify()
 PB = bmesh.new(); PVC = vcol_layer(PB); PUV = PB.loops.layers.uv.verify()       # props: one bmesh, material slots by PROPK
-PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete', 'paving']
+PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete', 'paving', 'hoard', 'people']
 def pmi(k): return PROPK.index(k)
 def pbox(c, size, yaw=0.0, k='slab', col=(1, 1, 1)):
     n0 = len(PB.faces); box(PB, c, size, yaw=yaw, mi=pmi(k))
@@ -184,6 +215,18 @@ def roof(c4, h, col=(0.55, 0.53, 0.5)):
     pquad([p + Vector((0, 0, h)) for p in c4], 'slab', col=col)
     for k in range(4):        # a parapet
         a, b = c4[k], c4[(k + 1) % 4]; m = (a + b) / 2; pbox(Vector((m.x, m.y, h + 0.45)), ((b - a).length, 0.25, 0.9), yaw=math.atan2((b - a).y, (b - a).x), col=col)
+def hoarding(base, z, w, h, yaw, idx=None):
+    """a billboard on two steel legs: one board of tex/hoardings.png (2 x 4), facing out of `yaw`'s front"""
+    i_ = rr.randrange(8) if idx is None else idx; u0, v0 = (i_ % 2) / 2, 1 - (i_ // 2 + 1) / 4
+    fwd_ = Vector((math.cos(yaw), math.sin(yaw), 0)); out_ = Vector((math.sin(yaw), -math.cos(yaw), 0)); a_ = base - fwd_ * w / 2 + out_ * 0.15; b_ = base + fwd_ * w / 2 + out_ * 0.15
+    pquad([a_ + Vector((0, 0, z)), b_ + Vector((0, 0, z)), b_ + Vector((0, 0, z + h)), a_ + Vector((0, 0, z + h))], 'hoard', uv=[(u0, v0), (u0 + 0.5, v0), (u0 + 0.5, v0 + 0.25), (u0, v0 + 0.25)])
+    pquad([b_ - out_ * 0.1 + Vector((0, 0, z)), a_ - out_ * 0.1 + Vector((0, 0, z)), a_ - out_ * 0.1 + Vector((0, 0, z + h)), b_ - out_ * 0.1 + Vector((0, 0, z + h))], 'steel')
+    for sx in (-0.35, 0.35): pbox(base + fwd_ * sx * w + Vector((0, 0, z / 2 + 0.01)), (0.3, 0.3, z), k='steel')
+def person(p, yaw, seated=False):
+    """a figure card (tex/people.png), 1.7 m standing or 1.0 m seated, its face toward `yaw`'s front"""
+    k_ = rr.randrange(8); u0 = k_ / 8; v0 = 0.0 if seated else 0.5; hh = 1.0 if seated else rr.uniform(1.55, 1.8); ww = hh / 2
+    fwd_ = Vector((math.cos(yaw), math.sin(yaw), 0)); a_ = p - fwd_ * ww / 2; b_ = p + fwd_ * ww / 2
+    pquad([a_, b_, b_ + Vector((0, 0, hh)), a_ + Vector((0, 0, hh))], 'people', uv=[(u0, v0), (u0 + 0.125, v0), (u0 + 0.125, v0 + 0.5), (u0, v0 + 0.5)])
 def chawl(c, w, d, yaw, floors, key):
     c4 = footprint(c, w, d, yaw); H_ = floors * 3.2 + 0.4
     for k in range(4): facade(c4[k], c4[(k + 1) % 4], H_, key)
@@ -197,6 +240,7 @@ def chawl(c, w, d, yaw, floors, key):
                 p = front + out * 1.2 + fwd * (-w / 2 + 1.5 + q * 3) + Vector((0, 0, z + 1.6))
                 pbox(p, (rr.uniform(0.5, 1.4), 0.02, rr.uniform(0.5, 0.9)), yaw=yaw, k='cloth', col=rr.choice([(0.85, 0.1, 0.1), (0.95, 0.75, 0.1), (0.1, 0.35, 0.8), (0.95, 0.95, 0.9), (0.9, 0.4, 0.7), (0.2, 0.6, 0.3)]))
     roof(c4, H_); roof_clutter(c4, H_, rr.randint(1, 3))
+    if rr.random() < 0.3: hoarding(front + out * 0.3, H_ + 1.0, min(12.0, w * 0.8), 4.2, yaw)
 def shops(c, w, d, yaw, floors, key):
     """a building with a shop row on the ground floor: shutters half up, a sign board from the atlas over each shop, an awning"""
     c4 = footprint(c, w, d, yaw); H_ = floors * 3.2 + 0.4
@@ -223,13 +267,25 @@ def deco(c, w, d, yaw, floors, key):
     fwd = Vector((math.cos(yaw), math.sin(yaw), 0)); out = Vector((math.sin(yaw), -math.cos(yaw), 0)); front = (c4[0] + c4[1]) / 2
     for f in range(1, floors + 1): pbox(front + out * 0.35 + Vector((0, 0, f * 3.4 - 0.2)), (w + 0.6, 0.7, 0.18), yaw=yaw, col=(0.92, 0.9, 0.84))
     pbox(front + out * 0.5 + Vector((0, 0, H_ / 2 + 2)), (1.6, 1.0, H_ + 4), yaw=yaw, col=(0.93, 0.9, 0.84))
-    cyl(PB, c4[1] + out * 0.0 - fwd * 0.0 + Vector((0, 0, 0)), 2.2, 2.2, H_ - 0.1, n=12, mi=pmi('slab'), cap=True)       # the rounded corner
+    cyl(PB, c4[1], 2.2, 2.2, H_ - 0.1, n=12, mi=pmi('white'), cap=True)       # the rounded corner
+    for f in range(1, floors):       # its curved balconies: a slab and a solid parapet at each floor
+        cyl(PB, c4[1] + Vector((0, 0, f * 3.4 - 0.15)), 3.0, 3.0, 0.18, n=16, mi=pmi('white'), cap=True)
+        cyl(PB, c4[1] + Vector((0, 0, f * 3.4)), 3.0, 3.0, 1.0, n=16, mi=pmi('white'), cap=False)
+    for k_, (sw, sh) in enumerate(((w * 0.55, 1.4), (w * 0.3, 2.8))):       # the stepped parapet over the fin
+        pbox(front + out * 0.2 + Vector((0, 0, H_ + sh / 2)), (sw, 0.6, sh), yaw=yaw, col=(0.95, 0.93, 0.88))
+    ent = front + out * 1.0 + Vector((0, 0, 3.2)); pbox(ent, (4.6, 2.0, 0.2), yaw=yaw, col=(0.95, 0.93, 0.88))       # the entrance canopy
+    si = rr.randrange(32); u0, v0 = (si % 4) / 4, 1 - (si // 4 + 1) / 8; a_ = front - fwd * 2.8 + out * 0.06; b_ = front + fwd * 2.8 + out * 0.06
+    pquad([a_ + Vector((0, 0, 3.6)), b_ + Vector((0, 0, 3.6)), b_ + Vector((0, 0, 4.4)), a_ + Vector((0, 0, 4.4))], 'signs', uv=[(u0, v0), (u0 + 0.25, v0), (u0 + 0.25, v0 + 0.125), (u0, v0 + 0.125)])
     roof(c4, H_, col=(0.8, 0.78, 0.72)); roof_clutter(c4, H_, rr.randint(0, 2))
 def tower(c, w, d, yaw, h, key):
     c4 = footprint(c, w, d, yaw)
     pod = footprint(c, w + 10, d + 10, yaw)
     for k in range(4): facade(pod[k], pod[(k + 1) % 4], 9.0, rr.choice(('deco_cream', 'res_grey', 'chawl_ochre')), shell=False)
     roof(pod, 9.0, col=(0.6, 0.6, 0.58))
+    pf = Vector(((pod[1] - pod[0]).x, (pod[1] - pod[0]).y, 0)); po = Vector((pf.y, -pf.x, 0)).normalized(); n_s = max(1, int(pf.length / 8))
+    for q in range(n_s):     # shop boards along the podium's street side
+        a_ = pod[0] + pf * (q / n_s) + po * 0.06; b_ = pod[0] + pf * ((q + 0.85) / n_s) + po * 0.06; si = rr.randrange(32); u0, v0 = (si % 4) / 4, 1 - (si // 4 + 1) / 8
+        pquad([a_ + Vector((0, 0, 4.0)), b_ + Vector((0, 0, 4.0)), b_ + Vector((0, 0, 5.4)), a_ + Vector((0, 0, 5.4))], 'signs', uv=[(u0, v0), (u0 + 0.25, v0), (u0 + 0.25, v0 + 0.125), (u0, v0 + 0.125)])
     for k in range(4): facade(c4[k], c4[(k + 1) % 4], h, key, z0=9.0)
     yaw_v = Vector((math.cos(yaw), math.sin(yaw), 0)); out_v = Vector((math.sin(yaw), -math.cos(yaw), 0))
     for z in range(int(9 + 36), int(h) - 8, 36):        # mechanical floors: a band of louvres every ten floors
