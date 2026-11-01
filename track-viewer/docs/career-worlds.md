@@ -65,24 +65,27 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **Watch.** The runway is wider than the track. Paint the 16 m edges clearly and make the rest run-off so the AI keeps a racing line.
 
-## 4. Infinia Track (World 1): the sea link
+## 4. Infinia: the main India circuit (sea link)
 
-![Infinia Track, variant A](career-worlds/infinia.svg)
-![Infinia Track, variant B](career-worlds/infinia_b.svg)
+![Infinia, variant A](career-worlds/infinia.svg)
+![Infinia, variant B](career-worlds/infinia_b.svg)
 
-**The idea.** A figure-eight across a bay, inspired by Mumbai's Bandra-Worli Sea Link: one leg of the eight is a long cable-stayed sea bridge, the other dives into an immersed tunnel under the bay, and the two cross in mid-bay, the bridge 36 m above the tunnel. The bridge is our own design in that family (tall inverted-Y towers, fans of stay cables, a slender deck, a gentle curve over the water), not a copy of the real one. Two shores close the eight: an old seafront on one side (promenade, sea wall, art-deco blocks), a cluster of new towers on the other. Bigger than before: 3.3-3.5 km.
+**The decision (2026-11-01).** Infinia grows into the game's main India circuit, 4.8-5.0 km like Marina (5.47) and Tokyo (5.18). India Ghat (2.99 km) stays as the smaller India map. The figure-eight and its central crossing stay: one leg is a sea link over the bay, the other an undersea tunnel beneath it.
 
-**Two layouts to choose from.**
-- **A, the Sea Link eight (3.30 km).** Symmetric. The start is on the old seafront, straight onto the bridge, which climbs to 24 m over the bay and lands among the towers. The east loop (rights) brings you back down into the tunnel, 12 m under the water, then the west loop (lefts) along the seafront. Two 800 m legs, each with one big curve-free run: the fastest lap in the career.
-- **B, the long curve (3.50 km).** The bridge is one long S over the water, the way the real link sweeps across the bay; the tunnel leg stays straight, so the two cross at an angle. The east loop is a big fast arc round the towers, the west loop tighter seafront streets. Fewer corners, more commitment: the bridge curve is taken flat out with the water on both sides.
+**What it takes from real India (research brief, 2026-11-01).**
+- *Bandra-Worli Sea Link, Mumbai:* 5.6 km, 250 m cable-stayed main spans, a diamond inverted-Y tower about 126 m tall, 8 lanes. Ours: a shorter link (about 1 km over the water at game scale) with one tall diamond inverted-Y tower and fans of stays, our own design.
+- *Mumbai Coastal Road:* India's first undersea twin tunnels, 17-20 m below sea level. Ours: the tunnel leg, 12 m under the bay, one continuous light line, a warm sodium palette after the sea glare.
+- *Buddh International Circuit:* 5.125 km, a straight over 1 km with a dip and climb, the banked multi-apex T10-12. Ours: the towers' long straight with a dip and climb (A) and one multi-apex sweeper.
+- *Hyderabad street circuit:* a lakeside chicane where the run-off could not grow. *Chennai street circuit:* a night street race past colonial landmarks. Ours: a chicane in the art-deco streets, a lakeside hook in the old city (B).
+- *Mumbai cues:* Marine Drive's long curve of streetlights (the Queen's Necklace from above), art-deco seafront blocks, black-and-yellow taxis and auto-rickshaws (generic), fishing boats, sea-wall promenade, monsoon rain, festival crowds.
 
-**Signature moments.** Climbing onto the bridge with the towers' cables flashing past (slow and steady, never a strobe: the cables are far apart and thin). Cresting mid-bay and seeing the tunnel portals below. The tunnel: down under the water, lit by one continuous light line, up into the other shore.
+**A, the Necklace eight (4.80 km).** The start is in the art-deco streets, through a chicane, straight onto the sea link: 22 m up over the bay, the tower overhead. It lands in the towers district: a 970 m straight with a dip and climb, then the multi-apex sweeper, and down into the undersea tunnel under the bridge. It comes up on the seafront for the Necklace, a 900 m curve along the bay under the streetlights, back to the start. Balanced: fast bridge, a big straight, a flowing seafront.
 
-**Surfaces.** New asphalt on the bridge deck with expansion joints, concrete parapets and crash barriers, the tunnel's tiled walls, seafront paving. Water around everything: Marina's sea material.
+**B, the long S (5.00 km).** The sea link is one long S over the water, the way the real link sweeps across the bay, and the longest straight in the game (1.1 km). The east loop is the old city: tight streets, chicanes and a lakeside hook. Then towers, the tunnel and the Necklace as in A. More of a street circuit, with the bridge as a pure speed run.
 
-**What it needs.** The bridge kit (deck, towers, cables, parapets), the tunnel (portals, tiled walls, light line, collision as a closed tube), the sea, two shore districts (Blender kit buildings; the far skyline as photographed arcs, as at Dry Lake). Day and dusk only: dusk with the bridge's cable lights on is the hero look.
+**Looks.** As a main circuit it should have all four looks like Marina, Tokyo and India Ghat: dusk on the bridge, and night on the Necklace with its streetlights, are the heroes. (The day-and-dusk rule was for the small career tracks.)
 
-**Watch.** The crossing needs collision in two levels (deck over tunnel); the checker allows legs 6 m or more apart in height. The bridge stays inside 8 % grades (A: 8.0 %, B: 6.8 %). Thin cables alias at distance: they fade with distance.
+**What it needs.** The bridge kit (deck, diamond tower, stays, parapets), the tunnel (portals, tiled walls, light line, two-level collision at the crossing), the sea (Marina's water), the seafront (sea wall, promenade, art-deco blocks), the towers district, the old city streets; distant skylines as photographed arcs. The biggest build of the four.
 
 ## 5. Shajawa Stadium (World 2, the only stadium)
 
