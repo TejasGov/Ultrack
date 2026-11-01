@@ -47,7 +47,9 @@ def tex_pair(name, draw, wall=None, base=None, tw=6.0, th=3.0):
         is_wall = np.all(np.abs(day[..., :3] - np.array(wall, np.float32)) < 1e-4, axis=-1)
         day[..., :3] = np.where(is_wall[..., None], np.clip(pd[..., :3] * np.array(wall, np.float32), 0, 1), day[..., :3] * (0.85 + 0.15 * pd[..., :3]))
         nrm = np.where(is_wall[..., None], pn, nrm); arm = np.where(is_wall[..., None], pa, arm)
-    grime(day)
+        lum = (day[..., :3] @ np.array([0.3, 0.59, 0.11], np.float32))[..., None]
+        day[..., :3] = np.where(is_wall[..., None], (day[..., :3] * 0.72 + lum * 0.28) * 0.9, day[..., :3])     # sun-faded paint
+    grime(day, 0.5)
     for arr, tag in ((day, ''), (night, '_night'), (nrm, '_n'), (arm, '_arm')):
         im = bpy.data.images.new(f'{name}{tag}', FS, FS, alpha=True); im.pixels[:] = arr.ravel()
         im.filepath_raw = str(H / 'tex' / f'{name}{tag}.png'); im.file_format = 'PNG'; im.save()
@@ -96,6 +98,9 @@ TYPES = {   # key: draw, tile (m wide, m high), roughness
     'deco_cream': (deco_draw((0.88, 0.83, 0.7), (0.6, 0.55, 0.45)), 9.0, 3.4, 0.75, 'white_stucco', (0.88, 0.83, 0.7)),
     'deco_rose': (deco_draw((0.88, 0.72, 0.66), (0.62, 0.48, 0.42)), 9.0, 3.4, 0.75, 'white_stucco', (0.88, 0.72, 0.66)),
     'deco_mint': (deco_draw((0.74, 0.84, 0.76), (0.48, 0.58, 0.5)), 9.0, 3.4, 0.75, 'worn_plaster_wall', (0.74, 0.84, 0.76)),
+    'res_grey': (deco_draw((0.72, 0.71, 0.68), (0.42, 0.42, 0.4)), 9.0, 3.2, 0.8, 'dirty_concrete', (0.72, 0.71, 0.68)),
+    'res_white': (deco_draw((0.86, 0.85, 0.82), (0.5, 0.5, 0.48)), 9.0, 3.2, 0.8, 'white_stucco', (0.86, 0.85, 0.82)),
+    'res_sand': (deco_draw((0.82, 0.74, 0.6), (0.5, 0.45, 0.38)), 9.0, 3.2, 0.8, 'worn_plaster_wall', (0.82, 0.74, 0.6)),
     'glass_blue': (glass_draw((0.12, 0.2, 0.28)), 6.0, 7.2, 0.25, None, None),
     'glass_bronze': (glass_draw((0.24, 0.2, 0.15)), 6.0, 7.2, 0.25, None, None),
     'house_pink': (house_draw((0.9, 0.5, 0.6)), 4.0, 3.0, 0.85, 'peeling_painted_wall', (0.9, 0.5, 0.6)),
@@ -147,7 +152,7 @@ KEYS = list(TYPES)
 # ------------------------------------------------------------------------------------------------ builders (merged per material)
 FB = bmesh.new(); FUV = FB.loops.layers.uv.verify(); GB = bmesh.new(); GUV = GB.loops.layers.uv.verify()
 PB = bmesh.new(); PVC = vcol_layer(PB); PUV = PB.loops.layers.uv.verify()       # props: one bmesh, material slots by PROPK
-PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete']
+PROPK = ['slab', 'rail', 'tank', 'tin', 'cloth', 'wire', 'white', 'saffron', 'stone', 'tetra', 'hull', 'canopy', 'glow', 'shutter', 'signs', 'steel', 'concrete', 'paving']
 def pmi(k): return PROPK.index(k)
 def pbox(c, size, yaw=0.0, k='slab', col=(1, 1, 1)):
     n0 = len(PB.faces); box(PB, c, size, yaw=yaw, mi=pmi(k))
@@ -223,17 +228,27 @@ def deco(c, w, d, yaw, floors, key):
 def tower(c, w, d, yaw, h, key):
     c4 = footprint(c, w, d, yaw)
     pod = footprint(c, w + 10, d + 10, yaw)
-    for k in range(4): facade(pod[k], pod[(k + 1) % 4], 9.0, 'deco_cream', shell=False)
+    for k in range(4): facade(pod[k], pod[(k + 1) % 4], 9.0, rr.choice(('deco_cream', 'res_grey', 'chawl_ochre')), shell=False)
     roof(pod, 9.0, col=(0.6, 0.6, 0.58))
     for k in range(4): facade(c4[k], c4[(k + 1) % 4], h, key, z0=9.0)
-    crown = rr.choice(('flat', 'step', 'spire'))
+    yaw_v = Vector((math.cos(yaw), math.sin(yaw), 0)); out_v = Vector((math.sin(yaw), -math.cos(yaw), 0))
+    for z in range(int(9 + 36), int(h) - 8, 36):        # mechanical floors: a band of louvres every ten floors
+        pbox(Vector((c.x, c.y, z)), (w + 0.5, d + 0.5, 1.6), yaw=yaw, k='concrete')
+    crown = rr.choice(('flat', 'step', 'spire', 'lantern', 'slant', 'helipad'))
     if crown == 'step':
         c2 = footprint(c, w * 0.7, d * 0.7, yaw)
         for k in range(4): facade(c2[k], c2[(k + 1) % 4], h + 10, key, z0=h)
         roof(c2, h + 10, col=(0.45, 0.46, 0.48))
+    elif crown == 'lantern':       # a glass lantern that glows from dusk (the plaza-light emissive)
+        roof(c4, h, col=(0.45, 0.46, 0.48)); pbox(Vector((c.x, c.y, h + 4)), (w * 0.6, d * 0.6, 8), yaw=yaw, k='glow')
+    elif crown == 'slant':
+        roof(c4, h, col=(0.45, 0.46, 0.48))
+        a, b, cc, dd = (p + Vector((0, 0, h)) for p in c4)
+        pquad([a, b, cc + Vector((0, 0, 14)), dd + Vector((0, 0, 14))], 'steel'); pquad([b, cc, cc + Vector((0, 0, 14))], 'steel'); pquad([dd, a, dd + Vector((0, 0, 14))], 'steel')
     else:
         roof(c4, h, col=(0.45, 0.46, 0.48))
         if crown == 'spire': pbox(Vector((c.x, c.y, h + 12)), (1.2, 1.2, 24), k='steel')
+        if crown == 'helipad': cyl(PB, Vector((c.x, c.y, h + 0.9)), min(w, d) * 0.42, min(w, d) * 0.42, 0.3, n=16, mi=pmi('slab'), cap=True)
 def house(c, w, d, yaw, floors, key):
     c4 = footprint(c, w, d, yaw); H_ = floors * 3.0
     for k in range(4): facade(c4[k], c4[(k + 1) % 4], H_, key)

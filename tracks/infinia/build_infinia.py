@@ -38,7 +38,7 @@ MAT.update({
     'concrete': material('IF | concrete', tex='brushed_concrete', vcol=True),
     'paving': material('IF | paving', tex='interlocking_concrete_pavers', vcol=True),
     'ground': material('IF | ground', tex='red_laterite_soil_stones', vcol=True),     # laterite earth and dust between the blocks, no lawns
-    'tower': material('IF | bridge concrete', (0.78, 0.77, 0.74), 0.7),
+    'tower': material('IF | bridge concrete', tex='brushed_concrete', vcol=False),
     'cable': material('IF | stay cable', (0.85, 0.85, 0.86), 0.35, 0.6),
     'steel': material('IF | steel', (0.36, 0.37, 0.39), 0.45, 0.7),
     'tile': material('IF | tunnel tile', (0.72, 0.72, 0.68), 0.35),
@@ -140,7 +140,9 @@ TA, TB = (BR0 + int(L_BR * 0.3)) % N, (BR0 + int(L_BR * 0.74)) % N       # the m
 for k in range(0, len(BRS), 22):
     i = BRS[k]
     if CL[i].z < 4 or tun_kd.find((CL[i].x, CL[i].y, 0))[2] < 26 or min(abs(i - TA), abs(i - TB)) < 8: continue
-    box(bm, off(i, 0, -2.6 - (CL[i].z + 12) / 2), (2.6, 9.0, CL[i].z + 12 - 2.6), yaw=HEAD[i], mi=0)
+    hgt = CL[i].z + 12 - 4.2
+    for sx in (-1, 1): box(bm, off(i, sx * 3.6, -4.2 - hgt / 2), (2.2, 2.2, hgt), yaw=HEAD[i], mi=0)     # two columns
+    box(bm, off(i, 0, -3.4), (2.6, 2 * DECKW - 1.0, 1.6), yaw=HEAD[i], mi=0)                                # the hammerhead cap
 def leg(bm, p0, p1, w, mi):       # a square leg from p0 to p1
     d = p1 - p0; L = d.length; c = (p0 + p1) / 2
     q = d.to_track_quat('Z', 'X'); Mx = Matrix.Translation(c) @ q.to_matrix().to_4x4()
@@ -170,7 +172,8 @@ def cables(i, apex, n, spacing, zlo, zhi, spread):
 aA = tower(TA, 110, True); cables(TA, aA, 14, 5, 52, 104, 0.8)
 aB = tower(TB, 58, False)
 cables(TB, aB, 8, 5, 30, 56, 0.9)
-mesh_obj('IF bridge', bm, ['tower'], planar=False)
+UVS['tower'] = 3.0
+mesh_obj('IF bridge', bm, ['tower'], planar=True)
 mesh_obj('IF cables', cb, ['cable'], planar=False)
 
 # ------------------------------------------------------------------------------------------------ the tunnel: cutting walls, the tube's roof, the light line

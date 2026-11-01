@@ -30,12 +30,12 @@ def fill(poly, pick, tries):
         c = Vector((x, y, 0))
         if free(footprint(c, w, d, yaw), pad=4.0): b(c, w, d, yaw, fl, key)
 CHAWLS = [k for k in KEYS if k.startswith('chawl')]; DECOS = [k for k in KEYS if k.startswith('deco')]
-GLASS = [k for k in KEYS if k.startswith('glass')]; HOUSES = [k for k in KEYS if k.startswith('house')]
+GLASS = [k for k in KEYS if k.startswith('glass')]; HOUSES = [k for k in KEYS if k.startswith('house')]; RES = [k for k in KEYS if k.startswith('res')]
 def old_pick():
     if rr.random() < 0.5: return (chawl, rr.uniform(16, 32), rr.uniform(10, 13), rr.randint(3, 5), rr.choice(CHAWLS))
     return (shops, rr.uniform(12, 22), rr.uniform(10, 14), rr.randint(2, 4), rr.choice(CHAWLS))
 def deco_pick(): return (deco, rr.uniform(18, 30), rr.uniform(14, 20), rr.randint(4, 7), rr.choice(DECOS))
-def tower_pick(): return (lambda c, w, d, yaw, fl, key: tower(c, w, d, yaw, fl, key), rr.uniform(24, 36), rr.uniform(24, 34), rr.uniform(70, 190), rr.choice(GLASS))
+def tower_pick(): return (lambda c, w, d, yaw, fl, key: tower(c, w, d, yaw, fl, key), rr.uniform(24, 36), rr.uniform(24, 34), rr.uniform(70, 190), rr.choice(GLASS + RES + RES))     # mostly residential concrete, some glass
 def house_pick(): return (house, rr.uniform(6, 9), rr.uniform(6, 8), rr.randint(1, 3), rr.choice(HOUSES))
 n_e = len(EAST); OLD, TOW = EAST[int(n_e * 0.06):int(n_e * 0.55)], EAST[int(n_e * 0.55):int(n_e * 0.95)]
 KOLI = EAST[:int(n_e * 0.12)]
@@ -79,9 +79,9 @@ for j in NECKS:
     a, b = j, (j + 1) % N
     if (b - a) != 1: continue
     p0, p1 = BD[-1][a] + 0.6, 30.0
-    pquad([Vector((q.x, q.y, 0.3)) for q in (off(a, -p0), off(a, -p1), off(b, -p1), off(b, -p0))], 'slab', col=(0.72, 0.68, 0.6))       # promenade
+    pquad([Vector((q.x, q.y, 0.3)) for q in (off(a, -p0), off(a, -p1), off(b, -p1), off(b, -p0))], 'paving', col=(0.9, 0.88, 0.84))       # promenade
     q0, q1 = off(a, -p1), off(b, -p1)
-    pquad([Vector((q0.x, q0.y, 0.3)), Vector((q1.x, q1.y, 0.3)), Vector((q1.x, q1.y, 1.1)), Vector((q0.x, q0.y, 1.1))], 'slab', col=(0.8, 0.78, 0.72))   # sea wall
+    pquad([Vector((q0.x, q0.y, 0.3)), Vector((q1.x, q1.y, 0.3)), Vector((q1.x, q1.y, 1.1)), Vector((q0.x, q0.y, 1.1))], 'stone', col=(0.9, 0.88, 0.84))   # sea wall
 def tetrapod(c, s, rot):
     for ax in (Vector((0, 0, 1)), Vector((0.943, 0, -0.333)), Vector((-0.471, 0.816, -0.333)), Vector((-0.471, -0.816, -0.333))):
         a2 = rot @ ax; q_ = a2.to_track_quat('Z', 'Y')
@@ -263,11 +263,11 @@ for sgn, yb in ((1, Y1 + 260), (-1, Y0 - 260)):
         fs.faces.new([fs.verts.new(v) for v in ((q[0], q[1], q[1] - Vector((0, 0, 9)), q[0] - Vector((0, 0, 9))) if sgn > 0 else (q[1], q[0], q[0] - Vector((0, 0, 9)), q[1] - Vector((0, 0, 9))))])
     for _ in range(700):
         x = rr.uniform(X0 - 850, X1 + 850); y = yb + sgn * rr.uniform(70, 880)
-        tall = rr.random() < 0.28; w, d = (rr.uniform(26, 40), rr.uniform(24, 36)) if tall else (rr.uniform(14, 30), rr.uniform(12, 22))
+        tall = rr.random() < 0.3; w, d = (rr.uniform(26, 40), rr.uniform(24, 36)) if tall else (rr.uniform(14, 30), rr.uniform(12, 22))
         h = rr.uniform(60, 210) if tall else rr.uniform(10, 28)
         c4 = footprint(Vector((x, y, 0.0)), w, d, rr.choice((0.0, 0.0, math.pi / 2, rr.uniform(0, 3.14))))
         if any(math.hypot(x - px, y - py) < max(w, d) * 0.7 + q for px, py, q in PLACED): continue
-        PLACED.append((x, y, max(w, d) * 0.7)); key = rr.choice(GLASS) if tall else rr.choice(CHAWLS + DECOS)
+        PLACED.append((x, y, max(w, d) * 0.7)); key = rr.choice(RES + RES + GLASS) if tall else rr.choice(CHAWLS + DECOS + RES)
         for k in range(4): facade(c4[k] + Vector((0, 0, 0)), c4[(k + 1) % 4], h + 2.0, key, z0=2.0)
         pquad([p + Vector((0, 0, h + 2.0)) for p in c4], 'slab', col=(0.5, 0.49, 0.47)); nfar += 1
 mesh_obj('IF far shores', fs, ['paving'], planar=True)
