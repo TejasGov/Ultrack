@@ -34,7 +34,10 @@ try{
   C.finishShootout(g.career,null);start.onShow();ok(start,'offers');assert.ok(start.el.querySelectorAll('[data-nav]').length>=4,'three offer cards and Sign');
   C.acceptOffer(g.career,g.career.pending.offers[0].id,{india:null,drylake:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null});g.screen=hub;
   for(let i=0;i<5;i++){hub.onShow();ok(hub,'hub tab '+i);hub.onKeyTab(1);}
-  C.finishQuali(g.career,60);hub.onShow('paddock');ok(hub,'paddock with a grid');assert.ok(hub.el.textContent.includes('Start the race'));}
+  C.finishQuali(g.career,60);hub.onShow('paddock');ok(hub,'paddock with a grid');assert.ok(hub.el.textContent.includes('Start the race'));
+  const rep=CU.CareerReportScreen(g);g.screen=rep;
+  while(g.career.clock.phase!=='review'){if(g.career.clock.phase==='paddock')C.finishQuali(g.career,60);const q=g.career.season.current.quali.grid;rep.onShow(C.finishRace(g.career,{order:q,best:Object.fromEntries(q.map((k,i)=>[k,60+i])),crashes:0,spins:0}));ok(rep,'round report');}
+  g.screen=hub;hub.onShow('paddock');assert.ok(hub.el.textContent.includes('Season review'));g.screen=start;start.onShow();ok(start,'season review');assert.ok(start.el.textContent.includes('Season 1 review'));}
  const credits=UI.CreditsScreen(game);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));assert.ok(credits.el.textContent.includes('Airbus A320 Airliner')&&credits.el.textContent.includes('Kyaie'),'the Dry Lake airliner (CC BY) is credited');assert.ok(['Modular Stadium','Stadium Light','davi.pereira.souza.0001','thundermind'].every(t=>credits.el.textContent.includes(t)),'the Shajawa stands and towers (CC BY) are credited');
  const records=UI.RecordsScreen(game);records.onShow();const rosterSize=JSON.parse((await import('node:fs')).readFileSync(new URL('../../assets/teams/teams.json',import.meta.url))).teams.flatMap(t=>t.cars).length;
  const recordRows=records.el.children[2].children[1].children[1].children;   // screen > body > table panel > rows
