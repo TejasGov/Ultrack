@@ -245,7 +245,7 @@ export class Game {
   // ---------------------------------------------------------------------------------------------- settings
   applySettings() {
     const S = store.settings, { params } = this.ctx;
-    const look = S.look;
+    const t = trackOf(S.track), look = t.times && !t.times.includes(S.look) ? t.look : S.look;     // a saved Night never lands on a day-only track (tracks.js `times`)
     if (params.quality !== S.quality) { params.quality = S.quality; this.ctx.applyQuality(); }
     const W = WEATHER[S.weather] ?? WEATHER.damp, tier = S.quality === 'auto' ? this.ctx.device?.tier : S.quality;
     params.wet = W.wet; params.rain = Math.min(W.rain, TIERS[tier]?.rain ?? 1); setWeather(W.wet);   // the tier's rain cap here: applyQuality only runs on a quality change

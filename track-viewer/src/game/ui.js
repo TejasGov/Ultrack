@@ -318,6 +318,8 @@ export function CreditsScreen(game) {
     group('Audio', [...ENGINE_CREDITS.map((c) => item(c.name + ' recording', links(link(c.title, c.url)), h('p', {}, 'Recorded by ', c.author), links(link(c.license, c.licenseUrl)), h('p.cr-dim', {}, c.changes))),
       item('Voices and effects', h('p', {}, 'Commentary voices and crash effects: ElevenLabs.'), h('p', {}, 'EV motor, wind and tyre layers: procedural Web Audio.'))]),
     group('Artwork', [item('Environment HDRIs', h('p', {}, 'Poly Haven (CC0).')),
+      item('Airbus A320 Airliner', h('p', {}, 'Created by ', link('Kyaie', 'https://sketchfab.com/Kyaie')), links(link('Original model', 'https://sketchfab.com/3d-models/airbus-a320-airliner-757aa190f27a407291187328d7125903'), licence('CC BY')),
+        h('p.cr-dim', {}, 'The Mojave Dry Lake boneyard: rescaled, re-materialled, some engines removed.')),
       item('Sponsor & marque artwork', h('p', {}, 'Simple Icons; Pirelli official artwork; Rolex wordmark via Wikimedia Commons; car-logos-dataset. Original marks remain with their owners.'))]),
     group('Fonts', FONT_CREDITS.map(([name, by, url]) => item(name, h('p', {}, by), links(link('Source', url), link('SIL Open Font License 1.1', 'https://openfontlicense.org'))))),
     group('Code', CODE_CREDITS.map(([name, by, url, lic, licUrl]) => item(name, h('p', {}, by), links(link('Project', url), link(lic, licUrl))))),
@@ -329,7 +331,7 @@ export function CreditsScreen(game) {
 
 const MODE_ICON = { race: 'race', trial: 'time-trial', drift: 'drift', free: 'free-drive' };
 const LOOK_ICON = { day: 'sun', dusk: 'sunset', bluehour: 'moon-horizon', night: 'moon' }, WEATHER_ICON = { dry: 'sun', damp: 'cloud-drizzle', rain: 'cloud-rain' };
-const looks = () => Object.entries(LOOK_LABEL).map(([k, l]) => [k, l, LOOK_ICON[k]]);
+const looks = () => Object.entries(LOOK_LABEL).filter(([k]) => trackOf(store.settings.track).times?.includes(k) ?? true).map(([k, l]) => [k, l, LOOK_ICON[k]]);   // tracks.js `times`
 const weathers = () => Object.entries(WEATHER).map(([k, w]) => [k, w.label, WEATHER_ICON[k]]);
 const lapChoices = [[1, '1'], [3, '3'], [5, '5'], [10, '10']];
 /** a circuit picker card: the still, the name, and its length and corners from track.json (an em dash until they arrive) */

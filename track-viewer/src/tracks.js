@@ -4,6 +4,7 @@
 //   stem       file base name: <stem>_visual(_ktx2).glb, <stem>_collision.glb (tracks/<id>/out/web -> sync-assets.mjs)
 //   dir        public URL folder; Marina keeps /assets/ itself (its files predate the registry), the rest get /assets/<id>/
 //   look       the time of day the track opens in when picked in the menu
+//   times      optional: the only times of day the track offers (the career's small tracks: day and dusk, chosen by the story); default all
 //   fog        multiplies the look's fog density (a bigger or hazier venue)
 //   sun        [x, z] bearing of the sun over the track; its height comes from the look
 //   tag        the commentary tag for lines about this circuit (null: none)
@@ -58,6 +59,12 @@ export const TRACKS = {
     // detail (car bodies, walls, poles) without doubling the pools' road light
     lampPower: 2,
     venue: () => import('./venue/india.js'),
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
+  drylake: {     // career World 1 (docs/career-worlds.md, tracks/drylake/build_drylake.py): a desert airfield and its boneyard
+    id: 'drylake', name: 'Mojave Dry Lake', stem: 'drylake', dir: '/assets/drylake/', look: 'day', times: ['day', 'dusk'], fog: 0.6, sun: [-0.55, -0.77], tag: null,
+    wet: { wet: ['DL | asphalt', 'DL | runway concrete', 'DL | line white', 'DL | kerb red', 'DL | kerb white', 'DL | runway paint'], puddles: ['DL | asphalt'] },
+    voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
 };

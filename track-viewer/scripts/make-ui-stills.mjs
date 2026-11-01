@@ -33,6 +33,7 @@ const VIEWS = {
   marina: { look: 'dusk', cam: [-8, 10, 8], tgt: [40, 3, -3] },      // the start straight: pit boxes left, the grandstand and the sun ahead
   tokyo: { look: 'dusk', cam: [360, 7, 9], tgt: [400, 2, 0] },       // temple street, cherry blossom and Fuji
   india: { look: 'day', cam: [786, 9, 3], tgt: [831, 0, -3] },       // the ghat road winding down into the valley
+  drylake: { look: 'dusk', cam: [178, 3.2, 5], tgt: [214, 2.5, 0] },   // into the boneyard flick (T2), airliners both sides, the low sun
 };
 // ---- the car camera: around the car at the origin of the garage room (its long axis on x), fov, target height
 const CAR_VIEW = { az: 35, el: 9, dist: 6.2, fov: 30, ty: 0.6 };   // nose to the right; the longest car fills ~70 % of the width

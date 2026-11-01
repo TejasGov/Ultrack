@@ -14,9 +14,9 @@ A world is a chapter of the career: a region with its own look, venues and spons
 | Idea | Working places turned into circuits for a weekend: a hill road, an airfield, a steel mill | Permanent circuits with history, press and name sponsors | Prestige venues, night races, the whole world watching |
 | Tracks | India Ghat (built), **Mojave Dry Lake**, **Keystone Ironworks** | Corniche Marina (built), **Kestrel Downs** | Tokyo Hiragana (built), **Lago Serena** |
 | Home teams | Mojave (Dry Lake), Liberty (Ironworks) | Sarab (Marina), Corvid (Kestrel) | Hayate (Tokyo), Saetta, Toro and Aurum (Lago) |
-| Venue dressing | Tyre walls, temporary stands, floodlights on masts, local sponsors | Permanent grandstands, pit buildings, hoardings | Night lighting, big screens, title sponsors |
+| Venue dressing | Tyre walls, temporary stands, local sponsors | Permanent grandstands, pit buildings, hoardings | Big screens, title sponsors |
 | Colour | Ochre, rust, sodium orange | Green, grey sky, sea blue | Neon, lake blue, villa gold |
-| Season finale | Ironworks at night | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
+| Season finale | Ironworks at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
 
 **Calendar rule** (replaces career-mode.md 4.1's "6 rounds on all tracks" once these tracks exist): the current world's tracks run twice each, every track from earlier worlds runs once, and a season is capped at 8 rounds.
 
@@ -42,10 +42,10 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 | Width | 16 m | 13 m | 16 m | 13 m |
 | Elevation | 0 to 5 m | -2 to 13 m, 11.7 % max | -15 to 25 m, 9.5 % max | 2 to 32 m, 11.5 % max |
 | Race laps at 7.5 min | 8 | 7 | 7-8 | 6-7 |
-| Looks | day, dusk, night | day, dusk, bluehour, night | day, dusk, bluehour (no night) | day, dusk, bluehour, night |
+| Looks | day, dusk | day, dusk | day, dusk | day, dusk |
 | Weather | dry; rain only at dusk (desert storm) | damp and rain common | damp is its home weather | all |
 | Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | -0.5 / +0.8 / +0.3 | +0.8 / 0 / +0.5 | +0.3 / +0.5 / +0.3 |
-| Hero shot | Driving under airliner wings at dusk | Night through the casting shed, furnace glow | Over the blind crest past the chalk kestrel in drizzle | Villa lights on the wet lake at night |
+| Hero shot | Driving under airliner wings at dusk | Dusk through the casting shed, furnace glow | Over the blind crest past the chalk kestrel in drizzle | Villa lights coming on over the lake at dusk |
 
 ## 3. Mojave Dry Lake (World 1, Mojave's home)
 
@@ -59,11 +59,11 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **Surfaces.** Runway concrete with tar joints for the straight; asphalt elsewhere; painted kerbs. Off track: cracked lake bed, sand and rock, Joshua trees and creosote scrub. Buttes and a far mountain ridge on the horizon, heat haze in the day.
 
-**Night.** Floodlights on tall masts along the runway (India's fixture system); the planes are silhouettes against stars. A rainy dusk turns the runway into a mirror.
+**Dusk.** Long shadows from the planes across the track, the buttes going orange. A rainy dusk turns the runway into a mirror.
 
-**What it needs.** Airliners are the big asset: one good model, instanced 12-20 times with variations (engines off, tail stripped, sun-faded). Downloading one needs your OK. Building it in Blender risks a placeholder look, which we have ruled out. Hangars, the water tower and the masts are simple Blender architecture.
+**What it needs.** Airliners are the big asset: one good model, instanced 12-20 times with variations (engines off, tail stripped, sun-faded). Downloading one needs your OK. Building it in Blender risks a placeholder look, which we have ruled out. Hangars, the tower and the water tower are simple Blender architecture.
 
-**Watch.** The runway is wider than the track. Paint the 16 m edges clearly and make the rest run-off so the AI keeps a racing line. Floodlights on masts must not blink.
+**Watch.** The runway is wider than the track. Paint the 16 m edges clearly and make the rest run-off so the AI keeps a racing line.
 
 ## 4. Keystone Ironworks (World 1, Liberty's home)
 
@@ -73,11 +73,11 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **The lap.** The start straight runs between brick sheds. The left (1) at the shed corner sends you **through the casting shed**: an indoor straight under hanging lamps and crane rails, shafts of light by day. A fast left (2) drops onto the riverside quay, which is cobbled and low grip and runs under the rail bridge. The left hairpin (3) wraps around a crane base, and after a short leg the right hairpin (4) starts the climb up the slag heap ramp. At the top, a long left (5) goes over the summit with the skyline ahead, then down to the start.
 
-**Signature moments.** The shed (light changes, sound echoes). Two hairpins stacked on top of each other, the drift section and the host for Drift Attack sponsor days. The summit with the city lights across the river.
+**Signature moments.** The shed (light changes, sound echoes). Two hairpins stacked on top of each other, the drift section and the host for Drift Attack sponsor days. The summit with the city across the river.
 
 **Surfaces.** Old concrete slabs with expansion joints, cobbled setts on the quay (meant to be the lowest grip in the game), asphalt patches. Rust, brick, oil-stained concrete, puddles that stay in Damp.
 
-**Night (the hero look).** Sodium orange lamps, one furnace lit for show, steam from the quench tower. In the rain the concrete shines.
+**Dusk (the hero look).** The sodium lamps just on, one furnace lit for show, steam from the quench tower against the sunset. In the rain the concrete shines.
 
 **What it needs.** Industrial geometry suits Blender kit-building: furnace, stacks, gantries, cranes, truss bridge, sheds. New textures: brick, setts, rusty metal and worn concrete slabs (CC0 sets, download OK needed).
 
@@ -95,7 +95,7 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **Surfaces.** Grippy asphalt with a lot of camber and crests; grass run-off, chalk where the turf wears through, gravel traps. India's stone walls and grass work here.
 
-**Light.** Overcast day and dusk, bluehour. There's no night race: a downland circuit has no floodlights, and the Grand Tour's night race is Marina. Damp is the default weather, since this is where the wet shader earns its keep.
+**Light.** Overcast day and dusk. Damp is the default weather, since this is where the wet shader earns its keep.
 
 **What it needs.** Manor (Blender), turbines (Blender), hedgerow cards, the chalk figure as a decal on the hillside (our own design, a kestrel silhouette). Few unique assets: the terrain does the work.
 
@@ -109,11 +109,11 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **The lap.** The lap starts by the harbour and runs flat out along the lake through the tunnel, then brakes into a 170° left (1) at the tunnel mouth. Three switchbacks climb through the villas: a right hairpin (2) and a left hairpin (3), each leg climbing. The top leg runs fast across the hillside, over the stone bridge and past the campanile. The left (4) at the far end starts the descent esses (5), and the left (6) drops back onto the promenade.
 
-**Signature moments.** The tunnel exit into the hard stop with the lake on your right. The switchbacks between villa walls. Night: villa windows and string lights doubled in the lake.
+**Signature moments.** The tunnel exit into the hard stop with the lake on your right. The switchbacks between villa walls. Dusk: villa windows and string lights doubled in the lake.
 
 **Surfaces.** Smooth asphalt, stone setts at the harbour, stone walls and balustrades, plaster villas with terracotta roofs, rock faces.
 
-**Night.** Villa windows, lamps on the promenade, harbour lights on the water. Rain at night is the hero look: the lake and the road both reflect.
+**Dusk.** Villa windows and promenade lamps coming on, harbour lights on the water. Rain at dusk is the hero look: the lake and the road both reflect.
 
 **What it needs.** A villa kit in Blender (plaster, shutters, roof tiles, balustrades) dressed in many combinations; cypress and pine tree cards (India's tree method); Marina's water for the lake; India's terrain method for the mountains. Runabout boats need a model (download OK needed).
 
@@ -128,10 +128,11 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 ## 8. Budgets every new track meets
 
-- Frame time within India's measured bench (1600x900, dynamic resolution off): day ≤ 9.9 ms, night ≤ 12.9 ms. These tracks are smaller, so they should come in under.
+- **Day and dusk only.** The new tracks have two looks, chosen by the career story for each round; no night lighting to build or pay for (decided 2026-11-01).
+- Frame time within India's measured day bench (1600x900, dynamic resolution off): ≤ 9.9 ms. These tracks are smaller, so they should come in under.
 - Materials through the India material layer (`src/venue/india/materials.js`, per-surface rules, KTX2 CC0 sets) rather than plain vertex colours; that is what fixed India's plastic look. Every road gets the shared wet shader.
 - Race-watch: one lap per look and weather with 0 dark frames and no stops, pull-ins or hidden cars; `test-track` static checks and the lamp check pass.
-- No flicker or hard blinking anywhere: lamps, masts, turbines, tunnels.
+- No flicker or hard blinking anywhere: lamps, turbines, tunnels.
 - No placeholder-looking props: a prop that can't be made convincing in Blender is downloaded (with your OK) or left out.
 
 ## 9. Open questions
@@ -141,4 +142,3 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 3. Airliners for Dry Lake and boats for Lago: download free models (each with your OK) or try Meshy (paid)?
 4. Poly Haven CC0 texture sets the new surfaces need (lake bed, brick, setts, rusty metal, terracotta, rock): OK to download them when each build starts?
 5. Are the names right (Mojave Dry Lake, Keystone Ironworks, Kestrel Downs, Lago Serena; The Proving Grounds, The Grand Tour, The Crown)?
-6. Should Kestrel Downs stay without a night race?
