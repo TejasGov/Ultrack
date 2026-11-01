@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "note": "Per-track career data and the worlds (track-viewer/docs/career-mode.md 4.1, docs/career-worlds.md). parLap is an AI flying lap at pace 1.00 in an average car, estimated from qa/race-watch reports (Marina, Tokyo, India, Dry Lake) or from length (Shajawa, Infinia): replace with measured laps.",
+  "note": "Per-track career data and the worlds (track-viewer/docs/career-mode.md 4.1, docs/career-worlds.md). parLap is an AI flying lap at pace 1.00 with the car factor taken out, measured 2026-11-01 with scripts/measure-par-laps.mjs (three cars, flying laps only, dry, no upgrades); re-measure after changing a track or the handling.",
   "tracks": {
-    "india":   { "parLap": 70,  "measured": "race-watch 1-lap races 70.6-80 s", "looks": { "day": 3, "dusk": 2, "bluehour": 1 }, "names": ["Ghat Climb", "Ghat Evening"] },
-    "drylake": { "parLap": 48,  "measured": "race-watch 3 laps 146.2 s",       "looks": { "day": 2, "dusk": 1 },               "names": ["Boneyard Sprint", "Dry Lake Dusk"], "dryOnly": true },
-    "infinia": { "parLap": 84, "measured": "AI hero in an AMG GT4 from the flying start, 84.5 s (qa-career-round, 2026-11-01)",           "looks": { "dusk": 3, "day": 1, "night": 1 },   "names": ["Sea Link Opener", "Over the Bay"] },
-    "marina":  { "parLap": 125, "measured": "race-watch 1-lap races 128 s",    "looks": { "dusk": 2, "night": 2, "day": 1 },   "names": ["Corniche Opener", "Marina Lights"] },
-    "shajawa": { "parLap": 55,  "measured": "estimated from 2.2 km",           "looks": { "day": 1, "dusk": 2 },               "names": ["Stadium Night Out", "Bowl Showdown"] },
-    "tokyo":   { "parLap": 95,  "measured": "race-watch 1-lap races 98 s",     "looks": { "night": 3, "dusk": 1 },             "names": ["Neon Street", "Season Finale"] }
+    "india":   { "parLap": 74.0,  "measured": "measured", "looks": { "day": 3, "dusk": 2, "bluehour": 1 }, "names": ["Ghat Climb", "Ghat Evening"] },
+    "drylake": { "parLap": 45.3,  "measured": "measured",       "looks": { "day": 2, "dusk": 1 },               "names": ["Boneyard Sprint", "Dry Lake Dusk"], "dryOnly": true },
+    "infinia": { "parLap": 83.8, "measured": "measured",           "looks": { "dusk": 3, "day": 1, "night": 1 },   "names": ["Sea Link Opener", "Over the Bay"] },
+    "marina":  { "parLap": 114.5, "measured": "measured",    "looks": { "dusk": 2, "night": 2, "day": 1 },   "names": ["Corniche Opener", "Marina Lights"] },
+    "shajawa": { "parLap": 46.8,  "measured": "measured",           "looks": { "day": 1, "dusk": 2 },               "names": ["Stadium Night Out", "Bowl Showdown"] },
+    "tokyo":   { "parLap": 89.3,  "measured": "measured",     "looks": { "night": 3, "dusk": 1 },             "names": ["Neon Street", "Season Finale"] }
   },
   "worlds": {
     "1": { "name": "The Proving Grounds", "rounds": 6, "home": ["india", "drylake", "infinia"], "guests": ["marina", "shajawa"],
