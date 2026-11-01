@@ -9,15 +9,16 @@ const ON_TRACK = new Set(['asphalt', 'pit', 'kerb', 'sausage kerb', 'run-off', '
 
 export const MODES = {
   race: { label: 'Race', desc: 'Eight teams, one car each. Lights out and away we go.', laps: true, rivals: true, start: 'lights', tags: ['race'] },
-  trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Leave the track and the lap does not count.', laps: false, rivals: false, start: 'count', tags: ['free'] },
+  trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Leave the track and the lap does not count.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true },
+  quali: { label: 'Qualifying', desc: 'Three valid laps on an empty circuit. Your best sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true, validLaps: 3 },   // the career's (game.js careerWeekend)
   drift: { label: 'Drift Attack', desc: 'Ninety seconds. Chain drifts for the multiplier; touch the grass and the chain is gone.', laps: false, rivals: false, start: 'count', tags: ['free'], seconds: 90 },
   free: { label: 'Free Drive', desc: 'No clock, no rivals. The whole circuit, at the hour you choose.', laps: false, rivals: false, start: 'none', tags: ['free'] },
 };
 
 export class Session {
-  /** field: Field with physics enabled; mode: key of MODES; laps: race distance */
-  constructor(field, mode, { laps = 3 } = {}) {
-    this.field = field; this.mode = mode; this.M = MODES[mode]; this.laps = laps;
+  /** field: Field with physics enabled; mode: key of MODES; laps: race distance; drivers: { carKey: driver } over teams.json (the career's player) */
+  constructor(field, mode, { laps = 3, drivers = null } = {}) {
+    this.field = field; this.mode = mode; this.M = MODES[mode]; this.laps = laps; this.drivers = drivers;
     this.t = 0; this.raceT = 0; this.state = 'grid'; this.events = [];
     this.N = field.N; this.len = field.length;
     this.trk = new Map(field.cars.map((c) => [c, { idx: this.nearest(c.vehicle.cur.pos, 0, true), cross: 0, mid: false, lapStart: null, lastLap: null, best: null, laps: [], finished: false, finishT: null, valid: true, offT: 0, dist: 0 }]));
@@ -31,7 +32,7 @@ export class Session {
   }
 
   emit(type, data = {}) { this.events.push({ type, ...data }); }
-  driver(c) { return DRIVER[c.key]; }
+  driver(c) { return this.drivers?.[c.key] ?? DRIVER[c.key]; }
 
   /** nearest racing-line index to p: a window ahead of the last one, or the whole line when lost */
   nearest(p, from, all = false) {
@@ -91,7 +92,7 @@ export class Session {
       const surf = c.vehicle.wheels.filter((w) => w.contact).map((w) => w.surface?.name);
       const off = surf.length > 0 && surf.every((n) => !ON_TRACK.has(n));
       s.offT = off ? s.offT + dt : 0;
-      if (c === hero && s.offT > 1 && s.valid && this.mode === 'trial' && s.cross > 0) { s.valid = false; this.emit('invalid'); }
+      if (c === hero && s.offT > 1 && s.valid && this.M.limits && s.cross > 0) { s.valid = false; this.emit('invalid'); }
     }
     this.order = [...this.trk.keys()].sort((a, b) => this.score(b) - this.score(a));
     // a new position counts once it has held for 0.6 s (side by side, the order flickers)
@@ -124,6 +125,7 @@ export class Session {
     const fastest = valid && [...this.trk.values()].every((o) => o === s || o.best === null || t <= o.best);
     if (c === this.field.hero) this.emit('lap', { t, valid, pb, fastest, n: s.laps.length, delta: s.laps.length > 1 && s.best !== t ? t - s.best : null });
     else if (fastest && this.mode === 'race') this.emit('rivalFastest', { car: c, t });
+    if (c === this.field.hero && this.M.validLaps && s.laps.filter((l) => l.valid).length >= this.M.validLaps) { this.state = 'done'; this.emit('finish', { best: s.best }); }   // qualifying: done after N valid laps
   }
 
   finish(c, s) {

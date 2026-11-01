@@ -182,7 +182,7 @@ export class Hud {
       if (this.curAge > 0.04 || cur === null) { this.curAge = 0; this.setTime(this.timeCur, 'tc', cur); }   // the running time repaints at ~25 Hz
       this.setTime(this.timeLast, 'tl', T.lastLap); this.setTime(this.timeBest, 'tb', best);
       this.flag(this.timingEl, 'nolast', !Number.isFinite(T.lastLap));            // a delta only under a LAST that has a time
-      this.flag(this.timingEl, 'inval', s.mode === 'trial' && !T.valid);
+      this.flag(this.timingEl, 'inval', !!M.limits && !T.valid);   // a boolean: classList.toggle(c, undefined) flips the class
       const p = cur === null ? 0 : Math.min(1, Math.max(0, T.idx / s.N)), pq = Math.round(p * 400);
       if (this.cache.prog !== pq) {                                                // three sector bars, each filling as the lap passes through it
         this.cache.prog = pq;

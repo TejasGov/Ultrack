@@ -533,8 +533,9 @@ export class Field {
     this.track = track;
     const slots = track.start.gridSlots;
     this.cars.forEach((c, k) => {
-      const s = slots[(c.hero ? this.cars.length - 1 : k - 1) % slots.length];
-      const row = c.hero ? this.cars.length - 1 : k - 1;                    // the player starts last and hunts the pack
+      const q = this.gridOrder?.indexOf(c.key) ?? -1;                      // a career race: the qualifying order (game.js startSession)
+      const row = q >= 0 ? q : c.hero ? this.cars.length - 1 : k - 1;      // otherwise the player starts last and hunts the pack
+      const s = slots[row % slots.length];
       c.dist = ((-9 - row * 8) % this.length + this.length) % this.length;
       c.speed = 0;
       c.lat = (k % 2 ? -1.6 : 1.6);
@@ -560,7 +561,7 @@ export class Field {
     }
     this.cars.forEach((c, k) => {
       c.vehicle = new Vehicle(pw, handling(c.key), c.profile, { pos: c.root.position.clone(), yaw: c.root.rotation.y });
-      c.ai = new AIDriver(this, c, c.hero ? 1 : 0.93 + 0.012 * k);
+      c.ai = new AIDriver(this, c, c.hero ? 1 : this.paceFor?.(c.key) ?? 0.93 + 0.012 * k);   // paceFor: the career's driver ratings
       c.ai.lane = c.hero ? 0 : (k % 2 ? -1 : 1) * 0.6;
       c.chassis.scale = 0.5;                           // the rigid body pitches and rolls on its own springs too
     });

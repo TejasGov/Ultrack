@@ -190,22 +190,21 @@ export function TitleScreen(game) {
 const FACTS = {};
 const factsOf = (t) => FACTS[t.id] ??= optionalJson(trackUrl(t, 'track')).then((j) => j && { m: j.lapLength, corners: j.corners?.length });
 /** a stat readout: label, tabular value, unit (docs/ui-system.md "Stat readout") */
-const stat = (label, value, unit) => h('span.stat-r', {}, h('small', {}, label), h('b.tnum', {}, value, unit ? h('small', {}, unit) : null));
+export const stat = (label, value, unit) => h('span.stat-r', {}, h('small', {}, label), h('b.tnum', {}, value, unit ? h('small', {}, unit) : null));
 
 /** the bento home: the Race tile on the selected circuit's still, the modes, your car, records, settings and credits. Every tile
  *  is a Nav stop with one look: a kicker, a word, an arrow-up-right go mark; focus is a ring plus a wash that never hides a still. */
 export function MenuScreen(game) {
-  const go = (id) => () => (MODES[id] ? game.show('setup', id) : id === 'career' ? game.setBusy('Career Mode is coming in a later update.') : game.show(id));
+  const go = (id) => () => (MODES[id] ? game.show('setup', id) : id === 'career' ? game.screens.careerStart.open() : game.show(id));
   const tile = (id, ic, word, kicker, desc, cls = '', extra = null, bg = null) => h('button.bento-tile.' + cls, { 'data-nav': '', 'data-id': id, onclick: go(id) }, bg,
-    h('span.tile-top', {}, icon(ic, { cls: 'tile-icon' }), icon(id === 'career' ? 'lock' : 'arrow-up-right', { cls: 'tile-go' })),
+    h('span.tile-top', {}, icon(ic, { cls: 'tile-icon' }), icon('arrow-up-right', { cls: 'tile-go' })),
     h('span.tile-text', {}, h('span.tile-kicker', {}, kicker), h('strong', {}, word), desc ? h('span.tile-desc', {}, desc) : null, extra));
   const raceStill = h('img.tile-still', { alt: '', decoding: 'async' }), circuit = h('b'), len = h('b.tnum'), corners = h('b.tnum');
   const facts = h('span.tile-facts', {}, h('span.stat-r', {}, h('small', {}, 'Circuit'), circuit), h('span.stat-r', {}, h('small', {}, 'Length'), len), h('span.stat-r', {}, h('small', {}, 'Corners'), corners));
   const race = tile('race', 'race', 'Race', 'The main event', MODES.race.desc, 'race-tile', facts, raceStill);
   const best = h('span.tile-desc.tile-best');
   const current = h('button.bento-tile.current-car', { 'data-nav': '', 'aria-label': 'Your car: open the garage', onclick: () => game.show('garage') });
-  // Career Mode holds the Garage tile's place until it is built (the garage is the Your car tile); a lock, not a go mark, on it
-  const career = tile('career', 'helmet', 'Career Mode', 'Coming soon', 'Your season, race by race. In a later update.', 'career-tile');
+  const career = tile('career', 'helmet', 'Career Mode', 'Rookie to Legend', 'A seat, a season, race by race. Judged against your car.', 'career-tile');
   const grid = h('div.bento-grid', {}, race,
     tile('trial', 'time-trial', 'Time Trial', 'Chase your best', MODES.trial.desc, 'trial-tile'),
     tile('drift', 'drift', 'Drift Attack', 'Find the limit', MODES.drift.desc, 'drift-tile'),
@@ -498,11 +497,14 @@ export function PauseScreen(game) {
         mode === 'trial' && [stat('Lap', String(Math.max(1, T.cross))), stat('Best', time(T.best))],
         mode === 'drift' && [stat('Score', Math.round(s.drift.score).toLocaleString('en'), 'PTS'), stat('Time left', String(Math.max(0, Math.ceil(s.drift.left))), 'S')],
         mode === 'free' && [stat('Time of day', LOOK_LABEL[store.settings.look] ?? empty()), stat('Weather', WEATHER[store.settings.weather]?.label ?? empty())]);   // no clock: the conditions instead
+      const career = !!game.careerRun;   // one try per career session (docs/career-mode.md 7.5): no Restart, and leaving is Retire or End
       fill(opts, opt('play', 'Resume', () => game.resume()),
-        opt('restart', 'Restart', () => ask('Restart?', mode === 'race' ? 'The race starts again from the grid.' : 'The session starts again from the beginning.', 'restart', 'Restart', () => game.restart())),
+        career ? null : opt('restart', 'Restart', () => ask('Restart?', mode === 'race' ? 'The race starts again from the grid.' : 'The session starts again from the beginning.', 'restart', 'Restart', () => game.restart())),
         mode === 'trial' && laps ? opt('lap', 'End and see laps', () => game.trialResults()) : null,
+        career && mode === 'quali' ? opt('lap', 'End qualifying', () => ask('End qualifying?', 'Your best valid lap so far sets your grid slot. With none, you start last.', 'lap', 'End', () => game.careerDone())) : null,
         opt('settings', 'Settings', () => game.show('settings', 'pause')),
-        opt('quit', 'Quit to menu', () => ask('Quit to menu?', 'This session ends and you go back to the main menu.', 'quit', 'Quit', () => game.quit())));
+        career ? (mode === 'race' ? opt('quit', 'Retire', () => ask('Retire from the race?', 'You are classified last and the round counts as a retirement.', 'quit', 'Retire', () => game.careerDone(true))) : null)
+          : opt('quit', 'Quit to menu', () => ask('Quit to menu?', 'This session ends and you go back to the main menu.', 'quit', 'Quit', () => game.quit())));
       nav.reset(0);
     },
     back() { if (modal) close(); else game.resume(); },

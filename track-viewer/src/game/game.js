@@ -21,6 +21,7 @@ import { rewardFor } from './economy.js';
 import { applyUpgrades } from './carinfo.js';
 import { canSelectCar, carProgression } from './progression.js';
 import { RaceLoading } from './race-loading.js';
+import { CareerStartScreen, CareerHubScreen, CareerReportScreen } from './career-ui.js';
 import { trackOf } from '../tracks.js';
 import { TIERS } from '../perf.js';
 
@@ -38,6 +39,7 @@ export class Game {
     this.screens = {
       credits: CreditsScreen(this), records: RecordsScreen(this), title: TitleScreen(this), menu: MenuScreen(this), setup: SetupScreen(this), garage: GarageScreen(this),
       settings: SettingsScreen(this), pause: PauseScreen(this), results: ResultsScreen(this),
+      careerStart: CareerStartScreen(this), careerHub: CareerHubScreen(this), careerReport: CareerReportScreen(this),
     };
     for (const s of Object.values(this.screens)) this.root.append(s.el);
     this.show('title');
@@ -158,7 +160,7 @@ export class Game {
     if (this.screen.nav) this.nav.reset(name === 'menu' ? this.menuIdx ?? 0 : 0);
     this.screen.onShow?.(arg);                   // a screen may set its own starting item (the garage: your car)
     if (name === 'garage') this.cameraFor('garage');
-    else if (['menu', 'setup', 'title', 'credits', 'records'].includes(name) || (name === 'settings' && arg !== 'pause')) { if (this.state !== 'menu') { this.state = 'menu'; } this.cameraFor('menu'); if (prev === this.screens.garage) this.lineup(); }
+    else if (['menu', 'setup', 'title', 'credits', 'records', 'careerStart', 'careerHub', 'careerReport'].includes(name) || (name === 'settings' && arg !== 'pause')) { if (this.state !== 'menu') { this.state = 'menu'; } this.cameraFor('menu'); if (prev === this.screens.garage) this.lineup(); }
   }
 
   hideScreens() {
@@ -174,7 +176,7 @@ export class Game {
       if (e.code === 'Escape') { if (!e.repeat) this.pause(); e.preventDefault(); }
       if (e.code === 'KeyC' && !e.repeat) this.cycleCamera();   // one view per press: key repeat would flicker through all five
     }
-    if ((this.screenName === 'settings' || this.screenName === 'garage') && (e.code === 'KeyQ' || e.code === 'KeyE')) this.screens[this.screenName].onKeyTab(e.code === 'KeyQ' ? -1 : 1);
+    if (['settings', 'garage', 'careerHub'].includes(this.screenName) && (e.code === 'KeyQ' || e.code === 'KeyE')) this.screens[this.screenName].onKeyTab(e.code === 'KeyQ' ? -1 : 1);
   }
 
   // ---------------------------------------------------------------------------------------------- cameras
@@ -259,14 +261,15 @@ export class Game {
   }
 
   // ---------------------------------------------------------------------------------------------- sessions
-  async startSession(mode) {
-    if (!canSelectCar(store.data.car, store.data)) {
+  /** career: { racers, gridOrder, pace, levels, drivers, kind, done, home } from careerSession (a career round or the Shootout) */
+  async startSession(mode, career = null) {
+    if (!career && !canSelectCar(store.data.car, store.data)) {
       this.setBusy(`This car requires level ${carProgression(store.data.car).level}. Choose an available car in the garage.`,{kind:'error'});
       return;
     }
     if (this.starting) return; this.starting = true;
     await this.trackP;                                                  // a circuit change in flight lands first
-    const S = store.settings, M = MODES[mode];
+    const S = store.settings, M = MODES[mode], racers = career?.racers ?? this.racersFor(store.data.car, M.rivals), home = career?.home ?? 'menu';
     const requestedFrom=this.screen;
     let preparedWorld, cancelled=false;
     const started=performance.now(),timings={};
@@ -278,7 +281,7 @@ export class Game {
     try {
     this.setBusy('');
     await this.raceLoading?.open({mode,reduceMotion:S.reduceMotion,track:trackOf(S.track).name,onCancel:()=>{
-      cancelled=true;this.raceLoading.close();this.ctx.clearDriverHoardings?.();this.lineup();this.show('menu');
+      cancelled=true;this.raceLoading.close();this.ctx.clearDriverHoardings?.();this.lineup();this.show(home);
     }});
     if(cancelled)return;
     await (this.preloadP??this.warmP)?.catch(()=>{});   // the whole menu preload, warm-up included, finishes first: it owns the renderer's shadow flag and the hero's visibility, and Start needs the same programs
@@ -287,7 +290,7 @@ export class Game {
     // Independent work starts together. Static collision construction does not advance a race clock.
     // Wait for all jobs even on failure so every newly created world can be disposed safely.
     const jobs=await Promise.allSettled([
-      stage('Grid',()=>this.ensureVehicles(this.racersFor(store.data.car,M.rivals),{announce:false})),
+      stage('Grid',()=>this.ensureVehicles(racers,{announce:false})),
       stage('Circuit',()=>this.ctx.ensureVenue?.()),
       stage('Track physics',async()=>{preparedWorld=await this.takeWorld();}),
       stage('Audio',()=>this.audio.engineFor(store.data.car).catch(error=>console.warn('Engine audio unavailable:',error))),
@@ -296,9 +299,10 @@ export class Game {
     const failure=jobs.find(job=>job.status==='rejected');if(failure)throw failure.reason;
     const F=this.field;
     this.hideScreens();
-    applyUpgrades((k)=>store.levels(k),store.data.car);
+    applyUpgrades(career?.levels ?? ((k)=>store.levels(k)),career?undefined:store.data.car);   // a career sets every car: AI teams carry their development levels
     this.earned=null;
-    F.configure({ hero: store.data.car, racers: this.racersFor(store.data.car, M.rivals) });
+    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;   // read by grid() in configure and by enablePhysics
+    F.configure({ hero: store.data.car, racers });
     this.cameraFor('chase');
     // Prepare shader variants/textures behind the intro, before the race clock and controls start.
     await stage('Graphics',async()=>{
@@ -317,7 +321,8 @@ export class Game {
     const h0 = handling(F.hero.key);
     const ev = EV.has(F.hero.key) || this.audio.engine?.ev;
     this.gearbox = new Gearbox(h0.top, this.audio.engine?.prof.redline ?? 8000, ev);
-    this.session = new Session(F, mode, { laps: S.laps });     // last: update() runs a session only once it is complete
+    this.careerRun = career && { ...career, crashes: 0, spins: 0 };
+    this.session = new Session(F, mode, { laps: S.laps, drivers: career?.drivers });     // last: update() runs a session only once it is complete
     this.setBusy('');
     this.mode = mode; this.lastLaps = S.laps;
     this.audio.commentary?.setTags([...M.tags, S.look === 'day' ? null : S.look === 'dusk' ? 'dusk' : 'night', S.weather === 'rain' ? 'rain' : 'dry', trackOf(S.track).tag].filter(Boolean));
@@ -330,7 +335,7 @@ export class Game {
     if (mode === 'race') this.sayLater('intro_session', { priority: 3, force: true, reply: 0 }, 400);
     else this.say('intro_session', { priority: 3, force: true });
     } catch(error) {
-      console.error('Session could not start:',error);this.raceLoading?.close();this.endSession();this.lineup();this.show('menu');this.setBusy('Session could not load. Try Start again.',{kind:'error'});
+      console.error('Session could not start:',error);this.raceLoading?.close();this.careerRun=null;this.endSession();this.lineup();this.show(home);this.setBusy('Session could not load. Try Start again.',{kind:'error'});
     } finally {
       preparedWorld?.dispose();this.raceLoading?.close();
       if(!this.session){this.audio.engineOff();this.ctx.clearDriverHoardings?.();}
@@ -342,6 +347,7 @@ export class Game {
     this.ctx.clearDriverHoardings?.();
     if (this.pw) { this.field.physics = false; for (const c of this.field.all) delete c.vehicle; this.pw.dispose(); this.pw = null; }
     applyUpgrades((k)=>store.levels(k));          // back to the garage view: every car as saved
+    if (this.field) this.field.gridOrder = this.field.paceFor = null;
     this.session = null; this.audio.engineOff(); this.audio.nitro(false); this.audio.commentary?.stop();
     this.hud?.show(false); this.ctx.params.paused = false; this.resultsShown = false;
     setTimeout(()=>{if(!this.starting&&!this.session)this.prepareWorld();},1500);   // the next race's collision world, built while the menu is up
@@ -398,7 +404,7 @@ export class Game {
       this.quietT = 0;
     }
     if (s.mode === 'race' && s.state === 'running' && s.raceT > 7 && !this.startSaid) { this.startSaid = true; this.say(s.heroPos < this.startPos ? 'race_start_good' : 'race_start_bad', { priority: 2 }); }
-    if (s.state === 'done' && s.doneT > 3.2 && !this.resultsShown) this.results();
+    if (s.state === 'done' && s.doneT > 3.2 && !this.resultsShown) { this.results(); if (this.session !== s) return; }   // a career session ends here: its cars are gone
     this.hud.update(dt, s, F, this.gearbox, fps);
   }
 
@@ -440,8 +446,8 @@ export class Game {
         break;
       case 'invalid': H.message('Lap invalid', 'track limits', 'bad', 2.2); break;
       case 'offTrack': this.say('off_track', { priority: 2, cooldown: 14 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
-      case 'crash': A.crash(e.kmh); this.say(e.kmh > 70 ? 'hard_crash' : 'soft_crash', { priority: 3, cooldown: 10 }); A.play('crowd/gasp.ogg', { bus: 'crowd', gain: 0.5 }); break;
-      case 'spin': this.say('spin', { priority: 2, cooldown: 12 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
+      case 'crash': if (this.careerRun) this.careerRun.crashes++; A.crash(e.kmh); this.say(e.kmh > 70 ? 'hard_crash' : 'soft_crash', { priority: 3, cooldown: 10 }); A.play('crowd/gasp.ogg', { bus: 'crowd', gain: 0.5 }); break;
+      case 'spin': if (this.careerRun) this.careerRun.spins++; this.say('spin', { priority: 2, cooldown: 12 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
       case 'driftBank': H.message(`+${Math.round(e.pts).toLocaleString('en')}`, `×${e.mult.toFixed(1)}`, 'gold', 1.6); A.play('race/checkpoint.ogg', { gain: 0.5 }); break;
       case 'driftFail': H.message('Chain lost', `−${Math.round(e.lost).toLocaleString('en')}`, 'bad', 1.6); break;
       case 'finish': this.finish(e); break;
@@ -453,9 +459,10 @@ export class Game {
     const s = this.session, A = this.audio, hero = this.field.hero;
     A.play('race/horn-long.ogg', { gain: 0.6 });
     this.field.setPlayer(false);                 // the AI brings the car round on a cool-down lap
+    if (s.mode === 'quali') this.hud.message('Qualifying done', fmtTime(e.best), 'gold', 3);
     if (s.mode === 'race') {
       const p = e.pos, rows = s.results(), fastest = rows.find((r) => r.hero)?.best;
-      this.pay({ mode: 'race', pos: p, cars: rows.length, laps: s.laps, finished: true, pb: this.racePb,
+      if (!this.careerRun) this.pay({ mode: 'race', pos: p, cars: rows.length, laps: s.laps, finished: true, pb: this.racePb,
         fastest: Number.isFinite(fastest) && fastest <= Math.min(...rows.map((r) => r.best ?? Infinity)) });
       this.hud.message(p === 1 ? 'Winner' : `P${p}`, `${fmtTime(s.raceT)}`, p === 1 ? 'gold' : '', 3.2);
       this.say(p === 1 ? 'player_wins' : p <= 3 ? 'player_podium' : p === s.order.length ? 'player_last' : 'player_midfield', { priority: 3, force: true });
@@ -470,11 +477,42 @@ export class Game {
 
   results() {
     this.resultsShown = true; this.hud.show(false);
+    if (this.careerRun) return this.careerDone();
     const s = this.session, reward = this.earned;
     this.audio.engineUpdate(this.gearbox.rpm, 0, 0.4);
     if (s.mode === 'race') this.show('results', { mode: 'race', rows: s.results(), laps: s.laps, reward });
     else if (s.mode === 'drift') this.show('results', { mode: 'drift', score: s.drift.score, record: this.driftRecord, reward });
     this.state = 'results';
+  }
+
+  // ---------------------------------------------------------------------------------------------- career (docs/career-mode.md)
+  /** a career session (career-ui.js): kind 'shootout' | 'quali' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
+   *  car and conditions are kept aside and leaveCareer puts them back (R12); done(data) gets the outcome */
+  async careerSession(kind, spec, done) {
+    this.freePlay ??= { car: store.data.car, track: store.settings.track, look: store.settings.look, weather: store.settings.weather, laps: store.settings.laps };
+    await this.selectTrack(spec.track);
+    if (this.ctx.trackId() !== spec.track) return;                       // the circuit would not load: selectTrack has said so
+    store.data.car = spec.car; Object.assign(store.settings, { look: spec.look, weather: spec.weather, laps: spec.laps ?? store.settings.laps }); store.save();
+    this.applySettings();
+    await this.startSession(kind === 'race' ? 'race' : 'quali', { ...spec.session, kind, done, home: spec.home });
+  }
+  /** a career session ends (the flag, the last qualifying lap, End qualifying, Retire): its numbers go back to the career screens */
+  careerDone(retired = false) {
+    const run = this.careerRun, s = this.session; if (!run || !s) return;
+    const T = s.trk.get(this.field.hero), rows = s.mode === 'race' ? s.results() : null;
+    const data = { kind: run.kind, best: T.best, dnf: retired, crashes: run.crashes, spins: run.spins, pro: store.settings.assists === 'pro',
+      order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])) };
+    this.careerRun = null; this.hideScreens(); this.endSession(); this.lineup(); this.state = 'menu'; this.cameraFor('menu');
+    run.done(data);
+  }
+  /** out of the career to the main menu: the free-play car, circuit and conditions as they were */
+  leaveCareer() {
+    const f = this.freePlay; this.freePlay = null;
+    if (f) {
+      store.data.car = f.car; Object.assign(store.settings, { look: f.look, weather: f.weather, laps: f.laps }); store.save();
+      this.selectTrack(f.track).then(() => { store.set('look', f.look); this.applySettings(); });
+    }
+    this.lineup(); this.applySettings(); this.show('menu');
   }
 
   /** time trial and free drive end from the pause menu: show the laps driven */

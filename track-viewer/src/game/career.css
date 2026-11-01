@@ -1,0 +1,99 @@
+/* Career Mode screens (career-ui.js): the shared tokens and primitives of ui.css, with only what the career adds. */
+
+/* ---------------------------------------------------------------- careerStart: one panel, left, the scene visible on the right */
+.cs-panel, .ch-panel { position: absolute; left: 0; top: 0; max-height: 100%; width: min(100%, calc(1040 * var(--u))); display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-5); }
+.cs-body, .ch-body { flex: 1 1 auto; display: flex; flex-direction: column; gap: var(--sp-4); }
+.ch-panel { bottom: 0; }
+.cs-body > *, .ch-body > * { flex: none; }
+.cs-lead { margin: 0; max-width: 64ch; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }
+.cs-note { display: flex; align-items: flex-start; gap: var(--sp-2); margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }
+.cs-note .icon { flex: none; margin-top: 0.15em; font-size: var(--icon-m); }
+.cs-acts { display: flex; justify-content: flex-end; gap: var(--sp-3); padding-top: var(--sp-2); }
+.cs-input { width: 100%; height: calc(40 * var(--u)); padding: 0 var(--sp-3); border: 1px solid var(--c-line-2); border-radius: var(--r-2); background: var(--c-fill-1);
+  color: var(--c-ink-1); font: inherit; font-size: var(--fs-value); }
+.cs-input:focus { outline: none; border-color: var(--c-accent); }
+.cs-grades { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
+.cs-grade { display: flex; flex-direction: column; gap: var(--sp-1); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--c-line); border-radius: var(--r-2); background: var(--c-fill-1); }
+.cs-grade b { font-style: italic; font-weight: 900; font-size: var(--fs-value); text-transform: uppercase; letter-spacing: var(--track-title); }
+.cs-grade small { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
+.cs-grade span { font-size: var(--fs-body); color: var(--c-ink-2); }
+
+/* offer cards: the car still at the top, the team bar, the terms as readouts; picked is an ink outline and a check, never an accent fill */
+.of-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(280 * var(--u)), 1fr)); gap: var(--sp-3); }
+.of-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); min-width: 0; padding: var(--sp-4); text-align: left;
+  border: 1px solid var(--c-line); border-radius: var(--r-3); background: var(--c-fill-1); color: var(--c-ink-1); font: inherit; cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out); }
+.of-card:hover { background: var(--c-fill-2); }
+:where(#ui) .of-card:is(.sel, :focus-visible) { outline: none; box-shadow: inset 0 0 0 var(--rule) var(--c-accent); }
+.of-card.on { border-color: var(--c-ink-1); }
+.of-car { align-self: center; width: 100%; height: calc(96 * var(--u)); object-fit: contain; }
+.of-top { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); width: 100%; }
+.of-top .team-logo { height: calc(22 * var(--u)); width: auto; }
+.of-card strong { font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
+.of-team { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-value); }
+.of-team small { color: var(--c-ink-3); font-size: var(--fs-label); }
+.of-card .tbar, .ch-slot .tbar { width: 4px; height: calc(20 * var(--u)); border-radius: var(--r-1); background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }
+.of-terms { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); padding: var(--sp-2) 0; border-block: 1px solid var(--c-line); width: 100%; }
+.of-terms b, .ch-kick b { display: inline-flex; align-items: center; gap: var(--sp-1); }
+.of-mate, .of-why, .of-diff { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }
+.of-mate { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.of-diff { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
+.of-check { position: absolute; top: var(--sp-3); right: var(--sp-3); font-size: var(--icon-l); }
+
+/* ---------------------------------------------------------------- careerHub */
+.ch-kick { display: flex; gap: var(--sp-5); }
+.ch-body { margin: 0 calc(-1 * var(--sp-3)); padding: 0 var(--sp-3); }
+.ch-h { margin-top: var(--sp-2); }
+.ch-round { position: relative; display: flex; align-items: flex-end; min-height: calc(160 * var(--u)); padding: var(--sp-4) var(--sp-5); overflow: hidden; border: 1px solid var(--c-line); border-radius: var(--r-3); }
+.ch-round img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ch-round::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, var(--c-scrim-edge), var(--c-scrim) 55%, transparent 90%); }
+.ch-round-text { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--sp-2); width: 100%; }
+.ch-round-text .kick { color: var(--c-ink-2); }
+.ch-round strong, .ch-me strong, .ch-car strong { font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: var(--lh-tight); letter-spacing: var(--track-title); text-transform: uppercase; }
+.ch-round .r-stats { border-bottom: 0; padding-bottom: 0; }
+.ch-obj { --cols: var(--icon-m) minmax(0, 1fr) auto; }
+.ch-obj > .icon { font-size: var(--icon-m); color: var(--c-ink-2); }
+.ch-obj small, .ch-up small { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
+.ch-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1) var(--sp-5); }
+.ch-slot { display: grid; grid-template-columns: calc(24 * var(--u)) 4px minmax(0, 1fr) auto; align-items: center; gap: var(--sp-3); padding: var(--sp-1) var(--sp-2); font-size: var(--fs-body); }
+.ch-slot:nth-child(even) { transform: translateY(calc(16 * var(--u))); }   /* the staggered two-by-two grid */
+.ch-slot.me { background: var(--c-accent-wash); border-radius: var(--r-1); }
+.ch-slot small { color: var(--c-ink-3); }
+.ch-next { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-5); margin-top: var(--sp-4); padding-top: var(--sp-4); border-top: 1px solid var(--c-line); }
+.ch-cal { --cols: calc(32 * var(--u)) minmax(0, 1fr) calc(88 * var(--u)) calc(56 * var(--u)) calc(110 * var(--u)); }
+.ch-cal .val, .ch-st .val, .ch-up .val, .cr-cols .val { display: inline-flex; align-items: center; justify-content: flex-end; gap: var(--sp-2); }
+.ch-cal .val small { color: var(--c-ink-3); font-size: var(--fs-label); }
+.ch-cond { display: inline-flex; gap: var(--sp-3); }
+.ch-cond .icon { font-size: var(--icon-m); }
+.ch-st { --cols: calc(32 * var(--u)) 4px minmax(0, 1fr) calc(64 * var(--u)) calc(88 * var(--u)); }
+.ch-st .tbar, .cr-cols .tbar { width: 4px; height: calc(24 * var(--u)); border-radius: var(--r-1); background: var(--team); box-shadow: 0 0 0 1px var(--c-line-2); }
+.ch-car { display: flex; align-items: center; gap: var(--sp-5); }
+.ch-car img { width: calc(320 * var(--u)); height: calc(150 * var(--u)); object-fit: contain; flex: none; }
+.ch-car > div { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; }
+.ch-up { --cols: var(--icon-m) minmax(0, 1fr) auto calc(220 * var(--u)); cursor: pointer; }
+.ch-up.off { color: var(--c-ink-2); }
+.ch-pips { display: inline-flex; gap: var(--sp-1); }
+.ch-pips i { width: calc(18 * var(--u)); height: calc(6 * var(--u)); border-radius: var(--r-1); background: var(--c-fill-2); }
+.ch-pips i.on { background: var(--c-ink-1); }
+.ch-pips i.cap { opacity: 0.35; background: repeating-linear-gradient(135deg, var(--c-line-2) 0 2px, transparent 2px 4px); }
+.ch-me { display: flex; align-items: baseline; gap: var(--sp-4); flex-wrap: wrap; }
+.ch-xp { align-self: stretch; }
+
+/* ---------------------------------------------------------------- careerReport (on the results layout) */
+.cr-lines { align-self: stretch; display: flex; flex-direction: column; gap: var(--sp-1); font-size: var(--fs-body); color: var(--c-ink-2); }
+.cr-lines span { display: flex; justify-content: space-between; gap: var(--sp-4); }
+.cr-lines b { color: var(--c-ink-1); }
+.cr-objs { align-self: stretch; display: flex; flex-direction: column; gap: var(--sp-1); font-size: var(--fs-body); color: var(--c-ink-3); }
+.cr-objs span { display: flex; align-items: center; gap: var(--sp-2); }
+.cr-objs span.met { color: var(--c-ink-1); }
+.cr-objs small { margin-left: auto; font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
+.cr-cols { --cols: calc(48 * var(--u)) 4px minmax(0, 1.25fr) minmax(0, 1fr) calc(152 * var(--u)) calc(88 * var(--u)); }
+.lhead.cr-cols > span { display: inline-flex; align-items: center; }
+
+@media (max-width: 900px) {
+  .cs-panel, .ch-panel { width: 100%; }
+  .cs-grades, .ch-grid { grid-template-columns: minmax(0, 1fr); }
+  .ch-slot:nth-child(even) { transform: none; }
+  .ch-car { flex-direction: column; align-items: flex-start; }
+}
+.ch-body > .btn-ghost { align-self: flex-start; }

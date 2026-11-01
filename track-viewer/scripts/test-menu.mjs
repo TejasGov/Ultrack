@@ -4,8 +4,8 @@ import * as THREE from 'three';
 import {PlayerInput} from '../src/physics/driver.js';
 class Element extends EventTarget {
  constructor(tag='div'){super();this.tagName=tag.toUpperCase();this.children=[];this.attrs={};this.style={setProperty:(k,v)=>this.style[k]=v};this.className='';this.dataset={};this.offsetParent={};
- this.classList={toggle:(k,on)=>{let s=new Set(this.className.split(' '));on??=!s.has(k);on?s.add(k):s.delete(k);this.className=[...s].join(' ');return on;}};}
- append(...items){for(const x of items){this.children.push(x);x.parentNode=this;}}appendChild(x){this.append(x);}
+ this.classList={toggle:(k,on)=>{let s=new Set(this.className.split(' '));on??=!s.has(k);on?s.add(k):s.delete(k);this.className=[...s].join(' ');return on;},contains:(k)=>this.className.split(' ').includes(k)};}
+ append(...items){for(let x of items){if(typeof x!=='object')x=globalThis.document.createTextNode(String(x));this.children.push(x);x.parentNode=this;}}   // strings become text nodes, as in the DOMappendChild(x){this.append(x);}
  replaceChildren(...items){this.children=[];this.append(...items);}
  setAttribute(k,v){this.attrs[k]=String(v);if(k.startsWith('data-'))this.dataset[k.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=String(v);}
  get textContent(){return this.text??this.children.map(c=>c.textContent).join('');}
@@ -17,15 +17,24 @@ globalThis.Node=Element;globalThis.document={createElement:t=>new Element(t),cre
 globalThis.addEventListener=()=>{};
 const server=await createServer({root:new URL('../',import.meta.url).pathname.replace(/^\/([A-Za-z]:)/,'$1'),configFile:false,server:{middlewareMode:true,hmr:false},appType:'custom'});
 try{
- const UI=await server.ssrLoadModule('/src/game/ui.js'),routes=[],busy=[],game={audio:{play(){}},show:(...args)=>routes.push(args),setBusy:(msg)=>busy.push(msg)};
+ const UI=await server.ssrLoadModule('/src/game/ui.js'),routes=[],busy=[],game={audio:{play(){}},show:(...args)=>routes.push(args),setBusy:(msg)=>busy.push(msg),screens:{careerStart:{open:()=>routes.push(['career'])}}};
  const nav=new UI.Nav(game);UI.setNav(nav);const menu=UI.MenuScreen(game);game.screen=menu;menu.onShow();
  const buttons=menu.el.querySelectorAll('[data-nav]');
  assert.equal(buttons.length,9);assert.ok(menu.el.textContent.includes('YOUR CAR'));
  for(const b of buttons)b.click();
  assert.ok(routes.some(([name,id])=>name==='setup'&&id==='race'));assert.ok(routes.some(([name])=>name==='garage'));assert.ok(routes.some(([name])=>name==='credits'));assert.ok(routes.some(([name])=>name==='records'));
- assert.ok(!routes.some(([name])=>name==='career')&&busy.some(m=>/Career Mode/.test(m)),'Career Mode is a locked tile: a toast, never a screen');
+ assert.ok(routes.some(([name])=>name==='career')&&!busy.some(m=>/Career Mode/.test(m)),'the Career Mode tile opens the career');
  buttons.forEach((b,i)=>b.rect={x:(i%3)*110,y:Math.floor(i/3)*110,width:100,height:100});
  nav.reset(0);nav.moveSpatial(1,0);assert.equal(nav.i,1);nav.moveSpatial(0,1);assert.equal(nav.i,4);
+ // ---- career screens: every step and tab renders real elements (a nested list once printed "[object HTMLDivElement]")
+ {const CU=await server.ssrLoadModule('/src/game/career-ui.js'),C=await server.ssrLoadModule('/src/game/career/career.js');
+  const g={...game,career:null,screens:{},setBusy(){},leaveCareer(){},careerSession(){}},start=CU.CareerStartScreen(g),hub=CU.CareerHubScreen(g);g.screen=start;
+  const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN'),what+': '+t.slice(0,200));};
+  start.onShow();ok(start,'create');g.career=C.newCareer({name:'Ada Test',seed:3,now:'x'});start.onShow();ok(start,'shootout');
+  C.finishShootout(g.career,null);start.onShow();ok(start,'offers');assert.ok(start.el.querySelectorAll('[data-nav]').length>=4,'three offer cards and Sign');
+  C.acceptOffer(g.career,g.career.pending.offers[0].id,{india:null,drylake:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null});g.screen=hub;
+  for(let i=0;i<5;i++){hub.onShow();ok(hub,'hub tab '+i);hub.onKeyTab(1);}
+  C.finishQuali(g.career,60);hub.onShow('paddock');ok(hub,'paddock with a grid');assert.ok(hub.el.textContent.includes('Start the race'));}
  const credits=UI.CreditsScreen(game);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));assert.ok(credits.el.textContent.includes('Airbus A320 Airliner')&&credits.el.textContent.includes('Kyaie'),'the Dry Lake airliner (CC BY) is credited');assert.ok(['Modular Stadium','Stadium Light','davi.pereira.souza.0001','thundermind'].every(t=>credits.el.textContent.includes(t)),'the Shajawa stands and towers (CC BY) are credited');
  const records=UI.RecordsScreen(game);records.onShow();const rosterSize=JSON.parse((await import('node:fs')).readFileSync(new URL('../../assets/teams/teams.json',import.meta.url))).teams.flatMap(t=>t.cars).length;
  const recordRows=records.el.children[2].children[1].children[1].children;   // screen > body > table panel > rows
