@@ -301,7 +301,7 @@ export class Game {
     this.hideScreens();
     applyUpgrades(career?.levels ?? ((k)=>store.levels(k)),career?undefined:store.data.car);   // a career sets every car: AI teams carry their development levels
     this.earned=null;
-    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;   // read by grid() in configure and by enablePhysics
+    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;F.runUp=career?.runUp??0;   // read by grid() in configure and by enablePhysics
     F.configure({ hero: store.data.car, racers });
     this.cameraFor('chase');
     // Prepare shader variants/textures behind the intro, before the race clock and controls start.
@@ -347,7 +347,7 @@ export class Game {
     this.ctx.clearDriverHoardings?.();
     if (this.pw) { this.field.physics = false; for (const c of this.field.all) delete c.vehicle; this.pw.dispose(); this.pw = null; }
     applyUpgrades((k)=>store.levels(k));          // back to the garage view: every car as saved
-    if (this.field) this.field.gridOrder = this.field.paceFor = null;
+    if (this.field) { this.field.gridOrder = this.field.paceFor = null; this.field.runUp = 0; }
     this.session = null; this.audio.engineOff(); this.audio.nitro(false); this.audio.commentary?.stop();
     this.hud?.show(false); this.ctx.params.paused = false; this.resultsShown = false;
     setTimeout(()=>{if(!this.starting&&!this.session)this.prepareWorld();},1500);   // the next race's collision world, built while the menu is up

@@ -6,12 +6,12 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import {
   TUNING as T, TIERS, CAL, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap,
-  buildCalendar, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveMet, interestOf, offerRoll,
+  buildCalendar, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveMet, interestOf, offerRoll,
   STATUS, statusChoices, demandOf, nearestTerms, sideMedal,
 } from './rules.js';
 import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
 
-export const SCHEMA = 2;
+export const SCHEMA = 3;
 export { driverAt, personOf, rivalsOf };
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
 const codeOf = (name) => (name.trim().split(/\s+/).pop() || 'YOU').replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase().padEnd(3, 'X');
@@ -19,9 +19,9 @@ const rankOf = (team) => tierOf(team).rank;
 const mean = (l) => (l.length ? l.reduce((s, v) => s + v, 0) / l.length : 0);
 
 /** a new career: the driver, a seed, the world as data; the next step is the Open Shootout (3.1) */
-export function newCareer({ name = 'A. Driver', nation = 'IND', number = 99, seed = (Math.random() * 2 ** 31) >>> 0, difficulty = 'normal', now = new Date().toISOString() } = {}) {
+export function newCareer({ name = 'A. Driver', nation = 'IND', number = 99, seed = (Math.random() * 2 ** 31) >>> 0, difficulty = 'normal', raceLength = 'sprint', now = new Date().toISOString() } = {}) {
   return {
-    schema: SCHEMA, id: 'c_' + seed.toString(36), createdAt: now, seed, rules: { difficulty },
+    schema: SCHEMA, id: 'c_' + seed.toString(36), createdAt: now, seed, rules: { difficulty, raceLength },
     player: { name: name.trim() || 'A. Driver', code: codeOf(name), nation, number },
     clock: { season: 1, round: 0, phase: 'shootout' },
     career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {} },
@@ -41,6 +41,7 @@ export function migrate(save) {
     if (save.contract) { W.free.push(W.seats[save.contract.car]); W.seats[save.contract.car] = YOU; }
     save.career.heat ??= {}; save.garage.package ??= 0; save.schema = 2;
   }
+  if (save.schema === 2) { setRaceLength(save, 'sprint'); save.schema = 3; }     // before race lengths every race was about 6 minutes
   return save;
 }
 
@@ -143,7 +144,7 @@ function reserveOffer(save) {
 // ---------------------------------------------------------------------------------------------- seasons and rounds
 function startSeason(save, available) {
   const me = save.contract, tier = TIERS.teams[me.team].tier, world = TIERS.tiers[tier].world;
-  save.season = { tier, world, calendar: buildCalendar(save.seed, save.clock.season, world, available), results: [], current: null, w1: null };
+  save.season = { tier, world, calendar: buildCalendar(save.seed, save.clock.season, world, available, save.rules.raceLength), results: [], current: null, w1: null };
   save.pending = null; save.clock.round = 0;
   save.garage.package = me.trust >= T.trust.package ? (me.status === 'number1' ? 2 : 1) : 0;   // the team's free level at the season start (5.4)
   prepareRound(save);
@@ -160,14 +161,22 @@ function prepareRound(save) {
   save.season.current = { round: R.round, entries, expPos, objectives: objectivesFor(rng(save.seed, 'obj', season, round), expPos, me.easier), quali: null, side };
   save.clock.phase = 'paddock';
 }
+/** the player's race length (tuning.json series.lengths): every round not yet raced takes it; points and XP do not depend on it */
+export function setRaceLength(save, length) {
+  if (!(length in T.series.lengths)) return save;
+  save.rules.raceLength = length;
+  save.season?.calendar.forEach((r, i) => { if (i >= save.clock.round) r.laps = lapsFor(r.track, length); });
+  return save;
+}
 export const currentRound = (save) => save.season?.calendar[save.clock.round] ?? null;
 const ratingOf = (save, key) => save.world.ratings[save.world.seats[key]];
 const devOf = (save, key) => save.world.teams[CAR[key].team].dev;
 const myLevels = (save) => ({ engine: 0, tyres: 0, brakes: 0, ...save.garage.upgrades[save.contract.car] });
 export const teammateCar = (save) => seatCar(save.contract.team, otherSeat(save.contract.seat));
 
-/** qualifying is done (the player's best valid lap, or null): the AI laps, the teammate's lap and duel, the grid (4.3) */
+/** qualifying is done (the player's best valid lap, or null): the AI laps, the teammate's lap and duel, the grid (4.3). Another try before the race keeps the better lap; the AI's laps are seeded, so they do not move */
 export function finishQuali(save, best) {
+  const held = save.season.current.quali?.laps[save.contract.car]; if (Number.isFinite(held)) best = Number.isFinite(best) ? Math.min(best, held) : held;
   const R = currentRound(save), cur = save.season.current, base = { seed: save.seed, season: save.clock.season, round: save.clock.round, track: R.track, weather: R.weather, difficulty: save.rules.difficulty };
   const laps = { [save.contract.car]: Number.isFinite(best) ? best : null };
   for (const key of cur.entries) laps[key] = aiLap({ ...base, key, rating: ratingOf(save, key), dev: devOf(save, key) });

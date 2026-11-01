@@ -16,6 +16,8 @@ const LOOK = { day: ['Day', 'sun'], dusk: ['Dusk', 'sunset'], bluehour: ['Evenin
 const WX_ICON = { dry: 'sun', damp: 'cloud-drizzle', rain: 'cloud-rain' };
 const NATIONS = ['IND', 'GBR', 'USA', 'JPN', 'ITA', 'UAE', 'BRA', 'GER'];
 const NUMBERS = [5, 11, 14, 21, 42, 55, 77, 99];                  // none is a teams.json race number
+const RACE_LENGTHS = Object.entries(TUNING.series.lengths).map(([id, min]) => [id, `${id[0].toUpperCase()}${id.slice(1)} · ${min} min`]);
+const RACE_LENGTH_NOTE = 'About how long each race takes; the laps depend on the circuit. Points and XP are the same at every length, and you can change it between rounds.';
 const coins = (n) => [icon('coin'), Math.round(n).toLocaleString('en')];
 const signed = (n, d = 0) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n).toFixed(d);
 const screen = (cls, ...kids) => h('div.screen.hidden.' + cls, {}, ...kids);
@@ -41,7 +43,7 @@ export function CareerStartScreen(game) {
   const title = h('h1'), kick = h('span.kick'), body = h('div.lscroll.cs-body', { onscroll: (e) => fadeMore(e.currentTarget) });
   const el = screen('career-start', h('div.sscrim'), header(title, kick), h('div.sbody', {}, h('div.pnl.cs-panel', {}, body)),
     h('div.sfoot', {}, prompt(['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'), prompt('Enter', 'a', 'Choose'), h('div.sp'), backButton(() => api.back())));
-  let pick = null, ask = null, creating = false, target = null, form = { name: '', nation: 'IND', number: 99, difficulty: 'normal' };
+  let pick = null, ask = null, creating = false, target = null, form = { name: '', nation: 'IND', number: 99, difficulty: 'normal', raceLength: 'sprint' };
   const primary = (ic, label, onclick) => h('button.btn.btn-primary.cs-go', { 'data-nav': '', onclick }, icon(ic), label);
   const secondary = (ic, label, onclick) => h('button.btn.btn-secondary', { 'data-nav': '', onclick }, icon(ic), label);
 
@@ -65,6 +67,7 @@ export function CareerStartScreen(game) {
       nameRow,
       row('Nation', seg(NATIONS.map((n) => [n, n]), form.nation, (v) => { form.nation = v; })),
       row('Number', seg(NUMBERS.map((n) => [n, '#' + n]), form.number, (v) => { form.number = v; })),
+      row('Race length', seg(RACE_LENGTHS, form.raceLength, (v) => { form.raceLength = v; }), RACE_LENGTH_NOTE),
       row('Rivals', seg([['easy', 'Gentle'], ['normal', 'Normal'], ['hard', 'Fierce']], form.difficulty, (v) => { form.difficulty = v; }), 'How fast the other drivers are. Gentle helps while you learn the circuits.'),
       h('div.cs-acts', {}, primary('play', 'Create driver', () => {
         game.career = C.newCareer({ ...form, name: form.name || 'A. Driver' }); saveCareer(game.career, target ?? activeSlot()); persist(game); creating = false; build();
@@ -73,14 +76,14 @@ export function CareerStartScreen(game) {
   function shootout(save) {
     const S = C.shootout(), par = parLap(S.track, S.car, S.weather);
     fill(title, icon('time-trial'), 'Open Shootout'); fill(kick, `Step 2 of 3 · ${save.player.name}`);
-    return [h('p.cs-lead', {}, `The three Rookie teams hold one trial for every hopeful: ${S.laps} flying laps of ${trackOf(S.track).name} in a neutral ${carName(S.car)}. Your best valid lap against par sets your grade. Nobody is turned away.`),
+    return [h('p.cs-lead', {}, `The three Rookie teams hold one trial for every hopeful: one flying lap of ${trackOf(S.track).name} in a neutral ${carName(S.car)}. Your lap against par sets your grade. Nobody is turned away.`),
       h('div.r-stats', {}, stat('Circuit', trackOf(S.track).name), stat('Car', carName(S.car)), stat('Par lap', fmtTime(par))),
       h('div.cs-grades', {}, [['Standout', 'within 3 % of par', 'bigger signing bonuses, 300 XP'], ['Solid', 'within 6 %', 'the normal offers, 100 XP'], ['Raw', 'slower, or no valid lap', 'offers still come, 10 % less salary']]
         .map(([g, when, what]) => h('div.cs-grade', {}, h('b', {}, g), h('small', {}, when), h('span', {}, what)))),
-      h('p.cs-note', {}, icon('info'), 'Leave the track with all four wheels for a second and the lap does not count. One try: there is no restart.'),
+      h('p.cs-note', {}, icon('info'), 'You get a run-up to the line. Leave the track with all four wheels for a second and the lap does not count: keep going, and your first valid lap ends the trial.'),
       h('div.cs-acts', {}, secondary('close', 'Skip: take Raw', () => { C.finishShootout(save, null); persist(game); build(); }),
         primary('play', 'Drive the Shootout', () => game.careerSession('shootout', { track: S.track, look: S.look, weather: S.weather, laps: 3, car: S.car, home: 'careerStart',
-          session: { levels: zero, drivers: { [S.car]: playerDriver(save, CAR[S.car].team) } } }, (d) => { C.finishShootout(save, d.best); persist(game); game.show('careerStart'); })))];
+          session: { levels: zero, runUp: TUNING.series.qualiRunUp, drivers: { [S.car]: playerDriver(save, CAR[S.car].team) } } }, (d) => { C.finishShootout(save, d.best); persist(game); game.show('careerStart'); })))];
   }
   /** an offer card: the car, team, seat and terms; one is picked, the primary signs it */
   function card(o, save) {
@@ -176,6 +179,7 @@ export function CareerHubScreen(game) {
         h('div.ch-round-text', {}, h('span.kick', {}, `Round ${R.round} of ${n}${R.finale ? ' · points ×1.5' : ''} · ${TIERS.tiers[save.season.tier].name} season ${save.clock.season}`),
           h('strong', {}, R.name), h('span', {}, t.name), h('div.r-stats', {}, cond(R), stat('Expected', 'P' + cur.expPos)))),
       notices(save), w1Card(save), sideRow(save),
+      lengthRow(save),
       h('h3.kick.ch-h', {}, 'Objectives'),
       cur.objectives.map((o) => h('div.lrow.ch-obj', { 'data-nav': '', tabIndex: 0 }, icon(o.mandatory ? 'star' : 'plus'), h('span', {}, objectiveText(o)), h('small', {}, o.mandatory ? 'Required: trust ±8, 60 XP' : 'Bonus: 40 XP'))),
       h('h3.kick.ch-h', {}, 'Your teammate'),
@@ -186,11 +190,14 @@ export function CareerHubScreen(game) {
         h('span', {}, C.driverAt(save, k).code), h('small.tnum', {}, q.laps[k] ? fmtTime(q.laps[k]) : 'No time')), { '--team': teamMark(loreOf(CAR[k].team)) })))] : null,
     ];
   }
+  /** the race length, changeable between rounds: the laps of every round not yet raced follow it */
+  const lengthRow = (save) => row('Race length', seg(RACE_LENGTHS, save.rules.raceLength, (v) => { C.setRaceLength(save, v); persist(game); build(true); }), RACE_LENGTH_NOTE);
   /** the Paddock's one primary: the next session, or the season review */
   function next(save) {
     if (save.clock.phase === 'review') return h('div.ch-next', {}, h('p.cs-lead', {}, 'The season is over. The review and next season\'s offers are waiting.'), h('button.btn.btn-primary', { 'data-nav': '', onclick: () => game.show('careerStart') }, icon('trophy'), 'Season review'));
     const R = C.currentRound(save), q = save.season.current.quali, me = save.contract, race = save.clock.phase === 'race';
-    return h('div.ch-next', {}, h('p.cs-note', {}, icon('info'), race ? `${R.laps} laps from P${q.grid.indexOf(me.car) + 1}. One try: Retire classifies you last.` : `Three valid laps, best one counts. ${me.salary} U salary per round.`),
+    return h('div.ch-next', {}, h('p.cs-note', {}, icon('info'), race ? `${R.laps} ${R.laps === 1 ? 'lap' : 'laps'} from P${q.grid.indexOf(me.car) + 1}. One try at the race: Retire classifies you last.` : `One valid flying lap sets your grid slot. ${me.salary} U salary per round.`),
+      race ? h('button.btn.btn-secondary', { 'data-nav': '', onclick: () => startQuali(save) }, icon('time-trial'), 'Improve your lap') : null,
       h('button.btn.btn-primary.ch-go', { 'data-nav': '', onclick: () => (race ? startRace(save) : startQuali(save)) }, icon(race ? 'race' : 'time-trial'), race ? 'Start the race' : 'Start qualifying'));
   }
   /** the seat review's warning (6.7) and a deal already signed for next season */
@@ -281,15 +288,15 @@ export function CareerHubScreen(game) {
   function startQuali(save) {
     const R = C.currentRound(save), car = save.contract.car, lv = C.raceSetup(save).levels;
     game.careerSession('quali', { track: R.track, look: R.look, weather: R.weather, laps: R.laps, car, home: 'careerHub',
-      session: { levels: lv, drivers: { [car]: playerDriver(save, save.contract.team) } } }, (d) => {
+      session: { levels: lv, runUp: TUNING.series.qualiRunUp, drivers: { [car]: playerDriver(save, save.contract.team) } } }, (d) => {
       C.finishQuali(save, d.best); persist(game);
       const q = save.season.current.quali, p = q.grid.indexOf(car) + 1;
-      game.show('careerHub'); game.setBusy(Number.isFinite(d.best) ? `Qualified P${p}: ${fmtTime(d.best)}. Teammate duel ${q.duel.result}.` : 'No valid lap: you start from the back.');
+      game.show('careerHub'); game.setBusy(Number.isFinite(q.laps[car]) ? `Qualified P${p}: ${fmtTime(q.laps[car])}. Teammate duel ${q.duel.result}.` : 'No valid lap: you start from the back.');
     });
   }
   function startSide(save, spec) {
     game.careerSession(spec.kind, { track: spec.track, look: spec.look, weather: spec.weather, laps: C.currentRound(save).laps, car: spec.car, home: 'careerHub',
-      session: { levels: C.raceSetup(save).levels, drivers: { [spec.car]: playerDriver(save, save.contract.team) } } }, (d) => {
+      session: { levels: C.raceSetup(save).levels, runUp: spec.kind === 'test' ? TUNING.series.qualiRunUp : 0, drivers: { [spec.car]: playerDriver(save, save.contract.team) } } }, (d) => {
       const r = C.finishSide(save, spec.kind === 'test' ? d.best : d.score); persist(game);
       game.show('careerHub'); game.setBusy(`${SIDE[spec.kind][0]}: ${MEDAL[r.medal]}${r.xp ? `, +${r.xp} XP` : ''}${r.coins ? `, +${r.coins.toLocaleString('en')} U` : ''}${r.package ? ', a free upgrade level' : ''}.`);
     });

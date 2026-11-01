@@ -36,15 +36,15 @@ export const paceOf = (rating, difficulty = 'normal') => clamp(T.pace.base + (ra
 /** an AI flying lap at pace 1.00 in this car, these conditions and these upgrade levels [engine, tyres, brakes] */
 export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
   CAL.tracks[track].parLap * (1 - T.pace.carZ * (TIERS.carZ[car] ?? 0)) * (T.pace.wet[weather] ?? 1) * (1 - T.pace.perDevLevel * avg(dev));
-/** feature-race laps from a target duration (4.1) */
-export const lapsFor = (track) => clamp(Math.round((T.series.featureMinutes * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
+/** race laps from the length the player picked, in minutes (tuning.json series.lengths): laps differ per circuit, the time does not, down to the 2-lap minimum */
+export const lapsFor = (track, length = 'sprint') => clamp(Math.round((T.series.lengths[length] * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
 
 // ---------------------------------------------------------------------------------------------- calendar
 /**
  * A season's rounds for a world (career-worlds.md): its home tracks twice, guests once, cut to the world's round count, the finale
  * last, never the same track twice in a row. `available` maps track id -> its `times` (null: every look) for the tracks the game has.
  */
-export function buildCalendar(seed, season, world, available) {
+export function buildCalendar(seed, season, world, available, length = 'sprint') {
   const W = CAL.worlds[world], has = (id) => id in available && CAL.tracks[id];
   const fin = W.finale.find((f) => has(f.track)) ?? { track: W.home.find(has) ?? Object.keys(available).find(has), look: null };
   const r = rng(seed, 'cal', season);
@@ -64,7 +64,7 @@ export function buildCalendar(seed, season, world, available) {
     if (i > 0 && !C.dryOnly && wet.n < T.weather.maxWet) weather = x < T.weather.rain ? 'rain' : x < T.weather.rain + T.weather.damp ? 'damp' : 'dry';
     if (weather !== 'dry') wet.n++;
     const n = (seen[track] = (seen[track] ?? -1) + 1);
-    return { round: i + 1, track, look, weather, laps: lapsFor(track), name: finale ? 'Season Finale' : C.names[Math.min(n, C.names.length - 1)], finale };
+    return { round: i + 1, track, look, weather, laps: lapsFor(track, length), name: finale ? 'Season Finale' : C.names[Math.min(n, C.names.length - 1)], finale };
   });
 }
 

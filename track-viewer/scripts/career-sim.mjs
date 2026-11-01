@@ -13,10 +13,10 @@ const AVAILABLE = { india: null, drylake: ['day', 'dusk'], marina: null, shajawa
 const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
 
 /** one career for `seasons` seasons; skill is the player's pace (1.00 = an AI of rating ~88) */
-export function play({ C, R }, seed, skill, seasons = 3) {
+export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') {
   let r = seed >>> 0; const rand = () => ((r = (Math.imul(r ^ (r >>> 15), 2246822507) + 0x9e3779b9) >>> 0) / 4294967296);
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
-  const save = C.newCareer({ name: 'Sim Driver', seed, now: '2026-11-01T00:00:00Z' });
+  const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
   const sh = C.shootout(); C.finishShootout(save, R.parLap(sh.track, sh.car) / skill * (1 + noise(0.01)));
   const log = { maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0 };
   // ask for a bit more, sometimes too much: a refusal or a withdrawal must never strand the career
@@ -32,7 +32,7 @@ export function play({ C, R }, seed, skill, seasons = 3) {
       const rd = C.currentRound(save), car = save.contract.car, u = save.garage.upgrades[car];
       C.finishQuali(save, R.parLap(rd.track, car, rd.weather, [u.engine, u.tyres, u.brakes]) / skill * (1 + noise(0.008)));
     } else if (save.clock.phase === 'race') {
-      const q = save.season.current.quali, t = Object.fromEntries(Object.entries(q.laps).map(([k, v]) => [k, (v ?? 999) * (1 + noise(0.012))]));
+      const q = save.season.current.quali, t = Object.fromEntries(Object.entries(q.laps).map(([k, v]) => [k, (v ?? 999) * (1 + noise(0.012 * Math.sqrt(C.currentRound(save).laps / 5)))]));   // a model, not a measurement: fewer laps, fewer places change from the grid
       const order = Object.keys(t).sort((a, b) => t[a] - t[b]), lap = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, v * 0.99]));
       const rep = C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: rand() < 0.3 ? 1 : 0, spins: rand() < 0.2 ? 1 : 0 });
       log.rr.push(rep.rr); log.finish.push(rep.finish);
@@ -73,6 +73,11 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
          avg RR ${avg((r) => r.rr.reduce((a, b) => a + b, 0) / r.rr.length)}, avg finish ${avg((r) => r.finish.reduce((a, b) => a + b, 0) / r.finish.length)}, min wallet ${Math.min(...runs.map((r) => r.minWallet))}, offers/season ${avg((r) => r.offers.reduce((a, b) => a + b, 0) / r.offers.length)} (min ${Math.min(...runs.flatMap((r) => r.offers))}),` +
         ` drops/career ${avg((r) => r.drops)}, warnings ${avg((r) => r.warnings)}, W1 ${avg((r) => r.w1)}, deals ${avg((r) => r.deals)}, withdrawn ${avg((r) => r.withdrawn)}, titles ${avg((r) => r.titles)}, cups ${avg((r) => r.cups)},` +
         ` final tier ${['rookie', 'maestro', 'legend'].map((t) => `${t} ${share((r) => r.tier.at(-1) === t)}`).join(' ')}`);
+    }
+    // the race lengths, same driver: progress must not depend on how long you race (the race noise is modelled, see above)
+    for (const length of ['sprint', 'standard', 'full']) {
+      const runs = Array.from({ length: N }, (_, i) => play(M, 1000 + i, 0.995, S, length).log), avg = (f) => (runs.reduce((a, r) => a + f(r), 0) / N).toFixed(2);
+      console.log(`${length.padEnd(9)} avg RR ${avg((r) => r.rr.reduce((a, b) => a + b, 0) / r.rr.length)}, avg finish ${avg((r) => r.finish.reduce((a, b) => a + b, 0) / r.finish.length)}, Maestro offer ${Math.round((100 * runs.filter((r) => r.maestroOffer).length) / N)} %, min wallet ${Math.min(...runs.map((r) => r.minWallet))}`);
     }
   } finally { await server.close(); }
 }

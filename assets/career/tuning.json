@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "note": "Every career formula constant (track-viewer/docs/career-mode.md 10.5). featureMinutes is 6, not the doc's 7.5: R5 says lower it if races feel long; tune from play.",
-  "series": { "featureMinutes": 6, "lapsMin": 3, "lapsMax": 12, "qualiValidLaps": 3,
+  "note": "Every career formula constant (track-viewer/docs/career-mode.md 10.5). series.lengths are the race lengths a player picks, in minutes (Sprint is the default: nobody should have to drive 8 laps to take part); qualiRunUp is the flying start, in metres, of a one-lap qualifying.",
+  "series": { "lengths": { "sprint": 2.5, "standard": 4, "full": 6 }, "lapsMin": 2, "lapsMax": 12, "qualiValidLaps": 1, "qualiRunUp": 250,
               "points": [25, 18, 15, 12, 10, 8, 6, 4], "pole": 2, "fastestLap": 1, "finaleMult": 1.5 },
   "pace": { "base": 0.94, "perRating": 0.0021, "min": 0.94, "max": 1.02, "jitter": 0.003, "perDevLevel": 0.01, "carZ": 0.012,
             "wet": { "dry": 1.0, "damp": 1.04, "rain": 1.08 }, "difficulty": { "easy": 0.97, "normal": 1.0, "hard": 1.02 } },

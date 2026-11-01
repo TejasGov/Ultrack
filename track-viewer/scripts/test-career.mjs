@@ -31,12 +31,32 @@ try {
     assert.equal(cal.length, 6); assert.ok(cal.at(-1).finale && cal.filter((r) => r.finale).length === 1);
     assert.equal(cal.at(-1).track, 'india', 'without Infinia the World 1 finale falls back to India'); assert.equal(cal.at(-1).look, 'dusk');
     assert.equal(cal[0].weather, 'dry');
-    for (const r of cal) { if (avail[r.track]) assert.ok(avail[r.track].includes(r.look), `${r.track} at ${r.look}`); if (r.track === 'drylake') assert.equal(r.weather, 'dry'); assert.ok(r.laps >= 3 && r.laps <= 12); }
+    for (const r of cal) { if (avail[r.track]) assert.ok(avail[r.track].includes(r.look), `${r.track} at ${r.look}`); if (r.track === 'drylake') assert.equal(r.weather, 'dry'); assert.ok(r.laps >= 2 && r.laps <= 12); }
     assert.ok(cal.filter((r) => r.track === 'india').length <= 2 && cal.filter((r) => r.track === 'drylake').length === 2);
     assert.ok(cal.filter((r) => r.weather !== 'dry').length <= 2);
   }
   assert.deepEqual(R.buildCalendar(5, 1, 1, avail), R.buildCalendar(5, 1, 1, avail), 'a calendar is seeded');
   assert.equal(R.buildCalendar(5, 1, 1, { ...avail, infinia: null }).at(-1).track, 'infinia', 'Infinia, when the game has it, is the World 1 finale');
+
+  // ---- race lengths: chosen in minutes, laps per circuit, the default is the short one, nobody is forced into 8 laps
+  assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('drylake', l)), [3, 5, 8]); assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('marina', l)), [2, 2, 3]);
+  assert.ok(R.buildCalendar(5, 1, 1, avail).every((r) => r.laps === R.lapsFor(r.track, 'sprint') && r.laps <= 3), 'Sprint by default');
+  assert.equal(R.TUNING.series.qualiValidLaps, 1, 'one valid lap qualifies');
+  const len = C.newCareer({ seed: 77, now: 'x' }); assert.equal(len.rules.raceLength, 'sprint'); C.finishShootout(len, null); C.acceptOffer(len, len.pending.offers[0].id, avail);
+  C.finishQuali(len, 60); C.finishRace(len, { order: len.season.current.quali.grid, best: {} });
+  const raced = len.season.calendar[0].laps; C.setRaceLength(len, 'full');
+  assert.equal(len.season.calendar[0].laps, raced, 'a round already raced keeps its laps'); assert.ok(len.season.calendar.slice(1).every((r) => r.laps === R.lapsFor(r.track, 'full')), 'the rounds to come follow it');
+  C.setRaceLength(len, 'silly'); assert.equal(len.rules.raceLength, 'full', 'an unknown length changes nothing');
+  // ---- points and XP do not depend on the length: the same round, the same result
+  const same = (l) => { const x = C.newCareer({ seed: 78, raceLength: l, now: 'x' }); C.finishShootout(x, null); C.acceptOffer(x, x.pending.offers[0].id, avail); C.finishQuali(x, 60); const r = C.finishRace(x, { order: x.season.current.quali.grid, best: {} }); return [r.xp, r.rr, r.rep, r.entries.map((e) => e.pts)]; };
+  assert.deepEqual(same('sprint'), same('full'), 'race length never changes XP, rating, reputation or points');
+  // ---- another qualifying try keeps the better lap and moves nobody else
+  const q2 = C.newCareer({ seed: 79, now: 'x' }); C.finishShootout(q2, null); C.acceptOffer(q2, q2.pending.offers[0].id, avail); C.finishQuali(q2, 90); const me = q2.contract.car, ai = { ...q2.season.current.quali.laps };
+  C.finishQuali(q2, 95); assert.equal(q2.season.current.quali.laps[me], 90, 'a slower retry changes nothing'); C.finishQuali(q2, null); assert.equal(q2.season.current.quali.laps[me], 90, 'no lap on a retry keeps the lap');
+  C.finishQuali(q2, 55); assert.equal(q2.season.current.quali.laps[me], 55); assert.deepEqual({ ...q2.season.current.quali.laps, [me]: 90 }, ai, 'the AI laps are seeded'); assert.equal(q2.clock.phase, 'race');
+  // ---- a save from before race lengths comes up on Sprint
+  const pre = C.newCareer({ seed: 80, now: 'x' }); C.finishShootout(pre, null); C.acceptOffer(pre, pre.pending.offers[0].id, avail); pre.schema = 2; delete pre.rules.raceLength; pre.season.calendar.forEach((r) => { r.laps = 8; });
+  C.migrate(pre); assert.equal(pre.schema, C.SCHEMA); assert.equal(pre.rules.raceLength, 'sprint'); assert.ok(pre.season.calendar.every((r) => r.laps <= 3));
 
   // ---- the first job: never refused, three B seats, the grade sets the terms
   const s0 = C.newCareer({ name: 'Ada Lovelace', seed: 42, now: 'x' }); assert.equal(s0.player.code, 'LOV');

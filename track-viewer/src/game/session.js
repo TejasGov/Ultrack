@@ -10,7 +10,7 @@ const ON_TRACK = new Set(['asphalt', 'pit', 'kerb', 'sausage kerb', 'run-off', '
 export const MODES = {
   race: { label: 'Race', desc: 'Eight teams, one car each. Lights out and away we go.', laps: true, rivals: true, start: 'lights', tags: ['race'] },
   trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Leave the track and the lap does not count.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true },
-  quali: { label: 'Qualifying', desc: 'Three valid laps on an empty circuit. Your best sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true, validLaps: 3 },   // the career's (game.js careerWeekend)
+  quali: { label: 'Qualifying', desc: 'One valid flying lap on an empty circuit sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true, validLaps: 1 },   // the career's (game.js careerWeekend)
   drift: { label: 'Drift Attack', desc: 'Ninety seconds. Chain drifts for the multiplier; touch the grass and the chain is gone.', laps: false, rivals: false, start: 'count', tags: ['free'], seconds: 90 },
   free: { label: 'Free Drive', desc: 'No clock, no rivals. The whole circuit, at the hour you choose.', laps: false, rivals: false, start: 'none', tags: ['free'] },
 };

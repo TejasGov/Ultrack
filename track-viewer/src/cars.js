@@ -541,6 +541,10 @@ export class Field {
       c.lat = (k % 2 ? -1.6 : 1.6);
       c.root.position.set(s.pos[0], s.pos[1], s.pos[2]);
       c.root.rotation.y = (s.headingYawRad ?? Math.PI / 2) - Math.PI / 2;   // +X along the slot heading (atan2(dx,dz)): India's grid sits on a bend
+      if (this.runUp && c.hero) {                                          // one-lap qualifying: back up the road, so the timed lap starts at speed
+        const u = 1 - this.runUp / this.length, p = this.curve.getPointAt(u), d = this.curve.getTangentAt(u);
+        c.root.position.copy(p); c.root.rotation.y = Math.atan2(d.x, d.z) - Math.PI / 2;
+      }
       c.car.rotation.y = Math.PI;                                          // car-lab noses point -X
       c.onGrid = true; c.reverse = false;
     });

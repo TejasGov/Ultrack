@@ -36,9 +36,9 @@ try {
   await shot('menu');
   await page.click('.bento-tile[data-id=career]'); await onScreen('career-start'); await shot('1-create');
   await page.fill('.cs-input', 'Test Driver'); await page.click('.cs-go'); await page.waitForSelector('text=Open Shootout'); await shot('2-shootout');
-  // the Shootout: one valid lap, then End qualifying (the pause menu's path)
+  // the Shootout: the first valid lap ends it
   await page.click('.cs-go');
-  await drive(() => window.game.session.trk.get(window.game.field.hero).best !== null, () => window.game.careerDone());
+  await drive(() => !window.game.session || window.game.session.trk.get(window.game.field.hero).best !== null, () => window.game.careerDone());
   await onScreen('career-start'); await page.waitForSelector('.of-card'); await shot('3-offers');
   report.shootout = await page.evaluate(() => window.game.career.pending.shootout);
   await page.click('.of-card >> nth=1'); await page.waitForSelector('text=Negotiate with');
@@ -51,9 +51,9 @@ try {
   report.afterBuy = await page.evaluate(() => ({ coins: window.game.career.wallet.coins, up: window.game.career.garage.upgrades[window.game.career.contract.car] }));
   await page.click('.stabs button:has-text("Paddock")');
   report.round = await page.evaluate(() => window.game.career.season.calendar[window.game.career.clock.round]);
-  // qualifying: one valid lap, then End qualifying
+  // qualifying: the first valid lap ends it, then the Paddock offers another try
   await page.click('.ch-go');
-  await drive(() => window.game.session.trk.get(window.game.field.hero).best !== null, () => window.game.careerDone());
+  await drive(() => !window.game.session || window.game.session.trk.get(window.game.field.hero).best !== null, () => window.game.careerDone());
   await onScreen('career-hub'); await shot('6-grid');
   report.quali = await page.evaluate(() => { const q = window.game.career.season.current.quali; return { grid: q.grid, duel: q.duel, me: q.laps[window.game.career.contract.car] }; });
   // the race, shortened to RACE_LAPS: checks the grid order and AI pace reached the field
@@ -88,7 +88,7 @@ try {
   report.w1 = await page.evaluate(() => ({ next: window.game.career.contract.next?.team, state: window.game.career.season.w1.state, coins: window.game.career.wallet.coins }));
   report.moved = await page.evaluate(() => { const c = window.game.career, k = c.season.current.entries[0]; c.world.academy.OKA = { name: 'Tobi Okafor', nation: 'NGA' }; c.world.ratings.OKA = 74; c.world.ages.OKA = 20; c.world.seats[k] = 'OKA'; return k; });
   await page.click('.ch-go');
-  await drive(() => window.game.session.trk.get(window.game.field.hero).best !== null, () => window.game.careerDone());
+  await drive(() => !window.game.session || window.game.session.trk.get(window.game.field.hero).best !== null, () => window.game.careerDone());
   await onScreen('career-hub'); await page.evaluate((n) => { const c = window.game.career; c.season.calendar[c.clock.round].laps = n; }, raceLaps);
   await page.click('.ch-go');
   await page.waitForFunction(() => window.game?.session?.mode === 'race' && window.game.session.field.rig, null, { timeout: 300000 });
