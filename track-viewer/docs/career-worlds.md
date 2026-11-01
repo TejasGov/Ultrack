@@ -12,8 +12,8 @@ A world is a chapter of the career: a region with its own look, venues and spons
 |---|---|---|---|
 | Tier | Rookies | Maestros | Legends |
 | Idea | Working places turned into circuits for a weekend: a hill road, an airfield, a steel mill | Permanent circuits with history, press and name sponsors | Prestige venues, night races, the whole world watching |
-| Tracks | India Ghat (built), **Mojave Dry Lake**, **Keystone Ironworks** | Corniche Marina (built), **Kestrel Downs** | Tokyo Hiragana (built), **Lago Serena** |
-| Home teams | Mojave (Dry Lake), Liberty (Ironworks) | Sarab (Marina), Corvid (Kestrel) | Hayate (Tokyo), Saetta, Toro and Aurum (Lago) |
+| Tracks | India Ghat (built), **Mojave Dry Lake**, **Keystone Ironworks** | Corniche Marina (built), **Shajawa Stadium** | Tokyo Hiragana (built), **Lago Serena** |
+| Home teams | Mojave (Dry Lake), Liberty (Ironworks) | Sarab (Marina); Shajawa is neutral, the series' showpiece | Hayate (Tokyo), Saetta, Toro and Aurum (Lago) |
 | Venue dressing | Tyre walls, temporary stands, local sponsors | Permanent grandstands, pit buildings, hoardings | Big screens, title sponsors |
 | Colour | Ochre, rust, sodium orange | Green, grey sky, sea blue | Neon, lake blue, villa gold |
 | Season finale | Ironworks at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
@@ -23,7 +23,7 @@ A world is a chapter of the career: a region with its own look, venues and spons
 | World | Rounds | Calendar |
 |---|---|---|
 | 1 | 6 | India, Dry Lake, Ironworks x2 each |
-| 2 | 7 | Marina, Kestrel x2 each; India, Dry Lake, Ironworks once |
+| 2 | 7 | Marina, Shajawa x2 each; India, Dry Lake, Ironworks once |
 | 3 | 8 | Tokyo, Lago x2 each; 4 of the 5 earlier tracks once (seeded) |
 
 Until Dry Lake and Ironworks exist, the MVP season stays as written in career-mode.md 4.1.
@@ -32,20 +32,20 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 ## 2. The four tracks at a glance
 
-| | Mojave Dry Lake | Keystone Ironworks | Kestrel Downs | Lago Serena |
+| | Mojave Dry Lake | Keystone Ironworks | Shajawa Stadium | Lago Serena |
 |---|---|---|---|---|
 | World | 1 | 1 | 2 | 3 |
-| Archetype (career-mode.md 4.5) | Short technical | Slide track | Fast flowing | Legends showcase: fast lakeside, then switchbacks |
-| Lap | 1.70 km, ~53 s | 1.90 km, ~65 s | 2.50 km, ~60 s | 2.40 km, ~68 s |
-| Corners (measured) | 8 | 5 (two hairpins, a long left over the summit) | 7 | 6 (two hairpins) |
-| Longest straight | 314 m (runway) | 224 m (casting shed) | 610 m | 480 m (through the tunnel) |
-| Width | 16 m | 13 m | 16 m | 13 m |
-| Elevation | 0 to 5 m | -2 to 13 m, 11.7 % max | -15 to 25 m, 9.5 % max | 2 to 32 m, 11.5 % max |
-| Race laps at 7.5 min | 8 | 7 | 7-8 | 6-7 |
+| Archetype (career-mode.md 4.5) | Short technical | Slide track | Stadium speedway: flat oval sweeps plus an infield section | Legends showcase: fast lakeside, then switchbacks |
+| Lap | 1.70 km, ~53 s | 1.90 km, ~65 s | 2.20 km, ~55 s | 2.40 km, ~68 s |
+| Corners (measured) | 8 | 5 (two hairpins, a long left over the summit) | 6 (two long flat sweeps, four 90° infield corners) | 6 (two hairpins) |
+| Longest straight | 314 m (runway) | 224 m (casting shed) | 484 m | 480 m (through the tunnel) |
+| Width | 16 m | 13 m | 15 m | 13 m |
+| Elevation | 0 to 5 m | -2 to 13 m, 11.7 % max | flat (no banking, by design) | 2 to 32 m, 11.5 % max |
+| Race laps at 7.5 min | 8 | 7 | 8 | 6-7 |
 | Looks | day, dusk | day, dusk | day, dusk | day, dusk |
-| Weather | dry; rain only at dusk (desert storm) | damp and rain common | damp is its home weather | all |
-| Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | -0.5 / +0.8 / +0.3 | +0.8 / 0 / +0.5 | +0.3 / +0.5 / +0.3 |
-| Hero shot | Driving under airliner wings at dusk | Dusk through the casting shed, furnace glow | Over the blind crest past the chalk kestrel in drizzle | Villa lights coming on over the lake at dusk |
+| Weather | dry; rain only at dusk (desert storm) | damp and rain common | all | all |
+| Career bias (power / grip / brake) | 0 / +0.3 / +0.5 | -0.5 / +0.8 / +0.3 | +0.8 / -0.2 / +0.4 | +0.3 / +0.5 / +0.3 |
+| Hero shot | Driving under airliner wings at dusk | Dusk through the casting shed, furnace glow | Down the main straight at dusk, 360° of packed stands and the lights coming on | Villa lights coming on over the lake at dusk |
 
 ## 3. Mojave Dry Lake (World 1, Mojave's home)
 
@@ -83,23 +83,21 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **Watch.** Indoors the sky light must not leak in; give the shed its own lighting. The hairpin stack has 74 m between legs, so it needs walls, not open run-off.
 
-## 5. Kestrel Downs (World 2, Corvid's home)
+## 5. Shajawa Stadium (World 2, the only stadium)
 
-![Kestrel Downs plan](career-worlds/kestrel.svg)
+![Shajawa Stadium plan](career-worlds/shajawa.svg)
 
-**The idea.** A fast English downland circuit on an old airfield perimeter: rolling chalk hills, hedgerows, dry-stone walls, a manor on a rise, wind turbines on the ridge, and a chalk hill figure of a kestrel cut into the slope. Grey skies and drizzle are its normal weather.
+**The idea.** The game's one stadium circuit: a speedway inside a closed bowl of grandstands, the crowd on every side, an infield with the team garages and a giant four-sided screen. The grammar is the big-stadium speedway from the films (towering stands, the roar, the infield village), but the track is **flat**: no banked corners, so it drives like the rest of the game. It is the Grand Tour's showpiece and the loudest round of the season. The bowl and stands are our own design; no real venue or film set is copied.
 
-**The lap.** The 610 m main straight runs slightly downhill past the grandstand. The heavy braking into the right (1) is a big stop from top speed. Then the road drops into the valley: a left (2) into the dip and its compression, and a fast right (3) out of it. The long right (4) sweeps under the turbines and leads to the left (5) at the manor. A long climbing right (6) up the down ends at the blind crest past the chalk kestrel. The fast right (7) comes back downhill onto the straight.
+**The lap.** The start is mid-way down the 484 m main straight, in front of the main grandstand and pit lane. The flat left sweep (1) is a long, fast 180° that rewards a clean line and the tyres. The back straight lets the engine run, then the lap dives into the infield: a hard left (2) off the back straight, a right (3) onto the infield straight past the garages and the screen, another right (4), and a left (5) back up onto the oval. The second flat sweep (6) brings you round onto the main straight.
 
-**Signature moments.** The braking zone into 1. The compression in the valley dip. Cresting blind with the chalk kestrel filling the screen.
+**Signature moments.** The first sweep with the stands towering on the outside. The brake from top speed into the infield (2), the best overtaking spot. The infield straight under the giant screen, the crowd on both sides.
 
-**Surfaces.** Grippy asphalt with a lot of camber and crests; grass run-off, chalk where the turf wears through, gravel traps. India's stone walls and grass work here.
+**The bowl.** Stands all the way round the oval, 25-40 m tall, steeper and taller behind the main straight, with a canopy ring, vomitories, and light towers above the rim. A pit lane and garage block along the main straight; team transporters and hospitality in the infield. Day under a hard sky; at dusk the stadium lights come on as glow (no night race, so no lighting rig to pay for).
 
-**Light.** Overcast day and dusk. Damp is the default weather, since this is where the wet shader earns its keep.
+**What it needs.** The stands are the big asset. Recommended start: the CC BY **Modular Stadium** (davi.pereira.souza, Sketchfab, 98k triangles), whose concrete stand sections we cut and array around the bowl, plus the CC BY **Stadium Light** (thundermind) for the light towers. Both need your OK to download and are credited in game. Seats and crowd are textures and cards on the tiers, not modelled one by one. The crowd reuses the game's existing stand crowd system if it fits the frame budget.
 
-**What it needs.** Manor (Blender), turbines (Blender), hedgerow cards, the chalk figure as a decal on the hillside (our own design, a kestrel silhouette). Few unique assets: the terrain does the work.
-
-**Watch.** On the blind crest (6/7), check the AI line and the chase camera. Wind turbines turn slowly and steadily: never a flicker of blade shadows over the camera.
+**Watch.** A closed bowl is a lot of geometry in view at once, the main performance risk of the four tracks: the stands are one mesh per material, the crowd is cards, and far tiers drop detail. The flat sweeps must still read as fast; kerbs and run-off sized for 160 km/h, not hairpins.
 
 ## 6. Lago Serena (World 3, the Italian teams' home)
 
@@ -123,7 +121,7 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 1. **Mojave Dry Lake.** Flat, open and small: the fastest way to prove the new-track pipeline end to end (Blender build, `track.json` with centreline, `lapLength`, `corners`, 8 `gridSlots`, `sectors` and `weather.looks`, a `TRACKS` entry in `src/tracks.js`, collision, AI laps). Only the airliner model is a real asset question.
 2. **Keystone Ironworks.** It completes World 1, so the career MVP gets its own calendar.
-3. **Kestrel Downs.** The terrain-led track, with few unique assets.
+3. **Shajawa Stadium.** The bowl is one big asset (a CC stand kit, cut and arrayed); the track itself is flat and simple.
 4. **Lago Serena.** The most assets and the hardest lighting; last, when the pipeline is proven.
 
 ## 8. Budgets every new track meets
@@ -138,7 +136,7 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 ## 9. Open questions
 
 1. Should worlds follow the player's tier (my recommendation), or should seasons visit the worlds in a fixed order whatever his seat?
-2. Four tracks, or three for now? If three, drop Kestrel Downs: World 2 then runs Marina plus the World 1 tracks, which is thin, so I'd keep all four.
+2. Shajawa has no home team (Corvid's was Kestrel Downs): give it one, or keep it the neutral showpiece?
 3. Airliners for Dry Lake and boats for Lago: download free models (each with your OK) or try Meshy (paid)?
 4. Poly Haven CC0 texture sets the new surfaces need (lake bed, brick, setts, rusty metal, terracotta, rock): OK to download them when each build starts?
-5. Are the names right (Mojave Dry Lake, Keystone Ironworks, Kestrel Downs, Lago Serena; The Proving Grounds, The Grand Tour, The Crown)?
+5. Are the names right (Mojave Dry Lake, Keystone Ironworks, Shajawa Stadium, Lago Serena; The Proving Grounds, The Grand Tour, The Crown)?
