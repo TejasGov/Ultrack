@@ -188,6 +188,11 @@ kbd .icon { font-size: var(--icon-s); }
 /* Race: two rows, the selected circuit's still under a bottom-up scrim, the facts on a hairline */
 .race-tile { grid-row: span 2; }
 .tile-still { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+/* every other tile: its own still, faded off into the panel toward the words, so the words stay on plain panel */
+.tile-fade { opacity: 0.62; mask-image: linear-gradient(0deg, transparent 22%, #000 92%); }
+:is(.records-tile, .settings-tile, .credits-tile) .tile-fade { mask-image: linear-gradient(90deg, transparent 18%, #000 95%); }   /* the short row: fades off to the left, where the words start */
+.bento-tile:has(.tile-fade) :is(.tile-kicker, .stat-r > small) { color: var(--c-ink-2); }
+.records-tile .tile-fade { opacity: 0.4; }   /* the stats sit over this one's picture */
 /* Marina's still is a wide start straight under a tall sky: crop the sky and the cut billboard, so the gantry sits up top and the words on tarmac */
 :is(.tile-still, .seg.cards img)[data-track=marina] { object-view-box: inset(34% 0 0 22%); }
 .race-tile::before { background-image: linear-gradient(0deg, var(--c-scrim-edge), var(--c-scrim) 45%, transparent 80%); }

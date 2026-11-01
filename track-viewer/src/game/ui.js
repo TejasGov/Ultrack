@@ -196,10 +196,12 @@ export const stat = (label, value, unit) => h('span.stat-r', {}, h('small', {}, 
  *  is a Nav stop with one look: a kicker, a word, an arrow-up-right go mark; focus is a ring plus a wash that never hides a still. */
 export function MenuScreen(game) {
   const go = (id) => () => (MODES[id] ? game.show('setup', id) : id === 'career' ? game.screens.careerStart.open() : game.show(id));
-  const tile = (id, ic, word, kicker, desc, cls = '', extra = null, bg = null) => h('button.bento-tile.' + cls, { 'data-nav': '', 'data-id': id, onclick: go(id) }, bg,
+  const stillImg = (cls = '', src) => h('img.tile-still' + cls, { alt: '', decoding: 'async', src, onerror: (e) => { e.currentTarget.hidden = true; } });   // no still yet: the plain panel, never a broken image
+  const fadedStill = (id) => stillImg('.tile-fade', still('tiles', id));
+  const tile = (id, ic, word, kicker, desc, cls = '', extra = null, bg = fadedStill(id)) => h('button.bento-tile.' + cls, { 'data-nav': '', 'data-id': id, onclick: go(id) }, bg,
     h('span.tile-top', {}, icon(ic, { cls: 'tile-icon' }), icon('arrow-up-right', { cls: 'tile-go' })),
     h('span.tile-text', {}, h('span.tile-kicker', {}, kicker), h('strong', {}, word), desc ? h('span.tile-desc', {}, desc) : null, extra));
-  const raceStill = h('img.tile-still', { alt: '', decoding: 'async' }), circuit = h('b'), len = h('b.tnum'), corners = h('b.tnum');
+  const raceStill = stillImg(), circuit = h('b'), len = h('b.tnum'), corners = h('b.tnum');
   const facts = h('span.tile-facts', {}, h('span.stat-r', {}, h('small', {}, 'Circuit'), circuit), h('span.stat-r', {}, h('small', {}, 'Length'), len), h('span.stat-r', {}, h('small', {}, 'Corners'), corners));
   const race = tile('race', 'race', 'Race', 'The main event', MODES.race.desc, 'race-tile', facts, raceStill);
   const best = h('span.tile-desc.tile-best');
@@ -230,7 +232,7 @@ export function MenuScreen(game) {
       const k = store.data.car, b = store.bestOf(k), d = store.driftOf(k);   // this circuit, your car
       fill(best, stat('Best lap', b ? fmtTime(b) : empty()), stat('Best drift', d ? d.toLocaleString('en') : empty(), d ? 'PTS' : null), stat('Car', carName(k)));
       if (shown === t.id + mph) return; shown = t.id + mph;
-      raceStill.src = still('tracks', t.id); raceStill.dataset.track = t.id; circuit.textContent = t.name; fill(len, empty()); fill(corners, empty());
+      raceStill.hidden = false; raceStill.src = still('tracks', t.id); raceStill.dataset.track = t.id; circuit.textContent = t.name; fill(len, empty()); fill(corners, empty());
       factsOf(t).then((f) => {
         if (!f || shown !== t.id + mph) return;
         fill(len, f.m ? [(f.m / (mph ? 1609.344 : 1000)).toFixed(2), h('small', {}, mph ? 'MI' : 'KM')] : empty()); fill(corners, f.corners ? String(f.corners) : empty());

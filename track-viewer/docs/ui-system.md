@@ -12,7 +12,7 @@ Source of truth:
 | Tokens | `src/game/ui-tokens.css` (imported first by `ui.css`) |
 | Icons | `scripts/make-ui-icons.mjs` writes `public/assets/ui/icons/<name>.svg`, the sprite `public/assets/ui/icons.svg` and `qa/ui-icons.png` |
 | Icon helper | `src/game/icons.js`: `icon(name, { cls, label })` |
-| Stills | `scripts/make-ui-stills.mjs` writes `public/assets/ui/stills/{tracks,cars}/<id>.webp`, `cars/thumbs/<key>.webp` and `cars/side/<key>.webp` |
+| Stills | `scripts/make-ui-stills.mjs` writes `public/assets/ui/stills/{tracks,tiles,cars}/<id>.webp`, `cars/thumbs/<key>.webp` and `cars/side/<key>.webp` |
 | Checks | `scripts/qa-ui-icons.mjs` (icons and tokens in Chrome), `scripts/qa-ui-tour.mjs` (every screen, three sizes, DOM audit) |
 
 ## 1. Tokens
@@ -255,6 +255,7 @@ Everything is the game itself. Nothing is painted or generated. Regenerate with
   - Records' circuit header.
   - The race-loading backdrop (replacing the illustrated slides).
   - The title screen backdrop until the live scene is dressed.
+- **Tiles** (`stills/tiles/<name>.webp`, 800 px wide, opaque; `make-ui-stills.mjs tiles`). The menu's other tiles each have their own view of a circuit (`TILES`), faded off into the panel (`.tile-fade`). A missing still leaves the plain panel, never a broken image.
 - **Cars** (`stills/cars/<key>.webp`, 1600x900, **alpha cutout** with its contact shadow). All 16 garage cars come from the
   garage room. Every car has the same front three-quarter camera (nose to the right, the longest car about 70 % of the width,
   car centred), so a car swap never shifts the layout.

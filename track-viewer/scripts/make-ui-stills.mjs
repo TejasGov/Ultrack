@@ -12,7 +12,8 @@
 //   side    the same room, each car square from the side through an orthographic camera: one scale for every car (200 px a metre)
 //           and the ground on one line, trimmed to the car's length -> public/assets/ui/stills/cars/side/<key>.webp (alpha, 320 px
 //           tall), so two drawn at the same height compare at true scale (the garage's Specs tab)
-//   node scripts/qa-lock.mjs -- node scripts/make-ui-stills.mjs [tracks|cars|side|thumbs|all=all] [url=http://127.0.0.1:5180]
+//   tiles   the menu's other tiles (TILES): more views from the same viewer -> public/assets/ui/stills/tiles/<name>.webp, 800 px
+//   node scripts/qa-lock.mjs -- node scripts/make-ui-stills.mjs [tracks|tiles|cars|side|thumbs|all=all] [url=http://127.0.0.1:5180]
 //   ONLY=marina,av12 limits the ids; PROBE=1 shoots candidate views instead (tracks: 8 around the lap; cars: 4 azimuths of the first
 //   car) into qa/ui-stills/probe/, to choose VIEWS / CAR_VIEW from.
 import { chromium } from 'playwright-core';
@@ -35,6 +36,17 @@ const VIEWS = {
   india: { look: 'day', cam: [786, 9, 3], tgt: [831, 0, -3] },       // the ghat road winding down into the valley
   drylake: { look: 'dusk', cam: [178, 3.2, 5], tgt: [214, 2.5, 0] },   // into the boneyard flick (T2), airliners both sides, the low sun
   shajawa: { look: 'dusk', cam: [-24, 3.5, 2], tgt: [30, 4, -1] },     // down the main straight, the stands on both sides, the lamps on
+  infinia: { look: 'dusk', cam: [-40, 3.5, 3], tgt: [70, 24, 0] },      // from the start: the sea link rising ahead, its tower and cables, the skyline beside it
+};
+// the menu's other tiles: a view of a circuit, its own picture, not the Race tile's; 800 px, they show small and faded
+const TILES = {
+  trial: { track: 'tokyo', look: 'night', cam: [120, 1.7, 0], tgt: [170, 3, 0] },          // an empty road and the clock
+  drift: { track: 'drylake', look: 'day', cam: [60, 2.4, 6], tgt: [100, 1.5, -2] },        // room to slide
+  free: { track: 'india', look: 'dusk', cam: [400, 6, 3], tgt: [445, 0, -2] },             // nowhere to be
+  career: { track: 'marina', look: 'night', cam: [-10, 1.8, 0], tgt: [30, 4, 0] },         // the grid under the lights
+  records: { track: 'shajawa', look: 'dusk', cam: [200, 3, 2], tgt: [250, 5, 0] },         // the stands
+  settings: { track: 'tokyo', look: 'dusk', cam: [600, 5, 4], tgt: [640, 3, 0] },
+  credits: { track: 'marina', look: 'day', cam: [500, 6, 4], tgt: [540, 3, 0] },
 };
 // ---- the car camera: around the car at the origin of the garage room (its long axis on x), fov, target height
 const CAR_VIEW = { az: 35, el: 9, dist: 6.2, fov: 30, ty: 0.6 };   // nose to the right; the longest car fills ~70 % of the width
@@ -60,18 +72,19 @@ async function open(url, settings) {
 const sel = (ids) => ids.filter((id) => !only || only.includes(id));
 
 // ------------------------------------------------------------------------------------------------ tracks
-async function tracks() {
-  for (const id of sel(Object.keys(VIEWS))) {
-    const C = JSON.parse(readFileSync(join(root, 'public', 'assets', ...(id === 'marina' ? [] : [id]), 'track.json'), 'utf8')).centerline;
+async function tracks(V = VIEWS, dir = 'tracks') {
+  for (const id of sel(Object.keys(V))) {
+    const trk = V[id].track ?? id;
+    const C = JSON.parse(readFileSync(join(root, 'public', 'assets', ...(trk === 'marina' ? [] : [trk]), 'track.json'), 'utf8')).centerline;
     const at = ([i, up = 0, side = 0]) => {   // a centreline point, raised and moved sideways (left of the direction of travel)
       const n = C.length, k = ((Math.round(i) % n) + n) % n, p = C[k], a = C[(k + n - 1) % n], b = C[(k + 1) % n];
       const tx = b[0] - a[0], tz = b[2] - a[2], l = Math.hypot(tx, tz) || 1;
       return [p[0] + (tz / l) * side, p[1] + up, p[2] - (tx / l) * side];
     };
-    const v = VIEWS[id];
+    const v = V[id];
     const views = probe ? [...Array(8)].map((_, j) => { const i = Math.round((j / 8) * C.length); return { name: `${id}-${j}-i${i}`, cam: at([i, 7, 9]), tgt: at([i + 40, 2, 0]) }; })
       : [{ name: id, cam: at(v.cam), tgt: at(v.tgt) }];
-    const { page, ctx } = await open(`${base}/?dev=1&track=${id}`, { track: id, look: v.look, weather: 'dry' });
+    const { page, ctx } = await open(`${base}/?dev=1&track=${trk}`, { track: trk, look: v.look, weather: 'dry' });
     await page.waitForFunction(() => window.viewer && !document.getElementById('loading'), null, { timeout: 300000 });
     await page.addStyleTag({ content: '.lil-gui, #hud, .input-debug, #loading { display: none !important; }' });
     await page.evaluate(async (look) => {
@@ -83,9 +96,9 @@ async function tracks() {
       await page.evaluate((s) => { const w = window.viewer; w.camera.position.set(...s.cam); w.controls.target.set(...s.tgt); w.controls.update(); w.camera.lookAt(...s.tgt); }, s);
       await page.waitForTimeout(3000);   // textures, the venue's LODs and the sky settle on the new view
       const png = await page.screenshot({ timeout: 240000 });
-      const file = probe ? join(PROBE, `${s.name}.jpg`) : join(OUT, 'tracks', `${id}.webp`);
+      const file = probe ? join(PROBE, `${s.name}.jpg`) : join(OUT, dir, `${id}.webp`);
       mkdirSync(dirname(file), { recursive: true });
-      await (probe ? sharp(png).resize(800).jpeg({ quality: 80 }) : sharp(png).webp(WEBP)).toFile(file);
+      await (probe ? sharp(png).resize(800).jpeg({ quality: 80 }) : dir === 'tiles' ? sharp(png).resize(800).webp(WEBP) : sharp(png).webp(WEBP)).toFile(file);
       console.log('track', s.name, JSON.stringify({ cam: s.cam.map((x) => +x.toFixed(1)), tgt: s.tgt.map((x) => +x.toFixed(1)) }));
     }
     await ctx.close();
@@ -180,6 +193,7 @@ async function thumbs() {
 
 try {
   if (what === 'tracks' || what === 'all') await tracks();
+  if (what === 'tiles' || what === 'all') await tracks(TILES, 'tiles');
   if (what === 'cars' || what === 'all') await cars();
   if (what === 'side' || what === 'all') await cars(true);
   if (what === 'thumbs' || what === 'all') await thumbs();
