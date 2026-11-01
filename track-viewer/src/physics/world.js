@@ -40,11 +40,16 @@ function voidWalls(world, ground) {
     if (n !== 1) continue;
     const ax = P[a * 3], ay = P[a * 3 + 1], az = P[a * 3 + 2], bx = P[b * 3], by = P[b * 3 + 1], bz = P[b * 3 + 2];
     const ex = bx - ax, ez = bz - az, len = Math.hypot(ex, ez); if (len < 0.05) continue;
-    const mx = (ax + bx) / 2, my = (ay + by) / 2, mz = (az + bz) / 2;
-    let ox = -ez / len, oz = ex / len; if (ox * (mx - P[c * 3]) + oz * (mz - P[c * 3 + 2]) < 0) { ox = -ox; oz = -oz; }
-    ray.origin = { x: mx + ox * 1.5, y: my + 4, z: mz + oz * 1.5 };
-    if (world.castRay(ray, 14, true, undefined, undefined, undefined, undefined, onGround)) continue;
-    const i = out.length / 3; out.push(ax, ay - 1, az, bx, by - 1, bz, bx, by + 6, bz, ax, ay + 6, az); tris.push(i, i + 1, i + 2, i, i + 2, i + 3);
+    let ox = -ez / len, oz = ex / len; if (ox * ((ax + bx) / 2 - P[c * 3]) + oz * ((az + bz) / 2 - P[c * 3 + 2]) < 0) { ox = -ox; oz = -oz; }
+    // tested in pieces of at most 2 m, at both ends and the middle: a long edge can run out over water at one end and under the road at the
+    // other, and one test at its middle would wall all of it, across the road (Infinia's bridge landing). A gap this leaves is under 2 m, narrower than a car
+    const pieces = Math.ceil(len / 2), at = (t) => [ax + (bx - ax) * t, ay + (by - ay) * t, az + (bz - az) * t];
+    const landing = (x, y, z) => { ray.origin = { x: x + ox * 1.5, y: y + 4, z: z + oz * 1.5 }; return world.castRay(ray, 14, true, undefined, undefined, undefined, undefined, onGround); };
+    for (let k = 0; k < pieces; k++) {
+      const [x0, y0, z0] = at(k / pieces), [x1, y1, z1] = at((k + 1) / pieces);
+      if (landing(x0, y0, z0) || landing(x1, y1, z1) || landing((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2)) continue;
+      const i = out.length / 3; out.push(x0, y0 - 1, z0, x1, y1 - 1, z1, x1, y1 + 6, z1, x0, y0 + 6, z0); tris.push(i, i + 1, i + 2, i, i + 2, i + 3);
+    }
   }
   return { count: tris.length / 6, v: new Float32Array(out), idx: new Uint32Array(tris) };
 }
