@@ -653,7 +653,7 @@ New icons (via `scripts/make-ui-icons.mjs`): `mail`, `contract`, `calendar`, `ri
 
 ### 10.2 The save
 
-A separate key `ultrack.career.v1` holding `{ slots: [save|null, save|null, save|null], active }`, guarded like `store.js` (every read and write in try/catch). Three slots; autosave on every phase change. Versioned with `schema` and a `migrate(save)` as in `economy.js`.
+A separate key `ultrack.career.v1` holding `{ slots: [save|null, save|null, save|null], active }`, guarded like `store.js` (every read and write in try/catch). Three slots, picked up, started or deleted on the screen the Career tile always opens first (with Manager career greyed, coming soon); autosave on every phase change. Versioned with `schema` and a `migrate(save)` as in `economy.js`.
 
 ```jsonc
 {

@@ -43,6 +43,7 @@ try {
   await page.click('.bento-tile[data-id=career]'); await onScreen('career-start');
 
   // ---- a new driver, with the keyboard: Left and Right change a row; Enter steps it; Q and E typed in the name stay in the name
+  await page.click('.cs-act:has-text("New career")'); await page.waitForSelector('.cs-input');
   await page.fill('.cs-input', 'Quincy Valois'); await key('ArrowDown');
   const nat = () => page.evaluate(() => document.querySelector('.row[aria-label=Nation] .seg .on')?.textContent), a = await nat(); await key('ArrowRight'); const b = await nat(); await key('ArrowLeft'); const c = await nat();
   report.keys.nation = { a, b, c, ok: a === 'IND' && b === 'GBR' && c === 'IND' };
@@ -115,7 +116,7 @@ try {
   await page.click('.screen.on .cx-offer >> nth=0'); await onScreen('career-deal'); await shot('deal-review'); await go('.cx-go'); await onScreen('career-hub'); await page.waitForTimeout(300); await shot('home-season-2');
   report.season2 = await page.evaluate(() => { const s = window.game.career; return { season: s.clock.season, week: s.clock.week, weeks: s.season.weeks.length, team: s.contract.team, car: s.contract.car, world: s.season.world, cal: s.season.calendar.map((r) => [r.track, r.look, r.weather]) }; });
   // ---- reload: the same career, the same week; the slots; back to the menu with free play as it was
-  await page.reload(); await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 }); await page.keyboard.press('Enter'); await page.waitForSelector('.bento-tile[data-id=career]', { state: 'visible' }); await page.click('.bento-tile[data-id=career]'); await onScreen('career-hub');
+  await page.reload(); await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 }); await page.keyboard.press('Enter'); await page.waitForSelector('.bento-tile[data-id=career]', { state: 'visible' }); await page.click('.bento-tile[data-id=career]'); await page.waitForSelector('.cs-slot'); await page.click('.cs-slot >> nth=0'); await onScreen('career-hub');
   report.afterReload = await state();
   await page.click('.stabs button:has-text("Driver")'); await page.click('.screen.on button:has-text("Other careers")'); await page.waitForSelector('.cs-slot'); await shot('slots'); await page.click('.cs-slot >> nth=1'); await page.waitForSelector('.cs-input'); await key('Escape'); await page.waitForSelector('.cs-slot'); report.keys.escToSlots = true;
   await page.click('.cs-slot >> nth=0'); await onScreen('career-hub'); await page.click('.screen.on button:has-text("Menu")'); await onScreen('home'); report.freePlay = await page.evaluate(() => ({ car: JSON.parse(localStorage.getItem('ultrack.v1')).car, track: window.game.ctx.trackId() }));

@@ -54,6 +54,7 @@ try {
   await page.goto(base); await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
   await page.keyboard.press('Enter'); await page.waitForSelector('.bento-tile[data-id=career]', { state: 'visible' });
   await page.click('.bento-tile[data-id=career]'); await page.waitForSelector('.screen.career-start.on');
+  await shot('landing'); await page.click('.cs-act:has-text("New career")'); await page.waitForSelector('.cs-input');
   await shot('create');
   await page.fill('.cs-input', 'Quincy Valois'); await page.click('.cs-go'); await page.waitForSelector('text=Open Shootout'); await shot('shootout');
   await run(`const s = g.career; C.finishShootout(s, C.shootoutGrade(0).par * 1.02); S.saveCareer(s); g.show('careerStart');`); await page.waitForSelector('.of-card'); await shot('first-offers');

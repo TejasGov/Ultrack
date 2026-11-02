@@ -238,8 +238,13 @@
 .cx-setrow .row .note { font-size: var(--fs-micro); }
 
 /* careerStart */
-.cs-slots { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; }
-.cs-slot { justify-content: flex-start; min-height: calc(220 * var(--u)); }
+.cs-slots { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: calc(250 * var(--u)); align-content: center; }
+.cs-slot, .cs-act { justify-content: flex-end; }
+.cs-slot .kick, .cs-act .kick { margin-bottom: auto; }
+.cs-act .kick { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.cx > .m-layer { position: absolute; inset: 0; z-index: 2; }
+.cx .of-card.off, .cx .of-card.off:hover { background: transparent; color: var(--c-ink-3); cursor: not-allowed; }
+.of-card.off > * { color: var(--c-ink-3); }
 .cs-create, .cs-shoot { grid-template-columns: minmax(0, calc(1040 * var(--u))); justify-content: center; align-items: center; }
 .cs-form { gap: var(--sp-3); padding: var(--sp-5); max-height: 100%; overflow-y: auto; }
 .cs-form .cx-stages { margin: 0; }

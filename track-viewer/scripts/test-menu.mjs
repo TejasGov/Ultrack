@@ -8,6 +8,7 @@ class Element extends EventTarget {
  append(...items){for(let x of items){if(typeof x!=='object')x=globalThis.document.createTextNode(String(x));this.children.push(x);x.parentNode=this;}}   // strings become text nodes, as in the DOMappendChild(x){this.append(x);}
  replaceChildren(...items){this.children=[];this.append(...items);}
  insertBefore(x,ref){const i=this.children.indexOf(ref);this.children.splice(i,0,x);x.parentNode=this;}
+ remove(){const c=this.parentNode?.children;if(c)c.splice(c.indexOf(this),1);}
  removeAttribute(k){delete this.attrs[k];}hasAttribute(k){return Object.hasOwn(this.attrs,k);}
  closest(sel){const c=sel.startsWith('.')?sel.slice(1):null;return c&&this.className.split(' ').includes(c)?this:this.parentNode?.closest?.(sel)??null;}
  setAttribute(k,v){this.attrs[k]=String(v);if(k.startsWith('data-'))this.dataset[k.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=String(v);}
@@ -38,10 +39,13 @@ try{
   const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN')&&!t.includes('null'),what+': '+t.slice(0,1500));return t;};
   const click=(scr,re)=>{const walk=(e)=>[e,...e.children.flatMap(walk)],b=walk(scr.el).filter(e=>Object.hasOwn(e.attrs,'data-nav')&&re.test(e.textContent)).pop();assert.ok(b,'no button '+re);b.click();};
   const prior=game.screen,show=(scr,arg)=>{g.screen=scr;game.screen=scr;scr.onShow(arg);};const getNavItem=()=>{const n=UI.getNav();return n.items()[n.i];};
-  // slots: all empty goes straight to create; a saved career shows the picker, an empty slot creates into that slot, and Esc goes back to the picker
-  show(start);assert.ok(ok(start,'create').includes('You are 21'));
+  // the landing: always first; with no saves New career creates, Delete career and Manager career are greyed; an empty slot creates into that slot, and Esc goes back to it
+  show(start);{const L=ok(start,'landing');assert.ok(L.includes('New career')&&L.includes('Delete career')&&L.includes('Manager career')&&L.includes('Coming soon')&&L.includes('No careers saved yet'));const hasNav=(re)=>{const walk=(e)=>[e,...e.children.flatMap(walk)];return walk(start.el).some(e=>Object.hasOwn(e.attrs,'data-nav')&&re.test(e.textContent));};assert.ok(!hasNav(/Manager career/)&&!hasNav(/Delete career/),'greyed tiles are no nav stops');click(start,/New career/);assert.ok(start.el.textContent.includes('You are 21'),'New career opens the form');start.back();assert.ok(start.el.textContent.includes('Manager career'),'Esc from the form goes back to the landing');}
   const a=C.newCareer({name:'Slot One',seed:21,now:'x'});S.saveCareer(a,0);start.onShow();let t=ok(start,'slots');assert.ok(t.includes('Slot One')&&t.includes('Empty')&&t.includes('Slot 3'));
   click(start,/Slot 2/);assert.ok(start.el.textContent.includes('You are 21'),'an empty slot opens the create form');start.back();assert.ok(start.el.textContent.includes('Slot One'),'Esc from the form goes back to the slots');
+  // delete: pick a save, a modal asks with Cancel first, Cancel and Esc keep it, Delete erases only that slot
+  {const b=C.newCareer({name:'Slot Three',seed:23,now:'x'});S.saveCareer(b,2);start.onShow();click(start,/Delete career/);assert.ok(ok(start,'delete').includes('Delete a career'));click(start,/Slot Three/);assert.ok(start.modal,'it asks first');start.back();assert.ok(!start.modal&&S.listCareers()[2],'Esc keeps the save');click(start,/Slot Three/);click({el:start.modal},/Cancel/);assert.ok(!start.modal&&S.listCareers()[2],'Cancel keeps the save');click(start,/Slot Three/);click({el:start.modal},/Delete career/);assert.ok(S.listCareers()[0]&&!S.listCareers()[2],'only that slot is erased');assert.ok(!start.modal&&start.el.textContent.includes('Manager career'),'back on the landing');
+   S.saveCareer(a,0);S.saveCareer(C.newCareer({name:'Two',seed:24,now:'x'}),1);S.saveCareer(C.newCareer({name:'Three',seed:25,now:'x'}),2);start.onShow();assert.ok(start.el.textContent.includes('slots are full'),'three saves: New career says why not');S.saveCareer(null,1);S.saveCareer(null,2);S.loadCareer(0);start.onShow();}
   click(start,/Slot 2/);click(start,/Create driver/);
   assert.equal(S.activeSlot(),1,'the new career went into the slot picked');assert.deepEqual(S.listCareers().map(c=>c?.seed!==undefined),[true,true,false]);assert.equal(g.career.clock.phase,'shootout');assert.ok(ok(start,'shootout').includes('Open Shootout'));
   // the first offers are cards; a card opens the talks on its own screen

@@ -1,4 +1,4 @@
-// Career Mode's screens outside the hub (docs/career-mode.md section 13): careerStart (the save slots, create the driver, the Open Shootout, the first offers, the
+// Career Mode's screens outside the hub (docs/career-mode.md section 13): careerStart (the landing with the saves, create the driver, the Open Shootout, the first offers, the
 // season review and its market) and careerReport (the round report). The rules live in career/career.js; these screens call it, store the save and start sessions.
 import { h, fill, css, seg, row, prompt, stat, still, empty, getNav, teamLogo, teamMark, fadeMore } from './ui.js';
 import { carName } from './carinfo.js';
@@ -19,25 +19,45 @@ const RACE_LENGTHS = Object.entries(TUNING.series.lengths).map(([id, min]) => [i
 const RACE_LENGTH_NOTE = 'About how long each race takes; the laps depend on the circuit. Points and XP are the same at every length, and you can change it between rounds.';
 
 // ---------------------------------------------------------------------------------------------- careerStart
-/** one screen for every step outside the season: the slots, create the driver, the Shootout, the first offers, and each season review */
+/** one screen for every step outside the season: the landing (saves, new, delete), create the driver, the Shootout, the first offers, and each season review */
 export function CareerStartScreen(game) {
   const F = frame('career-start');
-  let creating = false, target = null, form = { name: '', nation: 'IND', number: 99, difficulty: 'normal', raceLength: 'sprint' };
+  let creating = false, deleting = false, target = null, modal = null, cancelModal = null, form = { name: '', nation: 'IND', number: 99, difficulty: 'normal', raceLength: 'sprint' };
   const primary = (ic, label, onclick) => h('button.btn.btn-primary.cs-go', { 'data-nav': '', onclick }, icon(ic), label);
   const secondary = (ic, label, onclick) => h('button.btn.btn-secondary', { 'data-nav': '', onclick }, icon(ic), label);
   const steps = (at) => h('div.cx-stages', {}, ['Your driver', 'Open Shootout', 'First contract'].flatMap((s, i) => [h(i === at ? 'b' : 'span', {}, s), i < 2 ? icon('chevron-right') : null]));
   const openDeal = (id) => game.show('careerDeal', { id, home: 'careerStart' });
 
-  /** the save slots: a filled one resumes, an empty one starts a new career */
+  /** the landing: the saves (a filled one resumes, an empty one starts a new career), then new, delete and the manager career to come. Deleting: the saves are the choice */
   function slots(list) {
-    F.title('Career', `${SLOTS} save slots`); F.page.className = 'cx-page cs-slots'; fill(F.me);
-    return list.map((c, i) => (c?.unreadable ? h('button.of-card.cs-slot', { 'data-nav': '', onclick: () => game.setBusy('This career was saved by a newer version of the game.', { kind: 'error', ms: 4000 }) }, h('span.kick', {}, `Slot ${i + 1}`), h('strong', {}, 'Locked'), h('span.of-why', {}, 'Saved by a newer version of the game. Update to carry on.')) : h('button.of-card.cs-slot', { 'data-nav': '', onclick: () => {
-      if (c) { game.career = loadCareer(i); route(); } else { target = i; creating = true; build(); } } },
+    F.title(deleting ? 'Delete a career' : 'Career', deleting ? 'Pick the save to delete' : 'Pick up a save, or start something new'); F.page.className = 'cx-page cs-slots'; fill(F.me); F.backdrop('tiles', 'career');
+    const off = { disabled: true };      // greyed: no nav stop, nothing to press
+    const card = (c, i) => {
+      if (c?.unreadable) return h(`button.of-card.cs-slot${deleting ? '.off' : ''}`, deleting ? off : { 'data-nav': '', onclick: () => game.setBusy('This career was saved by a newer version of the game.', { kind: 'error', ms: 4000 }) }, h('span.kick', {}, `Slot ${i + 1}`), h('strong', {}, 'Locked'), h('span.of-why', {}, 'Saved by a newer version of the game. Update to carry on.'));
+      return h(`button.of-card.cs-slot${deleting && !c ? '.off' : ''}`, deleting && !c ? off : { 'data-nav': '', onclick: () => {
+        if (deleting) askDelete(i, c.player.name); else if (c) { game.career = loadCareer(i); route(); } else { target = i; creating = true; build(); } } },
       [h('span.kick', {}, `Slot ${i + 1}`), c ? [h('strong', {}, c.player.name),
         h('span.of-terms', {}, stat('Season', String(c.clock.season)), stat('Level', String(c.career.cl)), stat('Reputation', String(Math.round(c.career.rep)))),
         h('span.of-why', {}, c.contract ? `${teamName(c.contract.team)} · ${carName(c.contract.car)}` : 'Still looking for a seat')]
-        : [h('strong', {}, 'Empty'), h('span.of-why', {}, 'Start a new career')]].flat(Infinity))));
+        : [h('strong', {}, 'Empty'), h('span.of-why', {}, deleting ? 'Nothing to delete' : 'Start a new career')]].flat(Infinity));
+    };
+    if (deleting) return list.map(card);
+    const tile = (ic, kick, title, why, onclick) => h(`button.of-card.cs-act${onclick ? '' : '.off'}`, onclick ? { 'data-nav': '', onclick } : off, h('span.kick', {}, icon(ic), kick), h('strong', {}, title), h('span.of-why', {}, why));
+    const free = list.findIndex((c) => !c), saved = list.some((c) => c && !c.unreadable);
+    return [list.map(card),
+      tile('plus', 'Driver career', 'New career', free < 0 ? `All ${SLOTS} slots are full. Delete one first.` : 'Create your driver and start at the Open Shootout.', free < 0 ? null : () => { target = free; creating = true; build(); }),
+      tile('close', 'Your saves', 'Delete career', saved ? 'Pick a save to delete. This cannot be undone.' : 'No careers saved yet.', saved ? () => { deleting = true; build(); } : null),
+      tile('lock', 'Coming soon', 'Manager career', 'Run a team instead of driving for one.', null)];
   }
+  /** deleting is for good, so it asks first in a modal that traps focus on Cancel, as the pause menu's Restart and Quit do */
+  function askDelete(i, name) {
+    const opener = getNav().i; F.page.inert = F.foot.inert = true;
+    cancelModal = () => { closeModal(); getNav().reset(opener); };
+    modal = h('div.pnl.modal', { role: 'alertdialog', 'aria-modal': 'true', 'aria-label': 'Delete career' }, h('h2', {}, `Delete ${name}?`), h('p', {}, `Slot ${i + 1} is erased for good: every season, contract and coin in it. This cannot be undone.`),
+      h('div.m-acts', {}, h('button.btn.btn-secondary', { 'data-nav': '', onclick: cancelModal }, 'Cancel'), h('button.btn.btn-primary', { 'data-nav': '', onclick: () => { closeModal(); saveCareer(null, i); deleting = false; build(); } }, icon('close'), 'Delete career')));
+    F.el.append(h('div.m-layer', {}, modal)); getNav().reset(0);
+  }
+  function closeModal() { if (!modal) return; modal.parentNode.remove(); modal = null; F.page.inert = F.foot.inert = false; }
   function create() {
     F.title('New career', 'You are 21, fast, and unknown'); F.page.className = 'cx-page cs-create'; fill(F.me); F.backdrop('tiles', 'career');
     const name = h('input.cs-input', { type: 'text', maxLength: 24, placeholder: 'Your name', value: form.name, tabIndex: -1, 'aria-label': 'Driver name',
@@ -94,8 +114,8 @@ export function CareerStartScreen(game) {
   }
   const route = () => game.show(game.career && !['shootout', 'offers', 'review'].includes(game.career.clock.phase) ? 'careerHub' : 'careerStart', game.career && !['shootout', 'offers', 'review'].includes(game.career.clock.phase) ? 'home' : undefined);
   function build(keep = false) {
-    const save = game.career, cur = keep ? getNav().i : 0, all = save ? null : listCareers(), hasAny = all?.some(Boolean);
-    const nodes = !save ? (!creating && hasAny ? slots(all) : create()) : save.clock.phase === 'shootout' ? shootout(save) : save.clock.phase === 'offers' ? firstOffers(save) : review(save);
+    const save = game.career, cur = keep ? getNav().i : 0, all = save ? null : listCareers();
+    const nodes = !save ? (creating ? create() : slots(all)) : save.clock.phase === 'shootout' ? shootout(save) : save.clock.phase === 'offers' ? firstOffers(save) : review(save);
     fill(F.page, nodes.flat(Infinity));
     fill(F.foot, prompts(SELECT, CHOOSE), h('div.sp'), h('button.btn.btn-ghost', { 'data-nav': '', onclick: () => api.back() }, icon('back'), 'Back', prompt('Esc', 'b')));
     F.page.querySelectorAll('.lscroll').forEach(fadeMore);
@@ -104,11 +124,12 @@ export function CareerStartScreen(game) {
   }
   const api = {
     el: F.el, nav: true, grid: true,
-    /** the Career tile: a season under way goes straight to the hub */
-    open() { game.career ??= loadCareer(); route(); },
-    onShow() { creating = false; target = null; build(); },
-    /** from the new-career form back to the slots when there are any; otherwise out to the menu */
-    back() { if (!game.career && creating && listCareers().some(Boolean)) { creating = false; build(); } else game.leaveCareer(); },
+    get modal() { return modal; },     // Nav: only the modal's buttons
+    /** the Career tile: always the landing, where a save is picked up */
+    open() { game.career = null; game.show('careerStart'); },
+    onShow() { closeModal(); creating = deleting = false; target = null; build(); },
+    /** from the modal, the new-career form or picking a save to delete, one step back to the landing; from the landing out to the menu */
+    back() { if (modal) cancelModal(); else if (!game.career && (creating || deleting)) { creating = deleting = false; build(); } else game.leaveCareer(); },
   };
   return api;
 }
