@@ -37,7 +37,7 @@ try{
   const g={...game,career:null,screens:{},setBusy:(m)=>busy.push(m),leaveCareer(){},careerSession(...a){g.sessions.push(a);},sessions:[],show:(...a)=>shows.push(a)},start=CU.CareerStartScreen(g),hub=CU.CareerHubScreen(g),rep=CU.CareerReportScreen(g),deal=CU.CareerDealScreen(g);
   const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN')&&!t.includes('null'),what+': '+t.slice(0,1500));return t;};
   const click=(scr,re)=>{const walk=(e)=>[e,...e.children.flatMap(walk)],b=walk(scr.el).filter(e=>Object.hasOwn(e.attrs,'data-nav')&&re.test(e.textContent)).pop();assert.ok(b,'no button '+re);b.click();};
-  const show=(scr,arg)=>{g.screen=scr;scr.onShow(arg);};
+  const prior=game.screen,show=(scr,arg)=>{g.screen=scr;game.screen=scr;scr.onShow(arg);};const getNavItem=()=>{const n=UI.getNav();return n.items()[n.i];};
   // slots: all empty goes straight to create; a saved career shows the picker, an empty slot creates into that slot, and Esc goes back to the picker
   show(start);assert.ok(ok(start,'create').includes('You are 21'));
   const a=C.newCareer({name:'Slot One',seed:21,now:'x'});S.saveCareer(a,0);start.onShow();let t=ok(start,'slots');assert.ok(t.includes('Slot One')&&t.includes('Empty')&&t.includes('Slot 3'));
@@ -52,7 +52,7 @@ try{
   // a hard ask is countered; the counter can be accepted; then only Sign is left
   o0.interest=0;g.career.pending.offers.splice(1);deal.onShow({id:o0.id,home:'careerStart'});o0.seasons=2;
   C.negotiate(g.career,o0.id,{salary:0.3,signing:0.5,seasons:1,status:'second'});deal.onShow({id:o0.id,home:'careerStart'});t=ok(deal,'countered');assert.ok(t.includes('Accept their counter')&&t.includes('Their counter'));
-  click(deal,/Accept their counter/);t=ok(deal,'agreed');assert.ok(o0.agreed&&t.includes('Sign with')&&!t.includes('Propose'),'agreed: only signing left');
+  click(deal,/Accept their counter/);t=ok(deal,'agreed');assert.ok(o0.agreed&&t.includes('Sign with')&&!t.includes('Propose'),'agreed: only signing left');assert.match(getNavItem(g).textContent,/Sign with/,'focus goes to Sign, never to Walk away');
   click(deal,/Sign with/);assert.deepEqual(shows.at(-1),['careerHub','home'],'signing goes to the hub');const save=g.career;assert.equal(save.clock.phase,'paddock');
   // every tab of the hub, in a pre-season week
   for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'tab '+tab);}
@@ -99,7 +99,7 @@ try{
   // a career from before weeks opens on the new hub, every tab, mid-season and with a market offer waiting
   const old3=C.newCareer({name:'Old Save',seed:31,now:'x'});C.finishShootout(old3,null);C.acceptOffer(old3,old3.pending.offers[0].id,avail);g.career=old3;for(let i=0;i<3;i++){C.finishQuali(old3,60);const gq=old3.season.current.quali.grid;C.finishRace(old3,{order:gq,best:{},crashes:0,spins:0});}
   old3.schema=3;delete old3.inbox;delete old3.inboxN;delete old3.sponsors;delete old3.clock.week;delete old3.season.weeks;delete old3.season.mid;delete old3.season.asked;old3.season.w1={offer:{id:'w3',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,interest:0.4,why:'They want you.'},state:'open'};C.migrate(old3);
-  for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'migrated '+tab);}assert.ok(hub.el.textContent.includes('Week')&&C.findOffer(old3,'w3'),'the old offer is still on the table');
+  for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'migrated '+tab);}assert.ok(hub.el.textContent.includes('Week')&&C.findOffer(old3,'w3'),'the old offer is still on the table');game.screen=prior;
   delete globalThis.localStorage;
  }
  const credits=UI.CreditsScreen(game);for(const who of ['ar.jethin','evolveduk','sunnykhude'])assert.ok(credits.el.textContent.includes(who),'Infinia CC BY model credited: '+who);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));assert.ok(credits.el.textContent.includes('Airbus A320 Airliner')&&credits.el.textContent.includes('Kyaie'),'the Dry Lake airliner (CC BY) is credited');assert.ok(['Modular Stadium','Stadium Light','davi.pereira.souza.0001','thundermind'].every(t=>credits.el.textContent.includes(t)),'the Shajawa stands and towers (CC BY) are credited');

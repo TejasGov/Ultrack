@@ -61,10 +61,11 @@ export function migrate(save) {
       const S = save.season, weeks = buildWeeks(S.calendar, save.contract ? TIERS.teams[save.contract.team].side ?? 'test' : 'test');
       weeks.forEach((w) => { if (w.event && weeks.findIndex((x) => x.kind === 'race' && x.round === save.clock.round) > weeks.indexOf(w)) w.event.skipped = true; });
       S.results.forEach((r, i) => { weeks.find((w) => w.round === i).result = { finish: r.finish, rr: r.rr, dnf: r.dnf }; });
-      S.weeks = weeks; S.asked = {}; S.mid = S.w1?.state === 'open' ? [{ ...S.w1.offer, expires: weeks.findIndex((w) => w.kind === 'market') }] : []; delete S.w1;
+      const at = save.clock.phase === 'review' ? weeks.length - 1 : Math.max(0, weeks.findIndex((w) => w.kind === 'race' && w.round === save.clock.round));
+      S.weeks = weeks; S.asked = {}; S.mid = S.w1?.state === 'open' && save.clock.phase !== 'review' ? [{ ...S.w1.offer, expires: weeks.findIndex((w, i) => i >= at && w.kind !== 'race') }] : []; delete S.w1;
       S.calendar.forEach((r, i) => { if (i >= save.clock.round && r.track === 'infinia' && r.look === 'night') r.look = 'dusk'; });   // Infinia is day and dusk only
       if (S.current) delete S.current.side;
-      save.clock.week = save.clock.phase === 'review' ? weeks.length - 1 : Math.max(0, weeks.findIndex((w) => w.kind === 'race' && w.round === save.clock.round));
+      save.clock.week = at;
       post(save, 'news', 'The season now runs in weeks', 'Your career moved to the new calendar. Nothing you raced has changed.');
     }
     save.schema = 4;
@@ -123,9 +124,9 @@ function startSeason(save, available, displaced = null) {
   const me = save.contract, tier = TIERS.teams[me.team].tier, world = TIERS.tiers[tier].world, calendar = buildCalendar(save.seed, save.clock.season, world, available, save.rules.raceLength);
   save.season = { tier, world, calendar, weeks: buildWeeks(calendar, TIERS.teams[me.team].side ?? 'test'), results: [], current: null, mid: [], asked: {} };
   save.pending = null; save.clock.round = 0; save.clock.week = 0;
-  save.garage.package = me.trust >= T.trust.package ? (me.status === 'number1' ? 2 : 1) : 0;   // the team's free level at the season start (5.4)
+  save.garage.package = (save.garage.package ?? 0) + (me.trust >= T.trust.package ? (me.status === 'number1' ? 2 : 1) : 0);   // the team's free level at the season start (5.4), on top of any not yet spent
   prepareRound(save);
-  post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${save.garage.package ? `The team gives you ${save.garage.package === 1 ? 'a free upgrade level' : 'two free upgrade levels'}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
+  post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${save.garage.package ? `You have ${save.garage.package === 1 ? 'a free upgrade level' : `${save.garage.package} free upgrade levels`}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
   if (displaced) post(save, 'team', `${personOf(save, displaced)?.name ?? displaced} lost the seat to you`, 'A free agent now, and not one to forget it.');
   sponsorOffers(save, save.season.weeks.findIndex((w) => w.kind === 'market'));
 }
@@ -152,7 +153,11 @@ export function eventName(save, week) {
 /** what pressing Advance would cost, in words; empty when nothing is lost */
 export function advanceWarnings(save) {
   const w = currentWeek(save), i = save.clock.week, out = [], S = save.sponsors;
-  if (w?.event && !w.event.result && w.event.kind === 'sponsor' && S.deals.length) out.push(`Skipping costs goodwill with ${S.deals.map((d) => d.name).join(' and ')}`);
+  if (w?.event && !w.event.result && w.event.kind === 'sponsor' && S.deals.length) {
+    const end = S.deals.filter((d) => d.mood <= 1), rest = S.deals.filter((d) => d.mood > 1);
+    if (end.length) out.push(`Skipping ends your deal with ${end.map((d) => d.name).join(' and ')}: the retainer stops, reputation ${T.sponsors.droppedRep}`);
+    if (rest.length) out.push(`Skipping costs goodwill with ${rest.map((d) => d.name).join(' and ')}`);
+  }
   const lapse = [...(save.season?.mid ?? []), ...S.offers].filter((o) => (o.expires ?? i) === i);
   if (lapse.length) out.push(`${lapse.map((o) => o.name ?? teamName(o.team)).join(' and ')} ${lapse.length === 1 ? 'lapses' : 'lapse'} this week`);
   return out;
@@ -175,8 +180,8 @@ function enterWeek(save) {
   if (w.kind === 'race') {
     const R = S.calendar[w.round]; post(save, 'race', `Race week: ${R.name}`, `Round ${R.round} of ${S.calendar.length}${R.finale ? ', points ×1.5' : ''}. Expected finish P${S.current.expPos}. Practice is open, and qualifying sets the grid.`, { tab: 'home' });
   } else if (w.kind === 'market') {
-    post(save, 'deal', 'The market is open', 'For this one week teams can talk to you, and you can knock on their doors. Anything you sign starts next season.', { tab: 'deals' });
-    sponsorOffers(save, S.weeks.findLastIndex((x) => x.kind === 'race'));
+    post(save, 'deal', 'The market is open', save.clock.season === 1 ? 'Sponsors can still talk. Teams will not: your first season is probation, and they come to you at the season end.' : 'For this one week teams can talk to you, and you can knock on their doors. Anything you sign starts next season.', { tab: 'deals' });
+    sponsorOffers(save, save.clock.week + 2);   // the open week after the next round: late enough to answer, early enough to hit a target
   }
 }
 /** the player's race length (tuning.json series.lengths): every round not yet raced takes it; points and XP do not depend on it */
@@ -335,6 +340,7 @@ function endSeason(save) {
   save.history.push({ season: save.clock.season, team: me.team, seat: me.seat, car: me.car, tier: save.season.tier, drivers: drvPos, teams: teamPos, cup: cupPos,
     points: st.drivers[drvPos - 1]?.pts ?? 0, avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: st.teams.map((t) => t.team), dropped });
   for (const d of S.deals) if (!d.met) post(save, 'sponsor', `${d.name}: target missed`, `You did not ${targetText(d.target)}. No bonus this year.`);
+  for (const o of save.season.mid.splice(0)) { save.world.teams[o.team].declined++; post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
   save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
   save.clock.phase = 'review';

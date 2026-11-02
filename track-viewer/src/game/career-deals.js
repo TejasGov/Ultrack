@@ -22,9 +22,10 @@ export function offerRow(save, o, open) {
 /** the teams, closest first: how near the player is to each bar and the real reason; in a market week Enter knocks on the door */
 export function teamRows(save, game, rebuild) {
   return TEAM_IDS.filter((t) => t !== save.contract.team).map((t) => C.teamOutlook(save, t)).sort((a, b) => TIERS.tiers[a.tier].rank - TIERS.tiers[b.tier].rank || b.progress - a.progress).map((v) => css(
-    h('div.lrow.cx-teamrow', { 'data-nav': '', tabIndex: 0, role: 'button', 'aria-label': `Approach ${teamName(v.team)}`, onclick: () => {
+    h('div.lrow.cx-teamrow', { 'data-nav': '', 'data-team': v.team, tabIndex: 0, role: 'button', 'aria-label': `Approach ${teamName(v.team)}`, onclick: () => {
       if (!v.canAsk) return game.setBusy(`${teamName(v.team)}: ${v.blocked}.`, { kind: 'error', ms: 4000 });
       const r = C.approach(save, v.team); persist(game); game.setBusy(r.result === 'offer' ? `${teamName(v.team)} will talk. Their offer is on the table.` : `${teamName(v.team)}: ${r.why}`, r.result === 'offer' ? {} : { kind: 'error', ms: 4000 }); rebuild();
+      const at = getNav().items().findIndex((e) => e.dataset.team === v.team); if (at >= 0) getNav().reset(at);   // a new offer row moved everything down
     } }, h('i.cx-tbar'), h('span.c-name', {}, h('b', {}, teamName(v.team)), h('small', {}, TIERS.tiers[v.tier].name)), css(h('span.cx-gauge', {}, h('i')), { '--p': v.progress }),
       h('small.why', {}, v.why), h('span.cx-tag' + (v.canAsk ? '.warn' : ''), {}, v.canAsk ? 'Approach' : v.blocked)), { '--team': teamMark(loreOf(v.team)) }));
 }
@@ -82,7 +83,7 @@ export function CareerDealScreen(game) {
     const name = o.sponsor ? o.name : teamName(o.team), primary = (ic, label, onclick) => h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick }, icon(ic), label), second = (ic, label, onclick) => h('button.btn.btn-secondary', { 'data-nav': '', onclick }, icon(ic), label);
     const sign = () => doSign(save, o), keep = o.keep ? primary('check', `Stay at ${name}`, sign) : null;
     if (!can) return [keep ?? primary('check', o.signed ? `Join ${name}` : `Sign with ${name}`, sign), h('div.sp'), o.keep || o.signed || o.reserve ? null : walk(save, o)];
-    return [o.counter ? primary('check', 'Accept their counter', () => { const r = C.negotiate(save, o.id, o.counter); persist(game); ask = null; game.setBusy(r.result === 'accepted' ? `${name} agreed. Sign when you are ready.` : ''); build(true); }) : primary('check', asked ? 'Sign as offered' : `Sign with ${name}`, sign),
+    return [o.counter ? primary('check', 'Accept their counter', () => { const r = C.negotiate(save, o.id, o.counter); persist(game); ask = null; walking = false; game.setBusy(r.result === 'accepted' ? `${name} agreed. Sign when you are ready.` : ''); build(); }) : primary('check', asked ? 'Sign as offered' : `Sign with ${name}`, sign),
       second('upgrade', 'Propose', () => propose(save, o, name)), h('div.sp'), walk(save, o)];
   }
   const walk = (save, o) => h('button.btn.btn-ghost', { 'data-nav': '', onclick: () => {
@@ -90,10 +91,10 @@ export function CareerDealScreen(game) {
     C.walkAway(save, o.id); persist(game); leave();
   } }, icon('close'), walking ? 'Press again to walk away' : 'Walk away');
   function propose(save, o, name) {
-    const r = C.negotiate(save, o.id, ask); persist(game); ask = null;
+    const r = C.negotiate(save, o.id, ask); persist(game); ask = null; walking = false;
     if (r.result === 'withdrawn') { game.setBusy(`${name} walked away. Reputation down.`, { kind: 'error', ms: 4000 }); return leave(); }
     game.setBusy(r.result === 'accepted' ? `${name} agreed. Sign when you are ready.` : `${name} came back with terms of their own.`, r.result === 'accepted' ? {} : { kind: 'error', ms: 4000 });
-    build(true);
+    build();   // focus on the primary: the rows may be gone, and the old index could land on Walk away
   }
   function doSign(save, o) {
     if (o.sponsor) {

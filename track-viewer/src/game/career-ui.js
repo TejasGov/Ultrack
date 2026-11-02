@@ -31,12 +31,12 @@ export function CareerStartScreen(game) {
   /** the save slots: a filled one resumes, an empty one starts a new career */
   function slots(list) {
     F.title('Career', `${SLOTS} save slots`); F.page.className = 'cx-page cs-slots'; fill(F.me);
-    return list.map((c, i) => h('button.of-card.cs-slot', { 'data-nav': '', onclick: () => {
+    return list.map((c, i) => (c?.unreadable ? h('button.of-card.cs-slot', { 'data-nav': '', onclick: () => game.setBusy('This career was saved by a newer version of the game.', { kind: 'error', ms: 4000 }) }, h('span.kick', {}, `Slot ${i + 1}`), h('strong', {}, 'Locked'), h('span.of-why', {}, 'Saved by a newer version of the game. Update to carry on.')) : h('button.of-card.cs-slot', { 'data-nav': '', onclick: () => {
       if (c) { game.career = loadCareer(i); route(); } else { target = i; creating = true; build(); } } },
       [h('span.kick', {}, `Slot ${i + 1}`), c ? [h('strong', {}, c.player.name),
         h('span.of-terms', {}, stat('Season', String(c.clock.season)), stat('Level', String(c.career.cl)), stat('Reputation', String(Math.round(c.career.rep)))),
         h('span.of-why', {}, c.contract ? `${teamName(c.contract.team)} · ${carName(c.contract.car)}` : 'Still looking for a seat')]
-        : [h('strong', {}, 'Empty'), h('span.of-why', {}, 'Start a new career')]].flat(Infinity)));
+        : [h('strong', {}, 'Empty'), h('span.of-why', {}, 'Start a new career')]].flat(Infinity))));
   }
   function create() {
     F.title('New career', 'You are 21, fast, and unknown'); F.page.className = 'cx-page cs-create'; fill(F.me); F.backdrop('tiles', 'career');

@@ -178,6 +178,7 @@
 .cx-stages b { color: var(--c-ink-1); }
 .cx-stages .icon { font-size: var(--icon-s); }
 .cx-party img.car { width: 100%; height: calc(130 * var(--u)); object-fit: contain; flex: none; }
+.cx-party .stat-r > b { white-space: normal; }
 .cx-party .team-logo { height: calc(26 * var(--u)); width: auto; align-self: flex-start; }
 .cx-partylogo .cx-brand { height: calc(120 * var(--u)); }
 .cx-termhead { display: grid; grid-template-columns: calc(112 * var(--u)) calc(120 * var(--u)) minmax(0, 1fr); gap: var(--sp-4); padding: 0 var(--sp-3); font-size: var(--fs-micro); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }

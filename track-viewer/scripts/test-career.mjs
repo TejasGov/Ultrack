@@ -210,6 +210,13 @@ try {
   const ow = signed(125); toReview(ow, 4, 1); ow.contract.seasonsLeft = 1; ow.pending.offers = [{ id: 'own', team: 'mojave', seat: 'B', car: 'bmw1', tier: 'rookie', status: 'junior', salary: 300, signing: 0, seasons: 2, interest: -1 }]; const tr0 = ow.contract.trust;
   assert.equal(C.negotiate(ow, 'own', { salary: 0.3, signing: 0, seasons: 2, status: 'junior' }).result, 'countered'); assert.ok(ow.contract.trust < tr0, 'haggling with your own team costs trust');
 
+  // ---- review findings: a free level already earned carries over; a team with an offer on the table is not knocked on again; sponsors from the market lapse soon after it; the season end closes the rest
+  const pk = signed(133); pk.garage.package = 2; toReview(pk, 4, 1); pk.contract.trust = 10; const keep1 = pk.pending.offers.find((o) => o.keep) ?? pk.pending.offers.at(-1); C.acceptOffer(pk, keep1.id, avail); assert.equal(pk.garage.package, 2, 'unspent levels are not lost');
+  const dup = signed(134); toReview(dup, 4, 1); dup.pending.offers.push({ id: 'd', team: 'toro', seat: 'B', car: 'huracan', tier: 'maestro', status: 'junior', salary: 500, signing: 0, seasons: 2 }); assert.equal(C.teamOutlook(dup, 'toro').blocked, 'Offer on the table');
+  let spMk = null; for (let i = 800; i < 860 && !spMk; i++) { const a = signed(i); C.advanceWeek(a); while (C.currentWeek(a).kind !== 'market') { if (C.currentWeek(a).kind === 'race') round(a, 8); else C.advanceWeek(a); } if (a.sponsors.offers.some((o) => o.expires > a.clock.week)) spMk = a; }
+  assert.ok(spMk, 'the market brings new sponsors'); const lateO = spMk.sponsors.offers.find((o) => o.expires > spMk.clock.week); assert.equal(lateO.expires, spMk.clock.week + 2); assert.equal(spMk.season.weeks[lateO.expires].kind, 'open', 'and they lapse in the next open week');
+  const endM = signed(135); endM.season.mid.push({ id: 'e', team: 'toro', seat: 'B', car: 'huracan', tier: 'maestro', status: 'junior', salary: 500, signing: 0, seasons: 2, expires: -1 }); toReview(endM, 4); assert.deepEqual(endM.season.mid, [], 'the season end closes what is left'); assert.ok(endM.inbox.some((m) => /lapsed/.test(m.title)));
+
   // ---- team moves: the market week or the season end only, one knock per team, an honest no
   const ap = signed(126); assert.equal(C.approach(ap, 'toro').result, 'closed', 'not outside the market'); assert.equal(C.teamOutlook(ap, 'toro').blocked, 'Market closed'); assert.match(C.teamOutlook(ap, 'toro').why, /Reputation/);
   toReview(ap, 4); const no = C.approach(ap, 'aurum'); assert.ok(['closed', 'no'].includes(no.result)); ap.career.rep = 500; ap.career.rr = [8, 8, 8, 8, 8, 8]; ap.career.cl = 12; const yes = C.approach(ap, 'toro'); assert.ok(['offer', 'no'].includes(yes.result)); assert.equal(C.approach(ap, 'toro').result, 'closed', 'one knock a window');
@@ -219,11 +226,12 @@ try {
 
   // ---- sponsors: offers in pre-season, a slot per tier, a retainer every round, a bonus on the target, consequences for no-shows
   const sp = signed(128), so = sp.sponsors.offers; assert.equal(so.length, R.SPONSORS.offersPerWindow); assert.ok(so.every((o) => R.SPONSORS.brands[o.brand].tier === 'rookie')); assert.ok(so[0].expires === sp.season.weeks.findIndex((x) => x.kind === 'market'));
-  const so0 = so[0], ret = so0.retainer; assert.equal(C.negotiate(sp, so0.id, { retainer: 0.15, bonus: 0 }).result, 'accepted'); assert.equal(so0.retainer, Math.round(ret * 1.15 / 5) * 5); assert.ok(C.signSponsor(sp, so0.id).ok); assert.equal(C.signSponsor(sp, so[0].id).reason, 'slots', 'one slot at Rookie');
+  const so0 = so[0], ret = so0.retainer; assert.equal(C.negotiate(sp, so0.id, { retainer: 0.15, bonus: 0 }).result, 'accepted'); assert.equal(so0.retainer, Math.round(ret * 1.15 / 5) * 5); assert.ok(C.signSponsor(sp, so0.id).ok); assert.deepEqual(sp.sponsors.offers, [], 'one slot at Rookie: the other sponsor moves on'); assert.ok(sp.inbox.some((m) => /moved on/.test(m.title))); assert.equal(C.signSponsor(sp, 'nope').reason, 'gone');
+  const full = signed(132), fo = full.sponsors.offers[0]; full.sponsors.deals.push({ brand: 'x', name: 'X', retainer: 1, bonus: 1, target: { kind: 'win', count: 1 }, progress: 0, met: false, mood: 2 }); assert.equal(C.signSponsor(full, fo.id).reason, 'slots', 'no free slot, no signing');
   const cash0 = sp.wallet.coins, deal = sp.sponsors.deals[0]; deal.target = { kind: 'top', n: 8, count: 1 }; const rr0 = round(sp, 4); assert.ok(rr0.coinLines.some(([l]) => /retainer/.test(l))); assert.ok(rr0.coinLines.some(([l]) => /bonus/.test(l)), 'the target pays'); assert.ok(deal.met); assert.equal(sp.wallet.coins, cash0 + rr0.coins);
   const rr1 = round(sp, 4); assert.ok(!rr1.coinLines.some(([l]) => /bonus/.test(l)), 'once');
   const sk = signed(129), so1 = sk.sponsors.offers[0]; C.signSponsor(sk, so1.id); assert.ok(sk.sponsors.deals.length); sk.sponsors.deals[0].mood = 1; C.advanceWeek(sk); round(sk, 4); const wS = sk.season.weeks.find((x, i) => i >= sk.clock.week && x.event?.kind === 'sponsor'); while (C.currentWeek(sk) !== wS) { if (C.currentWeek(sk).kind === 'race') round(sk, 4); else C.advanceWeek(sk); }
-  assert.ok(C.advanceWarnings(sk).some((t) => /goodwill/.test(t)), 'Advance warns about a sponsor day'); const repS = sk.career.rep; C.advanceWeek(sk); assert.deepEqual(sk.sponsors.deals, [], 'out of goodwill, the deal ends'); assert.equal(sk.career.rep, Math.max(0, repS + R.TUNING.sponsors.droppedRep));
+  assert.ok(C.advanceWarnings(sk).some((t) => /ends your deal/.test(t)), 'on the last of the goodwill, Advance says the deal ends'); sk.sponsors.deals[0].mood = 2; assert.ok(C.advanceWarnings(sk).some((t) => /goodwill/.test(t))); sk.sponsors.deals[0].mood = 1; const repS = sk.career.rep; C.advanceWeek(sk); assert.deepEqual(sk.sponsors.deals, [], 'out of goodwill, the deal ends'); assert.equal(sk.career.rep, Math.max(0, repS + R.TUNING.sponsors.droppedRep));
   assert.equal(C.eventName(sk, { kind: 'open', event: { kind: 'sponsor' } }), 'Team drift day');
 
   // ---- migration: a P1 save gets the seat map, and an unknown schema is not guessed at
@@ -239,7 +247,8 @@ try {
 
   // ---- three save slots, each its own career, guarded when storage is missing
   const S = await server.ssrLoadModule('/src/game/career/save.js'), mem = {};
-  assert.deepEqual(S.listCareers(), [null, null, null], 'no localStorage: empty slots, no throw'); assert.equal(S.saveCareer(signed(114)), false, 'and a failed write says so');
+  assert.deepEqual(S.listCareers(), [null, null, null], 'no localStorage: empty slots, no throw');
+  { const m2 = {}; globalThis.localStorage = { getItem: (k) => m2[k] ?? null, setItem: (k, v) => { m2[k] = v; } }; m2['ultrack.career.v1'] = JSON.stringify({ active: 0, slots: [{ schema: 99 }] }); assert.deepEqual(S.listCareers()[0], { unreadable: true }, 'a newer save is locked, not empty'); delete globalThis.localStorage; } assert.equal(S.saveCareer(signed(114)), false, 'and a failed write says so');
   globalThis.localStorage = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; } };
   const a0 = signed(115), a2 = signed(116); assert.ok(S.saveCareer(a0, 0)); assert.ok(S.saveCareer(a2, 2));
   assert.equal(S.activeSlot(), 2); assert.equal(S.loadCareer().seed, 116); assert.equal(S.loadCareer(0).seed, 115); assert.equal(S.activeSlot(), 0, 'loading a slot makes it active');

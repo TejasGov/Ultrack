@@ -14,8 +14,8 @@ function read() {
 function write(d) {
   try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch { return false; }
 }
-/** every slot, for the picker: a save, or null when empty (or from a schema this code cannot read: not guessed at) */
-export const listCareers = () => read().slots.map(migrate);
+/** every slot, for the picker: a save, null when empty, { unreadable: true } for one from a schema this code cannot read: never guessed at, and never written over */
+export const listCareers = () => read().slots.map((s) => (s ? migrate(s) ?? { unreadable: true } : null));
 export const activeSlot = () => read().active;
 /** the active career, or slot i (which then becomes active) */
 export function loadCareer(i) {

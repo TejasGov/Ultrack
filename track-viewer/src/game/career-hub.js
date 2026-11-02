@@ -65,7 +65,7 @@ export function CareerHubScreen(game) {
     const nextRace = W.slice(i).find((x) => x.kind === 'race'), nextEvent = W.slice(i + 1).find((x) => x.event), R = C.currentRound(save);
     const locked = (why) => () => toast(why, true), grid = q ? q.grid.indexOf(me.car) + 1 : null;
     const tiles = [mode('free-drive', 'Practice', `Open: ${trackOf(R.track).name}, no stakes`, 'open', () => startPractice(save))];
-    if (w.kind === 'market') tiles.push(mode('contract', 'The market', 'Open this week: talk and approach', 'next', () => go('deals')));
+    if (w.kind === 'market') tiles.push(mode('contract', 'The market', save.clock.season === 1 ? 'Open this week: sponsors only' : 'Open this week: talk and approach', 'next', () => go('deals')));
     else if (spec) tiles.push(mode(EVENT[spec.kind][1], EVENT[spec.kind][0], 'This week: optional', 'next', () => startEvent(save, spec)));
     else if (w.event?.result) tiles.push(mode(EVENT[w.event.kind][1], EVENT[w.event.kind][0], `Done: ${MEDAL[w.event.result.medal]}`, 'done', locked('One try at each event.')));
     else if (nextEvent) tiles.push(mode(EVENT[nextEvent.event.kind][1], EVENT[nextEvent.event.kind][0], `Week ${nextEvent.week}`, 'off', locked(`The next one is in week ${nextEvent.week}.`)));
@@ -87,7 +87,7 @@ export function CareerHubScreen(game) {
       h('div.cx-objs', {}, cur.objectives.map((o) => h('span', {}, icon(o.mandatory ? 'star' : 'plus'), objectiveText(o), h('small', {}, o.mandatory ? 'Required' : 'Bonus')))),
       notices(save));
     if (w.kind === 'market') return hero('This week · The market', 'The market is open',
-      h('p.cx-note', {}, 'Teams can talk to you and you can knock on their doors, for this one week. Anything you sign starts next season. Then the window shuts until the season ends.'),
+      h('p.cx-note', {}, save.clock.season === 1 ? 'Sponsors can still talk this week. Teams will not: your first season is probation, and they come to you when the season ends.' : 'Teams can talk to you and you can knock on their doors, for this one week. Anything you sign starts next season. Then the window shuts until the season ends.'),
       h('div.r-stats', {}, stat('On the table', String(save.season.mid.length + save.sponsors.offers.length)), stat('Reputation', String(Math.round(save.career.rep))), stat('Next', R.name)), notices(save));
     if (spec) return hero(`This week · ${EVENT[spec.kind][0]} · Optional`, spec.name,
       h('p.cx-note', {}, spec.kind === 'test' ? 'One flying lap against the team\'s targets. Gold earns a free upgrade level.' : `Ninety seconds of Drift Attack. It pays by medal${save.sponsors.deals.length ? ', and your sponsor counts the ones you turn up to' : ''}.`),
@@ -129,7 +129,7 @@ export function CareerHubScreen(game) {
     const w = save.season.weeks[i], R = C.roundOfWeek(save, i), t = R && trackOf(R.track), res = w.result, e = w.event;
     const body = w.kind === 'race' ? [h('p.cx-note', {}, 'Race weekend: practice is open, qualifying sets the grid, then one try at the race.'),
       h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Round', `${R.round} of ${save.season.calendar.length}${R.finale ? ' · ×1.5' : ''}`), stat('Conditions', [icon(LOOK[R.look][1]), LOOK[R.look][0], ' · ', WEATHER[R.weather].label]), stat('Race', `${R.laps} laps`), res ? stat('Result', res.dnf ? 'Retired' : 'P' + res.finish) : null, res ? stat('Rating', res.rr.toFixed(1)) : null)]
-      : w.kind === 'market' ? [h('p.cx-note', {}, 'One week when teams can talk to you and you can approach them. Anything you sign starts next season.')]
+      : w.kind === 'market' ? [h('p.cx-note', {}, save.clock.season === 1 ? 'One week for sponsors. Teams wait for the season end: your first season is probation.' : 'One week when teams can talk to you and you can approach them. Anything you sign starts next season.')]
         : w.kind === 'end' ? [h('p.cx-note', {}, 'The season review, your team\'s verdict, and the market: every offer for next season.')]
           : [h('p.cx-note', {}, e.kind === 'test' ? 'Optional. One flying lap against the team\'s targets; gold earns a free upgrade level.' : 'Optional. Ninety seconds of Drift Attack; it pays by medal, and a signed sponsor counts the ones you turn up to.'),
             h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Result', e.result ? MEDAL[e.result.medal] : e.skipped ? 'Skipped' : empty()))];
@@ -143,7 +143,7 @@ export function CareerHubScreen(game) {
       const R = C.roundOfWeek(save, i), e = w.event, res = w.result;
       const out = res ? (res.dnf ? 'DNF' : `P${res.finish} · ${res.rr.toFixed(1)}`) : e?.result ? MEDAL[e.result.medal] : e?.skipped ? 'Skipped' : i === now ? 'This week' : '';
       return h(`div.lrow.cx-calrow${i === now ? '.now' : ''}${i < now ? '.past' : ''}`, { 'data-nav': '', 'data-week': i, tabIndex: 0 }, h('b.wk', {}, `WK ${i + 1}`), h('span', {}, h(`span.cx-tag${w.kind === 'race' ? '.ink' : ''}`, {}, kind(w))),
-        h('span.c-name', {}, h('b', {}, w.kind === 'race' ? `R${w.round + 1} ${R.name}` : weekTitle(save, w)), h('small', {}, w.kind === 'race' ? `${trackOf(R.track).name} · ${R.laps} laps` : w.kind === 'market' ? 'Teams can talk to you' : w.kind === 'end' ? 'Verdict and offers' : `${trackOf(R.track).name} · optional`)),
+        h('span.c-name', {}, h('b', {}, w.kind === 'race' ? `R${w.round + 1} ${R.name}` : weekTitle(save, w)), h('small', {}, w.kind === 'race' ? `${trackOf(R.track).name} · ${R.laps} laps` : w.kind === 'market' ? (save.clock.season === 1 ? 'Sponsors only: first season' : 'Teams can talk to you') : w.kind === 'end' ? 'Verdict and offers' : `${trackOf(R.track).name} · optional`)),
         h('span.ch-cond', {}, w.kind === 'race' ? conds(R) : null), h('span.val', {}, out));
     });
     calBox = h('div.cx-b.cx-detail', {}, weekDetail(save, calWeek));

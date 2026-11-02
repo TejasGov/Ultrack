@@ -153,7 +153,7 @@ export function teamOutlook(save, team) {
   const gates = [[st.rep, g.rep, `Reputation ${Math.round(st.rep)} of ${g.rep}`], [rr, g.rr, `Rating ${rr.toFixed(1)} of ${g.rr}`], [st.cl, g.cl, `Level ${st.cl} of ${g.cl}`]];
   const short = gates.filter(([v, min]) => v < min), progress = Math.min(...gates.map(([v, min]) => (min ? clamp(v / min, 0, 1) : 1)));
   const me = save.contract, mine = team === me?.team, asked = !!save.season?.asked?.[team], rank = me ? rankOf(me.team) : 1, tooHigh = !mine && me && rankOf(team) > rank + 1, same = rankOf(team) === rank && me?.seat === 'A', down = rankOf(team) < rank && !me?.dropped;
-  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : null;
+  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : null;
   return { team, tier: TIERS.teams[team].tier, progress, why: short[0]?.[2] ?? 'Clears their bar', short: short.length > 0, blocked, canAsk: !blocked };
 }
 /**
@@ -252,6 +252,7 @@ export function signSponsor(save, id) {
   S.offers.splice(S.offers.indexOf(o), 1);
   S.deals.push({ brand: o.brand, name: o.name, retainer: o.retainer, bonus: o.bonus, target: o.target, progress: 0, met: false, mood: SPONSORS.startMood });
   post(save, 'sponsor', `Signed with ${o.name}`, `${o.retainer} U a round for the season, and ${o.bonus.toLocaleString('en')} U if you ${targetText(o.target)}. Turn up to their sponsor days: miss ${SPONSORS.startMood} and the deal ends.`);
+  if (S.deals.length >= sponsorSlots(save)) for (const x of S.offers.splice(0)) post(save, 'sponsor', `${x.name} moved on`, 'You have no sponsor slot left, so their offer is closed.');
   return { ok: true };
 }
 /** a round's money from sponsors, and the target's progress; x is what happened in the race */
