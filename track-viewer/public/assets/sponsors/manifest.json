@@ -238,6 +238,81 @@
       "license": "Public domain (Wikimedia Commons, {{PD-textlogo}}: text logo below the threshold of originality); trademarked, Restrictions: trademarked. Sony and the Sony wordmark are trademarks of Sony Group Corporation; used here on a local noncommercial fan project, no endorsement implied.",
       "author": "Yasuo Kuroki / Sony (wordmark, 1973); SVG on Commons",
       "boards": "boards/sony-<aspect>.png, aspect = round(width/height*1000): 324 389 1600 3000 3111 6000 8571 10833 11818 15000 (make-sponsor-boards.mjs)"
+    },
+    {
+      "id": "jio",
+      "name": "Jio",
+      "aliases": [
+        "Reliance Jio"
+      ],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/jio.svg",
+      "sourceFile": "assets/sponsors/sources/jio.svg",
+      "file": "logos/jio.png",
+      "background": "#ffffff",
+      "ink": "#0A2885",
+      "usage": "venue-india",
+      "venue": false,
+      "retrieved": "2026-10-30",
+      "license": "Simple Icons (CC0 icon data); Jio is a trademark of Reliance Jio Infocomm Ltd; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "13f65867286d94749e8d449071873e79f832c7009a3d0bf8845b0e68236ffc4d"
+    },
+    {
+      "id": "oppo",
+      "name": "OPPO",
+      "aliases": [],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/oppo.svg",
+      "sourceFile": "assets/sponsors/sources/oppo.svg",
+      "file": "logos/oppo.png",
+      "background": "#2D683D",
+      "ink": "#ffffff",
+      "usage": "venue-india",
+      "venue": false,
+      "retrieved": "2026-10-30",
+      "license": "Simple Icons (CC0 icon data); OPPO is a trademark of Guangdong OPPO Mobile Telecommunications Corp.; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "0af8ef2d3f3ada53779f8dbaab6243ceccb530a03deebe9bc7a054c89189cf5a"
+    },
+    {
+      "id": "vivo",
+      "name": "vivo",
+      "aliases": [],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/vivo.svg",
+      "sourceFile": "assets/sponsors/sources/vivo.svg",
+      "file": "logos/vivo.png",
+      "background": "#415FFF",
+      "ink": "#ffffff",
+      "usage": "venue-india",
+      "venue": false,
+      "retrieved": "2026-10-30",
+      "license": "Simple Icons (CC0 icon data); vivo is a trademark of vivo Mobile Communication Co.; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "1db247986bd07a7b7a1754fa285f61c445d4767037fda96b6e5d72a60d1e4f94"
+    },
+    {
+      "id": "bjp",
+      "name": "BJP",
+      "aliases": [
+        "Bharatiya Janata Party"
+      ],
+      "source": "https://upload.wikimedia.org/wikipedia/commons/7/78/Logo_of_the_Bharatiya_Janata_Party.svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Logo_of_the_Bharatiya_Janata_Party.svg",
+      "sourceFile": "assets/sponsors/sources/bjp.svg",
+      "file": "logos/bjp.png",
+      "background": "#FF9933",
+      "ink": null,
+      "usage": "venue-india",
+      "venue": false,
+      "retrieved": "2026-10-30",
+      "license": "Public domain (Wikimedia Commons), Restrictions: trademarked. The lotus emblem is the Bharatiya Janata Party's; used here on a local noncommercial fan project, no endorsement implied. A roadside political hoarding as part of the Indian streetscape.",
+      "sourceSha256": "c5cb1947a8f0eae6bf84641bc7b71d3a7fcc56fc4e203f0e6b5f898b6e221e98",
+      "portrait": {
+        "name": "Official portrait of the Prime Minister Narendra Modi, November 2020 (cropped)",
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Official_portrait_of_the_Prime_Minister_Narendra_Modi,_November_2020_(cropped).jpg",
+        "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Official_portrait_of_the_Prime_Minister_Narendra_Modi%2C_November_2020_%28cropped%29.jpg/1280px-Official_portrait_of_the_Prime_Minister_Narendra_Modi%2C_November_2020_%28cropped%29.jpg",
+        "sourceFile": "assets/sponsors/sources/modi-portrait.jpg",
+        "sourceSha256": "44513cfd209bb153129e6d85aa40d87c55d9e4654323d631e7c9a497fa0317d5",
+        "license": "GODL-India (Government Open Data License - India), via Wikimedia Commons",
+        "retrieved": "2026-10-30"
+      },
+      "boards": "boards/bjp-3000.png (track-viewer/scripts/make-india-hoarding.mjs): lotus, wordmark and the official portrait"
     }
   ]
 }

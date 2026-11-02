@@ -68,9 +68,25 @@ export const TRACKS = {
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  infinia: {     // the main India circuit (docs/career-worlds.md section 4, tracks/infinia/build_infinia.py): a sea link over an undersea tunnel
+    id: 'infinia', name: 'Infinia', stem: 'infinia', dir: '/assets/infinia/', look: 'dusk', fog: 0.7, sun: [-0.94, 0.34], tag: null,
+    dayNight: { day: /(?!)/, night: /^IF window glow night/ },     // a lit-window shell over the facades, from evening on
+    wet: { wet: ['IF | asphalt', 'IF | line white', 'IF | kerb red', 'IF | kerb white', 'IF | paving'], puddles: ['IF | asphalt'] },
+    voidWalls: true,
+    lampPower: 2,     // heads 9 m up and 1.8 m out, as India Ghat's
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
   shajawa: {     // career World 2 (docs/career-worlds.md, tracks/shajawa/build_shajawa.py): the one stadium, a flat speedway in a bowl of stands
     id: 'shajawa', name: 'Shajawa Stadium', stem: 'shajawa', dir: '/assets/shajawa/', look: 'day', times: ['day', 'dusk'], fog: 0.5, sun: [-0.55, -0.77], tag: null,
     wet: { wet: ['SJ | asphalt', 'SJ | line white', 'SJ | kerb red', 'SJ | kerb white', 'SJ | paddock'], puddles: ['SJ | asphalt'] },
+    voidWalls: true,
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
+  llano: {     // career World 2 (docs/career-worlds/llano.json, tracks/llano/build_llano.py): the big speed track on the empty West Texas plain, Llano Central on its Long Mile
+    id: 'llano', name: 'Llano Speedway', stem: 'llano', dir: '/assets/llano/', look: 'dusk', times: ['day', 'dusk'], fog: 0.35, sun: [0.98, -0.18], tag: null,     // the low sun straight ahead down the start straight
+    dayNight: { day: /^Backdrop \| range day$/, dayEnd: 0.35 },     // the far range: the day copy over the dusk one, as Mojave's
+    looks: { day: { env: 1.3 }, dusk: { exposure: 0.54, env: 1.05 } },     // the low sun runs down the start straight, so the Long Mile and Llano Central's front stand in shade: more sky light, or the road goes black
+    wet: { wet: ['LL | asphalt', 'LL | line white', 'LL | kerb red', 'LL | kerb white', 'LL | road patch'], puddles: ['LL | asphalt'] },
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
