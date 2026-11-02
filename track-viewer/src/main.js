@@ -38,6 +38,7 @@ import { wetUniforms, wetify, wetCars } from './wet-road.js';
 import { makeRain } from './wet-rain.js';
 import { TIERS, detectTier, GpuTimer, Culler, DynamicResolution } from './perf.js';
 
+const SUN_GLARE = 0.7;     // the user's call, 2026-11-02: the sun's flare, haze, road glint and (by day and dusk, when the sun is what blooms) bloom, on every track, at 70 % of each look's value
 const DEV_QUERY = new URLSearchParams(location.search);
 const A = '/assets/';
 // the circuit (src/tracks.js): the menu's choice, or ?track= on the developer viewer. An unknown id is Marina.
@@ -895,8 +896,8 @@ function applyAll() {
   wetUniforms.uWet.value = params.wet;
   wetUniforms.uRain.value = Math.min(1, params.rain * 2);
   FINISH_RAIN.value = Math.min(1, params.rain * 2);
-  { const g = look.glint, k = Math.max(g[0], g[1], g[2], 1e-3); FINISH_SPARK.value.setRGB(...[0, 1, 2].map((i) => (0.04 + 0.1 * k) * (0.6 + 0.4 * g[i] / k))); }   // beads catch the light of the look (warm at dusk, none but lamps at night)
-  wetUniforms.uGlint.value.setRGB(...look.glint);
+  { const g = look.glint.map((x) => x * SUN_GLARE), k = Math.max(g[0], g[1], g[2], 1e-3); FINISH_SPARK.value.setRGB(...[0, 1, 2].map((i) => (0.04 + 0.1 * k) * (0.6 + 0.4 * g[i] / k))); }   // beads catch the light of the look (warm at dusk, none but lamps at night)
+  wetUniforms.uGlint.value.setRGB(...look.glint.map((x) => x * SUN_GLARE));
   wetUniforms.uMirror.value = mirrorWanted() ? 1 : 0;
   if (reflector) reflector.visible = mirrorWanted();
   rain.visible = params.rain > 0;
@@ -915,7 +916,7 @@ function applyAll() {
   }
   bloom.enabled = params.bloom;
   // driving into the low sun, a wide sky above the threshold bloomed into a cream veil: dusk blooms less, from brighter pixels
-  bloom.strength = params.bloomStrength * (look.bloomGain ?? 1); bloom.radius = params.bloomRadius; bloom.threshold = params.bloomThreshold * (look.bloomThr ?? 1);
+  bloom.strength = params.bloomStrength * (look.bloomGain ?? 1) * ((look.dn ?? 0) < 0.5 ? SUN_GLARE : 1); bloom.radius = params.bloomRadius; bloom.threshold = params.bloomThreshold * (look.bloomThr ?? 1);
   smaa.enabled = params.smaa;
   finalPass.uniforms.uCA.value = params.aberration;
   finalPass.uniforms.uVig.value = params.vignette;
@@ -924,8 +925,8 @@ function applyAll() {
   const G = look.grade, fu = finalPass.uniforms;
   fu.uS.value = G.s; fu.uBlack.value = G.black; fu.uSat.value = G.sat;
   fu.uShadows.value.set(...G.shadows); fu.uHighs.value.set(...G.highs);
-  fu.uFlare.value = look.flare * params.flare;
-  FOG_SUN.color.set(look.fogSun);
+  fu.uFlare.value = look.flare * params.flare * SUN_GLARE;
+  FOG_SUN.color.set(look.fogSun.map((x) => x * SUN_GLARE));
   applyDayNight(look);
   venueFx?.setLook?.(look, params);
   controls.enabled = params.mode === 'orbit';
