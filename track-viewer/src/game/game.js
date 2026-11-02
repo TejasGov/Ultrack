@@ -21,7 +21,7 @@ import { rewardFor } from './economy.js';
 import { applyUpgrades } from './carinfo.js';
 import { canSelectCar, carProgression } from './progression.js';
 import { RaceLoading } from './race-loading.js';
-import { CareerStartScreen, CareerHubScreen, CareerReportScreen } from './career-ui.js';
+import { CareerStartScreen, CareerHubScreen, CareerDealScreen, CareerReportScreen } from './career-ui.js';
 import { trackOf } from '../tracks.js';
 import { TIERS } from '../perf.js';
 
@@ -39,7 +39,7 @@ export class Game {
     this.screens = {
       credits: CreditsScreen(this), records: RecordsScreen(this), title: TitleScreen(this), menu: MenuScreen(this), setup: SetupScreen(this), garage: GarageScreen(this),
       settings: SettingsScreen(this), pause: PauseScreen(this), results: ResultsScreen(this),
-      careerStart: CareerStartScreen(this), careerHub: CareerHubScreen(this), careerReport: CareerReportScreen(this),
+      careerStart: CareerStartScreen(this), careerHub: CareerHubScreen(this), careerDeal: CareerDealScreen(this), careerReport: CareerReportScreen(this),
     };
     for (const s of Object.values(this.screens)) this.root.append(s.el);
     this.show('title');
@@ -160,7 +160,7 @@ export class Game {
     if (this.screen.nav) this.nav.reset(name === 'menu' ? this.menuIdx ?? 0 : 0);
     this.screen.onShow?.(arg);                   // a screen may set its own starting item (the garage: your car)
     if (name === 'garage') this.cameraFor('garage');
-    else if (['menu', 'setup', 'title', 'credits', 'records', 'careerStart', 'careerHub', 'careerReport'].includes(name) || (name === 'settings' && arg !== 'pause')) { if (this.state !== 'menu') { this.state = 'menu'; } this.cameraFor('menu'); if (prev === this.screens.garage) this.lineup(); }
+    else if (['menu', 'setup', 'title', 'credits', 'records', 'careerStart', 'careerHub', 'careerDeal', 'careerReport'].includes(name) || (name === 'settings' && arg !== 'pause')) { if (this.state !== 'menu') { this.state = 'menu'; } this.cameraFor('menu'); if (prev === this.screens.garage) this.lineup(); }
   }
 
   hideScreens() {
@@ -459,7 +459,7 @@ export class Game {
     const s = this.session, A = this.audio, hero = this.field.hero;
     A.play('race/horn-long.ogg', { gain: 0.6 });
     this.field.setPlayer(false);                 // the AI brings the car round on a cool-down lap
-    if (s.mode === 'quali') this.hud.message(this.careerRun?.kind === 'test' ? 'Test day done' : 'Qualifying done', fmtTime(e.best), 'gold', 3);
+    if (s.mode === 'quali') this.hud.message(this.careerRun?.kind === 'test' ? 'Test day done' : this.careerRun?.kind === 'shootout' ? 'Shootout done' : 'Qualifying done', fmtTime(e.best), 'gold', 3);
     if (s.mode === 'race') {
       const p = e.pos, rows = s.results(), fastest = rows.find((r) => r.hero)?.best;
       if (!this.careerRun) this.pay({ mode: 'race', pos: p, cars: rows.length, laps: s.laps, finished: true, pb: this.racePb,
@@ -488,7 +488,7 @@ export class Game {
   }
 
   // ---------------------------------------------------------------------------------------------- career (docs/career-mode.md)
-  /** a career session (career-ui.js): kind 'shootout' | 'quali' | 'test' | 'sponsor' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
+  /** a career session (career-hub.js): kind 'shootout' | 'quali' | 'test' | 'sponsor' | 'practice' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
    *  car and conditions are saved aside, and leaveCareer (or store.js, if the game closes first) puts them back (R12); done(data) gets the outcome */
   async careerSession(kind, spec, done) {
     if (!store.data.freePlay) { store.data.freePlay = { car: store.data.car, track: store.settings.track, look: store.settings.look, weather: store.settings.weather, laps: store.settings.laps }; store.save(); }
@@ -496,7 +496,7 @@ export class Game {
     if (this.ctx.trackId() !== spec.track) return;                       // the circuit would not load: selectTrack has said so
     store.data.car = spec.car; Object.assign(store.settings, { look: spec.look, weather: spec.weather, laps: spec.laps ?? store.settings.laps }); store.save();
     this.applySettings();
-    await this.startSession(kind === 'race' ? 'race' : kind === 'sponsor' ? 'drift' : 'quali', { ...spec.session, kind, done, home: spec.home });
+    await this.startSession(kind === 'race' ? 'race' : kind === 'sponsor' ? 'drift' : kind === 'practice' ? 'free' : 'quali', { ...spec.session, kind, done, home: spec.home });
   }
   /** a career session ends (the flag, the last qualifying lap, End qualifying, Retire): its numbers go back to the career screens */
   careerDone(retired = false) {

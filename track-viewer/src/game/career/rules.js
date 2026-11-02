@@ -4,10 +4,11 @@ import TUNING from '../../../../assets/career/tuning.json';
 import TIERS from '../../../../assets/career/tiers.json';
 import CAL from '../../../../assets/career/calendar.json';
 import DRIVERS from '../../../../assets/career/drivers.json';
+import SPONSORS from '../../../../assets/career/sponsors.json';
 import TEAMS from '../../../../assets/teams/teams.json';
 import { rng, gauss, weighted, shuffle } from './rng.js';
 
-export { TUNING, TIERS, CAL, DRIVERS };
+export { TUNING, TIERS, CAL, DRIVERS, SPONSORS };
 const T = TUNING;
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const avg = (l) => (l.length ? l.reduce((s, v) => s + v, 0) / l.length : 0);
@@ -68,6 +69,22 @@ export function buildCalendar(seed, season, world, available, length = 'sprint')
   });
 }
 
+// ---------------------------------------------------------------------------------------------- weeks (section 13)
+/**
+ * A season as weeks: pre-season, then each round's race week with an open week between rounds, the market after the middle round, the review last.
+ * An open week holds one optional event, the team's favourite kind first. 6 rounds make 13 weeks, 8 make 17.
+ */
+export function buildWeeks(calendar, theme = 'test') {
+  const other = theme === 'test' ? 'sponsor' : 'test', mid = Math.ceil(calendar.length / 2), out = [{ kind: 'pre', event: { kind: 'test', result: null } }];
+  let k = 0;
+  calendar.forEach((r, i) => {
+    out.push({ kind: 'race', round: i });
+    if (i === calendar.length - 1) return;
+    out.push(i + 1 === mid ? { kind: 'market' } : { kind: 'open', event: { kind: k++ % 2 ? other : theme, result: null } });
+  });
+  return [...out, { kind: 'end' }].map((w, i) => ({ week: i + 1, ...w }));
+}
+
 // ---------------------------------------------------------------------------------------------- qualifying
 /** a computed qualifying lap for an entry (4.3): par / pace, with seeded noise */
 export function aiLap({ seed, season, round, key, rating, track, weather, dev, difficulty }) {
@@ -95,7 +112,8 @@ export function roundRating({ expPos, grid, finish, fastest, clean, duel, underd
   if (duel) add(duel.result === 'won' ? 'Beat your teammate' : duel.result === 'lost' ? 'Lost to your teammate' : null, (duel.result === 'won' ? 1 : duel.result === 'lost' ? -1 : 0) * (duel.big ? R.duelBig : R.duel));
   if (underdog && pos >= 0 && !dnf) add('Underdog seat', R.underdog);
   if (dnf) add('Retired', R.dnf);
-  return { rr: Math.round(clamp(R.base + lines.reduce((s, l) => s + l[1], 0), R.min, R.max) * 10) / 10, lines };
+  const raw = R.base + lines.reduce((s, l) => s + l[1], 0), soft = raw > R.softAt ? R.softAt + (raw - R.softAt) * R.softRate : raw;   // the top of the scale is hard to reach: a P4 from the slowest car is not a perfect 10
+  return { rr: Math.round(clamp(soft, R.min, R.max) * 10) / 10, lines };
 }
 /** XP for a round (5.2) before nothing: the tier, assist and underdog multipliers are applied here */
 export function xpFor({ finish, expPos, grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog }) {
@@ -164,23 +182,34 @@ export const STATUS = ['junior', 'second', 'lead', 'number1'];
 export const STATUS_LABEL = { junior: 'Junior', second: 'Second driver', lead: 'Lead driver', number1: 'Number One' };
 /** what the status lever can reach from an offer: it never changes the car (the A seat is earned on track, 6.3) */
 export const statusChoices = (o) => (o.seat === 'A' ? (o.tier === 'legend' ? ['lead', 'number1'] : ['lead']) : ['junior', 'second']).filter((s) => STATUS.indexOf(s) >= STATUS.indexOf(o.status));
-/** demand points of a counter-proposal (6.5): salary +10 % = 1, status up = 2 a step, a shorter contract = 0.5 a season */
+/** demand points of a counter-proposal (6.5): salary +10 % = 1, signing +25 % = 1, status up = 2 a step, a shorter contract = 0.5 a season */
 export function demandOf(o, ask) {
   const D = T.offers.demand;
-  return Math.round(ask.salary / D.salaryStep) * D.perSalaryStep + Math.max(0, STATUS.indexOf(ask.status) - STATUS.indexOf(o.status)) * D.perStatus
+  return Math.round(ask.salary / D.salaryStep) * D.perSalaryStep + Math.round((ask.signing ?? 0) / D.signingStep) * D.perSigningStep + Math.max(0, STATUS.indexOf(ask.status) - STATUS.indexOf(o.status)) * D.perStatus
     + Math.max(0, o.seasons - ask.seasons) * D.perSeasonCut;
 }
-/** the nearest terms the team accepts: give up salary first, then status, then length (6.5) */
+/** the nearest terms the team accepts: give up the signing bonus first, then salary, then status, then length (6.5) */
 export function nearestTerms(o, ask, leverage) {
   const t = { ...ask }, D = T.offers.demand;
   while (demandOf(o, t) > leverage) {
-    if (t.salary > 0) t.salary = Math.round((t.salary - D.salaryStep) * 10) / 10;
+    if (t.signing > 0) t.signing = Math.round((t.signing - D.signingStep) * 100) / 100;
+    else if (t.salary > 0) t.salary = Math.round((t.salary - D.salaryStep) * 10) / 10;
     else if (STATUS.indexOf(t.status) > STATUS.indexOf(o.status)) t.status = STATUS[STATUS.indexOf(t.status) - 1];
     else if (t.seasons < o.seasons) t.seasons++;
     else break;
   }
   return t;
 }
+
+// ---------------------------------------------------------------------------------------------- sponsor targets
+/** a sponsor's target for a season: about one round in three, shaped by what the player's seat can do */
+export function targetFor(kind, expPos, rounds) {
+  const count = Math.max(1, Math.round(rounds / 3)), place = clamp(expPos - 1, 3, 7);
+  return { top: { kind, n: place, count }, quali: { kind, n: place, count }, podium: { kind, count: Math.max(1, count - 1) }, win: { kind, count: 1 }, clean: { kind, count: count + 1 }, duel: { kind, count: count + 1 } }[kind];
+}
+const times = (n) => (n === 1 ? 'once' : n === 2 ? 'twice' : `${n} times`);
+export const targetText = (t) => ({ top: `finish P${t.n} or better ${times(t.count)}`, quali: `qualify P${t.n} or better ${times(t.count)}`, podium: `finish on the podium ${times(t.count)}`, win: `win ${times(t.count)}`, clean: `race clean ${times(t.count)}`, duel: `beat your teammate on the clock ${times(t.count)}` })[t.kind];
+export const targetMet = (t, x) => ({ top: () => !x.dnf && x.finish <= t.n, quali: () => x.grid <= t.n, podium: () => !x.dnf && x.finish <= 3, win: () => !x.dnf && x.finish === 1, clean: () => !x.dnf && x.clean, duel: () => x.duel?.result === 'won' })[t.kind]();
 
 // ---------------------------------------------------------------------------------------------- side events
 /** a test-day or sponsor-day result against its targets (4.2): 0 none, 1 bronze, 2 silver, 3 gold */

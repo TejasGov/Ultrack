@@ -7,7 +7,7 @@ export async function loadCareer(server) {
   const C = await server.ssrLoadModule('/src/game/career/career.js'), R = await server.ssrLoadModule('/src/game/career/rules.js');
   return { C, R };
 }
-const AVAILABLE = { india: null, drylake: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], tokyo: null };
+const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], llano: ['day', 'dusk'], tokyo: null };
 
 /** the sim's pick at a review: the highest tier, the A seat, then the highest pay; a reserve seat only when nothing else is left */
 const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
@@ -18,7 +18,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
   const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
   const sh = C.shootout(); C.finishShootout(save, R.parLap(sh.track, sh.car) / skill * (1 + noise(0.01)));
-  const log = { maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0 };
+  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0 };
   // ask for a bit more, sometimes too much: a refusal or a withdrawal must never strand the career
   const haggle = (o) => { if (!C.canNegotiate(o)) return; const a = C.negotiate(save, o.id, { salary: rand() < 0.3 ? 0.3 : 0.1, seasons: o.seasons, status: o.status });
     if (a.result === 'accepted') log.deals++; if (a.result === 'withdrawn') log.withdrawn++; if (a.result === 'countered') C.negotiate(save, o.id, a.terms); };
@@ -29,6 +29,11 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
     if (save.clock.phase === 'paddock') {
       const spec = C.sideSpec(save);
       if (spec) { const m = C.finishSide(save, spec.kind === 'test' ? spec.par / skill * (1 + noise(0.01)) : 12000 + rand() * 30000); log.medals += m.medal; }
+      for (const o of [...save.sponsors.offers]) { if (C.negotiate(save, o.id, { retainer: 0.15, bonus: 0 }).result !== 'withdrawn' && C.signSponsor(save, o.id).ok) log.sponsors++; }
+      if (C.currentWeek(save).kind !== 'race') {
+        for (const m of [...save.season.mid]) { log.w1++; if (rand() < 0.5) C.signMid(save, m.id); else C.walkAway(save, m.id); }
+        C.advanceWeek(save); continue;
+      }
       const rd = C.currentRound(save), car = save.contract.car, u = save.garage.upgrades[car];
       C.finishQuali(save, R.parLap(rd.track, car, rd.weather, [u.engine, u.tyres, u.brakes]) / skill * (1 + noise(0.008)));
     } else if (save.clock.phase === 'race') {
@@ -37,10 +42,10 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
       const rep = C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: rand() < 0.3 ? 1 : 0, spins: rand() < 0.2 ? 1 : 0 });
       log.rr.push(rep.rr); log.finish.push(rep.finish);
       if (rep.midSeason?.warning) log.warnings++;
-      if (save.season.w1?.state === 'open') { log.w1++; C.answerW1(save, rand() < 0.5); }
       for (const cat of ['engine', 'tyres', 'brakes']) C.buyUpgrade(save, cat, 500);
-      log.minWallet = Math.min(log.minWallet, save.wallet.coins);
+      log.minWallet = Math.min(log.minWallet, save.wallet.coins); log.money[save.season.tier] = save.wallet.coins;
     } else if (save.clock.phase === 'review') {
+      log.seasonEnd.push({ tier: save.history.at(-1).tier, coins: save.wallet.coins, trust: save.contract.trust, rep: Math.round(save.career.rep), cl: save.career.cl });
       const offers = save.pending.offers, season = save.clock.season; log.offers.push(offers.length);
       if (save.pending.review.dropped) log.drops++;
       if (offers.some((o) => o.tier === 'maestro') && log.maestroOffer === null) log.maestroOffer = season;

@@ -87,6 +87,8 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 **What it needs.** The bridge kit (deck, diamond tower, stays, parapets), the tunnel (portals, tiled walls, light line, two-level collision at the crossing), the sea (Marina's water), the seafront (sea wall, promenade, art-deco blocks), the towers district, the old city streets; distant skylines as photographed arcs. The biggest build of the four.
 
+**Llano Speedway (World 2, added to the calendar 2026-11-02 at the user's call):** `tracks/llano`, par 117.5 s, day and dusk, a home track of World 2 beside Marina and Shajawa.
+
 ## 5. Shajawa Stadium (World 2, the only stadium)
 
 ![Shajawa Stadium plan](career-worlds/shajawa.svg)

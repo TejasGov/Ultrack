@@ -30,11 +30,11 @@ export function h(sel, attrs = {}, ...kids) {   // null / false children are ski
     else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);   // the HUD's rows and game.js's camera label; UI screens use css() custom properties
     else if (k in el && k !== 'list') el[k] = v; else el.setAttribute(k, v === true ? '' : v);
   }
-  for (const c of kids.flat()) if (c !== null && c !== undefined && c !== false) el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  for (const c of kids.flat(Infinity)) if (c !== null && c !== undefined && c !== false) el.append(c instanceof Node ? c : document.createTextNode(String(c)));
   return el;
 }
 /** replaceChildren that skips null / false (conditional parts) */
-export const fill = (el, ...kids) => el.replaceChildren(...kids.flat().filter((k) => k !== null && k !== undefined && k !== false));
+export const fill = (el, ...kids) => el.replaceChildren(...kids.flat(Infinity).filter((k) => k !== null && k !== undefined && k !== false));
 export const css = (el, vars) => { for (const [k, v] of Object.entries(vars)) el.style.setProperty(k, v); return el; };
 
 // ---------------------------------------------------------------------------------------------- system primitives (docs/ui-system.md)
@@ -82,7 +82,7 @@ export class Nav {
   move(d) { const L = this.items(); if (!L.length || this.game.screen?.navMove?.(L[this.i], d)) return; this.i = (this.i + d + L.length) % L.length; this.mark(true); this.game.audio.play('race/count-tick.ogg', { gain: 0.25 }); }
   /** a [data-grid] group inside a list screen (the garage's swatches): the arrows cross it spatially, Left/Right never adjust there */
   group() { return this.game.screen?.grid ? null : this.items()[this.i]?.closest?.('[data-grid]'); }
-  lr(d) { if (this.game.screen?.grid || this.group()) this.moveSpatial(d, 0); else this.adjust(d); }
+  lr(d) { if ((this.game.screen?.grid && !this.items()[this.i]?.hasAttribute?.('data-adjust')) || this.group()) this.moveSpatial(d, 0); else this.adjust(d); }   // on a grid screen a [data-adjust] control still takes Left/Right
   moveSpatial(dx,dy) {
     const g=this.group();
     if(!this.game.screen?.grid&&!g){this.move(dy||dx);return;}
@@ -163,7 +163,7 @@ export function toggle(on, onchange) {
 /** a note is a sentence and ends with a full stop (store.js ASSISTS notes have none until H9) */
 const sentence = (t) => (/[.!?]$/.test(t) ? t : t + '.');
 export function row(label, control, note) {
-  return h('div.row', { 'data-nav': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1) },
+  return h('div.row', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1) },
     h('label', {}, label), control, note ? h('div.note', {}, note) : null);
 }
 let nav = null;
@@ -511,9 +511,13 @@ export function PauseScreen(game) {
       fill(opts, opt('play', 'Resume', () => game.resume()),
         career ? null : opt('restart', 'Restart', () => ask('Restart?', mode === 'race' ? 'The race starts again from the grid.' : 'The session starts again from the beginning.', 'restart', 'Restart', () => game.restart())),
         mode === 'trial' && laps ? opt('lap', 'End and see laps', () => game.trialResults()) : null,
-        career && mode === 'quali' ? (game.careerRun.kind === 'test'
-          ? opt('lap', 'End test day', () => ask('End the test day?', 'Your best valid lap so far is measured against the targets.', 'lap', 'End', () => game.careerDone()))
-          : opt('lap', 'End qualifying', () => ask('End qualifying?', 'Your best valid lap so far sets your grid slot. With none, you start last.', 'lap', 'End', () => game.careerDone()))) : null,
+        career && mode !== 'race' ? (([label, q, text]) => opt('lap', label, () => ask(q, text, 'lap', 'End', () => game.careerDone())))({
+          test: ['End test day', 'End the test day?', 'Your best valid lap so far is measured against the targets.'],
+          shootout: ['End the Shootout', 'End the Shootout?', 'Your best valid lap so far sets your grade. With none, you are graded Raw.'],
+          sponsor: ['End sponsor day', 'End the sponsor day?', 'Your score so far decides the medal.'],
+          practice: ['End practice', 'End practice?', 'Back to the career. Nothing is at stake.'],
+          quali: ['End qualifying', 'End qualifying?', 'Your best valid lap so far sets your grid slot. With none, you start last.'],
+        }[game.careerRun.kind]) : null,
         opt('settings', 'Settings', () => game.show('settings', 'pause')),
         career ? (mode === 'race' ? opt('quit', 'Retire', () => ask('Retire from the race?', 'You are classified last and the round counts as a retirement.', 'quit', 'Retire', () => game.careerDone(true))) : null)
           : opt('quit', 'Quit to menu', () => ask('Quit to menu?', 'This session ends and you go back to the main menu.', 'quit', 'Quit', () => game.quit())));

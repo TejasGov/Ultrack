@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "note": "Personal sponsors (track-viewer/docs/career-mode.md section 13): brands from assets/sponsors/manifest.json, split by tier. retainer is U per round, bonus is that many rounds of retainer on hitting the target. Slots = the tier's rank. Starting values, not measurements.",
+  "retainer": { "rookie": 90, "maestro": 180, "legend": 360 },
+  "bonusRounds": 5,
+  "startMood": 2,
+  "offersPerWindow": 2,
+  "brands": {
+    "jio":      { "name": "Jio",       "tier": "rookie",  "bg": "#ffffff", "pitch": "They back young drivers on the way up. Keep the car on the road and they stay happy.", "target": "clean" },
+    "oppo":     { "name": "OPPO",      "tier": "rookie",  "bg": "#2d683d", "pitch": "They want you near the front in every highlight reel.", "target": "top" },
+    "vivo":     { "name": "vivo",      "tier": "rookie",  "bg": "#415fff", "pitch": "They like a driver who beats the car next to them on the clock.", "target": "duel" },
+    "rayban":   { "name": "Ray-Ban",   "tier": "rookie",  "bg": "#ed1c24", "pitch": "Style counts, but a good grid slot photographs better.", "target": "quali" },
+    "cocacola": { "name": "Coca-Cola", "tier": "maestro", "bg": "#d00013", "pitch": "Everyone watches the podium. They want you standing on it.", "target": "podium" },
+    "pirelli":  { "name": "Pirelli",   "tier": "maestro", "bg": "#fff200", "pitch": "Tyres win qualifying. Prove it for them.", "target": "quali" },
+    "sony":     { "name": "Sony",      "tier": "maestro", "bg": "#ffffff", "pitch": "A clean race makes good television.", "target": "clean" },
+    "shell":    { "name": "Shell",     "tier": "maestro", "bg": "#fbd600", "pitch": "They want results they can put on a forecourt.", "target": "top" },
+    "redbull":  { "name": "Red Bull",  "tier": "legend",  "bg": "#061e42", "pitch": "Win. That is the whole brief.", "target": "win" },
+    "emirates": { "name": "Emirates",  "tier": "legend",  "bg": "#d71920", "pitch": "A season at the sharp end, on every broadcast.", "target": "podium" },
+    "rolex":    { "name": "Rolex",     "tier": "legend",  "bg": "#ffffff", "pitch": "They put their name on the clock. Beat it.", "target": "quali" },
+    "hsbc":     { "name": "HSBC",      "tier": "legend",  "bg": "#ffffff", "pitch": "Steady returns. A clean season suits them best.", "target": "clean" }
+  }
+}

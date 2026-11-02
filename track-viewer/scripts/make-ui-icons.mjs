@@ -81,6 +81,10 @@ export const ICONS = {
   car: '<path d="M4.9 16H3.5a.5.5 0 0 1-.5-.5v-2.6a1 1 0 0 1 .7-.95L7 10.9l2.7-3.1a2 2 0 0 1 1.5-.7h4.1a2 2 0 0 1 1.6.8l2.4 3.1 1.6.5a1 1 0 0 1 .7.95v3.05a.5.5 0 0 1-.5.5h-2M9.1 16h5.8"/><circle cx="7" cy="16" r="2.1"/><circle cx="17" cy="16" r="2.1"/>',
   // ---- race data
   position: '<path d="M3 20.5h18M4.5 20.5v-6h5v6M9.5 20.5V8.5h5v12M14.5 20.5v-4h5v4"/>',
+  // ---- career
+  mail: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7.5 8.5 6 8.5-6"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M7.5 14h2M11 14h2M14.5 14h2M7.5 17h2M11 17h2"/>',
+  contract: '<path d="M6 3.5h8.5L18.5 7.5V20.5H6Z"/><path d="M14 3.5V8h4.5M9 11.5h6M9 14.5h6M9 17.5h3"/>',
   trophy: '<path d="M7.5 3.5h9v5.5a4.5 4.5 0 0 1-9 0Z"/><path d="M7.5 5.5H4.5v1a3.5 3.5 0 0 0 3.4 3.5M16.5 5.5h3v1a3.5 3.5 0 0 1-3.4 3.5M12 13.5V17M8.5 20.5h7M9.5 17h5v3.5"/>',
   lap: '<path d="M16.5 3.5 20 7l-3.5 3.5M20 7H8a4 4 0 0 0-4 4v1M7.5 20.5 4 17l3.5-3.5M4 17h12a4 4 0 0 0 4-4v-1"/>',
   timer: watch(),

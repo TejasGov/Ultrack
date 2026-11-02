@@ -153,12 +153,13 @@ try {
 
   // ---- W1: from season 2, one offer from the tier above; signing pays the release cut now and joins next season
   let w = null, seed = 200;
-  for (; seed < 400 && !w; seed++) { const s = signed(seed); toReview(s, 3, 1); s.career.rep = 400; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 10; const k = s.pending.offers.find((o) => o.keep); C.acceptOffer(s, k.id, avail); s.career.rep = 400; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 10; for (let i = 0; i < 3; i++) { s.career.rr = [8, 8, 8, 8, 8, 8]; round(s, 2, 1); } if (s.season.w1) w = s; }
-  assert.ok(w, 'a good driver gets a mid-season offer on some seeds'); assert.equal(R.TIERS.teams[w.season.w1.offer.team].tier, 'maestro');
-  const coinsW = w.wallet.coins, a1 = C.answerW1(w, true); assert.equal(w.wallet.coins, coinsW + a1.cut); assert.equal(C.answerW1(w, true), null, 'answered once'); assert.equal(w.contract.next.team, w.season.w1.offer.team);
+  for (; seed < 400 && !w; seed++) { const s = signed(seed); toReview(s, 3, 1); s.career.rep = 400; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 10; const k = s.pending.offers.find((o) => o.keep); C.acceptOffer(s, k.id, avail); s.career.rep = 400; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 10; for (let i = 0; i < 3; i++) { s.career.rr = [8, 8, 8, 8, 8, 8]; round(s, 2, 1); } if (s.season.mid.length) w = s; }
+  assert.ok(w, 'a good driver gets a mid-season offer on some seeds'); const wo = w.season.mid[0]; assert.equal(R.TIERS.teams[wo.team].tier, 'maestro'); assert.equal(C.currentWeek(w).kind, 'market', 'it arrives in the market week');
+  assert.ok(C.canNegotiate(wo), 'a mid-season offer can be negotiated'); assert.ok(w.inbox.some((m) => m.action?.deal === wo.id), 'and the inbox links to it');
+  const coinsW = w.wallet.coins, trustW = w.contract.trust, a1 = C.signMid(w, wo.id); assert.equal(w.wallet.coins, coinsW + a1.cut); assert.equal(C.signMid(w, wo.id), null, 'answered once'); assert.equal(w.contract.next.team, wo.team); assert.equal(w.contract.trust, trustW - R.TUNING.trust.signedAway, 'your team takes it badly');
   toReview(w, 2, 1); assert.equal(w.pending.offers.length, 1, 'the signed deal stands alone'); assert.ok(!C.canNegotiate(w.pending.offers[0]));
   const nextTeam = w.contract.next.team; C.acceptOffer(w, w.pending.offers[0].id, avail); assert.equal(w.contract.team, nextTeam); assert.equal(w.season.tier, 'maestro'); assert.ok(w.season.calendar.length >= 6, 'the World 2 calendar');
-  const s1 = signed(109); for (let i = 0; i < 3; i++) round(s1, 1, 1); assert.equal(s1.season.w1, null, 'season 1 is probation: no W1');
+  const s1 = signed(109); for (let i = 0; i < 3; i++) round(s1, 1, 1); assert.deepEqual(s1.season.mid, [], 'season 1 is probation: no W1');
 
   // ---- release: signing elsewhere with seasons left pays the player his cut; counter-offers carry the A seat
   let rel = null; for (let i = 400; i < 500 && !rel; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 1); if (s.contract.seasonsLeft > 1 && s.pending.offers.some((o) => o.tier === 'maestro')) rel = s; }
@@ -167,19 +168,74 @@ try {
   let ctr = null; for (let i = 500; i < 700 && !ctr; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 999); ctr = s.pending.offers.find((o) => o.counter) ?? null; }   // the duel lost: no promotion to compete with it
   assert.ok(ctr, 'a counter-offer appears on some seeds'); assert.equal(ctr.seat, 'A');
 
-  // ---- side events: rounds 2, 4, 6 have one; gold on a test day is a free upgrade level; a sponsor pays by tier and form
-  const si = signed(110); assert.equal(C.sideSpec(si), null, 'round 1 has none'); round(si, 4);
-  const spec = C.sideSpec(si); assert.equal(spec.kind, 'test', "Mojave's favourite is the test day"); assert.equal(spec.weather, 'dry');
-  const gold = C.finishSide(si, spec.par * 1.001); assert.equal(gold.medal, 3); assert.equal(gold.package, 1); assert.equal(C.sideSpec(si), null, 'one try'); assert.equal(C.finishSide(si, 1), null);
-  round(si, 4); round(si, 4); const sp2 = C.sideSpec(si); assert.equal(sp2.kind, 'sponsor', 'then the other kind');
-  const before2 = si.wallet.coins, medal = C.finishSide(si, 26000); assert.equal(medal.medal, 2); assert.ok(medal.coins > 0); assert.equal(si.wallet.coins, before2 + medal.coins); assert.equal(medal.xp, R.TUNING.side.xp[1]);
-  const nope = signed(111); round(nope, 4); assert.equal(C.finishSide(nope, null).medal, 0, 'no valid lap, no medal'); round(nope, 4); assert.equal(C.sideSpec(nope), null);
-  const qd = signed(112); round(qd, 4); C.finishQuali(qd, 90); assert.equal(C.sideSpec(qd), null, 'gone once qualifying has run');
+  // ---- weeks: 6 rounds make 13 weeks, every round has a race week, the market sits after the middle round, the review last
+  const wk = signed(110), W = wk.season.weeks;
+  assert.equal(W.length, 13); assert.equal(R.buildWeeks(Array(8).fill({})).length, 17); assert.deepEqual(W.map((x) => x.week), W.map((_, i) => i + 1));
+  assert.deepEqual(W.filter((x) => x.kind === 'race').map((x) => x.round), [0, 1, 2, 3, 4, 5]); assert.equal(W[6].kind, 'market'); assert.equal(W.at(-1).kind, 'end'); assert.equal(W[0].kind, 'pre');
+  assert.equal(wk.clock.week, 0); assert.equal(C.currentWeek(wk).kind, 'pre'); assert.equal(C.sideSpec(wk).kind, 'test', 'pre-season is a test day');
+  // a race week does not advance until it is raced; a race moves on by itself
+  assert.ok(C.advanceWeek(wk).ok); assert.equal(C.currentWeek(wk).kind, 'race'); assert.equal(C.advanceWeek(wk).ok, false, 'a race week ends with the race'); assert.equal(C.sideSpec(wk), null, 'no event in a race week');
+  round(wk, 4); assert.equal(wk.clock.week, 2); assert.equal(W[1].result.finish, 4, 'the calendar keeps the result'); assert.equal(C.currentWeek(wk).kind, 'open');
+  // events: distinct kinds, the team's favourite first; one try; gold on a test day is a free upgrade level; a sponsor pays by tier and form; skipped stays skipped
+  const spec = C.sideSpec(wk); assert.equal(spec.kind, 'test', "Mojave's favourite is the test day"); assert.equal(spec.weather, 'dry'); assert.equal(spec.track, C.currentRound(wk).track, "it runs at the next round's circuit");
+  const gold = C.finishSide(wk, spec.par * 1.001); assert.equal(gold.medal, 3); assert.equal(gold.package, 1); assert.equal(C.sideSpec(wk), null, 'one try'); assert.equal(C.finishSide(wk, 1), null);
+  C.advanceWeek(wk); round(wk, 4); const nxt = C.currentWeek(wk); assert.equal(nxt.kind, 'open'); const sp2 = C.sideSpec(wk); assert.equal(sp2.kind, 'sponsor', 'then the other kind');
+  const before2 = wk.wallet.coins, medal = C.finishSide(wk, 26000); assert.equal(medal.medal, 2); assert.ok(medal.coins > 0); assert.equal(wk.wallet.coins, before2 + medal.coins); assert.equal(medal.xp, R.TUNING.side.xp[1]);
+  const nope = signed(111); C.advanceWeek(nope); round(nope, 4); assert.equal(C.finishSide(nope, null).medal, 0, 'no valid lap, no medal');
+  const qd = signed(112); C.finishQuali(qd, 90); assert.equal(qd.season.weeks[0].event.skipped, true, 'qualifying skips what is still open'); assert.equal(C.currentWeek(qd).kind, 'race');
+  // the inbox: every change leaves a line, unread until opened, and it never grows without limit
+  assert.ok(qd.inbox.some((m) => /Race week/.test(m.title))); const n0u = C.unread(qd); assert.ok(n0u > 0); C.markRead(qd, qd.inbox.find((m) => !m.read).id); assert.equal(C.unread(qd), n0u - 1); assert.ok(qd.inbox.find((m) => /Race week/.test(m.title)).read, 'what was just seen on Home does not nag');
+  const big = signed(120); toReview(big, 4); assert.ok(big.inbox.some((m) => /Round 1/.test(m.title)), 'a race report is posted'); assert.ok(big.inbox.some((m) => /is over/.test(m.title))); assert.ok(big.inbox.length <= 50);
+
+  // ---- bugs from the 2026-11-02 audit
+  assert.equal(C.newCareer({ name: 'Quincy Valois', seed: 1, now: 'x' }).player.code, 'QVA', 'a player never shares a code with a driver');
+  assert.equal(C.newCareer({ name: 'Valois', seed: 1, now: 'x' }).player.code, 'VAX', 'one name works too');
+  for (let i = 0; i < 40; i++) for (const r of R.buildCalendar(i, 1, 1, { ...avail, infinia: null })) if (r.track === 'infinia') assert.ok(['day', 'dusk'].includes(r.look), 'Infinia is day and dusk only');
+  const dn = signed(121); C.finishQuali(dn, 999); const dg = dn.season.current.quali.grid, dh = dn.contract.car, dr2 = C.finishRace(dn, { order: dg, best: Object.fromEntries(dg.map((k) => [k, k === dh ? 60 : 70])), dnf: true });
+  assert.equal(dr2.entries.find((e) => e.you).pts, 0, 'a retirement scores no fastest-lap point'); assert.equal(dr2.fastest, false);
+  assert.ok(C.standings(dn).drivers.length >= 1); const rv = signed(122); toReview(rv, 4); assert.equal(rv.pending.review.driverCount, C.standings(rv).drivers.length, 'the review knows how many drivers scored');
+  const lapse = signed(123); const mo = { id: 'x-mid', team: 'toro', seat: 'B', car: 'huracan', tier: 'maestro', status: 'junior', salary: 500, signing: 1000, seasons: 2, why: 'x', w1: true };
+  while (C.currentWeek(lapse).kind !== 'market') { if (C.currentWeek(lapse).kind === 'race') round(lapse, 4); else C.advanceWeek(lapse); }
+  lapse.season.mid.push(mo); assert.ok(C.advanceWarnings(lapse).some((t) => /lapse/.test(t)), 'Advance warns first'); C.advanceWeek(lapse); assert.deepEqual(lapse.season.mid, []); assert.ok(lapse.inbox.some((m) => /lapsed/.test(m.title)), 'an unanswered offer never just disappears');
+
+  // ---- negotiation as a flow: patience, the push gauge, walking away, signing bonus, your own team
+  const fl = C.newCareer({ seed: 124, now: 'x' }); C.finishShootout(fl, null); const f0 = fl.pending.offers[0], open0 = C.openingAsk(f0);
+  assert.equal(C.pushOf(fl, f0, open0).label, 'As offered'); assert.equal(C.patienceOf(f0), 3); assert.ok(C.leversOf(f0).signing.length > 1);
+  assert.equal(C.pushOf(fl, f0, { ...open0, salary: 0.3, signing: 0.5, status: 'second' }).label, 'Unrealistic');
+  const sg0 = f0.signing; assert.equal(C.negotiate(fl, f0.id, { ...open0, signing: 0.25 }).result, 'accepted'); assert.equal(f0.signing, Math.round(sg0 * 1.25 / 50) * 50, 'the signing bonus is a lever'); assert.ok(f0.log.length >= 2, 'the conversation is kept');
+  const f1 = fl.pending.offers[1]; assert.equal(C.negotiate(fl, f1.id, { salary: 0.3, signing: 0.5, seasons: 1, status: 'second' }).result, 'countered'); assert.equal(C.patienceOf(f1), 1, 'an unrealistic ask costs twice the patience');
+  assert.equal(C.negotiate(fl, f1.id, f1.counter).result, 'accepted', 'their counter is always signable');
+  const f2 = fl.pending.offers[2]; assert.ok(C.walkAway(fl, f2.id)); assert.ok(!fl.pending.offers.includes(f2)); assert.equal(fl.world.teams[f2.team].declined, 1); assert.ok(fl.inbox.some((m) => /turned/.test(m.title)));
+  fl.pending.offers.length = 0; assert.ok(C.walkAway(fl, 'nope') === false);
+  const ow = signed(125); toReview(ow, 4, 1); ow.contract.seasonsLeft = 1; ow.pending.offers = [{ id: 'own', team: 'mojave', seat: 'B', car: 'bmw1', tier: 'rookie', status: 'junior', salary: 300, signing: 0, seasons: 2, interest: -1 }]; const tr0 = ow.contract.trust;
+  assert.equal(C.negotiate(ow, 'own', { salary: 0.3, signing: 0, seasons: 2, status: 'junior' }).result, 'countered'); assert.ok(ow.contract.trust < tr0, 'haggling with your own team costs trust');
+
+  // ---- team moves: the market week or the season end only, one knock per team, an honest no
+  const ap = signed(126); assert.equal(C.approach(ap, 'toro').result, 'closed', 'not outside the market'); assert.equal(C.teamOutlook(ap, 'toro').blocked, 'Market closed'); assert.match(C.teamOutlook(ap, 'toro').why, /Reputation/);
+  toReview(ap, 4); const no = C.approach(ap, 'aurum'); assert.ok(['closed', 'no'].includes(no.result)); ap.career.rep = 500; ap.career.rr = [8, 8, 8, 8, 8, 8]; ap.career.cl = 12; const yes = C.approach(ap, 'toro'); assert.ok(['offer', 'no'].includes(yes.result)); assert.equal(C.approach(ap, 'toro').result, 'closed', 'one knock a window');
+  let offered = null; for (let i = 700; i < 760 && !offered; i++) { const a = signed(i); toReview(a, 4); a.career.rep = 500; a.career.rr = [8, 8, 8, 8, 8, 8]; a.career.cl = 12; const n = a.pending.offers.length, q = C.approach(a, 'sarab'); if (q.result === 'offer') { offered = a; assert.equal(a.pending.offers.length, n + 1); } }
+  assert.ok(offered, 'a knock can bring an offer');
+  const probation = signed(127); while (C.currentWeek(probation).kind !== 'market') { if (C.currentWeek(probation).kind === 'race') round(probation, 4); else C.advanceWeek(probation); } assert.match(C.teamOutlook(probation, 'toro').blocked, /Probation/, 'not in the first season');
+
+  // ---- sponsors: offers in pre-season, a slot per tier, a retainer every round, a bonus on the target, consequences for no-shows
+  const sp = signed(128), so = sp.sponsors.offers; assert.equal(so.length, R.SPONSORS.offersPerWindow); assert.ok(so.every((o) => R.SPONSORS.brands[o.brand].tier === 'rookie')); assert.ok(so[0].expires === sp.season.weeks.findIndex((x) => x.kind === 'market'));
+  const so0 = so[0], ret = so0.retainer; assert.equal(C.negotiate(sp, so0.id, { retainer: 0.15, bonus: 0 }).result, 'accepted'); assert.equal(so0.retainer, Math.round(ret * 1.15 / 5) * 5); assert.ok(C.signSponsor(sp, so0.id).ok); assert.equal(C.signSponsor(sp, so[0].id).reason, 'slots', 'one slot at Rookie');
+  const cash0 = sp.wallet.coins, deal = sp.sponsors.deals[0]; deal.target = { kind: 'top', n: 8, count: 1 }; const rr0 = round(sp, 4); assert.ok(rr0.coinLines.some(([l]) => /retainer/.test(l))); assert.ok(rr0.coinLines.some(([l]) => /bonus/.test(l)), 'the target pays'); assert.ok(deal.met); assert.equal(sp.wallet.coins, cash0 + rr0.coins);
+  const rr1 = round(sp, 4); assert.ok(!rr1.coinLines.some(([l]) => /bonus/.test(l)), 'once');
+  const sk = signed(129), so1 = sk.sponsors.offers[0]; C.signSponsor(sk, so1.id); assert.ok(sk.sponsors.deals.length); sk.sponsors.deals[0].mood = 1; C.advanceWeek(sk); round(sk, 4); const wS = sk.season.weeks.find((x, i) => i >= sk.clock.week && x.event?.kind === 'sponsor'); while (C.currentWeek(sk) !== wS) { if (C.currentWeek(sk).kind === 'race') round(sk, 4); else C.advanceWeek(sk); }
+  assert.ok(C.advanceWarnings(sk).some((t) => /goodwill/.test(t)), 'Advance warns about a sponsor day'); const repS = sk.career.rep; C.advanceWeek(sk); assert.deepEqual(sk.sponsors.deals, [], 'out of goodwill, the deal ends'); assert.equal(sk.career.rep, Math.max(0, repS + R.TUNING.sponsors.droppedRep));
+  assert.equal(C.eventName(sk, { kind: 'open', event: { kind: 'sponsor' } }), 'Team drift day');
 
   // ---- migration: a P1 save gets the seat map, and an unknown schema is not guessed at
   const old = signed(113); delete old.world.seats; delete old.world.free; delete old.world.retired; delete old.world.academy; delete old.career.heat; delete old.garage.package; old.schema = 1;
   const mig = C.migrate(old); assert.equal(mig.schema, C.SCHEMA); assert.equal(mig.world.seats.bmw1, 'YOU'); assert.deepEqual(mig.world.free, ['QUI']); assert.deepEqual(mig.career.heat, {});
   assert.equal(C.migrate({ schema: 99 }), null); assert.equal(C.migrate(null), null);
+  const v3 = signed(130); round(v3, 3); round(v3, 3); v3.schema = 3; delete v3.inbox; delete v3.inboxN; delete v3.sponsors; delete v3.clock.week; const wo3 = { id: 'o', team: 'toro', seat: 'B', car: 'huracan', tier: 'maestro', status: 'junior', salary: 500, signing: 1000, seasons: 2, why: 'x' };
+  delete v3.season.weeks; delete v3.season.mid; delete v3.season.asked; v3.season.w1 = { offer: wo3, state: 'open' }; v3.season.current.side = { kind: 'test', result: null }; v3.season.calendar[4].track = 'infinia'; v3.season.calendar[4].look = 'night'; v3.player.code = 'VAL';
+  C.migrate(v3); assert.equal(v3.schema, C.SCHEMA); assert.equal(C.currentWeek(v3).kind, 'race'); assert.equal(C.currentWeek(v3).round, v3.clock.round, 'a season under way lands on its round'); assert.equal(v3.season.weeks[1].result.finish, 3, 'the rounds raced are on the calendar');
+  assert.equal(v3.season.mid[0].id, 'o', 'an open offer survives'); assert.equal(v3.season.w1, undefined); assert.equal(v3.season.current.side, undefined); assert.equal(v3.season.calendar[4].look, 'dusk'); assert.notEqual(v3.player.code, 'VAL'); assert.deepEqual(v3.sponsors, { deals: [], offers: [] }); assert.ok(v3.inbox.length);
+  C.finishQuali(v3, 60); assert.ok(C.finishRace(v3, { order: v3.season.current.quali.grid, best: {} }).rr, 'and it plays on');
+  const v3r = signed(131); toReview(v3r, 3); v3r.schema = 3; delete v3r.season.weeks; delete v3r.clock.week; delete v3r.sponsors; delete v3r.inbox; C.migrate(v3r); assert.equal(C.currentWeek(v3r).kind, 'end', 'a save at the review stays there'); C.acceptOffer(v3r, v3r.pending.offers[0].id, avail); assert.equal(v3r.clock.season, 2);
 
   // ---- three save slots, each its own career, guarded when storage is missing
   const S = await server.ssrLoadModule('/src/game/career/save.js'), mem = {};

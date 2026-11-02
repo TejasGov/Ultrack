@@ -2,7 +2,9 @@
 
 **Race length and qualifying, changed 2026-11-01 at the user's call (over sections 4.1 and 4.2 below):** nobody should have to drive 8 laps to take part. The player picks a race length in minutes when creating a career and between rounds: Sprint (2.5, the default), Standard (4), Full (6). Laps follow per circuit, 2-lap minimum; points, XP, rating and reputation are the same at every length (only per-lap prize money differs). Qualifying, the Shootout and test days are one valid flying lap with a 250 m run-up; the Paddock's "Improve your lap" retries before the race and keeps the better lap.
 
-Status: P0, P1 and P2 built 2026-11-01 (`src/game/career/`, `src/game/career-ui.js`, `assets/career/*.json`; tests `scripts/test-career.mjs`, sim `scripts/career-sim.mjs`, in-game `scripts/qa-career-round.mjs`). Par laps are measured (`scripts/measure-par-laps.mjs`, 2026-11-01); the human baseline is not. Not yet built: P3 and later (events, perks, press, living tiers), Mail and Contract tabs (the contract sits in Profile). Design first written 2026-10-31. It is written for the people who will build it: decisions first, the reason in a line, open questions at the end (section 12).
+**The hub, weeks, events, negotiations and sponsors, changed 2026-11-02 at the user's call (section 13):** read section 13 first; it replaces the Paddock, side events and offer cards described below, and it retuned rating, trust, reputation, XP and money.
+
+Status: P0, P1 and P2 built 2026-11-01, the 360 overhaul 2026-11-02 (`src/game/career/`, `src/game/career-ui.js`, `career-hub.js`, `career-deals.js`, `career-shell.js`, `assets/career/*.json`; tests `scripts/test-career.mjs`, `scripts/test-menu.mjs`, sim `scripts/career-sim.mjs`, in-game `scripts/qa-career-season.mjs` and `scripts/qa-career-screens.mjs`). Par laps are measured (`scripts/measure-par-laps.mjs`, 2026-11-01); the human baseline is not. Not yet built: P3 and later (events, perks, press, living tiers), Mail and Contract tabs (the contract sits in Profile). Design first written 2026-10-31. It is written for the people who will build it: decisions first, the reason in a line, open questions at the end (section 12).
 
 Every number here is a starting value for a data file (section 10.5), not a promise. Numbers marked **(assumed)** are guesses that a measurement must confirm before they are trusted; section 10.4 lists the measurements.
 
@@ -849,6 +851,46 @@ Skeleton of `tuning.json` with the values from this document:
 10. **New tracks.** How many (2 or 3), and are the three archetypes in 4.5 what you are building?
 11. **Iron Career and the pace coach.** Offer them from day one, or later?
 12. **Player look.** Name, nation, number and helmet colours only, or a portrait too (no art exists)?
+
+## 13. The 360 overhaul (2026-11-02)
+
+The user's words: "full screen UI polished like FC27, have proper segregation for weeks, events, modes, negotiations". The grammar is taken from a football career hub (status bar, tabs, Advance, staged deals with a tension gauge, one inbox). No names, art or layouts are copied, and the tokens are Ultrack's. Save schema 4 (`C.migrate` brings a schema 3 career onto the new calendar at the round it was on).
+
+### 13.1 Weeks
+
+`buildWeeks` (rules.js) turns a calendar into weeks: pre-season, then each round's race week with an open week between rounds, the market after the middle round, the review last. 6 rounds make 13 weeks, 8 make 17. `clock.week` is the index into `season.weeks`. `advanceWeek` moves on from any week but a race week, which ends with its race. `advanceWarnings` lists what a press would cost (a sponsor's goodwill, an offer lapsing); the first press shows it and the second goes. Nothing lapses or changes without a line in the inbox.
+
+### 13.2 Events and modes
+
+Three kinds, three columns on the Events tab. **Race weekends** are required. **Test days** (Time Trial against targets; gold is a free upgrade level) and **sponsor events** (Drift Attack, 90 s, pays by medal) are optional, one per open week, at the next round's circuit, the team's favourite kind first; `event.result` or `event.skipped` stays on the calendar.
+
+"Modes" was read as what the player can drive and when: Practice (new: Free Drive at the next round's circuit, nothing at stake), Qualifying, Race, Test day, Sponsor day, shown as tiles on Home, each open, next, locked or done with its reason. The race length is a tile beside them, because it changes between rounds.
+
+### 13.3 Negotiations
+
+`careerDeal` is one screen for contracts, offers, team moves and sponsors. Levers: salary, signing bonus, length, status (a sponsor: retainer, bonus). Accepted when the demand fits the leverage (6.5). Otherwise the team names the nearest terms it would sign and loses patience: 3 refusals (a sponsor: 2), and an ask past 1.5x the leverage costs two. Out of patience it walks: REP -5 and no more talks this window. Your own team refusing costs 3 trust each time. Walking away is free but counts as a decline. The gauge says As offered, Comfortable, Pushing it, Too much or Unrealistic; "Pushing it" runs to 1.15x the leverage, so the limit is near what it shows but not exact. Their counter can always be accepted. Agreed terms still need Sign.
+
+Team moves the player starts: in the market week or at the season end he can approach a team (`approach`). One try per team per window. Under their bar he hears the real reason; over it, a seeded roll on their interest. The tier above, or an A seat in his own tier with an average rating of 7.0. Not in the first season's market week. In mid-season a talk can leak (30 %: trust -5). A deal signed in mid-season starts next season and costs 8 trust; the release cut is paid at once. Unanswered, it lapses when the market closes.
+
+### 13.4 Personal sponsors
+
+`assets/career/sponsors.json`: brands from the sponsor folder by tier (no car makers, no political party). Slots: the tier's rank. Two offers before the season and in the market if a slot is free. A one-season deal: a retainer every round, a bonus on a target (top N, qualifying, podiums, a win, clean races, duels), and sponsor days: goodwill starts at 2, a skipped day costs 1, gold gives 1 back, and at 0 the deal ends (REP -3).
+
+### 13.5 Screens
+
+Everything is full screen on `.cx` (career.css): a still under a scrim, the status bar, the page's grid, a footer with the one primary. Hub tabs (Q/E, LB/RB): Home, Calendar, Events, Inbox, Deals, Standings, Garage, Driver. `row()` and tabs carry `data-adjust`, so on a `grid: true` screen Left/Right changes them and moves everywhere else. careerStart holds the slots, create, Shootout, first offers and the season review; careerReport fits one screen at 720p.
+
+### 13.6 Balance, as retuned (career-sim, 80 careers each)
+
+Rating above 8.5 counts half. Trust: per rating point 2, objective ±3, bonus objective 1, duel ±2. REP: per rating point 9, win 8, podium 4, Drivers' title 100, Teams' 60. XP: over-expected cap 60, quali per place 5, bonus objective 25, events 25 / 50 / 75. Prize multipliers 0.4 / 0.6 / 1.0, salaries Maestro 450 / 650, Legend 800 / 1,200 / 1,800, signing 1.5-3 x salary.
+
+### 13.7 Fixed from the audit
+
+Left/Right on form and negotiation rows, no way out of a sponsor day, the report's pay lines off screen at 720p, the review opening past its results, Sign and the levers below the fold, the Paddock's scroll, mid-season offers vanishing, events vanishing, Infinia at night (`calendar.json`), round names claiming an hour they do not run at, duplicate driver codes, "P12 / 8", a retirement keeping the fastest-lap point, the Shootout's pause copy, Esc from a new career leaving the career, offer copy like a debug line.
+
+### 13.8 Not built
+
+Simulating a race, more than one driver market at a time, exit fees, the livery clause, press and random events (7.4). A full-screen hub still renders the 3D lineup behind it, which costs GPU for nothing; a one-line skip in `main.js` would fix it once that file is free.
 
 ## Appendix A: lessons from the reference games
 

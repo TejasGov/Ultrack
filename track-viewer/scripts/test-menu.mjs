@@ -4,9 +4,12 @@ import * as THREE from 'three';
 import {PlayerInput} from '../src/physics/driver.js';
 class Element extends EventTarget {
  constructor(tag='div'){super();this.tagName=tag.toUpperCase();this.children=[];this.attrs={};this.style={setProperty:(k,v)=>this.style[k]=v};this.className='';this.dataset={};this.offsetParent={};
- this.classList={toggle:(k,on)=>{let s=new Set(this.className.split(' '));on??=!s.has(k);on?s.add(k):s.delete(k);this.className=[...s].join(' ');return on;},contains:(k)=>this.className.split(' ').includes(k)};}
+ this.classList={add:(k)=>{this.className=[...new Set([...this.className.split(' ').filter(Boolean),k])].join(' ');},remove:(k)=>{this.className=this.className.split(' ').filter(x=>x!==k).join(' ');},toggle:(k,on)=>{let s=new Set(this.className.split(' '));on??=!s.has(k);on?s.add(k):s.delete(k);this.className=[...s].join(' ');return on;},contains:(k)=>this.className.split(' ').includes(k)};}
  append(...items){for(let x of items){if(typeof x!=='object')x=globalThis.document.createTextNode(String(x));this.children.push(x);x.parentNode=this;}}   // strings become text nodes, as in the DOMappendChild(x){this.append(x);}
  replaceChildren(...items){this.children=[];this.append(...items);}
+ insertBefore(x,ref){const i=this.children.indexOf(ref);this.children.splice(i,0,x);x.parentNode=this;}
+ removeAttribute(k){delete this.attrs[k];}hasAttribute(k){return Object.hasOwn(this.attrs,k);}
+ closest(sel){const c=sel.startsWith('.')?sel.slice(1):null;return c&&this.className.split(' ').includes(c)?this:this.parentNode?.closest?.(sel)??null;}
  setAttribute(k,v){this.attrs[k]=String(v);if(k.startsWith('data-'))this.dataset[k.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=String(v);}
  get textContent(){return this.text??this.children.map(c=>c.textContent).join('');}
  set textContent(value){this.text=String(value);this.children=[];}
@@ -27,52 +30,76 @@ try{
  assert.ok(routes.some(([name])=>name==='career')&&!busy.some(m=>/Career Mode/.test(m)),'the Career Mode tile opens the career');
  buttons.forEach((b,i)=>b.rect={x:(i%3)*110,y:Math.floor(i/3)*110,width:100,height:100});
  nav.reset(0);nav.moveSpatial(1,0);assert.equal(nav.i,1);nav.moveSpatial(0,1);assert.equal(nav.i,4);
- // ---- career screens: every step and tab renders real elements (a nested list once printed "[object HTMLDivElement]")
- {const CU=await server.ssrLoadModule('/src/game/career-ui.js'),C=await server.ssrLoadModule('/src/game/career/career.js');
-  const g={...game,career:null,screens:{},setBusy(){},leaveCareer(){},careerSession(){}},start=CU.CareerStartScreen(g),hub=CU.CareerHubScreen(g);g.screen=start;
-  const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN'),what+': '+t.slice(0,200));};
-  start.onShow();ok(start,'create');g.career=C.newCareer({name:'Ada Test',seed:3,now:'x'});start.onShow();ok(start,'shootout');
-  C.finishShootout(g.career,null);start.onShow();ok(start,'offers');assert.ok(start.el.querySelectorAll('[data-nav]').length>=4,'three offer cards and Sign');
-  C.acceptOffer(g.career,g.career.pending.offers[0].id,{india:null,drylake:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null});g.screen=hub;
-  for(let i=0;i<5;i++){hub.onShow();ok(hub,'hub tab '+i);hub.onKeyTab(1);}
-  assert.ok(hub.el.textContent.includes('Race length')&&hub.el.textContent.includes('Sprint'),'the Paddock can change the race length');C.finishQuali(g.career,60);hub.onShow('paddock');ok(hub,'paddock with a grid');assert.ok(hub.el.textContent.includes('Improve your lap'),'qualifying can be retried before the race');assert.ok(hub.el.textContent.includes('Start the race'));
-  const rep=CU.CareerReportScreen(g);g.screen=rep;
-  while(g.career.clock.phase!=='review'){if(g.career.clock.phase==='paddock')C.finishQuali(g.career,60);const q=g.career.season.current.quali.grid;rep.onShow(C.finishRace(g.career,{order:q,best:Object.fromEntries(q.map((k,i)=>[k,60+i])),crashes:0,spins:0}));ok(rep,'round report');}
-  g.screen=hub;hub.onShow('paddock');assert.ok(hub.el.textContent.includes('Season review'));g.screen=start;start.onShow();ok(start,'season review');assert.ok(start.el.textContent.includes('Season 1 review'));}
- // ---- the ladder's views: save slots, negotiation, W1, side events, rivals, the team package, a dropped season, a moved driver
+ // ---- career screens: every step and tab renders real elements (a nested list once printed "[object HTMLDivElement]"), each with its one job
  {const CU=await server.ssrLoadModule('/src/game/career-ui.js'),C=await server.ssrLoadModule('/src/game/career/career.js'),S=await server.ssrLoadModule('/src/game/career/save.js'),mem={};
   globalThis.localStorage={getItem:k=>mem[k]??null,setItem:(k,v)=>{mem[k]=v;}};
-  const avail={india:null,drylake:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null},shows=[],busy=[];
-  const g={...game,career:null,screens:{},setBusy:(m)=>busy.push(m),leaveCareer(){},careerSession(...a){g.sessions.push(a);},sessions:[],show:(...a)=>shows.push(a)},start=CU.CareerStartScreen(g),hub=CU.CareerHubScreen(g),rep=CU.CareerReportScreen(g);
-  const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN')&&!t.includes('null'),what+': '+t.slice(0,300));return t;};
+  const avail={india:null,drylake:['day','dusk'],infinia:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null},shows=[],busy=[];
+  const g={...game,career:null,screens:{},setBusy:(m)=>busy.push(m),leaveCareer(){},careerSession(...a){g.sessions.push(a);},sessions:[],show:(...a)=>shows.push(a)},start=CU.CareerStartScreen(g),hub=CU.CareerHubScreen(g),rep=CU.CareerReportScreen(g),deal=CU.CareerDealScreen(g);
+  const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN')&&!t.includes('null'),what+': '+t.slice(0,1500));return t;};
   const click=(scr,re)=>{const walk=(e)=>[e,...e.children.flatMap(walk)],b=walk(scr.el).filter(e=>Object.hasOwn(e.attrs,'data-nav')&&re.test(e.textContent)).pop();assert.ok(b,'no button '+re);b.click();};
-  // slots: all empty goes straight to create; a saved career shows the picker, an empty slot creates into that slot
-  g.screen=start;start.onShow();assert.ok(ok(start,'create').includes('You are 21'));
+  const show=(scr,arg)=>{g.screen=scr;scr.onShow(arg);};
+  // slots: all empty goes straight to create; a saved career shows the picker, an empty slot creates into that slot, and Esc goes back to the picker
+  show(start);assert.ok(ok(start,'create').includes('You are 21'));
   const a=C.newCareer({name:'Slot One',seed:21,now:'x'});S.saveCareer(a,0);start.onShow();let t=ok(start,'slots');assert.ok(t.includes('Slot One')&&t.includes('Empty')&&t.includes('Slot 3'));
-  click(start,/Slot 2/);assert.ok(start.el.textContent.includes('You are 21'),'an empty slot opens the create form');click(start,/Create driver/);
-  assert.equal(S.activeSlot(),1,'the new career went into the slot picked');assert.deepEqual(S.listCareers().map(c=>c?.seed!==undefined),[true,true,false]);assert.equal(g.career.clock.phase,'shootout');
-  // offers: the picked card has its levers; a refused demand counters, and the card signs
-  C.finishShootout(g.career,null);start.onShow();t=ok(start,'offers with negotiation');assert.ok(t.includes('Negotiate with')&&t.includes('Their limit'));
-  g.career.pending.offers.forEach(o=>{o.interest=0;});click(start,/Propose terms/);t=ok(start,'accepted');assert.ok(t.includes('Terms agreed'),'nothing asked is accepted');assert.ok(!t.includes('Propose terms')||t.includes('Negotiate with')===false,'an agreed card has no levers');
-  C.acceptOffer(g.career,g.career.pending.offers[0].id,avail);const save=g.career;g.screen=hub;
-  // garage: the team package; paddock: no side event in round 1
-  hub.onShow('garage');t=ok(hub,'garage package');assert.ok(t.includes('Team package')&&t.includes('Free'));
-  hub.onShow('paddock');assert.ok(!/optional/.test(ok(hub,'round 1')));
-  const round=(p=4)=>{if(save.clock.phase==='paddock')C.finishQuali(save,60);const me=save.contract.car,o=save.season.current.quali.grid.filter(k=>k!==me);o.splice(p-1,0,me);return C.finishRace(save,{order:o,best:{},crashes:0,spins:0});};
-  round();hub.onShow('paddock');t=ok(hub,'side event');assert.ok(/optional/.test(t)&&t.includes('Gold'));click(hub,/optional/);assert.equal(g.sessions.at(-1)[0],C.sideSpec(save).kind,'the row starts the session');
-  g.sessions.at(-1)[2]({best:null,score:0});t=(hub.onShow('paddock'),ok(hub,'side result'));assert.ok(t.includes('No medal'));
-  // rivals, a seat review warning and W1 in the Paddock and Profile; a moved driver shows his own name
-  save.career.heat={LIN:50,MAD:90};save.contract.warning={left:1,met:1};save.season.w1={offer:{id:'w',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,w1:true,why:'They want you.'},state:'open'};
-  hub.onShow('paddock');t=ok(hub,'w1 and rivals');assert.ok(t.includes('Mid-season offer')&&t.includes('Seat review')&&t.includes('Rivals')&&t.includes('Feud'));
-  click(hub,/Sign for next season/);t=ok(hub,'signed w1');assert.ok(t.includes('Signed for next season')&&!t.includes('Mid-season offer'));
-  hub.onShow('profile');t=ok(hub,'profile');assert.ok(t.includes('Rivals')&&t.includes('Other careers')&&t.includes('Erase this career'));
-  save.world.seats[save.season.current.entries[0]]='OKA';save.world.academy.OKA={name:'Tobi Okafor',nation:'NGA'};save.world.ratings.OKA=72;
-  C.finishQuali(save,60);hub.onShow('paddock');assert.ok(ok(hub,'academy on the grid').includes('OKA'));
-  const r=round(1);g.screen=rep;rep.onShow(r);assert.ok(ok(rep,'report').includes('Tobi Okafor'));
+  click(start,/Slot 2/);assert.ok(start.el.textContent.includes('You are 21'),'an empty slot opens the create form');start.back();assert.ok(start.el.textContent.includes('Slot One'),'Esc from the form goes back to the slots');
+  click(start,/Slot 2/);click(start,/Create driver/);
+  assert.equal(S.activeSlot(),1,'the new career went into the slot picked');assert.deepEqual(S.listCareers().map(c=>c?.seed!==undefined),[true,true,false]);assert.equal(g.career.clock.phase,'shootout');assert.ok(ok(start,'shootout').includes('Open Shootout'));
+  // the first offers are cards; a card opens the talks on its own screen
+  C.finishShootout(g.career,null);start.onShow();t=ok(start,'first offers');assert.ok(t.includes('Your first contract'));
+  const o0=g.career.pending.offers[0];click(start,/Nissan/);assert.deepEqual(shows.at(-1),['careerDeal',{id:o0.id,home:'careerStart'}],'a card opens the deal');
+  show(deal,{id:o0.id,home:'careerStart'});t=ok(deal,'deal');for(const w of ['The terms','How hard you are pushing','Their patience','The conversation','Propose','Walk away','Sign'])assert.ok(t.includes(w),w);
+  assert.ok(t.includes('As offered'),'an untouched ask is as offered');
+  // a hard ask is countered; the counter can be accepted; then only Sign is left
+  o0.interest=0;g.career.pending.offers.splice(1);deal.onShow({id:o0.id,home:'careerStart'});o0.seasons=2;
+  C.negotiate(g.career,o0.id,{salary:0.3,signing:0.5,seasons:1,status:'second'});deal.onShow({id:o0.id,home:'careerStart'});t=ok(deal,'countered');assert.ok(t.includes('Accept their counter')&&t.includes('Their counter'));
+  click(deal,/Accept their counter/);t=ok(deal,'agreed');assert.ok(o0.agreed&&t.includes('Sign with')&&!t.includes('Propose'),'agreed: only signing left');
+  click(deal,/Sign with/);assert.deepEqual(shows.at(-1),['careerHub','home'],'signing goes to the hub');const save=g.career;assert.equal(save.clock.phase,'paddock');
+  // every tab of the hub, in a pre-season week
+  for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'tab '+tab);}
+  show(hub,'home');t=ok(hub,'home');for(const w of ['Week 1 of','Practice','Test day','Qualifying','Race','Sprint race','Inbox','Skip and advance'])assert.ok(t.includes(w),w);
+  // the race length is a Home tile and a Driver setting; Left/Right steps it
+  click(hub,/Sprint race/);assert.equal(save.rules.raceLength,'standard');click(hub,/Standard race/);click(hub,/Full race/);assert.equal(save.rules.raceLength,'sprint');
+  show(hub,'driver');t=ok(hub,'driver');for(const w of ['Race length','Other careers','Erase this career','Recent ratings'])assert.ok(t.includes(w),w);
+  // garage: the team package
+  show(hub,'garage');t=ok(hub,'garage');assert.ok(t.includes('free from the team')&&t.includes('Free'));
+  // a test day runs from its tile; its result stays on the calendar, and a skipped one says so
+  show(hub,'home');click(hub,/Test day/);assert.equal(g.sessions.at(-1)[0],'test','the tile starts the session');g.sessions.at(-1)[2]({best:null,score:0});assert.equal(save.season.weeks[0].event.result.medal,0);
+  show(hub,'home');t=ok(hub,'event done');assert.ok(t.includes('Done: No medal')&&t.includes('Advance'));
+  click(hub,/Practice/);assert.equal(g.sessions.at(-1)[0],'practice');
+  // Advance: into race week, whose primary is qualifying; the race is locked until then
+  click(hub,/^Advance/);assert.equal(C.currentWeek(save).kind,'race');show(hub,'home');t=ok(hub,'race week');assert.ok(t.includes('Start qualifying')&&t.includes('Locked: qualify first')&&t.includes('Required'));
+  click(hub,/Locked: qualify first/);assert.match(busy.at(-1),/Qualify first/);
+  C.finishQuali(save,60);show(hub,'home');t=ok(hub,'grid');assert.ok(t.includes('Improve your lap')&&t.includes('Start the race')&&t.includes('The grid'),'the grid and the retry are on Home');
+  click(hub,/Start the race/);assert.equal(g.sessions.at(-1)[0],'race');
+  const q=()=>save.season.current.quali.grid,round=(p=4)=>{if(save.clock.phase==='paddock')C.finishQuali(save,60);const me=save.contract.car,o=q().filter(k=>k!==me);o.splice(p-1,0,me);return C.finishRace(save,{order:o,best:{},crashes:0,spins:0});};
+  const r1=round();show(rep,r1);t=ok(rep,'report');for(const w of ['Round rating','Why that rating','What it paid','Objectives','Salary','Continue'])assert.ok(t.includes(w),w);
+  // an open week with a sponsor day; Advance warns once a sponsor is signed, then goes
+  const so=save.sponsors.offers[0];show(hub,'deals');t=ok(hub,'deals');for(const w of ['On the table','Your contract','Teams','Your sponsors','Market opens week'])assert.ok(t.includes(w),w);assert.ok(t.includes(so.name),'sponsor offers are on the table');
+  click(hub,new RegExp(so.name+': personal sponsor'));assert.deepEqual(shows.at(-1),['careerDeal',{id:so.id,home:'careerHub'}]);show(deal,{id:so.id,home:'careerHub'});t=ok(deal,'sponsor deal');assert.ok(t.includes('Retainer')&&t.includes('Bonus')&&t.includes('Their target'));click(deal,/Sign with/);assert.equal(save.sponsors.deals.length,1);
+  while(C.currentWeek(save).kind==='race')round();while(!(C.currentWeek(save).event?.kind==='sponsor'&&!C.currentWeek(save).event.skipped)){if(C.currentWeek(save).kind==='race')round();else C.advanceWeek(save);}
+  show(hub,'home');t=ok(hub,'sponsor week');assert.ok(t.includes('drift day')&&t.includes(so.name));const wkBefore=save.clock.week;click(hub,/Skip and advance/);assert.equal(save.clock.week,wkBefore,'a first press only warns');assert.ok(hub.el.textContent.includes('goodwill'));click(hub,/Skip and advance/);assert.equal(save.clock.week,wkBefore+1,'the second goes');
+  // the calendar and events views say what happened
+  show(hub,'calendar');t=ok(hub,'calendar');assert.ok(t.includes('Skipped')&&t.includes('Race')&&t.includes('Review'));show(hub,'events');t=ok(hub,'events');for(const w of ['Race weekends','Test days','Sponsor events','Required','Optional'])assert.ok(t.includes(w),w);
+  // the inbox: a row opens with its action, reading it clears the count
+  show(hub,'inbox');t=ok(hub,'inbox');assert.ok(t.includes('Inbox')&&t.includes('Round 1'));
+  // rivals, a seat review warning and a market offer; a moved driver shows his own name
+  while(C.currentWeek(save).kind!=='market'){if(C.currentWeek(save).kind==='race')round();else C.advanceWeek(save);}
+  save.career.heat={LIN:50,MAD:90};save.contract.warning={left:1,met:1};const mo={id:'w',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,w1:true,interest:0.4,why:'They want you.'};save.season.mid=[mo];
+  show(hub,'home');t=ok(hub,'market week');assert.ok(t.includes('The market is open')&&t.includes('Seat review'));show(hub,'deals');t=ok(hub,'deals in the market');assert.ok(t.includes('Toro: HU')&&t.includes('Open this week')&&t.includes('Probation'),'the market week lists the offer and says why doors are shut');
+  show(deal,{id:'w',home:'careerHub'});click(deal,/Sign with/);assert.equal(save.contract.next.team,'toro');assert.deepEqual(save.season.mid,[]);show(hub,'home');assert.ok(ok(hub,'signed').includes('Signed for next season'));
+  show(hub,'driver');t=ok(hub,'driver rivals');assert.ok(t.includes('Rivals')&&t.includes('Feud'));
+  C.advanceWeek(save);save.world.seats[save.season.current.entries[0]]='OKA';save.world.academy.OKA={name:'Tobi Okafor',nation:'NGA'};save.world.ratings.OKA=72;
+  C.finishQuali(save,60);show(hub,'home');assert.ok(ok(hub,'academy on the grid').includes('OKA'));
+  const r=round(1);show(rep,r);assert.ok(ok(rep,'report').includes('Tobi Okafor'));
   // a dropped season: the review says so, and the reserve seat cannot be haggled
-  delete save.contract.next;save.contract.warning={left:0,met:0};while(save.clock.phase!=='review'){save.contract.trust=5;if(save.clock.phase==='paddock')C.finishQuali(save,999);round(8);}
-  g.screen=start;start.onShow();t=ok(start,'dropped review');assert.ok(save.pending.review.dropped&&t.includes('let you go'));const ro=save.pending.offers.find(o=>o.reserve);assert.ok(ro);
-  click(start,/Reserve|reserve seat at reduced/);t=ok(start,'reserve card');assert.ok(!t.includes('Negotiate with'),'a reserve seat has no levers');
+  delete save.contract.next;save.contract.warning={left:0,met:0};while(save.clock.phase!=='review'){save.contract.trust=5;save.contract.warning={left:0,met:0};if(C.currentWeek(save).kind==='race')round(8);else C.advanceWeek(save);}
+  show(start);t=ok(start,'dropped review');assert.ok(save.pending.review.dropped&&t.includes('let you go')&&t.includes('Next season')&&t.includes('drivers scored'));const ro=save.pending.offers.find(o=>o.reserve);assert.ok(ro);
+  click(start,/reserve seat at reduced/);assert.equal(shows.at(-1)[1].id,ro.id);show(deal,{id:ro.id,home:'careerStart'});t=ok(deal,'reserve deal');assert.ok(!t.includes('Propose')&&t.includes('Sign with'),'a reserve seat has no levers');
+  click(deal,/Sign with/);assert.equal(save.clock.season,2,'and signing starts the next season');show(hub,'home');ok(hub,'season 2');
+  // a career from before weeks opens on the new hub, every tab, mid-season and with a market offer waiting
+  const old3=C.newCareer({name:'Old Save',seed:31,now:'x'});C.finishShootout(old3,null);C.acceptOffer(old3,old3.pending.offers[0].id,avail);g.career=old3;for(let i=0;i<3;i++){C.finishQuali(old3,60);const gq=old3.season.current.quali.grid;C.finishRace(old3,{order:gq,best:{},crashes:0,spins:0});}
+  old3.schema=3;delete old3.inbox;delete old3.inboxN;delete old3.sponsors;delete old3.clock.week;delete old3.season.weeks;delete old3.season.mid;delete old3.season.asked;old3.season.w1={offer:{id:'w3',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,interest:0.4,why:'They want you.'},state:'open'};C.migrate(old3);
+  for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'migrated '+tab);}assert.ok(hub.el.textContent.includes('Week')&&C.findOffer(old3,'w3'),'the old offer is still on the table');
   delete globalThis.localStorage;
  }
  const credits=UI.CreditsScreen(game);for(const who of ['ar.jethin','evolveduk','sunnykhude'])assert.ok(credits.el.textContent.includes(who),'Infinia CC BY model credited: '+who);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));assert.ok(credits.el.textContent.includes('Airbus A320 Airliner')&&credits.el.textContent.includes('Kyaie'),'the Dry Lake airliner (CC BY) is credited');assert.ok(['Modular Stadium','Stadium Light','davi.pereira.souza.0001','thundermind'].every(t=>credits.el.textContent.includes(t)),'the Shajawa stands and towers (CC BY) are credited');
