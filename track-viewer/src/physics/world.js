@@ -100,7 +100,9 @@ export class PhysicsWorld {
       const name = Object.keys(SURFACES).sort((a, b) => b.length - a.length).find((k) => o.name.startsWith(k) || o.parent?.name?.startsWith(k)) ?? 'col_asphalt';
       const s = SURFACES[name] ?? SURFACES.col_asphalt;
       if (name === 'col_wall') { wallMeshes.push({ v, idx, s }); return; }
-      const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(v, idx).setFriction(0.8).setRestitution(0));
+      // a kerb's edge catches a car sliding over it the way a wall's faces do (see below): one-sided, so looking up
+      if (name === 'col_curb') for (let t = 0; t + 3 <= idx.length; t += 3) { const [a, b, c] = [idx[t] * 3, idx[t + 1] * 3, idx[t + 2] * 3]; if ((v[b + 2] - v[a + 2]) * (v[c] - v[a]) - (v[b] - v[a]) * (v[c + 2] - v[a + 2]) < 0) { const k = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = k; } }
+      const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(v, idx, name === 'col_curb' ? RAPIER.TriMeshFlags.FIX_INTERNAL_EDGES : undefined).setFriction(0.8).setRestitution(0));
       w.surfaceOf.set(col.handle, s);
       ground.push({ v, idx, handle: col.handle });
     });

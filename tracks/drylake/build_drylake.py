@@ -209,8 +209,9 @@ for i0, i1 in zip(S, S[1:]):
     a_, b_ = i0 % N, i1 % N
     for sd, ye in ((1, RY1), (-1, RY0)):
         ra = [off(a_, sd * HW, -0.03)]; rb = [off(b_, sd * HW, -0.03)]
-        if sd > 0: ra.append(Vector((ra[0].x, RYC, -0.03))); rb.append(Vector((rb[0].x, RYC, -0.03)))
-        ra.append(Vector((ra[0].x, ye, -0.03))); rb.append(Vector((rb[0].x, ye, -0.03)))
+        # the rows go down with the road where it dips: level at 3 cm under zero they left it in a trench, with a 38 cm slab end across the run-off where the trench stops (a solid wall at station 633)
+        if sd > 0: ra.append(pv(ra[0].x, RYC)); rb.append(pv(rb[0].x, RYC))
+        ra.append(pv(ra[0].x, ye)); rb.append(pv(rb[0].x, ye))
         for k in range(len(ra) - 1): PAVED.append([ra[k], rb[k], rb[k + 1], ra[k + 1]][::sd])
 for x0, x1 in ((RX0, XA), (XB, RX1)):
     n_ = max(1, int((x1 - x0) / 10))
@@ -223,8 +224,11 @@ for q in PAVED:
     for l in f.loops: c = l.vert.co; t = 0.86 + 0.12 * fbm(c.x / 90, c.y / 90, 3); l[vc] = (t, t * 0.99, t * 0.97, 1)
 runway = mesh_obj('DL runway', bm, ['runway'])
 bm = bmesh.new()
-def pbox(bm, x0, x1, y0, y1, z=0.0):
-    f = bm.faces.new([bm.verts.new((x, y, z)) for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))]); f.material_index = 0
+def pbox(bm, x0, x1, y0, y1):       # 3 cm over the runway, in 5 m pieces to follow it through the dip
+    n_ = max(1, int((x1 - x0) / 5))
+    for k_ in range(n_):
+        u0, u1 = x0 + (x1 - x0) * k_ / n_, x0 + (x1 - x0) * (k_ + 1) / n_
+        f = bm.faces.new([bm.verts.new((x, y, pv(x, y).z + 0.03)) for x, y in ((u0, y0), (u1, y0), (u1, y1), (u0, y1))]); f.material_index = 0
 x = RX0 + 60
 while x < RX1 - 90:     # centreline dashes: 30 m on, 20 m off
     pbox(bm, x, x + 30, RYC - 0.45, RYC + 0.45); x += 50

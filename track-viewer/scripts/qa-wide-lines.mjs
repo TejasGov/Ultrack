@@ -48,7 +48,7 @@ const out = await page.evaluate(async ({ C, car, lats, kmh }) => {
       v.step(STEP, { counter: 0.6, stability: 1.4, tcs: 1 }); world.step();
       const lost = (prevV - v.speed) / STEP; prevV = v.speed; cool -= STEP;
       if (t > 2 && cool <= 0 && lost > 25) {   // m/s2: over 2.5 g backwards, more than any brake
-        res.push({ line: target, station: i, lat: +lat.toFixed(1), kmh: Math.round(v.speed * 3.6), g: +(lost / 9.81).toFixed(1), touching: touchingNow(v), wallL: +reach(i, 1).toFixed(1), wallR: +reach(i, -1).toFixed(1), x: +p.x.toFixed(1), y: +p.y.toFixed(1), z: +p.z.toFixed(1) });
+        res.push({ line: target, station: i, lat: +lat.toFixed(1), kmh: Math.round(v.speed * 3.6), g: +(lost / 9.81).toFixed(1), yawOff: Math.round(dy * 57.3), touching: touchingNow(v), wallL: +reach(i, 1).toFixed(1), wallR: +reach(i, -1).toFixed(1), x: +p.x.toFixed(1), y: +p.y.toFixed(1), z: +p.z.toFixed(1) });
         cool = 0.4;
       }
     }
