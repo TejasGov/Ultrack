@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const [tracks = 'india,drylake,infinia,marina,shajawa,tokyo', cars = 'bmw1,huracan,destrier', base = 'http://127.0.0.1:5180'] = process.argv.slice(2);
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const CAREER = (f) => JSON.parse(readFileSync(join(root, '..', 'assets', 'career', f), 'utf8')), carZ = CAREER('tiers.json').carZ, factor = CAREER('tuning.json').pace.carZ, cal = CAREER('calendar.json').tracks;
+const CAREER = (f) => JSON.parse(readFileSync(join(root, '..', 'assets', 'career', f), 'utf8')), carZ = CAREER('tiers.json').carZ, factor = CAREER('tuning.json').pace.carZ, cal = new Proxy(CAREER('calendar.json').tracks, { get: (t, k) => t[k] ?? { parLap: 120 } });     // a track not on the calendar yet: a first guess at its par
 const browser = await chromium.launch({ executablePath: ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync), headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
 const out = {};
 for (const track of tracks.split(',')) {

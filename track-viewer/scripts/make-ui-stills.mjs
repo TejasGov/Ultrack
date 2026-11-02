@@ -36,6 +36,7 @@ const VIEWS = {
   india: { look: 'day', cam: [786, 9, 3], tgt: [831, 0, -3] },       // the ghat road winding down into the valley
   drylake: { look: 'dusk', cam: [178, 3.2, 5], tgt: [214, 2.5, 0] },   // into the boneyard flick (T2), airliners both sides, the low sun
   shajawa: { look: 'dusk', cam: [-24, 3.5, 2], tgt: [30, 4, -1] },     // down the main straight, the stands on both sides, the lamps on
+  llano: { look: 'dusk', cam: [-60, 2.4, 2], tgt: [40, 5, -2] },        // down the start straight into the low sun: stand, pits, tower, the checkered gantry
   infinia: { look: 'dusk', cam: [-40, 3.5, 3], tgt: [70, 24, 0] },      // from the start: the sea link rising ahead, its tower and cables, the skyline beside it
 };
 // the menu's other tiles: a view of a circuit, its own picture, not the Race tile's; 800 px, they show small and faded
