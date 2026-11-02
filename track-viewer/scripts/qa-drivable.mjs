@@ -28,7 +28,7 @@ const res = await page.evaluate(async ({ track, C, STEP_LIMIT }) => {
     const mx = (V[q] + V[q + 3]) / 2, mz = (V[q + 2] + V[q + 5]) / 2; let best = 0, bd = 1e9;
     for (let i = 0; i < n; i++) { const d = Math.hypot(C[i][0] - mx, C[i][2] - mz); if (d < bd) { bd = d; best = i; } }
     const [lx, lz] = left(best), lat = (mx - C[best][0]) * lx + (mz - C[best][2]) * lz;
-    if (Math.abs(V[q + 1] + 1 - C[best][1]) < 6 && Math.abs(lat) < R[lat > 0 ? 1 : -1][best] - 0.6) inside.push({ station: best, lat: +lat.toFixed(1), len: +Math.hypot(V[q + 3] - V[q], V[q + 5] - V[q + 2]).toFixed(1), base: +(V[q + 1] + 1 - C[best][1]).toFixed(2) });
+    if (V[q + 1] - C[best][1] < 1 && Math.abs(V[q + 1] + 1 - C[best][1]) < 6 && Math.abs(lat) < R[lat > 0 ? 1 : -1][best] - 0.6) inside.push({ station: best, lat: +lat.toFixed(1), len: +Math.hypot(V[q + 3] - V[q], V[q + 5] - V[q + 2]).toFixed(1), base: +(V[q + 1] + 1 - C[best][1]).toFixed(2) });
   }
   const steps = [], holes = [];
   for (let i = 0; i < n; i++) {

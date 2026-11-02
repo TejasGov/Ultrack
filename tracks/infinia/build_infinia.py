@@ -54,7 +54,9 @@ UVS.update({'asphalt': 3.5, 'concrete': 4.0, 'paving': 2.0, 'ground': 3.0})
 
 # ------------------------------------------------------------------------------------------------ road and walls: parapets close on the bridge and in the tunnel
 road(7.5, 70)
-barriers(lambda i: HW + 1.6 if (BRIDGE[i] and CL[i].z > 0.8) or (TUNNEL[i] and CL[i].z < -0.3) else 15.0)     # the same bounds as the walkways and the cutting
+# the walls close before the cutting's shelf begins (the land beside it jumps to level there), 24 stations being how far barriers() smooths: a taper still open would leave the shelf standing in front of the wall
+CUT = [TUNNEL[i] and CL[i].z < -0.3 for i in range(N)]; CUT_NEAR = [any(CUT[(i + k) % N] for k in range(-24, 25)) for i in range(N)]
+barriers(lambda i: HW + 1.6 if (BRIDGE[i] and CL[i].z > 0.8) or CUT_NEAR[i] else 15.0)     # the same bounds as the walkways and the cutting
 
 # ------------------------------------------------------------------------------------------------ land: each loop's inside and a seafront round it
 def poly_of(idx): return np.array([[CL[i].x, CL[i].y] for i in idx], np.float64)

@@ -26,7 +26,7 @@ export const SURFACES = {
 
 // The drivable ground can simply end while the visible terrain goes on (India's collision corridor stops ~40 m out): a car that gets
 // there (off a crest, sliding wide) drops through the scenery. Every open edge of the ground with nothing to land on just beyond it
-// (a ray 1.5 m out finds no ground within 10 m below) gets an invisible wall (per track: tracks.js `voidWalls`), 1 m under to 6 m over the edge. Edges where another
+// (rays out to 1.5 m find no ground within 10 m below, and no barrier stands there) gets an invisible wall (per track: tracks.js `voidWalls`), 1 m under to 6 m over the edge. Edges where another
 // surface carries on (a seam between strips, a corridor lying over the next leg of the lap) find ground there and stay open.
 function voidWalls(world, ground) {
   const ids = new Map(), P = [], edges = new Map(), handles = new Set(ground.map((g) => g.handle));
@@ -35,7 +35,7 @@ function voidWalls(world, ground) {
     const tri = [vid(v, idx[t]), vid(v, idx[t + 1]), vid(v, idx[t + 2])];
     for (let k = 0; k < 3; k++) { const a = tri[k], b = tri[(k + 1) % 3], key = a < b ? `${a},${b}` : `${b},${a}`, e = edges.get(key); if (e) e.n++; else edges.set(key, { a, b, c: tri[(k + 2) % 3], n: 1 }); }
   }
-  const out = [], tris = [], ray = new RAPIER.Ray({ x: 0, y: 0, z: 0 }, { x: 0, y: -1, z: 0 }), onGround = (c) => handles.has(c.handle);
+  const out = [], tris = [], ray = new RAPIER.Ray({ x: 0, y: 0, z: 0 }, { x: 0, y: -1, z: 0 }), across = new RAPIER.Ray({ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }), onGround = (c) => handles.has(c.handle);
   for (const { a, b, c, n } of edges.values()) {
     if (n !== 1) continue;
     const ax = P[a * 3], ay = P[a * 3 + 1], az = P[a * 3 + 2], bx = P[b * 3], by = P[b * 3 + 1], bz = P[b * 3 + 2];
@@ -44,14 +44,36 @@ function voidWalls(world, ground) {
     // tested in pieces of at most 2 m, at both ends and the middle: a long edge can run out over water at one end and under the road at the
     // other, and one test at its middle would wall all of it, across the road (Infinia's bridge landing). A gap this leaves is under 2 m, narrower than a car
     const pieces = Math.ceil(len / 2), at = (t) => [ax + (bx - ax) * t, ay + (by - ay) * t, az + (bz - az) * t];
-    const landing = (x, y, z) => { ray.origin = { x: x + ox * 1.5, y: y + 4, z: z + oz * 1.5 }; return world.castRay(ray, 14, true, undefined, undefined, undefined, undefined, onGround); };
+    // looked for at three distances: from 1.5 m alone a strip narrower than that is jumped over, and the kerb's edge inside it gets a wall in front of the barrier (every corner on India Ghat)
+    const landing = (x, y, z) => [0.25, 0.75, 1.5].some((d) => { ray.origin = { x: x + ox * d, y: y + 4, z: z + oz * d }; return world.castRay(ray, 14, true, undefined, undefined, undefined, undefined, onGround); });
+    // a barrier within 1.5 m already closes the edge: panels at car height against it only stop the car dead, so there they start over the car's roof, to catch one that vaults the barrier
+    const barrier = (x, y, z) => [1, -1].some((sd) => { across.origin = { x, y: y + 0.4, z }; across.dir = { x: ox * sd, y: 0, z: oz * sd }; return world.castRay(across, 1.5, true, undefined, undefined, undefined, undefined, (o) => !handles.has(o.handle)); });
     for (let k = 0; k < pieces; k++) {
-      const [x0, y0, z0] = at(k / pieces), [x1, y1, z1] = at((k + 1) / pieces);
-      if (landing(x0, y0, z0) || landing(x1, y1, z1) || landing((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2)) continue;
-      const i = out.length / 3; out.push(x0, y0 - 1, z0, x1, y1 - 1, z1, x1, y1 + 6, z1, x0, y0 + 6, z0); tris.push(i, i + 1, i + 2, i, i + 2, i + 3);
+      const [x0, y0, z0] = at(k / pieces), [x1, y1, z1] = at((k + 1) / pieces), mx = (x0 + x1) / 2, my = (y0 + y1) / 2, mz = (z0 + z1) / 2;
+      if (landing(x0, y0, z0) || landing(x1, y1, z1) || landing(mx, my, mz)) continue;
+      const low = barrier(mx, my, mz) ? 1.4 : -1, i = out.length / 3; out.push(x0, y0 + low, z0, x1, y1 + low, z1, x1, y1 + 6, z1, x0, y0 + 6, z0); tris.push(i, i + 1, i + 2, i, i + 2, i + 3);
     }
   }
   return { count: tris.length / 6, v: new Float32Array(out), idx: new Uint32Array(tris) };
+}
+
+// A wall's faces for the two one-sided meshes that make it solid from both sides (see create). India's wall is the visible concrete's own mesh: every segment ends in small faces standing across
+// the wall, and a car's corner catches them. Dropped: tiny faces turned away from the wall they stand in (the main direction of a 6 m patch of it, by area, at double angle so its two sides agree).
+// Sloped faces look up only: turned over they are an overhang that presses a car's roof corner down and stops it. And the posts standing on it (small faces over 1.25 m above the ground) are not solid:
+// the top corner of the car's box hits them head on in what looks like a graze
+function wallFaces(v, idx, world) {
+  const cells = new Map(), key = (t) => `${Math.floor((v[idx[t] * 3] + v[idx[t + 1] * 3] + v[idx[t + 2] * 3]) / 18)},${Math.floor((v[idx[t] * 3 + 2] + v[idx[t + 1] * 3 + 2] + v[idx[t + 2] * 3 + 2]) / 18)}`;
+  const normal = (t) => { const [a, b, c] = [idx[t] * 3, idx[t + 1] * 3, idx[t + 2] * 3], ux = v[b] - v[a], uy = v[b + 1] - v[a + 1], uz = v[b + 2] - v[a + 2], wx = v[c] - v[a], wy = v[c + 1] - v[a + 1], wz = v[c + 2] - v[a + 2], nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx, h2 = nx * nx + nz * nz, l = Math.sqrt(h2 + ny * ny); return { area: l / 2, up: l ? ny / l : 0, c2: h2 ? (nx * nx - nz * nz) / h2 : 0, s2: h2 ? 2 * nx * nz / h2 : 0 }; };
+  for (let t = 0; t + 3 <= idx.length; t += 3) { const n = normal(t), k = key(t), e = cells.get(k) ?? [0, 0]; e[0] += n.area * n.c2; e[1] += n.area * n.s2; cells.set(k, e); }
+  const front = [], back = [];
+  for (let t = 0; t + 3 <= idx.length; t += 3) {
+    const n = normal(t), [c, s] = cells.get(key(t)), l = Math.hypot(c, s) || 1, A = idx[t], B = idx[t + 1], C = idx[t + 2];
+    if (n.area < 0.05 && (n.c2 * c + n.s2 * s) / l < -0.5) continue;      // over 60 degrees off
+    if (n.area < 0.1) { const o = { x: (v[A * 3] + v[B * 3] + v[C * 3]) / 3, y: (v[A * 3 + 1] + v[B * 3 + 1] + v[C * 3 + 1]) / 3, z: (v[A * 3 + 2] + v[B * 3 + 2] + v[C * 3 + 2]) / 3 }, g = world.castRay(new RAPIER.Ray(o, { x: 0, y: -1, z: 0 }), 6, true); if (g && g.timeOfImpact > 1.25) continue; }
+    if (Math.abs(n.up) > 0.25) { if (n.up > 0) front.push(A, B, C); else front.push(A, C, B); continue; }
+    front.push(A, B, C); back.push(A, C, B);
+  }
+  return [front, back].map((f) => Uint32Array.from(f));
 }
 
 export class PhysicsWorld {
@@ -65,7 +87,7 @@ export class PhysicsWorld {
     // the collision mesh loads once; every session (src/game) builds a fresh world from it
     const gltf = PhysicsWorld.cache[url] ??= await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url);
     gltf.scene.updateMatrixWorld(true);
-    const ground = [];
+    const ground = [], wallMeshes = [];
     gltf.scene.traverse((o) => {
       if (!o.isMesh) return;
       const g = o.geometry, P = g.attributes.position, v = new Float32Array(P.count * 3), e = o.matrixWorld.elements;
@@ -77,10 +99,18 @@ export class PhysicsWorld {
       // node names are the surface (col_asphalt) or a numbered copy of it (col_asphalt_1, col_asphalt.001)
       const name = Object.keys(SURFACES).sort((a, b) => b.length - a.length).find((k) => o.name.startsWith(k) || o.parent?.name?.startsWith(k)) ?? 'col_asphalt';
       const s = SURFACES[name] ?? SURFACES.col_asphalt;
-      const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(v, idx).setFriction(name === 'col_wall' ? 0.35 : 0.8).setRestitution(name === 'col_wall' ? 0.15 : 0));
+      if (name === 'col_wall') { wallMeshes.push({ v, idx, s }); return; }
+      const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(v, idx).setFriction(0.8).setRestitution(0));
       w.surfaceOf.set(col.handle, s);
-      if (name !== 'col_wall') ground.push({ v, idx, handle: col.handle });
+      ground.push({ v, idx, handle: col.handle });
     });
+    // walls are built face by face, so a box sliding along one catches the end of the next face and loses most of its speed to a light graze. The fix makes a mesh one-sided, and a pit wall has
+    // a road on both sides: so each wall in two meshes, facing each way
+    w.world.step();                                  // the ground is in: the walls' height is measured from it
+    for (const { v, idx, s } of wallMeshes) for (const faces of wallFaces(v, idx, w.world)) {
+      const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(v, faces, RAPIER.TriMeshFlags.FIX_INTERNAL_EDGES).setFriction(0.35).setRestitution(0.15));
+      w.surfaceOf.set(col.handle, s);
+    }
     w.world.step();                                  // builds the query pipeline
     w.voidWalls = walls ? voidWalls(w.world, ground) : { count: 0 };
     if (w.voidWalls.count) { const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(w.voidWalls.v, w.voidWalls.idx).setFriction(0.35).setRestitution(0.15)); w.surfaceOf.set(col.handle, SURFACES.col_wall); w.world.step(); }
