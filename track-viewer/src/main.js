@@ -1319,6 +1319,7 @@ if (!DEV) {
   game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, get physicsOpts() { return { voidWalls: !!TRACK.voidWalls }; }, track: () => track, setTrack, trackId: () => TRACK.id });
   game.screens.title.progress(0.15);
   window.game = game;
+  if (DEV_QUERY.get('bench') === '1') import('./game/bench-report.js').then((m) => m.startBenchReport(window.viewer, game));   // real numbers from a player's machine
 }
 applyQuality();
 Promise.all([load(),DEV?setLook(params.look):Promise.resolve()])
