@@ -117,11 +117,12 @@ const params = {
 //   mirrorOnce      the road mirror is drawn for the frame, not again for the transmission pass's copy of the scene
 //   mirrorSkip      no road-mirror render while the road is too dry for it to show: see mirrorWanted
 //   idleLights      a look with no venue lamp lit (day, dusk) hides the lamp pool: its 16 lights sit at intensity 0, which three still runs in every lit fragment
+//   mirrorFirst     the road mirror draws before the frame, not nested inside it: a nested render has lights of its own, so three re-keyed every material it shares with the frame, twice a frame
 //   singlePass      transparent double-sided sheets (fences, glass) draw once: three otherwise draws them twice, back then front, re-keying the material on both draws
 //   stableCapture   the hero's reflection capture keeps the frame's light count and shadow flag, so three neither re-keys every lit material around it nor keeps a second program set: see Field.captureLights
 // ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
 const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
-const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass') };
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst') };
 const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
@@ -308,17 +309,21 @@ function makeReflector() {
   wetUniforms.tReflection.value = tex;
   // while the mirror renders, the road must not sample the very texture being drawn (a WebGL feedback loop)
   const renderMirror = reflector.onBeforeRender;
+  reflector.userData.draw = (r) => draw(r, scene, camera);
   reflector.onBeforeRender = function (...args) {
     // the transmission pass draws the opaque list into its own target first: the road mirror is part of that list but nothing there needs it
     const rt = args[0].getRenderTarget();
     if (PERF.mirrorOnce && rt && rt !== composer.renderTarget1 && rt !== composer.renderTarget2) return;
+    draw(...args);
+  };
+  const draw = (...args) => {
     wetUniforms.tReflection.value = null;
     const peopleOn = people.group.visible;
     people.group.visible = false;    // the wet road doesn't need to mirror every spectator
     // nor cars beyond 80 m: a few blurred pixels each, ~35 draw calls each
     const cam = args[2], far = (field?.all ?? []).filter((c) => c.root.visible && c.root.position.distanceTo(cam.position) > 80);
     far.forEach((c) => { c.root.visible = false; });
-    renderMirror.apply(this, args);
+    renderMirror.apply(reflector, args);
     far.forEach((c) => { c.root.visible = true; });
     people.group.visible = peopleOn;
     wetUniforms.tReflection.value = tex;
@@ -442,7 +447,10 @@ let inWorld = true, glassOn = 0;
 {
   const renderPass = composer.passes[0], renderScene = renderPass.render.bind(renderPass);
   renderPass.render = (r, writeBuffer, readBuffer, ...rest) => {
+    const mirror = PERF.mirrorFirst && reflector?.visible ? reflector : null;
+    if (mirror) { mirror.userData.draw(r); mirror.visible = false; }
     renderScene(r, writeBuffer, readBuffer, ...rest);
+    if (mirror) mirror.visible = true;
     if (!glassOn) return;
     const target = r.getRenderTarget();
     avgCells.material.uniforms.tScene.value = readBuffer.texture;
