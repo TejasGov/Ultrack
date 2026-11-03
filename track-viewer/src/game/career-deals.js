@@ -68,7 +68,7 @@ export function CareerDealScreen(game) {
     ];
     const P = C.pushOf(save, o, ask), left = C.patienceOf(o), max = o.sponsor ? TUNING.sponsors.refusals : TUNING.offers.refusals, others = o.sponsor ? save.sponsors.offers.length - 1 : new Set((save.pending?.offers ?? []).filter((x) => x.team !== o.team).map((x) => x.team)).size;
     const name = o.sponsor ? o.name : teamName(o.team), own = !o.sponsor && o.team === save.contract?.team;
-    const risk = `${left === 1 ? `One more refusal and ${name} walk` : `If ${name} run out of patience they walk`}: reputation ${o.sponsor ? TUNING.sponsors.withdrawnRep : TUNING.rep.withdrawn}${o.sponsor ? '' : ', and no more talks this window'}.${own ? ` Every refusal from your own team costs ${TUNING.offers.ownTrust} trust.` : ''}${others ? ` ${others} other ${others === 1 ? 'offer' : 'offers'} in hand: that is your leverage.` : ''}`;
+    const risk = `${left === 1 ? `One more refusal and ${name} walk` : `If ${name} run out of patience they walk`}${save.career.rep > 0 ? `: reputation ${o.sponsor ? TUNING.sponsors.withdrawnRep : TUNING.rep.withdrawn}` : ''}${o.sponsor ? '' : ', and no more talks this window'}.${own ? ` Every refusal from your own team costs ${TUNING.offers.ownTrust} trust.` : ''}${others ? ` ${others} other ${others === 1 ? 'offer' : 'offers'} in hand: that is your leverage.` : ''}`;
     const asked = JSON.stringify(ask) !== JSON.stringify(said);
     return h('div.cx-b.cx-termsb', {}, blockHead('contract', 'The terms', o.counter ? 'Their last word beside your ask' : 'Their offer beside your ask'),
       can ? [h('div.cx-termhead', {}, h('span', {}, 'Term'), h('span', {}, o.counter ? 'They say' : 'They offer'), h('span', {}, 'You ask')), rows,
@@ -92,7 +92,7 @@ export function CareerDealScreen(game) {
   } }, icon('close'), walking ? 'Press again to walk away' : 'Walk away');
   function propose(save, o, name) {
     const r = C.negotiate(save, o.id, ask); persist(game); ask = null; walking = false;
-    if (r.result === 'withdrawn') { game.setBusy(`${name} walked away. Reputation down.`, { kind: 'error', ms: 4000 }); return leave(); }
+    if (r.result === 'withdrawn') { game.setBusy(`${name} walked away.${r.repLost ? ' Reputation down.' : ''}`, { kind: 'error', ms: 4000 }); return leave(); }
     game.setBusy(r.result === 'accepted' ? `${name} agreed. Sign when you are ready.` : `${name} came back with terms of their own.`, r.result === 'accepted' ? {} : { kind: 'error', ms: 4000 });
     build();   // focus on the primary: the rows may be gone, and the old index could land on Walk away
   }

@@ -18,7 +18,7 @@
   "form": [[8.5, 3], [8.0, 2], [7.2, 1], [5.8, 0], [5.0, -1], [4.2, -2], [0, -3]],
   "money": { "startWallet": 1000, "buyback": 0.6 },
   "upgrades": { "clGate": [2, 8, 15] },
-  "offers": { "base": 0.30, "slope": 0.55, "maxCarDropZ": 0.3, "promoteDuelShare": 0.5, "reserveSalary": 0.6, "sameTierRR": 7.0, "sameTierInterest": 0.5, "w1Gate": 50, "w1Roll": 0.5, "maxOffers": 4, "counter": 0.6, "counterRaise": 0.15, "release": 8, "releaseCut": 0.2,
+  "offers": { "base": 0.30, "slope": 0.55, "maxCarDropZ": 0.3, "reserveSalary": 0.6, "sameTierRR": 7.0, "sameTierInterest": 0.5, "w1Gate": 50, "w1Roll": 0.5, "maxOffers": 4, "counter": 0.6, "counterRaise": 0.15, "release": 8, "releaseCut": 0.2,
               "firstJobInterest": 0.15, "promoteInterest": 0.5, "declineAfter": 3, "declinePenalty": 0.2, "refusals": 3, "tooFar": 1.5, "ownTrust": 3, "leak": 0.3, "leakTrust": 5,
               "demand": { "salaryStep": 0.1, "salaryMax": 0.3, "perSalaryStep": 1, "signingStep": 0.25, "signingMax": 0.5, "perSigningStep": 1, "perStatus": 2, "perSeasonCut": 0.5 } },
   "sponsors": { "retainerStep": 0.15, "retainerMax": 0.3, "bonusStep": 0.25, "bonusMax": 0.5, "refusals": 2, "withdrawnRep": -2, "droppedRep": -3 },

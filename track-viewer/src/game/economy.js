@@ -57,7 +57,7 @@ export function rewardFor(r) {
   if (r.mode === 'race') {
     const f = Math.sqrt((r.laps ?? 3) / 3), cars = r.cars ?? PAY.length;
     const place = PAY[Math.min(PAY.length - 1, Math.round((r.pos - 1) * (PAY.length - 1) / Math.max(1, cars - 1)))];
-    add(`Finished P${r.pos}`, place * f);
+    if (!r.retired) add(`Finished P${r.pos}`, place * f);
     add(`${r.laps} ${r.laps === 1 ? 'lap' : 'laps'} driven`, LAP * (r.finished === false ? 0 : r.laps) * 0.8);
     if (r.fastest) add('Fastest lap', FASTEST * f);
     if (r.pb) add('Personal best', PB * f);

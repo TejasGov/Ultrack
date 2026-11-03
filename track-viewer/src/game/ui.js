@@ -73,7 +73,7 @@ export class Nav {
       if (k === 'ArrowDown') { this.moveSpatial(0,1); e.preventDefault(); }
       else if (k === 'ArrowUp') { this.moveSpatial(0,-1); e.preventDefault(); }
       else if (k === 'ArrowLeft' || k === 'ArrowRight') { this.lr(k === 'ArrowLeft' ? -1 : 1); e.preventDefault(); }
-      else if (k === 'Enter' || k === 'NumpadEnter') { this.items()[this.i]?.click(); e.preventDefault(); }
+      else if (k === 'Enter' || k === 'NumpadEnter') { if (!e.repeat) this.items()[this.i]?.click(); e.preventDefault(); }   // one press per press: a held Enter skipped weeks
       else if (k === 'Escape' || k === 'Backspace') { if (!e.repeat) s.back?.(); e.preventDefault(); }   // one step back per press: a held Esc toggled pause and resume
     });
   }
@@ -163,7 +163,8 @@ export function toggle(on, onchange) {
 /** a note is a sentence and ends with a full stop (store.js ASSISTS notes have none until H9) */
 const sentence = (t) => (/[.!?]$/.test(t) ? t : t + '.');
 export function row(label, control, note) {
-  return h('div.row', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1) },
+  const step = (d) => { if (typeof control.step === 'function') control.step(d); };     // a text <input> has a string .step of its own
+  return h('div.row', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => step(e.detail), onclick: () => step(1) },
     h('label', {}, label), control, note ? h('div.note', {}, note) : null);
 }
 let nav = null;

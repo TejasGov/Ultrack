@@ -70,6 +70,7 @@ export function migrate(save) {
     }
     save.schema = 4;
   }
+  for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
   return save;
 }
 
@@ -107,7 +108,7 @@ export function acceptOffer(save, id, available) {
   for (const x of save.pending.offers) if (x.team !== o.team && x.team !== old?.team) save.world.teams[x.team].declined++;   // declined three times, a team cools (6.5)
   const keep = old && old.team === o.team && !old.dropped;
   save.contract = { team: o.team, seat: o.seat, car: o.car, status: o.status, seasons: o.seasons, seasonsLeft: o.seasons, salary: o.salary, signing: o.signing ?? 0,
-    underdog: !!o.underdog || !!(keep && old.underdog && old.car === o.car), easier: !!(o.easier || o.reserve), reserve: !!o.reserve,
+    underdog: !!o.underdog || !!(keep && old.underdog && old.car === o.car), easier: !!(o.easier || o.reserve || (o.keep && old.easier)), reserve: !!o.reserve,
     trust: keep ? old.trust : T.trust.startBy[o.status] ?? T.trust.start, duel: { won: 0, lost: 0, level: 0 }, since: keep ? old.since : save.clock.season };
   if (o.keep) Object.assign(save.contract, { seasons: old.seasons, seasonsLeft: old.seasonsLeft - 1, signing: 0 });
   save.wallet.coins += save.contract.signing;
@@ -274,7 +275,7 @@ export function finishRace(save, result) {
   const trust = trustFor({ rr: rating.rr, mandatory, optional, duel });
   // money (5.5): salary, the race prize x the tier's multiplier, objective and contract bonuses, sponsors
   const Tr = TIERS.tiers[tier], coins = [['Salary', me.salary]];
-  for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: order.length, laps: R.laps, finished: !dnf, fastest }).lines) coins.push([label, round5(v * Tr.prize)]);
+  for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: order.length, laps: R.laps, finished: !dnf, retired: dnf, fastest }).lines) coins.push([label, round5(v * Tr.prize)]);
   if (mandatory) coins.push(['Round objective', Tr.objective[0]]);
   if (optional) coins.push(['Bonus objectives', optional * Tr.objective[1]]);
   if (!dnf && finish === 1) coins.push(['Win bonus', Tr.bonus.win]); else if (!dnf && finish <= 3) coins.push(['Podium bonus', Tr.bonus.podium]);

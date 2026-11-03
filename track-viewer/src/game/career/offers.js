@@ -71,12 +71,12 @@ export function negotiate(save, id, ask) {
   o.refusals = (o.refusals ?? 0) + (demand > leverage * T.offers.tooFar ? 2 : 1);
   if (own && save.contract) save.contract.trust = clamp(save.contract.trust - T.offers.ownTrust, 0, 100);   // haggling with your own team costs trust
   if (o.refusals >= T.offers.refusals) {
-    remove(save, o); save.career.rep = clamp(save.career.rep + T.rep.withdrawn, 0, 1000);
+    const repWas = save.career.rep; remove(save, o); save.career.rep = clamp(repWas + T.rep.withdrawn, 0, 1000);
     if (save.world.teams[o.team]) save.world.teams[o.team].declined++;
     if (save.season?.asked) save.season.asked[o.team] = 1;
-    post(save, 'warn', `${name} walked away`, `Your demands were more than they would pay. Reputation ${T.rep.withdrawn}. They will not offer again this window.`);
+    post(save, 'warn', `${name} walked away`, `Your demands were more than they would pay.${repWas > 0 ? ` Reputation ${T.rep.withdrawn}.` : ''} They will not offer again this window.`);
     keepARoute(save);
-    return { result: 'withdrawn', terms, demand, leverage };
+    return { result: 'withdrawn', terms, demand, leverage, repLost: repWas > save.career.rep };
   }
   const t = (o.counter = nearestTerms(o, terms, leverage));
   say(o, 'them', `${COUNTER[o.refusals % COUNTER.length](name, TIERS.teams[o.team].wants)} ${coins(round5(o.salary * (1 + t.salary)))} a round, ${coins(round50((o.signing ?? 0) * (1 + t.signing)))} to sign, ${t.seasons} ${t.seasons === 1 ? 'season' : 'seasons'}, ${STATUS_LABEL[t.status]}.`);
@@ -188,8 +188,8 @@ export function approach(save, team) {
 export function seasonOffers(save, { cup, title, dropped }) {
   const me = save.contract, tier = TIERS.tiers[save.season.tier], season = save.clock.season, list = [];
   if (me.next) return [{ ...me.next, why: 'Signed in mid-season. Your new team is waiting.' }];
-  const d = me.duel, raced = d.won + d.lost + d.level;
-  if (!dropped && me.seat === 'B' && raced && d.won / raced >= T.offers.promoteDuelShare && me.trust >= T.trust.promote)
+  const d = me.duel;
+  if (!dropped && me.seat === 'B' && d.won > d.lost && me.trust >= T.trust.promote)
     list.push(offer(save, me.team, 'A', { salary: tier.salary.A, signing: 0, seasons: 2, interest: T.offers.promoteInterest, why: `You won the duel ${d.won}-${d.lost} and the team trusts you. The senior car is yours.` }));
   if (!dropped && save.season.tier === 'legend' && me.seat === 'A' && me.status !== 'number1' && me.trust >= T.trust.numberOne && (cup || title))
     list.push(offer(save, me.team, 'A', { status: 'number1', salary: tier.salary.N, signing: round50(tier.salary.N * 2), seasons: 3, interest: T.offers.promoteInterest, tag: '-n1',
@@ -205,7 +205,7 @@ export function seasonOffers(save, { cup, title, dropped }) {
   list.push(...outside.sort((a, b) => rankOf(b.team) - rankOf(a.team) || b.interest - a.interest).slice(0, T.offers.maxOffers));
   if (!dropped && outside.length && me.trust >= T.trust.renew && !list.some((o) => o.team === me.team) && rng(save.seed, 'counter', season)() < T.offers.counter)
     list.push(offer(save, me.team, 'A', { status: me.status === 'number1' ? 'number1' : 'lead', salary: round5(Math.max(me.salary, tier.salary.A) * (1 + T.offers.counterRaise)), signing: 0, seasons: 2, interest: T.offers.promoteInterest, tag: '-counter',
-      counter: true, why: `Your team has heard about the other offers: ${me.seat === 'B' ? 'the A seat' : 'a raise'} and ${Math.round(T.offers.counterRaise * 100)} % more to stay.` }));
+      why: `Your team has heard about the other offers: ${me.seat === 'B' ? 'the A seat' : 'a raise'} and ${Math.round(T.offers.counterRaise * 100)} % more to stay.` }));
   if (dropped || (me.seasonsLeft <= 1 && me.trust < T.trust.renew)) list.push(reserveOffer(save));
   else if (me.seasonsLeft > 1) list.push({ ...offer(save, me.team, me.seat, { status: me.status, salary: me.salary, signing: 0, seasons: me.seasons, tag: '-keep' }), keep: true, why: `Your contract runs ${me.seasonsLeft - 1} more ${me.seasonsLeft - 1 === 1 ? 'season' : 'seasons'}.` });
   else list.push(offer(save, me.team, me.seat, { status: me.status, salary: round5(Math.max(me.salary * 1.1, me.reserve ? tier.salary[me.seat] : 0)), signing: round50(me.salary * 2), seasons: 2, interest: T.offers.promoteInterest, tag: '-renew', why: 'The team wants to renew.' }));
@@ -237,9 +237,9 @@ function talkSponsor(save, o, ask) {
   }
   o.refusals = (o.refusals ?? 0) + (demand > leverage * T.offers.tooFar ? 2 : 1);
   if (o.refusals >= T.sponsors.refusals) {
-    remove(save, o); save.career.rep = clamp(save.career.rep + T.sponsors.withdrawnRep, 0, 1000);
-    post(save, 'warn', `${o.name} pulled out`, `Your demands put them off. Reputation ${T.sponsors.withdrawnRep}.`);
-    return { result: 'withdrawn', terms, demand, leverage };
+    const repWas = save.career.rep; remove(save, o); save.career.rep = clamp(repWas + T.sponsors.withdrawnRep, 0, 1000);
+    post(save, 'warn', `${o.name} pulled out`, `Your demands put them off.${repWas > 0 ? ` Reputation ${T.sponsors.withdrawnRep}.` : ''}`);
+    return { result: 'withdrawn', terms, demand, leverage, repLost: repWas > save.career.rep };
   }
   const t = { ...terms }; while (demandOfSponsor(t) > leverage && (t.bonus > 0 || t.retainer > 0)) { if (t.bonus > 0) t.bonus = Math.round((t.bonus - T.sponsors.bonusStep) * 100) / 100; else t.retainer = Math.round((t.retainer - T.sponsors.retainerStep) * 100) / 100; }
   o.counter = t; say(o, 'them', `${o.name} come back lower. "This is our budget for a driver at your level." ${coins(round5(o.retainer * (1 + t.retainer)))} a round, ${coins(round50(o.bonus * (1 + t.bonus)))} on the target.`);

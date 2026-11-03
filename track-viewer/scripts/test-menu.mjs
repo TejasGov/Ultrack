@@ -8,6 +8,7 @@ class Element extends EventTarget {
  append(...items){for(let x of items){if(typeof x!=='object')x=globalThis.document.createTextNode(String(x));this.children.push(x);x.parentNode=this;}}   // strings become text nodes, as in the DOMappendChild(x){this.append(x);}
  replaceChildren(...items){this.children=[];this.append(...items);}
  insertBefore(x,ref){const i=this.children.indexOf(ref);this.children.splice(i,0,x);x.parentNode=this;}
+ get lastChild(){return this.children.at(-1);}
  remove(){const c=this.parentNode?.children;if(c)c.splice(c.indexOf(this),1);}
  removeAttribute(k){delete this.attrs[k];}hasAttribute(k){return Object.hasOwn(this.attrs,k);}
  closest(sel){const c=sel.startsWith('.')?sel.slice(1):null;return c&&this.className.split(' ').includes(c)?this:this.parentNode?.closest?.(sel)??null;}
@@ -46,6 +47,10 @@ try{
   // delete: pick a save, a modal asks with Cancel first, Cancel and Esc keep it, Delete erases only that slot
   {const b=C.newCareer({name:'Slot Three',seed:23,now:'x'});S.saveCareer(b,2);start.onShow();click(start,/Delete career/);assert.ok(ok(start,'delete').includes('Delete a career'));click(start,/Slot Three/);assert.ok(start.modal,'it asks first');start.back();assert.ok(!start.modal&&S.listCareers()[2],'Esc keeps the save');click(start,/Slot Three/);click({el:start.modal},/Cancel/);assert.ok(!start.modal&&S.listCareers()[2],'Cancel keeps the save');click(start,/Slot Three/);click({el:start.modal},/Delete career/);assert.ok(S.listCareers()[0]&&!S.listCareers()[2],'only that slot is erased');assert.ok(!start.modal&&start.el.textContent.includes('Manager career'),'back on the landing');
    S.saveCareer(a,0);S.saveCareer(C.newCareer({name:'Two',seed:24,now:'x'}),1);S.saveCareer(C.newCareer({name:'Three',seed:25,now:'x'}),2);start.onShow();assert.ok(start.el.textContent.includes('slots are full'),'three saves: New career says why not');S.saveCareer(null,1);S.saveCareer(null,2);S.loadCareer(0);start.onShow();}
+  // a damaged save and all three locked: the landing still renders, and either can be deleted, so it is never a dead end
+  {const K='ultrack.career.v1',keep=mem[K],d=JSON.parse(keep);d.slots[2]={schema:C.SCHEMA};mem[K]=JSON.stringify(d);start.onShow();const L=ok(start,'damaged');assert.ok(L.includes('Damaged')&&L.includes('Slot One'));click(start,/Delete career/);click(start,/Damaged/);assert.ok(start.modal);click({el:start.modal},/Delete career/);assert.equal(S.listCareers()[2],null);
+   mem[K]=JSON.stringify({active:0,slots:[{schema:99},{schema:99},{schema:99}]});start.onShow();assert.ok(!start.el.textContent.includes('No careers saved yet'));click(start,/Delete career/);click(start,/Slot 1/);click({el:start.modal},/Delete career/);assert.equal(S.listCareers()[0],null,'a locked save can be deleted when the player says so');
+   mem[K]=keep;S.loadCareer(0);start.onShow();}
   click(start,/Slot 2/);click(start,/Create driver/);
   assert.equal(S.activeSlot(),1,'the new career went into the slot picked');assert.deepEqual(S.listCareers().map(c=>c?.seed!==undefined),[true,true,false]);assert.equal(g.career.clock.phase,'shootout');assert.ok(ok(start,'shootout').includes('Open Shootout'));
   // the first offers are cards; a card opens the talks on its own screen
@@ -64,6 +69,7 @@ try{
   // the race length is a Home tile and a Driver setting; Left/Right steps it
   click(hub,/Sprint race/);assert.equal(save.rules.raceLength,'standard');click(hub,/Standard race/);click(hub,/Full race/);assert.equal(save.rules.raceLength,'sprint');
   show(hub,'driver');t=ok(hub,'driver');for(const w of ['Race length','Other careers','Erase this career','Recent ratings'])assert.ok(t.includes(w),w);
+  {const len=g.career.rules.raceLength;click(hub,/Erase this career/);assert.ok(hub.el.textContent.includes('Press again'));click(hub,/Race length/);assert.ok(hub.el.textContent.includes('Erase this career'),'a redraw shows the plain label');click(hub,/Erase this career/);assert.ok(g.career&&hub.el.textContent.includes('Press again'),'and it needs two presses again');C.setRaceLength(g.career,len);show(hub,'driver');}
   // garage: the team package
   show(hub,'garage');t=ok(hub,'garage');assert.ok(t.includes('free from the team')&&t.includes('Free'));
   // a test day runs from its tile; its result stays on the calendar, and a skipped one says so

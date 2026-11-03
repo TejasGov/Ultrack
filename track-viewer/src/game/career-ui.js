@@ -33,7 +33,10 @@ export function CareerStartScreen(game) {
     F.title(deleting ? 'Delete a career' : 'Career', deleting ? 'Pick the save to delete' : 'Pick up a save, or start something new'); F.page.className = 'cx-page cs-slots'; fill(F.me); F.backdrop('tiles', 'career');
     const off = { disabled: true };      // greyed: no nav stop, nothing to press
     const card = (c, i) => {
-      if (c?.unreadable) return h(`button.of-card.cs-slot${deleting ? '.off' : ''}`, deleting ? off : { 'data-nav': '', onclick: () => game.setBusy('This career was saved by a newer version of the game.', { kind: 'error', ms: 4000 }) }, h('span.kick', {}, `Slot ${i + 1}`), h('strong', {}, 'Locked'), h('span.of-why', {}, 'Saved by a newer version of the game. Update to carry on.'));
+      if (c?.unreadable) {
+        const why = c.damaged ? 'This save is damaged and cannot be opened. You can delete it.' : 'Saved by a newer version of the game. Update to carry on, or delete it.';
+        return h('button.of-card.cs-slot', { 'data-nav': '', onclick: () => (deleting ? askDelete(i, `slot ${i + 1}`) : game.setBusy(why, { kind: 'error', ms: 4000 })) }, h('span.kick', {}, `Slot ${i + 1}`), h('strong', {}, c.damaged ? 'Damaged' : 'Locked'), h('span.of-why', {}, why));
+      }
       return h(`button.of-card.cs-slot${deleting && !c ? '.off' : ''}`, deleting && !c ? off : { 'data-nav': '', onclick: () => {
         if (deleting) askDelete(i, c.player.name); else if (c) { game.career = loadCareer(i); route(); } else { target = i; creating = true; build(); } } },
       [h('span.kick', {}, `Slot ${i + 1}`), c ? [h('strong', {}, c.player.name),
@@ -43,7 +46,7 @@ export function CareerStartScreen(game) {
     };
     if (deleting) return list.map(card);
     const tile = (ic, kick, title, why, onclick) => h(`button.of-card.cs-act${onclick ? '' : '.off'}`, onclick ? { 'data-nav': '', onclick } : off, h('span.kick', {}, icon(ic), kick), h('strong', {}, title), h('span.of-why', {}, why));
-    const free = list.findIndex((c) => !c), saved = list.some((c) => c && !c.unreadable);
+    const free = list.findIndex((c) => !c), saved = list.some(Boolean);
     return [list.map(card),
       tile('plus', 'Driver career', 'New career', free < 0 ? `All ${SLOTS} slots are full. Delete one first.` : 'Create your driver and start at the Open Shootout.', free < 0 ? null : () => { target = free; creating = true; build(); }),
       tile('close', 'Your saves', 'Delete career', saved ? 'Pick a save to delete. This cannot be undone.' : 'No careers saved yet.', saved ? () => { deleting = true; build(); } : null),
@@ -105,7 +108,7 @@ export function CareerStartScreen(game) {
     const p = save.pending, r = p.review, last = save.history.at(-1), list = p.offers, st = C.standings(save), top = st.drivers.slice(0, 5);
     F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = 'cx-page cs-review'; statusBar(F.me, save); F.backdrop('cars', last.car);
     const headline = r.drivers === 1 ? 'Champion' : `P${r.drivers}`;
-    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount} drivers scored`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), stat('Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)))),
+    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers scored`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), stat('Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)))),
         r.dropped ? h('p.cx-note.warn', {}, icon('warning'), `${teamName(last.team)} has let you go: trust fell too far. Reputation ${TUNING.rep.dropped}. A reserve seat is the way back.`) : null,
         r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins ? h('p.cx-note', {}, icon('star'), `Titles this season: ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))} reputation${r.coins ? `, +${money(r.coins)}` : ''}.`) : null,
         h('div', {}, top.map((d, i) => css(h(`div.lrow.cx-mini${d.you ? '.me' : ''}`, {}, h('b.tnum', {}, i + 1), h('i.tbar'), h('span', {}, d.name), h('b.tnum', {}, String(Math.round(d.pts * 10) / 10))), { '--team': teamMark(loreOf(d.team)) })))),

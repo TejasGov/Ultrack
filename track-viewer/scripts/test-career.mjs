@@ -165,8 +165,17 @@ try {
   let rel = null; for (let i = 400; i < 500 && !rel; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 1); if (s.contract.seasonsLeft > 1 && s.pending.offers.some((o) => o.tier === 'maestro')) rel = s; }
   assert.ok(rel, 'a strong year brings a Maestro offer'); const up = rel.pending.offers.find((o) => o.tier === 'maestro'), cashR = rel.wallet.coins, sal = rel.contract.salary, sign0 = up.signing;
   C.acceptOffer(rel, up.id, avail); assert.equal(rel.transfer, Math.round(8 * sal * 1 * 0.2 / 50) * 50); assert.equal(rel.wallet.coins, cashR + rel.transfer + sign0 + rel.buyback); assert.equal(rel.season.tier, 'maestro');
-  let ctr = null; for (let i = 500; i < 700 && !ctr; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 999); ctr = s.pending.offers.find((o) => o.counter) ?? null; }   // the duel lost: no promotion to compete with it
-  assert.ok(ctr, 'a counter-offer appears on some seeds'); assert.equal(ctr.seat, 'A');
+  let ctr = null; for (let i = 500; i < 700 && !ctr; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 999); ctr = s.pending.offers.find((o) => o.id.endsWith('-counter')) ?? null; }   // the duel lost: no promotion to compete with it
+  assert.ok(ctr, 'a counter-offer appears on some seeds'); assert.equal(ctr.seat, 'A'); assert.equal(ctr.counter, undefined, 'it opens as a plain offer: .counter is the terms they last said');
+
+  ctr.counter = true; C.migrate({ schema: C.SCHEMA, pending: { offers: [ctr] } }); assert.equal(ctr.counter, undefined, 'a counter-offer saved with the old flag is repaired');
+  // ---- the bug sweep: a tied duel wins nothing, a retirement earns no place money, a Raw contract stays easier into its second year, a refusal at zero reputation promises no loss
+  const O = await server.ssrLoadModule('/src/game/career/offers.js'), E = await server.ssrLoadModule('/src/game/economy.js');
+  const duel = (won, lost, level) => { const s = signed(140); s.contract.seat = 'B'; s.contract.trust = 90; s.contract.duel = { won, lost, level }; return O.seasonOffers(s, { cup: false, title: false, dropped: false }).some((o) => o.team === s.contract.team && o.seat === 'A' && /won the duel/.test(o.why)); };
+  assert.equal(duel(3, 3, 0), false, 'a tied duel is not a win'); assert.equal(duel(4, 2, 0), true); assert.equal(duel(3, 2, 1), true); assert.equal(duel(2, 3, 1), false);
+  const payLabels = (retired) => E.rewardFor({ mode: 'race', pos: 8, cars: 8, laps: 5, finished: !retired, retired }).lines.map(([l]) => l);
+  assert.ok(payLabels(false).includes('Finished P8') && !payLabels(true).includes('Finished P8'), 'a retirement earns no place money');
+  const ez = signed(141); ez.contract.easier = true; toReview(ez, 8); const keepO = ez.pending.offers.find((o) => o.keep); if (keepO) { C.acceptOffer(ez, keepO.id, avail); assert.equal(ez.contract.easier, true, 'easier targets last the whole contract'); }
 
   // ---- weeks: 6 rounds make 13 weeks, every round has a race week, the market sits after the middle round, the review last
   const wk = signed(110), W = wk.season.weeks;
@@ -255,7 +264,15 @@ try {
   assert.deepEqual(S.listCareers().map((x) => x?.seed ?? null), [115, null, 116]);
   S.saveCareer(null); assert.deepEqual(S.listCareers().map((x) => x?.seed ?? null), [null, null, 116], 'only the active slot is erased');
   mem['ultrack.career.v1'] = '{broken'; assert.equal(S.loadCareer(), null, 'a broken save reads as none');
-  mem['ultrack.career.v1'] = JSON.stringify({ active: 0, slots: [{ schema: C.SCHEMA, contract: { car: 'mustang' } }] }); assert.equal(S.loadCareer().contract.car, 'ford-gt', 'a Mustang career moves to the Ford GT');
+  // two tabs share `active`: this tab's saves stay in this tab's slot
+  S.saveCareer(a0, 0); S.saveCareer(a2, 1); S.loadCareer(0); { const d = JSON.parse(mem['ultrack.career.v1']); d.active = 1; mem['ultrack.career.v1'] = JSON.stringify(d); } S.saveCareer(a0);
+  assert.deepEqual(S.listCareers().map((x) => x?.seed ?? null), [115, 116, null], 'the other tab changing the active slot does not redirect this tab');
+  // a damaged save is listed as damaged, never thrown on; the good one beside it still loads
+  mem['ultrack.career.v1'] = JSON.stringify({ active: 0, slots: [{ schema: C.SCHEMA }, a0, { schema: 1, player: { name: 'x' } }] });
+  assert.deepEqual(S.listCareers()[0], { unreadable: true, damaged: true }); assert.equal(S.listCareers()[1].seed, 115); assert.deepEqual(S.listCareers()[2], { unreadable: true, damaged: true }); assert.equal(S.loadCareer(0), null); assert.equal(S.loadCareer(1).seed, 115);
+  // a driver called mustang keeps the name; the car it means still moves on
+  mem['ultrack.career.v1'] = JSON.stringify({ active: 0, slots: [{ ...a0, player: { ...a0.player, name: 'mustang' } }] }); S.loadCareer(0); assert.equal(S.loadCareer(0).player.name, 'mustang');
+  mem['ultrack.career.v1'] = JSON.stringify({ active: 0, slots: [{ schema: C.SCHEMA, player: { name: 'mustang' }, clock: { season: 1 }, career: { cl: 1, rep: 0 }, contract: { car: 'mustang' } }] }); assert.equal(S.loadCareer().contract.car, 'ford-gt', 'a Mustang career moves to the Ford GT');
   // ---- the game closed mid-career: the next boot gives free play its own car and conditions back, before the circuit loads
   mem['ultrack.v1'] = JSON.stringify({ car: 'bmw1', settings: { track: 'india', look: 'day', weather: 'rain', laps: 8, master: 0.5 }, freePlay: { car: 'av12', track: 'marina', look: 'night', weather: 'dry', laps: 3 }, best: { 'marina/mustang': 90 }, upgrades: { mustang: { engine: 1 } } });
   const { store } = await server.ssrLoadModule('/src/game/store.js');

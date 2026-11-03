@@ -20,10 +20,10 @@ const conds = (R) => [icon(LOOK[R.look][1], { label: LOOK[R.look][0] }), icon(WX
 const scroller = (cls, ...kids) => h(`div.lscroll.${cls}`, { onscroll: (e) => fadeMore(e.currentTarget) }, ...kids);
 
 export function CareerHubScreen(game) {
-  let tab = 'home', armed = false, confirmErase = false, calWeek = null, mailId = null;
-  const tabs = h('div.stabs', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'tablist', 'aria-label': 'Career tabs', onadjust: (e) => api.onKeyTab(e.detail), onclick: () => api.onKeyTab(1) });
+  let tab = 'home', armed = false, calWeek = null, mailId = null;
+  const tabs = h('div.stabs', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'tablist', 'aria-label': 'Career tabs', onadjust: (e) => { api.onKeyTab(e.detail); getNav().reset(getNav().items().indexOf(tabs)); }, onclick: () => api.onKeyTab(1) });     // Left and Right stay on the strip, so holding one cycles the tabs
   const F = frame('career-hub', tabs);
-  const go = (t) => { tab = t; armed = false; confirmErase = false; build(); };
+  const go = (t) => { tab = t; armed = false; build(); };
   const open = (id) => game.show('careerDeal', { id, home: 'careerHub' });
   const toast = (msg, err) => game.setBusy(msg, err ? { kind: 'error', ms: 4000 } : {});
 
@@ -232,9 +232,10 @@ export function CareerHubScreen(game) {
   // ---------------------------------------------------------------------------------------------- Driver
   function driver(save) {
     const K = save.career, next = xpForLevel(K.cl + 1), prev = xpForLevel(K.cl), S = save.stats;
+    let confirmErase = false;      // here, so any redraw of this page disarms the button along with its label
     const reset = h('button.btn.btn-ghost', { 'data-nav': '', onclick: () => {
       if (!confirmErase) { confirmErase = true; reset.lastChild.textContent = 'Press again: this career is erased'; return; }
-      game.career = null; saveCareer(null); confirmErase = false; game.show('careerStart'); } }, icon('restart'), h('span', {}, 'Erase this career'));
+      game.career = null; saveCareer(null); game.show('careerStart'); } }, icon('restart'), h('span', {}, 'Erase this career'));
     const slots = h('button.btn.btn-ghost', { 'data-nav': '', onclick: () => { game.career = null; game.show('careerStart'); } }, icon('people'), h('span', {}, 'Other careers'));
     const rivals = C.rivalsOf(save).slice(0, 4);
     return [h('div.cx-b', {}, blockHead('helmet', `${save.player.nation} · #${save.player.number} · ${save.player.code}`), h('strong.cx-title', {}, save.player.name),
@@ -273,7 +274,7 @@ export function CareerHubScreen(game) {
   }
   const api = {
     el: F.el, nav: true, grid: true,
-    onShow(t) { if (!game.career) return void game.show('careerStart'); if (t) tab = t; armed = false; confirmErase = false; calWeek = null; mailId = null; build(); },
+    onShow(t) { if (!game.career) return void game.show('careerStart'); if (t) tab = t; armed = false; calWeek = null; mailId = null; build(); },
     onKeyTab(d) { go(TABS[(TABS.findIndex(([id]) => id === tab) + d + TABS.length) % TABS.length][0]); },
     /** the Calendar's and the Inbox's detail panels follow the focus */
     onSel(el) {
