@@ -117,10 +117,11 @@ const params = {
 //   mirrorOnce      the road mirror is drawn for the frame, not again for the transmission pass's copy of the scene
 //   mirrorSkip      no road-mirror render while the road is too dry for it to show: see mirrorWanted
 //   idleLights      a look with no venue lamp lit (day, dusk) hides the lamp pool: its 16 lights sit at intensity 0, which three still runs in every lit fragment
+//   singlePass      transparent double-sided sheets (fences, glass) draw once: three otherwise draws them twice, back then front, re-keying the material on both draws
 //   stableCapture   the hero's reflection capture keeps the frame's light count and shadow flag, so three neither re-keys every lit material around it nor keeps a second program set: see Field.captureLights
 // ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
 const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
-const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture') };
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass') };
 const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
@@ -459,13 +460,19 @@ function twinOf(m) {
       shader.fragmentShader = 'uniform sampler2D tAvg; uniform float uT, uVeil;\n' + shader.fragmentShader.replace('#include <transmission_fragment>', 'totalDiffuse = mix( totalDiffuse, texture2D( tAvg, vec2( 0.5 ) ).rgb * diffuseColor.rgb * uVeil, uT );');
     };
     w.customProgramCacheKey = () => 'world-glass';
+    singlePass(w);
     twins.set(m, w);
   }
   return w;
 }
+const singles = new Set();
+function singlePass(m) {
+  if (m.transparent && m.side === THREE.DoubleSide && !m.forceSinglePass) { singles.add(m); m.forceSinglePass = PERF.singlePass; }
+}
 function noteGlass(o, car) {
   const mats = Array.isArray(o.material) ? o.material : [o.material];
   mats.forEach((m, slot) => {
+    singlePass(m);
     if (m.transmission > 0 && !glass.some((g) => g.mesh === o && g.slot === (Array.isArray(o.material) ? slot : -1))) glass.push({ mesh: o, slot: Array.isArray(o.material) ? slot : -1, real: m, car, on: false });
   });
 }
@@ -604,6 +611,7 @@ async function loadVenue() {
         m.customProgramCacheKey = () => 'fence-soft';
       }
       else if (m.alphaTest > 0) m.alphaToCoverage = true;
+      singlePass(m);                                    // noteGlass ran before the fence became transparent
       // anisotropic filtering: without it the asphalt smears into flat colour at driver-eye height
       for (const key of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap']) {
         if (m[key]) { m[key].anisotropy = m.name === 'M_Fence' ? 1 : aniso; m[key].needsUpdate = true; }
@@ -916,6 +924,7 @@ function applyAll() {
     light.castShadow = params.shadows && useful;
     if (light.shadow) light.shadow.needsUpdate = true;
   }
+  for (const m of singles) if (m.forceSinglePass !== PERF.singlePass) { m.forceSinglePass = PERF.singlePass; m.needsUpdate = true; }
   bloom.enabled = params.bloom;
   // driving into the low sun, a wide sky above the threshold bloomed into a cream veil: dusk blooms less, from brighter pixels
   bloom.strength = params.bloomStrength * (look.bloomGain ?? 1) * ((look.dn ?? 0) < 0.5 ? SUN_GLARE : 1); bloom.radius = params.bloomRadius; bloom.threshold = params.bloomThreshold * (look.bloomThr ?? 1);
