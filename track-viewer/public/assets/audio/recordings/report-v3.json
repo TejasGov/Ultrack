@@ -1,0 +1,1556 @@
+{
+ "aston-martin-valk": {
+  "engines/v3/aston-martin-valk-idle.ogg": {
+   "rpm": 1318,
+   "seconds": 2.993,
+   "rms": 0.1151,
+   "peak": 0.58,
+   "wrapJump": 0.0,
+   "flutterDb": -22.2,
+   "centroid": 3410
+  },
+  "engines/v3/aston-martin-valk-on-0.ogg": {
+   "rpm": 4630,
+   "seconds": 1.982,
+   "rms": 0.1151,
+   "peak": 0.368,
+   "wrapJump": 0.01,
+   "flutterDb": -21.2,
+   "centroid": 1889,
+   "poolSeconds": 0.18
+  },
+  "engines/v3/aston-martin-valk-on-1.ogg": {
+   "rpm": 5490,
+   "seconds": 1.98,
+   "rms": 0.1152,
+   "peak": 0.418,
+   "wrapJump": 0.0,
+   "flutterDb": -19.5,
+   "centroid": 2137,
+   "poolSeconds": 0.36
+  },
+  "engines/v3/aston-martin-valk-on-2.ogg": {
+   "rpm": 6510,
+   "seconds": 1.988,
+   "rms": 0.115,
+   "peak": 0.39,
+   "wrapJump": 0.0,
+   "flutterDb": -25.4,
+   "centroid": 2678,
+   "poolSeconds": 0.88
+  },
+  "engines/v3/aston-martin-valk-on-3.ogg": {
+   "rpm": 7730,
+   "seconds": 1.996,
+   "rms": 0.115,
+   "peak": 0.445,
+   "wrapJump": 0.01,
+   "flutterDb": -24.4,
+   "centroid": 3384,
+   "poolSeconds": 1.07
+  },
+  "engines/v3/aston-martin-valk-on-4.ogg": {
+   "rpm": 9160,
+   "seconds": 1.988,
+   "rms": 0.1151,
+   "peak": 0.571,
+   "wrapJump": 0.01,
+   "flutterDb": -25.5,
+   "centroid": 4106,
+   "poolSeconds": 1.3
+  },
+  "engines/v3/aston-martin-valk-on-5.ogg": {
+   "rpm": 10870,
+   "seconds": 1.994,
+   "rms": 0.1149,
+   "peak": 0.586,
+   "wrapJump": 0.0,
+   "flutterDb": -21.0,
+   "centroid": 4599,
+   "poolSeconds": 1.64
+  },
+  "engines/v3/aston-martin-valk-off-0.ogg": {
+   "rpm": 9310,
+   "seconds": 1.498,
+   "rms": 0.1151,
+   "peak": 0.4,
+   "wrapJump": 0.01,
+   "flutterDb": -25.6,
+   "centroid": 3887,
+   "poolSeconds": 0.26
+  },
+  "engines/v3/aston-martin-valk-off-1.ogg": {
+   "rpm": 10210,
+   "seconds": 1.492,
+   "rms": 0.115,
+   "peak": 0.402,
+   "wrapJump": 0.0,
+   "flutterDb": -24.1,
+   "centroid": 4041,
+   "poolSeconds": 0.16
+  }
+ },
+ "av12": {
+  "engines/v3/av12-idle.ogg": {
+   "rpm": 1129,
+   "seconds": 2.959,
+   "rms": 0.115,
+   "peak": 0.555,
+   "wrapJump": 0.0,
+   "flutterDb": -10.2,
+   "centroid": 2089
+  },
+  "engines/v3/av12-on-0.ogg": {
+   "rpm": 2290,
+   "seconds": 1.975,
+   "rms": 0.1149,
+   "peak": 0.288,
+   "wrapJump": 0.0,
+   "flutterDb": -24.3,
+   "centroid": 1266,
+   "poolSeconds": 0.16
+  },
+  "engines/v3/av12-on-1.ogg": {
+   "rpm": 2730,
+   "seconds": 1.999,
+   "rms": 0.1151,
+   "peak": 0.339,
+   "wrapJump": 0.0,
+   "flutterDb": -19.8,
+   "centroid": 1453,
+   "poolSeconds": 1.04
+  },
+  "engines/v3/av12-on-2.ogg": {
+   "rpm": 3250,
+   "seconds": 1.996,
+   "rms": 0.115,
+   "peak": 0.288,
+   "wrapJump": 0.0,
+   "flutterDb": -24.4,
+   "centroid": 1445,
+   "poolSeconds": 1.67
+  },
+  "engines/v3/av12-on-3.ogg": {
+   "rpm": 3880,
+   "seconds": 1.984,
+   "rms": 0.1151,
+   "peak": 0.447,
+   "wrapJump": 0.0,
+   "flutterDb": -22.2,
+   "centroid": 1571,
+   "poolSeconds": 1.09
+  },
+  "engines/v3/av12-on-4.ogg": {
+   "rpm": 4620,
+   "seconds": 1.999,
+   "rms": 0.1149,
+   "peak": 0.37,
+   "wrapJump": 0.01,
+   "flutterDb": -25.8,
+   "centroid": 1638,
+   "poolSeconds": 1.18
+  },
+  "engines/v3/av12-on-5.ogg": {
+   "rpm": 5510,
+   "seconds": 1.983,
+   "rms": 0.1148,
+   "peak": 0.315,
+   "wrapJump": 0.0,
+   "flutterDb": -23.0,
+   "centroid": 1978,
+   "poolSeconds": 1.09
+  },
+  "engines/v3/av12-on-6.ogg": {
+   "rpm": 6560,
+   "seconds": 1.987,
+   "rms": 0.1149,
+   "peak": 0.381,
+   "wrapJump": 0.01,
+   "flutterDb": -18.4,
+   "centroid": 995,
+   "poolSeconds": 1.32
+  },
+  "engines/v3/av12-on-7.ogg": {
+   "rpm": 7820,
+   "seconds": 1.99,
+   "rms": 0.1151,
+   "peak": 0.355,
+   "wrapJump": 0.0,
+   "flutterDb": -24.1,
+   "centroid": 992,
+   "poolSeconds": 1.31
+  }
+ },
+ "furari-488": {
+  "engines/v3/furari-488-idle.ogg": {
+   "rpm": 952,
+   "seconds": 2.968,
+   "rms": 0.115,
+   "peak": 0.418,
+   "wrapJump": 0.0,
+   "flutterDb": -22.0,
+   "centroid": 3937
+  },
+  "engines/v3/furari-488-on-1.ogg": {
+   "rpm": 1590,
+   "seconds": 1.943,
+   "rms": 0.1149,
+   "peak": 0.368,
+   "wrapJump": 0.02,
+   "flutterDb": -23.9,
+   "centroid": 2987,
+   "poolSeconds": 0.66
+  },
+  "engines/v3/furari-488-on-2.ogg": {
+   "rpm": 1890,
+   "seconds": 1.984,
+   "rms": 0.1148,
+   "peak": 0.309,
+   "wrapJump": 0.01,
+   "flutterDb": -26.4,
+   "centroid": 3142,
+   "poolSeconds": 0.33
+  },
+  "engines/v3/furari-488-on-3.ogg": {
+   "rpm": 2250,
+   "seconds": 1.958,
+   "rms": 0.1151,
+   "peak": 0.437,
+   "wrapJump": 0.01,
+   "flutterDb": -23.5,
+   "centroid": 2783,
+   "poolSeconds": 0.36
+  },
+  "engines/v3/furari-488-on-4.ogg": {
+   "rpm": 2690,
+   "seconds": 1.972,
+   "rms": 0.115,
+   "peak": 0.332,
+   "wrapJump": 0.0,
+   "flutterDb": -26.5,
+   "centroid": 3345,
+   "poolSeconds": 0.22
+  },
+  "engines/v3/furari-488-on-5.ogg": {
+   "rpm": 3200,
+   "seconds": 1.986,
+   "rms": 0.1151,
+   "peak": 0.327,
+   "wrapJump": 0.0,
+   "flutterDb": -24.9,
+   "centroid": 2607,
+   "poolSeconds": 0.16
+  },
+  "engines/v3/furari-488-on-6.ogg": {
+   "rpm": 3810,
+   "seconds": 1.972,
+   "rms": 0.1152,
+   "peak": 0.299,
+   "wrapJump": 0.01,
+   "flutterDb": -25.0,
+   "centroid": 2445,
+   "poolSeconds": 0.16
+  },
+  "engines/v3/furari-488-on-7.ogg": {
+   "rpm": 4550,
+   "seconds": 1.988,
+   "rms": 0.1152,
+   "peak": 0.434,
+   "wrapJump": 0.0,
+   "flutterDb": -24.6,
+   "centroid": 2047,
+   "poolSeconds": 0.7
+  },
+  "engines/v3/furari-488-on-8.ogg": {
+   "rpm": 5420,
+   "seconds": 1.983,
+   "rms": 0.1151,
+   "peak": 0.472,
+   "wrapJump": 0.01,
+   "flutterDb": -24.5,
+   "centroid": 2036,
+   "poolSeconds": 1.14
+  },
+  "engines/v3/furari-488-on-9.ogg": {
+   "rpm": 6460,
+   "seconds": 1.984,
+   "rms": 0.115,
+   "peak": 0.335,
+   "wrapJump": 0.01,
+   "flutterDb": -23.4,
+   "centroid": 1702,
+   "poolSeconds": 2.13
+  },
+  "engines/v3/furari-488-on-10.ogg": {
+   "rpm": 7700,
+   "seconds": 1.998,
+   "rms": 0.1149,
+   "peak": 0.434,
+   "wrapJump": 0.0,
+   "flutterDb": -25.5,
+   "centroid": 1679,
+   "poolSeconds": 1.21
+  },
+  "engines/v3/furari-488-off-1.ogg": {
+   "rpm": 1570,
+   "seconds": 1.432,
+   "rms": 0.1152,
+   "peak": 0.406,
+   "wrapJump": 0.01,
+   "flutterDb": -27.5,
+   "centroid": 5080,
+   "poolSeconds": 0.51
+  },
+  "engines/v3/furari-488-off-2.ogg": {
+   "rpm": 1850,
+   "seconds": 1.46,
+   "rms": 0.1148,
+   "peak": 0.416,
+   "wrapJump": 0.01,
+   "flutterDb": -25.0,
+   "centroid": 4183,
+   "poolSeconds": 0.55
+  },
+  "engines/v3/furari-488-off-3.ogg": {
+   "rpm": 2180,
+   "seconds": 1.46,
+   "rms": 0.115,
+   "peak": 0.403,
+   "wrapJump": 0.0,
+   "flutterDb": -23.9,
+   "centroid": 3635,
+   "poolSeconds": 0.45
+  },
+  "engines/v3/furari-488-off-4.ogg": {
+   "rpm": 2570,
+   "seconds": 1.473,
+   "rms": 0.1149,
+   "peak": 0.37,
+   "wrapJump": 0.01,
+   "flutterDb": -30.6,
+   "centroid": 3367,
+   "poolSeconds": 0.17
+  },
+  "engines/v3/furari-488-off-7.ogg": {
+   "rpm": 4210,
+   "seconds": 1.486,
+   "rms": 0.1148,
+   "peak": 0.412,
+   "wrapJump": 0.0,
+   "flutterDb": -22.1,
+   "centroid": 1969,
+   "poolSeconds": 1.42
+  },
+  "engines/v3/furari-488-off-8.ogg": {
+   "rpm": 4970,
+   "seconds": 1.489,
+   "rms": 0.1151,
+   "peak": 0.446,
+   "wrapJump": 0.0,
+   "flutterDb": -22.9,
+   "centroid": 1756,
+   "poolSeconds": 1.32
+  }
+ },
+ "mp1x": {
+  "engines/v3/mp1x-idle.ogg": {
+   "rpm": 1187,
+   "seconds": 2.987,
+   "rms": 0.1151,
+   "peak": 0.32,
+   "wrapJump": 0.0,
+   "flutterDb": -25.1,
+   "centroid": 2155
+  },
+  "engines/v3/mp1x-on-1.ogg": {
+   "rpm": 1600,
+   "seconds": 1.928,
+   "rms": 0.115,
+   "peak": 0.296,
+   "wrapJump": 0.0,
+   "flutterDb": -27.5,
+   "centroid": 3691,
+   "poolSeconds": 0.22
+  },
+  "engines/v3/mp1x-on-2.ogg": {
+   "rpm": 1880,
+   "seconds": 1.963,
+   "rms": 0.115,
+   "peak": 0.397,
+   "wrapJump": 0.0,
+   "flutterDb": -24.3,
+   "centroid": 3475,
+   "poolSeconds": 0.47
+  },
+  "engines/v3/mp1x-on-3.ogg": {
+   "rpm": 2210,
+   "seconds": 1.968,
+   "rms": 0.1151,
+   "peak": 0.429,
+   "wrapJump": 0.0,
+   "flutterDb": -23.5,
+   "centroid": 3372,
+   "poolSeconds": 0.4
+  },
+  "engines/v3/mp1x-on-4.ogg": {
+   "rpm": 2600,
+   "seconds": 1.954,
+   "rms": 0.1151,
+   "peak": 0.419,
+   "wrapJump": 0.0,
+   "flutterDb": -26.4,
+   "centroid": 3282,
+   "poolSeconds": 0.55
+  },
+  "engines/v3/mp1x-on-5.ogg": {
+   "rpm": 3050,
+   "seconds": 1.971,
+   "rms": 0.1151,
+   "peak": 0.526,
+   "wrapJump": 0.01,
+   "flutterDb": -17.8,
+   "centroid": 2939,
+   "poolSeconds": 0.95
+  },
+  "engines/v3/mp1x-on-6.ogg": {
+   "rpm": 3580,
+   "seconds": 1.99,
+   "rms": 0.115,
+   "peak": 0.397,
+   "wrapJump": 0.0,
+   "flutterDb": -19.1,
+   "centroid": 2864,
+   "poolSeconds": 0.48
+  },
+  "engines/v3/mp1x-on-7.ogg": {
+   "rpm": 4200,
+   "seconds": 1.982,
+   "rms": 0.1151,
+   "peak": 0.689,
+   "wrapJump": 0.0,
+   "flutterDb": -17.4,
+   "centroid": 2583,
+   "poolSeconds": 0.66
+  },
+  "engines/v3/mp1x-on-8.ogg": {
+   "rpm": 4930,
+   "seconds": 1.99,
+   "rms": 0.1151,
+   "peak": 0.425,
+   "wrapJump": 0.01,
+   "flutterDb": -26.0,
+   "centroid": 2480,
+   "poolSeconds": 1.05
+  },
+  "engines/v3/mp1x-on-9.ogg": {
+   "rpm": 5790,
+   "seconds": 1.985,
+   "rms": 0.115,
+   "peak": 0.26,
+   "wrapJump": 0.01,
+   "flutterDb": -27.0,
+   "centroid": 2412,
+   "poolSeconds": 0.16
+  },
+  "engines/v3/mp1x-off-1.ogg": {
+   "rpm": 1630,
+   "seconds": 1.466,
+   "rms": 0.115,
+   "peak": 0.355,
+   "wrapJump": 0.01,
+   "flutterDb": -21.9,
+   "centroid": 3135,
+   "poolSeconds": 0.28
+  },
+  "engines/v3/mp1x-off-2.ogg": {
+   "rpm": 1950,
+   "seconds": 1.439,
+   "rms": 0.1151,
+   "peak": 0.385,
+   "wrapJump": 0.0,
+   "flutterDb": -25.9,
+   "centroid": 3222,
+   "poolSeconds": 0.35
+  },
+  "engines/v3/mp1x-off-3.ogg": {
+   "rpm": 2330,
+   "seconds": 1.47,
+   "rms": 0.115,
+   "peak": 0.465,
+   "wrapJump": 0.0,
+   "flutterDb": -23.4,
+   "centroid": 3284,
+   "poolSeconds": 0.9
+  },
+  "engines/v3/mp1x-off-4.ogg": {
+   "rpm": 2790,
+   "seconds": 1.462,
+   "rms": 0.1149,
+   "peak": 0.432,
+   "wrapJump": 0.01,
+   "flutterDb": -25.3,
+   "centroid": 3282,
+   "poolSeconds": 0.86
+  },
+  "engines/v3/mp1x-off-5.ogg": {
+   "rpm": 3340,
+   "seconds": 1.498,
+   "rms": 0.1151,
+   "peak": 0.463,
+   "wrapJump": 0.01,
+   "flutterDb": -25.6,
+   "centroid": 3466,
+   "poolSeconds": 0.56
+  }
+ },
+ "blackbird": {
+  "engines/v3/blackbird-idle.ogg": {
+   "rpm": 893,
+   "seconds": 2.933,
+   "rms": 0.1147,
+   "peak": 0.441,
+   "wrapJump": 0.0,
+   "flutterDb": -13.7,
+   "centroid": 1400
+  },
+  "engines/v3/blackbird-on-1.ogg": {
+   "rpm": 1230,
+   "seconds": 1.911,
+   "rms": 0.1149,
+   "peak": 0.237,
+   "wrapJump": 0.01,
+   "flutterDb": -23.3,
+   "centroid": 318,
+   "poolSeconds": 0.22
+  },
+  "engines/v3/blackbird-on-2.ogg": {
+   "rpm": 1460,
+   "seconds": 1.982,
+   "rms": 0.1149,
+   "peak": 0.353,
+   "wrapJump": 0.0,
+   "flutterDb": -17.4,
+   "centroid": 311,
+   "poolSeconds": 0.35
+  },
+  "engines/v3/blackbird-on-3.ogg": {
+   "rpm": 1720,
+   "seconds": 1.975,
+   "rms": 0.1148,
+   "peak": 0.269,
+   "wrapJump": 0.0,
+   "flutterDb": -19.8,
+   "centroid": 287,
+   "poolSeconds": 0.26
+  },
+  "engines/v3/blackbird-on-4.ogg": {
+   "rpm": 2040,
+   "seconds": 1.993,
+   "rms": 0.115,
+   "peak": 0.313,
+   "wrapJump": 0.03,
+   "flutterDb": -19.0,
+   "centroid": 246,
+   "poolSeconds": 0.38
+  },
+  "engines/v3/blackbird-on-5.ogg": {
+   "rpm": 2420,
+   "seconds": 1.962,
+   "rms": 0.1152,
+   "peak": 0.355,
+   "wrapJump": 0.0,
+   "flutterDb": -23.7,
+   "centroid": 301,
+   "poolSeconds": 2.59
+  },
+  "engines/v3/blackbird-on-6.ogg": {
+   "rpm": 2860,
+   "seconds": 1.996,
+   "rms": 0.115,
+   "peak": 0.386,
+   "wrapJump": 0.01,
+   "flutterDb": -20.0,
+   "centroid": 289,
+   "poolSeconds": 2.04
+  },
+  "engines/v3/blackbird-on-7.ogg": {
+   "rpm": 3390,
+   "seconds": 1.99,
+   "rms": 0.1147,
+   "peak": 0.357,
+   "wrapJump": 0.0,
+   "flutterDb": -27.0,
+   "centroid": 308,
+   "poolSeconds": 1.12
+  },
+  "engines/v3/blackbird-off-0.ogg": {
+   "rpm": 1030,
+   "seconds": 1.391,
+   "rms": 0.1151,
+   "peak": 0.407,
+   "wrapJump": 0.01,
+   "flutterDb": -20.2,
+   "centroid": 1527,
+   "poolSeconds": 0.67
+  },
+  "engines/v3/blackbird-off-1.ogg": {
+   "rpm": 1220,
+   "seconds": 1.437,
+   "rms": 0.1148,
+   "peak": 0.363,
+   "wrapJump": 0.0,
+   "flutterDb": -23.4,
+   "centroid": 1569,
+   "poolSeconds": 0.46
+  },
+  "engines/v3/blackbird-off-2.ogg": {
+   "rpm": 1450,
+   "seconds": 1.425,
+   "rms": 0.115,
+   "peak": 0.309,
+   "wrapJump": 0.01,
+   "flutterDb": -23.6,
+   "centroid": 1067,
+   "poolSeconds": 0.54
+  },
+  "engines/v3/blackbird-off-3.ogg": {
+   "rpm": 1720,
+   "seconds": 1.463,
+   "rms": 0.1151,
+   "peak": 0.309,
+   "wrapJump": 0.0,
+   "flutterDb": -22.3,
+   "centroid": 458,
+   "poolSeconds": 0.93
+  },
+  "engines/v3/blackbird-off-4.ogg": {
+   "rpm": 2040,
+   "seconds": 1.458,
+   "rms": 0.1148,
+   "peak": 0.351,
+   "wrapJump": 0.01,
+   "flutterDb": -21.0,
+   "centroid": 349,
+   "poolSeconds": 3.83
+  },
+  "engines/v3/blackbird-off-5.ogg": {
+   "rpm": 2420,
+   "seconds": 1.491,
+   "rms": 0.1148,
+   "peak": 0.332,
+   "wrapJump": 0.01,
+   "flutterDb": -21.5,
+   "centroid": 274,
+   "poolSeconds": 1.28
+  }
+ },
+ "buggati": {
+  "engines/v3/buggati-idle.ogg": {
+   "rpm": 666,
+   "seconds": 2.889,
+   "rms": 0.115,
+   "peak": 0.327,
+   "wrapJump": 0.02,
+   "flutterDb": -20.3,
+   "centroid": 884
+  },
+  "engines/v3/buggati-on-1.ogg": {
+   "rpm": 930,
+   "seconds": 1.921,
+   "rms": 0.115,
+   "peak": 0.383,
+   "wrapJump": 0.01,
+   "flutterDb": -18.7,
+   "centroid": 1208,
+   "poolSeconds": 0.94
+  },
+  "engines/v3/buggati-on-2.ogg": {
+   "rpm": 1090,
+   "seconds": 1.95,
+   "rms": 0.1147,
+   "peak": 0.407,
+   "wrapJump": 0.0,
+   "flutterDb": -17.5,
+   "centroid": 1069,
+   "poolSeconds": 1.71
+  },
+  "engines/v3/buggati-on-3.ogg": {
+   "rpm": 1280,
+   "seconds": 1.946,
+   "rms": 0.115,
+   "peak": 0.42,
+   "wrapJump": 0.01,
+   "flutterDb": -19.7,
+   "centroid": 873,
+   "poolSeconds": 0.98
+  },
+  "engines/v3/buggati-on-4.ogg": {
+   "rpm": 1500,
+   "seconds": 1.94,
+   "rms": 0.1148,
+   "peak": 0.339,
+   "wrapJump": 0.0,
+   "flutterDb": -16.2,
+   "centroid": 742,
+   "poolSeconds": 1.16
+  },
+  "engines/v3/buggati-on-5.ogg": {
+   "rpm": 1750,
+   "seconds": 1.993,
+   "rms": 0.1149,
+   "peak": 0.361,
+   "wrapJump": 0.04,
+   "flutterDb": -21.3,
+   "centroid": 941,
+   "poolSeconds": 1.01
+  },
+  "engines/v3/buggati-on-6.ogg": {
+   "rpm": 2050,
+   "seconds": 1.959,
+   "rms": 0.1147,
+   "peak": 0.309,
+   "wrapJump": 0.04,
+   "flutterDb": -16.2,
+   "centroid": 506,
+   "poolSeconds": 0.29
+  },
+  "engines/v3/buggati-off-0.ogg": {
+   "rpm": 1430,
+   "seconds": 1.437,
+   "rms": 0.1151,
+   "peak": 0.349,
+   "wrapJump": 0.01,
+   "flutterDb": -22.3,
+   "centroid": 1242,
+   "poolSeconds": 0.9
+  }
+ },
+ "bentley-gt": {
+  "engines/v3/bentley-gt-idle.ogg": {
+   "rpm": 1064,
+   "seconds": 2.896,
+   "rms": 0.115,
+   "peak": 0.3,
+   "wrapJump": 0.01,
+   "flutterDb": -23.2,
+   "centroid": 479
+  },
+  "engines/v3/bentley-gt-on-0.ogg": {
+   "rpm": 1220,
+   "seconds": 1.997,
+   "rms": 0.1149,
+   "peak": 0.256,
+   "wrapJump": 0.0,
+   "flutterDb": -25.4,
+   "centroid": 963,
+   "poolSeconds": 0.28
+  },
+  "engines/v3/bentley-gt-on-1.ogg": {
+   "rpm": 1420,
+   "seconds": 1.963,
+   "rms": 0.1147,
+   "peak": 0.255,
+   "wrapJump": 0.0,
+   "flutterDb": -24.9,
+   "centroid": 846,
+   "poolSeconds": 0.33
+  },
+  "engines/v3/bentley-gt-on-3.ogg": {
+   "rpm": 1930,
+   "seconds": 1.954,
+   "rms": 0.1151,
+   "peak": 0.28,
+   "wrapJump": 0.0,
+   "flutterDb": -23.0,
+   "centroid": 914,
+   "poolSeconds": 0.38
+  },
+  "engines/v3/bentley-gt-on-4.ogg": {
+   "rpm": 2250,
+   "seconds": 1.961,
+   "rms": 0.1153,
+   "peak": 0.526,
+   "wrapJump": 0.0,
+   "flutterDb": -18.9,
+   "centroid": 878,
+   "poolSeconds": 0.93
+  },
+  "engines/v3/bentley-gt-on-5.ogg": {
+   "rpm": 2610,
+   "seconds": 1.994,
+   "rms": 0.115,
+   "peak": 0.383,
+   "wrapJump": 0.0,
+   "flutterDb": -22.2,
+   "centroid": 875,
+   "poolSeconds": 0.51
+  },
+  "engines/v3/bentley-gt-off-0.ogg": {
+   "rpm": 1220,
+   "seconds": 1.489,
+   "rms": 0.1149,
+   "peak": 0.292,
+   "wrapJump": 0.01,
+   "flutterDb": -13.4,
+   "centroid": 440,
+   "poolSeconds": 0.9
+  }
+ },
+ "jaguarxkjss": {
+  "engines/v3/jaguarxkjss-idle.ogg": {
+   "rpm": 1973,
+   "seconds": 2.942,
+   "rms": 0.1152,
+   "peak": 0.293,
+   "wrapJump": 0.0,
+   "flutterDb": -23.9,
+   "centroid": 967
+  },
+  "engines/v3/jaguarxkjss-on-0.ogg": {
+   "rpm": 2270,
+   "seconds": 1.97,
+   "rms": 0.1152,
+   "peak": 0.291,
+   "wrapJump": 0.01,
+   "flutterDb": -22.9,
+   "centroid": 1021,
+   "poolSeconds": 1.09
+  },
+  "engines/v3/jaguarxkjss-on-1.ogg": {
+   "rpm": 2570,
+   "seconds": 1.979,
+   "rms": 0.115,
+   "peak": 0.273,
+   "wrapJump": 0.04,
+   "flutterDb": -27.1,
+   "centroid": 1210,
+   "poolSeconds": 0.82
+  },
+  "engines/v3/jaguarxkjss-on-2.ogg": {
+   "rpm": 2910,
+   "seconds": 1.977,
+   "rms": 0.1149,
+   "peak": 0.281,
+   "wrapJump": 0.0,
+   "flutterDb": -21.8,
+   "centroid": 1335,
+   "poolSeconds": 0.34
+  },
+  "engines/v3/jaguarxkjss-off-0.ogg": {
+   "rpm": 2270,
+   "seconds": 1.465,
+   "rms": 0.1149,
+   "peak": 0.257,
+   "wrapJump": 0.0,
+   "flutterDb": -22.7,
+   "centroid": 1153,
+   "poolSeconds": 0.5
+  },
+  "engines/v3/jaguarxkjss-off-2.ogg": {
+   "rpm": 2910,
+   "seconds": 1.476,
+   "rms": 0.1152,
+   "peak": 0.307,
+   "wrapJump": 0.02,
+   "flutterDb": -23.5,
+   "centroid": 1500,
+   "poolSeconds": 0.42
+  }
+ },
+ "porsche1": {
+  "engines/v3/porsche1-idle.ogg": {
+   "rpm": 1010,
+   "seconds": 2.937,
+   "rms": 0.1152,
+   "peak": 0.359,
+   "wrapJump": 0.06,
+   "flutterDb": -23.2,
+   "centroid": 1670
+  },
+  "engines/v3/porsche1-on-0.ogg": {
+   "rpm": 2340,
+   "seconds": 1.962,
+   "rms": 0.1151,
+   "peak": 0.309,
+   "wrapJump": 0.0,
+   "flutterDb": -24.1,
+   "centroid": 1164,
+   "poolSeconds": 1.16
+  },
+  "engines/v3/porsche1-on-1.ogg": {
+   "rpm": 2760,
+   "seconds": 1.984,
+   "rms": 0.1149,
+   "peak": 0.373,
+   "wrapJump": 0.02,
+   "flutterDb": -14.2,
+   "centroid": 1080,
+   "poolSeconds": 1.04
+  },
+  "engines/v3/porsche1-on-2.ogg": {
+   "rpm": 3260,
+   "seconds": 1.982,
+   "rms": 0.1148,
+   "peak": 0.322,
+   "wrapJump": 0.0,
+   "flutterDb": -18.4,
+   "centroid": 1169,
+   "poolSeconds": 0.92
+  },
+  "engines/v3/porsche1-on-3.ogg": {
+   "rpm": 3850,
+   "seconds": 2.0,
+   "rms": 0.115,
+   "peak": 0.388,
+   "wrapJump": 0.0,
+   "flutterDb": -17.5,
+   "centroid": 1393,
+   "poolSeconds": 0.48
+  },
+  "engines/v3/porsche1-off-0.ogg": {
+   "rpm": 2670,
+   "seconds": 1.455,
+   "rms": 0.1151,
+   "peak": 0.341,
+   "wrapJump": 0.01,
+   "flutterDb": -20.7,
+   "centroid": 1460,
+   "poolSeconds": 0.86
+  },
+  "engines/v3/porsche1-off-1.ogg": {
+   "rpm": 3120,
+   "seconds": 1.471,
+   "rms": 0.1151,
+   "peak": 0.32,
+   "wrapJump": 0.01,
+   "flutterDb": -17.3,
+   "centroid": 1333,
+   "poolSeconds": 0.94
+  },
+  "engines/v3/porsche1-off-2.ogg": {
+   "rpm": 3650,
+   "seconds": 1.473,
+   "rms": 0.1149,
+   "peak": 0.309,
+   "wrapJump": 0.02,
+   "flutterDb": -25.0,
+   "centroid": 1263,
+   "poolSeconds": 0.53
+  }
+ },
+ "bmw1": {
+  "engines/v3/bmw1-idle.ogg": {
+   "rpm": 936,
+   "seconds": 2.949,
+   "rms": 0.115,
+   "peak": 0.417,
+   "wrapJump": 0.01,
+   "flutterDb": -18.3,
+   "centroid": 1328
+  },
+  "engines/v3/bmw1-on-0.ogg": {
+   "rpm": 3950,
+   "seconds": 1.986,
+   "rms": 0.1151,
+   "peak": 0.391,
+   "wrapJump": 0.01,
+   "flutterDb": -23.3,
+   "centroid": 1114,
+   "poolSeconds": 1.08
+  },
+  "engines/v3/bmw1-on-1.ogg": {
+   "rpm": 4530,
+   "seconds": 1.999,
+   "rms": 0.1151,
+   "peak": 0.383,
+   "wrapJump": 0.0,
+   "flutterDb": -22.8,
+   "centroid": 1096,
+   "poolSeconds": 1.07
+  },
+  "engines/v3/bmw1-on-2.ogg": {
+   "rpm": 5190,
+   "seconds": 1.983,
+   "rms": 0.115,
+   "peak": 0.395,
+   "wrapJump": 0.02,
+   "flutterDb": -25.2,
+   "centroid": 1146,
+   "poolSeconds": 0.54
+  },
+  "engines/v3/bmw1-off-2.ogg": {
+   "rpm": 1520,
+   "seconds": 1.433,
+   "rms": 0.1152,
+   "peak": 0.427,
+   "wrapJump": 0.0,
+   "flutterDb": -25.5,
+   "centroid": 1862,
+   "poolSeconds": 0.58
+  },
+  "engines/v3/bmw1-off-3.ogg": {
+   "rpm": 1800,
+   "seconds": 1.485,
+   "rms": 0.1149,
+   "peak": 0.432,
+   "wrapJump": 0.01,
+   "flutterDb": -24.1,
+   "centroid": 1766,
+   "poolSeconds": 0.3
+  },
+  "engines/v3/bmw1-off-8.ogg": {
+   "rpm": 4270,
+   "seconds": 1.497,
+   "rms": 0.1152,
+   "peak": 0.456,
+   "wrapJump": 0.01,
+   "flutterDb": -23.6,
+   "centroid": 1022,
+   "poolSeconds": 0.49
+  },
+  "engines/v3/bmw1-off-9.ogg": {
+   "rpm": 5070,
+   "seconds": 1.48,
+   "rms": 0.1149,
+   "peak": 0.392,
+   "wrapJump": 0.0,
+   "flutterDb": -23.4,
+   "centroid": 946,
+   "poolSeconds": 1.02
+  }
+ },
+ "nissan-z": {
+  "engines/v3/nissan-z-idle.ogg": {
+   "rpm": 1503,
+   "seconds": 2.921,
+   "rms": 0.1151,
+   "peak": 0.422,
+   "wrapJump": 0.12,
+   "flutterDb": -22.8,
+   "centroid": 1731
+  },
+  "engines/v3/nissan-z-on-0.ogg": {
+   "rpm": 2330,
+   "seconds": 1.97,
+   "rms": 0.1149,
+   "peak": 0.406,
+   "wrapJump": 0.01,
+   "flutterDb": -26.8,
+   "centroid": 3757,
+   "poolSeconds": 0.16
+  },
+  "engines/v3/nissan-z-on-1.ogg": {
+   "rpm": 2740,
+   "seconds": 1.974,
+   "rms": 0.1149,
+   "peak": 0.495,
+   "wrapJump": 0.0,
+   "flutterDb": -30.5,
+   "centroid": 3689,
+   "poolSeconds": 0.16
+  },
+  "engines/v3/nissan-z-on-3.ogg": {
+   "rpm": 3790,
+   "seconds": 1.97,
+   "rms": 0.1151,
+   "peak": 0.48,
+   "wrapJump": 0.0,
+   "flutterDb": -21.1,
+   "centroid": 1938,
+   "poolSeconds": 0.72
+  },
+  "engines/v3/nissan-z-on-4.ogg": {
+   "rpm": 4450,
+   "seconds": 1.99,
+   "rms": 0.115,
+   "peak": 0.471,
+   "wrapJump": 0.01,
+   "flutterDb": -25.5,
+   "centroid": 1819,
+   "poolSeconds": 0.98
+  },
+  "engines/v3/nissan-z-on-5.ogg": {
+   "rpm": 5240,
+   "seconds": 1.992,
+   "rms": 0.1151,
+   "peak": 0.412,
+   "wrapJump": 0.0,
+   "flutterDb": -27.1,
+   "centroid": 1614,
+   "poolSeconds": 1.1
+  },
+  "engines/v3/nissan-z-on-6.ogg": {
+   "rpm": 6160,
+   "seconds": 1.984,
+   "rms": 0.115,
+   "peak": 0.381,
+   "wrapJump": 0.0,
+   "flutterDb": -27.4,
+   "centroid": 1438,
+   "poolSeconds": 1.03
+  },
+  "engines/v3/nissan-z-off-0.ogg": {
+   "rpm": 2320,
+   "seconds": 1.459,
+   "rms": 0.1153,
+   "peak": 0.515,
+   "wrapJump": 0.0,
+   "flutterDb": -19.0,
+   "centroid": 1659,
+   "poolSeconds": 0.5
+  },
+  "engines/v3/nissan-z-off-1.ogg": {
+   "rpm": 2750,
+   "seconds": 1.496,
+   "rms": 0.1152,
+   "peak": 0.498,
+   "wrapJump": 0.01,
+   "flutterDb": -19.7,
+   "centroid": 1853,
+   "poolSeconds": 0.93
+  },
+  "engines/v3/nissan-z-off-2.ogg": {
+   "rpm": 3270,
+   "seconds": 1.465,
+   "rms": 0.1151,
+   "peak": 0.456,
+   "wrapJump": 0.0,
+   "flutterDb": -24.0,
+   "centroid": 2023,
+   "poolSeconds": 0.44
+  },
+  "engines/v3/nissan-z-off-3.ogg": {
+   "rpm": 3890,
+   "seconds": 1.479,
+   "rms": 0.1153,
+   "peak": 0.449,
+   "wrapJump": 0.01,
+   "flutterDb": -26.3,
+   "centroid": 1935,
+   "poolSeconds": 0.62
+  },
+  "engines/v3/nissan-z-off-4.ogg": {
+   "rpm": 4620,
+   "seconds": 1.492,
+   "rms": 0.115,
+   "peak": 0.456,
+   "wrapJump": 0.01,
+   "flutterDb": -20.2,
+   "centroid": 1834,
+   "poolSeconds": 0.48
+  },
+  "engines/v3/nissan-z-off-5.ogg": {
+   "rpm": 5480,
+   "seconds": 1.485,
+   "rms": 0.1151,
+   "peak": 0.426,
+   "wrapJump": 0.01,
+   "flutterDb": -25.7,
+   "centroid": 1839,
+   "poolSeconds": 0.29
+  }
+ },
+ "supra": {
+  "engines/v3/supra-idle.ogg": {
+   "rpm": 893,
+   "seconds": 2.913,
+   "rms": 0.115,
+   "peak": 0.681,
+   "wrapJump": 0.02,
+   "flutterDb": -9.4,
+   "centroid": 1083
+  },
+  "engines/v3/supra-on-0.ogg": {
+   "rpm": 2720,
+   "seconds": 1.992,
+   "rms": 0.115,
+   "peak": 0.389,
+   "wrapJump": 0.01,
+   "flutterDb": -21.2,
+   "centroid": 1766,
+   "poolSeconds": 0.38
+  },
+  "engines/v3/supra-on-1.ogg": {
+   "rpm": 3210,
+   "seconds": 1.989,
+   "rms": 0.115,
+   "peak": 0.428,
+   "wrapJump": 0.0,
+   "flutterDb": -23.8,
+   "centroid": 1542,
+   "poolSeconds": 0.36
+  },
+  "engines/v3/supra-on-2.ogg": {
+   "rpm": 3780,
+   "seconds": 1.97,
+   "rms": 0.115,
+   "peak": 0.422,
+   "wrapJump": 0.0,
+   "flutterDb": -21.4,
+   "centroid": 1700,
+   "poolSeconds": 0.48
+  },
+  "engines/v3/supra-on-3.ogg": {
+   "rpm": 4460,
+   "seconds": 1.99,
+   "rms": 0.1151,
+   "peak": 0.471,
+   "wrapJump": 0.0,
+   "flutterDb": -25.1,
+   "centroid": 1709,
+   "poolSeconds": 1.08
+  },
+  "engines/v3/supra-on-4.ogg": {
+   "rpm": 5250,
+   "seconds": 1.998,
+   "rms": 0.1151,
+   "peak": 0.474,
+   "wrapJump": 0.0,
+   "flutterDb": -25.1,
+   "centroid": 1772,
+   "poolSeconds": 1.05
+  },
+  "engines/v3/supra-on-5.ogg": {
+   "rpm": 6190,
+   "seconds": 1.981,
+   "rms": 0.1149,
+   "peak": 0.419,
+   "wrapJump": 0.0,
+   "flutterDb": -26.0,
+   "centroid": 1853,
+   "poolSeconds": 0.25
+  },
+  "engines/v3/supra-off-0.ogg": {
+   "rpm": 1800,
+   "seconds": 1.483,
+   "rms": 0.115,
+   "peak": 0.31,
+   "wrapJump": 0.0,
+   "flutterDb": -22.9,
+   "centroid": 1041,
+   "poolSeconds": 0.29
+  },
+  "engines/v3/supra-off-1.ogg": {
+   "rpm": 2150,
+   "seconds": 1.448,
+   "rms": 0.1153,
+   "peak": 0.573,
+   "wrapJump": 0.03,
+   "flutterDb": -14.9,
+   "centroid": 1045,
+   "poolSeconds": 0.58
+  },
+  "engines/v3/supra-off-2.ogg": {
+   "rpm": 2560,
+   "seconds": 1.49,
+   "rms": 0.1147,
+   "peak": 0.44,
+   "wrapJump": 0.01,
+   "flutterDb": -23.9,
+   "centroid": 1096,
+   "poolSeconds": 0.68
+  },
+  "engines/v3/supra-off-3.ogg": {
+   "rpm": 3060,
+   "seconds": 1.49,
+   "rms": 0.1149,
+   "peak": 0.393,
+   "wrapJump": 0.0,
+   "flutterDb": -21.8,
+   "centroid": 1237,
+   "poolSeconds": 0.98
+  },
+  "engines/v3/supra-off-4.ogg": {
+   "rpm": 3650,
+   "seconds": 1.472,
+   "rms": 0.1149,
+   "peak": 0.476,
+   "wrapJump": 0.01,
+   "flutterDb": -23.9,
+   "centroid": 1441,
+   "poolSeconds": 1.15
+  },
+  "engines/v3/supra-off-5.ogg": {
+   "rpm": 4350,
+   "seconds": 1.49,
+   "rms": 0.115,
+   "peak": 0.397,
+   "wrapJump": 0.0,
+   "flutterDb": -18.7,
+   "centroid": 1560,
+   "poolSeconds": 1.0
+  },
+  "engines/v3/supra-off-6.ogg": {
+   "rpm": 5190,
+   "seconds": 1.485,
+   "rms": 0.1152,
+   "peak": 0.499,
+   "wrapJump": 0.0,
+   "flutterDb": -21.2,
+   "centroid": 1887,
+   "poolSeconds": 1.06
+  }
+ },
+ "huracan": {
+  "engines/v3/huracan-idle.ogg": {
+   "rpm": 1231,
+   "seconds": 2.93,
+   "rms": 0.1151,
+   "peak": 0.299,
+   "wrapJump": 0.05,
+   "flutterDb": -25.3,
+   "centroid": 1383
+  },
+  "engines/v3/huracan-on-1.ogg": {
+   "rpm": 2530,
+   "seconds": 1.995,
+   "rms": 0.1151,
+   "peak": 0.358,
+   "wrapJump": 0.02,
+   "flutterDb": -19.9,
+   "centroid": 1116,
+   "poolSeconds": 0.5
+  },
+  "engines/v3/huracan-on-2.ogg": {
+   "rpm": 3010,
+   "seconds": 1.996,
+   "rms": 0.115,
+   "peak": 0.324,
+   "wrapJump": 0.0,
+   "flutterDb": -23.0,
+   "centroid": 1312,
+   "poolSeconds": 0.3
+  },
+  "engines/v3/huracan-on-3.ogg": {
+   "rpm": 3590,
+   "seconds": 1.971,
+   "rms": 0.115,
+   "peak": 0.437,
+   "wrapJump": 0.0,
+   "flutterDb": -21.1,
+   "centroid": 1489,
+   "poolSeconds": 0.39
+  },
+  "engines/v3/huracan-on-4.ogg": {
+   "rpm": 4270,
+   "seconds": 1.991,
+   "rms": 0.1148,
+   "peak": 0.466,
+   "wrapJump": 0.0,
+   "flutterDb": -24.0,
+   "centroid": 1647,
+   "poolSeconds": 0.34
+  },
+  "engines/v3/huracan-on-5.ogg": {
+   "rpm": 5080,
+   "seconds": 1.989,
+   "rms": 0.115,
+   "peak": 0.451,
+   "wrapJump": 0.0,
+   "flutterDb": -29.0,
+   "centroid": 1512,
+   "poolSeconds": 1.75
+  },
+  "engines/v3/huracan-on-6.ogg": {
+   "rpm": 6050,
+   "seconds": 1.991,
+   "rms": 0.1151,
+   "peak": 0.281,
+   "wrapJump": 0.0,
+   "flutterDb": -26.3,
+   "centroid": 1986,
+   "poolSeconds": 0.92
+  },
+  "engines/v3/huracan-on-7.ogg": {
+   "rpm": 7190,
+   "seconds": 1.99,
+   "rms": 0.1151,
+   "peak": 0.398,
+   "wrapJump": 0.01,
+   "flutterDb": -25.8,
+   "centroid": 2027,
+   "poolSeconds": 0.16
+  },
+  "engines/v3/huracan-off-0.ogg": {
+   "rpm": 4450,
+   "seconds": 1.491,
+   "rms": 0.1151,
+   "peak": 0.39,
+   "wrapJump": 0.01,
+   "flutterDb": -27.3,
+   "centroid": 1768,
+   "poolSeconds": 0.14
+  },
+  "engines/v3/huracan-off-1.ogg": {
+   "rpm": 5160,
+   "seconds": 1.488,
+   "rms": 0.115,
+   "peak": 0.319,
+   "wrapJump": 0.0,
+   "flutterDb": -26.0,
+   "centroid": 1504,
+   "poolSeconds": 0.43
+  },
+  "engines/v3/huracan-off-2.ogg": {
+   "rpm": 5990,
+   "seconds": 1.482,
+   "rms": 0.1149,
+   "peak": 0.401,
+   "wrapJump": 0.01,
+   "flutterDb": -24.3,
+   "centroid": 1486,
+   "poolSeconds": 0.95
+  },
+  "engines/v3/huracan-off-3.ogg": {
+   "rpm": 6940,
+   "seconds": 1.497,
+   "rms": 0.1151,
+   "peak": 0.563,
+   "wrapJump": 0.0,
+   "flutterDb": -20.7,
+   "centroid": 1577,
+   "poolSeconds": 1.2
+  },
+  "engines/v3/huracan-off-4.ogg": {
+   "rpm": 8050,
+   "seconds": 1.49,
+   "rms": 0.1151,
+   "peak": 0.444,
+   "wrapJump": 0.0,
+   "flutterDb": -20.6,
+   "centroid": 1600,
+   "poolSeconds": 0.57
+  }
+ },
+ "laferrari": {
+  "engines/v3/laferrari-idle.ogg": {
+   "rpm": 1357,
+   "seconds": 2.934,
+   "rms": 0.115,
+   "peak": 0.365,
+   "wrapJump": 0.01,
+   "flutterDb": -20.8,
+   "centroid": 2117
+  },
+  "engines/v3/laferrari-on-0.ogg": {
+   "rpm": 2980,
+   "seconds": 1.999,
+   "rms": 0.115,
+   "peak": 0.465,
+   "wrapJump": 0.0,
+   "flutterDb": -15.3,
+   "centroid": 2029,
+   "poolSeconds": 0.55
+  },
+  "engines/v3/laferrari-on-1.ogg": {
+   "rpm": 3500,
+   "seconds": 1.978,
+   "rms": 0.115,
+   "peak": 0.451,
+   "wrapJump": 0.01,
+   "flutterDb": -23.6,
+   "centroid": 1443,
+   "poolSeconds": 1.15
+  },
+  "engines/v3/laferrari-on-2.ogg": {
+   "rpm": 4120,
+   "seconds": 1.99,
+   "rms": 0.1152,
+   "peak": 0.379,
+   "wrapJump": 0.0,
+   "flutterDb": -25.5,
+   "centroid": 1669,
+   "poolSeconds": 2.13
+  },
+  "engines/v3/laferrari-on-3.ogg": {
+   "rpm": 4840,
+   "seconds": 1.994,
+   "rms": 0.1151,
+   "peak": 0.262,
+   "wrapJump": 0.0,
+   "flutterDb": -26.5,
+   "centroid": 1522,
+   "poolSeconds": 0.17
+  },
+  "engines/v3/laferrari-on-4.ogg": {
+   "rpm": 5690,
+   "seconds": 1.989,
+   "rms": 0.115,
+   "peak": 0.432,
+   "wrapJump": 0.0,
+   "flutterDb": -20.5,
+   "centroid": 2286,
+   "poolSeconds": 0.4
+  },
+  "engines/v3/laferrari-on-5.ogg": {
+   "rpm": 6690,
+   "seconds": 1.998,
+   "rms": 0.1149,
+   "peak": 0.419,
+   "wrapJump": 0.01,
+   "flutterDb": -25.4,
+   "centroid": 2806,
+   "poolSeconds": 0.98
+  },
+  "engines/v3/laferrari-on-6.ogg": {
+   "rpm": 7860,
+   "seconds": 1.99,
+   "rms": 0.1149,
+   "peak": 0.427,
+   "wrapJump": 0.0,
+   "flutterDb": -24.2,
+   "centroid": 3363,
+   "poolSeconds": 1.03
+  },
+  "engines/v3/laferrari-on-7.ogg": {
+   "rpm": 9240,
+   "seconds": 1.999,
+   "rms": 0.1149,
+   "peak": 0.516,
+   "wrapJump": 0.01,
+   "flutterDb": -26.1,
+   "centroid": 3837,
+   "poolSeconds": 0.99
+  },
+  "engines/v3/laferrari-on-8.ogg": {
+   "rpm": 10860,
+   "seconds": 1.99,
+   "rms": 0.1151,
+   "peak": 0.472,
+   "wrapJump": 0.01,
+   "flutterDb": -23.4,
+   "centroid": 4575,
+   "poolSeconds": 1.0
+  },
+  "engines/v3/laferrari-off-0.ogg": {
+   "rpm": 2970,
+   "seconds": 1.461,
+   "rms": 0.1151,
+   "peak": 0.33,
+   "wrapJump": 0.0,
+   "flutterDb": -23.6,
+   "centroid": 1146,
+   "poolSeconds": 0.68
+  },
+  "engines/v3/laferrari-off-1.ogg": {
+   "rpm": 3330,
+   "seconds": 1.484,
+   "rms": 0.1151,
+   "peak": 0.365,
+   "wrapJump": 0.01,
+   "flutterDb": -22.6,
+   "centroid": 1589,
+   "poolSeconds": 0.92
+  },
+  "engines/v3/laferrari-off-2.ogg": {
+   "rpm": 3740,
+   "seconds": 1.468,
+   "rms": 0.115,
+   "peak": 0.301,
+   "wrapJump": 0.03,
+   "flutterDb": -26.2,
+   "centroid": 2424,
+   "poolSeconds": 0.22
+  }
+ }
+}

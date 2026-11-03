@@ -1,8 +1,17 @@
 # Ultrack audio
 
-## Current engine bank — 2026-10-20
+## Engine bank in the game (approved by ear 2026-11-02)
 
-The game now uses **real YouTube recordings for all 14 combustion cars** (9 recordings; the Porsche 918, Destrier, Blackbird, Huracan and LaFerrari share another car's, see `sharedWith` in the bank), selected from videos whose captured metadata explicitly allows Creative Commons reuse. Announcer recordings, scripts, PA processing, crowd, race cues and crashes are unchanged. Tesla and Audi retain their quiet procedural EV audio.
+`engine-bank.json` + `engines/v3/`: idle, on-throttle and off-throttle loops at measured rpm, with real shift and pop samples and a tyre squeal loop. Compare with the old sound at `/audio-lab.html`, or drive the old one with `?enginebank=old`.
+
+- `recordings/plan-v3.json`: hand-picked source stretches, the engine line to follow and which order it is. RPM comes from tracking that line, so it is measured, though the order is read by eye from each spectrogram.
+- `tools/audio/build_engine_bank.py` (`engine_dsp.py`): tracks pitch, flattens each stretch to its anchor rpm, reweaves it into a 1.5-3 s loop and matches tone across rpm. Loop points sit inside the file, away from the codec's start-up error.
+- `recordings/report-v3.json`: per-loop measurements. `recordings/CREDITS-v3.md`, `credits.json` (the game's Credits screen): sources. `recordings/incoming/`: the 2026-11-02 originals and licence metadata, excluded from the shipped game.
+- `track-viewer/scripts/render-engine-sweep.mjs`: renders a race pull through the real mixer and gearbox to `qa/engine-sound/` (needs the dev server).
+
+## Old engine bank — 2026-10-20
+
+Kept for comparison and rollback; `build_recorded_engines.py` would overwrite `credits.json`, so don't rerun it. It used **real YouTube recordings for all 14 combustion cars** (9 recordings; the Porsche 918, Destrier, Blackbird, Huracan and LaFerrari share another car's, see `sharedWith` in the bank), selected from videos whose captured metadata explicitly allows Creative Commons reuse. Announcer recordings, scripts, PA processing, crowd, race cues and crashes are unchanged. Tesla and Audi retain their quiet procedural EV audio.
 
 - `recorded-engine-bank.json`: active per-car idle/low/mid/high/overrun layers.
 - `recordings/plan.json`: exact source video IDs, trim times and estimated RPM anchors.

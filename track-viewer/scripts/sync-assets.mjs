@@ -60,9 +60,9 @@ const audio = join(root, 'assets', 'audio');
 if (existsSync(audio)) {
   const copyTree = (from, to) => {
     for (const e of readdirSync(from, { withFileTypes: true })) {
-      if (e.name === 'src' || e.name.startsWith('_') || e.name === 'voice-previews') continue;
+      if (e.name === 'src' || e.name === 'incoming' || e.name.startsWith('_') || e.name === 'voice-previews') continue;
       if (from===audio&&['exhaust','nitro','engine-sim-bank.json','engine-sim-receipts.json'].includes(e.name)) continue;
-      if (from===join(audio,'engines')&&e.name!=='recorded') continue;
+      if (from===join(audio,'engines')&&!['recorded','v3'].includes(e.name)) continue;
       const a = join(from, e.name), b = join(to, e.name);
       if (e.isDirectory()) { copyTree(a, b); continue; }
       if (!/\.(ogg|json)$/.test(e.name)) continue;
@@ -84,7 +84,7 @@ if (existsSync(audio)) {
   };
   for(const folder of ['exhaust','nitro'])prune(join(publicAudio,folder));
   const oldEngines=join(publicAudio,'engines');
-  if(existsSync(oldEngines))for(const e of readdirSync(oldEngines,{withFileTypes:true}))if(e.isDirectory()&&e.name!=='recorded')prune(join(oldEngines,e.name));
+  if(existsSync(oldEngines))for(const e of readdirSync(oldEngines,{withFileTypes:true}))if(e.isDirectory()&&!['recorded','v3'].includes(e.name))prune(join(oldEngines,e.name));
   for(const name of ['engine-sim-bank.json','engine-sim-receipts.json']){const file=join(publicAudio,name);if(existsSync(file))unlinkSync(file);}
   copyTree(audio, join(dest, 'audio'));
 }

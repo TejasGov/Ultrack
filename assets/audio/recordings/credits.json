@@ -1,5 +1,16 @@
 [
   {
+    "car": "aston-martin-valk",
+    "name": "Aston Martin Valkyrie V12",
+    "author": "Car and Driver España",
+    "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+    "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
     "car": "av12",
     "name": "Lamborghini Aventador SV V12",
     "author": "FiExhaust",
@@ -8,7 +19,29 @@
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
     "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "av12",
+    "name": "Lamborghini Aventador SV V12",
+    "author": "Played N Faved - Sound Effects & Stock Footage",
+    "title": "Lamborghini Supercar Sound Effect | Lamborghini Engine Sounds | Royalty Free",
+    "url": "https://www.youtube.com/watch?v=kMLCWrG_KQk",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "75a4d38f48e080b70ae7ad7732ce5a073a4296cdea9fd262743716b6e7928b43",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "furari-488",
+    "name": "Ferrari 488 GTB V8",
+    "author": "FiExhaust",
+    "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+    "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
   },
   {
     "car": "furari-488",
@@ -19,7 +52,7 @@
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
     "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
   },
   {
     "car": "mp1x",
@@ -30,40 +63,40 @@
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
     "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
   },
   {
-    "car": "aston-martin-valk",
-    "name": "Aston Martin Valkyrie V12",
-    "author": "Car and Driver España",
-    "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
-    "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+    "car": "mp1x",
+    "name": "McLaren 720S V8",
+    "author": "FiExhaust",
+    "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+    "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
   },
   {
     "car": "blackbird",
-    "name": "Hennessey Blackbird NA V8 (the Mustang GT V8 recording)",
+    "name": "Hennessey Blackbird NA V8",
+    "author": "Played N Faved - Sound Effects & Stock Footage",
+    "title": "Mustang Sound Effect | American Muscle Car Mustang Engine Sounds | Royalty Free",
+    "url": "https://www.youtube.com/watch?v=WZmkSobG290",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "072ad1172d33da3c92c69cd3447189f98287b0be0d375a046a2e92d53f58e08b",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "blackbird",
+    "name": "Hennessey Blackbird NA V8",
     "author": "Next-Gen Speed",
     "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
     "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
     "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
-  },
-  {
-    "car": "bmw1",
-    "name": "BMW i8 turbo three-cylinder",
-    "author": "Sahan Chethiya",
-    "title": "BMW i8 Revs & Exhaust Sound",
-    "url": "https://www.youtube.com/watch?v=dmtl68ED5KU",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "sourceSha256": "158585d4b8e3b99842e6d8004d10398c831233c7c12fc03631ba588ff93173c8",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
   },
   {
     "car": "buggati",
@@ -74,7 +107,18 @@
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
     "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "buggati",
+    "name": "Bugatti Chiron W16",
+    "author": "TvdL Films",
+    "title": "Bugatti Chiron -Sound- LOUD REVS, Start Up & convoy !!!",
+    "url": "https://www.youtube.com/watch?v=vVr85l6oilo",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "18e558ed67c981289a0ac7da54ca848b80e882378b174340d7a868a8be666e27",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
   },
   {
     "car": "bentley-gt",
@@ -85,7 +129,7 @@
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
     "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
   },
   {
     "car": "jaguarxkjss",
@@ -96,6 +140,137 @@
     "license": "CC BY 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
     "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
-    "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "porsche1",
+    "name": "Porsche 918 Spyder V8 hybrid",
+    "author": "Hungarian Supercar Spotters",
+    "title": "Porsche 918 Spyder Sound and Acceleration",
+    "url": "https://www.youtube.com/watch?v=XybqVpbkFs4",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "f9bfcca43fdf309a66e788d9d995b93657bb2ca9fdb5a5c8126f2aca5da3549e",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "porsche1",
+    "name": "Porsche 918 Spyder V8 hybrid",
+    "author": "FiExhaust",
+    "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+    "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "porsche1",
+    "name": "Porsche 918 Spyder V8 hybrid",
+    "author": "SOL - Supercars of London",
+    "title": "Dubai Porsche 918 Spyder Sounds in London!",
+    "url": "https://www.youtube.com/watch?v=yvzlDiyxUJ4",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "fb035cc29646502c447ee1856c690bbe0bc59cb0ade3adfb047bb99e9e3c1829",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "bmw1",
+    "name": "Mercedes-AMG GT4 twin-turbo V8",
+    "author": "FiExhaust",
+    "title": "2018 Mercedes-AMG GTR Valves ON/OFF,  POV Driving, Pops and Crackles w/  Catless Fi EXHAUST",
+    "url": "https://www.youtube.com/watch?v=PT3fZm5HBqA",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "6638e7ba2871f2eeea08e69487580b0c600aab63be307c41462f5e396bd5184f",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "nissan-z",
+    "name": "Nissan Z GT4 twin-turbo V6",
+    "author": "FiExhaust",
+    "title": "Infiniti Q60 S 3.0T V6 X Fi EXHAUST Startup & Acceleration",
+    "url": "https://www.youtube.com/watch?v=i42YelyRWDc",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "585095dddae8341935ce0195e197e0273a807d2942640c5c8f92994a961df226",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "supra",
+    "name": "Toyota GR Supra GT500 turbo inline-4",
+    "author": "FiExhaust",
+    "title": "Toyota Supra 2.0T B48 Fi EXHAUST Acceleration, Revving, Driveby X Lee Speed",
+    "url": "https://www.youtube.com/watch?v=QXxg4EQsijA",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "83b79ba3d15d6e8eb315002b81ea8a67c13cbfd90fe858d333dcd1ef1a82653c",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "huracan",
+    "name": "Lamborghini Huracan STO V10",
+    "author": "FiExhaust",
+    "title": "Lamborghini Huracan LP610-4 with Valvetronic Fi Exhaust Acceleration Sound collections !!",
+    "url": "https://www.youtube.com/watch?v=EPW09CdBBjM",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "5f0bd2639732c86c2c55f22f74a9de330709ff0f2004e89d6ffc328c08ad2845",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "huracan",
+    "name": "Lamborghini Huracan STO V10",
+    "author": "FiExhaust",
+    "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+    "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "laferrari",
+    "name": "Ferrari LaFerrari V12 hybrid",
+    "author": "Car and Driver España",
+    "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+    "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "laferrari",
+    "name": "Ferrari LaFerrari V12 hybrid",
+    "author": "SOL - Supercars of London",
+    "title": "INCREDIBLE LaFerrari: Loud Revs & Acceleration",
+    "url": "https://www.youtube.com/watch?v=uAIWC9vskVs",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "8f3bea3470efdf413741e463012c4200263cf98b800a7360cf8523efc535a37c",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "laferrari",
+    "name": "Ferrari LaFerrari V12 hybrid",
+    "author": "ePic eXhaust",
+    "title": "Ferrari LaFerrari Revving Sound!",
+    "url": "https://www.youtube.com/watch?v=w1XHmlAlax0",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "cc769c1ccc49eabf40b533223469234622e3897cf05bf583f309026c18520ff9",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+  },
+  {
+    "car": "all",
+    "name": "Tyre squeal",
+    "author": "BigSoundBank (Joseph Sardin)",
+    "title": "Tire squeal",
+    "url": "https://bigsoundbank.com/tire-squeal-s0500.html",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "Cut to one loop, filtered, level matched and encoded to Opus."
   }
 ]

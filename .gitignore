@@ -28,6 +28,7 @@ research/endurance/cmp/*/
 track-viewer/qa/**/*.png
 track-viewer/qa/**/*.jpg
 track-viewer/qa/**/*.webm
+track-viewer/qa/**/*.wav
 
 # tools and OS
 .playwright-mcp/

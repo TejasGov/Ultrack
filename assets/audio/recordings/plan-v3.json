@@ -1,0 +1,1599 @@
+{
+  "schemaVersion": 3,
+  "note": "Segments are hand-picked from spectrograms, away from backing music and speech. hz bounds the engine line to follow; order says which engine order that line is, so rpm = hz * 60 / order. set: idle holds at one pitch, on = rising or held under throttle, off = falling after a lift, auto splits a segment by direction.",
+  "tyres": {
+    "file": "bigsoundbank/0500.ogg",
+    "from": 6,
+    "to": 12,
+    "source": {
+      "author": "BigSoundBank (Joseph Sardin)",
+      "title": "Tire squeal",
+      "url": "https://bigsoundbank.com/tire-squeal-s0500.html",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "Cut to one loop, filtered, level matched and encoded to Opus."
+    }
+  },
+  "cars": {
+    "aston-martin-valk": {
+      "name": "Aston Martin Valkyrie V12",
+      "redline": 11000,
+      "shifts": [
+        [
+          "9nE5FoIYa2Y",
+          29.3
+        ]
+      ],
+      "pops": [
+        [
+          "9nE5FoIYa2Y",
+          13.491
+        ],
+        [
+          "9nE5FoIYa2Y",
+          19.39
+        ],
+        [
+          "9nE5FoIYa2Y",
+          25.13
+        ]
+      ],
+      "match": "Valkyrie V12 free revving, Car and Driver Espana",
+      "preview": [
+        "9nE5FoIYa2Y",
+        20.3,
+        12
+      ],
+      "segments": [
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 18.3,
+          "to": 20.2,
+          "hz": [
+            110,
+            150
+          ],
+          "order": 6,
+          "set": "idle"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 9.8,
+          "to": 13.3,
+          "hz": [
+            230,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 15.3,
+          "to": 17.7,
+          "hz": [
+            480,
+            580
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 20.4,
+          "to": 24.4,
+          "hz": [
+            230,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 27.0,
+          "to": 29.3,
+          "hz": [
+            300,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 29.3,
+          "to": 29.8,
+          "hz": [
+            440,
+            560
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 29.8,
+          "to": 33.0,
+          "hz": [
+            440,
+            540
+          ],
+          "order": 3,
+          "set": "on"
+        }
+      ]
+    },
+    "av12": {
+      "name": "Lamborghini Aventador SV V12",
+      "redline": 8500,
+      "shifts": [
+        [
+          "eh5WmIWNkLQ",
+          108.95
+        ],
+        [
+          "eh5WmIWNkLQ",
+          123.75
+        ],
+        [
+          "eh5WmIWNkLQ",
+          126.6
+        ]
+      ],
+      "pops": [
+        [
+          "eh5WmIWNkLQ",
+          35.598
+        ],
+        [
+          "eh5WmIWNkLQ",
+          38.272
+        ],
+        [
+          "eh5WmIWNkLQ",
+          39.121
+        ],
+        [
+          "eh5WmIWNkLQ",
+          39.702
+        ],
+        [
+          "eh5WmIWNkLQ",
+          39.83
+        ]
+      ],
+      "match": "Aventador SV with Fi exhaust; idle and low range from a Played N Faved Lamborghini recording",
+      "preview": [
+        "eh5WmIWNkLQ",
+        120.5,
+        13
+      ],
+      "segments": [
+        {
+          "video": "kMLCWrG_KQk",
+          "from": 6.5,
+          "to": 17.5,
+          "hz": [
+            95,
+            130
+          ],
+          "order": 6,
+          "set": "idle"
+        },
+        {
+          "video": "kMLCWrG_KQk",
+          "from": 18.0,
+          "to": 25.3,
+          "hz": [
+            100,
+            240
+          ],
+          "order": 3,
+          "set": "auto"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 102.8,
+          "to": 105.2,
+          "hz": [
+            280,
+            470
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 109.0,
+          "to": 111.0,
+          "hz": [
+            290,
+            540
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 120.6,
+          "to": 123.7,
+          "hz": [
+            550,
+            800
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 124.1,
+          "to": 126.6,
+          "hz": [
+            570,
+            790
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 129.5,
+          "to": 132.4,
+          "hz": [
+            300,
+            650
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 55.2,
+          "to": 57.8,
+          "hz": [
+            480,
+            650
+          ],
+          "order": 6,
+          "set": "on"
+        }
+      ]
+    },
+    "furari-488": {
+      "name": "Ferrari 488 GTB V8",
+      "redline": 8000,
+      "shifts": [
+        [
+          "reWmK4awXng",
+          96.05
+        ],
+        [
+          "reWmK4awXng",
+          97.35
+        ],
+        [
+          "reWmK4awXng",
+          104.65
+        ]
+      ],
+      "pops": [
+        [
+          "nxC6jPnQ1Vk",
+          6.321
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          9.45
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          34.396
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          36.37
+        ]
+      ],
+      "match": "488 GTB with Fi catback; game body is 488 Pista",
+      "preview": [
+        "reWmK4awXng",
+        92.5,
+        14
+      ],
+      "segments": [
+        {
+          "video": "reWmK4awXng",
+          "from": 61.3,
+          "to": 63.9,
+          "hz": [
+            55,
+            72
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 54.0,
+          "to": 61.0,
+          "hz": [
+            55,
+            400
+          ],
+          "order": 4,
+          "set": "auto"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 92.8,
+          "to": 96.0,
+          "hz": [
+            90,
+            520
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 102.0,
+          "to": 104.6,
+          "hz": [
+            290,
+            480
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 104.8,
+          "to": 106.0,
+          "hz": [
+            320,
+            440
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 109.6,
+          "to": 110.5,
+          "hz": [
+            330,
+            440
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 106.1,
+          "to": 108.1,
+          "hz": [
+            290,
+            345
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 111.8,
+          "to": 113.4,
+          "hz": [
+            260,
+            320
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 115.2,
+          "to": 127.2,
+          "hz": [
+            370,
+            530
+          ],
+          "order": 4,
+          "set": "on"
+        }
+      ]
+    },
+    "mp1x": {
+      "name": "McLaren 720S V8",
+      "redline": 8500,
+      "shifts": [
+        [
+          "WKjvGg0hSAA",
+          24.5
+        ],
+        [
+          "WKjvGg0hSAA",
+          25.65
+        ]
+      ],
+      "pops": [
+        [
+          "nxC6jPnQ1Vk",
+          9.74
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          11.707
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          36.529
+        ]
+      ],
+      "match": "720S with Fi exhaust; source is only 72 kbps",
+      "preview": [
+        "WKjvGg0hSAA",
+        4.1,
+        16.5
+      ],
+      "segments": [
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 11.5,
+          "to": 13.6,
+          "hz": [
+            72,
+            90
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 4.2,
+          "to": 11.2,
+          "hz": [
+            70,
+            400
+          ],
+          "order": 4,
+          "set": "auto"
+        },
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 15.0,
+          "to": 20.0,
+          "hz": [
+            70,
+            400
+          ],
+          "order": 4,
+          "set": "auto"
+        },
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 20.5,
+          "to": 24.5,
+          "hz": [
+            70,
+            420
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 24.6,
+          "to": 25.6,
+          "hz": [
+            230,
+            330
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 25.7,
+          "to": 27.3,
+          "hz": [
+            270,
+            370
+          ],
+          "order": 4,
+          "set": "on"
+        }
+      ]
+    },
+    "blackbird": {
+      "name": "Hennessey Blackbird NA V8",
+      "redline": 7400,
+      "pops": [
+        [
+          "eAfIb9VvPqY",
+          17.235
+        ],
+        [
+          "eAfIb9VvPqY",
+          18.163
+        ],
+        [
+          "eAfIb9VvPqY",
+          20.851
+        ]
+      ],
+      "match": "Ford Mustang V8: driving take for on-throttle, Next-Gen Speed revs for idle and overrun. The on-throttle take only reaches about 3,500 rpm",
+      "preview": [
+        "WZmkSobG290",
+        9,
+        16
+      ],
+      "segments": [
+        {
+          "video": "eAfIb9VvPqY",
+          "from": 25.0,
+          "to": 30.4,
+          "hz": [
+            46,
+            64
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "eAfIb9VvPqY",
+          "from": 18.4,
+          "to": 20.1,
+          "hz": [
+            55,
+            220
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "eAfIb9VvPqY",
+          "from": 21.1,
+          "to": 24.0,
+          "hz": [
+            50,
+            230
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 8.2,
+          "to": 11.4,
+          "hz": [
+            60,
+            230
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 12.5,
+          "to": 15.8,
+          "hz": [
+            130,
+            240
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 17.8,
+          "to": 23.8,
+          "hz": [
+            140,
+            240
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 34.3,
+          "to": 44.5,
+          "hz": [
+            110,
+            170
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 46.5,
+          "to": 50.2,
+          "hz": [
+            130,
+            200
+          ],
+          "order": 4,
+          "set": "on"
+        }
+      ]
+    },
+    "buggati": {
+      "name": "Bugatti Chiron W16",
+      "redline": 6800,
+      "match": "2017 Chiron: idle and revs from TvdL Films, road take near Wolfsburg; real audio only reaches about 2,100 rpm",
+      "preview": [
+        "vVr85l6oilo",
+        105,
+        14
+      ],
+      "segments": [
+        {
+          "video": "vVr85l6oilo",
+          "from": 125.0,
+          "to": 131.0,
+          "hz": [
+            80,
+            100
+          ],
+          "order": 8,
+          "set": "idle"
+        },
+        {
+          "video": "vVr85l6oilo",
+          "from": 107.2,
+          "to": 108.2,
+          "hz": [
+            95,
+            290
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "vVr85l6oilo",
+          "from": 131.6,
+          "to": 132.2,
+          "hz": [
+            95,
+            290
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "jT9eWupIUnM",
+          "from": 42.5,
+          "to": 48.5,
+          "hz": [
+            120,
+            420
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "jT9eWupIUnM",
+          "from": 78.2,
+          "to": 82.6,
+          "hz": [
+            170,
+            270
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "jT9eWupIUnM",
+          "from": 82.8,
+          "to": 84.8,
+          "hz": [
+            190,
+            250
+          ],
+          "order": 8,
+          "set": "off"
+        }
+      ],
+      "shifts": [
+        [
+          "jT9eWupIUnM",
+          82.65
+        ]
+      ]
+    },
+    "bentley-gt": {
+      "name": "Bentley Continental GT Speed W12",
+      "redline": 6500,
+      "match": "Continental GT Speed with QuickSilver exhaust; only reaches about 3,000 rpm, mostly with road noise",
+      "preview": [
+        "_yken1hIYOY",
+        93.8,
+        22
+      ],
+      "segments": [
+        {
+          "video": "_yken1hIYOY",
+          "from": 96.0,
+          "to": 99.2,
+          "hz": [
+            85,
+            150
+          ],
+          "order": 6,
+          "set": "idle"
+        },
+        {
+          "video": "_yken1hIYOY",
+          "from": 99.4,
+          "to": 101.4,
+          "hz": [
+            90,
+            320
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "_yken1hIYOY",
+          "from": 101.5,
+          "to": 102.6,
+          "hz": [
+            190,
+            260
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "_yken1hIYOY",
+          "from": 105.0,
+          "to": 106.3,
+          "hz": [
+            190,
+            290
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "_yken1hIYOY",
+          "from": 106.6,
+          "to": 110.5,
+          "hz": [
+            90,
+            260
+          ],
+          "order": 6,
+          "set": "off"
+        },
+        {
+          "video": "_yken1hIYOY",
+          "from": 115.0,
+          "to": 116.0,
+          "hz": [
+            100,
+            300
+          ],
+          "order": 6,
+          "set": "on"
+        }
+      ],
+      "shifts": [
+        [
+          "_yken1hIYOY",
+          101.45
+        ]
+      ]
+    },
+    "jaguarxkjss": {
+      "name": "Mercedes-AMG ONE V6 hybrid",
+      "redline": 11000,
+      "match": "Actual AMG ONE at Goodwood, low-speed running only: real up to about 3,400 rpm, everything above is transposed",
+      "quality": "limited-rpm-source",
+      "preview": [
+        "-hdl5ZmNt-4",
+        1,
+        12
+      ],
+      "segments": [
+        {
+          "video": "-hdl5ZmNt-4",
+          "from": 4.0,
+          "to": 6.3,
+          "hz": [
+            92,
+            110
+          ],
+          "order": 3,
+          "set": "idle"
+        },
+        {
+          "video": "-hdl5ZmNt-4",
+          "from": 6.3,
+          "to": 12.8,
+          "hz": [
+            95,
+            175
+          ],
+          "order": 3,
+          "set": "auto"
+        }
+      ]
+    },
+    "porsche1": {
+      "name": "Porsche 918 Spyder V8 hybrid",
+      "redline": 8000,
+      "match": "Actual 918 Spyder, roadside recordings in London and Hungary",
+      "preview": [
+        "yvzlDiyxUJ4",
+        40,
+        16
+      ],
+      "shifts": [
+        [
+          "yvzlDiyxUJ4",
+          99.55
+        ]
+      ],
+      "pops": [
+        [
+          "nxC6jPnQ1Vk",
+          6.321
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          34.396
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          36.529
+        ]
+      ],
+      "segments": [
+        {
+          "video": "XybqVpbkFs4",
+          "from": 15.8,
+          "to": 19.0,
+          "hz": [
+            62,
+            78
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "yvzlDiyxUJ4",
+          "from": 41.2,
+          "to": 45.8,
+          "hz": [
+            150,
+            185
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "yvzlDiyxUJ4",
+          "from": 48.2,
+          "to": 50.9,
+          "hz": [
+            150,
+            250
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "yvzlDiyxUJ4",
+          "from": 51.3,
+          "to": 54.2,
+          "hz": [
+            165,
+            290
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "yvzlDiyxUJ4",
+          "from": 46.0,
+          "to": 48.0,
+          "hz": [
+            150,
+            245
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "yvzlDiyxUJ4",
+          "from": 54.2,
+          "to": 55.8,
+          "hz": [
+            190,
+            285
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "yvzlDiyxUJ4",
+          "from": 97.8,
+          "to": 99.5,
+          "hz": [
+            190,
+            360
+          ],
+          "order": 4,
+          "set": "on"
+        }
+      ]
+    },
+    "bmw1": {
+      "name": "Mercedes-AMG GT4 twin-turbo V8",
+      "redline": 7000,
+      "match": "AMG GT R: the same M178 twin-turbo V8 family as the GT4, with Fi exhaust",
+      "preview": [
+        "PT3fZm5HBqA",
+        22.5,
+        16
+      ],
+      "shifts": [],
+      "pops": [
+        [
+          "PT3fZm5HBqA",
+          1.621
+        ],
+        [
+          "PT3fZm5HBqA",
+          1.903
+        ],
+        [
+          "PT3fZm5HBqA",
+          2.087
+        ],
+        [
+          "PT3fZm5HBqA",
+          5.734
+        ]
+      ],
+      "segments": [
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 16.0,
+          "to": 18.0,
+          "hz": [
+            45,
+            70
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 22.2,
+          "to": 25.6,
+          "hz": [
+            125,
+            170
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 30.8,
+          "to": 33.6,
+          "hz": [
+            120,
+            175
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 41.0,
+          "to": 44.8,
+          "hz": [
+            130,
+            190
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 38.0,
+          "to": 40.2,
+          "hz": [
+            130,
+            170
+          ],
+          "order": 2,
+          "set": "off"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 19.5,
+          "to": 21.8,
+          "hz": [
+            40,
+            130
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 13.5,
+          "to": 15.5,
+          "hz": [
+            40,
+            130
+          ],
+          "order": 4,
+          "set": "off"
+        }
+      ]
+    },
+    "nissan-z": {
+      "name": "Nissan Z GT4 twin-turbo V6",
+      "redline": 7000,
+      "match": "Infiniti Q60 3.0T: the same VR30 twin-turbo V6 family as the Z, with Fi exhaust",
+      "preview": [
+        "i42YelyRWDc",
+        14,
+        10
+      ],
+      "shifts": [
+        [
+          "i42YelyRWDc",
+          15.55
+        ],
+        [
+          "i42YelyRWDc",
+          18.98
+        ]
+      ],
+      "pops": [
+        [
+          "i42YelyRWDc",
+          3.087
+        ],
+        [
+          "i42YelyRWDc",
+          41.295
+        ],
+        [
+          "i42YelyRWDc",
+          43.794
+        ],
+        [
+          "i42YelyRWDc",
+          46.015
+        ],
+        [
+          "i42YelyRWDc",
+          48.395
+        ]
+      ],
+      "segments": [
+        {
+          "video": "i42YelyRWDc",
+          "from": 34.5,
+          "to": 38.2,
+          "hz": [
+            68,
+            85
+          ],
+          "order": 3,
+          "set": "idle"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 14.2,
+          "to": 19.0,
+          "hz": [
+            90,
+            320
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 19.2,
+          "to": 22.3,
+          "hz": [
+            210,
+            285
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 3.9,
+          "to": 5.8,
+          "hz": [
+            115,
+            240
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 6.4,
+          "to": 9.2,
+          "hz": [
+            120,
+            290
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 9.5,
+          "to": 11.4,
+          "hz": [
+            115,
+            260
+          ],
+          "order": 3,
+          "set": "off"
+        }
+      ]
+    },
+    "supra": {
+      "name": "Toyota GR Supra GT500 turbo inline-4",
+      "redline": 8000,
+      "match": "Road Supra 2.0T B48 turbo inline-4 with Fi exhaust; not the GT500 race engine",
+      "preview": [
+        "QXxg4EQsijA",
+        18.5,
+        14
+      ],
+      "shifts": [
+        [
+          "QXxg4EQsijA",
+          20.85
+        ],
+        [
+          "QXxg4EQsijA",
+          22.5
+        ]
+      ],
+      "pops": [
+        [
+          "QXxg4EQsijA",
+          3.357
+        ],
+        [
+          "QXxg4EQsijA",
+          4.69
+        ],
+        [
+          "QXxg4EQsijA",
+          4.892
+        ],
+        [
+          "QXxg4EQsijA",
+          5.029
+        ],
+        [
+          "QXxg4EQsijA",
+          7.146
+        ]
+      ],
+      "segments": [
+        {
+          "video": "QXxg4EQsijA",
+          "from": 16.2,
+          "to": 17.6,
+          "hz": [
+            45,
+            70
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "QXxg4EQsijA",
+          "from": 19.0,
+          "to": 20.7,
+          "hz": [
+            85,
+            215
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "QXxg4EQsijA",
+          "from": 22.6,
+          "to": 24.6,
+          "hz": [
+            135,
+            180
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "QXxg4EQsijA",
+          "from": 31.0,
+          "to": 32.5,
+          "hz": [
+            130,
+            155
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "QXxg4EQsijA",
+          "from": 49.0,
+          "to": 55.0,
+          "hz": [
+            100,
+            215
+          ],
+          "order": 2,
+          "set": "auto"
+        },
+        {
+          "video": "QXxg4EQsijA",
+          "from": 9.5,
+          "to": 12.0,
+          "hz": [
+            90,
+            190
+          ],
+          "order": 2,
+          "set": "off"
+        },
+        {
+          "video": "QXxg4EQsijA",
+          "from": 12.5,
+          "to": 15.8,
+          "hz": [
+            55,
+            190
+          ],
+          "order": 2,
+          "set": "off"
+        },
+        {
+          "video": "QXxg4EQsijA",
+          "from": 55.0,
+          "to": 59.0,
+          "hz": [
+            60,
+            215
+          ],
+          "order": 2,
+          "set": "off"
+        }
+      ]
+    },
+    "destrier": {
+      "sharedWith": "buggati",
+      "name": "Bugatti Destrier W16 (the Chiron W16 recording)",
+      "redline": 6800
+    },
+    "huracan": {
+      "name": "Lamborghini Huracan STO V10",
+      "redline": 8500,
+      "match": "Huracan LP610-4 V10 with Fi exhaust; the STO runs the same 5.2 V10 family",
+      "preview": [
+        "EPW09CdBBjM",
+        12.8,
+        18
+      ],
+      "shifts": [
+        [
+          "EPW09CdBBjM",
+          25.75
+        ],
+        [
+          "EPW09CdBBjM",
+          27.95
+        ],
+        [
+          "EPW09CdBBjM",
+          43.55
+        ],
+        [
+          "EPW09CdBBjM",
+          45.75
+        ]
+      ],
+      "pops": [
+        [
+          "eh5WmIWNkLQ",
+          35.598
+        ],
+        [
+          "eh5WmIWNkLQ",
+          38.272
+        ],
+        [
+          "eh5WmIWNkLQ",
+          39.702
+        ],
+        [
+          "eh5WmIWNkLQ",
+          39.83
+        ]
+      ],
+      "segments": [
+        {
+          "video": "EPW09CdBBjM",
+          "from": 31.6,
+          "to": 37.6,
+          "hz": [
+            95,
+            115
+          ],
+          "order": 5,
+          "set": "idle"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 12.8,
+          "to": 15.1,
+          "hz": [
+            85,
+            345
+          ],
+          "order": 2.5,
+          "set": "on"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 17.6,
+          "to": 18.5,
+          "hz": [
+            200,
+            300
+          ],
+          "order": 2.5,
+          "set": "on"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 25.9,
+          "to": 27.9,
+          "hz": [
+            190,
+            250
+          ],
+          "order": 2.5,
+          "set": "on"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 28.2,
+          "to": 30.2,
+          "hz": [
+            190,
+            240
+          ],
+          "order": 2.5,
+          "set": "on"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 39.0,
+          "to": 40.9,
+          "hz": [
+            100,
+            275
+          ],
+          "order": 2.5,
+          "set": "on"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 43.7,
+          "to": 45.6,
+          "hz": [
+            200,
+            265
+          ],
+          "order": 2.5,
+          "set": "on"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 45.9,
+          "to": 47.5,
+          "hz": [
+            210,
+            260
+          ],
+          "order": 2.5,
+          "set": "on"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 23.2,
+          "to": 24.4,
+          "hz": [
+            170,
+            250
+          ],
+          "order": 2.5,
+          "set": "off"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 40.9,
+          "to": 42.3,
+          "hz": [
+            180,
+            265
+          ],
+          "order": 2.5,
+          "set": "off"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 15.5,
+          "to": 17.5,
+          "hz": [
+            205,
+            345
+          ],
+          "order": 2.5,
+          "set": "off"
+        }
+      ]
+    },
+    "laferrari": {
+      "name": "Ferrari LaFerrari V12 hybrid",
+      "redline": 11000,
+      "match": "Actual LaFerrari up to about 5,000 rpm; above that the Aston Martin Valkyrie V12 free-revving take",
+      "preview": [
+        "w1XHmlAlax0",
+        23,
+        13
+      ],
+      "shifts": [
+        [
+          "w1XHmlAlax0",
+          26.25
+        ],
+        [
+          "w1XHmlAlax0",
+          30.55
+        ]
+      ],
+      "pops": [
+        [
+          "9nE5FoIYa2Y",
+          13.491
+        ],
+        [
+          "9nE5FoIYa2Y",
+          19.39
+        ],
+        [
+          "9nE5FoIYa2Y",
+          25.13
+        ]
+      ],
+      "segments": [
+        {
+          "video": "uAIWC9vskVs",
+          "from": 38.6,
+          "to": 42.8,
+          "hz": [
+            115,
+            150
+          ],
+          "order": 6,
+          "set": "idle"
+        },
+        {
+          "video": "w1XHmlAlax0",
+          "from": 0.2,
+          "to": 3.0,
+          "hz": [
+            290,
+            440
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "w1XHmlAlax0",
+          "from": 22.9,
+          "to": 26.2,
+          "hz": [
+            310,
+            490
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "w1XHmlAlax0",
+          "from": 27.7,
+          "to": 30.5,
+          "hz": [
+            400,
+            450
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "w1XHmlAlax0",
+          "from": 31.0,
+          "to": 35.0,
+          "hz": [
+            320,
+            390
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "w1XHmlAlax0",
+          "from": 36.0,
+          "to": 39.0,
+          "hz": [
+            255,
+            375
+          ],
+          "order": 6,
+          "set": "off"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 20.4,
+          "to": 24.4,
+          "hz": [
+            260,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 27.0,
+          "to": 29.3,
+          "hz": [
+            300,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 9.8,
+          "to": 13.3,
+          "hz": [
+            260,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        }
+      ]
+    },
+    "ford-gt": {
+      "sharedWith": "nissan-z",
+      "name": "Ford GT Mk II twin-turbo V6 (the Infiniti Q60 3.0T V6 recording)",
+      "redline": 7000
+    }
+  }
+}

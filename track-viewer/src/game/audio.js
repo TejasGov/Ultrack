@@ -1,7 +1,8 @@
 // Game audio on the Web Audio API (assets/audio/README.md says how each sound is meant to be used):
 // - buses: master -> engine, effects, commentary, crowd (volumes from the settings)
-// - real recorded engines: idle / low / mid / high loops crossfaded and pitched by rpm, a decel
-//   layer on lift-off; rpm comes from a display gearbox (the physics has no gears; HUD shows the same gear)
+// - real recorded engines (engine-bank.json): idle plus on- and off-throttle loops at tracked rpm, close enough together that the crossfade
+//   barely bends pitch; real shift, pop and tyre samples; rpm comes from a display gearbox (the physics has no gears; HUD shows the same gear)
+// - the old bank (recorded-engine-bank.json, ?enginebank=old, and the listening page's comparison): idle / low / mid / high loops, a decel layer on lift-off
 // - one-shots: race cues, pops, nitro, crashes, crowd, fireworks; the crowd ambience loop
 // - commentary: Enzo, Alastair and Kavya lines picked by category and situation, never two at once, speakers alternating
 //   (Enzo, then Alastair answering), minimum gaps by priority and an airtime cap, no repeats until a category is used up
@@ -15,9 +16,9 @@ export class GameAudio {
   }
 
   /** must run inside a user gesture (browsers start audio only then) */
-  async start() {
+  async start(context) {
     if (this.ctx) { if (this.ctx.state === 'suspended') await this.ctx.resume(); await this.initializing; return; }
-    const ctx = this.ctx = new AudioContext({ latencyHint: 'interactive' });
+    const ctx = this.ctx = context ?? new AudioContext({ latencyHint: 'interactive' });
     this.master = ctx.createGain(); this.master.connect(ctx.destination);
     const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -10; comp.ratio.value = 4;   // keeps a crash and a shout from clipping
     this.master.disconnect(); this.master.connect(comp); comp.connect(ctx.destination);
@@ -29,8 +30,9 @@ export class GameAudio {
   }
 
   async loadBank() {
+    const bankFile = new URLSearchParams(globalThis.location?.search ?? '').get('enginebank') === 'old' ? 'recorded-engine-bank.json' : 'engine-bank.json';
     const [bank, script, voices] = await Promise.all([
-      fetch(A+'recorded-engine-bank.json').then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(A+bankFile).then(r=>r.ok?r.json():null).catch(()=>null),
       ...['announcers/script.json', 'announcers/voice_manifest.json'].map(f=>fetch(A+f).then(r=>r.json()))
     ]);
     this.engineBank=bank; this.voices = voices.lines;
@@ -43,7 +45,7 @@ export class GameAudio {
     if (this.initializing) await this.initializing;
     if (!this.ready) return;
     const prof = this.engineBank?.profiles?.[key];
-    const files = [...Object.values(prof?.loops ?? {}).map((l) => l.file), prof?.start, prof?.rev, 'race/lights-on.ogg', 'race/lights-out.ogg', 'race/horn-start.ogg'];
+    const files = [...(prof?.on ? [prof.idle, ...prof.on, ...prof.off] : Object.values(prof?.loops ?? {})).map((l) => l.file), prof?.start, prof?.rev, 'race/lights-on.ogg', 'race/lights-out.ogg', 'race/horn-start.ogg'];
     await Promise.all(files.filter(Boolean).map((f) => this.buffer(f)));
   }
 
@@ -72,13 +74,13 @@ export class GameAudio {
   }
 
   /** a looping layer: { src, gain, stop() } */
-  async loop(path, { bus = 'effects', gain = 0 } = {}) {
+  async loop(path, { bus = 'effects', gain = 0, loopStart = 0, loopEnd = 0 } = {}) {
     if (!this.ready) return null;
     const buf = await this.buffer(path); if (!buf) return null;
     const src = this.ctx.createBufferSource(), g = this.ctx.createGain();
-    src.buffer = buf; src.loop = true; g.gain.value = gain;
+    src.buffer = buf; src.loop = true; src.loopStart = loopStart; src.loopEnd = loopEnd; g.gain.value = gain;
     src.connect(g).connect(bus === 'crowd' ? this.duck : this.bus[bus]);
-    src.start();
+    src.start(0, loopStart);
     return { src, gain: g, stop: () => { try { src.stop(); } catch { /* already stopped */ } } };
   }
 
@@ -99,10 +101,19 @@ export class GameAudio {
     if(electric){this.engine={ev:true,prof:{redline:16000},layers:{},road:new RoadAudio(this.ctx,this.bus,{electric:true})};return;}
     // Missing recordings stay quiet; never silently restore the generated V1 bank.
     const prof = this.engineBank?.profiles?.[key] ?? {redline:8000,loops:{}};
+    if(prof.on){await this.measuredEngine(prof,token);return;}
     const layers = {};
     await Promise.all(Object.entries(prof.loops).map(async ([name, l]) => { layers[name] = { ...l, h: await this.loop(l.file, { bus: 'engine', gain: 0 }) }; }));
     if(token!==this.engineToken){for(const l of Object.values(layers))l.h?.stop();return;}
     this.engine = { prof, layers, ev:false,rev:prof.rev,shiftUntil:0,road:new RoadAudio(this.ctx,this.bus) };
+  }
+
+  async measuredEngine(prof,token) {
+    const start=async(l,bus='engine')=>({...l,h:await this.loop(l.file,{bus,gain:0,loopStart:l.loopStart,loopEnd:l.loopEnd})});
+    const [idle,on,off,squeal]=await Promise.all([start(prof.idle),Promise.all(prof.on.map(l=>start(l))),Promise.all(prof.off.map(l=>start(l))),this.engineBank.tyres?start(this.engineBank.tyres,'effects'):null]);
+    const layers=Object.fromEntries([['idle',idle],...on.map((l,i)=>['on'+i,l]),...off.map((l,i)=>['off'+i,l]),['squeal',squeal]].filter(([,l])=>l));
+    if(token!==this.engineToken){for(const l of Object.values(layers))l.h?.stop();return;}
+    this.engine={prof,layers,ev:false,shiftUntil:0,road:new RoadAudio(this.ctx,this.bus),idle,on:[idle,...on],off:[idle,...off],squeal};
   }
 
   engineOff() {
@@ -117,6 +128,7 @@ export class GameAudio {
   engineUpdate(rpm, throttle, mute = 1, speed = 0, slip = 0) {
     const E = this.engine; if (!E || !this.ctx) return;
     E.road?.update(speed,throttle,mute,slip);if(E.ev)return;
+    if(E.on){this.mixMeasured(E,rpm,throttle,mute,speed,slip);return;}
     const t = this.ctx.currentTime, L = E.layers, order = ['idle', 'low', 'mid', 'high'].filter((k) => L[k]?.h);
     if(!order.length)return;
     const gains = {};
@@ -139,6 +151,34 @@ export class GameAudio {
     if (L.decel?.h) {
       L.decel.h.src.playbackRate.setTargetAtTime(Math.min(3.5, Math.max(0.45, rpm / L.decel.rpm)), t, 0.03);
       L.decel.h.gain.gain.setTargetAtTime(decel * mute * 0.32, t, 0.06);
+    }
+  }
+
+  /** the measured bank: neighbours crossfade at one pitch; lifting moves to the off-throttle set, or to a quiet on-throttle if no real overrun reaches this rpm */
+  mixMeasured(E,rpm,throttle,mute,speed,slip) {
+    const t=this.ctx.currentTime,clamp=(x)=>Math.min(1,Math.max(0,x));
+    const around=(list,into,scale)=>{
+      let i=0;while(i<list.length-1&&rpm>list[i+1].rpm)i++;
+      const a=list[i],b=list[Math.min(i+1,list.length-1)],x=a===b?0:clamp((rpm-a.rpm)/(b.rpm-a.rpm));
+      into.set(a,(into.get(a)??0)+Math.cos(x*Math.PI/2)*scale);
+      if(a!==b)into.set(b,(into.get(b)??0)+Math.sin(x*Math.PI/2)*scale);
+    };
+    const idle=E.idle.rpm,top=E.off.at(-1).rpm,lift=clamp(1-throttle*4),reach=clamp(1-Math.log(rpm/top)/Math.log(1.3));
+    const body=.5+.5*clamp(Math.log(rpm/idle)/Math.log(E.prof.redline/idle)),power=.72*(.55+.45*throttle);
+    const gains=new Map();
+    around(E.on,gains,((1-lift)+lift*(1-reach)*.45)*power*body);
+    around(E.off,gains,lift*reach*.5*body);
+    const dip=(t<E.shiftUntil?.55:1)*(this.nitroOn?1.08:1)*mute;
+    for(const l of Object.values(E.layers)){
+      if(l===E.squeal||!l.h)continue;   // a loop that failed to load stays silent; the rest keep playing
+      // the display gearbox idles lower than some recordings: idle keeps its real pitch rather than dropping below it
+      l.h.src.playbackRate.setTargetAtTime(Math.min(3.5,Math.max(l===E.idle?1:.45,rpm/l.rpm)),t,.03);
+      l.h.gain.gain.setTargetAtTime((gains.get(l)??0)*dip,t,.04);
+    }
+    if(E.squeal?.h){
+      const x=clamp((Math.abs(slip)-.1)/.22),amount=x*x*(3-2*x)*Math.min(1,Math.abs(speed)/6);   // same onset as the tyre smoke and skid marks
+      E.squeal.h.gain.gain.setTargetAtTime(amount*.34*mute,t,.05);
+      E.squeal.h.src.playbackRate.setTargetAtTime(.92+.16*x,t,.1);
     }
   }
 

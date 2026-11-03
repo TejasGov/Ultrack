@@ -115,6 +115,26 @@ test('an old engine load cannot replace the new EV after a rapid car swap',async
  assert.equal(a.engine.ev,true);assert.ok(stopped);a.engineOff();
 });
 
+test('measured bank: neighbours crossfade near pitch, lifting moves to overrun, loop points reach the source, shift and pops use real samples',async()=>{
+ const a=new GameAudio();a.ctx=new AudioContext();a.bus={engine:new AudioNode(),effects:new AudioNode()};a.ready=true;
+ const layer=(rpm,i)=>({file:`engines/v3/x-${i}.ogg`,rpm,loopStart:.12,loopEnd:2.12});const asked=[],played=[];
+ a.engineBank={tyres:{file:'tyres/squeal-loop.ogg',loopStart:.12,loopEnd:3},profiles:{x:{redline:8000,idle:layer(1000,'i'),on:[layer(3000,0),layer(4000,1)],off:[layer(3000,2)],shifts:['engines/v3/s.ogg'],pops:['engines/v3/p.ogg'],cars:['x']}}};
+ a.loop=async(file,o)=>{asked.push({file,...o});return {src:{playbackRate:{value:1,setTargetAtTime(v){this.value=v;}}},gain:{gain:{value:0,setTargetAtTime(v){this.value=v;}}},stop(){}};};
+ a.play=async(f)=>{played.push(f);};
+ await a.engineFor('x');const L=a.engine.layers;
+ assert.ok(asked.every(o=>o.loopEnd>o.loopStart&&o.gain===0));assert.equal(asked.length,5);
+ a.engineUpdate(3500,1,1,40,0);
+ assert.ok(L.on0.h.gain.gain.value>.1&&L.on1.h.gain.gain.value>.1&&L.off0.h.gain.gain.value===0&&L.idle.h.gain.gain.value===0);
+ assert.ok(Math.abs(L.on0.h.src.playbackRate.value-3500/3000)<1e-9&&Math.abs(L.on1.h.src.playbackRate.value-3500/4000)<1e-9);
+ a.engineUpdate(3000,0,1,40,0);assert.ok(L.off0.h.gain.gain.value>.1,'lift plays the overrun set');
+ a.engineUpdate(7000,0,1,40,0);assert.equal(L.off0.h.gain.gain.value,0,'no overrun above its real range: a quiet on-throttle instead');assert.ok(L.on1.h.gain.gain.value>0);
+ assert.equal(L.squeal.h.gain.gain.value,0);a.engineUpdate(4000,1,1,40,.4);assert.ok(L.squeal.h.gain.gain.value>.2);
+ a.engineUpdate(1000,0,0,0,0);for(const l of Object.values(L))assert.equal(l.h.gain.gain.value,0,'muted');
+ a.shift();a.pop();assert.deepEqual(played,['engines/v3/s.ogg','engines/v3/p.ogg']);a.engineOff();
+ a.loop=async(file,o)=>file.includes('x-1')?null:{src:{playbackRate:{setTargetAtTime(){}}},gain:{gain:{setTargetAtTime(){}}},stop(){}};   // a loop that failed to load must not stop the mix
+ await a.engineFor('x');assert.doesNotThrow(()=>a.engineUpdate(3500,1,1,40,0));a.engineOff();
+});
+
 test('missing real recordings never restore the generated V1 engine or exhaust',async()=>{
  const a=new GameAudio();a.ctx=new AudioContext();a.bus={engine:new AudioNode(),effects:new AudioNode()};a.ready=true;
  a.manifest={engineProfiles:{'v8-flatplane':{loops:{idle:{file:'engines/legacy.ogg',rpm:1000}}}}};

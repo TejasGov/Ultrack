@@ -1,0 +1,1698 @@
+{
+ "schemaVersion": 3,
+ "kind": "measured-recordings",
+ "profiles": {
+  "aston-martin-valk": {
+   "name": "Aston Martin Valkyrie V12",
+   "redline": 11000,
+   "cars": [
+    "aston-martin-valk"
+   ],
+   "idle": {
+    "file": "engines/v3/aston-martin-valk-idle.ogg",
+    "rpm": 1318,
+    "loopStart": 0.123729,
+    "loopEnd": 3.117
+   },
+   "on": [
+    {
+     "file": "engines/v3/aston-martin-valk-on-0.ogg",
+     "rpm": 4630,
+     "loopStart": 0.118125,
+     "loopEnd": 2.100104
+    },
+    {
+     "file": "engines/v3/aston-martin-valk-on-1.ogg",
+     "rpm": 5490,
+     "loopStart": 0.120167,
+     "loopEnd": 2.100625
+    },
+    {
+     "file": "engines/v3/aston-martin-valk-on-2.ogg",
+     "rpm": 6510,
+     "loopStart": 0.118208,
+     "loopEnd": 2.105729
+    },
+    {
+     "file": "engines/v3/aston-martin-valk-on-3.ogg",
+     "rpm": 7730,
+     "loopStart": 0.123667,
+     "loopEnd": 2.119542
+    },
+    {
+     "file": "engines/v3/aston-martin-valk-on-4.ogg",
+     "rpm": 9160,
+     "loopStart": 0.119625,
+     "loopEnd": 2.107917
+    },
+    {
+     "file": "engines/v3/aston-martin-valk-on-5.ogg",
+     "rpm": 10870,
+     "loopStart": 0.123813,
+     "loopEnd": 2.118292
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/aston-martin-valk-off-0.ogg",
+     "rpm": 9310,
+     "loopStart": 0.116667,
+     "loopEnd": 1.614417
+    },
+    {
+     "file": "engines/v3/aston-martin-valk-off-1.ogg",
+     "rpm": 10210,
+     "loopStart": 0.121021,
+     "loopEnd": 1.613104
+    }
+   ],
+   "shifts": [
+    "engines/v3/aston-martin-valk-shift-0.ogg"
+   ],
+   "pops": [
+    "engines/v3/aston-martin-valk-pop-0.ogg",
+    "engines/v3/aston-martin-valk-pop-1.ogg",
+    "engines/v3/aston-martin-valk-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "Car and Driver Espa\u00f1a",
+     "title": "As\u00ed suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+     "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Valkyrie V12 free revving, Car and Driver Espana",
+   "quality": "measured",
+   "preview": "engines/v3/aston-martin-valk-source.ogg"
+  },
+  "furari-488": {
+   "name": "Ferrari 488 GTB V8",
+   "redline": 8000,
+   "cars": [
+    "furari-488"
+   ],
+   "idle": {
+    "file": "engines/v3/furari-488-idle.ogg",
+    "rpm": 952,
+    "loopStart": 0.119604,
+    "loopEnd": 3.087438
+   },
+   "on": [
+    {
+     "file": "engines/v3/furari-488-on-1.ogg",
+     "rpm": 1590,
+     "loopStart": 0.119125,
+     "loopEnd": 2.062396
+    },
+    {
+     "file": "engines/v3/furari-488-on-2.ogg",
+     "rpm": 1890,
+     "loopStart": 0.117625,
+     "loopEnd": 2.101646
+    },
+    {
+     "file": "engines/v3/furari-488-on-3.ogg",
+     "rpm": 2250,
+     "loopStart": 0.121667,
+     "loopEnd": 2.079979
+    },
+    {
+     "file": "engines/v3/furari-488-on-4.ogg",
+     "rpm": 2690,
+     "loopStart": 0.123521,
+     "loopEnd": 2.095687
+    },
+    {
+     "file": "engines/v3/furari-488-on-5.ogg",
+     "rpm": 3200,
+     "loopStart": 0.118125,
+     "loopEnd": 2.103958
+    },
+    {
+     "file": "engines/v3/furari-488-on-6.ogg",
+     "rpm": 3810,
+     "loopStart": 0.1215,
+     "loopEnd": 2.093354
+    },
+    {
+     "file": "engines/v3/furari-488-on-7.ogg",
+     "rpm": 4550,
+     "loopStart": 0.122396,
+     "loopEnd": 2.110542
+    },
+    {
+     "file": "engines/v3/furari-488-on-8.ogg",
+     "rpm": 5420,
+     "loopStart": 0.119833,
+     "loopEnd": 2.103167
+    },
+    {
+     "file": "engines/v3/furari-488-on-9.ogg",
+     "rpm": 6460,
+     "loopStart": 0.117708,
+     "loopEnd": 2.101271
+    },
+    {
+     "file": "engines/v3/furari-488-on-10.ogg",
+     "rpm": 7700,
+     "loopStart": 0.119292,
+     "loopEnd": 2.117208
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/furari-488-off-1.ogg",
+     "rpm": 1570,
+     "loopStart": 0.122854,
+     "loopEnd": 1.555
+    },
+    {
+     "file": "engines/v3/furari-488-off-2.ogg",
+     "rpm": 1850,
+     "loopStart": 0.116687,
+     "loopEnd": 1.576625
+    },
+    {
+     "file": "engines/v3/furari-488-off-3.ogg",
+     "rpm": 2180,
+     "loopStart": 0.117917,
+     "loopEnd": 1.578354
+    },
+    {
+     "file": "engines/v3/furari-488-off-4.ogg",
+     "rpm": 2570,
+     "loopStart": 0.121563,
+     "loopEnd": 1.594083
+    },
+    {
+     "file": "engines/v3/furari-488-off-7.ogg",
+     "rpm": 4210,
+     "loopStart": 0.123667,
+     "loopEnd": 1.610062
+    },
+    {
+     "file": "engines/v3/furari-488-off-8.ogg",
+     "rpm": 4970,
+     "loopStart": 0.118188,
+     "loopEnd": 1.606792
+    }
+   ],
+   "shifts": [
+    "engines/v3/furari-488-shift-0.ogg",
+    "engines/v3/furari-488-shift-1.ogg",
+    "engines/v3/furari-488-shift-2.ogg"
+   ],
+   "pops": [
+    "engines/v3/furari-488-pop-0.ogg",
+    "engines/v3/furari-488-pop-1.ogg",
+    "engines/v3/furari-488-pop-2.ogg",
+    "engines/v3/furari-488-pop-3.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+     "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+     "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "488 GTB with Fi catback; game body is 488 Pista",
+   "quality": "measured",
+   "preview": "engines/v3/furari-488-source.ogg"
+  },
+  "porsche1": {
+   "name": "Porsche 918 Spyder V8 hybrid",
+   "redline": 8000,
+   "cars": [
+    "porsche1"
+   ],
+   "idle": {
+    "file": "engines/v3/porsche1-idle.ogg",
+    "rpm": 1010,
+    "loopStart": 0.122,
+    "loopEnd": 3.059167
+   },
+   "on": [
+    {
+     "file": "engines/v3/porsche1-on-0.ogg",
+     "rpm": 2340,
+     "loopStart": 0.120604,
+     "loopEnd": 2.082604
+    },
+    {
+     "file": "engines/v3/porsche1-on-1.ogg",
+     "rpm": 2760,
+     "loopStart": 0.120479,
+     "loopEnd": 2.104125
+    },
+    {
+     "file": "engines/v3/porsche1-on-2.ogg",
+     "rpm": 3260,
+     "loopStart": 0.116896,
+     "loopEnd": 2.099375
+    },
+    {
+     "file": "engines/v3/porsche1-on-3.ogg",
+     "rpm": 3850,
+     "loopStart": 0.116354,
+     "loopEnd": 2.116354
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/porsche1-off-0.ogg",
+     "rpm": 2670,
+     "loopStart": 0.121625,
+     "loopEnd": 1.576979
+    },
+    {
+     "file": "engines/v3/porsche1-off-1.ogg",
+     "rpm": 3120,
+     "loopStart": 0.122354,
+     "loopEnd": 1.593521
+    },
+    {
+     "file": "engines/v3/porsche1-off-2.ogg",
+     "rpm": 3650,
+     "loopStart": 0.122646,
+     "loopEnd": 1.595229
+    }
+   ],
+   "shifts": [
+    "engines/v3/porsche1-shift-0.ogg"
+   ],
+   "pops": [
+    "engines/v3/porsche1-pop-0.ogg",
+    "engines/v3/porsche1-pop-1.ogg",
+    "engines/v3/porsche1-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "Hungarian Supercar Spotters",
+     "title": "Porsche 918 Spyder Sound and Acceleration",
+     "url": "https://www.youtube.com/watch?v=XybqVpbkFs4",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "f9bfcca43fdf309a66e788d9d995b93657bb2ca9fdb5a5c8126f2aca5da3549e",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+     "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "SOL - Supercars of London",
+     "title": "Dubai Porsche 918 Spyder Sounds in London!",
+     "url": "https://www.youtube.com/watch?v=yvzlDiyxUJ4",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "fb035cc29646502c447ee1856c690bbe0bc59cb0ade3adfb047bb99e9e3c1829",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Actual 918 Spyder, roadside recordings in London and Hungary",
+   "quality": "measured",
+   "preview": "engines/v3/porsche1-source.ogg"
+  },
+  "bmw1": {
+   "name": "Mercedes-AMG GT4 twin-turbo V8",
+   "redline": 7000,
+   "cars": [
+    "bmw1"
+   ],
+   "idle": {
+    "file": "engines/v3/bmw1-idle.ogg",
+    "rpm": 936,
+    "loopStart": 0.117083,
+    "loopEnd": 3.065771
+   },
+   "on": [
+    {
+     "file": "engines/v3/bmw1-on-0.ogg",
+     "rpm": 3950,
+     "loopStart": 0.118354,
+     "loopEnd": 2.104375
+    },
+    {
+     "file": "engines/v3/bmw1-on-1.ogg",
+     "rpm": 4530,
+     "loopStart": 0.121563,
+     "loopEnd": 2.120208
+    },
+    {
+     "file": "engines/v3/bmw1-on-2.ogg",
+     "rpm": 5190,
+     "loopStart": 0.116479,
+     "loopEnd": 2.099042
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/bmw1-off-2.ogg",
+     "rpm": 1520,
+     "loopStart": 0.116125,
+     "loopEnd": 1.549583
+    },
+    {
+     "file": "engines/v3/bmw1-off-3.ogg",
+     "rpm": 1800,
+     "loopStart": 0.120708,
+     "loopEnd": 1.605729
+    },
+    {
+     "file": "engines/v3/bmw1-off-8.ogg",
+     "rpm": 4270,
+     "loopStart": 0.117604,
+     "loopEnd": 1.614542
+    },
+    {
+     "file": "engines/v3/bmw1-off-9.ogg",
+     "rpm": 5070,
+     "loopStart": 0.117021,
+     "loopEnd": 1.596708
+    }
+   ],
+   "shifts": [],
+   "pops": [
+    "engines/v3/bmw1-pop-0.ogg",
+    "engines/v3/bmw1-pop-1.ogg",
+    "engines/v3/bmw1-pop-2.ogg",
+    "engines/v3/bmw1-pop-3.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "2018 Mercedes-AMG GTR Valves ON/OFF,  POV Driving, Pops and Crackles w/  Catless Fi EXHAUST",
+     "url": "https://www.youtube.com/watch?v=PT3fZm5HBqA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "6638e7ba2871f2eeea08e69487580b0c600aab63be307c41462f5e396bd5184f",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "AMG GT R: the same M178 twin-turbo V8 family as the GT4, with Fi exhaust",
+   "quality": "measured",
+   "preview": "engines/v3/bmw1-source.ogg"
+  },
+  "nissan-z": {
+   "name": "Nissan Z GT4 twin-turbo V6",
+   "redline": 7000,
+   "cars": [
+    "nissan-z"
+   ],
+   "idle": {
+    "file": "engines/v3/nissan-z-idle.ogg",
+    "rpm": 1503,
+    "loopStart": 0.119333,
+    "loopEnd": 3.0405
+   },
+   "on": [
+    {
+     "file": "engines/v3/nissan-z-on-0.ogg",
+     "rpm": 2330,
+     "loopStart": 0.1205,
+     "loopEnd": 2.09075
+    },
+    {
+     "file": "engines/v3/nissan-z-on-1.ogg",
+     "rpm": 2740,
+     "loopStart": 0.116625,
+     "loopEnd": 2.090229
+    },
+    {
+     "file": "engines/v3/nissan-z-on-3.ogg",
+     "rpm": 3790,
+     "loopStart": 0.118896,
+     "loopEnd": 2.088417
+    },
+    {
+     "file": "engines/v3/nissan-z-on-4.ogg",
+     "rpm": 4450,
+     "loopStart": 0.123854,
+     "loopEnd": 2.11375
+    },
+    {
+     "file": "engines/v3/nissan-z-on-5.ogg",
+     "rpm": 5240,
+     "loopStart": 0.119313,
+     "loopEnd": 2.111813
+    },
+    {
+     "file": "engines/v3/nissan-z-on-6.ogg",
+     "rpm": 6160,
+     "loopStart": 0.1205,
+     "loopEnd": 2.104917
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/nissan-z-off-0.ogg",
+     "rpm": 2320,
+     "loopStart": 0.119375,
+     "loopEnd": 1.578604
+    },
+    {
+     "file": "engines/v3/nissan-z-off-1.ogg",
+     "rpm": 2750,
+     "loopStart": 0.122896,
+     "loopEnd": 1.619104
+    },
+    {
+     "file": "engines/v3/nissan-z-off-2.ogg",
+     "rpm": 3270,
+     "loopStart": 0.11775,
+     "loopEnd": 1.582563
+    },
+    {
+     "file": "engines/v3/nissan-z-off-3.ogg",
+     "rpm": 3890,
+     "loopStart": 0.122167,
+     "loopEnd": 1.601542
+    },
+    {
+     "file": "engines/v3/nissan-z-off-4.ogg",
+     "rpm": 4620,
+     "loopStart": 0.121375,
+     "loopEnd": 1.613083
+    },
+    {
+     "file": "engines/v3/nissan-z-off-5.ogg",
+     "rpm": 5480,
+     "loopStart": 0.121208,
+     "loopEnd": 1.606625
+    }
+   ],
+   "shifts": [
+    "engines/v3/nissan-z-shift-0.ogg",
+    "engines/v3/nissan-z-shift-1.ogg"
+   ],
+   "pops": [
+    "engines/v3/nissan-z-pop-0.ogg",
+    "engines/v3/nissan-z-pop-1.ogg",
+    "engines/v3/nissan-z-pop-2.ogg",
+    "engines/v3/nissan-z-pop-3.ogg",
+    "engines/v3/nissan-z-pop-4.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "Infiniti Q60 S 3.0T V6 X Fi EXHAUST Startup & Acceleration",
+     "url": "https://www.youtube.com/watch?v=i42YelyRWDc",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "585095dddae8341935ce0195e197e0273a807d2942640c5c8f92994a961df226",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Infiniti Q60 3.0T: the same VR30 twin-turbo V6 family as the Z, with Fi exhaust",
+   "quality": "measured",
+   "preview": "engines/v3/nissan-z-source.ogg"
+  },
+  "supra": {
+   "name": "Toyota GR Supra GT500 turbo inline-4",
+   "redline": 8000,
+   "cars": [
+    "supra"
+   ],
+   "idle": {
+    "file": "engines/v3/supra-idle.ogg",
+    "rpm": 893,
+    "loopStart": 0.118667,
+    "loopEnd": 3.031563
+   },
+   "on": [
+    {
+     "file": "engines/v3/supra-on-0.ogg",
+     "rpm": 2720,
+     "loopStart": 0.120021,
+     "loopEnd": 2.111687
+    },
+    {
+     "file": "engines/v3/supra-on-1.ogg",
+     "rpm": 3210,
+     "loopStart": 0.119938,
+     "loopEnd": 2.108854
+    },
+    {
+     "file": "engines/v3/supra-on-2.ogg",
+     "rpm": 3780,
+     "loopStart": 0.118521,
+     "loopEnd": 2.088667
+    },
+    {
+     "file": "engines/v3/supra-on-3.ogg",
+     "rpm": 4460,
+     "loopStart": 0.120854,
+     "loopEnd": 2.110583
+    },
+    {
+     "file": "engines/v3/supra-on-4.ogg",
+     "rpm": 5250,
+     "loopStart": 0.118167,
+     "loopEnd": 2.116646
+    },
+    {
+     "file": "engines/v3/supra-on-5.ogg",
+     "rpm": 6190,
+     "loopStart": 0.122708,
+     "loopEnd": 2.103917
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/supra-off-0.ogg",
+     "rpm": 1800,
+     "loopStart": 0.116521,
+     "loopEnd": 1.599187
+    },
+    {
+     "file": "engines/v3/supra-off-1.ogg",
+     "rpm": 2150,
+     "loopStart": 0.122146,
+     "loopEnd": 1.570229
+    },
+    {
+     "file": "engines/v3/supra-off-2.ogg",
+     "rpm": 2560,
+     "loopStart": 0.120833,
+     "loopEnd": 1.610437
+    },
+    {
+     "file": "engines/v3/supra-off-3.ogg",
+     "rpm": 3060,
+     "loopStart": 0.116625,
+     "loopEnd": 1.606875
+    },
+    {
+     "file": "engines/v3/supra-off-4.ogg",
+     "rpm": 3650,
+     "loopStart": 0.119813,
+     "loopEnd": 1.5915
+    },
+    {
+     "file": "engines/v3/supra-off-5.ogg",
+     "rpm": 4350,
+     "loopStart": 0.121271,
+     "loopEnd": 1.611604
+    },
+    {
+     "file": "engines/v3/supra-off-6.ogg",
+     "rpm": 5190,
+     "loopStart": 0.118271,
+     "loopEnd": 1.603104
+    }
+   ],
+   "shifts": [
+    "engines/v3/supra-shift-0.ogg",
+    "engines/v3/supra-shift-1.ogg"
+   ],
+   "pops": [
+    "engines/v3/supra-pop-0.ogg",
+    "engines/v3/supra-pop-1.ogg",
+    "engines/v3/supra-pop-2.ogg",
+    "engines/v3/supra-pop-3.ogg",
+    "engines/v3/supra-pop-4.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "Toyota Supra 2.0T B48 Fi EXHAUST Acceleration, Revving, Driveby X Lee Speed",
+     "url": "https://www.youtube.com/watch?v=QXxg4EQsijA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "83b79ba3d15d6e8eb315002b81ea8a67c13cbfd90fe858d333dcd1ef1a82653c",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Road Supra 2.0T B48 turbo inline-4 with Fi exhaust; not the GT500 race engine",
+   "quality": "measured",
+   "preview": "engines/v3/supra-source.ogg"
+  },
+  "laferrari": {
+   "name": "Ferrari LaFerrari V12 hybrid",
+   "redline": 11000,
+   "cars": [
+    "laferrari"
+   ],
+   "idle": {
+    "file": "engines/v3/laferrari-idle.ogg",
+    "rpm": 1357,
+    "loopStart": 0.117958,
+    "loopEnd": 3.051792
+   },
+   "on": [
+    {
+     "file": "engines/v3/laferrari-on-0.ogg",
+     "rpm": 2980,
+     "loopStart": 0.120063,
+     "loopEnd": 2.119125
+    },
+    {
+     "file": "engines/v3/laferrari-on-1.ogg",
+     "rpm": 3500,
+     "loopStart": 0.118063,
+     "loopEnd": 2.0965
+    },
+    {
+     "file": "engines/v3/laferrari-on-2.ogg",
+     "rpm": 4120,
+     "loopStart": 0.12175,
+     "loopEnd": 2.111375
+    },
+    {
+     "file": "engines/v3/laferrari-on-3.ogg",
+     "rpm": 4840,
+     "loopStart": 0.117083,
+     "loopEnd": 2.111146
+    },
+    {
+     "file": "engines/v3/laferrari-on-4.ogg",
+     "rpm": 5690,
+     "loopStart": 0.123646,
+     "loopEnd": 2.112958
+    },
+    {
+     "file": "engines/v3/laferrari-on-5.ogg",
+     "rpm": 6690,
+     "loopStart": 0.122438,
+     "loopEnd": 2.119979
+    },
+    {
+     "file": "engines/v3/laferrari-on-6.ogg",
+     "rpm": 7860,
+     "loopStart": 0.116104,
+     "loopEnd": 2.106417
+    },
+    {
+     "file": "engines/v3/laferrari-on-7.ogg",
+     "rpm": 9240,
+     "loopStart": 0.122896,
+     "loopEnd": 2.121688
+    },
+    {
+     "file": "engines/v3/laferrari-on-8.ogg",
+     "rpm": 10860,
+     "loopStart": 0.123208,
+     "loopEnd": 2.113437
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/laferrari-off-0.ogg",
+     "rpm": 2970,
+     "loopStart": 0.117479,
+     "loopEnd": 1.578229
+    },
+    {
+     "file": "engines/v3/laferrari-off-1.ogg",
+     "rpm": 3330,
+     "loopStart": 0.121792,
+     "loopEnd": 1.605438
+    },
+    {
+     "file": "engines/v3/laferrari-off-2.ogg",
+     "rpm": 3740,
+     "loopStart": 0.121729,
+     "loopEnd": 1.590229
+    }
+   ],
+   "shifts": [
+    "engines/v3/laferrari-shift-0.ogg",
+    "engines/v3/laferrari-shift-1.ogg"
+   ],
+   "pops": [
+    "engines/v3/laferrari-pop-0.ogg",
+    "engines/v3/laferrari-pop-1.ogg",
+    "engines/v3/laferrari-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "Car and Driver Espa\u00f1a",
+     "title": "As\u00ed suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+     "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "SOL - Supercars of London",
+     "title": "INCREDIBLE LaFerrari: Loud Revs & Acceleration",
+     "url": "https://www.youtube.com/watch?v=uAIWC9vskVs",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "8f3bea3470efdf413741e463012c4200263cf98b800a7360cf8523efc535a37c",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "ePic eXhaust",
+     "title": "Ferrari LaFerrari Revving Sound!",
+     "url": "https://www.youtube.com/watch?v=w1XHmlAlax0",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "cc769c1ccc49eabf40b533223469234622e3897cf05bf583f309026c18520ff9",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Actual LaFerrari up to about 5,000 rpm; above that the Aston Martin Valkyrie V12 free-revving take",
+   "quality": "measured",
+   "preview": "engines/v3/laferrari-source.ogg"
+  },
+  "av12": {
+   "name": "Lamborghini Aventador SV V12",
+   "redline": 8500,
+   "cars": [
+    "av12"
+   ],
+   "idle": {
+    "file": "engines/v3/av12-idle.ogg",
+    "rpm": 1129,
+    "loopStart": 0.118438,
+    "loopEnd": 3.077292
+   },
+   "on": [
+    {
+     "file": "engines/v3/av12-on-0.ogg",
+     "rpm": 2290,
+     "loopStart": 0.118271,
+     "loopEnd": 2.093229
+    },
+    {
+     "file": "engines/v3/av12-on-1.ogg",
+     "rpm": 2730,
+     "loopStart": 0.122271,
+     "loopEnd": 2.12125
+    },
+    {
+     "file": "engines/v3/av12-on-2.ogg",
+     "rpm": 3250,
+     "loopStart": 0.121146,
+     "loopEnd": 2.116646
+    },
+    {
+     "file": "engines/v3/av12-on-3.ogg",
+     "rpm": 3880,
+     "loopStart": 0.118438,
+     "loopEnd": 2.102292
+    },
+    {
+     "file": "engines/v3/av12-on-4.ogg",
+     "rpm": 4620,
+     "loopStart": 0.118958,
+     "loopEnd": 2.117792
+    },
+    {
+     "file": "engines/v3/av12-on-5.ogg",
+     "rpm": 5510,
+     "loopStart": 0.121521,
+     "loopEnd": 2.104812
+    },
+    {
+     "file": "engines/v3/av12-on-6.ogg",
+     "rpm": 6560,
+     "loopStart": 0.121042,
+     "loopEnd": 2.107729
+    },
+    {
+     "file": "engines/v3/av12-on-7.ogg",
+     "rpm": 7820,
+     "loopStart": 0.116417,
+     "loopEnd": 2.106292
+    }
+   ],
+   "off": [],
+   "shifts": [
+    "engines/v3/av12-shift-0.ogg",
+    "engines/v3/av12-shift-1.ogg",
+    "engines/v3/av12-shift-2.ogg"
+   ],
+   "pops": [
+    "engines/v3/av12-pop-0.ogg",
+    "engines/v3/av12-pop-1.ogg",
+    "engines/v3/av12-pop-2.ogg",
+    "engines/v3/av12-pop-3.ogg",
+    "engines/v3/av12-pop-4.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+     "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Played N Faved - Sound Effects & Stock Footage",
+     "title": "Lamborghini Supercar Sound Effect | Lamborghini Engine Sounds | Royalty Free",
+     "url": "https://www.youtube.com/watch?v=kMLCWrG_KQk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "75a4d38f48e080b70ae7ad7732ce5a073a4296cdea9fd262743716b6e7928b43",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Aventador SV with Fi exhaust; idle and low range from a Played N Faved Lamborghini recording",
+   "quality": "measured",
+   "preview": "engines/v3/av12-source.ogg"
+  },
+  "mp1x": {
+   "name": "McLaren 720S V8",
+   "redline": 8500,
+   "cars": [
+    "mp1x"
+   ],
+   "idle": {
+    "file": "engines/v3/mp1x-idle.ogg",
+    "rpm": 1187,
+    "loopStart": 0.123354,
+    "loopEnd": 3.110708
+   },
+   "on": [
+    {
+     "file": "engines/v3/mp1x-on-1.ogg",
+     "rpm": 1600,
+     "loopStart": 0.123896,
+     "loopEnd": 2.052104
+    },
+    {
+     "file": "engines/v3/mp1x-on-2.ogg",
+     "rpm": 1880,
+     "loopStart": 0.122667,
+     "loopEnd": 2.085479
+    },
+    {
+     "file": "engines/v3/mp1x-on-3.ogg",
+     "rpm": 2210,
+     "loopStart": 0.122833,
+     "loopEnd": 2.090708
+    },
+    {
+     "file": "engines/v3/mp1x-on-4.ogg",
+     "rpm": 2600,
+     "loopStart": 0.118854,
+     "loopEnd": 2.073313
+    },
+    {
+     "file": "engines/v3/mp1x-on-5.ogg",
+     "rpm": 3050,
+     "loopStart": 0.121313,
+     "loopEnd": 2.092021
+    },
+    {
+     "file": "engines/v3/mp1x-on-6.ogg",
+     "rpm": 3580,
+     "loopStart": 0.118688,
+     "loopEnd": 2.109021
+    },
+    {
+     "file": "engines/v3/mp1x-on-7.ogg",
+     "rpm": 4200,
+     "loopStart": 0.118958,
+     "loopEnd": 2.101354
+    },
+    {
+     "file": "engines/v3/mp1x-on-8.ogg",
+     "rpm": 4930,
+     "loopStart": 0.123146,
+     "loopEnd": 2.11275
+    },
+    {
+     "file": "engines/v3/mp1x-on-9.ogg",
+     "rpm": 5790,
+     "loopStart": 0.120667,
+     "loopEnd": 2.105917
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/mp1x-off-1.ogg",
+     "rpm": 1630,
+     "loopStart": 0.122125,
+     "loopEnd": 1.588521
+    },
+    {
+     "file": "engines/v3/mp1x-off-2.ogg",
+     "rpm": 1950,
+     "loopStart": 0.12225,
+     "loopEnd": 1.560854
+    },
+    {
+     "file": "engines/v3/mp1x-off-3.ogg",
+     "rpm": 2330,
+     "loopStart": 0.116458,
+     "loopEnd": 1.586292
+    },
+    {
+     "file": "engines/v3/mp1x-off-4.ogg",
+     "rpm": 2790,
+     "loopStart": 0.117813,
+     "loopEnd": 1.580271
+    },
+    {
+     "file": "engines/v3/mp1x-off-5.ogg",
+     "rpm": 3340,
+     "loopStart": 0.119313,
+     "loopEnd": 1.616854
+    }
+   ],
+   "shifts": [
+    "engines/v3/mp1x-shift-0.ogg",
+    "engines/v3/mp1x-shift-1.ogg"
+   ],
+   "pops": [
+    "engines/v3/mp1x-pop-0.ogg",
+    "engines/v3/mp1x-pop-1.ogg",
+    "engines/v3/mp1x-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+     "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+     "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "720S with Fi exhaust; source is only 72 kbps",
+   "quality": "measured",
+   "preview": "engines/v3/mp1x-source.ogg"
+  },
+  "blackbird": {
+   "name": "Hennessey Blackbird NA V8",
+   "redline": 7400,
+   "cars": [
+    "blackbird"
+   ],
+   "idle": {
+    "file": "engines/v3/blackbird-idle.ogg",
+    "rpm": 893,
+    "loopStart": 0.118833,
+    "loopEnd": 3.052292
+   },
+   "on": [
+    {
+     "file": "engines/v3/blackbird-on-1.ogg",
+     "rpm": 1230,
+     "loopStart": 0.120563,
+     "loopEnd": 2.031625
+    },
+    {
+     "file": "engines/v3/blackbird-on-2.ogg",
+     "rpm": 1460,
+     "loopStart": 0.122188,
+     "loopEnd": 2.104167
+    },
+    {
+     "file": "engines/v3/blackbird-on-3.ogg",
+     "rpm": 1720,
+     "loopStart": 0.121354,
+     "loopEnd": 2.096292
+    },
+    {
+     "file": "engines/v3/blackbird-on-4.ogg",
+     "rpm": 2040,
+     "loopStart": 0.1175,
+     "loopEnd": 2.110042
+    },
+    {
+     "file": "engines/v3/blackbird-on-5.ogg",
+     "rpm": 2420,
+     "loopStart": 0.116,
+     "loopEnd": 2.078333
+    },
+    {
+     "file": "engines/v3/blackbird-on-6.ogg",
+     "rpm": 2860,
+     "loopStart": 0.118667,
+     "loopEnd": 2.115125
+    },
+    {
+     "file": "engines/v3/blackbird-on-7.ogg",
+     "rpm": 3390,
+     "loopStart": 0.119771,
+     "loopEnd": 2.109729
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/blackbird-off-0.ogg",
+     "rpm": 1030,
+     "loopStart": 0.120917,
+     "loopEnd": 1.512104
+    },
+    {
+     "file": "engines/v3/blackbird-off-1.ogg",
+     "rpm": 1220,
+     "loopStart": 0.121042,
+     "loopEnd": 1.557771
+    },
+    {
+     "file": "engines/v3/blackbird-off-2.ogg",
+     "rpm": 1450,
+     "loopStart": 0.120625,
+     "loopEnd": 1.545271
+    },
+    {
+     "file": "engines/v3/blackbird-off-3.ogg",
+     "rpm": 1720,
+     "loopStart": 0.122792,
+     "loopEnd": 1.585917
+    },
+    {
+     "file": "engines/v3/blackbird-off-4.ogg",
+     "rpm": 2040,
+     "loopStart": 0.116771,
+     "loopEnd": 1.575271
+    },
+    {
+     "file": "engines/v3/blackbird-off-5.ogg",
+     "rpm": 2420,
+     "loopStart": 0.119771,
+     "loopEnd": 1.611187
+    }
+   ],
+   "shifts": [],
+   "pops": [
+    "engines/v3/blackbird-pop-0.ogg",
+    "engines/v3/blackbird-pop-1.ogg",
+    "engines/v3/blackbird-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "Played N Faved - Sound Effects & Stock Footage",
+     "title": "Mustang Sound Effect | American Muscle Car Mustang Engine Sounds | Royalty Free",
+     "url": "https://www.youtube.com/watch?v=WZmkSobG290",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "072ad1172d33da3c92c69cd3447189f98287b0be0d375a046a2e92d53f58e08b",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Next-Gen Speed",
+     "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+     "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Ford Mustang V8: driving take for on-throttle, Next-Gen Speed revs for idle and overrun. The on-throttle take only reaches about 3,500 rpm",
+   "quality": "measured",
+   "preview": "engines/v3/blackbird-source.ogg"
+  },
+  "buggati": {
+   "name": "Bugatti Chiron W16",
+   "redline": 6800,
+   "cars": [
+    "buggati"
+   ],
+   "idle": {
+    "file": "engines/v3/buggati-idle.ogg",
+    "rpm": 666,
+    "loopStart": 0.121771,
+    "loopEnd": 3.010917
+   },
+   "on": [
+    {
+     "file": "engines/v3/buggati-on-1.ogg",
+     "rpm": 930,
+     "loopStart": 0.123292,
+     "loopEnd": 2.044521
+    },
+    {
+     "file": "engines/v3/buggati-on-2.ogg",
+     "rpm": 1090,
+     "loopStart": 0.118542,
+     "loopEnd": 2.068542
+    },
+    {
+     "file": "engines/v3/buggati-on-3.ogg",
+     "rpm": 1280,
+     "loopStart": 0.119063,
+     "loopEnd": 2.064583
+    },
+    {
+     "file": "engines/v3/buggati-on-4.ogg",
+     "rpm": 1500,
+     "loopStart": 0.122542,
+     "loopEnd": 2.062833
+    },
+    {
+     "file": "engines/v3/buggati-on-5.ogg",
+     "rpm": 1750,
+     "loopStart": 0.119167,
+     "loopEnd": 2.11175
+    },
+    {
+     "file": "engines/v3/buggati-on-6.ogg",
+     "rpm": 2050,
+     "loopStart": 0.117625,
+     "loopEnd": 2.076687
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/buggati-off-0.ogg",
+     "rpm": 1430,
+     "loopStart": 0.117979,
+     "loopEnd": 1.554812
+    }
+   ],
+   "shifts": [
+    "engines/v3/buggati-shift-0.ogg"
+   ],
+   "pops": [],
+   "sources": [
+    {
+     "author": "TvdL Films",
+     "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+     "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "TvdL Films",
+     "title": "Bugatti Chiron -Sound- LOUD REVS, Start Up & convoy !!!",
+     "url": "https://www.youtube.com/watch?v=vVr85l6oilo",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "18e558ed67c981289a0ac7da54ca848b80e882378b174340d7a868a8be666e27",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "2017 Chiron: idle and revs from TvdL Films, road take near Wolfsburg; real audio only reaches about 2,100 rpm",
+   "quality": "measured",
+   "preview": "engines/v3/buggati-source.ogg"
+  },
+  "bentley-gt": {
+   "name": "Bentley Continental GT Speed W12",
+   "redline": 6500,
+   "cars": [
+    "bentley-gt"
+   ],
+   "idle": {
+    "file": "engines/v3/bentley-gt-idle.ogg",
+    "rpm": 1064,
+    "loopStart": 0.123479,
+    "loopEnd": 3.019958
+   },
+   "on": [
+    {
+     "file": "engines/v3/bentley-gt-on-0.ogg",
+     "rpm": 1220,
+     "loopStart": 0.117333,
+     "loopEnd": 2.114125
+    },
+    {
+     "file": "engines/v3/bentley-gt-on-1.ogg",
+     "rpm": 1420,
+     "loopStart": 0.121896,
+     "loopEnd": 2.085292
+    },
+    {
+     "file": "engines/v3/bentley-gt-on-3.ogg",
+     "rpm": 1930,
+     "loopStart": 0.117042,
+     "loopEnd": 2.071521
+    },
+    {
+     "file": "engines/v3/bentley-gt-on-4.ogg",
+     "rpm": 2250,
+     "loopStart": 0.123063,
+     "loopEnd": 2.084271
+    },
+    {
+     "file": "engines/v3/bentley-gt-on-5.ogg",
+     "rpm": 2610,
+     "loopStart": 0.122313,
+     "loopEnd": 2.116125
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/bentley-gt-off-0.ogg",
+     "rpm": 1220,
+     "loopStart": 0.117604,
+     "loopEnd": 1.606375
+    }
+   ],
+   "shifts": [
+    "engines/v3/bentley-gt-shift-0.ogg"
+   ],
+   "pops": [],
+   "sources": [
+    {
+     "author": "QuickSilver Sound Architects",
+     "title": "Bentley Continental GT Speed W12 with QuickSilver Sport Exhaust",
+     "url": "https://www.youtube.com/watch?v=_yken1hIYOY",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "2d43fb96815533d94f296374a69f75c5c729b09f6d6b33e70e7c3363285de325",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Continental GT Speed with QuickSilver exhaust; only reaches about 3,000 rpm, mostly with road noise",
+   "quality": "measured",
+   "preview": "engines/v3/bentley-gt-source.ogg"
+  },
+  "jaguarxkjss": {
+   "name": "Mercedes-AMG ONE V6 hybrid",
+   "redline": 11000,
+   "cars": [
+    "jaguarxkjss"
+   ],
+   "idle": {
+    "file": "engines/v3/jaguarxkjss-idle.ogg",
+    "rpm": 1973,
+    "loopStart": 0.120688,
+    "loopEnd": 3.062333
+   },
+   "on": [
+    {
+     "file": "engines/v3/jaguarxkjss-on-0.ogg",
+     "rpm": 2270,
+     "loopStart": 0.123292,
+     "loopEnd": 2.093187
+    },
+    {
+     "file": "engines/v3/jaguarxkjss-on-1.ogg",
+     "rpm": 2570,
+     "loopStart": 0.121063,
+     "loopEnd": 2.100521
+    },
+    {
+     "file": "engines/v3/jaguarxkjss-on-2.ogg",
+     "rpm": 2910,
+     "loopStart": 0.117083,
+     "loopEnd": 2.093792
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/jaguarxkjss-off-0.ogg",
+     "rpm": 2270,
+     "loopStart": 0.1235,
+     "loopEnd": 1.588521
+    },
+    {
+     "file": "engines/v3/jaguarxkjss-off-2.ogg",
+     "rpm": 2910,
+     "loopStart": 0.120729,
+     "loopEnd": 1.597167
+    }
+   ],
+   "shifts": [],
+   "pops": [],
+   "sources": [
+    {
+     "author": "Dan Outside",
+     "title": "Mercedes AMG ONE at Goodwood Breakfast Club Supercar Sunday",
+     "url": "https://www.youtube.com/watch?v=-hdl5ZmNt-4",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "eddeea1b177b5a8248a77c87331722464984747399fbe59200c6da6ea5b03191",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Actual AMG ONE at Goodwood, low-speed running only: real up to about 3,400 rpm, everything above is transposed",
+   "quality": "limited-rpm-source",
+   "preview": "engines/v3/jaguarxkjss-source.ogg"
+  },
+  "destrier": {
+   "name": "Bugatti Destrier W16 (the Chiron W16 recording)",
+   "redline": 6800,
+   "cars": [
+    "destrier"
+   ],
+   "idle": {
+    "file": "engines/v3/buggati-idle.ogg",
+    "rpm": 666,
+    "loopStart": 0.121771,
+    "loopEnd": 3.010917
+   },
+   "on": [
+    {
+     "file": "engines/v3/buggati-on-1.ogg",
+     "rpm": 930,
+     "loopStart": 0.123292,
+     "loopEnd": 2.044521
+    },
+    {
+     "file": "engines/v3/buggati-on-2.ogg",
+     "rpm": 1090,
+     "loopStart": 0.118542,
+     "loopEnd": 2.068542
+    },
+    {
+     "file": "engines/v3/buggati-on-3.ogg",
+     "rpm": 1280,
+     "loopStart": 0.119063,
+     "loopEnd": 2.064583
+    },
+    {
+     "file": "engines/v3/buggati-on-4.ogg",
+     "rpm": 1500,
+     "loopStart": 0.122542,
+     "loopEnd": 2.062833
+    },
+    {
+     "file": "engines/v3/buggati-on-5.ogg",
+     "rpm": 1750,
+     "loopStart": 0.119167,
+     "loopEnd": 2.11175
+    },
+    {
+     "file": "engines/v3/buggati-on-6.ogg",
+     "rpm": 2050,
+     "loopStart": 0.117625,
+     "loopEnd": 2.076687
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/buggati-off-0.ogg",
+     "rpm": 1430,
+     "loopStart": 0.117979,
+     "loopEnd": 1.554812
+    }
+   ],
+   "shifts": [
+    "engines/v3/buggati-shift-0.ogg"
+   ],
+   "pops": [],
+   "sources": [
+    {
+     "author": "TvdL Films",
+     "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+     "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "TvdL Films",
+     "title": "Bugatti Chiron -Sound- LOUD REVS, Start Up & convoy !!!",
+     "url": "https://www.youtube.com/watch?v=vVr85l6oilo",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "18e558ed67c981289a0ac7da54ca848b80e882378b174340d7a868a8be666e27",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "2017 Chiron: idle and revs from TvdL Films, road take near Wolfsburg; real audio only reaches about 2,100 rpm",
+   "quality": "measured",
+   "preview": "engines/v3/buggati-source.ogg",
+   "sharedWith": "buggati"
+  },
+  "huracan": {
+   "name": "Lamborghini Huracan STO V10",
+   "redline": 8500,
+   "cars": [
+    "huracan"
+   ],
+   "idle": {
+    "file": "engines/v3/huracan-idle.ogg",
+    "rpm": 1231,
+    "loopStart": 0.117333,
+    "loopEnd": 3.046854
+   },
+   "on": [
+    {
+     "file": "engines/v3/huracan-on-1.ogg",
+     "rpm": 2530,
+     "loopStart": 0.117979,
+     "loopEnd": 2.112792
+    },
+    {
+     "file": "engines/v3/huracan-on-2.ogg",
+     "rpm": 3010,
+     "loopStart": 0.119313,
+     "loopEnd": 2.114854
+    },
+    {
+     "file": "engines/v3/huracan-on-3.ogg",
+     "rpm": 3590,
+     "loopStart": 0.116312,
+     "loopEnd": 2.087396
+    },
+    {
+     "file": "engines/v3/huracan-on-4.ogg",
+     "rpm": 4270,
+     "loopStart": 0.119083,
+     "loopEnd": 2.109917
+    },
+    {
+     "file": "engines/v3/huracan-on-5.ogg",
+     "rpm": 5080,
+     "loopStart": 0.121542,
+     "loopEnd": 2.1105
+    },
+    {
+     "file": "engines/v3/huracan-on-6.ogg",
+     "rpm": 6050,
+     "loopStart": 0.123083,
+     "loopEnd": 2.114083
+    },
+    {
+     "file": "engines/v3/huracan-on-7.ogg",
+     "rpm": 7190,
+     "loopStart": 0.117062,
+     "loopEnd": 2.107292
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/huracan-off-0.ogg",
+     "rpm": 4450,
+     "loopStart": 0.121979,
+     "loopEnd": 1.613125
+    },
+    {
+     "file": "engines/v3/huracan-off-1.ogg",
+     "rpm": 5160,
+     "loopStart": 0.119104,
+     "loopEnd": 1.607458
+    },
+    {
+     "file": "engines/v3/huracan-off-2.ogg",
+     "rpm": 5990,
+     "loopStart": 0.122583,
+     "loopEnd": 1.605042
+    },
+    {
+     "file": "engines/v3/huracan-off-3.ogg",
+     "rpm": 6940,
+     "loopStart": 0.116062,
+     "loopEnd": 1.612667
+    },
+    {
+     "file": "engines/v3/huracan-off-4.ogg",
+     "rpm": 8050,
+     "loopStart": 0.120917,
+     "loopEnd": 1.611229
+    }
+   ],
+   "shifts": [
+    "engines/v3/huracan-shift-0.ogg",
+    "engines/v3/huracan-shift-1.ogg",
+    "engines/v3/huracan-shift-2.ogg",
+    "engines/v3/huracan-shift-3.ogg"
+   ],
+   "pops": [
+    "engines/v3/huracan-pop-0.ogg",
+    "engines/v3/huracan-pop-1.ogg",
+    "engines/v3/huracan-pop-2.ogg",
+    "engines/v3/huracan-pop-3.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "Lamborghini Huracan LP610-4 with Valvetronic Fi Exhaust Acceleration Sound collections !!",
+     "url": "https://www.youtube.com/watch?v=EPW09CdBBjM",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "5f0bd2639732c86c2c55f22f74a9de330709ff0f2004e89d6ffc328c08ad2845",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+     "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Huracan LP610-4 V10 with Fi exhaust; the STO runs the same 5.2 V10 family",
+   "quality": "measured",
+   "preview": "engines/v3/huracan-source.ogg"
+  },
+  "ford-gt": {
+   "name": "Ford GT Mk II twin-turbo V6 (the Infiniti Q60 3.0T V6 recording)",
+   "redline": 7000,
+   "cars": [
+    "ford-gt"
+   ],
+   "idle": {
+    "file": "engines/v3/nissan-z-idle.ogg",
+    "rpm": 1503,
+    "loopStart": 0.119333,
+    "loopEnd": 3.0405
+   },
+   "on": [
+    {
+     "file": "engines/v3/nissan-z-on-0.ogg",
+     "rpm": 2330,
+     "loopStart": 0.1205,
+     "loopEnd": 2.09075
+    },
+    {
+     "file": "engines/v3/nissan-z-on-1.ogg",
+     "rpm": 2740,
+     "loopStart": 0.116625,
+     "loopEnd": 2.090229
+    },
+    {
+     "file": "engines/v3/nissan-z-on-3.ogg",
+     "rpm": 3790,
+     "loopStart": 0.118896,
+     "loopEnd": 2.088417
+    },
+    {
+     "file": "engines/v3/nissan-z-on-4.ogg",
+     "rpm": 4450,
+     "loopStart": 0.123854,
+     "loopEnd": 2.11375
+    },
+    {
+     "file": "engines/v3/nissan-z-on-5.ogg",
+     "rpm": 5240,
+     "loopStart": 0.119313,
+     "loopEnd": 2.111813
+    },
+    {
+     "file": "engines/v3/nissan-z-on-6.ogg",
+     "rpm": 6160,
+     "loopStart": 0.1205,
+     "loopEnd": 2.104917
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/nissan-z-off-0.ogg",
+     "rpm": 2320,
+     "loopStart": 0.119375,
+     "loopEnd": 1.578604
+    },
+    {
+     "file": "engines/v3/nissan-z-off-1.ogg",
+     "rpm": 2750,
+     "loopStart": 0.122896,
+     "loopEnd": 1.619104
+    },
+    {
+     "file": "engines/v3/nissan-z-off-2.ogg",
+     "rpm": 3270,
+     "loopStart": 0.11775,
+     "loopEnd": 1.582563
+    },
+    {
+     "file": "engines/v3/nissan-z-off-3.ogg",
+     "rpm": 3890,
+     "loopStart": 0.122167,
+     "loopEnd": 1.601542
+    },
+    {
+     "file": "engines/v3/nissan-z-off-4.ogg",
+     "rpm": 4620,
+     "loopStart": 0.121375,
+     "loopEnd": 1.613083
+    },
+    {
+     "file": "engines/v3/nissan-z-off-5.ogg",
+     "rpm": 5480,
+     "loopStart": 0.121208,
+     "loopEnd": 1.606625
+    }
+   ],
+   "shifts": [
+    "engines/v3/nissan-z-shift-0.ogg",
+    "engines/v3/nissan-z-shift-1.ogg"
+   ],
+   "pops": [
+    "engines/v3/nissan-z-pop-0.ogg",
+    "engines/v3/nissan-z-pop-1.ogg",
+    "engines/v3/nissan-z-pop-2.ogg",
+    "engines/v3/nissan-z-pop-3.ogg",
+    "engines/v3/nissan-z-pop-4.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "Infiniti Q60 S 3.0T V6 X Fi EXHAUST Startup & Acceleration",
+     "url": "https://www.youtube.com/watch?v=i42YelyRWDc",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "585095dddae8341935ce0195e197e0273a807d2942640c5c8f92994a961df226",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Infiniti Q60 3.0T: the same VR30 twin-turbo V6 family as the Z, with Fi exhaust",
+   "quality": "measured",
+   "preview": "engines/v3/nissan-z-source.ogg",
+   "sharedWith": "nissan-z"
+  }
+ },
+ "tyres": {
+  "file": "tyres/squeal-loop.ogg",
+  "source": {
+   "author": "BigSoundBank (Joseph Sardin)",
+   "title": "Tire squeal",
+   "url": "https://bigsoundbank.com/tire-squeal-s0500.html",
+   "license": "CC0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "changes": "Cut to one loop, filtered, level matched and encoded to Opus."
+  },
+  "loopStart": 0.117917,
+  "loopEnd": 5.867917
+ }
+}
