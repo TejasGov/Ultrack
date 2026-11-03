@@ -448,7 +448,7 @@ export class Field {
    *  program set to compile). Dark stand-ins, shown only during a capture, hold the count. */
   captureLights(h, on) {
     let n = 0;
-    if (on) h.root.traverse((o) => { if (o.isSpotLight && o.visible) n++; });   // shortcut: spots only, the hero carries no other kind; another kind just costs the re-key again
+    if (on) h.root.traverse((o) => { if (o.isSpotLight) n++; });   // visible or not: the menu's warm-up runs with the beams off, the race with them on. shortcut: spots only, the hero carries no other kind; another kind just costs the re-key again
     const pool = this.standIns ??= [];
     while (pool.length < n) { const s = new THREE.SpotLight(0x000000, 0); this.scene.add(s); pool.push(s); }
     pool.forEach((s, i) => { s.visible = on && i < n; });
