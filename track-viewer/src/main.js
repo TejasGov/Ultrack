@@ -1110,6 +1110,7 @@ function tick(now) {
   requestAnimationFrame(tick);
   if(benchmarking)return;
   if (now < due - 0.5) return;   // the cap keeps the GPU (and the room) cooler
+  const tickStart = performance.now();
   const wallDt = Math.max(0, (now - last) / 1000);
   const dt = Math.min(0.05, wallDt);
   last = now;
@@ -1191,7 +1192,7 @@ function tick(now) {
   gpuTimer.end();
   if (params.dynamicRes) {
     dynres.budgetMs = 1000 / params.fpsCap;
-    dynres.sample(gpuTimer.supported ? gpuTimer.ms : wallDt * 1000, wallDt);
+    dynres.sample(gpuTimer.ms, wallDt, performance.now() - tickStart);
     const s = dynres.decide(params.renderScale);
     if (s !== null) { params.renderScale = s; resize(); }
   }

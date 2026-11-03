@@ -33,6 +33,7 @@
     "test:scenery-lod": "node scripts/test-scenery-yachts.mjs && node scripts/test-scenery-buildings.mjs && node scripts/test-culling.mjs",
     "test:turning": "node scripts/physics-turning.mjs --only arcade,steady,turnin,ice,lift,trail,rwd,handbrake,slalom,abuse,hairpin,assert",
     "test:braking": "node scripts/physics-braking.mjs",
+    "test:dynres": "node scripts/test-dynres.mjs",
     "test:hud": "node src/game/hud-smoke.mjs"
   },
   "dependencies": {

@@ -162,21 +162,43 @@ export class Culler {
 
 // ------------------------------------------------------------------------------------------------ dynamic resolution
 
-/** Nudges render scale so GPU (or frame) time stays under budget; steps are small and slow so it never pumps. */
+/**
+ * Holds the frame to a budget by changing render scale, judged on what the player gets: the frame's real interval, read with the JS time inside it to
+ * tell a GPU limit from a CPU one, and the GPU timer where the browser has one (Safari has none, and a tile-based GPU's reading can run low). Down: one step,
+ * sized to the miss (pixels are the cost, so the square root), not 4 s per 10 %. Up: only after a long quiet spell, and a step up that overshoots
+ * doubles the wait. A step down that did not help is undone and left alone for a minute (a 30 Hz low-power rAF, a slow CPU): lower resolution would only blur.
+ */
 export class DynamicResolution {
   constructor({ budgetMs = 16.6, min = 0.5, max = 1.0 } = {}) {
-    Object.assign(this, { budgetMs, min, max, acc: 0, n: 0, t: 0, lastUp: 0, clock: 0 });
+    Object.assign(this, { budgetMs, min, max, wall: 0, cpu: 0, gpu: 0, n: 0, gpuN: 0, t: 0, clock: 0, changed: -1e9, rose: -1e9, upWait: 15, hold: 0, check: null, first: true });
   }
-  sample(ms, dt) { if (Number.isFinite(ms)) { this.acc += ms; this.n++; } this.t += dt; this.clock += dt; }
+  sample(gpuMs, dt, cpuMs = 0) {
+    this.clock += dt;
+    if (dt > 0.25) return;   // a stall or a hidden tab says nothing about the resolution
+    this.t += dt; this.n++; this.wall += dt * 1000; this.cpu += cpuMs;
+    if (Number.isFinite(gpuMs)) { this.gpu += gpuMs; this.gpuN++; }
+  }
   /** Returns a new scale when it should change, otherwise null. */
   decide(scale) {
-    // judged over 4 s; down only when clearly over budget, up only when well under it and not within 15 s of a change
-    // (every change resizes the frame, and frequent ones made distant lights shimmer)
-    if (this.t < 4 || !this.n) return null;
-    const avg = this.acc / this.n;
-    this.acc = this.n = this.t = 0;
-    if (avg > this.budgetMs * 1.2 && scale > this.min) { this.lastUp = this.clock; return Math.max(this.min, +(scale - 0.1).toFixed(2)); }
-    if (avg < this.budgetMs * 0.6 && scale < this.max && this.clock - this.lastUp > 15) { this.lastUp = this.clock; return Math.min(this.max, +(scale + 0.05).toFixed(2)); }
+    if (this.t < (this.first ? 2 : 4) || !this.n) return null;   // the first look comes early: a slow machine should not sit through 4 s of it
+    this.first = false;
+    const B = this.budgetMs, wall = this.wall / this.n, cpu = this.cpu / this.n, gpu = this.gpuN ? this.gpu / this.gpuN : NaN;
+    this.wall = this.cpu = this.gpu = this.n = this.gpuN = this.t = 0;
+    if (this.check) {
+      const { scale: was, wall: then } = this.check; this.check = null;
+      if (wall > then * 0.97) { this.hold = this.clock + 60; this.changed = this.clock; return was; }
+    }
+    if (this.clock < this.hold) return null;
+    if (scale > this.min && (gpu > B * 1.2 || (wall > B * 1.2 && cpu < B * 0.8))) {
+      if (this.clock - this.rose < 10) this.upWait = Math.min(240, this.upWait * 2);
+      this.check = { scale, wall }; this.changed = this.clock;
+      return Math.max(this.min, +Math.min(scale - 0.1, scale * Math.sqrt(B / Math.max(wall, gpu || 0))).toFixed(2));
+    }
+    // !(gpu >= ...): no timer reading leaves the frame's interval as the only word
+    if (scale < this.max && wall < B * 1.1 && !(gpu >= B * 0.6) && this.clock - this.changed > this.upWait) {
+      this.changed = this.rose = this.clock;
+      return Math.min(this.max, +(scale + 0.05).toFixed(2));
+    }
     return null;
   }
 }
