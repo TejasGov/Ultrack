@@ -76,6 +76,19 @@ function wallFaces(v, idx, world) {
   return [front, back].map((f) => Uint32Array.from(f));
 }
 
+// Where a road ribbon turns tighter than it is wide, its strips cross (India's hairpins, stations 924 and 955-958), and the crossing makes small faces standing nearly upright on the road. A body
+// low on its springs hits them head on and is thrown backwards, with nothing drawn there. Over 45 degrees is not ground for the wheels (GROUND_COS), so it is not road for the body either
+const ROAD_SURFACES = new Set(['col_asphalt', 'col_curb', 'col_paved']);
+function withoutSteepFaces(v, idx) {
+  const kept = [];
+  for (let t = 0; t + 3 <= idx.length; t += 3) {
+    const [a, b, c] = [idx[t] * 3, idx[t + 1] * 3, idx[t + 2] * 3], ux = v[b] - v[a], uy = v[b + 1] - v[a + 1], uz = v[b + 2] - v[a + 2], wx = v[c] - v[a], wy = v[c + 1] - v[a + 1], wz = v[c + 2] - v[a + 2];
+    const nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx, l = Math.hypot(nx, ny, nz);
+    if (!l || Math.abs(ny) / l >= Math.SQRT1_2) kept.push(idx[t], idx[t + 1], idx[t + 2]);
+  }
+  return kept.length === idx.length ? idx : Uint32Array.from(kept);
+}
+
 export class PhysicsWorld {
   static cache = {};
   static async create(url, { voidWalls: walls = false } = {}) {
@@ -95,14 +108,16 @@ export class PhysicsWorld {
         const x = P.getX(i), y = P.getY(i), z = P.getZ(i);
         v[i * 3] = e[0] * x + e[4] * y + e[8] * z + e[12]; v[i * 3 + 1] = e[1] * x + e[5] * y + e[9] * z + e[13]; v[i * 3 + 2] = e[2] * x + e[6] * y + e[10] * z + e[14];
       }
-      const idx = g.index ? Uint32Array.from(g.index.array) : Uint32Array.from({ length: P.count }, (_, k) => k);
+      let idx = g.index ? Uint32Array.from(g.index.array) : Uint32Array.from({ length: P.count }, (_, k) => k);
       // node names are the surface (col_asphalt) or a numbered copy of it (col_asphalt_1, col_asphalt.001)
       const name = Object.keys(SURFACES).sort((a, b) => b.length - a.length).find((k) => o.name.startsWith(k) || o.parent?.name?.startsWith(k)) ?? 'col_asphalt';
       const s = SURFACES[name] ?? SURFACES.col_asphalt;
       if (name === 'col_wall') { wallMeshes.push({ v, idx, s }); return; }
-      // a kerb's edge catches a car sliding over it the way a wall's faces do (see below): one-sided, so looking up
-      if (name === 'col_curb') for (let t = 0; t + 3 <= idx.length; t += 3) { const [a, b, c] = [idx[t] * 3, idx[t + 1] * 3, idx[t + 2] * 3]; if ((v[b + 2] - v[a + 2]) * (v[c] - v[a]) - (v[b] - v[a]) * (v[c + 2] - v[a + 2]) < 0) { const k = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = k; } }
-      const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(v, idx, name === 'col_curb' ? RAPIER.TriMeshFlags.FIX_INTERNAL_EDGES : undefined).setFriction(0.8).setRestitution(0));
+      if (ROAD_SURFACES.has(name)) idx = withoutSteepFaces(v, idx);
+      // a road or kerb edge catches a car's body sliding over it the way a wall's faces do (see below): 107 km/h to 22 at India's hairpins, the springs bottomed on the way down. The fix makes the mesh
+      // one-sided, so its faces look up first
+      if (ROAD_SURFACES.has(name)) for (let t = 0; t + 3 <= idx.length; t += 3) { const [a, b, c] = [idx[t] * 3, idx[t + 1] * 3, idx[t + 2] * 3]; if ((v[b + 2] - v[a + 2]) * (v[c] - v[a]) - (v[b] - v[a]) * (v[c + 2] - v[a + 2]) < 0) { const k = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = k; } }
+      const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(v, idx, ROAD_SURFACES.has(name) ? RAPIER.TriMeshFlags.FIX_INTERNAL_EDGES : undefined).setFriction(0.8).setRestitution(0));
       w.surfaceOf.set(col.handle, s);
       ground.push({ v, idx, handle: col.handle });
     });

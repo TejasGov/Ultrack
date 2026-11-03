@@ -32,7 +32,7 @@ const WET_ON = 0.2;     // the road wears its wet shader above this params.wet (
 // tint: scales the bake (white road paint reflects ~65 %, not the bake's 85 %)
 export const KINDS = {
   // a little lighter than the bake (sRGB 0.14 read as fresh tar by day) and a little smoother: worn asphalt has a sheen toward the low sun
-  road: { def: 'IN_PLANAR', set: 'asphalt_track', scale: 2.4, nrm: 1, alb: 0.85, rough: 1, ao: 0.7, macro: 0.07, r: 0.72, wet: 'puddles', map: true, lk: 1, flat: 0.5, tint: 1.45, tone2: true },
+  road: { def: 'IN_PLANAR', set: 'asphalt_track', scale: 2.4, nrm: 1, alb: 0.85, rough: 1, ao: 0.7, macro: 0.07, r: 0.72, wet: 'puddles', map: true, lk: 1, flat: 0.9, tint: 1.45, tone2: true },
   // the paint takes a quarter of the lamps' light: the asphalt's albedo is 0.017, so at full light a line burned 40x brighter and bloomed;
   // at a quarter it still reads clearly brighter than the road (the additive light it replaces had washed the lines out)
   line: { def: 'IN_PLANAR', set: 'asphalt_track', scale: 2.4, nrm: 0.45, alb: 0.1, rough: 0.6, ao: 0.3, macro: 0.05, r: 0.6, metal: 0, wet: 'wet', map: true, lk: 0.25, tint: 0.8 },

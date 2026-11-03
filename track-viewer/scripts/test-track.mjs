@@ -74,7 +74,7 @@ const ROAD = new Set(['col_asphalt', 'col_pit']);
 let groundBad = 0, heightBad = 0;
 for (let i = 0; i < n; i++) {
   const [lx, lz] = leftOf(i);
-  for (const lat of [0, hw[i] - 0.4, -(hw[i] - 0.4)]) {
+  for (const lat of [0.001, hw[i] - 0.4, -(hw[i] - 0.4)]) {     // 1 mm off the centreline: on an unrounded mesh a ray can land exactly on a vertex and miss
     const o = { x: c[i][0] + lx * lat, y: c[i][1] + 3, z: c[i][2] + lz * lat };
     const h = cast(o, { x: 0, y: -1, z: 0 }, 10);
     if (!h || !ROAD.has(h.surface)) { groundBad++; if (groundBad <= 5) fail(`ground: sample ${i} lat ${lat.toFixed(1)}: ${h ? h.surface : 'no hit'}`); continue; }

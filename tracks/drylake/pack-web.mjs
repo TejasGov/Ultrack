@@ -1,7 +1,7 @@
 // Mojave Dry Lake web build, the same steps as track-viewer/scripts/pack-web.mjs for Marina (read its header for why each flag):
 //   node tracks/drylake/pack-web.mjs    after build_drylake.py ->  tracks/drylake/out/web/drylake_{visual,collision,visual_ktx2,*_sectors}.glb
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, rmSync } from 'node:fs';
+import { cpSync, mkdirSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,7 +22,7 @@ const tmp = join(out, 'web', '_opt.glb');
 gt('optimize', join(out, 'drylake_visual.glb'), tmp, '--compress', 'false', '--texture-compress', 'webp', '--texture-size', '2048', '--simplify', 'false', '--palette', 'false', ...(process.env.NO_JOIN ? ['--join', 'false'] : []));
 gt('meshopt', tmp, join(out, 'web', 'drylake_visual.glb'), ...q16);
 gt('optimize', join(out, 'drylake_collision.glb'), tmp, '--compress', 'false', '--texture-compress', 'false', '--simplify', 'false', '--weld', 'false', '--join', 'false');
-gt('meshopt', tmp, join(out, 'web', 'drylake_collision.glb'), ...q16);
+cpSync(tmp, join(out, 'web', 'drylake_collision.glb'));       // not rounded: 16 bits of a whole track is 2-3 cm, and the car feels it as ripple on every slope
 rmSync(tmp);
 const run = (script) => execFileSync(process.execPath, [join(viewer, 'scripts', script)], { stdio: 'inherit', cwd: viewer, env: process.env });
 run('pack-ktx2.mjs');

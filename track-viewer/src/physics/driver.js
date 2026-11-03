@@ -113,7 +113,7 @@ export class AIDriver {
     // really has (yaw rate / speed), so understeer on a wet road does not carry it 3-4 m wide
     const kappa = 2 * Math.sin(ang) / Math.max(look, 1), kAct = v.rb.angvel().y / Math.max(speed, 8);
     const steerRad = Math.atan(v.wheelbase * kappa) + (1) * v.wheelbase * (kappa - kAct);
-    const want = steerRad / v.steerLock(speed), steer = THREE.MathUtils.clamp(want, -1, 1);
+    const want = steerRad / v.steerLock(speed), steer = THREE.MathUtils.clamp(want, -1, 1) || 0;     // standing dead straight: 0 / 0, and one NaN ends the car
     // speed: the profile a little ahead (braking points), scaled by grip
     // the slowest point of the next ~45 m (linePts share vt's sampling): never on the power before the corner is done
     let vmin = Infinity; for (let k = 0; k <= 10; k++) vmin = Math.min(vmin, F.vt[(this.i + k) % N]);
