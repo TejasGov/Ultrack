@@ -8,7 +8,7 @@ import { trackOf } from '../tracks.js';
 import { SLOTS, listCareers, loadCareer, saveCareer, activeSlot } from './career/save.js';
 import * as C from './career/career.js';
 import { TUNING, TIERS, CAR, loreOf, rrLabel, objectiveText, parLap, STATUS_LABEL } from './career/rules.js';
-import { frame, statusBar, coins, money, signed, teamName, persist, playerDriver, zero, prompts, SELECT, CHOOSE, blockHead } from './career-shell.js';
+import { frame, statusBar, coins, money, signed, delta, cs, rich, teamName, persist, playerDriver, zero, prompts, SELECT, CHOOSE, blockHead } from './career-shell.js';
 import { CareerHubScreen } from './career-hub.js';
 import { CareerDealScreen, offerRow, teamRows } from './career-deals.js';
 
@@ -25,32 +25,32 @@ export function CareerStartScreen(game) {
   let creating = false, deleting = false, target = null, modal = null, cancelModal = null, form = { name: '', nation: 'IND', number: 99, difficulty: 'normal', raceLength: 'sprint' };
   const primary = (ic, label, onclick) => h('button.btn.btn-primary.cs-go', { 'data-nav': '', onclick }, icon(ic), label);
   const secondary = (ic, label, onclick) => h('button.btn.btn-secondary', { 'data-nav': '', onclick }, icon(ic), label);
-  const steps = (at) => h('div.cx-stages', {}, ['Your driver', 'Open Shootout', 'First contract'].flatMap((s, i) => [h(i === at ? 'b' : 'span', {}, s), i < 2 ? icon('chevron-right') : null]));
+  const steps = (at) => h('div.cx-stages', {}, ['Your driver', 'Open Shootout', 'First contract'].flatMap((s, i) => [h(i === at ? 'b' : i < at ? 'span.done' : 'span', {}, i < at ? icon('check') : h('i', {}, i + 1), s), i < 2 ? icon('chevron-right') : null]));
   const openDeal = (id) => game.show('careerDeal', { id, home: 'careerStart' });
 
   /** the landing: the saves (a filled one resumes, an empty one starts a new career), then new, delete and the manager career to come. Deleting: the saves are the choice */
   function slots(list) {
-    F.title(deleting ? 'Delete a career' : 'Career', deleting ? 'Pick the save to delete' : 'Pick up a save, or start something new'); F.page.className = 'cx-page cs-slots'; fill(F.me); F.backdrop('tiles', 'career');
+    F.sec(deleting ? 'delete' : 'start'); F.title(deleting ? 'Delete a career' : 'Career', deleting ? 'Pick the save to delete' : 'Pick up a save, or start something new'); F.page.className = 'cx-page cs-slots'; fill(F.me); F.backdrop('tiles', 'career');
     const off = { disabled: true };      // greyed: no nav stop, nothing to press
     const card = (c, i) => {
       if (c?.unreadable) {
         const why = c.damaged ? 'This save is damaged and cannot be opened. You can delete it.' : 'Saved by a newer version of the game. Update to carry on, or delete it.';
-        return h('button.of-card.cs-slot', { 'data-nav': '', onclick: () => (deleting ? askDelete(i, `slot ${i + 1}`) : game.setBusy(why, { kind: 'error', ms: 4000 })) }, h('span.kick', {}, `Slot ${i + 1}`), h('strong', {}, c.damaged ? 'Damaged' : 'Locked'), h('span.of-why', {}, why));
+        return h('button.of-card.cs-slot.bad', { 'data-nav': '', onclick: () => (deleting ? askDelete(i, `slot ${i + 1}`) : game.setBusy(why, { kind: 'error', ms: 4000 })) }, h('span.kick', {}, icon('warning'), `Slot ${i + 1}`), h('strong', {}, c.damaged ? 'Damaged' : 'Locked'), h('span.of-why', {}, why));
       }
-      return h(`button.of-card.cs-slot${deleting && !c ? '.off' : ''}`, deleting && !c ? off : { 'data-nav': '', onclick: () => {
+      return h(`button.of-card.cs-slot${c ? '.has' : '.empty'}${deleting && !c ? '.off' : ''}${deleting && c ? '.del' : ''}`, deleting && !c ? off : { 'data-nav': '', onclick: () => {
         if (deleting) askDelete(i, c.player.name); else if (c) { game.career = loadCareer(i); route(); } else { target = i; creating = true; build(); } } },
-      [h('span.kick', {}, `Slot ${i + 1}`), c ? [h('strong', {}, c.player.name),
-        h('span.of-terms', {}, stat('Season', String(c.clock.season)), stat('Level', String(c.career.cl)), stat('Reputation', String(Math.round(c.career.rep)))),
+      [h('span.kick', {}, icon(c ? 'helmet' : deleting ? 'lock' : 'plus'), `Slot ${i + 1}`), c ? [h('strong', {}, c.player.name),
+        h('span.of-terms', {}, stat('Season', String(c.clock.season)), cs('xp', 'Level', String(c.career.cl)), cs('rep', 'Reputation', String(Math.round(c.career.rep)))),
         h('span.of-why', {}, c.contract ? `${teamName(c.contract.team)} · ${carName(c.contract.car)}` : 'Still looking for a seat')]
         : [h('strong', {}, 'Empty'), h('span.of-why', {}, deleting ? 'Nothing to delete' : 'Start a new career')]].flat(Infinity));
     };
     if (deleting) return list.map(card);
-    const tile = (ic, kick, title, why, onclick) => h(`button.of-card.cs-act${onclick ? '' : '.off'}`, onclick ? { 'data-nav': '', onclick } : off, h('span.kick', {}, icon(ic), kick), h('strong', {}, title), h('span.of-why', {}, why));
+    const tile = (ic, kick, title, why, onclick, tone) => h(`button.of-card.cs-act.${tone}${onclick ? '' : '.off'}`, onclick ? { 'data-nav': '', onclick } : off, h('span.kick', {}, icon(ic), kick), h('strong', {}, title), h('span.of-why', {}, why));
     const free = list.findIndex((c) => !c), saved = list.some(Boolean);
     return [list.map(card),
-      tile('plus', 'Driver career', 'New career', free < 0 ? `All ${SLOTS} slots are full. Delete one first.` : 'Create your driver and start at the Open Shootout.', free < 0 ? null : () => { target = free; creating = true; build(); }),
-      tile('close', 'Your saves', 'Delete career', saved ? 'Pick a save to delete. This cannot be undone.' : 'No careers saved yet.', saved ? () => { deleting = true; build(); } : null),
-      tile('lock', 'Coming soon', 'Manager career', 'Run a team instead of driving for one.', null)];
+      tile('plus', 'Driver career', 'New career', free < 0 ? `All ${SLOTS} slots are full. Delete one first.` : 'Create your driver and start at the Open Shootout.', free < 0 ? null : () => { target = free; creating = true; build(); }, 'new'),
+      tile('close', 'Your saves', 'Delete career', saved ? 'Pick a save to delete. This cannot be undone.' : 'No careers saved yet.', saved ? () => { deleting = true; build(); } : null, 'del'),
+      tile('lock', 'Coming soon', 'Manager career', 'Run a team instead of driving for one.', null, 'soon')];
   }
   /** deleting is for good, so it asks first in a modal that traps focus on Cancel, as the pause menu's Restart and Quit do */
   function askDelete(i, name) {
@@ -62,7 +62,7 @@ export function CareerStartScreen(game) {
   }
   function closeModal() { if (!modal) return; modal.parentNode.remove(); modal = null; F.page.inert = F.foot.inert = false; }
   function create() {
-    F.title('New career', 'You are 21, fast, and unknown'); F.page.className = 'cx-page cs-create'; fill(F.me); F.backdrop('tiles', 'career');
+    F.sec('create'); F.title('New career', 'You are 21, fast, and unknown'); F.page.className = 'cx-page cs-create'; fill(F.me); F.backdrop('tiles', 'career');
     const name = h('input.cs-input', { type: 'text', maxLength: 24, placeholder: 'Your name', value: form.name, tabIndex: -1, 'aria-label': 'Driver name',
       oninput: (e) => { form.name = e.target.value; }, onkeydown: (e) => { if (!['Enter', 'Escape', 'ArrowUp', 'ArrowDown'].includes(e.key)) e.stopPropagation(); } });   // typing stays in the box: Nav takes only Enter, Esc and Up/Down
     const nameRow = row('Name', name); nameRow.addEventListener('click', () => name.focus()); nameRow.removeAttribute('data-adjust');
@@ -77,11 +77,11 @@ export function CareerStartScreen(game) {
   }
   function shootout(save) {
     const S = C.shootout(), par = parLap(S.track, S.car, S.weather), t = trackOf(S.track);
-    F.title('Open Shootout', save.player.name); F.page.className = 'cx-page cs-shoot'; statusBar(F.me, save); F.backdrop('tracks', S.track);
+    F.sec('shootout'); F.title('Open Shootout', save.player.name); F.page.className = 'cx-page cs-shoot'; statusBar(F.me, save); F.backdrop('tracks', S.track);
     return [h('div.cx-b.cs-form', {}, steps(1), h('p.cx-note', {}, `The three Rookie teams hold one trial for every hopeful: one flying lap of ${t.name} in a neutral ${carName(S.car)}. Your lap against par sets your grade. Nobody is turned away.`),
       h('div.r-stats', {}, stat('Circuit', t.name), stat('Car', carName(S.car)), stat('Par lap', fmtTime(par))),
       h('div.cs-grades', {}, [['Standout', 'within 3 % of par', `bigger signing bonuses, ${TUNING.shootout.standoutXp} XP`], ['Solid', 'within 6 %', `the normal offers, ${TUNING.shootout.baseXp} XP`], ['Raw', 'slower, or no valid lap', 'offers still come, 10 % less salary']]
-        .map(([g, when, what]) => h('div.cs-grade', {}, h('b', {}, g), h('small', {}, when), h('span', {}, what)))),
+        .map(([g, when, what]) => h(`div.cs-grade.g-${g.toLowerCase()}`, {}, h('b', {}, g), h('small', {}, when), h('span', {}, rich(what))))),
       h('p.cx-note', {}, icon('info'), 'You get a run-up to the line. Leave the track with all four wheels for a second and the lap does not count: keep going, and your first valid lap ends the trial.'),
       h('div.cx-acts.end', {}, secondary('close', 'Skip: take Raw', () => { C.finishShootout(save, null); persist(game); build(); }),
         primary('play', 'Drive the Shootout', () => game.careerSession('shootout', { track: S.track, look: S.look, weather: S.weather, laps: 3, car: S.car, home: 'careerStart',
@@ -95,22 +95,22 @@ export function CareerStartScreen(game) {
       h('strong', {}, carName(o.car)), h('span.of-team', {}, h('i.tbar'), t.name, h('small', {}, '#' + CAR[o.car].number)),
       h('span.of-terms', {}, stat('Salary', coins(o.salary), '/ ROUND'), stat('Signing', o.signing ? coins(o.signing) : empty()), stat('Seasons', String(o.seasons))),
       h('span.of-mate', {}, icon('people'), `Teammate: ${mate.name}, rated ${mate.rating}`), o.pitch ? h('span.of-why', {}, o.pitch) : null,
-      h('span.of-foot', {}, o.difficulty ? h('span.of-diff', {}, `Difficulty: ${o.difficulty}`) : null, h(`span.cx-tag${o.agreed ? '.ink' : o.counter ? '.warn' : ''}`, {}, o.agreed ? 'Agreed: sign it' : o.counter ? 'They countered' : 'Open talks'))), { '--team': teamMark(t) });
+      h('span.of-foot', {}, o.difficulty ? h('span.of-diff', {}, `Difficulty: ${o.difficulty}`) : null, h(`span.cx-tag${o.agreed ? '.ok' : o.counter ? '.warn' : '.talk'}`, {}, icon(o.agreed ? 'check' : o.counter ? 'warning' : 'chevron-right'), o.agreed ? 'Agreed: sign it' : o.counter ? 'They countered' : 'Open talks'))), { '--team': teamMark(t) });
   }
   function firstOffers(save) {
     const p = save.pending, s = p.shootout, list = p.offers;
-    F.title('Your first contract', save.player.name); F.page.className = 'cx-page cs-offers'; statusBar(F.me, save); F.backdrop('tracks', C.shootout().track);
+    F.sec('offers'); F.title('Your first contract', save.player.name); F.page.className = 'cx-page cs-offers'; statusBar(F.me, save); F.backdrop('tracks', C.shootout().track);
     return [h('div.cs-offerhead', {}, steps(2), h('p.cx-note', {}, s.best ? `Shootout: ${s.grade}. Best lap ${fmtTime(s.best)}, ${signed(s.delta * 100, 1)} % to par.` : 'Shootout: Raw, no valid lap. The teams still want to talk.',
       ' Each team offers its junior seat for two seasons, and your results are judged against the car. Open one to talk terms and sign.')), h('div.of-row', {}, list.map((o) => card(save, o)))];
   }
   /** the season's verdict on the left, next season's seats on the right */
   function review(save) {
     const p = save.pending, r = p.review, last = save.history.at(-1), list = p.offers, st = C.standings(save), top = st.drivers.slice(0, 5);
-    F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = 'cx-page cs-review'; statusBar(F.me, save); F.backdrop('cars', last.car);
+    F.sec('review'); F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = 'cx-page cs-review'; statusBar(F.me, save); F.backdrop('cars', last.car);
     const headline = r.drivers === 1 ? 'Champion' : `P${r.drivers}`;
-    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers scored`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), stat('Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)))),
-        r.dropped ? h('p.cx-note.warn', {}, icon('warning'), `${teamName(last.team)} has let you go: trust fell too far. Reputation ${TUNING.rep.dropped}. A reserve seat is the way back.`) : null,
-        r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins ? h('p.cx-note', {}, icon('star'), `Titles this season: ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))} reputation${r.coins ? `, +${money(r.coins)}` : ''}.`) : null,
+    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers scored`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), cs('trust', 'Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)))),
+        r.dropped ? h('p.cx-note.warn', {}, icon('warning'), rich(`${teamName(last.team)} has let you go: trust fell too far. Reputation ${TUNING.rep.dropped}. A reserve seat is the way back.`)) : null,
+        r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins ? h('p.cx-note', {}, icon('trophy'), 'Titles this season: ', rich(`reputation ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))}${r.coins ? `, +${money(r.coins)}` : ''}`), '.') : null,
         h('div', {}, top.map((d, i) => css(h(`div.lrow.cx-mini${d.you ? '.me' : ''}`, {}, h('b.tnum', {}, i + 1), h('i.tbar'), h('span', {}, d.name), h('b.tnum', {}, String(Math.round(d.pts * 10) / 10))), { '--team': teamMark(loreOf(d.team)) })))),
       h('div.cx-b', {}, blockHead('contract', 'Next season', list.length > 1 ? 'Open one to talk or sign' : 'One way forward'), h('div.lscroll.cx-list', { onscroll: (e) => fadeMore(e.currentTarget) }, list.map((o) => offerRow(save, o, () => openDeal(o.id))))),
       h('div.cx-b', {}, blockHead('people', 'Teams', 'Enter to approach'), h('div.lscroll.cx-list', { onscroll: (e) => fadeMore(e.currentTarget) }, teamRows(save, game, () => build(true))))];
@@ -142,12 +142,12 @@ export function CareerStartScreen(game) {
 export function CareerReportScreen(game) {
   const F = frame('career-report');
   F.page.classList.add('cx-report');
-  const lines = (list, unit = '') => h('div.cr-lines', {}, list.map(([label, v]) => h('span', {}, label, h('b.tnum', {}, (typeof v === 'number' ? signed(v, unit === 'rr' ? 1 : 0) : v)))));
+  const lines = (list, unit = '') => h('div.cr-lines', {}, list.map(([label, v]) => h('span', {}, label, h('b.tnum', {}, unit === 'coin' ? coins(v, true) : typeof v === 'number' ? delta(v, unit === 'rr' ? 1 : 0) : v))));
   const api = {
     el: F.el, nav: true, grid: true,
     onShow(rep) {
       const save = game.career, fastest = Math.min(...Object.values(rep.best ?? {}).filter(Number.isFinite));
-      F.title(`Round ${rep.round}: ${rep.name}`, `${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`); statusBar(F.me, save); F.backdrop('tracks', rep.track);
+      F.sec('report'); F.title(`Round ${rep.round}: ${rep.name}`, `${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`); statusBar(F.me, save); F.backdrop('tracks', rep.track);
       const verdict = rep.dnf ? 'Retired' : rep.finish === 1 ? 'Victory' : `P${rep.finish}`;
       const table = h('div.cx-b.cr-table', {}, h('div.lhead.cr-cols', {}, h('span', {}, 'Pos'), h('span'), h('span', {}, 'Driver'), h('span', {}, 'Car'), h('span.val', {}, 'Best lap'), h('span.val', {}, 'Pts')),
         rep.entries.map((e, k) => css(h('div.lrow.cr-cols' + (e.you ? '.me' : ''), {}, h('b.r-pos.tnum', {}, e.you && rep.dnf ? 'DNF' : k + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, e.you ? save.player.name : C.personOf(save, e.code)?.name ?? e.code), h('small', {}, teamName(e.team))),
@@ -156,15 +156,15 @@ export function CareerReportScreen(game) {
       const mate = C.personOf(save, rep.duel.mateCode)?.name ?? 'your teammate';
       fill(F.page,
         h('div.cx-b.cr-hero', {}, h('div.cr-pos', {}, h('h2', {}, verdict), h('p.cx-note', {}, `Expected P${rep.expPos}, started P${rep.grid}${rep.pole ? ' (pole)' : ''}${rep.fastest ? ', fastest lap' : ''}`)),
-          h('div.cr-rate', {}, h('small', {}, 'Round rating'), h('b', {}, rep.rr.toFixed(1)), h('span', {}, icon('star'), rrLabel(rep.rr))),
-          h('div.cr-deltas', {}, stat('XP', signed(rep.xp)), stat('Reputation', signed(rep.rep)), stat('Trust', signed(rep.trust)), stat('Earned', coins(rep.coins))), rep.levelUp ? h('span.cx-tag.ink', {}, icon('chevrons-up'), `Career Level ${rep.levelUp}`) : null),
+          h('div.cr-rate', {}, h('small', {}, 'Round rating'), h(`b${rep.rr >= 7 ? '.hi' : rep.rr < 5 ? '.lo' : ''}`, {}, rep.rr.toFixed(1)), h('span', {}, icon(rep.rr >= 7 ? 'chevron-up' : rep.rr < 5 ? 'chevron-down' : 'minus'), rrLabel(rep.rr))),
+          h('div.cr-deltas', {}, cs('xp', 'XP', delta(rep.xp)), cs('rep', 'Reputation', delta(rep.rep)), cs('trust', 'Trust', delta(rep.trust)), stat('Earned', coins(rep.coins, true))), rep.levelUp ? h('span.cx-tag.xp', {}, icon('chevrons-up'), `Career Level ${rep.levelUp}`) : null),
         table,
-        h('div.cx-b.cr-why', {}, blockHead('star', 'Why that rating'), lines([['Base', '6.0'], ...rep.rrLines], 'rr'),
+        h('div.cx-b.cr-why', {}, blockHead('specs', 'Why that rating'), lines([['Base', '6.0'], ...rep.rrLines], 'rr'),
           h('div.cx-bh', {}, h('span', {}, 'Objectives')), h('div.cr-objs', {}, rep.objectives.map((o) => h('span' + (o.met ? '.met' : ''), {}, icon(o.met ? 'check' : 'close'), objectiveText(o), o.mandatory ? h('small', {}, 'Required') : null)))),
-        h('div.cx-b.cr-money', {}, blockHead('coin', 'What it paid'), lines(rep.coinLines.map(([l, v]) => [l, '+' + v.toLocaleString('en')])),
+        h('div.cx-b.cr-money', {}, blockHead('coin', 'What it paid'), lines(rep.coinLines, 'coin'),
           h('p.cx-note', {}, icon('people'), rep.duel.result === 'level' ? `Level with ${mate} in qualifying.` : `${rep.duel.result === 'won' ? 'You out-qualified' : 'Out-qualified by'} ${mate}: ${rep.duel.mine ? fmtTime(rep.duel.mine) : 'no lap'} vs ${fmtTime(rep.duel.mate)}.`),
           rep.rivals?.length ? h('p.cx-note', {}, icon('people'), rep.rivals.map(([l]) => l).join('. ') + '.') : null,
-          rep.midSeason?.warning ? h('p.cx-note.warn', {}, icon('warning'), `Seat review: trust is ${save.contract.trust}. Meet the round objective in the next ${TUNING.trust.recover} rounds.`) : null,
+          rep.midSeason?.warning ? h('p.cx-note.warn', {}, icon('warning'), 'Seat review: ', rich(`trust ${save.contract.trust}`), `. Meet the round objective in the next ${TUNING.trust.recover} rounds.`) : null,
           rep.midSeason?.w1 ? h('p.cx-note', {}, icon('star'), `${teamName(rep.midSeason.w1)} want to talk. Their offer is in your inbox, until the market closes.`) : null));
       const next = h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => api.back() }, icon('chevron-right'), 'Continue');
       fill(F.foot, prompts(CHOOSE), h('div.sp'), next);

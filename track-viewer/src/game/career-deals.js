@@ -5,7 +5,7 @@ import { carName } from './carinfo.js';
 import { icon } from './icons.js';
 import * as C from './career/career.js';
 import { TUNING, TIERS, CAR, STATUS_LABEL, TEAM_IDS, loreOf, targetText, expOf } from './career/rules.js';
-import { frame, statusBar, coins, money, teamName, persist, available, prompts, CHOOSE, blockHead, brandMark } from './career-shell.js';
+import { frame, statusBar, coins, money, rich, teamName, persist, available, prompts, CHOOSE, blockHead, brandMark } from './career-shell.js';
 
 const round5 = (v) => Math.round(v / 5) * 5, round50 = (v) => Math.round(v / 50) * 50;
 const seasons = (n) => `${n} ${n === 1 ? 'season' : 'seasons'}`;
@@ -15,8 +15,8 @@ export function offerRow(save, o, open) {
   const left = o.sponsor ? brandMark(o.brand) : h('img.car', { src: still('cars', o.car), alt: '', decoding: 'async' });
   const title = o.sponsor ? `${o.name}: personal sponsor` : `${teamName(o.team)}: ${carName(o.car)}`;
   const line = o.sponsor ? `${money(o.retainer)} a round, ${money(o.bonus)} if you ${targetText(o.target)}` : `${TIERS.tiers[o.tier].name}, ${o.seat} seat, ${STATUS_LABEL[o.status]}. ${money(o.salary)} a round${o.signing ? `, ${money(o.signing)} to sign` : ''}, ${seasons(o.keep ? save.contract.seasonsLeft - 1 : o.seasons)}`;
-  const tag = o.agreed ? h('span.cx-tag.ink', {}, 'Agreed: sign it') : o.signed ? h('span.cx-tag.ink', {}, 'Signed') : o.counter ? h('span.cx-tag.warn', {}, 'They countered') : h('span.cx-tag.warn', {}, C.canNegotiate(o) ? 'Your move' : 'Take it or leave it');
-  return css(h('button.cx-offer', { 'data-nav': '', onclick: open }, left, h('span', {}, h('strong', {}, title), h('small', {}, line), o.why ? h('small', {}, o.why) : null),
+  const tag = o.agreed ? h('span.cx-tag.ok', {}, icon('check'), 'Agreed: sign it') : o.signed ? h('span.cx-tag.ok', {}, icon('check'), 'Signed') : o.counter ? h('span.cx-tag.warn', {}, icon('warning'), 'They countered') : h('span.cx-tag.warn', {}, icon('chevron-right'), C.canNegotiate(o) ? 'Your move' : 'Take it or leave it');
+  return css(h('button.cx-offer', { 'data-nav': '', onclick: open }, left, h('span', {}, h('strong', {}, title), h('small', {}, rich(line)), o.why ? h('small', {}, rich(o.why)) : null),
     h('span.act', {}, tag, o.expires !== undefined ? h('small', {}, `Until week ${o.expires + 1}`) : null)), { '--team': o.sponsor ? 'transparent' : teamMark(loreOf(o.team)) });
 }
 /** the teams, closest first: how near the player is to each bar and the real reason; in a market week Enter knocks on the door */
@@ -27,13 +27,13 @@ export function teamRows(save, game, rebuild) {
       const r = C.approach(save, v.team); persist(game); game.setBusy(r.result === 'offer' ? `${teamName(v.team)} will talk. Their offer is on the table.` : `${teamName(v.team)}: ${r.why}`, r.result === 'offer' ? {} : { kind: 'error', ms: 4000 }); rebuild();
       const at = getNav().items().findIndex((e) => e.dataset.team === v.team); if (at >= 0) getNav().reset(at);   // a new offer row moved everything down
     } }, h('i.cx-tbar'), h('span.c-name', {}, h('b', {}, teamName(v.team)), h('small', {}, TIERS.tiers[v.tier].name)), css(h('span.cx-gauge', {}, h('i')), { '--p': v.progress }),
-      h('small.why', {}, v.why), h('span.cx-tag' + (v.canAsk ? '.warn' : ''), {}, v.canAsk ? 'Approach' : v.blocked)), { '--team': teamMark(loreOf(v.team)) }));
+      h('small.why', {}, v.why), h('span.cx-tag' + (v.canAsk ? '.talk' : ''), {}, v.canAsk ? 'Approach' : v.blocked)), { '--team': teamMark(loreOf(v.team)) }));
 }
 
 /** one term of a deal: the label, their standing number, your ask as a segmented control (Left/Right steps it) */
 function term(label, was, choices, value, set) {
   const control = seg(choices, value, set);
-  return h('div.row.cx-term', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1) }, h('label', {}, label), h('span.was.tnum', {}, was), control);
+  return h('div.row.cx-term', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'group', 'aria-label': label, onadjust: (e) => control.step?.(e.detail), onclick: () => control.step?.(1) }, h('label', {}, label), h('span.was.tnum', {}, rich(was)), control);
 }
 export function CareerDealScreen(game) {
   const F = frame('career-deal'), stages = h('div.cx-stages');
@@ -42,7 +42,7 @@ export function CareerDealScreen(game) {
   const leave = () => (home === 'careerStart' ? game.show('careerStart') : game.show('careerHub', 'deals'));
   const stage = (o) => {
     const at = o.agreed || o.keep || o.reserve || o.signed ? 3 : o.counter ? 2 : o.log?.length ? 1 : 0;
-    fill(stages, ['Their offer', 'Your proposal', 'Their counter', 'Sign'].flatMap((s, i) => [h(i === at ? 'b' : 'span', {}, s), i < 3 ? icon('chevron-right') : null]));
+    fill(stages, ['Their offer', 'Your proposal', 'Their counter', 'Sign'].flatMap((s, i) => [h(i === at ? 'b' : i < at ? 'span.done' : 'span', {}, i < at ? icon('check') : h('i', {}, i + 1), s), i < 3 ? icon('chevron-right') : null]));
   };
   /** who you are talking to */
   function party(save, o) {
@@ -51,7 +51,7 @@ export function CareerDealScreen(game) {
     const mate = C.mateOf(save, o), exp = expOf(save.world.teams[o.team].expPos, o.seat), lore = loreOf(o.team), old = save.contract, cut = old && o.team !== old.team && !o.signed && !o.reserve && !old.dropped && old.seasonsLeft > 1;
     return css(h('div.cx-b.cx-party', {}, blockHead(null, `${TIERS.tiers[o.tier].name} · ${o.seat} seat`, '#' + CAR[o.car].number), h('img.car', { src: still('cars', o.car), alt: '', decoding: 'async' }), teamLogo(lore), h('strong.cx-title', {}, carName(o.car)),
       h('div.cx-kv.two', {}, stat('Teammate', `${mate.name} · ${mate.rating}`), stat('Expected', 'P' + exp), stat('Upgrade cap', 'Level ' + TIERS.tiers[o.tier].cap), stat('They want', TIERS.teams[o.team].wants)),
-      h('p.cx-note', {}, o.why ?? o.pitch), cut ? h('p.cx-if', {}, `Leaving ${teamName(old.team)} early pays you ${money(C.releaseCutOf(old))} of the release clause.`) : null, o.difficulty ? h('p.cx-if', {}, `Difficulty: ${o.difficulty}`) : null), { '--team': teamMark(lore) });
+      h('p.cx-note', {}, rich(o.why ?? o.pitch)), cut ? h('p.cx-if', {}, rich(`Leaving ${teamName(old.team)} early pays you ${money(C.releaseCutOf(old))} of the release clause.`)) : null, o.difficulty ? h('p.cx-if', {}, `Difficulty: ${o.difficulty}`) : null), { '--team': teamMark(lore) });
   }
   /** the terms, your ask, the gauge, what a refusal costs, the buttons */
   function terms(save, o) {
@@ -74,7 +74,7 @@ export function CareerDealScreen(game) {
       can ? [h('div.cx-termhead', {}, h('span', {}, 'Term'), h('span', {}, o.counter ? 'They say' : 'They offer'), h('span', {}, 'You ask')), rows,
         h('div.cx-tension', {}, h('div.r2', {}, h('span', {}, 'How hard you are pushing'), h('b', {}, P.label)), css(h('div.bar', {}, h(P.demand > P.limit * 1.15 ? 'i.over' : 'i')), { '--p': P.share }),
           h('div.r2', {}, h('span', {}, 'Their patience'), h('span.cx-pips', {}, Array.from({ length: max }, (_, i) => h(i < left ? 'i.on' : 'i'))))),
-        h('p.cx-if', {}, risk)] : fixedTerms(save, o),
+        h('p.cx-if', {}, rich(risk))] : fixedTerms(save, o),
       h('div.cx-acts', {}, buttons(save, o, can, asked)));
   }
   const fixedTerms = (save, o) => (o.sponsor ? h('div.cx-kv', {}, stat('Retainer', coins(o.retainer), '/ ROUND'), stat('Bonus', coins(o.bonus)), stat('Target', targetText(o.target)))
@@ -114,14 +114,14 @@ export function CareerDealScreen(game) {
   /** the conversation so far, the newest at the bottom; their opening line first */
   function talk(o) {
     const opening = o.sponsor ? `${money(o.retainer)} a round, and ${money(o.bonus)} if you ${targetText(o.target)}.` : `${money(o.salary)} a round${o.signing ? `, ${money(o.signing)} to sign` : ''}, ${seasons(o.seasons)}, ${STATUS_LABEL[o.status]}.`;
-    const log = (o.log?.length ? o.log : [{ who: 'them', text: opening }]).map((m) => h('div.cx-say' + (m.who === 'you' ? '.you' : ''), {}, h('small', {}, m.who === 'you' ? 'You' : o.sponsor ? o.name : teamName(o.team)), h('span', {}, m.text)));
+    const log = (o.log?.length ? o.log : [{ who: 'them', text: opening }]).map((m) => h('div.cx-say' + (m.who === 'you' ? '.you' : ''), {}, h('small', {}, m.who === 'you' ? 'You' : o.sponsor ? o.name : teamName(o.team)), h('span', {}, rich(m.text))));
     const body = h('div.lscroll.cx-log', { onscroll: (e) => fadeMore(e.currentTarget) }, log);
     queueMicrotask(() => { body.scrollTop = body.scrollHeight; fadeMore(body); });
     return h('div.cx-b', {}, blockHead('mail', 'The conversation'), body);
   }
   function build(keep = false) {
     const save = game.career, o = C.findOffer(save, id), cur = keep ? getNav().i : 0; if (!o) return leave();
-    F.title(`Talks with ${o.sponsor ? o.name : teamName(o.team)}`, save.clock.phase === 'offers' ? 'Your first contract' : save.clock.phase === 'review' ? `Season-end market · Season ${save.clock.season}` : `Season ${save.clock.season} · Week ${save.clock.week + 1}. It starts next season`);
+    F.sec('deal'); F.title(`Talks with ${o.sponsor ? o.name : teamName(o.team)}`, save.clock.phase === 'offers' ? 'Your first contract' : save.clock.phase === 'review' ? `Season-end market · Season ${save.clock.season}` : `Season ${save.clock.season} · Week ${save.clock.week + 1}. It starts next season`);
     if (o.sponsor) F.title(`Talks with ${o.name}`, `Season ${save.clock.season} · Week ${save.clock.week + 1}`);
     F.backdrop('cars', o.sponsor ? save.contract?.car : o.car); statusBar(F.me, save); stage(o);
     fill(F.page, party(save, o), terms(save, o), talk(o));

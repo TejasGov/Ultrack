@@ -8,15 +8,34 @@ import { icon } from './icons.js';
 import { TRACKS } from '../tracks.js';
 import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
-import { loreOf, TIERS, CAL, SPONSORS } from './career/rules.js';
+import { loreOf, TIERS, CAL, SPONSORS, xpForLevel } from './career/rules.js';
 
 export const LOOK = { day: ['Day', 'sun'], dusk: ['Dusk', 'sunset'], bluehour: ['Evening', 'moon-horizon'], night: ['Night', 'moon'] };
 export const WX_ICON = { dry: 'sun', damp: 'cloud-drizzle', rain: 'cloud-rain' };
 export const MEDAL = ['No medal', 'Bronze', 'Silver', 'Gold'];
 export const EVENT = { test: ['Test day', 'time-trial'], sponsor: ['Sponsor day', 'drift'] };
-export const coins = (n) => [icon('coin'), Math.round(n).toLocaleString('en')];
+/** coins are gold with the coin, wherever an amount is shown (the .cx-coin colour is the wallet's) */
+export const coins = (n, plus = false) => h('span.cx-coin', {}, icon('coin'), (plus && n > 0 ? '+' : '') + Math.round(n).toLocaleString('en'));
 export const money = (n) => `${Math.round(n).toLocaleString('en')} U`;
 export const signed = (n, d = 0) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n).toFixed(d);
+/** a change you can read at a glance: green and up, red and down, grey and level; the arrow and the sign carry it as well as the colour */
+export const delta = (n, d = 0) => h(`span.cx-d.${n > 0 ? 'pos' : n < 0 ? 'neg' : 'zero'}`, {}, icon(n > 0 ? 'chevron-up' : n < 0 ? 'chevron-down' : 'minus'), signed(n, d));
+/** the four numbers of a career, each with its own colour and icon wherever it appears: coin (gold), xp (Level and XP, sky), rep (rose), trust (orange) */
+const SX = { coin: 'coin', xp: 'chevrons-up', rep: 'star', trust: 'assists' };
+export const cs = (k, label, value, unit) => h(`span.stat-r.sx.sx-${k}`, {}, h('small', {}, icon(SX[k]), label), h('b.tnum', {}, value, unit ? h('small', {}, unit) : null));
+/** the engine's sentences, with the amounts in their own colours: "95 U" a coin, "+215 XP", "reputation +36", "trust +7" */
+const RICH = /([+−-]?\d[\d,]*(?:\.\d+)?) ?(U|XP)\b|([Rr]eputation|[Tt]rust) ([+−-]?\d+)/g;
+export function rich(text) {
+  const out = []; let at = 0, t = String(text ?? '');
+  for (const m of t.matchAll(RICH)) {
+    out.push(t.slice(at, m.index)); at = m.index + m[0].length;
+    out.push(m[2] === 'U' ? h('span.cx-coin', {}, icon('coin'), m[1]) : m[2] ? h('span.cx-xp', {}, icon('chevrons-up'), m[0])
+      : h(`span.cx-${m[3][0].toLowerCase() === 't' ? 'trust' : 'rep'}`, {}, icon(m[3][0].toLowerCase() === 't' ? 'assists' : 'star'), m[0]));
+  }
+  out.push(t.slice(at)); return out;
+}
+/** what a week is, for the colour that says so: race, test, sponsor, market, review */
+export const kindOf = (w) => (w.kind === 'race' ? 'race' : w.kind === 'market' ? 'market' : w.kind === 'end' ? 'review' : w.event.kind);
 export const zero = () => ({ engine: 0, tyres: 0, brakes: 0 });
 export const available = () => Object.fromEntries(Object.values(TRACKS).map((t) => [t.id, t.times ?? null]));
 export const teamName = (id) => loreOf(id).name;
@@ -33,13 +52,15 @@ export const playerDriver = (save, team) => ({ name: save.player.name, code: sav
 export function frame(cls, tabs = null) {
   const bg = h('img.cx-bg', { alt: '', decoding: 'async' }), where = h('div.cx-where'), me = h('div.cx-me'), page = h('div.cx-page'), foot = h('div.cx-foot');
   const el = h(`div.screen.hidden.cx.${cls}`, {}, bg, h('div.cx-scrim'), h('div.cx-top', {}, h('i.logo'), where, me), tabs, page, foot);
-  return { el, bg, where, me, page, foot, title(title, sub) { fill(where, h('strong', {}, title), sub ? h('small', {}, sub) : null); }, backdrop(kind, id) { if (id) bg.src = still(kind, id); } };
+  return { el, bg, where, me, page, foot, sec(name) { el.dataset.sec = name; }, title(title, sub) { fill(where, h('strong', {}, title), sub ? h('small', {}, sub) : null); }, backdrop(kind, id) { if (id) bg.src = still(kind, id); } };
 }
 /** the status bar's right side: who you are, in numbers */
 export function statusBar(me, save) {
   const c = save.contract;
+  const K = save.career, prev = xpForLevel(K.cl), next = xpForLevel(K.cl + 1), level = cs('xp', 'Level', String(K.cl));
+  level.append(css(h('i.sx-bar', {}, h('i')), { '--p': K.cl >= 25 ? 1 : Math.max(0, Math.min(1, (K.xp - prev) / (next - prev))) }));   // the way to the next one, under it
   fill(me, c ? h('span.cx-team', {}, teamLogo(loreOf(c.team)), stat(`${c.seat} seat`, carName(c.car))) : stat('Driver', save.player.name),
-    stat('Level', String(save.career.cl)), stat('Reputation', String(Math.round(save.career.rep)), '/ 1000'), c ? stat('Trust', String(c.trust), '/ 100') : null, stat('Wallet', coins(save.wallet.coins)));
+    level, cs('rep', 'Reputation', String(Math.round(K.rep)), '/ 1000'), c ? cs('trust', 'Trust', String(c.trust), '/ 100') : null, cs('coin', 'Wallet', Math.round(save.wallet.coins).toLocaleString('en')));
 }
 /** the footer's left: the prompts */
 export const prompts = (...list) => list.map(([k, p, l]) => prompt(k, p, l));
@@ -48,15 +69,16 @@ export const SELECT = [['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 
 const SHORT = { india: 'Ghat', drylake: 'Lake', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano' };
 const WEEK_LABEL = (save, w) => (w.kind === 'race' ? `R${w.round + 1} ${save.season.calendar[w.round].finale ? 'Finale' : SHORT[save.season.calendar[w.round].track] ?? ''}` : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
 const WEEK_ICON = (w) => (w.kind === 'race' ? 'race' : w.kind === 'market' ? 'contract' : w.kind === 'end' ? 'trophy' : EVENT[w.event.kind][1]);
+export const kindIcon = WEEK_ICON;
 /** a week as words, for the Calendar and the footer */
 export const weekTitle = (save, w) => (w.kind === 'race' ? save.season.calendar[w.round].name : w.kind === 'market' ? 'The market' : w.kind === 'end' ? 'Season review' : C.eventName(save, w));
 /** the season strip: one cell a week, this week outlined; the same on Home and the Calendar */
 export function strip(save) {
   const W = save.season.weeks, now = save.clock.week;
-  return css(h('div.cx-b.cx-stripb', {}, h('div.cx-strip', {}, W.map((w, i) => h(`div.cx-wk${w.kind === 'race' ? '.race' : ''}${i < now ? '.past' : ''}${i === now ? '.now' : ''}`, {}, h('b', {}, `WK ${i + 1}`), h('span', {}, icon(WEEK_ICON(w)), h('i', {}, WEEK_LABEL(save, w))))))), { '--weeks': W.length });
+  return css(h('div.cx-b.cx-stripb', {}, h('div.cx-strip', {}, W.map((w, i) => h(`div.cx-wk.k-${kindOf(w)}${i < now ? '.past' : ''}${i === now ? '.now' : i > now ? '.ahead' : ''}`, {}, h('b', {}, `WK ${i + 1}`, i < now ? icon(w.event?.skipped ? 'minus' : 'check', { label: w.event?.skipped ? 'Skipped' : 'Done' }) : null), h('span', {}, icon(WEEK_ICON(w)), h('i', {}, WEEK_LABEL(save, w))))))), { '--weeks': W.length });
 }
 /** a block's title line */
-export const blockHead = (ic, title, right) => h('div.cx-bh', {}, h('span', {}, ic ? icon(ic) : null, title), right ? h('span', {}, right) : null);
+export const blockHead = (ic, title, right) => h('div.cx-bh', { 'data-ic': ic }, h('span', {}, ic ? h('i.cx-ico', {}, icon(ic)) : null, title), right ? h('span', {}, right) : null);
 export const worldName = (save) => CAL.worlds[save.season?.world]?.name;
 export const tierCup = (save) => TIERS.tiers[save.season.tier].cup;
 /** a sponsor's logo on its own colour; the brand's name if the file is not there */
