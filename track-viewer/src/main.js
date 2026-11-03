@@ -117,12 +117,13 @@ const params = {
 //   mirrorOnce      the road mirror is drawn for the frame, not again for the transmission pass's copy of the scene
 //   mirrorSkip      no road-mirror render while the road is too dry for it to show: see mirrorWanted
 //   idleLights      a look with no venue lamp lit (day, dusk) hides the lamp pool: its 16 lights sit at intensity 0, which three still runs in every lit fragment
+//   postMsaa        only the buffer the scene draws into is multisampled: the post chain's full-screen passes have no edges to smooth, and each one paid a resolve
 //   mirrorFirst     the road mirror draws before the frame, not nested inside it: a nested render has lights of its own, so three re-keyed every material it shares with the frame, twice a frame
 //   singlePass      transparent double-sided sheets (fences, glass) draw once: three otherwise draws them twice, back then front, re-keying the material on both draws
 //   stableCapture   the hero's reflection capture keeps the frame's light count and shadow flag, so three neither re-keys every lit material around it nor keeps a second program set: see Field.captureLights
 // ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
 const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
-const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst') };
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst'), postMsaa: saving('postMsaa') };
 const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
@@ -447,6 +448,8 @@ let inWorld = true, glassOn = 0;
 {
   const renderPass = composer.passes[0], renderScene = renderPass.render.bind(renderPass);
   renderPass.render = (r, writeBuffer, readBuffer, ...rest) => {
+    // the scene always lands in the multisampled buffer: live smoke or SMAA add a swap, so the buffers can come round the other way (see msaaTargets)
+    if (readBuffer !== composer.renderTarget2 && PERF.postMsaa) { composer.swapBuffers(); [writeBuffer, readBuffer] = [readBuffer, writeBuffer]; }
     const mirror = PERF.mirrorFirst && reflector?.visible ? reflector : null;
     if (mirror) { mirror.userData.draw(r); mirror.visible = false; }
     renderScene(r, writeBuffer, readBuffer, ...rest);
@@ -933,6 +936,7 @@ function applyAll() {
     if (light.shadow) light.shadow.needsUpdate = true;
   }
   for (const m of singles) if (m.forceSinglePass !== PERF.singlePass) { m.forceSinglePass = PERF.singlePass; m.needsUpdate = true; }
+  msaaTargets();
   bloom.enabled = params.bloom;
   // driving into the low sun, a wide sky above the threshold bloomed into a cream veil: dusk blooms less, from brighter pixels
   bloom.strength = params.bloomStrength * (look.bloomGain ?? 1) * ((look.dn ?? 0) < 0.5 ? SUN_GLARE : 1); bloom.radius = params.bloomRadius; bloom.threshold = params.bloomThreshold * (look.bloomThr ?? 1);
@@ -969,14 +973,16 @@ window.addEventListener('resize', resize);
 
 const device = detectTier(renderer);
 const tier = () => TIERS[params.quality === 'auto' ? device.tier : params.quality];
+function msaaTargets() {   // MSAA: thin posts, cables and rails stop crawling
+  const n = tier().msaa;
+  for (const [rt, samples] of [[composer.renderTarget2, n], [composer.renderTarget1, PERF.postMsaa ? 0 : n]]) if (rt.samples !== samples) { rt.samples = samples; rt.dispose(); }
+}
 function applyQuality() {
   const q = tier();
   Object.assign(params, { shadows: q.shadows, ao: q.ao, mirror: q.mirror, mirrorRes: q.mirrorRes, bloom: q.bloom, smaa: q.smaa,
     rain: Math.min(params.rain, q.rain), renderScale: q.scale, cullDistance: q.cull });
   dynres.max = q.scale;
-  for (const rt of [composer.renderTarget1, composer.renderTarget2]) {   // MSAA: thin posts, cables and rails stop crawling
-    if (rt.samples !== q.msaa) { rt.samples = q.msaa; rt.dispose(); }
-  }
+  msaaTargets();
   gui.controllersRecursive().forEach((c) => c.updateDisplay());
   resize(); applyAll();
 }
