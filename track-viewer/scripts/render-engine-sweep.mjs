@@ -1,5 +1,5 @@
 // Renders a race pull through the game's real mixer and gearbox in a headless Chrome (OfflineAudioContext), to qa/engine-sound/<car>-<bank>.wav,
-// with the rpm per frame beside it. Needs the dev server. Usage: node scripts/render-engine-sweep.mjs [car ...] [--bank measured|current]
+// with the rpm per frame beside it. Needs the dev server. Usage: node scripts/render-engine-sweep.mjs [car ...] [--bank packs|measured|current]
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -7,14 +7,17 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const argv = process.argv.slice(2), at = argv.indexOf('--bank');
-const banks = at < 0 ? ['current', 'measured'] : [argv[at + 1]];
+const banks = at < 0 ? ['measured', 'packs'] : [argv[at + 1]];
 const named = argv.filter((a, i) => !a.startsWith('--') && (at < 0 || i !== at + 1));
-const files = { measured: 'engine-bank.json', current: 'recorded-engine-bank.json' };   // current: the old sound, as the listening page calls it
+const files = { packs: 'engine-packs.json', measured: 'engine-bank.json', current: 'recorded-engine-bank.json' };   // current: the old sound, as the listening page calls it
 const out = join(root, 'qa', 'engine-sound');
 mkdirSync(out, { recursive: true });
 const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'].find(existsSync);
 const browser = await chromium.launch({ executablePath: chrome, headless: true });
-const page = await browser.newPage();
+const context = await browser.newContext();
+// any agent saving a file would otherwise hot-reload this page mid-render (the shared dev server reloads everyone)
+await context.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; Object.assign(F, W); window.WebSocket = F; });
+const page = await context.newPage();
 page.on('pageerror', (e) => console.error('page:', e.message));
 await page.goto('http://127.0.0.1:5180/audio-lab.html');
 
@@ -22,10 +25,10 @@ const profiles = JSON.parse(readFileSync(join(root, 'public/assets/audio', files
 const keys = named.length ? named : Object.keys(profiles);
 for (const key of keys) for (const bank of banks) {
   const r = await page.evaluate(async ({ key, file }) => {
-    const { GameAudio, Gearbox } = await import('/src/game/audio.js');
+    const { GameAudio, Gearbox, expandBank } = await import('/src/game/audio.js');
     const SR = 48000, LEN = 19, ctx = new OfflineAudioContext(1, SR * LEN, SR), audio = new GameAudio();
     await audio.start(ctx);
-    audio.engineBank = await (await fetch('/assets/audio/' + file)).json();
+    audio.engineBank = expandBank(await (await fetch('/assets/audio/' + file)).json());
     audio.setVolumes({ master: 1, engine: .85, effects: .8, commentaryOn: false, commentary: 0, crowd: 0 });
     await audio.engineFor(key);
     const DT = 1 / 60, gears = new Gearbox(85, audio.engine.prof.redline), rpm = [];

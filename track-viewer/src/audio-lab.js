@@ -1,10 +1,10 @@
-import {GameAudio,Gearbox} from './game/audio.js';
+import {GameAudio,Gearbox,expandBank} from './game/audio.js';
 const $=id=>document.getElementById(id),audio=new GameAudio();
-let banks={},playing=false,sweep=null,request=0,loading=null,last=0;
+let banks={},playing=false,sweep=null,pass=null,request=0,loading=null,last=0;
 const status=text=>{$('status').textContent=text;};
 const prof=()=>banks[$('version').value].profiles[$('car').value];
 const idleOf=p=>p.idle?.rpm??p.loops.idle.rpm;
-function stop(){request++;playing=false;sweep=null;audio.engineOff();$('source').pause();status('Stopped.');}
+function stop(){request++;playing=false;sweep=null;pass=null;audio.engineOff();$('source').pause();status('Stopped.');}
 function labels(){
  $('rpm-value').textContent=Number($('rpm').value).toLocaleString()+' RPM';
  $('load-value').textContent=Math.round($('load').value*100)+'%';
@@ -13,9 +13,9 @@ function labels(){
  if(audio.ctx)audio.setVolumes({master:Number($('volume').value),engine:.85,effects:.8,commentaryOn:false,commentary:0,crowd:0});
 }
 function coverage(p){
- if(!p.on)return p.quality==='limited-rpm-source'?'Limited source: high-RPM layers are transposed from low-speed running. Current RPM labels are estimates.':'Old sound: very short loops with estimated RPM labels.';
- const top=p.on.at(-1).rpm,stretch=p.redline/top;
- const borrowed=p.sharedWith?`Borrows the ${banks.measured.profiles[p.sharedWith].name} recording. `:'';
+ if(!p.on)return p.quality==='limited-rpm-source'?'Limited source: high-RPM layers are transposed from low-speed running. Current RPM labels are estimates.':'First sound: very short loops with estimated RPM labels.';
+ const top=Math.min(p.redline,Math.round(p.on.at(-1).rpm/(p.pitch??1))),stretch=p.redline/top;
+ const borrowed=p.pack?`Category: ${banks.packs.packs[p.pack].label}. `:p.sharedWith?`Borrows the ${banks.measured.profiles[p.sharedWith].name} recording. `:'';
  return `${borrowed}Real measured audio from ${idleOf(p).toLocaleString()} to ${top.toLocaleString()} rpm, ${p.on.length} on-throttle and ${p.off.length} off-throttle loops, ${p.shifts.length} shift and ${p.pops.length} pop samples.`+(stretch>1.2?` Above that it is pitched up, ×${stretch.toFixed(1)} at the ${p.redline.toLocaleString()} rpm redline.`:'');
 }
 function select(){
@@ -55,6 +55,16 @@ for(const id of ['rpm','load','slip','volume'])$(id).addEventListener('input',()
 $('source').addEventListener('play',()=>{request++;playing=false;sweep=null;audio.engineOff();status('Playing source excerpt.');});
 $('shift').addEventListener('click',()=>{if(!playing)return;audio.shift();$('rpm').value=Math.max(Number($('rpm').min),$('rpm').value*.72);labels();});
 $('pop').addEventListener('click',()=>{if(playing)audio.pop();});
+$('nitro').addEventListener('click',()=>{if(playing){audio.nitro(false);audio.nitro(true);setTimeout(()=>audio.nitro(false),1200);}});
+$('crash').addEventListener('click',()=>{if(playing)audio.crash(90);});
+// a rival overtakes from behind on your left at 90 km/h more than you, through the game's own opponent voices; each press is the next category
+let passIndex=0;
+$('pass').addEventListener('click',async()=>{
+ if(!playing)await start();if(!playing||!audio.traffic){status('Opponent sound is in the category packs only.');return;}
+ const keys=Object.keys(banks.packs.packs).map(n=>Object.keys(banks.packs.profiles).find(k=>banks.packs.profiles[k].pack===n)),key=keys[passIndex++%keys.length];
+ const car=(x,y,z)=>({root:{position:{x,y,z},quaternion:{x:0,y:0,z:0,w:1}},key,_fx:{rpm:.75}});
+ pass={t:0,hero:car(0,0,0),rival:car(-60,0,-3.5)};status(`A ${banks.packs.packs[banks.packs.profiles[key].pack].label} passes.`);
+});
 // the same gearbox the race uses: idle, full throttle through the gears, then lift and coast down
 $('sweep').addEventListener('click',async()=>{if(!playing)await start();if(playing)sweep={t:0,speed:0,gears:new Gearbox(85,prof().redline)};});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
@@ -71,6 +81,11 @@ function frame(now){
    $('rpm').value=sweep.gears.rpm;$('load').value=thr;speed=sweep.speed;labels();
    if(sweep.t>19)sweep=null;
   }
+  if(pass){
+   pass.t+=dt;pass.hero.root.position.x+=40*dt;pass.rival.root.position.x+=65*dt;
+   audio.traffic?.update([pass.hero,pass.rival],pass.hero,dt);
+   if(pass.t>5){audio.traffic?.silence();pass=null;}
+  }
   audio.engineUpdate(Number($('rpm').value),Number($('load').value),1,speed,Number($('slip').value));
  }
  requestAnimationFrame(frame);
@@ -78,10 +93,10 @@ function frame(now){
 requestAnimationFrame(frame);
 try{
  const load=async file=>{const r=await fetch('/assets/audio/'+file);if(!r.ok)throw Error('Recording bank unavailable: '+file);return r.json();};
- [banks.measured,banks.current]=await Promise.all([load('engine-bank.json'),load('recorded-engine-bank.json')]);
+ [banks.packs,banks.measured,banks.current]=await Promise.all([load('engine-packs.json').then(expandBank),load('engine-bank.json'),load('recorded-engine-bank.json')]);
  const q=new URLSearchParams(location.search);
  $('car').replaceChildren(...Object.entries(banks.measured.profiles).map(([key,p])=>{const o=document.createElement('option');o.value=key;o.textContent=banks.current.profiles[key]?.name?.split(' (')[0]??p.name;return o;}));
  if(banks.measured.profiles[q.get('car')])$('car').value=q.get('car');
- if(q.get('version')==='current')$('version').value='current';
+ if(banks[q.get('version')])$('version').value=q.get('version');
  $('car').disabled=false;$('version').disabled=false;$('start').disabled=false;select();status('Ready. Select a car and start the engine.');
 }catch(e){status(e.message);}

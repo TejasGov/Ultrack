@@ -7,10 +7,10 @@ import {padSteer} from '../src/physics/player-controls.js';
 import {isModelRim} from '../src/carkit/model-rims.js';
 import {shedBodywork} from '../src/carkit/loose-parts.js';
 import {summarizeFrames} from '../src/model-benchmark.js';
-import {GameAudio} from '../src/game/audio.js';
+import {GameAudio,expandBank} from '../src/game/audio.js';
 import {EV} from '../src/game/ev.js';
 EV.add('ev-test');  // no electric car ships; the EV audio path stays covered with a synthetic one
-import {createPA,RoadAudio} from '../src/game/audio-effects.js';
+import {createPA,RoadAudio,TrafficAudio} from '../src/game/audio-effects.js';
 const button=value=>({value,pressed:value>.5});
 const pad=x=>({connected:true,id:'test-pad',axes:[x,0],buttons:Array.from({length:16},()=>button(0))});
 function fixture(pads=[]){
@@ -133,6 +133,33 @@ test('measured bank: neighbours crossfade near pitch, lifting moves to overrun, 
  a.shift();a.pop();assert.deepEqual(played,['engines/v3/s.ogg','engines/v3/p.ogg']);a.engineOff();
  a.loop=async(file,o)=>file.includes('x-1')?null:{src:{playbackRate:{setTargetAtTime(){}}},gain:{gain:{setTargetAtTime(){}}},stop(){}};   // a loop that failed to load must not stop the mix
  await a.engineFor('x');assert.doesNotThrow(()=>a.engineUpdate(3500,1,1,40,0));a.engineOff();
+});
+
+test('a category pack is one file: each car plays at its own firing pitch, and an opponent passes through a shared voice',async()=>{
+ const param=()=>({value:0,setTargetAtTime(v){this.value=v;}}),node=()=>({connect(n){return n;},gain:param(),frequency:param(),Q:param(),positionX:param(),positionY:param(),positionZ:param()});
+ const started=[];const ctx={currentTime:0,sampleRate:100,createBiquadFilter:node,createGain:node,createPanner:node,createBuffer:()=>({getChannelData:()=>new Float32Array(200)}),
+  createBufferSource:()=>({connect(n){return n;},playbackRate:param(),start(){started.push(this);},stop(){this.stopped=true;}})};
+ const bank={traffic:{v8:{rpm:5000,loopStart:1,loopEnd:2}},profiles:{a:{pack:'v8',redline:8000,pitch:1}}};
+ const hero={root:{position:{x:0,y:0,z:0},quaternion:{x:0,y:0,z:0,w:1}}},rival=(x,z)=>({key:'a',_fx:{rpm:.75},root:{position:{x,y:0,z},quaternion:hero.root.quaternion}});
+ const far=[1,2,3,4].map(i=>rival(500*i,0)),near=[1,2,3,4].map(i=>rival(i*5,3));
+ const t=new TrafficAudio(ctx,{engine:node(),effects:node()},{},bank);t.update(far,hero,.1);assert.deepEqual(t.report(),[null,null,null],'nobody out of range is heard');
+ t.update(near,hero,.1);assert.equal(t.report().filter(Boolean).length,3,'four cars near: the nearest three have voices');
+ const v=t.voices.find(x=>x.car===near[0]);assert.equal(v.panner.positionX.value,3,'right of the player');assert.ok(v.panner.positionZ.value<0,'ahead of the player');
+ const steady=v.src.playbackRate.value;near[0].root.position.x-=30*.1;t.update(near,hero,.1);assert.ok(v.src.playbackRate.value>steady,'closing raises the pitch');
+ near[0].root.position.x=2;near[0].root.position.z=1;for(let i=0;i<2;i++){near[0].root.position.x+=3;t.update(near,hero,.1);}assert.ok(t.airGain.gain.value>0,'a close pass rushes air');
+ t.silence();assert.deepEqual(t.report(),[null,null,null]);assert.equal(t.airGain.gain.value,0);t.stop();assert.ok(t.stopped);t.update(near,hero,.1);assert.deepEqual(t.report(),[null,null,null],'stopped stays stopped');
+ const pack={idle:{file:'p.ogg',rpm:1000,loopStart:.1,loopEnd:1},on:[{file:'p.ogg',rpm:3000,loopStart:2,loopEnd:3}],off:[]};
+ const b=expandBank({common:{file:'c.ogg'},packs:{v8:pack},profiles:{x:{pack:'v8',redline:8000,pitch:.75,cars:['x']}}});
+ const a=new GameAudio();a.ctx=new AudioContext();a.bus={engine:new AudioNode(),effects:new AudioNode()};a.ready=true;a.engineBank=b;a.buffer=async()=>null;
+ const fetched=new Set();const was=a.buffer;a.buffer=async f=>{fetched.add(f);return was(f);};
+ a.loop=async(file,o)=>{fetched.add(file);return {src:{playbackRate:param()},gain:{gain:param()},stop(){}};};
+ await a.engineFor('x');a.engineUpdate(4000,1,1,40,0);assert.equal(a.engine.layers.on0.h.src.playbackRate.value,1,'4000 rpm at pitch 0.75 is the 3000 rpm loop at its own pitch');
+ assert.deepEqual([...fetched].sort(),['c.ogg','p.ogg'],'one pack and the shared file');a.engineOff();
+ const played=[];a.play=async(c)=>{played.push(c);};a.engineBank={...b,nitro:[{file:'c.ogg',at:1,dur:1}],turbo:{whistle:{file:'c.ogg',loopStart:3,loopEnd:4},blow:[{file:'c.ogg',at:2,dur:1}]}};a.engineBank.profiles={x:{...b.profiles.x,turbo:true}};
+ await a.engineFor('x');const E=a.engine;assert.ok(E.whistle);
+ a.engineUpdate(7000,1,1,40,0);assert.ok(E.whistle.h.gain.gain.value>0,'boost whistles under load');
+ a.engineUpdate(7000,.1,1,40,0);assert.deepEqual(played.map(c=>c.at),[2],'a sharp lift blows off once');a.engineUpdate(7000,.1,1,40,0);assert.equal(played.length,1);
+ a.nitro(true);a.nitro(true);assert.deepEqual(played.map(c=>c.at),[2,1],'nitro bursts once as it fires');a.nitro(false);a.engineOff();
 });
 
 test('missing real recordings never restore the generated V1 engine or exhaust',async()=>{

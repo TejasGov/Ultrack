@@ -392,6 +392,7 @@ export class Game {
     const shift = this.gearbox.update(dt, v.speed, thr, v.state.reverse ?? v.vForward < -0.5);
     if (shift === 'up' && thr > 0.8) this.audio.shift();
     this.audio.engineUpdate(this.gearbox.rpm, thr, 1, v.speed, v.latSlip);
+    this.audio.traffic?.update(F.cars, F.hero, dt);
     this.audio.nitro(v.state.nitroOn);
     if (v.state.nitroOn && !this.nitroWas) this.say('nitro_used', { cooldown: 40, priority: 1 });
     this.nitroWas = v.state.nitroOn;

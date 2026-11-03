@@ -1,0 +1,600 @@
+{
+ "screamer": {
+  "bytes": 202771,
+  "peak": 0.708,
+  "loops": [
+   {
+    "role": "idle",
+    "rpm": 1129,
+    "seconds": 1.988,
+    "rms": 0.1152,
+    "wrapJump": 0.01,
+    "flutterDb": -10.4,
+    "centroid": 1945,
+    "pool": null
+   },
+   {
+    "role": "on",
+    "rpm": 2290,
+    "seconds": 1.485,
+    "rms": 0.1149,
+    "wrapJump": 0.0,
+    "flutterDb": -21.0,
+    "centroid": 1064,
+    "pool": 0.16
+   },
+   {
+    "role": "on",
+    "rpm": 3130,
+    "seconds": 1.464,
+    "rms": 0.115,
+    "wrapJump": 0.02,
+    "flutterDb": -24.0,
+    "centroid": 1435,
+    "pool": 1.29
+   },
+   {
+    "role": "on",
+    "rpm": 4270,
+    "seconds": 1.476,
+    "rms": 0.1151,
+    "wrapJump": 0.0,
+    "flutterDb": -22.4,
+    "centroid": 1603,
+    "pool": 1.06
+   },
+   {
+    "role": "on",
+    "rpm": 5830,
+    "seconds": 1.483,
+    "rms": 0.1147,
+    "wrapJump": 0.0,
+    "flutterDb": -22.7,
+    "centroid": 1011,
+    "pool": 1.08
+   },
+   {
+    "role": "on",
+    "rpm": 7960,
+    "seconds": 1.496,
+    "rms": 0.1151,
+    "wrapJump": 0.0,
+    "flutterDb": -23.4,
+    "centroid": 2617,
+    "pool": 1.03
+   },
+   {
+    "role": "on",
+    "rpm": 10870,
+    "seconds": 1.499,
+    "rms": 0.1152,
+    "wrapJump": 0.02,
+    "flutterDb": -23.7,
+    "centroid": 4050,
+    "pool": 1.64
+   },
+   {
+    "role": "off",
+    "rpm": 2530,
+    "seconds": 1.179,
+    "rms": 0.1149,
+    "wrapJump": 0.01,
+    "flutterDb": -21.0,
+    "centroid": 1061,
+    "pool": 0.2
+   },
+   {
+    "role": "off",
+    "rpm": 5080,
+    "seconds": 1.195,
+    "rms": 0.1149,
+    "wrapJump": 0.0,
+    "flutterDb": -19.0,
+    "centroid": 1819,
+    "pool": 1.01
+   },
+   {
+    "role": "off",
+    "rpm": 10210,
+    "seconds": 1.189,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -24.3,
+    "centroid": 3667,
+    "pool": 0.16
+   }
+  ]
+ },
+ "flat-v8": {
+  "bytes": 194206,
+  "peak": 0.751,
+  "loops": [
+   {
+    "role": "idle",
+    "rpm": 952,
+    "seconds": 1.882,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -22.3,
+    "centroid": 3881,
+    "pool": null
+   },
+   {
+    "role": "on",
+    "rpm": 1620,
+    "seconds": 1.449,
+    "rms": 0.1148,
+    "wrapJump": 0.02,
+    "flutterDb": -28.7,
+    "centroid": 3121,
+    "pool": 0.64
+   },
+   {
+    "role": "on",
+    "rpm": 2390,
+    "seconds": 1.484,
+    "rms": 0.1152,
+    "wrapJump": 0.01,
+    "flutterDb": -24.6,
+    "centroid": 2788,
+    "pool": 0.93
+   },
+   {
+    "role": "on",
+    "rpm": 3100,
+    "seconds": 1.465,
+    "rms": 0.1151,
+    "wrapJump": 0.01,
+    "flutterDb": -24.9,
+    "centroid": 2317,
+    "pool": 0.44
+   },
+   {
+    "role": "on",
+    "rpm": 4020,
+    "seconds": 1.481,
+    "rms": 0.1152,
+    "wrapJump": 0.01,
+    "flutterDb": -24.5,
+    "centroid": 2142,
+    "pool": 0.46
+   },
+   {
+    "role": "on",
+    "rpm": 5940,
+    "seconds": 1.494,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -24.0,
+    "centroid": 1771,
+    "pool": 1.42
+   },
+   {
+    "role": "on",
+    "rpm": 7700,
+    "seconds": 1.486,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -24.6,
+    "centroid": 1564,
+    "pool": 1.21
+   },
+   {
+    "role": "off",
+    "rpm": 1480,
+    "seconds": 1.16,
+    "rms": 0.1151,
+    "wrapJump": 0.01,
+    "flutterDb": -23.1,
+    "centroid": 3610,
+    "pool": 0.6
+   },
+   {
+    "role": "off",
+    "rpm": 2710,
+    "seconds": 1.188,
+    "rms": 0.1151,
+    "wrapJump": 0.01,
+    "flutterDb": -20.5,
+    "centroid": 2879,
+    "pool": 0.92
+   },
+   {
+    "role": "off",
+    "rpm": 4970,
+    "seconds": 1.193,
+    "rms": 0.1152,
+    "wrapJump": 0.01,
+    "flutterDb": -22.6,
+    "centroid": 1953,
+    "pool": 1.32
+   }
+  ]
+ },
+ "cross-v8": {
+  "bytes": 182307,
+  "peak": 0.711,
+  "loops": [
+   {
+    "role": "idle",
+    "rpm": 893,
+    "seconds": 1.943,
+    "rms": 0.1151,
+    "wrapJump": 0.02,
+    "flutterDb": -14.0,
+    "centroid": 1460,
+    "pool": null
+   },
+   {
+    "role": "on",
+    "rpm": 1160,
+    "seconds": 1.473,
+    "rms": 0.1149,
+    "wrapJump": 0.0,
+    "flutterDb": -30.9,
+    "centroid": 160,
+    "pool": 0.24
+   },
+   {
+    "role": "on",
+    "rpm": 1600,
+    "seconds": 1.448,
+    "rms": 0.1149,
+    "wrapJump": 0.02,
+    "flutterDb": -21.4,
+    "centroid": 205,
+    "pool": 0.38
+   },
+   {
+    "role": "on",
+    "rpm": 2200,
+    "seconds": 1.455,
+    "rms": 0.1145,
+    "wrapJump": 0.0,
+    "flutterDb": -20.8,
+    "centroid": 367,
+    "pool": 1.32
+   },
+   {
+    "role": "on",
+    "rpm": 2730,
+    "seconds": 1.47,
+    "rms": 0.1149,
+    "wrapJump": 0.0,
+    "flutterDb": -17.4,
+    "centroid": 401,
+    "pool": 2.08
+   },
+   {
+    "role": "on",
+    "rpm": 3760,
+    "seconds": 1.473,
+    "rms": 0.1151,
+    "wrapJump": 0.01,
+    "flutterDb": -24.0,
+    "centroid": 801,
+    "pool": 0.87
+   },
+   {
+    "role": "on",
+    "rpm": 5190,
+    "seconds": 1.498,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -24.4,
+    "centroid": 899,
+    "pool": 0.54
+   },
+   {
+    "role": "off",
+    "rpm": 1030,
+    "seconds": 1.146,
+    "rms": 0.1152,
+    "wrapJump": 0.01,
+    "flutterDb": -18.5,
+    "centroid": 703,
+    "pool": 0.79
+   },
+   {
+    "role": "off",
+    "rpm": 2410,
+    "seconds": 1.172,
+    "rms": 0.1149,
+    "wrapJump": 0.0,
+    "flutterDb": -19.3,
+    "centroid": 413,
+    "pool": 1.3
+   },
+   {
+    "role": "off",
+    "rpm": 5070,
+    "seconds": 1.185,
+    "rms": 0.1151,
+    "wrapJump": 0.01,
+    "flutterDb": -19.0,
+    "centroid": 655,
+    "pool": 1.02
+   }
+  ]
+ },
+ "turbo": {
+  "bytes": 214564,
+  "peak": 0.715,
+  "loops": [
+   {
+    "role": "idle",
+    "rpm": 1503,
+    "seconds": 1.966,
+    "rms": 0.1149,
+    "wrapJump": 0.02,
+    "flutterDb": -22.6,
+    "centroid": 1719,
+    "pool": null
+   },
+   {
+    "role": "on",
+    "rpm": 2330,
+    "seconds": 1.473,
+    "rms": 0.1148,
+    "wrapJump": 0.0,
+    "flutterDb": -23.2,
+    "centroid": 3859,
+    "pool": 0.16
+   },
+   {
+    "role": "on",
+    "rpm": 2830,
+    "seconds": 1.485,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -23.5,
+    "centroid": 3690,
+    "pool": 0.16
+   },
+   {
+    "role": "on",
+    "rpm": 3670,
+    "seconds": 1.488,
+    "rms": 0.1152,
+    "wrapJump": 0.0,
+    "flutterDb": -20.5,
+    "centroid": 2090,
+    "pool": 0.74
+   },
+   {
+    "role": "on",
+    "rpm": 4170,
+    "seconds": 1.489,
+    "rms": 0.1151,
+    "wrapJump": 0.0,
+    "flutterDb": -20.4,
+    "centroid": 1935,
+    "pool": 0.5
+   },
+   {
+    "role": "on",
+    "rpm": 5070,
+    "seconds": 1.486,
+    "rms": 0.1151,
+    "wrapJump": 0.0,
+    "flutterDb": -24.4,
+    "centroid": 1702,
+    "pool": 1.57
+   },
+   {
+    "role": "on",
+    "rpm": 6160,
+    "seconds": 1.482,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -26.4,
+    "centroid": 1420,
+    "pool": 1.03
+   },
+   {
+    "role": "off",
+    "rpm": 2320,
+    "seconds": 1.181,
+    "rms": 0.1147,
+    "wrapJump": 0.0,
+    "flutterDb": -18.9,
+    "centroid": 1535,
+    "pool": 0.5
+   },
+   {
+    "role": "off",
+    "rpm": 3470,
+    "seconds": 1.189,
+    "rms": 0.1147,
+    "wrapJump": 0.01,
+    "flutterDb": -24.3,
+    "centroid": 1940,
+    "pool": 0.57
+   },
+   {
+    "role": "off",
+    "rpm": 5480,
+    "seconds": 1.196,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -23.5,
+    "centroid": 1707,
+    "pool": 0.29
+   }
+  ]
+ },
+ "w-engine": {
+  "bytes": 195913,
+  "peak": 0.726,
+  "loops": [
+   {
+    "role": "idle",
+    "rpm": 666,
+    "seconds": 1.875,
+    "rms": 0.1148,
+    "wrapJump": 0.02,
+    "flutterDb": -19.4,
+    "centroid": 866,
+    "pool": null
+   },
+   {
+    "role": "on",
+    "rpm": 900,
+    "seconds": 1.384,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -17.3,
+    "centroid": 943,
+    "pool": 0.86
+   },
+   {
+    "role": "on",
+    "rpm": 1280,
+    "seconds": 1.493,
+    "rms": 0.1149,
+    "wrapJump": 0.0,
+    "flutterDb": -20.6,
+    "centroid": 892,
+    "pool": 0.98
+   },
+   {
+    "role": "on",
+    "rpm": 1810,
+    "seconds": 1.483,
+    "rms": 0.1152,
+    "wrapJump": 0.0,
+    "flutterDb": -21.6,
+    "centroid": 1049,
+    "pool": 1.17
+   },
+   {
+    "role": "on",
+    "rpm": 2300,
+    "seconds": 1.455,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -23.4,
+    "centroid": 1121,
+    "pool": 0.59
+   },
+   {
+    "role": "on",
+    "rpm": 3270,
+    "seconds": 1.469,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -24.7,
+    "centroid": 1137,
+    "pool": 0.92
+   },
+   {
+    "role": "on",
+    "rpm": 4650,
+    "seconds": 1.476,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -26.3,
+    "centroid": 1256,
+    "pool": 0.83
+   },
+   {
+    "role": "off",
+    "rpm": 1010,
+    "seconds": 1.109,
+    "rms": 0.1148,
+    "wrapJump": 0.01,
+    "flutterDb": -21.9,
+    "centroid": 1077,
+    "pool": 0.96
+   },
+   {
+    "role": "off",
+    "rpm": 1360,
+    "seconds": 1.198,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -16.4,
+    "centroid": 716,
+    "pool": 1.24
+   },
+   {
+    "role": "off",
+    "rpm": 1910,
+    "seconds": 1.138,
+    "rms": 0.1148,
+    "wrapJump": 0.02,
+    "flutterDb": -20.9,
+    "centroid": 587,
+    "pool": 0.91
+   }
+  ]
+ },
+ "common": {
+  "bytes": 328618,
+  "loops": [
+   {
+    "role": "traffic",
+    "rpm": 5830,
+    "seconds": 1.483,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -21.2,
+    "centroid": 1009
+   },
+   {
+    "role": "traffic",
+    "rpm": 5940,
+    "seconds": 1.494,
+    "rms": 0.1152,
+    "wrapJump": 0.02,
+    "flutterDb": -23.2,
+    "centroid": 1778
+   },
+   {
+    "role": "traffic",
+    "rpm": 5190,
+    "seconds": 1.498,
+    "rms": 0.1145,
+    "wrapJump": 0.0,
+    "flutterDb": -27.9,
+    "centroid": 899
+   },
+   {
+    "role": "traffic",
+    "rpm": 5070,
+    "seconds": 1.486,
+    "rms": 0.115,
+    "wrapJump": 0.01,
+    "flutterDb": -24.4,
+    "centroid": 1703
+   },
+   {
+    "role": "traffic",
+    "rpm": 4650,
+    "seconds": 1.476,
+    "rms": 0.1151,
+    "wrapJump": 0.0,
+    "flutterDb": -25.4,
+    "centroid": 1254
+   },
+   {
+    "role": "tyres",
+    "rpm": 0,
+    "seconds": 2.924,
+    "rms": 0.115,
+    "wrapJump": 0.0,
+    "flutterDb": -15.5,
+    "centroid": 4062
+   },
+   {
+    "role": "whistle",
+    "rpm": 0,
+    "seconds": 3.65,
+    "rms": 0.1149,
+    "wrapJump": 0.02,
+    "flutterDb": -18.1,
+    "centroid": 4184
+   }
+  ]
+ }
+}

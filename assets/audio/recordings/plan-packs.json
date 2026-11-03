@@ -1,0 +1,1093 @@
+{
+  "schemaVersion": 4,
+  "note": "Five engine categories; a race fetches one pack and the shared file. order on a pack and a car is firing pulses per revolution: a car plays at pack rpm x its order / the pack order, so it keeps its true firing pitch.",
+  "tyres": {
+    "file": "bigsoundbank/0500.ogg",
+    "from": 6,
+    "to": 12,
+    "source": {
+      "author": "BigSoundBank (Joseph Sardin)",
+      "title": "Tire squeal",
+      "url": "https://bigsoundbank.com/tire-squeal-s0500.html",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "Cut to one loop, filtered, level matched and encoded to Opus."
+    }
+  },
+  "crash": [
+    "soft-1",
+    "soft-2",
+    "soft-3",
+    "glass-tinkle-1",
+    "glass-tinkle-2",
+    {
+      "name": "hard-1",
+      "video": "ESdiL9GSEAo",
+      "at": 1.52,
+      "secs": 1.5
+    },
+    {
+      "name": "hard-2",
+      "video": "lkDPfocjqxE",
+      "at": 7.05,
+      "secs": 0.95
+    },
+    {
+      "name": "hard-3",
+      "video": "WXHjRfme8Fg",
+      "at": 1.86,
+      "secs": 3.4
+    }
+  ],
+  "packs": {
+    "screamer": {
+      "label": "Naturally aspirated V12 and V10",
+      "order": 6,
+      "segments": [
+        {
+          "video": "kMLCWrG_KQk",
+          "from": 6.5,
+          "to": 17.5,
+          "hz": [
+            95,
+            130
+          ],
+          "order": 6,
+          "set": "idle"
+        },
+        {
+          "video": "kMLCWrG_KQk",
+          "from": 18.0,
+          "to": 25.3,
+          "hz": [
+            100,
+            240
+          ],
+          "order": 3,
+          "set": "auto"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 102.8,
+          "to": 105.2,
+          "hz": [
+            280,
+            470
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 109.0,
+          "to": 111.0,
+          "hz": [
+            290,
+            540
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 120.6,
+          "to": 123.7,
+          "hz": [
+            550,
+            800
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 124.1,
+          "to": 126.6,
+          "hz": [
+            570,
+            790
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 129.5,
+          "to": 132.4,
+          "hz": [
+            300,
+            650
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "eh5WmIWNkLQ",
+          "from": 55.2,
+          "to": 57.8,
+          "hz": [
+            480,
+            650
+          ],
+          "order": 6,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 9.8,
+          "to": 13.3,
+          "hz": [
+            230,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 15.3,
+          "to": 17.7,
+          "hz": [
+            480,
+            580
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 20.4,
+          "to": 24.4,
+          "hz": [
+            230,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 27.0,
+          "to": 29.3,
+          "hz": [
+            300,
+            560
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 29.3,
+          "to": 29.8,
+          "hz": [
+            440,
+            560
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "9nE5FoIYa2Y",
+          "from": 29.8,
+          "to": 33.0,
+          "hz": [
+            440,
+            540
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "w1XHmlAlax0",
+          "from": 36.0,
+          "to": 39.0,
+          "hz": [
+            255,
+            375
+          ],
+          "order": 6,
+          "set": "off"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 23.2,
+          "to": 24.4,
+          "hz": [
+            170,
+            250
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 40.9,
+          "to": 42.3,
+          "hz": [
+            180,
+            265
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "EPW09CdBBjM",
+          "from": 15.5,
+          "to": 17.5,
+          "hz": [
+            205,
+            345
+          ],
+          "order": 3,
+          "set": "off"
+        }
+      ],
+      "shifts": [
+        [
+          "eh5WmIWNkLQ",
+          108.95
+        ],
+        [
+          "eh5WmIWNkLQ",
+          123.75
+        ],
+        [
+          "EPW09CdBBjM",
+          25.75
+        ]
+      ],
+      "pops": [
+        [
+          "eh5WmIWNkLQ",
+          35.598
+        ],
+        [
+          "eh5WmIWNkLQ",
+          39.121
+        ],
+        [
+          "eh5WmIWNkLQ",
+          39.702
+        ]
+      ],
+      "start": [
+        "kMLCWrG_KQk",
+        6.0,
+        2.4
+      ]
+    },
+    "flat-v8": {
+      "label": "Flat-plane V8 supercar",
+      "order": 4,
+      "segments": [
+        {
+          "video": "reWmK4awXng",
+          "from": 61.3,
+          "to": 63.9,
+          "hz": [
+            55,
+            72
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 54.0,
+          "to": 61.0,
+          "hz": [
+            55,
+            400
+          ],
+          "order": 4,
+          "set": "auto"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 92.8,
+          "to": 96.0,
+          "hz": [
+            90,
+            520
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 102.0,
+          "to": 104.6,
+          "hz": [
+            290,
+            480
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 104.8,
+          "to": 106.0,
+          "hz": [
+            320,
+            440
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 109.6,
+          "to": 110.5,
+          "hz": [
+            330,
+            440
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 106.1,
+          "to": 108.1,
+          "hz": [
+            290,
+            345
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 111.8,
+          "to": 113.4,
+          "hz": [
+            260,
+            320
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "reWmK4awXng",
+          "from": 115.2,
+          "to": 127.2,
+          "hz": [
+            370,
+            530
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 4.2,
+          "to": 11.2,
+          "hz": [
+            70,
+            400
+          ],
+          "order": 4,
+          "set": "auto"
+        },
+        {
+          "video": "WKjvGg0hSAA",
+          "from": 15.0,
+          "to": 20.0,
+          "hz": [
+            70,
+            400
+          ],
+          "order": 4,
+          "set": "auto"
+        }
+      ],
+      "shifts": [
+        [
+          "reWmK4awXng",
+          96.05
+        ],
+        [
+          "reWmK4awXng",
+          104.65
+        ],
+        [
+          "WKjvGg0hSAA",
+          24.5
+        ]
+      ],
+      "pops": [
+        [
+          "nxC6jPnQ1Vk",
+          6.321
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          34.396
+        ],
+        [
+          "nxC6jPnQ1Vk",
+          36.37
+        ]
+      ],
+      "start": [
+        "reWmK4awXng",
+        45.4,
+        2.4
+      ]
+    },
+    "cross-v8": {
+      "label": "Cross-plane V8",
+      "order": 4,
+      "segments": [
+        {
+          "video": "eAfIb9VvPqY",
+          "from": 25.0,
+          "to": 30.4,
+          "hz": [
+            46,
+            64
+          ],
+          "order": 4,
+          "set": "idle"
+        },
+        {
+          "video": "eAfIb9VvPqY",
+          "from": 18.4,
+          "to": 20.1,
+          "hz": [
+            55,
+            220
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "eAfIb9VvPqY",
+          "from": 21.1,
+          "to": 24.0,
+          "hz": [
+            50,
+            230
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 8.2,
+          "to": 11.4,
+          "hz": [
+            60,
+            230
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 12.5,
+          "to": 15.8,
+          "hz": [
+            130,
+            240
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 17.8,
+          "to": 23.8,
+          "hz": [
+            140,
+            240
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 34.3,
+          "to": 44.5,
+          "hz": [
+            110,
+            170
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "WZmkSobG290",
+          "from": 46.5,
+          "to": 50.2,
+          "hz": [
+            130,
+            200
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 22.2,
+          "to": 25.6,
+          "hz": [
+            125,
+            170
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 30.8,
+          "to": 33.6,
+          "hz": [
+            120,
+            175
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 41.0,
+          "to": 44.8,
+          "hz": [
+            130,
+            190
+          ],
+          "order": 2,
+          "set": "on"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 38.0,
+          "to": 40.2,
+          "hz": [
+            130,
+            170
+          ],
+          "order": 2,
+          "set": "off"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 19.5,
+          "to": 21.8,
+          "hz": [
+            40,
+            130
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "PT3fZm5HBqA",
+          "from": 13.5,
+          "to": 15.5,
+          "hz": [
+            40,
+            130
+          ],
+          "order": 4,
+          "set": "off"
+        }
+      ],
+      "shifts": [
+        [
+          "reWmK4awXng",
+          97.35
+        ]
+      ],
+      "pops": [
+        [
+          "PT3fZm5HBqA",
+          1.621
+        ],
+        [
+          "PT3fZm5HBqA",
+          1.903
+        ],
+        [
+          "PT3fZm5HBqA",
+          2.087
+        ]
+      ],
+      "start": [
+        "eAfIb9VvPqY",
+        15.0,
+        2.2
+      ]
+    },
+    "turbo": {
+      "label": "Turbo V6 and inline-4",
+      "order": 3,
+      "segments": [
+        {
+          "video": "i42YelyRWDc",
+          "from": 34.5,
+          "to": 38.2,
+          "hz": [
+            68,
+            85
+          ],
+          "order": 3,
+          "set": "idle"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 14.2,
+          "to": 19.0,
+          "hz": [
+            90,
+            320
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 19.2,
+          "to": 22.3,
+          "hz": [
+            210,
+            285
+          ],
+          "order": 3,
+          "set": "on"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 3.9,
+          "to": 5.8,
+          "hz": [
+            115,
+            240
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 6.4,
+          "to": 9.2,
+          "hz": [
+            120,
+            290
+          ],
+          "order": 3,
+          "set": "off"
+        },
+        {
+          "video": "i42YelyRWDc",
+          "from": 9.5,
+          "to": 11.4,
+          "hz": [
+            115,
+            260
+          ],
+          "order": 3,
+          "set": "off"
+        }
+      ],
+      "shifts": [
+        [
+          "i42YelyRWDc",
+          15.55
+        ],
+        [
+          "i42YelyRWDc",
+          18.98
+        ]
+      ],
+      "pops": [
+        [
+          "i42YelyRWDc",
+          3.087
+        ],
+        [
+          "QXxg4EQsijA",
+          3.357
+        ],
+        [
+          "QXxg4EQsijA",
+          4.892
+        ]
+      ],
+      "start": [
+        "i42YelyRWDc",
+        32.5,
+        2.4
+      ]
+    },
+    "w-engine": {
+      "label": "W16 and W12",
+      "order": 8,
+      "segments": [
+        {
+          "video": "vVr85l6oilo",
+          "from": 125.0,
+          "to": 131.0,
+          "hz": [
+            80,
+            100
+          ],
+          "order": 8,
+          "set": "idle"
+        },
+        {
+          "video": "vVr85l6oilo",
+          "from": 107.2,
+          "to": 108.2,
+          "hz": [
+            95,
+            290
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "vVr85l6oilo",
+          "from": 131.6,
+          "to": 132.2,
+          "hz": [
+            95,
+            290
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "jT9eWupIUnM",
+          "from": 42.5,
+          "to": 48.5,
+          "hz": [
+            120,
+            420
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "jT9eWupIUnM",
+          "from": 78.2,
+          "to": 82.6,
+          "hz": [
+            170,
+            270
+          ],
+          "order": 8,
+          "set": "on"
+        },
+        {
+          "video": "jT9eWupIUnM",
+          "from": 82.8,
+          "to": 84.8,
+          "hz": [
+            190,
+            250
+          ],
+          "order": 8,
+          "set": "off"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 42.4,
+          "to": 45.0,
+          "hz": [
+            185,
+            295
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 45.2,
+          "to": 47.0,
+          "hz": [
+            190,
+            225
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 66.2,
+          "to": 67.6,
+          "hz": [
+            75,
+            310
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 67.7,
+          "to": 69.2,
+          "hz": [
+            185,
+            320
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 69.4,
+          "to": 72.0,
+          "hz": [
+            205,
+            325
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 208.5,
+          "to": 210.0,
+          "hz": [
+            90,
+            285
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 210.2,
+          "to": 211.7,
+          "hz": [
+            165,
+            295
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 211.9,
+          "to": 214.6,
+          "hz": [
+            190,
+            295
+          ],
+          "order": 4,
+          "set": "on"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 59.2,
+          "to": 64.2,
+          "hz": [
+            65,
+            175
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "8ZAPQoPaRek",
+          "from": 56.0,
+          "to": 58.0,
+          "hz": [
+            80,
+            180
+          ],
+          "order": 4,
+          "set": "off"
+        },
+        {
+          "video": "qPDiJdPGe4c",
+          "from": 286.7,
+          "to": 289.9,
+          "hz": [
+            100,
+            145
+          ],
+          "order": 4,
+          "set": "on"
+        }
+      ],
+      "shifts": [
+        [
+          "8ZAPQoPaRek",
+          67.65
+        ],
+        [
+          "8ZAPQoPaRek",
+          69.3
+        ],
+        [
+          "8ZAPQoPaRek",
+          210.1
+        ],
+        [
+          "8ZAPQoPaRek",
+          211.75
+        ]
+      ],
+      "pops": [],
+      "start": [
+        "vVr85l6oilo",
+        118.8,
+        2.6
+      ]
+    }
+  },
+  "cars": {
+    "aston-martin-valk": {
+      "name": "Aston Martin Valkyrie V12",
+      "redline": 11000,
+      "pack": "screamer",
+      "order": 6,
+      "turbo": false
+    },
+    "laferrari": {
+      "name": "Ferrari LaFerrari V12 hybrid",
+      "redline": 11000,
+      "pack": "screamer",
+      "order": 6,
+      "turbo": false
+    },
+    "av12": {
+      "name": "Lamborghini Aventador SV V12",
+      "redline": 8500,
+      "pack": "screamer",
+      "order": 6,
+      "turbo": false
+    },
+    "huracan": {
+      "name": "Lamborghini Huracan STO V10",
+      "redline": 8500,
+      "pack": "screamer",
+      "order": 5,
+      "turbo": false
+    },
+    "furari-488": {
+      "name": "Ferrari 488 GTB V8",
+      "redline": 8000,
+      "pack": "flat-v8",
+      "order": 4,
+      "turbo": true
+    },
+    "mp1x": {
+      "name": "McLaren 720S V8",
+      "redline": 8500,
+      "pack": "flat-v8",
+      "order": 4,
+      "turbo": true
+    },
+    "porsche1": {
+      "name": "Porsche 918 Spyder V8 hybrid",
+      "redline": 8000,
+      "pack": "flat-v8",
+      "order": 4,
+      "turbo": false
+    },
+    "bmw1": {
+      "name": "Mercedes-AMG GT4 twin-turbo V8",
+      "redline": 7000,
+      "pack": "cross-v8",
+      "order": 4,
+      "turbo": true
+    },
+    "blackbird": {
+      "name": "Hennessey Blackbird NA V8",
+      "redline": 7400,
+      "pack": "cross-v8",
+      "order": 4,
+      "turbo": false
+    },
+    "nissan-z": {
+      "name": "Nissan Z GT4 twin-turbo V6",
+      "redline": 7000,
+      "pack": "turbo",
+      "order": 3,
+      "turbo": true
+    },
+    "ford-gt": {
+      "name": "Ford GT Mk II twin-turbo V6",
+      "redline": 7000,
+      "pack": "turbo",
+      "order": 3,
+      "turbo": true
+    },
+    "jaguarxkjss": {
+      "name": "Mercedes-AMG ONE V6 hybrid",
+      "redline": 11000,
+      "pack": "turbo",
+      "order": 3,
+      "turbo": true
+    },
+    "supra": {
+      "name": "Toyota GR Supra GT500 turbo inline-4",
+      "redline": 8000,
+      "pack": "turbo",
+      "order": 2,
+      "turbo": true
+    },
+    "buggati": {
+      "name": "Bugatti Chiron W16",
+      "redline": 6800,
+      "pack": "w-engine",
+      "order": 8,
+      "turbo": true
+    },
+    "destrier": {
+      "name": "Bugatti Destrier W16",
+      "redline": 6800,
+      "pack": "w-engine",
+      "order": 8,
+      "turbo": true
+    },
+    "bentley-gt": {
+      "name": "Bentley Continental GT Speed W12",
+      "redline": 6500,
+      "pack": "w-engine",
+      "order": 6,
+      "turbo": true
+    }
+  },
+  "previews": {
+    "destrier": "buggati",
+    "ford-gt": "nissan-z"
+  },
+  "nitro": [
+    [
+      "Evvnc_qtTB4",
+      10.65,
+      1.0
+    ],
+    [
+      "Evvnc_qtTB4",
+      22.25,
+      0.9
+    ]
+  ],
+  "turboSounds": {
+    "whistle": [
+      "yMKOexb-yAM",
+      3.05,
+      4.0
+    ],
+    "blow": [
+      [
+        "kiec7gd__4M",
+        1.05,
+        1.5
+      ],
+      [
+        "rZloLfgTllk",
+        9.4,
+        1.3
+      ]
+    ]
+  }
+}

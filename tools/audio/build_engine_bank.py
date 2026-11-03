@@ -1,4 +1,4 @@
-"""Build the measured engine bank from recordings/plan-v3.json. Writes engine-bank.json, engines/v3/ and the game's credits.json; the old bank is left alone.
+"""Build the measured engine bank from recordings/plan-v3.json. Writes engine-bank.json and engines/v3/; other banks and the game's credits are left alone.
 
 Every loop comes from a stretch where the engine's pitch was tracked, is flattened to its own anchor rpm and woven into a seamless
 2 s loop. Requires ffmpeg, numpy, scipy. Usage: python build_engine_bank.py [car ...] [--view DIR]
@@ -214,7 +214,7 @@ def build_car(key, car, viewdir=None):
 
 
 def write_records(bank, plan):
-    """measurements go to report-v3.json (the game never reads them); credits.json (the game's Credits screen) and CREDITS-v3.md list every source"""
+    """measurements go to report-v3.json (the game never reads them); credits-v3.json and CREDITS-v3.md list every source"""
     path = WORK / 'report-v3.json'
     report = json.loads(path.read_text(encoding='utf8')) if path.exists() else {}
     credits, lines = [], []
@@ -233,7 +233,7 @@ def write_records(bank, plan):
     lines.append(f"- **Tyre squeal (all cars)**: [{t['title']}]({t['url']}), {t['author']}, [{t['license']}]({t['licenseUrl']})")
     shared = [f"{c['name']}" for c in plan.values() if 'sharedWith' in c]
     path.write_text(json.dumps(report, indent=1) + '\n', encoding='utf8')
-    (WORK / 'credits.json').write_text(json.dumps(credits, indent=2, ensure_ascii=False) + '\n', encoding='utf8')
+    (WORK / 'credits-v3.json').write_text(json.dumps(credits, indent=2, ensure_ascii=False) + '\n', encoding='utf8')
     (WORK / 'CREDITS-v3.md').write_text('# Measured engine bank: sources\n\nEvery source shows Creative Commons Attribution on YouTube as of 2026-11-02 (captured in its .info.json), except the CC0 tyre clip. That licence is the uploader\'s own claim. Credits refer to the recordings, not an endorsement.\n\n' + '\n'.join(lines) + '\n\nSharing a recording: ' + '; '.join(shared) + '.\n\nAll edits retain the source licence. Changes: trimmed, pitch flattened, rewoven into loops, tone matched across rpm, filtered, level matched, encoded to Opus; pitch and level follow driving at runtime.\n', encoding='utf8')
 
 

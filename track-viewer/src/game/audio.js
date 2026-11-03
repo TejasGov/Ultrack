@@ -1,14 +1,22 @@
 // Game audio on the Web Audio API (assets/audio/README.md says how each sound is meant to be used):
 // - buses: master -> engine, effects, commentary, crowd (volumes from the settings)
-// - real recorded engines (engine-bank.json): idle plus on- and off-throttle loops at tracked rpm, close enough together that the crossfade
-//   barely bends pitch; real shift, pop and tyre samples; rpm comes from a display gearbox (the physics has no gears; HUD shows the same gear)
-// - the old bank (recorded-engine-bank.json, ?enginebank=old, and the listening page's comparison): idle / low / mid / high loops, a decel layer on lift-off
+// - real recorded engines in five category packs (engine-packs.json): idle plus on- and off-throttle loops at tracked rpm, close enough together that the
+//   crossfade barely bends pitch; real shift, pop and start samples. A race fetches one pack and the shared file (opponents, tyres, crash, nitro, turbo).
+//   rpm comes from a display gearbox (the physics has no gears; HUD shows the same gear)
+// - older banks, for the listening page's comparison and rollback: per-car (engine-bank.json, ?enginebank=car), and the first one (recorded-engine-bank.json, ?enginebank=old)
 // - one-shots: race cues, pops, nitro, crashes, crowd, fireworks; the crowd ambience loop
 // - commentary: Enzo, Alastair and Kavya lines picked by category and situation, never two at once, speakers alternating
 //   (Enzo, then Alastair answering), minimum gaps by priority and an airtime cap, no repeats until a category is used up
-import { createPA, RoadAudio } from './audio-effects.js';
+import { createPA, RoadAudio, TrafficAudio } from './audio-effects.js';
 import { EV } from './ev.js';
 const A = '/assets/audio/';
+const BANKS = { old: 'recorded-engine-bank.json', car: 'engine-bank.json' };
+
+/** the category bank lists its loops once per pack: a car is its pack plus its own name, redline and pitch */
+export function expandBank(bank) {
+  if (bank?.packs) for (const [key, car] of Object.entries(bank.profiles)) bank.profiles[key] = { ...bank.packs[car.pack], ...car };
+  return bank;
+}
 
 export class GameAudio {
   constructor() {
@@ -30,12 +38,12 @@ export class GameAudio {
   }
 
   async loadBank() {
-    const bankFile = new URLSearchParams(globalThis.location?.search ?? '').get('enginebank') === 'old' ? 'recorded-engine-bank.json' : 'engine-bank.json';
+    const bankFile = BANKS[new URLSearchParams(globalThis.location?.search ?? '').get('enginebank')] ?? 'engine-packs.json';
     const [bank, script, voices] = await Promise.all([
       fetch(A+bankFile).then(r=>r.ok?r.json():null).catch(()=>null),
       ...['announcers/script.json', 'announcers/voice_manifest.json'].map(f=>fetch(A+f).then(r=>r.json()))
     ]);
-    this.engineBank=bank; this.voices = voices.lines;
+    this.engineBank=expandBank(bank); this.voices = voices.lines;
     this.commentary = new Commentary(this, script.lines.filter((l) => voices.lines[l.id]));
     this.ready = true;
   }
@@ -45,8 +53,8 @@ export class GameAudio {
     if (this.initializing) await this.initializing;
     if (!this.ready) return;
     const prof = this.engineBank?.profiles?.[key];
-    const files = [...(prof?.on ? [prof.idle, ...prof.on, ...prof.off] : Object.values(prof?.loops ?? {})).map((l) => l.file), prof?.start, prof?.rev, 'race/lights-on.ogg', 'race/lights-out.ogg', 'race/horn-start.ogg'];
-    await Promise.all(files.filter(Boolean).map((f) => this.buffer(f)));
+    const files = [...(prof?.on ? [prof.idle, ...prof.on, ...prof.off] : Object.values(prof?.loops ?? {})), prof?.start, prof?.rev, this.engineBank?.common, 'race/lights-on.ogg', 'race/lights-out.ogg', 'race/horn-start.ogg'];
+    await Promise.all(files.filter(Boolean).map((f) => this.buffer(f.file ?? f)));
   }
 
   setVolumes(s) {
@@ -61,15 +69,15 @@ export class GameAudio {
     return this.buffers.get(path);
   }
 
-  /** one-shot; returns the source node (or null). bus: effects | crowd | commentary | engine */
+  /** one-shot from a file, or a { file, at, dur } clip inside a pack; returns the source node (or null). bus: effects | crowd | commentary | engine */
   async play(path, { bus = 'effects', gain = 1, rate = 1, delay = 0, onended } = {}) {
     if (!this.ready) return null;
-    const buf = await this.buffer(path); if (!buf) return null;
+    const buf = await this.buffer(path.file ?? path); if (!buf) return null;
     const src = this.ctx.createBufferSource(), g = this.ctx.createGain();
     src.buffer = buf; src.playbackRate.value = rate; g.gain.value = gain;
     src.connect(g).connect(bus === 'crowd' ? this.duck : this.bus[bus]);
     if (onended) src.onended = onended;
-    src.start(this.ctx.currentTime + delay);
+    if (path.file) src.start(this.ctx.currentTime + delay, path.at, path.dur); else src.start(this.ctx.currentTime + delay);
     return src;
   }
 
@@ -110,14 +118,17 @@ export class GameAudio {
 
   async measuredEngine(prof,token) {
     const start=async(l,bus='engine')=>({...l,h:await this.loop(l.file,{bus,gain:0,loopStart:l.loopStart,loopEnd:l.loopEnd})});
-    const [idle,on,off,squeal]=await Promise.all([start(prof.idle),Promise.all(prof.on.map(l=>start(l))),Promise.all(prof.off.map(l=>start(l))),this.engineBank.tyres?start(this.engineBank.tyres,'effects'):null]);
-    const layers=Object.fromEntries([['idle',idle],...on.map((l,i)=>['on'+i,l]),...off.map((l,i)=>['off'+i,l]),['squeal',squeal]].filter(([,l])=>l));
+    const [idle,on,off,squeal,whistle]=await Promise.all([start(prof.idle),Promise.all(prof.on.map(l=>start(l))),Promise.all(prof.off.map(l=>start(l))),this.engineBank.tyres?start(this.engineBank.tyres,'effects'):null,prof.turbo&&this.engineBank.turbo?start(this.engineBank.turbo.whistle):null]);
+    const layers=Object.fromEntries([['idle',idle],...on.map((l,i)=>['on'+i,l]),...off.map((l,i)=>['off'+i,l]),['squeal',squeal],['whistle',whistle]].filter(([,l])=>l));
     if(token!==this.engineToken){for(const l of Object.values(layers))l.h?.stop();return;}
-    this.engine={prof,layers,ev:false,shiftUntil:0,road:new RoadAudio(this.ctx,this.bus),idle,on:[idle,...on],off:[idle,...off],squeal};
+    this.engine={prof,layers,ev:false,rev:prof.start,shiftUntil:0,road:new RoadAudio(this.ctx,this.bus),idle,on:[idle,...on],off:[idle,...off],squeal,whistle,boostAt:-9,nextBlow:-9};
+    const shared=this.engineBank.common&&await this.buffer(this.engineBank.common.file);
+    if(shared&&token===this.engineToken)this.traffic=new TrafficAudio(this.ctx,this.bus,shared,this.engineBank);
   }
 
   engineOff() {
     this.engineToken=(this.engineToken??0)+1;
+    this.traffic?.stop();this.traffic=null;
     if (!this.engine) return;
     this.engine.road?.stop();
     for (const l of Object.values(this.engine.layers)) l.h?.stop();
@@ -156,7 +167,9 @@ export class GameAudio {
 
   /** the measured bank: neighbours crossfade at one pitch; lifting moves to the off-throttle set, or to a quiet on-throttle if no real overrun reaches this rpm */
   mixMeasured(E,rpm,throttle,mute,speed,slip) {
-    const t=this.ctx.currentTime,clamp=(x)=>Math.min(1,Math.max(0,x));
+    const t=this.ctx.currentTime,clamp=(x)=>Math.min(1,Math.max(0,x)),pitch=E.prof.pitch??1;
+    if(mute<1)this.traffic?.silence();
+    rpm*=pitch;   // a category pack plays each car at its own firing pitch
     const around=(list,into,scale)=>{
       let i=0;while(i<list.length-1&&rpm>list[i+1].rpm)i++;
       const a=list[i],b=list[Math.min(i+1,list.length-1)],x=a===b?0:clamp((rpm-a.rpm)/(b.rpm-a.rpm));
@@ -164,16 +177,25 @@ export class GameAudio {
       if(a!==b)into.set(b,(into.get(b)??0)+Math.sin(x*Math.PI/2)*scale);
     };
     const idle=E.idle.rpm,top=E.off.at(-1).rpm,lift=clamp(1-throttle*4),reach=clamp(1-Math.log(rpm/top)/Math.log(1.3));
-    const body=.5+.5*clamp(Math.log(rpm/idle)/Math.log(E.prof.redline/idle)),power=.72*(.55+.45*throttle);
+    const body=.5+.5*clamp(Math.log(rpm/idle)/Math.log(E.prof.redline*pitch/idle)),power=.72*(.55+.45*throttle);
     const gains=new Map();
     around(E.on,gains,((1-lift)+lift*(1-reach)*.45)*power*body);
     around(E.off,gains,lift*reach*.5*body);
     const dip=(t<E.shiftUntil?.55:1)*(this.nitroOn?1.08:1)*mute;
     for(const l of Object.values(E.layers)){
-      if(l===E.squeal||!l.h)continue;   // a loop that failed to load stays silent; the rest keep playing
+      if(l===E.squeal||l===E.whistle||!l.h)continue;   // a loop that failed to load stays silent; the rest keep playing
       // the display gearbox idles lower than some recordings: idle keeps its real pitch rather than dropping below it
       l.h.src.playbackRate.setTargetAtTime(Math.min(3.5,Math.max(l===E.idle?1:.45,rpm/l.rpm)),t,.03);
       l.h.gain.gain.setTargetAtTime((gains.get(l)??0)*dip,t,.04);
+    }
+    if(E.whistle){
+      const rev=rpm/(E.prof.redline*pitch),boost=clamp((throttle-.5)*2)*clamp((rev-.35)/.35);
+      if(E.whistle.h){E.whistle.h.gain.gain.setTargetAtTime(boost*.1*mute,t,.12);E.whistle.h.src.playbackRate.setTargetAtTime(.85+.35*rev,t,.1);}
+      // a sharp lift with boost up dumps it: the blow-off
+      if(throttle>.7&&rev>.45)E.boostAt=t;
+      else if(throttle<.25&&t-E.boostAt<.3&&t>E.nextBlow&&mute===1&&this.engineBank.turbo?.blow.length){
+        const b=this.engineBank.turbo.blow;this.play(b[Math.floor(Math.random()*b.length)],{bus:'engine',gain:.32});E.nextBlow=t+1.2;E.boostAt=-9;
+      }
     }
     if(E.squeal?.h){
       const x=clamp((Math.abs(slip)-.1)/.22),amount=x*x*(3-2*x)*Math.min(1,Math.abs(speed)/6);   // same onset as the tyre smoke and skid marks
@@ -199,13 +221,16 @@ export class GameAudio {
 
   // ---------------------------------------------------------------------------------------------- nitro
   async nitro(on) {
-    // Boost lifts the real engine slightly. No generated sci-fi jet samples.
+    // Boost lifts the real engine slightly, and the category bank adds a real flame burst as it fires. No generated sci-fi jet samples.
+    const bursts=this.engineBank?.nitro;
+    if(on&&!this.nitroOn&&bursts?.length&&this.engine&&!this.engine.ev)this.play(bursts[Math.floor(Math.random()*bursts.length)],{bus:'engine',gain:.45});
     this.nitroOn=on;
   }
 
   crash(kmh) {
-    if (kmh < 40) this.play(this.pick('crash/soft-', 3), { gain: 0.4 + kmh / 80 });
-    else { this.play(this.pick('crash/hard-', 3), { gain: Math.min(1, 0.5 + kmh / 200) }); this.play(this.pick('crash/glass-tinkle-', 2), { gain: 0.5, delay: 0.2 }); }
+    const clip = (prefix, n) => { const f = this.pick('crash/' + prefix, n); return this.engineBank?.crash?.[f.slice(6, -4)] ?? f; };   // in the shared file, so it never waits on the network mid-race
+    if (kmh < 40) this.play(clip('soft-', 3), { gain: 0.4 + kmh / 80 });
+    else { this.play(clip('hard-', 3), { gain: Math.min(1, 0.5 + kmh / 200) }); this.play(clip('glass-tinkle-', 2), { gain: 0.5, delay: 0.2 }); }
   }
 
   stopAll() { this.engineOff(); this.nitro(false); this.commentary?.stop(); }

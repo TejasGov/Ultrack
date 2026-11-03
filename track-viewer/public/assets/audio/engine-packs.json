@@ -1,0 +1,1206 @@
+{
+ "schemaVersion": 4,
+ "kind": "category-packs",
+ "packs": {
+  "screamer": {
+   "file": "engines/packs/screamer.ogg",
+   "order": 6,
+   "idle": {
+    "file": "engines/packs/screamer.ogg",
+    "rpm": 1129,
+    "loopStart": 0.118104,
+    "loopEnd": 2.106313
+   },
+   "on": [
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 2290,
+     "loopStart": 2.350521,
+     "loopEnd": 3.835938
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 3130,
+     "loopStart": 4.074833,
+     "loopEnd": 5.539083
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 4270,
+     "loopStart": 5.774312,
+     "loopEnd": 7.250167
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 5830,
+     "loopStart": 7.496771,
+     "loopEnd": 8.980063
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 7960,
+     "loopStart": 9.214667,
+     "loopEnd": 10.710979
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 10870,
+     "loopStart": 10.951438,
+     "loopEnd": 12.45025
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 2530,
+     "loopStart": 12.693896,
+     "loopEnd": 13.87275
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 5080,
+     "loopStart": 14.111625,
+     "loopEnd": 15.306979
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "rpm": 10210,
+     "loopStart": 15.55,
+     "loopEnd": 16.738667
+    }
+   ],
+   "shifts": [
+    {
+     "file": "engines/packs/screamer.ogg",
+     "at": 16.855021,
+     "dur": 0.19
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "at": 17.065021,
+     "dur": 0.19
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "at": 17.275021,
+     "dur": 0.19
+    }
+   ],
+   "pops": [
+    {
+     "file": "engines/packs/screamer.ogg",
+     "at": 17.485021,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "at": 17.665021,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/screamer.ogg",
+     "at": 17.845021,
+     "dur": 0.159979
+    }
+   ],
+   "start": {
+    "file": "engines/packs/screamer.ogg",
+    "at": 18.025,
+    "dur": 2.4
+   },
+   "sources": [
+    {
+     "author": "Car and Driver España",
+     "title": "Así suena el motor V12 del Aston Martin Valkyrie | CAR AND DRIVER",
+     "url": "https://www.youtube.com/watch?v=9nE5FoIYa2Y",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "67c9e1b3e83bbb6f72d438cb4f13e39e6bf4b4092be19c65dba6848a887665c2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "Lamborghini Huracan LP610-4 with Valvetronic Fi Exhaust Acceleration Sound collections !!",
+     "url": "https://www.youtube.com/watch?v=EPW09CdBBjM",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "5f0bd2639732c86c2c55f22f74a9de330709ff0f2004e89d6ffc328c08ad2845",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "Lamborghini Aventador LP750-4 SV Flamethrower Idle Rev, Flybys w/ Fi EXHAUST Street King Ver",
+     "url": "https://www.youtube.com/watch?v=eh5WmIWNkLQ",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "8dc0936175e56e293b1a2294b3856f0d69230a9f6a4a302195d2f368a5c24370",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Played N Faved - Sound Effects & Stock Footage",
+     "title": "Lamborghini Supercar Sound Effect | Lamborghini Engine Sounds | Royalty Free",
+     "url": "https://www.youtube.com/watch?v=kMLCWrG_KQk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "75a4d38f48e080b70ae7ad7732ce5a073a4296cdea9fd262743716b6e7928b43",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "ePic eXhaust",
+     "title": "Ferrari LaFerrari Revving Sound!",
+     "url": "https://www.youtube.com/watch?v=w1XHmlAlax0",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "cc769c1ccc49eabf40b533223469234622e3897cf05bf583f309026c18520ff9",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "label": "Naturally aspirated V12 and V10"
+  },
+  "flat-v8": {
+   "file": "engines/packs/flat-v8.ogg",
+   "order": 4,
+   "idle": {
+    "file": "engines/packs/flat-v8.ogg",
+    "rpm": 952,
+    "loopStart": 0.120354,
+    "loopEnd": 2.002083
+   },
+   "on": [
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 1620,
+     "loopStart": 2.243333,
+     "loopEnd": 3.692687
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 2390,
+     "loopStart": 3.935062,
+     "loopEnd": 5.419083
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 3100,
+     "loopStart": 5.652563,
+     "loopEnd": 7.117396
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 4020,
+     "loopStart": 7.35925,
+     "loopEnd": 8.8405
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 5940,
+     "loopStart": 9.078,
+     "loopEnd": 10.572125
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 7700,
+     "loopStart": 10.811625,
+     "loopEnd": 12.297688
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 1480,
+     "loopStart": 12.542167,
+     "loopEnd": 13.702542
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 2710,
+     "loopStart": 13.942896,
+     "loopEnd": 15.130854
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "rpm": 4970,
+     "loopStart": 15.371208,
+     "loopEnd": 16.564062
+    }
+   ],
+   "shifts": [
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "at": 16.682562,
+     "dur": 0.19
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "at": 16.892563,
+     "dur": 0.19
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "at": 17.102563,
+     "dur": 0.19
+    }
+   ],
+   "pops": [
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "at": 17.312562,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "at": 17.492562,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/flat-v8.ogg",
+     "at": 17.672563,
+     "dur": 0.159979
+    }
+   ],
+   "start": {
+    "file": "engines/packs/flat-v8.ogg",
+    "at": 17.852542,
+    "dur": 2.4
+   },
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+     "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+     "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+     "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "label": "Flat-plane V8 supercar"
+  },
+  "cross-v8": {
+   "file": "engines/packs/cross-v8.ogg",
+   "order": 4,
+   "idle": {
+    "file": "engines/packs/cross-v8.ogg",
+    "rpm": 893,
+    "loopStart": 0.120667,
+    "loopEnd": 2.064021
+   },
+   "on": [
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 1160,
+     "loopStart": 2.306375,
+     "loopEnd": 3.779437
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 1600,
+     "loopStart": 4.016271,
+     "loopEnd": 5.46475
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 2200,
+     "loopStart": 5.705542,
+     "loopEnd": 7.160292
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 2730,
+     "loopStart": 7.4,
+     "loopEnd": 8.870104
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 3760,
+     "loopStart": 9.109792,
+     "loopEnd": 10.583229
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 5190,
+     "loopStart": 10.824687,
+     "loopEnd": 12.323063
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 1030,
+     "loopStart": 12.5605,
+     "loopEnd": 13.706667
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 2410,
+     "loopStart": 13.947792,
+     "loopEnd": 15.120188
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "rpm": 5070,
+     "loopStart": 15.361187,
+     "loopEnd": 16.546063
+    }
+   ],
+   "shifts": [
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "at": 16.665,
+     "dur": 0.19
+    }
+   ],
+   "pops": [
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "at": 16.875,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "at": 17.055,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/cross-v8.ogg",
+     "at": 17.235,
+     "dur": 0.16
+    }
+   ],
+   "start": {
+    "file": "engines/packs/cross-v8.ogg",
+    "at": 17.415,
+    "dur": 2.2
+   },
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "2018 Mercedes-AMG GTR Valves ON/OFF,  POV Driving, Pops and Crackles w/  Catless Fi EXHAUST",
+     "url": "https://www.youtube.com/watch?v=PT3fZm5HBqA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "6638e7ba2871f2eeea08e69487580b0c600aab63be307c41462f5e396bd5184f",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Played N Faved - Sound Effects & Stock Footage",
+     "title": "Mustang Sound Effect | American Muscle Car Mustang Engine Sounds | Royalty Free",
+     "url": "https://www.youtube.com/watch?v=WZmkSobG290",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "072ad1172d33da3c92c69cd3447189f98287b0be0d375a046a2e92d53f58e08b",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Next-Gen Speed",
+     "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+     "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "Ferrari 488 GTB Idle Rev, Flybys w/ Valvetronic Fi EXHAUST Catback X One Belief Tyre & Wheels",
+     "url": "https://www.youtube.com/watch?v=reWmK4awXng",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b2730cf0e4df45a68f1dfc28f504213cb27f3f5799b81b3307d9137479617617",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "label": "Cross-plane V8"
+  },
+  "turbo": {
+   "file": "engines/packs/turbo.ogg",
+   "order": 3,
+   "idle": {
+    "file": "engines/packs/turbo.ogg",
+    "rpm": 1503,
+    "loopStart": 0.117958,
+    "loopEnd": 2.083729
+   },
+   "on": [
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 2330,
+     "loopStart": 2.329083,
+     "loopEnd": 3.802458
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 2830,
+     "loopStart": 4.042833,
+     "loopEnd": 5.527979
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 3670,
+     "loopStart": 5.767896,
+     "loopEnd": 7.255562
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 4170,
+     "loopStart": 7.491812,
+     "loopEnd": 8.980688
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 5070,
+     "loopStart": 9.217708,
+     "loopEnd": 10.704146
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 6160,
+     "loopStart": 10.944708,
+     "loopEnd": 12.426333
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 2320,
+     "loopStart": 12.6685,
+     "loopEnd": 13.849229
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 3470,
+     "loopStart": 14.092646,
+     "loopEnd": 15.281417
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "rpm": 5480,
+     "loopStart": 15.520646,
+     "loopEnd": 16.716313
+    }
+   ],
+   "shifts": [
+    {
+     "file": "engines/packs/turbo.ogg",
+     "at": 16.834063,
+     "dur": 0.19
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "at": 17.044062,
+     "dur": 0.19
+    }
+   ],
+   "pops": [
+    {
+     "file": "engines/packs/turbo.ogg",
+     "at": 17.254062,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "at": 17.434062,
+     "dur": 0.16
+    },
+    {
+     "file": "engines/packs/turbo.ogg",
+     "at": 17.614062,
+     "dur": 0.16
+    }
+   ],
+   "start": {
+    "file": "engines/packs/turbo.ogg",
+    "at": 17.794062,
+    "dur": 2.4
+   },
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "Toyota Supra 2.0T B48 Fi EXHAUST Acceleration, Revving, Driveby X Lee Speed",
+     "url": "https://www.youtube.com/watch?v=QXxg4EQsijA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "83b79ba3d15d6e8eb315002b81ea8a67c13cbfd90fe858d333dcd1ef1a82653c",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "Infiniti Q60 S 3.0T V6 X Fi EXHAUST Startup & Acceleration",
+     "url": "https://www.youtube.com/watch?v=i42YelyRWDc",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "585095dddae8341935ce0195e197e0273a807d2942640c5c8f92994a961df226",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "label": "Turbo V6 and inline-4"
+  },
+  "w-engine": {
+   "file": "engines/packs/w-engine.ogg",
+   "order": 8,
+   "idle": {
+    "file": "engines/packs/w-engine.ogg",
+    "rpm": 666,
+    "loopStart": 0.122188,
+    "loopEnd": 1.996854
+   },
+   "on": [
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 900,
+     "loopStart": 2.235958,
+     "loopEnd": 3.620104
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 1280,
+     "loopStart": 3.856396,
+     "loopEnd": 5.34925
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 1810,
+     "loopStart": 5.587875,
+     "loopEnd": 7.070833
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 2300,
+     "loopStart": 7.312417,
+     "loopEnd": 8.767563
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 3270,
+     "loopStart": 9.007625,
+     "loopEnd": 10.477063
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 4650,
+     "loopStart": 10.719146,
+     "loopEnd": 12.194854
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 1010,
+     "loopStart": 12.435313,
+     "loopEnd": 13.544042
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 1360,
+     "loopStart": 13.781187,
+     "loopEnd": 14.979583
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "rpm": 1910,
+     "loopStart": 15.21925,
+     "loopEnd": 16.356833
+    }
+   ],
+   "shifts": [
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "at": 16.479625,
+     "dur": 0.19
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "at": 16.689625,
+     "dur": 0.189979
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "at": 16.899604,
+     "dur": 0.19
+    },
+    {
+     "file": "engines/packs/w-engine.ogg",
+     "at": 17.109604,
+     "dur": 0.19
+    }
+   ],
+   "pops": [],
+   "start": {
+    "file": "engines/packs/w-engine.ogg",
+    "at": 17.319604,
+    "dur": 2.6
+   },
+   "sources": [
+    {
+     "author": "QuickSilver Sound Architects",
+     "title": "2019 Bentley GT W12 QuickSilver Exhaust System",
+     "url": "https://www.youtube.com/watch?v=8ZAPQoPaRek",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "634aa3d4b5846ba6f19b0c0b7d98fa4d1b3f37ae63887f1215f756b7b600735b",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "TvdL Films",
+     "title": "Bugattiblue CHIRON SOUND / chasing a Veyron WRE on the road DRIVING -- Bugatti",
+     "url": "https://www.youtube.com/watch?v=jT9eWupIUnM",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "414de702ee1eb965ec5bbfdaff2b9c7d0353f592002238770e0c95e233a6c129",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Hungarian Supercar Spotters",
+     "title": "1/1 Bugatti Veyron 16.4 Oakley Design Start up, Sound and Acceleration with 1145hp 1580Nm",
+     "url": "https://www.youtube.com/watch?v=qPDiJdPGe4c",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b997d7f79eeb01067290dcba6f0e821a48ca4c0533b3699855ae0770d831de01",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "TvdL Films",
+     "title": "Bugatti Chiron -Sound- LOUD REVS, Start Up & convoy !!!",
+     "url": "https://www.youtube.com/watch?v=vVr85l6oilo",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "18e558ed67c981289a0ac7da54ca848b80e882378b174340d7a868a8be666e27",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "label": "W16 and W12"
+  }
+ },
+ "common": {
+  "file": "engines/packs/common.ogg",
+  "traffic": {
+   "screamer": {
+    "file": "engines/packs/common.ogg",
+    "rpm": 5830,
+    "loopStart": 0.118667,
+    "loopEnd": 1.601958
+   },
+   "flat-v8": {
+    "file": "engines/packs/common.ogg",
+    "rpm": 5940,
+    "loopStart": 1.846042,
+    "loopEnd": 3.340167
+   },
+   "cross-v8": {
+    "file": "engines/packs/common.ogg",
+    "rpm": 5190,
+    "loopStart": 3.574271,
+    "loopEnd": 5.072646
+   },
+   "turbo": {
+    "file": "engines/packs/common.ogg",
+    "rpm": 5070,
+    "loopStart": 5.312167,
+    "loopEnd": 6.798604
+   },
+   "w-engine": {
+    "file": "engines/packs/common.ogg",
+    "rpm": 4650,
+    "loopStart": 7.039458,
+    "loopEnd": 8.515167
+   }
+  },
+  "tyres": {
+   "file": "engines/packs/common.ogg",
+   "source": {
+    "author": "BigSoundBank (Joseph Sardin)",
+    "title": "Tire squeal",
+    "url": "https://bigsoundbank.com/tire-squeal-s0500.html",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "Cut to one loop, filtered, level matched and encoded to Opus."
+   },
+   "loopStart": 8.75675,
+   "loopEnd": 11.680979
+  },
+  "nitro": [
+   {
+    "file": "engines/packs/common.ogg",
+    "at": 24.121708,
+    "dur": 1.0
+   },
+   {
+    "file": "engines/packs/common.ogg",
+    "at": 25.141708,
+    "dur": 0.9
+   }
+  ],
+  "turbo": {
+   "whistle": {
+    "file": "engines/packs/common.ogg",
+    "loopStart": 29.017771,
+    "loopEnd": 32.667771
+   },
+   "blow": [
+    {
+     "file": "engines/packs/common.ogg",
+     "at": 26.061708,
+     "dur": 1.499979
+    },
+    {
+     "file": "engines/packs/common.ogg",
+     "at": 27.581688,
+     "dur": 1.3
+    }
+   ]
+  },
+  "sources": [
+   {
+    "author": "Free Sounds Library",
+    "title": "Car Crash Sound FX | Vehicle Impact Collision Audio",
+    "url": "https://www.youtube.com/watch?v=ESdiL9GSEAo",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "f7d12ff4890a844c75b710289ae99bcd84eef6e4d8939ae2f91ff45aad3728f2",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+   },
+   {
+    "author": "Marwan Ryad",
+    "title": "Ferrari F430 nitros NOS flaming kit",
+    "url": "https://www.youtube.com/watch?v=Evvnc_qtTB4",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "7d822b6cce5ff19a3be4b310ed15f1f5a48fe750b1667ceb0a8d3160a6dcc121",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+   },
+   {
+    "author": "77Pacer",
+    "title": "Custom made car crashing sound effect",
+    "url": "https://www.youtube.com/watch?v=WXHjRfme8Fg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "262222734b8fc624cb6ccb79b4cde97111f6fcbdddf78783d7b8a1d15fc50903",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+   },
+   {
+    "author": "OverBOOST TV",
+    "title": "Toyota Supra Turbo Flutter",
+    "url": "https://www.youtube.com/watch?v=kiec7gd__4M",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "76b321b990760eed4ec4cd7a60dcfd3d2929960796f8906bd7a160d799154467",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+   },
+   {
+    "author": "Stock Media",
+    "title": "Car Crash Sound Effect | Realistic Impact Audio for Films, Shorts & Game Development",
+    "url": "https://www.youtube.com/watch?v=lkDPfocjqxE",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "5fabfc174a9aadf10934c6466b24462e290a4e399f782a647f8ac6c291716c44",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+   },
+   {
+    "author": "Bonzorello",
+    "title": "2G Eclipse 4G63 Turbo Flutter Sound.",
+    "url": "https://www.youtube.com/watch?v=rZloLfgTllk",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "5556891f1383e3ece97d86f33d0a4b01377fafe90eb70ef9dc1e9b842a34c5f0",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+   },
+   {
+    "author": "RF TURBO GARAGE ",
+    "title": "❗️🥇1.9 TDI PD 130 450HP🥇❗️ NITRO FLAMES HARDCUT INSANE",
+    "url": "https://www.youtube.com/watch?v=yMKOexb-yAM",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceSha256": "12f20b30010eefc9bb80dd00e44f18e2d42112ff3f8a8a4f01f667ee58a9bb23",
+    "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+   }
+  ],
+  "crash": {
+   "soft-1": {
+    "file": "engines/packs/common.ogg",
+    "at": 11.802167,
+    "dur": 1.0
+   },
+   "soft-2": {
+    "file": "engines/packs/common.ogg",
+    "at": 12.822167,
+    "dur": 1.36
+   },
+   "soft-3": {
+    "file": "engines/packs/common.ogg",
+    "at": 14.202167,
+    "dur": 0.74725
+   },
+   "glass-tinkle-1": {
+    "file": "engines/packs/common.ogg",
+    "at": 14.969417,
+    "dur": 1.48
+   },
+   "glass-tinkle-2": {
+    "file": "engines/packs/common.ogg",
+    "at": 16.469417,
+    "dur": 1.722292
+   },
+   "hard-1": {
+    "file": "engines/packs/common.ogg",
+    "at": 18.211708,
+    "dur": 1.5
+   },
+   "hard-2": {
+    "file": "engines/packs/common.ogg",
+    "at": 19.731708,
+    "dur": 0.95
+   },
+   "hard-3": {
+    "file": "engines/packs/common.ogg",
+    "at": 20.701708,
+    "dur": 3.4
+   }
+  }
+ },
+ "tyres": {
+  "file": "engines/packs/common.ogg",
+  "source": {
+   "author": "BigSoundBank (Joseph Sardin)",
+   "title": "Tire squeal",
+   "url": "https://bigsoundbank.com/tire-squeal-s0500.html",
+   "license": "CC0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "changes": "Cut to one loop, filtered, level matched and encoded to Opus."
+  },
+  "loopStart": 8.75675,
+  "loopEnd": 11.680979
+ },
+ "crash": {
+  "soft-1": {
+   "file": "engines/packs/common.ogg",
+   "at": 11.802167,
+   "dur": 1.0
+  },
+  "soft-2": {
+   "file": "engines/packs/common.ogg",
+   "at": 12.822167,
+   "dur": 1.36
+  },
+  "soft-3": {
+   "file": "engines/packs/common.ogg",
+   "at": 14.202167,
+   "dur": 0.74725
+  },
+  "glass-tinkle-1": {
+   "file": "engines/packs/common.ogg",
+   "at": 14.969417,
+   "dur": 1.48
+  },
+  "glass-tinkle-2": {
+   "file": "engines/packs/common.ogg",
+   "at": 16.469417,
+   "dur": 1.722292
+  },
+  "hard-1": {
+   "file": "engines/packs/common.ogg",
+   "at": 18.211708,
+   "dur": 1.5
+  },
+  "hard-2": {
+   "file": "engines/packs/common.ogg",
+   "at": 19.731708,
+   "dur": 0.95
+  },
+  "hard-3": {
+   "file": "engines/packs/common.ogg",
+   "at": 20.701708,
+   "dur": 3.4
+  }
+ },
+ "traffic": {
+  "screamer": {
+   "file": "engines/packs/common.ogg",
+   "rpm": 5830,
+   "loopStart": 0.118667,
+   "loopEnd": 1.601958
+  },
+  "flat-v8": {
+   "file": "engines/packs/common.ogg",
+   "rpm": 5940,
+   "loopStart": 1.846042,
+   "loopEnd": 3.340167
+  },
+  "cross-v8": {
+   "file": "engines/packs/common.ogg",
+   "rpm": 5190,
+   "loopStart": 3.574271,
+   "loopEnd": 5.072646
+  },
+  "turbo": {
+   "file": "engines/packs/common.ogg",
+   "rpm": 5070,
+   "loopStart": 5.312167,
+   "loopEnd": 6.798604
+  },
+  "w-engine": {
+   "file": "engines/packs/common.ogg",
+   "rpm": 4650,
+   "loopStart": 7.039458,
+   "loopEnd": 8.515167
+  }
+ },
+ "nitro": [
+  {
+   "file": "engines/packs/common.ogg",
+   "at": 24.121708,
+   "dur": 1.0
+  },
+  {
+   "file": "engines/packs/common.ogg",
+   "at": 25.141708,
+   "dur": 0.9
+  }
+ ],
+ "turbo": {
+  "whistle": {
+   "file": "engines/packs/common.ogg",
+   "loopStart": 29.017771,
+   "loopEnd": 32.667771
+  },
+  "blow": [
+   {
+    "file": "engines/packs/common.ogg",
+    "at": 26.061708,
+    "dur": 1.499979
+   },
+   {
+    "file": "engines/packs/common.ogg",
+    "at": 27.581688,
+    "dur": 1.3
+   }
+  ]
+ },
+ "profiles": {
+  "aston-martin-valk": {
+   "name": "Aston Martin Valkyrie V12",
+   "redline": 11000,
+   "pitch": 1.0,
+   "pack": "screamer",
+   "turbo": false,
+   "cars": [
+    "aston-martin-valk"
+   ],
+   "match": "Naturally aspirated V12 and V10",
+   "quality": "category-pack",
+   "preview": "engines/v3/aston-martin-valk-source.ogg"
+  },
+  "laferrari": {
+   "name": "Ferrari LaFerrari V12 hybrid",
+   "redline": 11000,
+   "pitch": 1.0,
+   "pack": "screamer",
+   "turbo": false,
+   "cars": [
+    "laferrari"
+   ],
+   "match": "Naturally aspirated V12 and V10",
+   "quality": "category-pack",
+   "preview": "engines/v3/laferrari-source.ogg"
+  },
+  "av12": {
+   "name": "Lamborghini Aventador SV V12",
+   "redline": 8500,
+   "pitch": 1.0,
+   "pack": "screamer",
+   "turbo": false,
+   "cars": [
+    "av12"
+   ],
+   "match": "Naturally aspirated V12 and V10",
+   "quality": "category-pack",
+   "preview": "engines/v3/av12-source.ogg"
+  },
+  "huracan": {
+   "name": "Lamborghini Huracan STO V10",
+   "redline": 8500,
+   "pitch": 0.8333,
+   "pack": "screamer",
+   "turbo": false,
+   "cars": [
+    "huracan"
+   ],
+   "match": "Naturally aspirated V12 and V10",
+   "quality": "category-pack",
+   "preview": "engines/v3/huracan-source.ogg"
+  },
+  "furari-488": {
+   "name": "Ferrari 488 GTB V8",
+   "redline": 8000,
+   "pitch": 1.0,
+   "pack": "flat-v8",
+   "turbo": true,
+   "cars": [
+    "furari-488"
+   ],
+   "match": "Flat-plane V8 supercar",
+   "quality": "category-pack",
+   "preview": "engines/v3/furari-488-source.ogg"
+  },
+  "mp1x": {
+   "name": "McLaren 720S V8",
+   "redline": 8500,
+   "pitch": 1.0,
+   "pack": "flat-v8",
+   "turbo": true,
+   "cars": [
+    "mp1x"
+   ],
+   "match": "Flat-plane V8 supercar",
+   "quality": "category-pack",
+   "preview": "engines/v3/mp1x-source.ogg"
+  },
+  "porsche1": {
+   "name": "Porsche 918 Spyder V8 hybrid",
+   "redline": 8000,
+   "pitch": 1.0,
+   "pack": "flat-v8",
+   "turbo": false,
+   "cars": [
+    "porsche1"
+   ],
+   "match": "Flat-plane V8 supercar",
+   "quality": "category-pack",
+   "preview": "engines/v3/porsche1-source.ogg"
+  },
+  "bmw1": {
+   "name": "Mercedes-AMG GT4 twin-turbo V8",
+   "redline": 7000,
+   "pitch": 1.0,
+   "pack": "cross-v8",
+   "turbo": true,
+   "cars": [
+    "bmw1"
+   ],
+   "match": "Cross-plane V8",
+   "quality": "category-pack",
+   "preview": "engines/v3/bmw1-source.ogg"
+  },
+  "blackbird": {
+   "name": "Hennessey Blackbird NA V8",
+   "redline": 7400,
+   "pitch": 1.0,
+   "pack": "cross-v8",
+   "turbo": false,
+   "cars": [
+    "blackbird"
+   ],
+   "match": "Cross-plane V8",
+   "quality": "category-pack",
+   "preview": "engines/v3/blackbird-source.ogg"
+  },
+  "nissan-z": {
+   "name": "Nissan Z GT4 twin-turbo V6",
+   "redline": 7000,
+   "pitch": 1.0,
+   "pack": "turbo",
+   "turbo": true,
+   "cars": [
+    "nissan-z"
+   ],
+   "match": "Turbo V6 and inline-4",
+   "quality": "category-pack",
+   "preview": "engines/v3/nissan-z-source.ogg"
+  },
+  "ford-gt": {
+   "name": "Ford GT Mk II twin-turbo V6",
+   "redline": 7000,
+   "pitch": 1.0,
+   "pack": "turbo",
+   "turbo": true,
+   "cars": [
+    "ford-gt"
+   ],
+   "match": "Turbo V6 and inline-4",
+   "quality": "category-pack",
+   "preview": "engines/v3/nissan-z-source.ogg"
+  },
+  "jaguarxkjss": {
+   "name": "Mercedes-AMG ONE V6 hybrid",
+   "redline": 11000,
+   "pitch": 1.0,
+   "pack": "turbo",
+   "turbo": true,
+   "cars": [
+    "jaguarxkjss"
+   ],
+   "match": "Turbo V6 and inline-4",
+   "quality": "category-pack",
+   "preview": "engines/v3/jaguarxkjss-source.ogg"
+  },
+  "supra": {
+   "name": "Toyota GR Supra GT500 turbo inline-4",
+   "redline": 8000,
+   "pitch": 0.6667,
+   "pack": "turbo",
+   "turbo": true,
+   "cars": [
+    "supra"
+   ],
+   "match": "Turbo V6 and inline-4",
+   "quality": "category-pack",
+   "preview": "engines/v3/supra-source.ogg"
+  },
+  "buggati": {
+   "name": "Bugatti Chiron W16",
+   "redline": 6800,
+   "pitch": 1.0,
+   "pack": "w-engine",
+   "turbo": true,
+   "cars": [
+    "buggati"
+   ],
+   "match": "W16 and W12",
+   "quality": "category-pack",
+   "preview": "engines/v3/buggati-source.ogg"
+  },
+  "destrier": {
+   "name": "Bugatti Destrier W16",
+   "redline": 6800,
+   "pitch": 1.0,
+   "pack": "w-engine",
+   "turbo": true,
+   "cars": [
+    "destrier"
+   ],
+   "match": "W16 and W12",
+   "quality": "category-pack",
+   "preview": "engines/v3/buggati-source.ogg"
+  },
+  "bentley-gt": {
+   "name": "Bentley Continental GT Speed W12",
+   "redline": 6500,
+   "pitch": 0.75,
+   "pack": "w-engine",
+   "turbo": true,
+   "cars": [
+    "bentley-gt"
+   ],
+   "match": "W16 and W12",
+   "quality": "category-pack",
+   "preview": "engines/v3/bentley-gt-source.ogg"
+  }
+ }
+}

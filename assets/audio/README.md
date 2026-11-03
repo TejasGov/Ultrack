@@ -1,12 +1,20 @@
 # Ultrack audio
 
-## Engine bank in the game (approved by ear 2026-11-02)
+## Engine sound in the game: five category packs (approved 2026-11-03)
 
-`engine-bank.json` + `engines/v3/`: idle, on-throttle and off-throttle loops at measured rpm, with real shift and pop samples and a tyre squeal loop. Compare with the old sound at `/audio-lab.html`, or drive the old one with `?enginebank=old`.
+`engine-packs.json` + `engines/packs/`: one file per engine category, plus `common.ogg` for opponents, tyres, crash, nitro and turbo. A race fetches one pack and the shared file. Each car plays its pack at its own firing pitch.
+
+- `recordings/plan-packs.json`: categories, cars and source stretches. `tools/audio/build_engine_packs.py` builds everything and writes `recordings/credits.json` (the game's Credits screen) and `report-packs.json` (measurements). Rebuild all packs to refresh `common.ogg`.
+- Opponents: `TrafficAudio` in `track-viewer/src/game/audio-effects.js` gives the nearest three cars a voice from the shared file.
+- `engine-bank.json` below and `recorded-engine-bank.json` stay for comparison at `/audio-lab.html` and rollback with `?enginebank=car` or `?enginebank=old`.
+
+## Per-car engine bank (approved by ear 2026-11-02, replaced by the packs)
+
+`engine-bank.json` + `engines/v3/`: idle, on-throttle and off-throttle loops at measured rpm, with real shift and pop samples and a tyre squeal loop whose gaps make a long skid stutter.
 
 - `recordings/plan-v3.json`: hand-picked source stretches, the engine line to follow and which order it is. RPM comes from tracking that line, so it is measured, though the order is read by eye from each spectrogram.
 - `tools/audio/build_engine_bank.py` (`engine_dsp.py`): tracks pitch, flattens each stretch to its anchor rpm, reweaves it into a 1.5-3 s loop and matches tone across rpm. Loop points sit inside the file, away from the codec's start-up error.
-- `recordings/report-v3.json`: per-loop measurements. `recordings/CREDITS-v3.md`, `credits.json` (the game's Credits screen): sources. `recordings/incoming/`: the 2026-11-02 originals and licence metadata, excluded from the shipped game.
+- `recordings/report-v3.json`: per-loop measurements. `recordings/CREDITS-v3.md`, `credits-v3.json`: sources. `recordings/incoming/`: the 2026-11-02 originals and licence metadata, excluded from the shipped game.
 - `track-viewer/scripts/render-engine-sweep.mjs`: renders a race pull through the real mixer and gearbox to `qa/engine-sound/` (needs the dev server).
 
 ## Old engine bank — 2026-10-20
