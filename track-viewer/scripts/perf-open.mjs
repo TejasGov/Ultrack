@@ -33,10 +33,10 @@ export function views(track, pick) {
 }
 
 /** returns { browser, page, errors, env } with window.viewer ready; mode 'game' (Free Drive) or 'dev' */
-export async function openViewer({ track, look, weather = 'dry', mode = 'game', base = 'http://127.0.0.1:5180', query = '' }) {
+export async function openViewer({ track, look, weather = 'dry', mode = 'game', base = 'http://127.0.0.1:5180', query = '', width = 1920, height = 1080, dpr = 1 }) {
   const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
   const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
-  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr });
   const errors = [];
   // a stub for Vite's HMR socket: any agent saving a file would otherwise reload this page mid-run (the shared dev server hot-reloads everyone)
   await ctx.addInitScript(() => { const W = window.WebSocket; const F = function (u, p) { if (p === 'vite-hmr') { const t = new EventTarget(); t.send = () => {}; t.close = () => {}; t.readyState = 0; return t; } return new W(u, p); }; F.prototype = W.prototype; Object.assign(F, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 }); window.WebSocket = F; });

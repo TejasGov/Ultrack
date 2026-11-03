@@ -443,19 +443,31 @@ export class Field {
     this.face = 0;
   }
 
-  /** Compile the cube-capture variants (no shadows, cube target). The race draws them every few frames; menu idle warms them early.
+  /** The hero is hidden from its own capture, and its lamps with it. Three keys every lit material on the scene's light count, so a capture with
+   *  fewer lights re-keys ~100 materials on the way in and again on the way out (every 4 frames: ~1.5 ms a frame, 40 MB/s of garbage, and a second
+   *  program set to compile). Dark stand-ins, shown only during a capture, hold the count. */
+  captureLights(h, on) {
+    let n = 0;
+    if (on) h.root.traverse((o) => { if (o.isSpotLight && o.visible) n++; });   // shortcut: spots only, the hero carries no other kind; another kind just costs the re-key again
+    const pool = this.standIns ??= [];
+    while (pool.length < n) { const s = new THREE.SpotLight(0x000000, 0); this.scene.add(s); pool.push(s); }
+    pool.forEach((s, i) => { s.visible = on && i < n; });
+  }
+
+  /** Compile the cube-capture variants (cube target). The race draws them every few frames; menu idle warms them early.
    *  extra/around: see warmup.js compileVisible. */
   async compileCube(renderer,{isCancelled=()=>false,extra,around,inflight}={}) {
     const {compileVisible}=await import('./warmup.js');
     const shadows=renderer.shadowMap.enabled,target=renderer.getRenderTarget(),face=renderer.getActiveCubeFace(),mip=renderer.getActiveMipmapLevel();
     const wrap=around??(fn=>fn());
     let ready;
-    // the cube is the target compileVisible captures (program keys include the output colour space); shadows are off only while a chunk is submitted
+    const stable=this.stableCapture!==false;
+    // the cube is the target compileVisible captures (program keys include the output colour space); the capture's light set is held only while a chunk is submitted
     try{
       renderer.setRenderTarget(this.cubeRT,0);
       ready=compileVisible(renderer,this.scene,this.cubeCam.children[0],{isCancelled,extra,inflight,around:fn=>wrap(()=>{
-        renderer.shadowMap.enabled=false;
-        try{fn();}finally{renderer.shadowMap.enabled=shadows;}})});
+        if(stable)this.captureLights(this.hero,true);else renderer.shadowMap.enabled=false;
+        try{fn();}finally{if(stable)this.captureLights(this.hero,false);else renderer.shadowMap.enabled=shadows;}})});
     }finally{renderer.setRenderTarget(target,face,mip);}
     return ready;
   }
@@ -463,10 +475,10 @@ export class Field {
   /** Capture the first paint reflection before the race so its shader variant is warmed too. */
   async prepareReflection(renderer, hide = [], isCancelled = ()=>false) {
     const h=this.hero;if(!h)return;
-    const hidden=hide.filter(o=>o?.visible),visible=h.root.visible,shadows=renderer.shadowMap.enabled;
+    const hidden=hide.filter(o=>o?.visible),visible=h.root.visible,shadows=renderer.shadowMap.enabled,shadowAuto=renderer.shadowMap.autoUpdate,stable=this.stableCapture!==false;
     hidden.forEach(o=>{o.visible=false;});h.root.visible=false;
     try{
-      renderer.shadowMap.enabled=false;
+      if(stable)renderer.shadowMap.autoUpdate=renderer.shadowMap.needsUpdate=false;else renderer.shadowMap.enabled=false;
       this.cubeCam.position.copy(h.root.position).add(new THREE.Vector3(0,1.2,0));
       this.cubeCam.updateMatrixWorld(true);
       if(this.cubeCam.coordinateSystem!==renderer.coordinateSystem){
@@ -480,7 +492,9 @@ export class Field {
         // Yield between faces; the loading slideshow stays on its own compositor layers.
         for(let i=0;i<6;i++){
           if(isCancelled())return;
+          if(stable)this.captureLights(h,true);   // only around the draw: compileCube's chunks turn them off behind them
           renderer.setRenderTarget(this.cubeRT,i);renderer.render(this.scene,this.cubeCam.children[i]);
+          if(stable)this.captureLights(h,false);
           renderer.setRenderTarget(target,face,mip);
           await paintFrame();
         }
@@ -488,7 +502,7 @@ export class Field {
       this.pmrem??=new THREE.PMREMGenerator(renderer);
       this.envRT=this.pmrem.fromCubemap(this.cubeRT.texture,this.envRT);
       this.useHeroEnvironment(h);this.face=0;
-    }finally{renderer.shadowMap.enabled=shadows;h.root.visible=visible;hidden.forEach(o=>{o.visible=true;});}
+    }finally{renderer.shadowMap.enabled=shadows;renderer.shadowMap.autoUpdate=shadowAuto;h.root.visible=visible;hidden.forEach(o=>{o.visible=true;});}
   }
 
   useHeroEnvironment(h) {
@@ -793,23 +807,25 @@ export class Field {
     this.tick = (this.tick ?? 0) + 1;
     const captureEvery = this.captureEvery ?? 4;
     if (this.hero && captureEvery > 0 && this.tick % captureEvery === 0) {
-      const h = this.hero, cams = this.cubeCam.children;
+      const h = this.hero, cams = this.cubeCam.children, stable = this.stableCapture !== false;
       if (this.face === 0) this.cubeCam.position.copy(h.root.position).add(new THREE.Vector3(0, 1.2, 0));
       this.cubeCam.updateMatrixWorld(true);
+      if (stable) this.captureLights(h, true);
       h.root.visible = false;
       const hidden = hideForCapture.filter((o) => o && o.visible);
       hidden.forEach((o) => { o.visible = false; });
       const boosted = boostForCapture.map((m) => [m, m.emissiveIntensity]);
       boosted.forEach(([m, e]) => { m.emissiveIntensity = e * 3; });
-      const prevTarget = renderer.getRenderTarget(), prevXr = renderer.xr.enabled, prevShadows = renderer.shadowMap.enabled;
+      const prevTarget = renderer.getRenderTarget(), prevXr = renderer.xr.enabled, prevShadows = renderer.shadowMap.enabled, prevAuto = renderer.shadowMap.autoUpdate;
       renderer.xr.enabled = false;
-      // Match the reflection warm-up variant and avoid re-rendering every shadow map for a 128px cube face.
-      renderer.shadowMap.enabled = false;
+      // Avoid re-rendering every shadow map for a 128px cube face (the maps stay bound: turning shadows off here would re-key every material too).
+      if (stable) renderer.shadowMap.autoUpdate = renderer.shadowMap.needsUpdate = false; else renderer.shadowMap.enabled = false;
       renderer.setRenderTarget(this.cubeRT, this.face);
       renderer.render(this.scene, cams[this.face]);
       renderer.setRenderTarget(prevTarget);
       renderer.xr.enabled = prevXr;
-      renderer.shadowMap.enabled = prevShadows;
+      renderer.shadowMap.enabled = prevShadows; renderer.shadowMap.autoUpdate = prevAuto;
+      if (stable) this.captureLights(h, false);
       hidden.forEach((o) => { o.visible = true; });
       boosted.forEach(([m, e]) => { m.emissiveIntensity = e; });
       h.root.visible = true;

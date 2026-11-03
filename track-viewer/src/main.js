@@ -117,9 +117,10 @@ const params = {
 //   mirrorOnce      the road mirror is drawn for the frame, not again for the transmission pass's copy of the scene
 //   mirrorSkip      no road-mirror render while the road is too dry for it to show: see mirrorWanted
 //   idleLights      a look with no venue lamp lit (day, dusk) hides the lamp pool: its 16 lights sit at intensity 0, which three still runs in every lit fragment
+//   stableCapture   the hero's reflection capture keeps the frame's light count and shadow flag, so three neither re-keys every lit material around it nor keeps a second program set: see Field.captureLights
 // ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
 const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
-const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights') };
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture') };
 const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
@@ -500,6 +501,7 @@ async function load() {
     .setKTX2Loader(new KTX2Loader().setTranscoderPath('/basis/').setWorkerLimit(2).detectSupport(renderer));
   // The garage needs only the selected car and small track metadata. Venue geometry is deferred until Start.
   field = new Field(scene, { loadCar: async (...a) => { const c = await assemble(...a); applyRainGlass(c.materials.glass); return c; } });   // rain beads on the glass (finish.js)
+  field.stableCapture = PERF.stableCapture;   // the warm-up compiles the capture's programs too
   field.fx = new CarFx(scene);                 // exhaust, pops, nitro, tyre smoke (carkit/fx.js)
   field.fx.attach(composer, camera);           // its smoke and spray: a soft-particle pass after the scene (fx-smoke.js SmokePass)
   const carsReady = field.load(gltfLoader, game ? [game.startupCar] : undefined);
@@ -1025,6 +1027,7 @@ function updateFx(t, cull = false) {
   if (cull && culler && params.cull) { culler.k = params.cullDistance; cullStats = culler.update(camera.position); }
   if (field) {
     field.captureEvery = ({low:0,medium:8,high:4,ultra:2})[params.quality==='auto'?device.tier:params.quality] ?? 4;
+    field.stableCapture = PERF.stableCapture;
     field.lightMode = look.lamps ?? 'low';
     field.cars.forEach((c) => { c.root.visible = params.cars; });
     if (params.cars) field.update(t, camera, renderer, look, [rain, people.group, glows?.points, reflector, trails?.mesh, field.fx?.smoke, field.fx?.fire, field.fx?.jet], captureBoost);

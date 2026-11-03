@@ -1,7 +1,7 @@
 // Per-pass frame cost of a circuit: GPU milliseconds (EXT_disjoint_timer_query), CPU submit milliseconds, draw calls and triangles for the
 // main pass, the planar road mirror, every shadow map, GTAO, the car-reflection cube capture and the post chain.
 //   node scripts/qa-lock.mjs -- node scripts/perf-passes.mjs [track=tokyo] [looks=night,dusk] [--weather dry|damp|rain|dry,damp] [--frames 90]
-//        [--label name] [--views 0,1,..] [--drive 20] [--mode game|dev] [--census] [--bench] [--set mirror=false,renderScale=0.5]
+//        [--label name] [--size 1512x982] [--dpr 2] [--views 0,1,..] [--drive 20] [--mode game|dev] [--census] [--bench] [--set mirror=false,renderScale=0.5]
 // game mode (default) is the game's Free Drive like qa-tokyo-views.mjs (one car); dev is ?dev=1 (the whole 8-car grid). The real tick runs
 // (the game's chase camera behind the hero, held at a spot of the lap, or driven by the AI for --drive seconds), so the numbers include
 // what the game pays: the sun's shadow refresh per 8 m cell, lamp shadow re-picks, the cube capture every few frames. --census lists
@@ -19,7 +19,7 @@ const outDir = join(root, 'qa', 'perf'); mkdirSync(outDir, { recursive: true });
 const { C, N, V: VIEWS, names: viewNames } = views(track, flag('views', null));
 
 // ------------------------------------------------------------------------------------------------ driver
-const { browser, page, errors, mode: openedMode } = await openViewer({ track, look: looks[0], weather, mode, base: flag('url', 'http://127.0.0.1:5180'), query: flag('query', '') });
+const { browser, page, errors, mode: openedMode } = await openViewer({ track, look: looks[0], weather, mode, base: flag('url', 'http://127.0.0.1:5180'), query: flag('query', ''), width: +flag('size', '1920x1080').split('x')[0], height: +flag('size', '1920x1080').split('x')[1], dpr: +flag('dpr', 1) });
 // --compare: every spot is measured twice in this session, first with every saving in viewer.perf off (the baseline), then as shipped
 const setSavings = (spec) => page.evaluate((spec) => { const v = window.viewer; window.__perfDefaults ??= { ...v.perf }; for (const k of Object.keys(v.perf ?? {})) v.perf[k] = spec === true ? window.__perfDefaults[k] : spec === false ? false : !spec.off.includes(k) && window.__perfDefaults[k]; v.applyAll(); }, spec);
 const flagNames = await page.evaluate(() => Object.keys(window.viewer.perf ?? {}));
