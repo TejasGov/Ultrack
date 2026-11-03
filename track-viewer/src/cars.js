@@ -274,8 +274,9 @@ export async function assemble(loader, key, k, hero) {
       const src = o.geometry, n = src.attributes.position.count, P = new Float32Array(n * 3), N = new Float32Array(n * 3), v = new THREE.Vector3();
       const nm = new THREE.Matrix3().getNormalMatrix(o.matrixWorld);
       for (let i = 0; i < n; i++) {
-        v.fromBufferAttribute(src.attributes.position, i).applyMatrix4(o.matrixWorld).toArray(P, i * 3);
-        if (src.attributes.normal) v.fromBufferAttribute(src.attributes.normal, i).applyMatrix3(nm).normalize().toArray(N, i * 3);
+        v.fromBufferAttribute(src.attributes.position, i).applyMatrix4(o.matrixWorld);
+        P[i * 3] = v.x; P[i * 3 + 1] = v.y; P[i * 3 + 2] = v.z;   // not toArray: half a second of a race's load, over eight cars
+        if (src.attributes.normal) { v.fromBufferAttribute(src.attributes.normal, i).applyMatrix3(nm).normalize(); N[i * 3] = v.x; N[i * 3 + 1] = v.y; N[i * 3 + 2] = v.z; }
       }
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
