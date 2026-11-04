@@ -76,8 +76,8 @@ export const kindIcon = WEEK_ICON;
 export const weekTitle = (save, w) => (w.kind === 'race' ? save.season.calendar[w.round].name : w.kind === 'market' ? 'The market' : w.kind === 'end' ? 'Season review' : C.eventName(save, w));
 /** the season strip: one cell a week, this week outlined; the same on Home and the Calendar */
 export function strip(save) {
-  const W = save.season.weeks, now = save.clock.week;
-  return css(h('div.cx-b.cx-stripb', {}, h('div.cx-strip', {}, W.map((w, i) => h(`div.cx-wk.k-${kindOf(w)}${i < now ? '.past' : ''}${i === now ? '.now' : i > now ? '.ahead' : ''}`, {}, h('b', {}, `WK ${i + 1}`, i < now ? icon(w.event?.skipped ? 'minus' : 'check', { label: w.event?.skipped ? 'Skipped' : 'Done' }) : null), h('span', {}, icon(WEEK_ICON(w)), h('i', {}, WEEK_LABEL(save, w))))))), { '--weeks': W.length });
+  const W = save.season.weeks, now = save.clock.week, from = Math.max(0, Math.min(now - 3, W.length - 13)), shown = W.slice(from, from + 13);   // a 21-week season cut every label short: 13 around this week, the Calendar tab lists them all
+  return css(h('div.cx-b.cx-stripb', {}, h('div.cx-strip', {}, shown.map((w, j) => { const i = from + j; return h(`div.cx-wk.k-${kindOf(w)}${i < now ? '.past' : ''}${i === now ? '.now' : i > now ? '.ahead' : ''}`, {}, h('b', {}, `WK ${i + 1}`, i < now ? icon(w.event?.skipped ? 'minus' : 'check', { label: w.event?.skipped ? 'Skipped' : 'Done' }) : null), h('span', {}, icon(WEEK_ICON(w)), h('i', {}, WEEK_LABEL(save, w)))); }))), { '--weeks': shown.length });
 }
 /** a block's title line */
 export const blockHead = (ic, title, right) => h('div.cx-bh', { 'data-ic': ic }, h('span', {}, ic ? h('i.cx-ico', {}, icon(ic)) : null, title), right ? h('span', {}, right) : null);
