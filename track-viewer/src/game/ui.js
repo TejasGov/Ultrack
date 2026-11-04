@@ -327,7 +327,7 @@ export function CreditsScreen(game) {
       item('Stadium Light', h('p', {}, 'Created by ', link('thundermind', 'https://sketchfab.com/thundermind')), links(link('Original model', 'https://sketchfab.com/3d-models/stadium-light-425625d154084a29a194dd2b0bb52fd5'), licence('CC BY')),
         h('p.cr-dim', {}, 'The Shajawa Stadium light towers, simplified.')),
       item('Coconut Tree Low poly', h('p', {}, 'Created by ', link('ar.jethin', 'https://sketchfab.com/ar.jethin')), links(link('Original model', 'https://sketchfab.com/3d-models/coconut-tree-low-poly-8c5d6b661b2f4c37834d87cd187eb907'), link('CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/')),
-        h('p.cr-dim', {}, 'The palms of Infinia\'s Necklace, koliwada and islet.')),
+        h('p.cr-dim', {}, 'The palms of Infinia\'s Necklace, koliwada and islet, and of Shajawa Stadium\'s gates and infield.')),
       item('Coconut Palm', h('p', {}, 'Created by ', link('evolveduk', 'https://sketchfab.com/evolveduk')), links(link('Original model', 'https://sketchfab.com/3d-models/coconut-palm-26e787f2ff2e4c0fb004c3b0210805a3'), link('CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/')),
         h('p.cr-dim', {}, 'The big palms at Infinia\'s start and on the Necklace.')),
       item('Indian Mumbai kali pili taxi', h('p', {}, 'Created by ', link('sunnykhude', 'https://sketchfab.com/sunnykhude')), links(link('Original model', 'https://sketchfab.com/3d-models/c47209917cad45b5ab96e7e10ce5de37'), link('CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/')),
@@ -342,7 +342,7 @@ export function CreditsScreen(game) {
         h('p.cr-dim', {}, 'The slim dark trees of Venice\'s cypress lines.')),
       item('Realistic Tree', h('p', {}, 'Created by ', link('danielpetrov', 'https://sketchfab.com/danielpetrov')), links(link('Original model', 'https://sketchfab.com/3d-models/d989c0f801d847b9a74992ec4ddcfdfc'), link('CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/')),
         h('p.cr-dim', {}, 'The boulevard trees of Venice.')),
-      item('Sponsor & marque artwork', h('p', {}, 'Simple Icons; Pirelli official artwork; Rolex wordmark via Wikimedia Commons; car-logos-dataset. Original marks remain with their owners.'))]),
+      item('Sponsor & marque artwork', h('p', {}, 'Simple Icons; Pirelli official artwork; Rolex wordmark and the Aramco, ADNOC, SABIC, stc and DP World logos via Wikimedia Commons; car-logos-dataset. Original marks remain with their owners.'))]),
     group('Fonts', FONT_CREDITS.map(([name, by, url]) => item(name, h('p', {}, by), links(link('Source', url), link('SIL Open Font License 1.1', 'https://openfontlicense.org'))))),
     group('Code', CODE_CREDITS.map(([name, by, url, lic, licUrl]) => item(name, h('p', {}, by), links(link('Project', url), link(lic, licUrl))))),
     h('p.cr-notice', {}, icon('info'), h('span', {}, 'Every model is shown with its creator and licence. Car names and marks belong to their owners.')));
