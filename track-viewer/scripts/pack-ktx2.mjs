@@ -4,10 +4,10 @@
 // Geometry goes through the same gltf-transform optimize settings as the WebP build, then textures become KTX2:
 // the road's normal map UASTC, everything else ETC1S. sRGB flags follow the slot.
 import { execFileSync } from 'node:child_process';
-import { existsSync, rmSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NodeIO } from '@gltf-transform/core';
+import { Material, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { textureCompress } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
@@ -54,6 +54,20 @@ for (const t of doc.getRoot().listTextures()) {
   if (!w || (pot(w) === w && pot(h) === h)) continue;
   t.setImage(new Uint8Array(await sharp(t.getImage()).resize(Math.min(TEX_MAX, pot(w)), Math.min(TEX_MAX, pot(h)), { fit: 'fill' }).png().toBuffer()));
   t.setMimeType('image/png');
+}
+// TEX_CAPS: a JSON file of { material name regex: largest px }, for surfaces a driver only sees from afar (tracks/venice/texture_caps.json). A texture shrinks only if every material using it has a cap, so one shared with a near surface stays sharp.
+if (process.env.TEX_CAPS) {
+  const caps = Object.entries(JSON.parse(readFileSync(process.env.TEX_CAPS, 'utf8'))).map(([re, px]) => [new RegExp(re), px]), done = [];
+  for (const t of doc.getRoot().listTextures()) {
+    const mats = doc.getGraph().listParents(t).filter((p) => p instanceof Material), [w, h] = t.getSize() || [0, 0];
+    const each = mats.map((m) => caps.find(([re]) => re.test(m.getName()))?.[1]);
+    if (!mats.length || !w || each.some((c) => !c)) continue;
+    const cap = Math.max(...each);
+    if (Math.max(w, h) <= cap) continue;
+    t.setImage(new Uint8Array(await sharp(t.getImage()).resize(Math.min(w, cap), Math.min(h, cap), { fit: 'fill', kernel: 'lanczos3' }).png().toBuffer())); t.setMimeType('image/png');
+    done.push(`${t.getName()} (${mats[0].getName()}) ${w} -> ${Math.min(w, cap)}`);
+  }
+  console.log(`texture caps: ${done.length} shrunk\n  ${done.join('\n  ')}`);
 }
 await doc.transform(
   // the race surface's normal map is what the camera sees most: UASTC keeps its grain; other normal maps are ETC1S in

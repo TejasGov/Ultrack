@@ -58,14 +58,17 @@ def arch_pts(a0, a1, spring, rise, n=8, pointed=False):
         t_ = q / n; x = a0 + (a1 - a0) * t_; c_ = 2 * t_ - 1
         out.append((x, spring + (rise * (1 - abs(c_)) ** 0.75 if pointed else rise * math.sqrt(max(0.0, 1 - c_ * c_)))))
     return out
-def window(w, a, z0, wd, ht, k, col, trim='lime', tcol=PALE, depth=0.42, rise=0.0, hood=None, surround=True, panel=None, sill=True, pointed=False, glass=True):
+def window(w, a, z0, wd, ht, k, col, trim='lime', tcol=PALE, depth=0.42, rise=0.0, hood=None, surround=True, panel=None, sill=True, pointed=False, glass=True, lit=None):
     """one opening with a real recess, in a wall panel panel=(a0, a1, z0, z1); the panel's wall is built round the hole"""
     a0, a1, z1 = a - wd / 2, a + wd / 2, z0 + ht; P0, P1, Pz0, Pz1 = panel; L_ = lod(w.p(a, z0), w.n)
     if L_ == 0: rect(w, P0, P1, Pz0, Pz1, 0, k, col); return
+    outl = [(a0, z0), (a1, z0)] + (arch_pts(a0, a1, z1, rise, n=4, pointed=pointed)[::-1] if rise > 0 else [(a1, z1), (a0, z1)])
     if L_ == 1:
         rect(w, P0, P1, Pz0, Pz1, 0, k, col)
         KT.face([w.p(a0, z0, 0.08), w.p(a1, z0, 0.08)] + ([w.p(x, z_, 0.08) for x, z_ in arch_pts(a0, a1, z1, rise, n=4, pointed=pointed)[::-1]] if rise > 0 else [w.p(a1, z1, 0.08), w.p(a0, z1, 0.08)]), 'glass')      # 8 cm: the web pack rounds this mesh's positions to about 3 cm
+        lit_window(lambda x, z_: w.p(x, z_, 0.15), outl, lit)
         return
+    lit_window(lambda x, z_: w.p(x, z_, -depth + 0.09), outl, lit)      # in front of the real glazing bars: the room's picture carries its own
     glass = glass and road_d(w.p(a, z0)) < 45 or (glass and rise > 0)      # glazing bars only where you could count them
     rect(w, P0, a0, Pz0, Pz1, 0, k, col); rect(w, a1, P1, Pz0, Pz1, 0, k, col); rect(w, a0, a1, Pz0, z0, 0, k, col)      # left, right, below
     if rise > 0:
@@ -501,6 +504,7 @@ def dim(c, f): return (c[0] * f, c[1] * f, c[2] * f)
 def recess(w, a, z0, wd, ht, k, col, trim, tcol, panel, depth=0.55, rise=0.0, pointed=False, **_):
     """the second rank's window: a real hole with shaded reveals and a dark back, a stone sill and a stone head. No glazing bars, no mouldings: about 30 triangles"""
     a0, a1, z1 = a - wd / 2, a + wd / 2, z0 + ht; P0, P1, Pz0, Pz1 = panel
+    lit_window(lambda x, z_: w.p(x, z_, -depth + 0.09), [(a0, z0), (a1, z0)] + (arch_pts(a0, a1, z1, rise, n=4, pointed=pointed)[::-1] if rise > 0 else [(a1, z1), (a0, z1)]))
     rect(w, P0, a0, Pz0, Pz1, 0, k, col); rect(w, a1, P1, Pz0, Pz1, 0, k, col); rect(w, a0, a1, Pz0, z0, 0, k, col)
     if rise > 0:
         ap = arch_pts(a0, a1, z1, rise, n=4, pointed=pointed); ao = arch_pts(a0 - 0.2, a1 + 0.2, z1, rise + 0.2, n=4, pointed=pointed)
@@ -542,6 +546,7 @@ def pal_wall(w, LL, lv, S, front):
             a = (s_ + 0.5) * bw
             for z0, z1, kd in ZS:
                 ww, wh = bw * 0.3, z1 - z0 - (1.9 if kd != 'attic' else 2.4); rect(w, a - ww / 2, a + ww / 2, z0 + 1.0, z0 + 1.0 + wh, 0.09, 'glass', WHITE)
+                lit_window(lambda x, z_: w.p(x, z_, 0.16), [(a - ww / 2, z0 + 1.0), (a + ww / 2, z0 + 1.0), (a + ww / 2, z0 + 1.0 + wh), (a - ww / 2, z0 + 1.0 + wh)])
         rect(w, 0, LL, gh - 0.1, gh + 0.2, 0.12, trim, tcol); cornice(w, -0.7, LL + 0.7, top, sc, trim, tcol); return
     LOD_FORCE = 2; win = window if lv == 3 else recess
     mid_ = (nb - 1) / 2; group = front and nb >= 3 and sty != 'plain'
@@ -599,7 +604,7 @@ def campanile(c, gz_):
         relief(w, -0.5, L_ + 0.5, -1, 3.5, 0, 0.5, 'lime', LI); rect(w, 0, L_, 3.5, 60, -0.35, 'brick', WHITE)
         for a0, a1 in ((0, 1.4), (3.5, 4.5), (7.5, 8.5), (L_ - 1.4, L_)): relief(w, a0, a1, 3.5, 60, -0.35, 0, 'brick', WHITE, top=False, bottom=False)
         relief(w, 0, L_, 60, 62, -0.35, 0, 'brick', WHITE, top=False); cornice(w, -0.4, L_ + 0.4, 62, 0.9, 'lime', LI)
-        for q, a in enumerate((2.2, 6.0, 9.8)): window(w, a, 63.6, 2.3, 4.6, 'lime', LI, trim='lime', tcol=LI, depth=1.6, rise=1.15, panel=(a - 1.9 if q else 0, a + 1.9 if q < 2 else L_, 63, 72), sill=False, surround=False)
+        for q, a in enumerate((2.2, 6.0, 9.8)): window(w, a, 63.6, 2.3, 4.6, 'lime', LI, trim='lime', tcol=LI, depth=1.6, rise=1.15, panel=(a - 1.9 if q else 0, a + 1.9 if q < 2 else L_, 63, 72), sill=False, surround=False, lit=True)      # the belfry stays lit all night
         cornice(w, -0.3, L_ + 0.3, 72, 0.8, 'lime', LI); relief(w, 0.2, L_ - 0.2, 72.8, 74, -0.3, 0, 'lime', LI, top=False, bottom=False)
     p_ = Vector((c.x, c.y, gz_ + 99)); cs = [Vector((c.x + a_ * 5.8, c.y + b_ * 5.8, gz_ + 74)) for a_, b_ in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
     for q in range(4): KT.face([cs[q], cs[(q + 1) % 4], p_], 'lead', (0.62, 0.8, 0.72))

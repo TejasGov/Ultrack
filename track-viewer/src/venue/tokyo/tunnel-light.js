@@ -15,8 +15,8 @@ const N = 16, HALF_W = 13, KEEP = { spec: 0.03, diff: 0.1 };     // segments; ha
 const DIR_LIGHT = 'getDirectionalLightInfo( directionalLight, directLight );';
 const BLOOM_IN = { night: 0.35 };                // bloom strength kept with the camera fully in the tunnel, per look
 
-// opts, for another track's tunnel (venue/venice.js): mats, its materials; roof, its roof mesh's name; halfW, half the tunnel's width; fill, the tunnel's own lamps as an even light under the roof (linear rgb)
-export async function create({ root, track, bloom }, { mats = MATS, roof = ROOF, halfW = HALF_W, label = 'tokyo', fill = null } = {}) {
+// opts, for another track's tunnel (venue/venice.js): mats, its materials; roof, its roof mesh's name; halfW, half the tunnel's width; fill, the tunnel's own lamps as an even light under the roof (linear rgb); fillLook, its gain per look (a night's exposure would otherwise overlight it)
+export async function create({ root, track, bloom }, { mats = MATS, roof = ROOF, halfW = HALF_W, label = 'tokyo', fill = null, fillLook = {} } = {}) {
   const box = new THREE.Box3();
   root.traverse((o) => { if (o.isMesh && roof.test(o.name)) box.expandByObject(o); });
   if (box.isEmpty() || !THREE.ShaderChunk.lights_fragment_begin.includes(DIR_LIGHT)) return { dispose() {} };
@@ -25,9 +25,9 @@ export async function create({ root, track, bloom }, { mats = MATS, roof = ROOF,
   const pts = C.map((p, i) => ({ p, i })).filter(({ p }) => p[0] > box.min.x && p[0] < box.max.x && p[2] > box.min.z && p[2] < box.max.z && p[1] < box.max.y - 2);
   if (pts.length < 2) return { dispose() {} };
   const line = Array.from({ length: N + 1 }, (_, i) => pts[Math.round(i / N * (pts.length - 1))].p);
-  const uniforms = { uTun: { value: line.map((p) => new THREE.Vector2(p[0], p[2])) }, uTunTop: { value: box.max.y } };
+  const uniforms = { uTun: { value: line.map((p) => new THREE.Vector2(p[0], p[2])) }, uTunTop: { value: box.max.y }, uTunFill: { value: new THREE.Vector3() } };
   const VERT = 'varying vec3 vTunW;\n', FRAG = /* glsl */`
-    varying vec3 vTunW; uniform vec2 uTun[${N + 1}]; uniform float uTunTop;
+    varying vec3 vTunW; uniform vec2 uTun[${N + 1}]; uniform float uTunTop; uniform vec3 uTunFill;
     float tunnelCover(vec3 p) {
       if (p.y > uTunTop + 0.5) return 0.0;
       float d = 1e9;
@@ -54,7 +54,7 @@ export async function create({ root, track, bloom }, { mats = MATS, roof = ROOF,
           .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  float gTunCov = tunnelCover(vTunW);')
           .replace('#include <lights_fragment_begin>', lightsBegin)                 // the sun (main.js's directional light)
           .replace('#include <lights_fragment_maps>', `#include <lights_fragment_maps>
-            radiance *= 1.0 - ${(1 - KEEP.spec).toFixed(2)} * gTunCov; iblIrradiance *= 1.0 - ${(1 - KEEP.diff).toFixed(2)} * gTunCov;${fill ? ` iblIrradiance += vec3(${fill.map((v) => v.toFixed(3)).join(', ')}) * gTunCov;` : ''}
+            radiance *= 1.0 - ${(1 - KEEP.spec).toFixed(2)} * gTunCov; iblIrradiance *= 1.0 - ${(1 - KEEP.diff).toFixed(2)} * gTunCov; iblIrradiance += uTunFill * gTunCov;
             #ifdef USE_CLEARCOAT
               clearcoatRadiance *= 1.0 - ${(1 - KEEP.spec).toFixed(2)} * gTunCov;     // the asphalt's wet coat mirrored the open sky
             #endif`)
@@ -81,7 +81,7 @@ export async function create({ root, track, bloom }, { mats = MATS, roof = ROOF,
   let lowered = false;                           // only an fx that wrote the bloom restores it (an aborted load's base is another track's stale value)
   console.info(`${label} tunnel light: ${patched.length} materials, roof top ${box.max.y.toFixed(1)} m, centerline ${pts[0].i}-${pts.at(-1).i} under it`);
   return {
-    setLook(look, params) { base = bloom?.strength; k = BLOOM_IN[params?.look] ?? 1; },
+    setLook(look, params) { base = bloom?.strength; k = BLOOM_IN[params?.look] ?? 1; if (fill) uniforms.uTunFill.value.set(...fill).multiplyScalar(fillLook[params?.look] ?? 1); },
     update(t, camera) { if (bloom && k < 1) { lowered = true; bloom.strength = base * (1 - (1 - k) * camCover(camera.position)); } },
     dispose() {
       if (bloom && lowered && base !== undefined) bloom.strength = base;   // a track switch never keeps the tunnel's value

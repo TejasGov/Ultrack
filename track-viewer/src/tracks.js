@@ -83,8 +83,10 @@ export const TRACKS = {
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
   venice: {     // tracks/venice/build_venice.py: a fictional street circuit on a lagoon island, a figure-eight with a tunnel under the deck (not yet on the career calendar, local only)
-    id: 'venice', name: 'Venice', stem: 'venice', dir: '/assets/venice/', look: 'dusk', times: ['day', 'dusk'], fog: 0.5, sun: [0.3, 0.95], tag: null,     // the sun from the south, across the tunnel: a low sun along it runs the sunset's glow down the inside (see venue/tokyo/tunnel-light.js); the pillared fronts north of the two straights take the light
-    looks: { day: { env: 1.3 }, dusk: { exposure: 0.54, env: 1.2 } },     // more sky light than most, as Llano: else the road goes black
+    id: 'venice', name: 'Venice', stem: 'venice', dir: '/assets/venice/', look: 'dusk', times: ['day', 'dusk', 'bluehour', 'night'], fog: 0.5, sun: [0.3, 0.95], tag: null,     // the sun from the south, across the tunnel: a low sun along it runs the sunset's glow down the inside (see venue/tokyo/tunnel-light.js); the pillared fronts north of the two straights take the light
+    dayNight: { day: /(?!)/, night: /^VE (window|lamp) glow night/ },     // lit rooms and lantern mantles, from evening on
+    // glow 0: the lantern sprites stay off at dusk, as they always were. After dark the sky is the road's floor and the lamps' pools (venue/venice/night.js) lie over it
+    looks: { day: { env: 1.3 }, dusk: { exposure: 0.54, env: 1.2, glow: 0 }, bluehour: { exposure: 0.92, env: 0.3 }, night: { env: 0.09 } },     // more sky light than most, as Llano: else the road goes black
     wet: { wet: ['VE | asphalt', 'VE | line white', 'VE | kerb red', 'VE | kerb white', 'VE | paving'], puddles: ['VE | asphalt'] },
     voidWalls: true,
     venue: () => import('./venue/venice.js'),

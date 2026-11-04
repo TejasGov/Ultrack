@@ -1,0 +1,9 @@
+{
+  "^VE VE boats ": 512,
+  "^VE VE gondolas ": 512,
+  "^VE \\| painted pole$": 512,
+  "^VE \\| roof$": 512,
+  "^VE \\| laundry$": 512,
+  "^VE \\| slate$": 1024,
+  "^VE \\| clay tile$": 1024
+}

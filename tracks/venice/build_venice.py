@@ -131,6 +131,45 @@ class Sheet:
         for q in ((0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)) + (((4, 5, 6, 7),) if top else ()): s.face([p[v] for v in q], k, col)
         return p
     def done(s, **kw): return mesh_obj(s.name, s.bm, s.keys, **kw)
+# ------------------------------------------------------------------------------------------------ after dark: lit windows and lantern mantles, on their own night-only materials (tracks.js dayNight: invisible by day and at dusk, so neither changes)
+# The rooms come from a small atlas of eight kinds in two brightnesses (make_night_windows.py), so no two runs of windows repeat; which windows are lit follows slow noise, so whole floors and buildings stay dark while others are busy. Its own random stream: the day's layout draws on the other streams and must not move.
+NR = random.Random(2026)
+_wn = H / 'tex' / 'window_night.png'      # make_night_windows.py
+_wg = bpy.data.materials.new('VE window glow night')
+try: _wg.use_nodes = True
+except AttributeError: pass
+_P = _wg.node_tree.nodes['Principled BSDF']; _P.inputs['Base Color'].default_value = (0, 0, 0, 1); _it = _wg.node_tree.nodes.new('ShaderNodeTexImage'); _it.image = image(_wn)
+_wg.node_tree.links.new(_it.outputs['Color'], _P.inputs['Emission Color']); _P.inputs['Emission Strength'].default_value = 1.0
+MAT['wglow'] = _wg
+MAT['lglow'] = material('VE lamp glow night', (0, 0, 0), 0.5, emit=((1.0, 0.76, 0.46), 6.0))
+GW = bmesh.new(); _gw_uv = GW.loops.layers.uv.verify(); N_LIT = [0, 0]
+def lit_window(P_, outline, lit=None):
+    """P_(x, z) -> the point on the shell; outline: the opening's (x, z), wound to face out. lit: None draws it by the noise, True always"""
+    xs, zs = [p[0] for p in outline], [p[1] for p in outline]; x0, x1, z0, z1 = min(xs), max(xs), min(zs), max(zs)
+    if x1 - x0 < 0.5 or z1 - z0 < 0.5: return
+    N_LIT[1] += 1; c = P_((x0 + x1) / 2, (z0 + z1) / 2)
+    if lit is None:
+        h_ = c.z - Z(0.0); p_ = 0.3 if h_ < 5.5 else 0.36 if h_ < 11 else 0.26
+        if NR.random() > p_ + 0.62 * noise.noise(Vector((c.x / 19.0, c.y / 19.0, c.z / 7.0))) + 0.34 * noise.noise(Vector((c.x / 71.0, c.y / 71.0, 3.1))): return
+    col, row, flip = NR.randrange(8), 0 if NR.random() < 0.6 else 1, NR.random() < 0.5; N_LIT[0] += 1
+    f = GW.faces.new([GW.verts.new(P_(x, z)) for x, z in outline]); f.material_index = 0
+    for l, (x, z) in zip(f.loops, outline):
+        s_ = (x - x0) / (x1 - x0); s_ = 1 - s_ if flip else s_
+        l[_gw_uv].uv = ((col + 0.01 + 0.98 * s_) / 8, (1 - row - 1 + 0.01 + 0.98 * (z - z0) / (z1 - z0)) / 2 + 0.5)      # row 0: the image's top half
+LG = Sheet('VE lamp glow night', ['lglow']); LAMPS, WASH, MASTS = [], [], set()      # game's lights.json: the lanterns; the floods on landmarks, piers and bridges (venue/venice/night.js)
+def lamp_glow(c_):
+    """a lit lantern: a thin shell just outside its glass, and its place for the game's lights"""
+    R0_, R1_, n_ = 0.182, 0.282, 6
+    for q in range(n_):
+        a0, a1 = 2 * math.pi * q / n_, 2 * math.pi * (q + 1) / n_
+        LG.face([c_ + Vector((R0_ * math.cos(a0), R0_ * math.sin(a0), 0.08)), c_ + Vector((R0_ * math.cos(a1), R0_ * math.sin(a1), 0.08)), c_ + Vector((R1_ * math.cos(a1), R1_ * math.sin(a1), 0.72)), c_ + Vector((R1_ * math.cos(a0), R1_ * math.sin(a0), 0.72))], 'lglow')
+    LAMPS.append(c_ + Vector((0, 0, 0.42)))
+def wash(p, r_, gain=1.0): WASH.append((p.copy() if hasattr(p, 'copy') else p, r_, gain))
+def uplight(p, r_=8.5, gain=1.0):
+    """a flood at a wall's foot: a low iron housing with a lit lens, and its wash"""
+    KT.block(p, (0.6, 0.6, 0.2), 0.0, 'iron', (1, 1, 1))
+    LG.face([p + Vector((-0.22, -0.22, 0.22)), p + Vector((0.22, -0.22, 0.22)), p + Vector((0.22, 0.22, 0.22)), p + Vector((-0.22, 0.22, 0.22))], 'lglow')
+    wash(p, r_, gain)
 def opening(sh, a, u, w, z0, z1, rise, out=0.15, gothic=True, k='dark', col=(1, 1, 1)):
     """a window or arch on a solid wall: `a` the point on the wall at its centre, u the wall's unit direction, its right-hand normal the outward one. Near the road it stands proud in a stone frame with reveals and glazing bars,
     so it throws shadow; beyond 75 m (or set into a wall, out <= 0) a flat shape is enough. Pointed head for gothic, round otherwise"""
@@ -144,7 +183,10 @@ def opening(sh, a, u, w, z0, z1, rise, out=0.15, gothic=True, k='dark', col=(1, 
     inner = outline(w / 2, z0, z1, rise); ni_, nd_ = near(a.x, a.y)
     if nd_ > 240 or (CL[ni_] - a).to_2d().dot(n_.to_2d()) < -0.3 * max(nd_, 1.0): return      # not seen from the road
     if out <= 0 or nd_ > 48 or k != 'dark':
-        sh.face([P(p, out) for p in inner], k, col); return
+        sh.face([P(p, out) for p in inner], k, col)
+        if k == 'dark': lit_window(lambda x, z: P((x, z), out + 0.07), inner)
+        return
+    lit_window(lambda x, z: P((x, z), 0.1), inner)
     fr = 0.26; fw = max(0.14, w * 0.09); FC = (0.8, 0.77, 0.7); outer = outline(w / 2 + fw, z0 - fw, z1, rise + fw)
     sh.face([P(p, 0.03) for p in inner], k, col)
     m = len(inner)
@@ -478,5 +520,9 @@ sh = Sheet('VE shoulders', ['pave'])
 for q in SHOULDER + [[Vector((p.x, p.y, p.z - 0.01)) for p in q] for q in walk if not any(DECK[near(p.x, p.y)[0]] for p in q)]: sh.face(q, 'pave', (0.8, 0.77, 0.7))
 sh.done()
 collision(ground_col, walk + APRON + SHOULDER)
-write_track('Venice', ['Textures: Poly Haven (CC0)'], ['day', 'dusk'], 'dusk', [{'name': 'Campanile', 'pos': to_game(Vector((pc.x, pc.y, gz + 99)))}, {'name': 'HQ', 'pos': to_game(Vector((cq.x, cq.y, gq + 35)))}, {'name': 'Dome hall', 'pos': to_game(dc_ + Vector((0, 0, 50)))}, {'name': 'Town hall tower', 'pos': to_game(at(th, yt, 0, -36, 60))}, {'name': 'Cathedral', 'pos': to_game(at(ca, yca, -53, 0, 70))}])
+mesh_obj('VE window glow night', GW, ['wglow'], planar=False); LG.done(planar=False)
+log('night: windows lit of all', N_LIT, 'lanterns', len(LAMPS), 'washes', len(WASH))
+(OUT / 'lights.json').write_text(json.dumps({'floodlights': [], 'standLamps': [], 'streetLamps': [{'pos': [round(v_, 2) for v_ in to_game(p)], 'color': '#ffc98f', **({'h': 20} if q in MASTS else {})} for q, p in enumerate(LAMPS)], 'covered': [R0, R1],
+                                             'wash': [{'pos': [round(v_, 2) for v_ in to_game(p)], 'r': r_, 'gain': g_} for p, r_, g_ in WASH]}, separators=(',', ':')), encoding='utf8')
+write_track('Venice', ['Textures: Poly Haven (CC0)'], ['day', 'dusk', 'bluehour', 'night'], 'dusk', [{'name': 'Campanile', 'pos': to_game(Vector((pc.x, pc.y, gz + 99)))}, {'name': 'HQ', 'pos': to_game(Vector((cq.x, cq.y, gq + 35)))}, {'name': 'Dome hall', 'pos': to_game(dc_ + Vector((0, 0, 50)))}, {'name': 'Town hall tower', 'pos': to_game(at(th, yt, 0, -36, 60))}, {'name': 'Cathedral', 'pos': to_game(at(ca, yca, -53, 0, 70))}])
 export()

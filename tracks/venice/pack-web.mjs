@@ -10,6 +10,7 @@ const out = join(root, 'tracks', 'venice', 'out');
 const viewer = join(root, 'track-viewer');
 process.env.TRACK = 'venice';
 process.env.TEX_MAX ??= '2048';
+process.env.TEX_CAPS ??= join(root, 'tracks', 'venice', 'texture_caps.json');      // far surfaces only: measure_texture_need.py has the distances
 
 
 process.env.SKIP_SHELL ??= '1';         // no hidden-face pass (needs Blender)

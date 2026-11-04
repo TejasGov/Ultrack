@@ -9,10 +9,11 @@ const { browser, page, errors } = await openViewer({ track: 'venice', look: 'dus
 for (const look of (process.env.LOOKS ?? 'dusk,day').split(',')) {
   await retry(page, setupLook, [look, 'dry', {}]);
   await page.evaluate(() => window.game?.hud?.show?.(false));
+  if (process.env.VIEW) await page.evaluate((w) => { const r = window.viewer.field().rig; if (r) r.view = w; if (window.game) window.game.camView = w; }, process.env.VIEW);     // VIEW=hood: the driver's seat
   for (const [name, st] of Object.entries(SHOTS).filter(([n]) => !process.env.ONLY || process.env.ONLY.split(',').some((o) => n.startsWith(o)))) {
     await page.evaluate(teleport, [C[st % N], C[(st + 3) % N], true]);
     await page.waitForTimeout(2600);
-    await page.screenshot({ path: `${OUT}/${name}-${look}.png`, timeout: 240000 });
+    await page.screenshot({ path: `${OUT}/${name}-${look}${process.env.VIEW ? '-' + process.env.VIEW : ''}.png`, timeout: 240000 });
     console.log('shot', name, look);
   }
 }

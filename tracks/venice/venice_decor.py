@@ -110,7 +110,9 @@ def lamp(p, h_=6.6, double=False):
     for off_ in ((-0.75, 0.75) if double else (0,)):
         t_ = Vector((off_, 0, 0)); c_ = p + t_ + UP * h_
         if double: beam(p + UP * (h_ - 0.25), c_, 0.035)
-        lathe_k(c_, [(0.09, 0), (0.17, 0.08), (0.27, 0.72), (0.31, 0.75)], 'glass', WHITE, n=6); lathe_k(c_ + UP * 0.75, [(0.31, 0), (0.1, 0.3), (0.03, 0.55)], 'iron', WHITE, n=6)
+        lantern(c_)
+def lantern(c_):
+    lathe_k(c_, [(0.09, 0), (0.17, 0.08), (0.27, 0.72), (0.31, 0.75)], 'glass', WHITE, n=6); lathe_k(c_ + UP * 0.75, [(0.31, 0), (0.1, 0.3), (0.03, 0.55)], 'iron', WHITE, n=6); lamp_glow(c_)
 n_lamps = 0
 for j in range(0, N, 16):
     for sd in (1, -1):
@@ -125,6 +127,17 @@ for j in range(0, N, 16):
                 f = -T[j]; r_ = Vector((-f.y, f.x, 0)); c_ = p + UP * 4.0 + r_ * 0.1
                 panel(c_ + r_ * sd * 0.55, 0.95, 2.5, f, 'banner', (0, 0.25, 0, 1) if (j // 32) % 2 else (0.25, 0.5, 0, 1), back=False); beam(p + UP * 6.5, p + UP * 6.5 + r_ * sd * 1.08, 0.022); beam(p + UP * 4.0, p + UP * 4.0 + r_ * sd * 1.08, 0.022)
         n_lamps += 1
+# the road has to read after dark: where a stand (or the cutting's walls) took a station's post, the opposite side has one instead, so a pool of light comes every 40 m. Added for the night, a few more posts by day
+for j in range(0, N, 16):
+    sd = 1 if (j // 16) % 2 else -1
+    if ROOF[j] or DECK[j] or any((CL[j] - Vector((p_.x, p_.y, CL[j].z))).length < 22 for p_ in LAMPS): continue
+    if CUT[j]:
+        if min((j - R0) % N, (R0 - j) % N) < 26 or min((j - R1) % N, (R1 - j) % N) < 26: continue      # the Bridge of Sighs and the buildings at the mouths
+        p = off(j, sd * (HW + 2.3)); p.z = Z(0.2); lamp(p); n_lamps += 1
+    else:
+        if on_stand(j, sd): sd = -sd
+        if on_stand(j, sd): continue
+        p = off(j, sd * (BD[sd][j] + 1.5), -0.5); lamp(p); n_lamps += 1
 log('lamps', n_lamps)
 for j in range(D0 + 12, D1, 24):      # stone urns on the deck's parapets
     for sd in (1, -1): lathe_k(off(j, sd * (DW - 0.25), PAR), [(0.42, 0), (0.42, 0.14), (0.16, 0.28), (0.2, 0.4), (0.48, 0.75), (0.52, 1.05), (0.34, 1.2), (0.42, 1.28), (0.12, 1.42)], 'lime', WARM, n=10)
@@ -256,7 +269,9 @@ def canal_bridge(px):
             KT.face([pt(t0, s_ * (wd / 2 - 0.4), top(t0) + 1.05), pt(t1, s_ * (wd / 2 - 0.4), top(t1) + 1.05), pt(t1, s_ * wd / 2, top(t1) + 1.05), pt(t0, s_ * wd / 2, top(t0) + 1.05)][:: s_], 'lime', PALE)
             f_ = [pt(t0, s_ * (wd / 2 - 0.4), top(t0)), pt(t1, s_ * (wd / 2 - 0.4), top(t1)), pt(t1, s_ * (wd / 2 - 0.4), top(t1) + 1.05), pt(t0, s_ * (wd / 2 - 0.4), top(t0) + 1.05)]; KT.face(f_[::-1] if s_ > 0 else f_, 'lime', PALE)
     for t_ in (0.0, 1.0):
-        for s_ in (-1, 1): lathe_k(pt(t_, s_ * (wd / 2 - 0.2), z0 + 0.0), [(0.5, 0), (0.5, 1.5), (0.34, 1.6), (0.5, 2.0), (0.12, 2.5)], 'lime', WARM, n=10)
+        for s_ in (-1, 1): lathe_k(pt(t_, s_ * (wd / 2 - 0.2), z0 + 0.0), [(0.5, 0), (0.5, 1.5), (0.34, 1.6), (0.5, 2.0), (0.12, 2.5)], 'lime', WARM, n=10); lantern(pt(t_, s_ * (wd / 2 - 0.2), z0 + 2.5))      # a lantern on each newel
+    for t_ in (0.3, 0.7):      # and the span's arch lit from the banks
+        for s_ in (-1, 1): uplight(pt(t_, s_ * (wd / 2 + 1.2), zw + 0.4), 9.0, 0.8)
 canal_bridge(590); canal_bridge(930)
 BANKS = []      # along the canal's two long edges, the boats' places: (position, direction, side outward)
 pts_c = [Vector(p) for p in CANAL]; ctr = sum(pts_c, Vector((0, 0))) / len(pts_c)
@@ -388,4 +403,44 @@ for m in pm.materials:      # dark, like cypress
         if P and P.inputs['Base Color'].is_linked:
             mx = m.node_tree.nodes.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.blend_type = 'MULTIPLY'; mx.inputs['Factor'].default_value = 1; mx.inputs[7].default_value = (0.34, 0.46, 0.34, 1)
             m.node_tree.links.new(P.inputs['Base Color'].links[0].from_socket, mx.inputs[6]); m.node_tree.links.new(mx.outputs[2], P.inputs['Base Color'])
+# where the run-off is wide the posts stand too far from the road for their light to reach it (Turn 1, the hairpin): twin-headed masts there, and only where the road would be dim
+def pool_at(c):
+    e_ = 0.0
+    for q, p_ in enumerate(LAMPS):
+        h_ = 20.0 if q in MASTS else 11.0; r_ = (c.to_2d() - p_.to_2d()).length; R_ = h_ * 3.8
+        if r_ < R_: e_ += (1 - ss(0.55 * R_, R_, r_)) * (1 + r_ * r_ / (h_ * h_)) ** -1.5
+    return e_
+n_mast = 0
+for j in range(0, N, 4):
+    if ROOF[j] or pool_at(CL[j]) >= 0.09: continue
+    for sd in sorted((1, -1), key=lambda s_: BD[s_][j]):
+        if CUT[j]:
+            if min((j - R0) % N, (R0 - j) % N) < 26 or min((j - R1) % N, (R1 - j) % N) < 26: break
+            p = off(j, sd * (HW + 2.3)); p.z = Z(0.2)
+        elif DECK[j]: p = off(j, sd * (DW - 0.25), PAR)
+        elif on_stand(j, sd): continue
+        else: p = off(j, sd * (BD[sd][j] + 1.5), -0.5)
+        lamp(p, 11.0, double=True); MASTS.update((len(LAMPS) - 2, len(LAMPS) - 1)); n_mast += 1
+        break
+log('masts', n_mast)
+# ------------------------------------------------------------------------------------------------ floods: the landmarks stand lit against the sky, and the viaduct's piers from the ground. A wash keeps to its own footprint, so it is a real wall lit, not a haze
+for j in range(D0 + 4, D1 - 3, 8):
+    if in_poly(CL[j].x, CL[j].y, PODIUM): continue
+    for sd in (1, -1):
+        p = off(j, sd * (DW + 1.6)); p.z = ground_z(p.x, p.y)[0] + 0.05; uplight(p, 8.0, 0.75)
+wash(off((R0 - 9) % N, 0), 15.0, 0.2)      # the Bridge of Sighs, all of it
+for m_ in (R0, R1):      # the cuttings at the tunnel's mouths have no room for posts: lanterns on brackets on their walls
+    for q in range(-24, 25, 8):
+        j = (m_ + q) % N
+        if ROOF[j] or not CUT[j]: continue
+        sd = 1 if (q // 8) % 2 else -1; lat = HW + 1.7; z_ = min(CL[j].z + 4.2, Z(1.2) - 0.75)
+        a = off(j, sd * lat); a.z = z_ + 0.72; b = off(j, sd * (lat - 0.62)); b.z = z_ + 0.72
+        if z_ - CL[j].z < 1.6: continue
+        beam(a, b, 0.03); beam(Vector((a.x, a.y, z_ + 0.1)), b, 0.022); lantern(Vector((b.x, b.y, z_)))
+for q_ in (-1, 1):
+    for r_ in (-1, 1): uplight(Vector((pc.x + q_ * 8.2, pc.y + r_ * 8.2, gz + 0.1)), 15.0, 0.82)      # the campanile
+n_ = max(2, int(HW_ / 18))
+for q in range(n_ + 1):
+    wash(HQ_C - HQ_N * (HD_ / 2 + 2) + HQ_U * (HW_ * (q / n_ - 0.5)), 14.0, 0.8)      # the HQ's front
+wash(dc_, 25.0, 0.9); wash(at(th, yt, 0, -36), 16.0, 0.9); wash(at(ca, yca, -32, 0), 22.0, 0.8)      # the dome hall's drum, the town hall's tower, the cathedral's towers
 AR.done(); DEC_.done()

@@ -6,7 +6,7 @@ const VIEW = { venice: [[1080, 'lap']], infinia: [[300, 'lap']] };      // bench
 const results = {};
 for (const track of ['venice', 'infinia', 'venice', 'infinia']) {
   const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } });
-  await ctx.addInitScript((t) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track: t, look: 'dusk', weather: 'dry' } })); } catch { /* none */ } }, track);
+  await ctx.addInitScript(([t, look]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track: t, look, weather: 'dry' } })); } catch { /* none */ } }, [track, process.env.LOOK ?? 'dusk']);      // LOOK=night: the frame cost after dark
   const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(e.message));
   const t0 = Date.now();
   await page.goto('http://127.0.0.1:5180'); await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
