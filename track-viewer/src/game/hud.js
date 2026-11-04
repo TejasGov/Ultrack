@@ -63,7 +63,8 @@ export class Hud {
           h('div.dmain', {}, label('drift', 'DRIFT SCORE'), this.dTotal = h('div.total')),
           h('div.drec', {}, label('trophy', 'RECORD'), this.dRec = h('div.rec')),
           h('div.chainrow', {}, this.dChain = h('div.chain'), this.dMult = h('div.mult')),
-          h('div.chainbar', {}, this.dBar = h('i')))),
+          h('div.chainbar', {}, this.dBar = h('i'))),
+        this.rivalEl = h('div.tile.rival', {}, this.rivalMark = h('i'), this.rivalCode = h('span.code'), this.rivalVal = h('span.g'))),
       this.tr = h('div.grp.tr', {}, this.fpsEl = h('div.fps')),
       this.bl = h('div.grp.bl', {}, this.map.el),
       this.br = h('div.grp.br', {}, this.gauge.el),
@@ -188,6 +189,13 @@ export class Hud {
         this.cache.prog = pq;
         this.progs.forEach((e, k) => e.style.transform = `scaleX(${Math.min(1, Math.max(0, (p - this.sec[k]) / (this.sec[k + 1] - this.sec[k]))).toFixed(3)})`);
       }
+    }
+    // career qualifying: the teammate, his gap on the road until he has set a lap, then the lap to beat
+    const R = s.rival; this.flag(this.el, 'duel', !!R);
+    if (R) {
+      const d = s.driver(R), lap = s.trk.get(R).best, gap = s.rivalGap();
+      this.set(this.rivalCode, 'rc', d.code); if (this.cache.rm !== d.code) { this.cache.rm = d.code; this.rivalMark.style.background = teamMark(d.team); }
+      this.set(this.rivalVal, 'rv', lap !== null ? fmtTime(lap) : `${gap > 0 ? 'AHEAD' : 'BEHIND'} ${Math.abs(gap).toFixed(1)}`);
     }
     // drift attack: the score, a ring timer with the seconds, the record, the chain and its multiplier (always shown)
     if (s.drift) {

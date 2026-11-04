@@ -198,14 +198,24 @@ const devOf = (save, key) => save.world.teams[CAR[key].team].dev;
 const myLevels = (save) => ({ engine: 0, tyres: 0, brakes: 0, ...save.garage.upgrades[save.contract.car] });
 export const teammateCar = (save) => seatCar(save.contract.team, otherSeat(save.contract.seat));
 
-/** qualifying is done (the player's best valid lap, or null): the AI laps, the teammate's lap and duel, the grid (4.3). Another try before the race keeps the better lap; the AI's laps are seeded, so they do not move */
-export function finishQuali(save, best) {
+/** a rival's pace this round: his rating, with seeded jitter */
+const aiPace = (save, key) => paceOf(ratingOf(save, key), save.rules.difficulty) * (1 + T.pace.jitter * gauss(rng(save.seed, 'pace', save.clock.season, save.clock.round, key)));
+
+/** who drives in qualifying: the player and, on track with him, the teammate at his race pace (an empty seat: the player alone) */
+export function qualiSetup(save) {
+  const hero = save.contract.car, mate = teammateCar(save), racers = driverAt(save, mate) ? [hero, mate] : [hero];
+  return { racers, pace: racers[1] ? { [mate]: aiPace(save, mate) } : {}, drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])) };
+}
+
+/** qualifying is done (the player's best valid lap or null, and the teammate's lap on track or null): the AI laps, the duel, the grid (4.3). Another try before the race keeps each driver's better lap; the other teams' laps are seeded, so they do not move, and the teammate's computed lap only stands in when he set none */
+export function finishQuali(save, best, mateRun = null) {
   while (currentWeek(save).kind !== 'race' && advanceWeek(save).ok);   // qualifying belongs to a race week: anything still open is skipped
   const held = save.season.current.quali?.laps[save.contract.car]; if (Number.isFinite(held)) best = Number.isFinite(best) ? Math.min(best, held) : held;
   const R = currentRound(save), cur = save.season.current, base = { seed: save.seed, season: save.clock.season, round: save.clock.round, track: R.track, weather: R.weather, difficulty: save.rules.difficulty };
   const laps = { [save.contract.car]: Number.isFinite(best) ? best : null };
   for (const key of cur.entries) laps[key] = aiLap({ ...base, key, rating: ratingOf(save, key), dev: devOf(save, key) });
-  const mate = teammateCar(save), mateLap = aiLap({ ...base, key: mate, rating: ratingOf(save, mate), dev: devOf(save, mate) });
+  const mate = teammateCar(save), heldMate = cur.quali?.mate.lap;
+  const mateLap = Number.isFinite(mateRun) ? Math.min(mateRun, heldMate ?? Infinity) : heldMate ?? aiLap({ ...base, key: mate, rating: ratingOf(save, mate), dev: devOf(save, mate) });
   const grid = Object.keys(laps).sort((a, b) => (laps[a] ?? Infinity) - (laps[b] ?? Infinity));
   cur.quali = { laps, grid, mate: { car: mate, lap: mateLap, code: save.world.seats[mate] }, duel: duelOf(laps[save.contract.car], mateLap) };
   save.clock.phase = 'race';
@@ -215,10 +225,7 @@ export function finishQuali(save, best) {
 /** what game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels and who drives each car */
 export function raceSetup(save) {
   const R = currentRound(save), cur = save.season.current, hero = save.contract.car;
-  const pace = Object.fromEntries(cur.entries.map((key) => {
-    const r = rng(save.seed, 'pace', save.clock.season, save.clock.round, key);
-    return [key, paceOf(ratingOf(save, key), save.rules.difficulty) * (1 + T.pace.jitter * gauss(r))];
-  }));
+  const pace = Object.fromEntries(cur.entries.map((key) => [key, aiPace(save, key)]));
   const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2] }), racers = cur.quali?.grid ?? [hero, ...cur.entries];
   return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, laps: R.laps, track: R.track, look: R.look, weather: R.weather,
     drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };

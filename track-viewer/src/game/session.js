@@ -10,7 +10,7 @@ const ON_TRACK = new Set(['asphalt', 'pit', 'kerb', 'sausage kerb', 'run-off', '
 export const MODES = {
   race: { label: 'Race', desc: 'Eight teams, one car each. Lights out and away we go.', laps: true, rivals: true, start: 'lights', tags: ['race'] },
   trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Leave the track and the lap does not count.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true },
-  quali: { label: 'Qualifying', desc: 'One valid flying lap on an empty circuit sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true, validLaps: 1 },   // the career's (game.js careerWeekend)
+  quali: { label: 'Qualifying', desc: 'One valid flying lap sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true, validLaps: 1 },   // the career's (game.js careerWeekend)
   drift: { label: 'Drift Attack', desc: 'Ninety seconds. Chain drifts for the multiplier; touch the grass and the chain is gone.', laps: false, rivals: false, start: 'count', tags: ['free'], seconds: 90 },
   free: { label: 'Free Drive', desc: 'No clock, no rivals. The whole circuit, at the hour you choose.', laps: false, rivals: false, start: 'none', tags: ['free'] },
 };
@@ -98,7 +98,7 @@ export class Session {
     // a new position counts once it has held for 0.6 s (side by side, the order flickers)
     const pos = this.order.indexOf(hero) + 1;
     this.posHold = pos !== this.heroPos ? this.posHold + dt : 0;
-    if (this.posHold > 0.6) { if (this.state === 'running') this.emit('position', { from: this.heroPos, to: pos }); this.heroPos = pos; this.posHold = 0; }
+    if (this.posHold > 0.6) { if (this.state === 'running' && this.M.rivals) this.emit('position', { from: this.heroPos, to: pos }); this.heroPos = pos; this.posHold = 0; }   // a race's: qualifying has no places on the road
     // ---- the hero: wrong way, off track, crashes, spins
     if (this.state === 'running') {
       const s = this.trk.get(hero), L = this.field.linePts, a = L[s.idx], b = L[(s.idx + 3) % this.N];
@@ -154,6 +154,17 @@ export class Session {
       this.state = 'done'; this.emit('finish', { score: D.score });
     }
   }
+
+  /** career qualifying's other car: the teammate on track with the player */
+  get rival() { return this.mode === 'quali' ? this.field.cars.find((c) => c !== this.field.hero) ?? null : null; }
+  /** the rival's flying lap: the best he has set or, past halfway on his first, his pace so far carried to the line; before that, null */
+  rivalLap() {
+    const c = this.rival, s = c && this.trk.get(c); if (!s) return null;
+    if (s.best !== null) return s.best;
+    return s.lapStart !== null && s.idx >= this.N / 2 ? (this.raceT - s.lapStart) * this.N / s.idx : null;
+  }
+  /** seconds the rival is up the road from the hero (negative: behind), from track distance and the hero's speed */
+  rivalGap() { return (this.progress(this.rival) - this.progress(this.field.hero)) / this.N * this.len / Math.max(20, this.field.hero.vehicle.speed); }
 
   /** the classification: finished cars by time, the rest by progress, each with a gap (estimated for the unfinished) */
   results() {

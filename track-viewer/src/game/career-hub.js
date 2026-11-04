@@ -35,10 +35,10 @@ export function CareerHubScreen(game) {
   function startQuali(save) {
     const R = C.currentRound(save), car = save.contract.car, lv = C.raceSetup(save).levels;
     game.careerSession('quali', { track: R.track, look: R.look, weather: R.weather, laps: R.laps, car, home: 'careerHub',
-      session: { levels: lv, runUp: TUNING.series.qualiRunUp, drivers: { [car]: playerDriver(save, save.contract.team) } } }, (d) => {
-      C.finishQuali(save, d.best); persist(game);
+      session: { ...C.qualiSetup(save), levels: lv, runUp: TUNING.series.qualiRunUp } }, (d) => {
+      C.finishQuali(save, d.best, d.mateLap); persist(game);
       const q = save.season.current.quali, p = q.grid.indexOf(car) + 1;
-      game.show('careerHub', 'home'); toast(Number.isFinite(q.laps[car]) ? `Qualified P${p}: ${fmtTime(q.laps[car])}. Teammate duel ${q.duel.result}.` : 'No valid lap: you start from the back.');
+      game.show('careerHub', 'home'); toast(Number.isFinite(q.laps[car]) ? `Qualified P${p}: ${fmtTime(q.laps[car])}. ${q.mate.code} ${fmtTime(q.mate.lap)}: duel ${q.duel.result}.` : 'No valid lap: you start from the back.');
     });
   }
   function startEvent(save, spec) {
@@ -70,7 +70,7 @@ export function CareerHubScreen(game) {
     else if (spec) tiles.push(mode(EVENT[spec.kind][1], EVENT[spec.kind][0], 'This week: optional', 'next', () => startEvent(save, spec), spec.kind));
     else if (w.event?.result) tiles.push(mode(EVENT[w.event.kind][1], EVENT[w.event.kind][0], `Done: ${MEDAL[w.event.result.medal]}`, 'done', locked('One try at each event.'), w.event.kind));
     else if (nextEvent) tiles.push(mode(EVENT[nextEvent.event.kind][1], EVENT[nextEvent.event.kind][0], `Week ${nextEvent.week}`, 'off', locked(`The next one is in week ${nextEvent.week}.`), nextEvent.event.kind));
-    tiles.push(race ? mode('time-trial', q ? 'Improve your lap' : 'Qualifying', q ? `Grid P${grid}: ${q.laps[me.car] ? fmtTime(q.laps[me.car]) : 'no lap'}. Keeps the better lap` : 'Next: one flying lap sets your grid slot', q ? 'open' : 'next', () => startQuali(save), 'race')
+    tiles.push(race ? mode('time-trial', q ? 'Improve your lap' : 'Qualifying', q ? `Grid P${grid}: ${q.laps[me.car] ? fmtTime(q.laps[me.car]) : 'no lap'}. Keeps the better lap` : 'Next: one flying lap on track with your teammate sets your grid slot', q ? 'open' : 'next', () => startQuali(save), 'race')
       : mode('time-trial', 'Qualifying', `Week ${nextRace.week}`, 'off', locked(`Qualifying opens in race week: week ${nextRace.week}.`), 'race'));
     tiles.push(race ? mode('race', 'Race', q ? `Next: ${R.laps} laps from P${grid}. One try` : 'Locked: qualify first', q ? 'next' : 'off', q ? () => startRace(save) : locked('Qualify first: it sets your grid slot.'), 'race')
       : mode('race', 'Race', `Week ${nextRace.week}`, 'off', locked(`The next race is in week ${nextRace.week}.`), 'race'));

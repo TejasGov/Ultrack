@@ -66,6 +66,11 @@
 .hud .prog div { flex: 1 1 0; border-radius: var(--r-1); background: var(--c-fill-2); overflow: hidden; }
 .hud .prog i { display: block; height: 100%; background: var(--c-ink-1); transform-origin: left; transform: scaleX(0); transition: transform var(--dur-3) linear; }
 .hud:not(.timed) .timing { display: none; }
+/* career qualifying: the teammate under the timing tile */
+.hud .rival { display: none; width: fit-content; margin: var(--sp-2) auto 0; padding: 4px 12px; align-items: center; gap: 8px; font-size: 17px; letter-spacing: 0.06em; }
+.hud.duel .rival { display: flex; }
+.hud .rival i { width: 4px; height: 14px; border-radius: 1px; box-shadow: 0 0 0 1px var(--c-line-2); }
+.hud .rival .g { font-size: 16px; color: var(--c-ink-2); letter-spacing: 0.04em; }
 
 /* ---- drift attack: a ring timer with the seconds | the score | the record; the chain and its multiplier (always shown) under them */
 .hud .drift { display: none; width: 448px; grid-template-columns: 64px 1fr 96px; align-items: start; column-gap: 24px; padding: 16px 24px; }

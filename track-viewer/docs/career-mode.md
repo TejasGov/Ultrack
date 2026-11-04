@@ -259,7 +259,7 @@ Total: a full weekend is about 11 minutes; with both optional events about 15.
 
 ### 4.3 Qualifying and the grid
 
-- Player lap: real. AI lap: `parLap(track, car) / pace(rating) x (1 + N(0, 0.004))`, seeded per (season, round, entry). The teammate (who does not race) also gets a computed lap: that is the **teammate duel** (6.3).
+- Player lap: real. AI lap: `parLap(track, car) / pace(rating) x (1 + N(0, 0.004))`, seeded per (season, round, entry). The teammate (who does not race) is on track with the player, starting 20 m ahead on the same run-up at his race pace: his real lap is the **teammate duel** (6.3). If the player finishes first, his pace so far is carried to the line; a computed lap stands in only when he got less than halfway.
 - Grid order = qualifying order. Today `Field.grid()` always puts the hero last; the career needs an ordered grid (section 10.3). Without this change the player starts last every round, which makes a slow car miserable; with it, qualifying is worth playing.
 - `parLap(track, car)` is stored per track and car (the AI solo lap from `testdrive.js balance()` / `npm run laps`). Until measured, it is `lapLength / avgSpeed(track)` with the Marina / Tokyo / India numbers above.
 
@@ -434,7 +434,7 @@ Rookie pace, six rounds: a stellar season (average RR 8.5, wins, the Cup) is 6 x
 
 The teammate cannot be on the grid (C1), so the duel is run on the clock.
 
-- Each round the player's best valid qualifying lap is compared with the teammate's computed lap (4.3, his rating and his car's par).
+- Each round the player's best valid qualifying lap is compared with the lap the teammate sets on track beside him (4.3, his rating sets his pace, in his own car).
 - Margin over 0.15%: won / lost; within 0.15%: level. The Contract tab shows the season score ("4-2") and the margin per round in thousandths.
 - The result adds to RR (+/-0.4, +/-0.6 beyond a 0.3% margin), to trust (+/-3), and decides promotion to the A seat: win the season duel (4 of 6), trust 60 or more, then the A seat is offered and the old A driver swaps down to the B car. Rating of the teammate is visible and moves with age and form.
 - Qualifying is therefore the one place the teammate is real. That is why the Time Trial becomes qualifying and not an extra.

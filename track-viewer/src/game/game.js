@@ -503,7 +503,7 @@ export class Game {
   careerDone(retired = false) {
     const run = this.careerRun, s = this.session; if (!run || !s) return;
     const T = s.trk.get(this.field.hero), rows = s.mode === 'race' ? s.results() : null;
-    const data = { kind: run.kind, best: T.best, score: s.drift?.score ?? null, dnf: retired, crashes: run.crashes, spins: run.spins, pro: store.settings.assists === 'pro',
+    const data = { kind: run.kind, best: T.best, mateLap: s.rivalLap(), score: s.drift?.score ?? null, dnf: retired, crashes: run.crashes, spins: run.spins, pro: store.settings.assists === 'pro',
       order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])) };
     this.careerRun = null; this.hideScreens(); this.endSession(); this.lineup(); this.state = 'menu'; this.cameraFor('menu');
     run.done(data);
