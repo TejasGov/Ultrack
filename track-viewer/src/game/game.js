@@ -282,7 +282,7 @@ export class Game {
     };
     try {
     this.setBusy('');
-    await this.raceLoading?.open({mode,reduceMotion:S.reduceMotion,track:trackOf(S.track).name,onCancel:()=>{
+    await this.raceLoading?.open({mode,reduceMotion:S.reduceMotion,track:trackOf(S.track).name,label:career?.label,field:career?.field,onCancel:()=>{
       cancelled=true;this.raceLoading.close();this.ctx.clearDriverHoardings?.();this.lineup();this.show(home);
     }});
     if(cancelled)return;

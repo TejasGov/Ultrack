@@ -11,7 +11,7 @@ import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
 import { loreOf, TIERS, CAL, SPONSORS, xpForLevel } from './career/rules.js';
 
-export const ROUND_EVENT = { sprint: 'Sprint', grandprix: 'Grand Prix', showpiece: 'Showpiece', finale: 'Season Finale' };   // calendar.json `event`; a season from before events has none
+export const ROUND_EVENT = { tour: 'Tour', open: 'Open', masters: 'Masters', sprint: 'Sprint', grandprix: 'Grand Prix', showpiece: 'Showpiece', finale: 'Season Finale' };   // a round's `event`; the last four are seasons from before the Tour
 export const LOOK = { day: ['Day', 'sun'], dusk: ['Dusk', 'sunset'], bluehour: ['Evening', 'moon-horizon'], night: ['Night', 'moon'] };
 export const WX_ICON = { dry: 'sun', damp: 'cloud-drizzle', rain: 'cloud-rain' };
 export const MEDAL = ['No medal', 'Bronze', 'Silver', 'Gold'];
@@ -37,7 +37,7 @@ export function rich(text) {
   out.push(t.slice(at)); return out;
 }
 /** what a week is, for the colour that says so: race, test, sponsor, market, review */
-export const kindOf = (w) => (w.kind === 'race' ? 'race' : w.kind === 'market' ? 'market' : w.kind === 'end' ? 'review' : w.event.kind);
+export const kindOf = (w) => (w.kind === 'race' ? (w.ev === 'open' || w.ev === 'masters' ? 'open' : 'race') : w.kind === 'market' ? 'market' : w.kind === 'end' ? 'review' : w.event.kind);
 export const zero = () => ({ engine: 0, tyres: 0, brakes: 0 });
 export const available = () => Object.fromEntries(Object.values(TRACKS).map((t) => [t.id, t.times ?? null]));
 export const teamName = (id) => loreOf(id).name;
@@ -68,9 +68,9 @@ export function statusBar(me, save) {
 export const prompts = (...list) => list.map(([k, p, l]) => prompt(k, p, l));
 export const SELECT = [['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'], CHOOSE = ['Enter', 'a', 'Choose'];
 
-const SHORT = { india: 'Ghat', drylake: 'Lake', qingshan: 'Forest', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano', venice: 'Venice' };
-const WEEK_LABEL = (save, w) => (w.kind === 'race' ? `R${w.round + 1} ${save.season.calendar[w.round].finale ? 'Finale' : SHORT[save.season.calendar[w.round].track] ?? ''}` : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
-const WEEK_ICON = (w) => (w.kind === 'race' ? 'race' : w.kind === 'market' ? 'contract' : w.kind === 'end' ? 'trophy' : EVENT[w.event.kind][1]);
+const SHORT = { india: 'Ghat', drylake: 'Lake', qingshan: 'Forest', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano', venice: 'Venice' }, OPEN_SHORT = { open: 'Open', masters: 'Masters' };
+const WEEK_LABEL = (save, w) => (w.kind === 'race' ? `R${w.round + 1} ${OPEN_SHORT[w.ev] ?? (save.season.calendar[w.round].finale ? 'Finale' : SHORT[save.season.calendar[w.round].track] ?? '')}` : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
+const WEEK_ICON = (w) => (w.kind === 'race' ? (w.ev ? (w.ev === 'tour' ? 'race' : 'trophy') : 'race') : w.kind === 'market' ? 'contract' : w.kind === 'end' ? 'trophy' : EVENT[w.event.kind][1]);
 export const kindIcon = WEEK_ICON;
 /** a week as words, for the Calendar and the footer */
 export const weekTitle = (save, w) => (w.kind === 'race' ? save.season.calendar[w.round].name : w.kind === 'market' ? 'The market' : w.kind === 'end' ? 'Season review' : C.eventName(save, w));
@@ -81,7 +81,7 @@ export function strip(save) {
 }
 /** a block's title line */
 export const blockHead = (ic, title, right) => h('div.cx-bh', { 'data-ic': ic }, h('span', {}, ic ? h('i.cx-ico', {}, icon(ic)) : null, title), right ? h('span', {}, right) : null);
-export const worldName = (save) => CAL.worlds[save.season?.world]?.name;
+export const worldName = (save) => (save.season?.calendar.some((r) => r.kind) ? 'The Ultrack Tour' : CAL.worlds[save.season?.world]?.name);   // a season rolled before the Tour keeps its world
 export const tierCup = (save) => TIERS.tiers[save.season.tier].cup;
 /** a sponsor's logo on its own colour; the brand's name if the file is not there */
 export function brandMark(id) {

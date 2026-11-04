@@ -34,7 +34,7 @@ export class RaceLoading {
     if(this.preloaded)return;
     this.preloaded=new Image();this.preloaded.src=LOADING_SLIDES.find((s)=>s.track===trackOf(store.settings.track).id)?.image??LOADING_SLIDES[0].image;
   }
-  async open({ mode = 'race', reduceMotion = false, track = 'Corniche Marina', onCancel } = {}) {
+  async open({ mode = 'race', reduceMotion = false, track = 'Corniche Marina', label = null, field = null, onCancel } = {}) {   // label, field: a career event's own name (Last Chance Qualifier, Japan Open Final) and line
     this.close(); this.active = true; this.done = new Set(); this.started = performance.now();
     this.previousFocus = document.activeElement;
     const t = Object.values(TRACKS).find((x) => x.name === track) ?? trackOf(store.settings.track), S = store.settings;
@@ -45,9 +45,9 @@ export class RaceLoading {
     image.onerror = () => image.remove(); // the scrim and copy stay readable without it
     const where = [t.name, LOOK_LABEL[S.look], S.weather !== 'dry' ? WEATHER[S.weather]?.label : null].filter(Boolean).join(' · ');
     this.slow = el('p', 'rl-slow', icon('info'), el('span', '', 'First-time preparation can take longer. You can return to the menu at any time.')); this.slow.hidden = true;
-    const copy = el('div', 'rl-copy', el('p', 'kick rl-kick', icon('track'), where), el('h1', '', slide.title), el('p', 'rl-field', icon(mic), fieldLine(mode)),
+    const copy = el('div', 'rl-copy', el('p', 'kick rl-kick', icon('track'), where), el('h1', '', slide.title), el('p', 'rl-field', icon(mic), field ?? fieldLine(mode)),
       el('p', 'rl-text', slide.text), el('p', 'rl-tip', icon('info'), el('span', '', TIP)), this.slow);
-    const logo = el('i', 'logo'), head = el('header', 'rl-head', logo, el('span', 'kick rl-mode', icon(mic), mlabel));
+    const logo = el('i', 'logo'), head = el('header', 'rl-head', logo, el('span', 'kick rl-mode', icon(mic), label ?? mlabel));
     // the stage bar: the stage in progress and the share done; the label is the live region
     this.detail = el('span', 'rl-stage'); this.detail.setAttribute('role', 'status'); this.detail.setAttribute('aria-live', 'polite');
     this.pct = el('span', 'rl-pct tnum'); this.fillBar = el('i'); this.bar = el('div', 'bar4', this.fillBar);

@@ -309,7 +309,7 @@ try {
   { const K = await server.ssrLoadModule('/src/game/career/ranking.js'), s = signed(300), r0 = K.rankingOf(s);
     assert.equal(r0.length, 16); assert.equal(r0[0].code, Object.entries(s.world.ratings).sort((a, b) => b[1] - a[1])[0][0], 'the best-rated driver starts first'); assert.equal(r0.at(-1).code, 'YOU', 'the player starts at the bottom'); assert.deepEqual(r0.map((x) => x.rank), [...Array(16).keys()].map((i) => i + 1));
     assert.equal(K.rankPoints(0, 'tour'), 25); assert.equal(K.rankPoints(0, 'open'), 62.5); assert.equal(K.rankPoints(0, 'masters'), 75); assert.equal(K.rankPoints(9, 'tour'), 0);
-    const w = R.TUNING.ranking.window, t = signed(301); const r1 = K.rankOf(t); K.addDay(t, { YOU: 100 }); assert.ok(K.rankOf(t) < r1, 'a big day lifts the player');
+    const w = R.TUNING.ranking.window, t = signed(301); const r1 = K.playerRank(t); K.addDay(t, { YOU: 100 }); assert.ok(K.playerRank(t) < r1, 'a big day lifts the player');
     for (let i = 0; i < w; i++) K.addDay(t, {}); assert.equal(t.ranking.days.length, w, 'only the last window of days is kept'); assert.equal(K.rankingOf(t).find((x) => x.you).pts, 0, 'the day fell out of the window, and the seed has faded');
     const a = signed(302); round(a, 1, 1); assert.ok(K.rankingOf(a).find((x) => x.you).pts >= 25, 'a win scores ranking points'); assert.equal(a.ranking.n, 1); }
 

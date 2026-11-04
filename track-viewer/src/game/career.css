@@ -8,7 +8,7 @@
    A state is never colour alone: locked has a lock, a dashed edge and hatching; done a check; the current week a ring and "Now". */
 .cx {
   --d-home: #ff5a52; --d-calendar: #2dd4bf; --d-events: #a78bfa; --d-inbox: #5b9dff; --d-media: #ffc94a; --d-deals: #ff9447; --d-standings: #ff6fae; --d-garage: #3fd18a; --d-driver: #4cc9ff;
-  --d-race: #ff5a52; --d-test: #a6e04a; --d-sponsor: #ff9447; --d-market: #a78bfa; --d-review: #ff6fae; --d-practice: #9db2c9;
+  --d-open: #f2c14e; --d-race: #ff5a52; --d-test: #a6e04a; --d-sponsor: #ff9447; --d-market: #a78bfa; --d-review: #ff6fae; --d-practice: #9db2c9;
   --s-coin: #ffd24a; --s-xp: var(--d-driver); --s-rep: var(--d-standings); --s-trust: var(--d-deals);
   --pos: #3fca7f; --neg: #ff6b66;
   --sec: var(--d-home); --wm: url('/assets/ui/icons/car.svg');
@@ -26,7 +26,7 @@
 .cx[data-sec=report] { --sec: var(--d-race); --wm: url('/assets/ui/icons/race.svg'); }
 .cx[data-sec=delete] { --sec: var(--neg); --wm: url('/assets/ui/icons/close.svg'); }
 /* the kinds: a class on the week, the tile, the row or the panel that is of that kind */
-.k-race { --k: var(--d-race); } .k-test { --k: var(--d-test); } .k-sponsor { --k: var(--d-sponsor); } .k-market { --k: var(--d-market); } .k-review { --k: var(--d-review); } .k-practice { --k: var(--d-practice); }
+.k-open { --k: var(--d-open); } .k-race { --k: var(--d-race); } .k-test { --k: var(--d-test); } .k-sponsor { --k: var(--d-sponsor); } .k-market { --k: var(--d-market); } .k-review { --k: var(--d-review); } .k-practice { --k: var(--d-practice); }
 .cx-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
 .cx-scrim { position: absolute; inset: 0; background: rgba(5, 7, 10, 0.72); }
 .cx > :not(.cx-bg, .cx-scrim) { position: relative; }
@@ -390,7 +390,12 @@
 .cx-say.you small { color: var(--sec); }
 
 /* Standings */
-.cx-standings { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr); }
+.cx-standings { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cx-standings .cx-st .c-name { display: grid; gap: 0; align-content: center; line-height: 1.15; }
+.cx-standings .lrow.cx-st { min-height: calc(48 * var(--u)); }
+.cx-st.rk { --cols: calc(28 * var(--u)) 4px minmax(0, 1fr) calc(52 * var(--u)); }
+.lrow.cx-st.rk.cut { box-shadow: inset 0 -2px 0 var(--d-open); }
+.cx-standings .k-open > .cx-note { flex: none; }
 .cx-st { --cols: calc(28 * var(--u)) 4px minmax(0, 1fr) calc(44 * var(--u)) calc(52 * var(--u)); }
 .lrow.cx-st { min-height: calc(40 * var(--u)); font-size: var(--fs-body); }
 .lhead.cx-st { flex: none; height: calc(28 * var(--u)); color: var(--c-ink-2); }
@@ -423,6 +428,11 @@
 
 /* Driver */
 .cx-driver { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); }
+.cx-stack.rev { grid-template-rows: minmax(0, 1fr) auto; }
+.cx-mini.cut { box-shadow: inset 0 -2px 0 var(--d-open); }
+.cx-roadhead { flex: none; display: flex; gap: var(--sp-6); }
+.cr-lcq { grid-column: 1 / -1; }
+.cx-week.k-open { --k: var(--d-open); }
 .ch-xp { flex: none; align-self: stretch; }
 .ch-xp i { background: var(--s-xp); }
 .cx-rr { flex: none; display: flex; align-items: flex-end; gap: var(--sp-2); height: calc(96 * var(--u)); }

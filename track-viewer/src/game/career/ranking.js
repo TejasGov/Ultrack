@@ -22,4 +22,4 @@ export function rankingOf(save) {
   list.sort((a, b) => b.pts - a.pts || rating(b.code) - rating(a.code) || (a.code < b.code ? -1 : 1));
   return list.map((x, i) => ({ ...x, rank: i + 1 }));
 }
-export const rankOf = (save) => rankingOf(save).find((x) => x.you)?.rank ?? null;
+export const playerRank = (save) => rankingOf(save).find((x) => x.you)?.rank ?? null;

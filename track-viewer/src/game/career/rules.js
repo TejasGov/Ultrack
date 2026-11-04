@@ -89,7 +89,7 @@ export function buildWeeks(calendar, theme = 'test') {
   const other = theme === 'test' ? 'sponsor' : 'test', mid = Math.ceil(calendar.length / 2), out = [{ kind: 'pre', event: { kind: 'test', result: null } }];
   let k = 0;
   calendar.forEach((r, i) => {
-    out.push({ kind: 'race', round: i });
+    out.push({ kind: 'race', round: i, ...(r.kind ? { ev: r.kind } : {}) });
     if (i === calendar.length - 1) return;
     out.push(i + 1 === mid ? { kind: 'market' } : { kind: 'open', event: { kind: k++ % 2 ? other : theme, result: null } });
   });

@@ -8,7 +8,7 @@ import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap,
   buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult,
 } from './rules.js';
-import { newRanking, rankPoints, addDay, rankingOf, rankOf } from './ranking.js';
+import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
 import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
 import { post, unread, markRead } from './inbox.js';
 import { coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, unreadStories, readStory, storyImage, latestBytes } from './media.js';
@@ -18,7 +18,7 @@ import {
 } from './offers.js';
 
 export const SCHEMA = 5;
-export { rankingOf, rankOf };
+export { rankingOf, playerRank };
 export { unreadStories, readStory, storyImage, latestBytes };
 export { thumbOf } from './media.js';
 export { releaseCut as releaseCutOf, driverAt, personOf, rivalsOf, unread, markRead, findOffer, mateOf, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, signMid, teamOutlook, approach, sponsorSlots, signSponsor };
@@ -267,7 +267,7 @@ function enterWeek(save) {
   }
 }
 /** what a race week's message adds: how the player gets to the grid */
-function weekNote(save, R) {
+export function weekNote(save, R) {
   const { open: o, exempt: ex } = save.season.current;
   if (!o) return `Practice is open. ${ex ? `After ${ex.why} you skip qualifying and start P${ex.slot}.` : `All 16 drivers qualify, and the fastest ${T.series.gridSize} race.`}`;
   if (o.kind === 'masters') return o.seeded ? `Ranked ${o.rank}: you are in, as one of the top ${o.seeds.length} of the Ultrack Ranking. Practice is open.` : `Ranked ${o.rank}: only the top ${o.seeds.length} of the Ultrack Ranking race the Masters. It runs without you.`;
@@ -406,14 +406,14 @@ export function finishRace(save, result) {
     if (me.warning.met >= T.trust.recover) me.warning = null;
   }
   const S = save.stats; if (!dnq) S.starts++; if (!dnf && finish === 1) S.wins++; if (!dnf && finish <= 3) S.podiums++; if (pole) S.poles++; if (fastest) S.fastest++;
-  const rankBefore = rankOf(save), day = {};              // the Ultrack Ranking: points by place for those who raced, a retirement scoring none
+  const rankBefore = playerRank(save), day = {};              // the Ultrack Ranking: points by place for those who raced, a retirement scoring none
   entries.forEach((e, i) => { if (!e.dnq && !(e.you && dnf)) day[seats[e.key]] = rankPoints(i, kind); });
   addDay(save, day);
   const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, expPos: cur.expPos, dnf, dnq, pole, fastest, clean,
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
     entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines,
-    rank: { before: rankBefore, after: rankOf(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, lcq: cur.open.lcq?.finish ?? null } } : {}) };
+    rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null } } : {}) };
   if (cur.open) recordOpen(save, R, entries[0], report);
   save.season.results.push(report);
   coverRound(save, report); if (cur.open) coverOpen(save, report);
@@ -483,11 +483,11 @@ function endSeason(save) {
   save.career.rep = clamp(save.career.rep + rep, 0, 1000); save.wallet.coins += coins;
   const avgRR = mean(rs.map((r) => r.rr));
   save.history.push({ season: save.clock.season, team: me.team, seat: me.seat, car: me.car, tier: save.season.tier, drivers: drvPos, teams: teamPos, cup: cupPos,
-    points: st.drivers[drvPos - 1]?.pts ?? 0, rank: rankOf(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: st.teams.map((t) => t.team), dropped });
+    points: st.drivers[drvPos - 1]?.pts ?? 0, rank: playerRank(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: st.teams.map((t) => t.team), dropped });
   for (const d of S.deals) if (!d.met) post(save, 'sponsor', `${d.name}: target missed`, `You did not ${targetText(d.target)}. No bonus this year.`);
   for (const o of save.season.mid.splice(0)) { save.world.teams[o.team].declined++; post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
-  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: rankOf(save) }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
+  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save) }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
   save.clock.phase = 'review';
   if (dropped) coverFired(save, me.team);
   post(save, dropped ? 'warn' : 'race', `Season ${save.clock.season} is over: P${drvPos} in the Drivers'`, dropped ? `${teamName(me.team)} has let you go.` : 'The review and the market are waiting.');

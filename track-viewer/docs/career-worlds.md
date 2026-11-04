@@ -1,5 +1,8 @@
 # Career worlds and four new tracks: concepts
 
+**Superseded for new seasons (2026-11-04):** every tier now plays one Tour with three Opens and the Masters (see the top of `career-mode.md`). The worlds below stay as the notes for the circuits; a season rolled before the Tour keeps its world.
+
+
 Concepts to start the Blender work from, written on 2026-11-01. Nothing here is built. The career itself is designed in `career-mode.md`; this file fills its section 4.5 ("tracks the career wants next") and gives the career three worlds.
 
 The plans and the numbers under them come from `docs/career-worlds/layouts.json` through `node scripts/sketch-layouts.mjs` (add `--png` for `qa/career-worlds/sheet.png`). The script closes each waypoint list with a centripetal Catmull-Rom spline, scales it to the target lap and checks corners, the longest straight, grades and how close two parts of the lap pass. `docs/career-worlds/<id>.json` is the scaled centreline for the Blender build, in metres, the same kind of closed waypoint road India V1 started from. Lap times are estimates **(assumed)** until the AI laps them.
