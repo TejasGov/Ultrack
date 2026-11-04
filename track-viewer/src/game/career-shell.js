@@ -63,7 +63,7 @@ export function statusBar(me, save) {
   const K = save.career, prev = xpForLevel(K.cl), next = xpForLevel(K.cl + 1), level = cs('xp', 'Level', String(K.cl));
   level.append(css(h('i.sx-bar', {}, h('i')), { '--p': K.cl >= 25 ? 1 : Math.max(0, Math.min(1, (K.xp - prev) / (next - prev))) }));   // the way to the next one, under it
   fill(me, c ? h('span.cx-team', {}, teamLogo(loreOf(c.team)), stat(`${c.seat} seat`, carName(c.car))) : stat('Driver', save.player.name),
-    level, cs('rep', 'Reputation', String(Math.round(K.rep)), '/ 1000'), c ? cs('trust', 'Trust', String(c.trust), '/ 100') : null, cs('mood', 'Mood', String(Math.round(save.life.happy))), cs('coin', 'Wallet', Math.round(save.wallet.coins).toLocaleString('en')));
+    level, cs('rep', 'Reputation', String(Math.round(K.rep)), '/ 1000'), c ? cs('trust', 'Trust', String(c.trust), '/ 100') : null, cs('mood', 'Happiness', String(Math.round(save.life.happy))), cs('coin', 'Wallet', Math.round(save.wallet.coins).toLocaleString('en')));
 }
 /** the footer's left: the prompts */
 export const prompts = (...list) => list.map(([k, p, l]) => prompt(k, p, l));

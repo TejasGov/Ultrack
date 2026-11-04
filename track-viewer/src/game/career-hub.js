@@ -341,7 +341,7 @@ export function CareerHubScreen(game) {
       if (!r.ok) return toast(r.reason === 'asked' ? 'You have already asked this season.' : r.reason === 'race' ? 'Ask in a week without a race.' : 'Not now.', true);
       toast('You asked for a transfer: the offers are in your Deals tab until you advance the week.'); go('deals'); } }, icon('contract'), hiring === 'demand' ? 'Press again to ask' : 'Demand a transfer');
     const left = h('div.cx-b.cl-mood', {}, blockHead('energy', 'How life is going', band.name),
-      h('div.cl-big', {}, h('b.tnum', {}, String(Math.round(L.happy))), h('span', {}, 'Mood'), h('small', {}, band.does)), meter,
+      h('div.cl-big', {}, h('b.tnum', {}, String(Math.round(L.happy))), h('span', {}, 'Happiness'), h('small', {}, band.does)), meter,
       h('div.cl-big.fans', {}, h('b.tnum', {}, String(Math.round(L.fans))), h('span', {}, 'Fan support'), h('small', {}, C.fansName(L.fans))), css(h('div.bar4.cl-fans', {}, h('i')), { '--p': L.fans / 100 }),
       h('div.cx-bh', {}, h('span', {}, 'Why it moved'), h('span', {}, 'Last race week')), scroller('cx-list.cl-why', h('div.cr-lines', {}, why)),
       h('p.cx-note', {}, icon('info'), L.sinceOff > 8 ? `${L.sinceOff} weeks without time off: it is wearing you down.` : `${L.sinceOff} ${L.sinceOff === 1 ? 'week' : 'weeks'} since time off.`, upkeep ? ` Upkeep next season: ${money(upkeep)}${save.wallet.coins < upkeep ? ', more than your wallet: something would be sold' : ''}.` : ''),
@@ -350,7 +350,7 @@ export function CareerHubScreen(game) {
     const sections = C.TYPES.map((t) => {
       const cards = C.ITEMS.filter((x) => x.type === t.id).sort((a, b) => (a.price ?? a.pay) - (b.price ?? b.pay)).map((x) => {
         const q = C.lifeInfo(save, x.id), n = C.ownedN(save, x.id), chips = [];
-        chips.push(x.type === 'ad' ? 'Mood ' + signed(x.boost) : 'Mood ' + signed(q.boost));
+        chips.push(x.type === 'ad' ? 'Happiness ' + signed(x.boost) : 'Happiness ' + signed(q.boost));
         if (x.fans) chips.push(`Fans +${x.fans}`); if (x.glow) chips.push(`+${x.glow} a round`); if (x.upkeep) chips.push(`${money(x.upkeep)} a season`);
         if (x.scandal) chips.push(`${Math.round(x.scandal * 100)} % risk of a story`); if (q.skips) chips.push(`Skips the ${q.skips}`); else if (x.skips) chips.push('Takes the week');
         const r = q.reason;
