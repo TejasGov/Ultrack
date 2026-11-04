@@ -6,6 +6,7 @@
 // custom colour on an HSV strip in the panel.
 import TEAMS from '../../../assets/teams/teams.json';
 import { carProgression, teamHistory, canSelectCar, playerLevel } from './progression.js';
+import { aeroGain } from '../physics/arcade.js';
 import { handling } from '../physics/handling.js';   // the game's own (compressed) numbers; the real ones come from carinfo
 import { store, fmtTime } from './store.js';
 import { CATS, MAX_LEVEL, costOf, classOf } from './economy.js';
@@ -144,6 +145,8 @@ export function GarageScreen(game) {
       const line = (label, x, y, d, unit) => h('span.ga-delta', {}, h('small', {}, label), h('b.tnum', {}, fmt(x, d) ?? empty()), icon('arrow-right'), h('b.tnum.pos', {}, fmt(y, d) ?? empty()), unit ? h('small', {}, unit) : null);
       if (cat === 'engine') return [line('Top speed', a.topSpeedKmh, b.topSpeedKmh, 0, 'KM/H'), line('0–100', a.zeroTo100S, b.zeroTo100S, 2, 'S')];
       if (cat === 'tyres') return [line('Grip', handlingWith(key, cur, cur).grip, handlingWith(key, next, cur).grip, 2, 'G')];
+      if (cat === 'aero') { const gain = (lv) => { const x = handlingWith(key, { ...cur, aero: lv }, cur); return (aeroGain(x.downforceStock, x.downforce, x.mass, 55) - 1) * 100; }; return [line('Grip at 200 km/h', gain(cur.aero), gain(next.aero), 1, '%')]; }
+      if (cat === 'nitro') { const at = (lv) => handlingWith(key, { ...cur, nitro: lv }, cur); return [line('Tank', at(cur.nitro).nitroTank * 100, at(next.nitro).nitroTank * 100, 0, '%'), line('Refill', at(cur.nitro).nitroRefill * 100, at(next.nitro).nitroRefill * 100, 0, '%')]; }
       return Number.isFinite(a.brake100To0M) ? [line('100–0', a.brake100To0M, b.brake100To0M, 1, 'M')]
         : [h('span.ga-delta', {}, h('small', {}, 'Braking'), h('b.tnum.pos', {}, `+${Math.round((b.gain.brake ?? 1) / (a.gain.brake ?? 1) * 100 - 100)}`), h('small', {}, '%'))];
     };

@@ -43,7 +43,7 @@ export function rangeOf(field) {
 /** Used only while src/physics/handling.js has no setUpgrades(): a rough per-level change, so the garage still shows a before -> after. */
 const NOMINAL = { engine: 0.06, tyres: 0.04, brakes: 0.08 };
 export const physicsHasUpgrades = typeof PHYSICS.setUpgrades === 'function';
-const ZERO = { engine: 0, tyres: 0, brakes: 0 };
+const ZERO = Object.fromEntries(CATS.map(([c]) => [c, 0]));    // every category: setUpgrades keeps a level it is not told about
 
 /** tell the physics which upgrade levels each car wears: the player's cars as saved, everything else (AI) at level 0 */
 export function applyUpgrades(levelsOf, onlyKey) {

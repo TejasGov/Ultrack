@@ -1,8 +1,8 @@
-// U-coins: the in-game currency. Results pay out coins; coins buy per-car upgrade levels (engine, tyres, brakes; 1..3).
+// U-coins: the in-game currency. Results pay out coins; coins buy per-car upgrade levels (engine, tyres, brakes, aero, nitro; 1..3).
 // Pure functions over the saved profile (`data` = store.data), so they run and test without a browser. The physics side
 // (what a level changes) lives in src/physics/handling.js setUpgrades(); this file only keeps the ledger and the prices.
 
-export const CATS = [['engine', 'Engine'], ['tyres', 'Tyres'], ['brakes', 'Brakes']];
+export const CATS = [['engine', 'Engine'], ['tyres', 'Tyres'], ['brakes', 'Brakes'], ['aero', 'Aero'], ['nitro', 'Nitro']];
 export const MAX_LEVEL = 3;
 export const START_COINS = 1500;          // a new (or migrated) profile can buy a first level straight away
 
@@ -19,7 +19,7 @@ export const classOf = (hp) => CLASSES.find((c) => (hp ?? 600) < c.maxHp) ?? CLA
 export const costOf = (hp, level) => Math.round(BASE[level - 1] * classOf(hp).mult / 50) * 50;
 
 const clampLevel = (v) => Math.max(0, Math.min(MAX_LEVEL, Math.floor(+v) || 0));
-export const levelsOf = (data, key) => ({ engine: 0, tyres: 0, brakes: 0, ...(data.upgrades?.[key] ?? {}) });
+export const levelsOf = (data, key) => ({ ...Object.fromEntries(CATS.map(([c]) => [c, 0])), ...(data.upgrades?.[key] ?? {}) });   // a category an older save never had reads as 0
 export const totalLevels = (data, key) => CATS.reduce((n, [c]) => n + levelsOf(data, key)[c], 0);
 
 /** Old saves have no coins or upgrades: give the starting balance once, and repair anything out of range. */

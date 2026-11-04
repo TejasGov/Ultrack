@@ -135,7 +135,7 @@ try{
  const old={settings:{},car:'av12',paint:{},best:{},drift:{}};                          // a V2 save: no coins, no upgrades
  E.migrate(old);assert.equal(old.coins,E.START_COINS);assert.deepEqual(old.upgrades,{});
  const bad=E.migrate({coins:'x',upgrades:{av12:{engine:9,tyres:-2,brakes:'1'},junk:null}});
- assert.equal(bad.coins,E.START_COINS);assert.deepEqual(bad.upgrades.av12,{engine:3,tyres:0,brakes:1});assert.deepEqual(bad.upgrades.junk,{engine:0,tyres:0,brakes:0});
+ assert.equal(bad.coins,E.START_COINS);assert.deepEqual(bad.upgrades.av12,{engine:3,tyres:0,brakes:1,aero:0,nitro:0},'an older save reads Aero and Nitro as 0');assert.deepEqual(bad.upgrades.junk,{engine:0,tyres:0,brakes:0,aero:0,nitro:0});assert.deepEqual(E.levelsOf({upgrades:{av12:{engine:1}}},'av12'),{engine:1,tyres:0,brakes:0,aero:0,nitro:0});assert.deepEqual(E.CATS.map(c=>c[0]),['engine','tyres','brakes','aero','nitro']);
  assert.equal(E.migrate({coins:420.9}).coins,420,'an existing balance survives migration');
  assert.ok(E.costOf(1479,1)>E.costOf(770,1)&&E.costOf(770,1)>E.costOf(369,1),'prices scale with car class');
  assert.ok(E.costOf(770,2)>E.costOf(770,1)&&E.costOf(770,3)>E.costOf(770,2),'each level costs more');
@@ -146,6 +146,7 @@ try{
  E.earn(p,100000);for(let i=0;i<5;i++)E.buyUpgrade(p,'av12','engine',770);
  assert.equal(p.upgrades.av12.engine,3);assert.equal(E.buyUpgrade(p,'av12','engine',770).reason,'maxed');
  assert.equal(E.buyUpgrade(p,'av12','turbo',770).reason,'unknown');
+ assert.ok(E.buyUpgrade(p,'av12','aero',770).ok&&E.buyUpgrade(p,'av12','nitro',770).ok,'free play buys Aero and Nitro too');assert.equal(p.upgrades.av12.aero,1);assert.equal(p.upgrades.av12.nitro,1);
  const win=E.rewardFor({mode:'race',pos:1,cars:7,laps:3,fastest:true,pb:true}),last=E.rewardFor({mode:'race',pos:7,cars:7,laps:3});
  assert.ok(win.total>last.total*3,'winning pays far more than finishing last');assert.ok(last.total>0);
  assert.equal(win.total,win.lines.reduce((s,l)=>s+l[1],0));
@@ -172,7 +173,7 @@ try{
   PH.setUpgrades('av12',{engine:0,tyres:0,brakes:0});const h0=PH.handling('av12');
   CI.applyUpgrades(k=>({engine:3,tyres:3,brakes:3}),'av12');const h3=PH.handling('av12'),ai=PH.handling('mp1x');
   assert.ok(h3.power>h0.power*1.1&&h3.grip>h0.grip*1.05&&h3.brakeK>h0.brakeK*1.1,'level 3 raises power, grip and brake torque');
-  assert.deepEqual(ai.upgrades,{engine:0,tyres:0,brakes:0},'AI cars are never upgraded');
+  assert.deepEqual(ai.upgrades,{engine:0,tyres:0,brakes:0,aero:0,nitro:0},'AI cars are never upgraded');
   CI.applyUpgrades(()=>({engine:0,tyres:0,brakes:0}));
  }
  console.log('Economy: migration, prices by class, purchase rules, earnings by mode, pacing and upgrade gains hold.');
