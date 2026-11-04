@@ -38,6 +38,7 @@ const VIEWS = {
   shajawa: { look: 'dusk', cam: [-24, 3.5, 2], tgt: [30, 4, -1] },     // down the main straight, the stands on both sides, the lamps on
   llano: { look: 'dusk', cam: [-60, 2.4, 2], tgt: [40, 5, -2] },        // down the start straight into the low sun: stand, pits, tower, the checkered gantry
   infinia: { look: 'dusk', cam: [-40, 3.5, 3], tgt: [70, 24, 0] },      // from the start: the sea link rising ahead, its tower and cables, the skyline beside it
+  venice: { look: 'dusk', cam: [1190, 3.2, 0], tgt: [1250, 7, 0] },      // the pillared boulevard, colonnades both sides, the dome at its end
 };
 // the menu's other tiles: a view of a circuit, its own picture, not the Race tile's; 800 px, they show small and faded
 const TILES = {
