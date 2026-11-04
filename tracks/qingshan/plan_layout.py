@@ -182,7 +182,7 @@ forest = ~clear & (dist_road < 900); G = max(1, round(4 / k)); yy, xx = np.mgrid
 def sow(spacing, lo, hi):
     g = max(1, round(spacing / k)); y, x = np.mgrid[0:SH[0]:g, 0:SH[1]:g]; j = rng.uniform(-.45, .45, (2,) + y.shape) * g; xi = np.clip((x + j[0]).astype(int), 0, SH[1] - 1); yi = np.clip((y + j[1]).astype(int), 0, SH[0] - 1)
     ok = forest[yi, xi] & (dist_road[yi, xi] >= lo) & (dist_road[yi, xi] < hi); return np.c_[(xi[ok] - PAD) * k, -(yi[ok] - PAD) * k]
-ROWS, CLUMP, FARCARD = sow(7.4, 0, 60), sow(13.5, 60, 170), sow(26.7, 170, 900)      # 30 % fewer than the first game build (the user, 2026-11-04, for leaf overdraw), least at the road edge where they show
+ROWS, CLUMP, FARCARD = sow(7.4, 0, 60), sow(15.0, 60, 170), np.r_[sow(29.0, 170, 320), sow(45.0, 320, 900)]      # 35 % fewer again (the user, 2026-11-04): the road edge untouched, the deep forest, where no gap can be seen, takes nearly all of it
 T0, T1, TC = 1950, 420, 6      # tris of the converted scans (make_trees.py): hero, LOD1, crossed card
 def sweep(r0, r1, cull):
     tr = cKDTree(ROWS); tc = cKDTree(CLUMP); tf = cKDTree(FARCARD); rows = []

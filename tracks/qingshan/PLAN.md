@@ -223,18 +223,23 @@ Measured with the game's own tools, this PC standing in for a Mac window (`perf-
 | Far cards stop casting shadows, tighter detail ranges | 13.67 ms | 18.0 ms | 32 ms | 483 | 1,276k |
 | **Shipped: also 28 % fewer trees (the user's call), 16,716 to 11,982, least at the road edge** | **12.67 ms (79 fps)** | **16.1 ms** | **31 ms** | **481** | **1,214k** |
 | Llano, same sitting | 9.05 ms (110 fps) | 11.2 ms | 24 ms | 368 | 903k |
+| **Now: 35 % fewer trees again (the user's call), 11,982 to 7,734 sown; 13 billboards; a fuller crowd; smaller far textures** | **12.70 ms (79 fps)** | **16.0 ms** | **30 ms** | **482** | **1,185k** |
+| Llano, same sitting as that | 8.67 ms (115 fps) | 10.3 ms | 24 ms | 368 | 899k |
+
+Cutting 35 % of the trees moved the frame time by nothing measurable: nearly all came from the deep forest's far cards, which cost little, and the road edge, where the overdraw is, stayed as it was so the forest would still look dense.
+
 
 No frame over 33 ms. It still misses the 12.3 ms target and costs about 40 % more than Llano, nearly all of it GPU time (6.7 ms against 3.7): leaf overdraw. **Never run on a real MacBook.**
 
-Files: 53.1 MB KTX2 web file (target 40; Venice 52, Llano 24), 1.4 MB collision. 704k unique tris, 300k of them the five hall buildings, still over the 200k plan.
+Files: 46.1 MB KTX2 web file, textures 36.5 MB of it (was 53.1, and 52.9 with 43.4 MB of textures just before far textures shrank; target 40; Venice 52, Llano 24), 1.4 MB collision. Shrunk, by the measured nearest they come to the road: forest floor, boardwalk, hall red plaster, turbine paint to 1K, shed cladding and cedar to 512 (`pack-web.mjs`); no softening in before/after views from the road (`qa_tex_views.mjs`). 704k unique tris, 300k of them the five hall buildings, still over the 200k plan.
 
-Driving (`qa-player-lap`, Nissan Z, player's assists, 1.05 pace): 0 stuck in lanes 0, -6, +6, -12, +12 and weaves of 8 and 12 m; one graze of a real wall at Turn 5. About 123 s, 245 km/h top. `qa-drivable`: no invisible walls, no holes; 144 ground steps over 0.12 m in the run-off on the stack (stations 434-870), not felt in any lane driven. `test-track`, `test-career`, `test-menu`: PASS. Rotors checked by eye between two frames, after fixing a wobble.
+Driving (`qa-player-lap`, Nissan Z, player's assists, 1.05 pace): 0 stuck in lanes 0, -6, +6, -12, +12 and weaves of 8 and 12 m; one graze of a real wall by the north stand on the approach to Turn 7, lane 12 only. About 123 s, 245 km/h top. `qa-drivable`: no invisible walls, no holes; 144 ground steps over 0.12 m in the run-off on the stack (stations 434-870), not felt in any lane driven. `test-track`, `test-career`, `test-menu`: PASS. Rotors checked by eye between two frames, after fixing a wobble.
 
 Next levers if a MacBook struggles, cheapest first: shrink the 40 m and 90 m tree ranges, tile the tree sets so they can be frustum culled (a small `perf.js` change: today every instance in range draws, even behind the car), thin the halls further.
 
 Files: 53.5 MB KTX2 web file (target 40; Venice 52, Llano 24), 1.4 MB collision. 704k unique tris, 300k of them the five hall buildings, still over the 200k plan.
 
-Driving (`qa-player-lap`, Nissan Z, player's assists): 0 stuck and 0 stops in lanes 0, -6, +6 and an 8 m weave; in the earlier wider run including -12, +12 and a 12 m weave, one graze of a real wall at Turn 5. About 123 s at 1.05 pace, 245 km/h top. `qa-drivable`: no invisible walls; 144 small ground steps over 0.12 m in the run-off on the stack (stations 434-870), not felt in any lane driven. `test-track`: PASS. Rotors checked by eye between two frames, after fixing a wobble.
+Driving (`qa-player-lap`, Nissan Z, player's assists): 0 stuck and 0 stops in lanes 0, -6, +6 and an 8 m weave; in the earlier wider run including -12, +12 and a 12 m weave, one graze of a real wall by the north stand on the approach to Turn 7, lane 12 only. About 123 s at 1.05 pace, 245 km/h top. `qa-drivable`: no invisible walls; 144 small ground steps over 0.12 m in the run-off on the stack (stations 434-870), not felt in any lane driven. `test-track`: PASS. Rotors checked by eye between two frames, after fixing a wobble.
 
 Not done: career calendar entry (needs a measured `parLap`), a `race-loading` line, dusk beyond a quick tune. Dusk's sky and buildings look right; the road stays dark there.
 

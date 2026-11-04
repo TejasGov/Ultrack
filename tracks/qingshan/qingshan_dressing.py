@@ -155,6 +155,40 @@ for name_, line_ in FRONTS.items():
 for q in range(0, BAYS, 2):      # along the pit fascia
     s0_ = P0 + (q + .5) * BAYL; i = s_i(s0_); p = off(i, -PL1 + 1.5, 10.75); ART_.rect('ads6', p, 13.0, 1.1, -T[i].to_3d(), r6(q // 2))
 exec(compile((H / 'qingshan_decor.py').read_text(encoding='utf8'), str(H / 'qingshan_decor.py'), 'exec'))
+# ---- big billboards at irregular spots behind the barrier, turned towards oncoming drivers. On a corner only its outside, so none stands in a sight line; none on the open infield's rail, by the pits, the stands or the gate
+MAT['adsk'] = sheet('QS | billboards', TX / 'ads_kr.png', .5); BRANDS = 5; rb = np.random.default_rng(23); UP_ = Vector((0, 0, 1)); CLA = np.array([(p.x, p.y) for p in CL])
+CORN = [(c['at'], c['radius'] * math.radians(c['turn']) / 2 + 70, 1 if c['hand'] == 'R' else -1) for c in SRC['corners']]
+def bb_side(s):
+    for at, half, outer in CORN:
+        if abs((s - at + LAP / 2) % LAP - LAP / 2) < half: return outer
+    return 1 if rb.random() < .7 else -1
+def bb_frame(s, sd, w, yaw):
+    i = s_i(s); wl = BD[sd][i]; A = math.radians(yaw); tor = NL[i].normalized() * -sd; Tn = T[i].to_3d().normalized(); n = (tor * math.cos(A) - Tn * math.sin(A)).normalized(); right = (-n).cross(UP_).normalized()      # n towards the oncoming driver; right is that driver's right, so the mark reads the right way round
+    lat = wl + w / 2 * math.sin(A) + 2.5; c = off(i, sd * lat); c.z = gz(c.x, c.y); return i, lat, n, right, Tn, c
+def bb_clear(s, sd, w, yaw):      # the whole board behind this side's barrier, no other leg of the road near, not on the arena's forecourt
+    i, lat, n, right, Tn, c = bb_frame(s, sd, w, yaw); s = s % LAP
+    if RAIL[sd][i] or (sd == 1 and (s > 5480 or s < 520)) or (sd == -1 and (s > LAP - 280 or s < 190)): return False
+    if xs_[0] < c.x < xs_[-1] and ys_[0] < c.y < ys_[-1] and sample(D_, c.x, c.y) > -48: return False
+    dist = np.linalg.norm(CLA - np.array((c.x, c.y)), axis=1); idx = np.arange(N); other = np.minimum(np.abs(idx - i), N - np.abs(idx - i)) * STEP > 160
+    return bool(dist[other].min() > lat + 34)
+def bb_build(s, sd, w, yaw, q):
+    i, lat, n, right, Tn, c = bb_frame(s, sd, w, yaw); h = w * 344 / 1024; z0 = 2.8; b0 = c + UP_ * z0; R_ = right * (w / 2 + .15); Hz = UP_ * (h + .3); Dn = n * .15; bl = b0 - UP_ * .15
+    F = [bl - R_ + Dn, bl + R_ + Dn, bl + R_ + Hz + Dn, bl - R_ + Hz + Dn]; B = [p - Dn * 2 for p in F]; uv = [(0, 0), (1, 0), (1, 1), (0, 1)]
+    ART_.rect('adsk', b0 + n * .17, w, h, right, (0, 1, 1 - (q + 1) / BRANDS + .004, 1 - q / BRANDS - .004))
+    for q_ in ([B[1], B[0], B[3], B[2]], [F[3], F[2], B[2], B[3]], [B[0], B[1], F[1], F[0]], [B[0], F[0], F[3], B[3]], [F[1], B[1], B[2], F[2]], F): ART_.quad('steel', q_, uv)      # a steel box behind the face: from the far side of the lap a board shows its back, never a mirrored mark
+    for e_ in (-.3, .3): v_ = c + right * (w * e_) - n * .05; Kd.box('steel', (v_.x, v_.y, v_.z + (z0 + .6) / 2 - .2), (.42, .42, z0 + .6))
+    cut = 0; rp = CL[i]
+    for ob in list(FOREST.objects):      # the board stands clear, and the trees just upstream don't hide it from the road
+        d_ = ob.location - c; d_.z = 0; u_, v_ = d_.dot(right), d_.dot(n); up_ = -d_.dot(Tn); la_ = (ob.location - rp).to_2d().dot(NL[i].to_2d()) * sd
+        if (abs(u_) < w / 2 + 3 and -4 < v_ < 12) or (0 < up_ < 110 and 0 < la_ < (lat + 4) * (1 - up_ / 140) + 6): bpy.data.objects.remove(ob, do_unlink=True); cut += 1
+    return cut
+bb_s = 300.0; bb_n = 0; bb_cut = 0; bb_log = []
+while bb_s < LAP + 150:
+    bb_sd = bb_side(bb_s); bb_w = float(rb.choice([20.0, 22.0, 24.0, 26.0, 30.0])); bb_y = float(rb.uniform(24, 40))
+    if bb_clear(bb_s, bb_sd, bb_w, bb_y):
+        bb_cut += bb_build(bb_s, bb_sd, bb_w, bb_y, [0, 3, 1, 4, 2][bb_n % BRANDS]); bb_log.append((int(bb_s % LAP), bb_sd, bb_w)); bb_n += 1; bb_s += float(rb.uniform(190, 520))
+    else: bb_s += 45.0
+log('billboards', bb_n, bb_log, 'trees cleared for them', bb_cut)
 # ---- catch fence in front of the stands
 STANDSD = np.maximum.reduce([SD['North block / stand'], SD['Corner stand'], SD['Main stand']]); fn = 0
 for sd in (1, -1):

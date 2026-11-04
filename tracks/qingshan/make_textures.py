@@ -49,6 +49,11 @@ for q, n in enumerate(REAL):
 for q, (bg, zh, en, ink) in enumerate(LOCAL):
     cell = Image.new('RGB', (CW, CH_), bg); d = ImageDraw.Draw(cell); centred(d, 230, 82, zh, Fc(80 if len(zh) > 2 else 96), ink); centred(d, 700, 88, en, fit(d, en, Fw, 58, 580), ink); g.paste(cell, (0, (len(REAL) + q) * CH_))
 g.save(T / 'ads_qs.png')
+# the big billboards' sheet: Korean marks, 1024 x 344 cells, the mark's proportions kept (make_kr_logos.mjs)
+KR = ['samsung', 'lg', 'hyundai', 'kia', 'lotte-mart']; g = Image.new('RGB', (1024, 344 * len(KR)))
+for q, n in enumerate(KR):
+    b = BR[n]; cell = Image.new('RGB', (1024, 344), b['background']); mk = Image.open(H.parents[1] / 'assets' / 'sponsors' / b['file']).convert('RGBA'); mk = mk.crop(mk.getbbox()); r = min(1024 * .84 / mk.width, 344 * .72 / mk.height); mk = mk.resize((round(mk.width * r), round(mk.height * r)), Image.LANCZOS); cell.paste(mk, ((1024 - mk.width) // 2, (344 - mk.height) // 2), mk); g.paste(cell, (0, q * 344))
+g.save(T / 'ads_kr.png')
 a, l = lum(PH / 'worn_asphalt' / 'worn_asphalt_diff_2k.jpg'); base = np.clip(l[:256, :768] * .55, 0, .5)      # tyres: rubber from a photo base, a third painted white, a shadow in each gap
 yy, xx = np.mgrid[0:256, 0:768]; img = np.zeros((256, 768, 3)); R0 = 42
 for col in range(9):

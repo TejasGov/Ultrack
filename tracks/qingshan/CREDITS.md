@@ -15,3 +15,5 @@ Race furniture: Llano's sheets (tracks/llano/tex: start lights, boards, sponsors
 Sponsors: real marks from assets/sponsors (OPPO, vivo, Sony, Pirelli, HSBC, Rolex, Red Bull), this local fan prototype only, as the other tracks' boards. Qingfeng Wind, Bihu Solar, Lütu EV and Zhuyuan are invented. Decor (qingshan_decor.py) is hand-built; bamboo leaves come from tree_small_02's atlas, the boardwalk is weathered_planks.
 
 Nothing here needs naming on the game's Credits screen so far: every source is CC0.
+
+Billboard logos, for this local fan project, no endorsement implied, each a trademark of its owner (assets/sponsors/manifest.json has URLs and hashes): Samsung, LG, Hyundai, Kia from Simple Icons (CC0 icon data); Lotte Mart from Wikimedia Commons, File:Lotte Mart (2023).svg, tagged public domain.

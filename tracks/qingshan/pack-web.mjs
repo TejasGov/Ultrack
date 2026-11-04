@@ -2,6 +2,7 @@
 //   node tracks/qingshan/pack-web.mjs    after build_qingshan.py ->  tracks/qingshan/out/web/qingshan_{visual,collision,visual_ktx2,*_sectors}.glb
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, rmSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -20,6 +21,20 @@ const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const gt = (...args) => execFileSync(npx, ['-y', '@gltf-transform/cli@4', ...args], { stdio: 'inherit', shell: true, cwd: viewer });
 const q16 = ['--level', 'high', '--quantize-position', '16'];
 const tmp = join(out, 'web', '_opt.glb');
+// Surfaces the driver only ever sees from a distance get smaller textures, in the Blender export itself so both web builds share them. Nearest each comes to the road, measured from the geometry
+// (2026-11-04): forest floor 40 m, boardwalk 40, hall red plaster 45, turbine paint 32, shed cladding 91, cedar 104. Anything also used near the road stays sharp. Safe to run twice.
+const FAR_TEX = [[/^(forest_leaves_02|red_plaster_weathered|weathered_planks|white_stucco)_/, 1024], [/^japanese_cedar_planks_|^painted_metal_shutter_diff/, 512]];
+{
+  const req = createRequire(join(viewer, 'package.json')), { NodeIO } = req('@gltf-transform/core'), { ALL_EXTENSIONS } = req('@gltf-transform/extensions'), sharp = req('sharp');
+  const io = new NodeIO().registerExtensions(ALL_EXTENSIONS), doc = await io.read(join(out, 'qingshan_visual.glb')); let n = 0;
+  for (const t of doc.getRoot().listTextures()) {
+    const size = FAR_TEX.find(([re]) => re.test(t.getName()))?.[1];
+    if (!size || t.getSize()[0] <= size) continue;
+    const s = sharp(t.getImage()).resize(size, size); t.setImage(new Uint8Array(await (t.getMimeType() === 'image/png' ? s.png() : s.jpeg({ quality: 95 })).toBuffer())); n++;
+  }
+  if (n) await io.write(join(out, 'qingshan_visual.glb'), doc);
+  console.log('far textures shrunk:', n);
+}
 gt('optimize', join(out, 'qingshan_visual.glb'), tmp, '--compress', 'false', '--texture-compress', 'webp', '--texture-size', '2048', '--simplify', 'false', '--palette', 'false', ...(process.env.NO_JOIN ? ['--join', 'false'] : []));
 gt('meshopt', tmp, join(out, 'web', 'qingshan_visual.glb'), ...q16);
 gt('optimize', join(out, 'qingshan_collision.glb'), tmp, '--compress', 'false', '--texture-compress', 'false', '--simplify', 'false', '--weld', 'false', '--join', 'false');

@@ -19,6 +19,8 @@ Every part of a lap should hold something that could only be here. Qingshan (青
 ## Ads
 Real marks as on the other tracks' boards, for this local fan prototype only: OPPO and vivo (Chinese brands, the headline), Sony, Pirelli, HSBC, Rolex, Red Bull. Invented local sponsors, all fictional: 青风能源 Qingfeng Wind, 碧湖光伏 Bihu Solar, 绿途电动 Lütu EV, 竹源 Zhuyuan. One public line, 绿水青山 "clear water, green mountains". Hoardings stand behind the wall on the straights and into the stops, on the stands' fronts and on the pit fascia. None on the hairpin stack's forest side, where the trees are the point.
 
+Thirteen big billboards, 20 to 30 m wide, stand at irregular spots behind the barrier (the user, 2026-11-04): Samsung, LG, Hyundai, Kia, Lotte Mart. The user now says the map is in Korea; what still says China is theirs to decide. On a corner a board only stands on the outside, never on the open infield's rail, and the trees just upstream are cleared so it can be read.
+
 ## Rules
 - Generated art only for signs and sponsor boards, on plain colour.
 - No flicker, no blinking, no lit shell: day and dusk only.

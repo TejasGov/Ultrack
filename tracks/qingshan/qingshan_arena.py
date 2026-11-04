@@ -2,7 +2,7 @@
 How: the grey outlines of the sketch become one smooth signed-distance field; the roof is a height function of it, so the silhouette is theirs and the skin falls to a clean edge everywhere. Everything is cut from that field:
     roof, funnel glass, soffit, curtain wall, edge band, forecourt.   Then the three stands (north, corner, main), open at the front under a raised edge, with their treads, seats and crowd."""
 MAT.update({'roof': material('QS | red roof', tex='box_profile_metal_sheet', rough=.5, diff=TX / 'roof_red_diff_2k.jpg'), 'soffit': material('QS | roof soffit', tex='concrete_wall_009', vcol=False), 'glass': material('QS | curtain glass', (.05, .085, .10), .12, .1), 'alu': material('QS | aluminium', tex='brushed_concrete', rough=.42), 'mull': material('QS | mullion', (.20, .21, .22), .42, .7),
-            'pave': material('QS | forecourt', tex='interlocking_concrete_pavers'), 'conc': material('QS | stand concrete', tex='brushed_concrete'), 'seat': material('QS | seats', (.33, .05, .04), .55)})
+            'pave': material('QS | forecourt', tex='interlocking_concrete_pavers'), 'conc': material('QS | stand concrete', tex='brushed_concrete'), 'seat': material('QS | seats', (.11, .12, .13), .6)})
 Pr = MAT['roof'].node_tree.nodes['Principled BSDF']      # paint, not bare metal: a matte deep red, its highlight no paler than the colour
 for lk in list(Pr.inputs['Metallic'].links): MAT['roof'].node_tree.links.remove(lk)
 Pr.inputs['Metallic'].default_value = 0.0; Pr.inputs['Specular IOR Level'].default_value = 0.28
@@ -139,8 +139,10 @@ def stand(name, A_, B_, ends=True):
     if ends:
         for sx in (S0, S1): Ks.box('conc', (sx, (O0 + yb) / 2, (zt + 2) / 2), (.8, O0 - yb + 1, zt + 2))
     for k in range(NR_):
-        y_ = O0 - k * TR_ - .35; z_ = 1.7 + k * RS_ + .05; var = (k * 3) % 4; a = [Cb.verts.new(Ws @ Vector(p)) for p in ((S0 + .6, y_, z_), (S1 - .6, y_, z_), (S1 - .6, y_, z_ + 1.15), (S0 + .6, y_, z_ + 1.15))]; f = Cb.faces.new(a); u0 = k * .37 + S0 / 14; u1 = u0 + (SW - 1.2) / 14.0
-        for l, (u, v) in zip(f.loops, ((u0, 0), (u1, 0), (u1, 1), (u0, 1))): l[uvc].uv = (u, (var + v) / 4)
+        z_ = 1.7 + k * RS_ + .05
+        for y_, var, u0 in ((O0 - k * TR_ - .02, (k * 3) % 4, k * .37 + S0 / 14), (O0 - k * TR_ - .35, (k * 3 + 2) % 4, k * .61 + S0 / 14 + .43)):      # a card ahead of the seat boxes, or they hide the people and a dark seat is all that shows; a second row behind it fills the first's gaps, far enough back not to fight it
+            a = [Cb.verts.new(Ws @ Vector(p)) for p in ((S0 + .6, y_, z_), (S1 - .6, y_, z_), (S1 - .6, y_, z_ + 1.15), (S0 + .6, y_, z_ + 1.15))]; f = Cb.faces.new(a); u1 = u0 + (SW - 1.2) / 14.0
+            for l, (u, v) in zip(f.loops, ((u0, 0), (u1, 0), (u1, 1), (u0, 1))): l[uvc].uv = (u, (var + v) / 4)
     for k_, b_ in Ks.b.items(): mesh_obj(f'QS {name} {k_}', b_, [k_], planar=True)
     STAND_POS[name] = (float(mid_[0]), float(mid_[1]), float(zs_))
 for name, line in FRONTS.items():

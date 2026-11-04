@@ -313,6 +313,81 @@
         "retrieved": "2026-10-30"
       },
       "boards": "boards/bjp-3000.png (track-viewer/scripts/make-india-hoarding.mjs): lotus, wordmark and the official portrait"
+    },
+    {
+      "id": "samsung",
+      "name": "Samsung",
+      "aliases": [],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/samsung.svg",
+      "sourceFile": "assets/sponsors/sources/samsung.svg",
+      "file": "logos/samsung.png",
+      "background": "#1428A0",
+      "ink": "#ffffff",
+      "usage": "venue-qingshan",
+      "venue": false,
+      "retrieved": "2026-11-04",
+      "license": "Simple Icons (CC0 icon data); Samsung is a trademark of Samsung Electronics Co.; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "4a241ca8ebab6e71883b172acb9fb454efa69f308e4f2c31ec80668aeb6627d9"
+    },
+    {
+      "id": "lg",
+      "name": "LG",
+      "aliases": [],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/lg.svg",
+      "sourceFile": "assets/sponsors/sources/lg.svg",
+      "file": "logos/lg.png",
+      "background": "#A50034",
+      "ink": "#ffffff",
+      "usage": "venue-qingshan",
+      "venue": false,
+      "retrieved": "2026-11-04",
+      "license": "Simple Icons (CC0 icon data); LG is a trademark of LG Corp.; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "bde201887c0e190b0b1bbc15c71a0996ed818050d8db5764adb310f0a4043020"
+    },
+    {
+      "id": "hyundai",
+      "name": "Hyundai",
+      "aliases": [],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/hyundai.svg",
+      "sourceFile": "assets/sponsors/sources/hyundai.svg",
+      "file": "logos/hyundai.png",
+      "background": "#002C5F",
+      "ink": "#ffffff",
+      "usage": "venue-qingshan",
+      "venue": false,
+      "retrieved": "2026-11-04",
+      "license": "Simple Icons (CC0 icon data); Hyundai is a trademark of Hyundai Motor Co.; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "dcd2d6c20e7c4bc431f7c3a1108c4493b007f978b8ee6f48b007406cc8435937"
+    },
+    {
+      "id": "kia",
+      "name": "Kia",
+      "aliases": [],
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/kia.svg",
+      "sourceFile": "assets/sponsors/sources/kia.svg",
+      "file": "logos/kia.png",
+      "background": "#05141F",
+      "ink": "#ffffff",
+      "usage": "venue-qingshan",
+      "venue": false,
+      "retrieved": "2026-11-04",
+      "license": "Simple Icons (CC0 icon data); Kia is a trademark of Kia Corp.; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "bbdeeab899331fc6181949c2b31686208a88d7afc69d182b54dccc138b8e4843"
+    },
+    {
+      "id": "lotte-mart",
+      "name": "Lotte Mart",
+      "aliases": [],
+      "source": "https://upload.wikimedia.org/wikipedia/commons/2/24/Lotte_Mart_%282023%29.svg",
+      "sourceFile": "assets/sponsors/sources/lotte-mart.svg",
+      "file": "logos/lotte-mart.png",
+      "background": "#ffffff",
+      "ink": "#000000",
+      "usage": "venue-qingshan",
+      "venue": false,
+      "retrieved": "2026-11-04",
+      "license": "Wikimedia Commons, tagged public domain (File:Lotte Mart (2023).svg); Lotte Mart is a trademark of Lotte Shopping Co.; used here on a local noncommercial fan project, no endorsement implied.",
+      "sourceSha256": "575efa37989b5c63a9f3706f15daf02a1a8c410230209f41012a148e9b185472"
     }
   ]
 }

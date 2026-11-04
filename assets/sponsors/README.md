@@ -82,3 +82,6 @@ roadside **BJP** hoarding on the city approach. All four are `usage: venue-india
   rendition, GODL-India). The hoarding is composed by `track-viewer/scripts/make-india-hoarding.mjs`.
 
 These marks and the portrait belong to their owners; used on a local noncommercial fan project, no endorsement implied.
+
+Qingshan Park's billboards add Samsung, LG, Hyundai and Kia (Simple Icons) and Lotte Mart
+(Wikimedia Commons, tagged public domain): `tracks/qingshan/make_kr_logos.mjs`, `usage: venue-qingshan`, `venue: false`.
