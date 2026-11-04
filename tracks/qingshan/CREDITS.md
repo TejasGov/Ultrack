@@ -1,4 +1,4 @@
-# Qingshan Park: sources
+# Cheongsan Park: sources
 
 Layout: the user's sketch (source/user-sketch.png), traced in plan_layout.py.
 
@@ -8,12 +8,14 @@ ambientCG (CC0): SolarPanel002, assets/ambientcg/, for the solar field (not buil
 
 Arena: box_profile_metal_sheet (regraded red: tex/roof_red), interlocking_concrete_pavers, brushed_concrete, concrete_wall_009; crowd from tracks/shajawa/tex/crowd_rows.png (ours). Lake and turbines: coast_sand_01, white_stucco.
 
-The hall (qingshan_hall.py) is our own design from the grammar of Chinese imperial halls, not a copy of a named building. The red roof hall (not built yet) takes its grammar from Ferrari World Abu Dhabi: no Ferrari name, mark or copy of the building. A fictional circuit: no real race is claimed.
+The hall (qingshan_hall.py) is our own design from the grammar of Chinese imperial halls, not a copy of a named building; kept when the map moved to Korea, by the user's choice. The red roof hall (not built yet) takes its grammar from Ferrari World Abu Dhabi: no Ferrari name, mark or copy of the building. A fictional circuit: no real race is claimed.
 
 Race furniture: Llano's sheets (tracks/llano/tex: start lights, boards, sponsors as on the other tracks' boards, rubber, skid, fence). Generated here: tex/signs.png (the name sign), tex/tyres.png over a worn_asphalt base, tex/shutter_grey from painted_metal_shutter. Solar: ambientCG SolarPanel002. Visitor hall: japanese_cedar_planks, leafy_grass.
 
-Sponsors: real marks from assets/sponsors (OPPO, vivo, Sony, Pirelli, HSBC, Rolex, Red Bull), this local fan prototype only, as the other tracks' boards. Qingfeng Wind, Bihu Solar, Lütu EV and Zhuyuan are invented. Decor (qingshan_decor.py) is hand-built; bamboo leaves come from tree_small_02's atlas, the boardwalk is weathered_planks.
+Sponsors: real marks from assets/sponsors (Samsung, LG, Sony, Pirelli, HSBC, Rolex, Red Bull), this local fan prototype only, as the other tracks' boards. Saebaram Wind, Eunbit Solar, Chorokgil EV and Daesup are invented. Decor (qingshan_decor.py) is hand-built; bamboo leaves come from tree_small_02's atlas, the boardwalk is weathered_planks.
 
 Nothing here needs naming on the game's Credits screen so far: every source is CC0.
 
 Billboard logos, for this local fan project, no endorsement implied, each a trademark of its owner (assets/sponsors/manifest.json has URLs and hashes): Samsung, LG, Hyundai, Kia from Simple Icons (CC0 icon data); Lotte Mart from Wikimedia Commons, File:Lotte Mart (2023).svg, tagged public domain.
+
+The colourful crowd sheet (tex/crowd_rows.png) is our own art, copied from Shajawa's before that track changed to a calmer palette. Hangul on signs is set in Malgun Gothic Bold, rendered into the textures. No font file ships.

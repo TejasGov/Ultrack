@@ -1,4 +1,4 @@
-// Qingshan Park's runtime effect, loaded through tracks.js `venue`: the wind farm turns. Slowly, one turn in about four seconds, each rotor at its own phase and pace; nothing blinks.
+// Cheongsan Park's runtime effect, loaded through tracks.js `venue`: the wind farm turns. Slowly, one turn in about four seconds, each rotor at its own phase and pace; nothing blinks.
 // Each rotor hangs from a pivot at its true hub (track.json rotorHubs): the web pack re-centres mesh origins, so turning the node itself would make the blades wobble about the wrong point.
 import * as THREE from 'three';
 const q = new THREE.Quaternion(), wq = new THREE.Quaternion();

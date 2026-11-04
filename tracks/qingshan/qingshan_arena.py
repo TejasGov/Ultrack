@@ -6,7 +6,7 @@ MAT.update({'roof': material('QS | red roof', tex='box_profile_metal_sheet', rou
 Pr = MAT['roof'].node_tree.nodes['Principled BSDF']      # paint, not bare metal: a matte deep red, its highlight no paler than the colour
 for lk in list(Pr.inputs['Metallic'].links): MAT['roof'].node_tree.links.remove(lk)
 Pr.inputs['Metallic'].default_value = 0.0; Pr.inputs['Specular IOR Level'].default_value = 0.28
-cr = bpy.data.materials.new('QS | crowd'); cr.use_nodes = True; nt_ = cr.node_tree; P_ = nt_.nodes['Principled BSDF']; it_ = nt_.nodes.new('ShaderNodeTexImage'); it_.image = image(ROOT / 'tracks' / 'shajawa' / 'tex' / 'crowd_rows.png'); nt_.links.new(it_.outputs['Color'], P_.inputs['Base Color']); P_.inputs['Roughness'].default_value = .9; gt_ = nt_.nodes.new('ShaderNodeMath'); gt_.operation = 'GREATER_THAN'; gt_.inputs[1].default_value = .5; nt_.links.new(it_.outputs['Alpha'], gt_.inputs[0]); nt_.links.new(gt_.outputs[0], P_.inputs['Alpha']); MAT['crowd'] = cr
+cr = bpy.data.materials.new('QS | crowd'); cr.use_nodes = True; nt_ = cr.node_tree; P_ = nt_.nodes['Principled BSDF']; it_ = nt_.nodes.new('ShaderNodeTexImage'); it_.image = image(TX / 'crowd_rows.png'); nt_.links.new(it_.outputs['Color'], P_.inputs['Base Color']); P_.inputs['Roughness'].default_value = .9; gt_ = nt_.nodes.new('ShaderNodeMath'); gt_.operation = 'GREATER_THAN'; gt_.inputs[1].default_value = .5; nt_.links.new(it_.outputs['Alpha'], gt_.inputs[0]); nt_.links.new(gt_.outputs[0], P_.inputs['Alpha']); MAT['crowd'] = cr
 UVS.update({'pave': 3.0, 'conc': 4.0, 'alu': 4.0, 'soffit': 5.0, 'glass': 6.0, 'mull': 4.0, 'seat': 3.0})
 GR = STATS['shapes']['GREY']
 def WP_(p): v = MM @ Vector((p[0] * kk, -p[1] * kk, 0)); return (v.x, v.y)

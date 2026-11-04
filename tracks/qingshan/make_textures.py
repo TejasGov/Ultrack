@@ -18,36 +18,37 @@ Image.fromarray((np.clip(g * np.array((.40, .028, .022)), 0, 1) * 255).astype(np
 a, l = lum(PH / 'painted_metal_shutter' / 'painted_metal_shutter_diff_2k.jpg') if (PH / 'painted_metal_shutter' / 'painted_metal_shutter_diff_2k.jpg').exists() else lum(PH / 'painted_metal_shutter' / 'painted_metal_shutter_diff_1k.jpg'); g = np.clip(l / np.percentile(l, 60), .6, 1.2)[..., None]      # garage doors in plain light grey
 Image.fromarray((np.clip(g * np.array((.62, .63, .62)), 0, 1) * 255).astype(np.uint8)).save(T / 'shutter_grey_diff.jpg', quality=90)
 from PIL import ImageDraw, ImageFont
-Fw = lambda n: ImageFont.truetype('C:/Windows/Fonts/arialbd.ttf', n); Fc = lambda n: ImageFont.truetype('C:/Windows/Fonts/msyhbd.ttc', n)
+Fw = lambda n: ImageFont.truetype('C:/Windows/Fonts/arialbd.ttf', n); Fk = lambda n: ImageFont.truetype('C:/Windows/Fonts/malgunbd.ttf', n)
 def fit(d, text, make, size, width):
     while d.textlength(text, font=make(size)) > width and size > 12: size -= 2
     return make(size)
 def centred(d, cx, cy, text, font, fill): box = d.textbbox((0, 0), text, font=font); d.text((cx - (box[0] + box[2]) / 2, cy - (box[1] + box[3]) / 2), text, font=font, fill=fill)
 g = Image.new('RGB', (2048, 512), (22, 58, 40)); d = ImageDraw.Draw(g)
-d.rectangle((10, 10, 2037, 245), outline=(226, 224, 210), width=6); d.text((90, 62), 'QINGSHAN PARK', font=Fw(120), fill=(238, 236, 224)); d.text((1330, 48), '\u9752\u5c71\u516c\u56ed', font=Fc(130), fill=(238, 236, 224))      # 'green mountain park'
-d.rectangle((10, 266, 2037, 501), outline=(226, 224, 210), width=6); centred(d, 650, 380, 'POWERED BY WIND AND SUN', Fw(84), (238, 236, 224)); centred(d, 1600, 380, '\u98ce\u5149\u4f9b\u7535', Fc(120), (238, 236, 224))      # 'wind and solar power'
+d.rectangle((10, 10, 2037, 245), outline=(226, 224, 210), width=6); centred(d, 660, 128, 'CHEONGSAN PARK', fit(d, 'CHEONGSAN PARK', Fw, 120, 1160), (238, 236, 224)); centred(d, 1640, 122, '청산공원', Fk(130), (238, 236, 224))      # Cheongsan, 'green mountain': the Korean reading of 青山
+d.rectangle((10, 266, 2037, 501), outline=(226, 224, 210), width=6); centred(d, 650, 380, 'POWERED BY WIND AND SUN', Fw(84), (238, 236, 224)); centred(d, 1640, 376, '바람과 햇빛으로', fit(d, '바람과 햇빛으로', Fk, 110, 700), (238, 236, 224))      # 'by wind and sunlight'
 g.save(T / 'signs.png')
 # corner names, both languages: 2 x 4, 1024 x 256
-NAMES = [('\u7af9\u6797\u5f2f', 'BAMBOO BEND'), ('\u9752\u5c71\u5f2f', 'GREEN HILL'), ('\u4e91\u5cad\u5f2f', 'CLOUD RIDGE'), ('\u671b\u6e56\u5f2f', 'LAKE VIEW'), ('\u98ce\u8f66\u5f2f', 'WINDMILL'), ('\u7fe0\u6e56\u5f2f', 'JADE LAKE'), ('\u56de\u9f99\u5f2f', 'DRAGON TURN'), ('\u5149\u4f0f\u5f2f', 'SOLAR CURVE')]
+NAMES = [('대나무 코너', 'BAMBOO BEND'), ('청산 코너', 'GREEN HILL'), ('구름재 코너', 'CLOUD RIDGE'), ('호수전망 코너', 'LAKE VIEW'), ('풍차 코너', 'WINDMILL'), ('비취호 코너', 'JADE LAKE'), ('용틀임 코너', 'DRAGON TURN'), ('태양광 코너', 'SOLAR CURVE')]
 g = Image.new('RGB', (2048, 1024), (22, 58, 40)); d = ImageDraw.Draw(g)
-for q, (zh, en) in enumerate(NAMES):
-    x, y = (q % 2) * 1024, (q // 2) * 256; d.rectangle((x + 8, y + 8, x + 1015, y + 247), outline=(226, 224, 210), width=5); centred(d, x + 240, y + 124, zh, Fc(108), (238, 236, 224)); centred(d, x + 700, y + 128, en, fit(d, en, Fw, 64, 540), (238, 236, 224))
+for q, (ko, en) in enumerate(NAMES):
+    x, y = (q % 2) * 1024, (q // 2) * 256; d.rectangle((x + 8, y + 8, x + 1015, y + 247), outline=(226, 224, 210), width=5); centred(d, x + 225, y + 124, ko, fit(d, ko, Fk, 92, 390), (238, 236, 224)); centred(d, x + 725, y + 128, en, fit(d, en, Fw, 64, 500), (238, 236, 224))
 g.save(T / 'names.png')
 # tall banners: 4 x 1, 256 x 1024; each name set vertically, as they are
-BN = [((156, 22, 18), '\u9752\u5c71\u516c\u56ed', (236, 196, 92)), ((24, 74, 48), '\u7eff\u6c34\u9752\u5c71', (238, 236, 224)), ((196, 150, 40), '\u98ce\u5149\u80fd\u6e90', (70, 22, 12)), ((26, 54, 92), '\u78a7\u6e56\u5149\u4f0f', (238, 236, 224))]
+BN = [((156, 22, 18), '청산공원', (236, 196, 92)), ((24, 74, 48), '맑은물푸른산', (238, 236, 224)), ((196, 150, 40), '청정에너지', (70, 22, 12)), ((26, 54, 92), '은빛호수', (238, 236, 224))]
 g = Image.new('RGB', (1024, 1024)); d = ImageDraw.Draw(g)
 for q, (bg, t_, ink) in enumerate(BN):
     x = q * 256; d.rectangle((x, 0, x + 255, 1023), fill=bg); d.rectangle((x + 14, 14, x + 241, 1009), outline=ink, width=4)
-    for k, ch in enumerate(t_): centred(d, x + 128, 150 + k * 240, ch, Fc(170), ink)
+    gap = min(240, 900 / len(t_))
+    for k, ch in enumerate(t_): centred(d, x + 128, 512 + (k - (len(t_) - 1) / 2) * gap, ch, Fk(round(gap * .72)), ink)
 g.save(T / 'banners.png')
 # the ad sheet: real marks as on the other tracks' boards, each on its brand's colour with its proportions kept, then the invented local sponsors. 1024 x 171 cells
-BR = {b['id']: b for b in json.loads((H.parents[1] / 'assets' / 'sponsors' / 'manifest.json').read_text(encoding='utf8'))['brands']}; REAL = ['oppo', 'vivo', 'sony', 'pirelli', 'hsbc', 'rolex', 'redbull']
-LOCAL = [((20, 84, 62), '\u9752\u98ce\u80fd\u6e90', 'QINGFENG WIND', (240, 240, 230)), ((14, 52, 96), '\u78a7\u6e56\u5149\u4f0f', 'BIHU SOLAR', (240, 240, 230)), ((226, 232, 222), '\u7eff\u9014\u7535\u52a8', 'L\u00dcTU EV', (20, 96, 60)), ((124, 158, 60), '\u7af9\u6e90', 'ZHUYUAN', (20, 40, 20)), ((150, 22, 18), '\u7eff\u6c34\u9752\u5c71', 'CLEAR WATER, GREEN HILLS', (240, 226, 190))]
+BR = {b['id']: b for b in json.loads((H.parents[1] / 'assets' / 'sponsors' / 'manifest.json').read_text(encoding='utf8'))['brands']}; REAL = ['samsung', 'lg', 'sony', 'pirelli', 'hsbc', 'rolex', 'redbull']
+LOCAL = [((20, 84, 62), '새바람에너지', 'SAEBARAM WIND', (240, 240, 230)), ((14, 52, 96), '은빛호수 솔라', 'EUNBIT SOLAR', (240, 240, 230)), ((226, 232, 222), '초록길 모터스', 'CHOROKGIL EV', (20, 96, 60)), ((124, 158, 60), '대숲', 'DAESUP', (20, 40, 20)), ((150, 22, 18), '맑은 물 푸른 산', 'CLEAR WATER, GREEN HILLS', (240, 226, 190))]
 CW, CH_ = 1024, 170; g = Image.new('RGB', (CW, CH_ * 12), (32, 32, 32))
 for q, n in enumerate(REAL):
     b = BR[n]; cell = Image.new('RGB', (CW, CH_), b['background']); mk = Image.open(H.parents[1] / 'assets' / 'sponsors' / b['file']).convert('RGBA'); bb = mk.getbbox(); mk = mk.crop(bb); r = min(CW * .72 / mk.width, CH_ * .72 / mk.height); mk = mk.resize((max(1, round(mk.width * r)), max(1, round(mk.height * r))), Image.LANCZOS); cell.paste(mk, ((CW - mk.width) // 2, (CH_ - mk.height) // 2), mk); g.paste(cell, (0, q * CH_))
-for q, (bg, zh, en, ink) in enumerate(LOCAL):
-    cell = Image.new('RGB', (CW, CH_), bg); d = ImageDraw.Draw(cell); centred(d, 230, 82, zh, Fc(80 if len(zh) > 2 else 96), ink); centred(d, 700, 88, en, fit(d, en, Fw, 58, 580), ink); g.paste(cell, (0, (len(REAL) + q) * CH_))
+for q, (bg, ko, en, ink) in enumerate(LOCAL):
+    cell = Image.new('RGB', (CW, CH_), bg); d = ImageDraw.Draw(cell); centred(d, 235, 82, ko, fit(d, ko, Fk, 92, 410), ink); centred(d, 735, 88, en, fit(d, en, Fw, 58, 510), ink); g.paste(cell, (0, (len(REAL) + q) * CH_))
 g.save(T / 'ads_qs.png')
 # the big billboards' sheet: Korean marks, 1024 x 344 cells, the mark's proportions kept (make_kr_logos.mjs)
 KR = ['samsung', 'lg', 'hyundai', 'kia', 'lotte-mart']; g = Image.new('RGB', (1024, 344 * len(KR)))

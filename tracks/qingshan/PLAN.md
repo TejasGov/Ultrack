@@ -1,6 +1,8 @@
-# Qingshan Park: the plan
+# Cheongsan Park: the plan
 
-**Status (2026-11-04):** in the game with decor and ads, selectable as Qingshan Park. Not on the career calendar. See "In the game" below.
+Called Qingshan Park until 2026-11-04, when the user placed the map in Korea and chose to change the name and boards only. The id, folders and files stay `qingshan`. "Chinese halls" below is what they are: the halls were kept on purpose.
+
+**Status (2026-11-04):** in the game with decor and ads, selectable as Cheongsan Park, and on the career calendar as the Forest Classic. See "In the game" below.
 
 - Numbers come from `plan_layout.py` (`out/plan/stats.json`). Sheets come from `plan_sheets.py`: `out/plan/layout_plan.png` and `out/plan/zone_plan.png`.
 - Speeds and lap time are estimates. The model is fitted to the measured AI laps of Mojave Dry Lake, Infinia, Shajawa and Llano, and lands within 3.4 % of each. The AI's own lap replaces them after the build.

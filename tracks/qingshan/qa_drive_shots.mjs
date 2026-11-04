@@ -1,4 +1,4 @@
-// Qingshan Park from the game's own chase camera, car on the road: the look a player gets.
+// Cheongsan Park from the game's own chase camera, car on the road: the look a player gets.
 //   cd track-viewer && node scripts/qa-lock.mjs -- node ../tracks/qingshan/qa_drive_shots.mjs
 import { mkdirSync, readFileSync } from 'node:fs';
 import { openViewer, setupLook, teleport, retry } from 'file:///D:/RaceUltimate/track-viewer/scripts/perf-open.mjs';

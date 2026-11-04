@@ -1,4 +1,4 @@
-"""Qingshan Park layout plan: the user's sketch (source/user-sketch.png) traced to waypoints, scaled to 5.8 km, measured. PLAN ONLY: nothing here builds the track.
+"""Cheongsan Park (internal id qingshan) layout plan: the user's sketch (source/user-sketch.png) traced to waypoints, scaled to 5.8 km, measured. PLAN ONLY: nothing here builds the track.
 Same centripetal Catmull-Rom as career_lib.py, so the numbers hold for the build. Writes out/plan/stats.json and ../../track-viewer/docs/career-worlds/qingshan.json; plan_sheets.py draws them.
     python plan_layout.py [lap_m]
 The layout was approved by the user on 2026-11-03: re-running rewrites the concept the build reads."""
@@ -212,6 +212,6 @@ stats = dict(lap_m=round(LAP), m_per_sketch_px=round(float(k), 3), alat_calibrat
     sketch_deviation_m=dict(median=round(float(np.median(dev)), 1), p95=round(float(np.percentile(dev, 95)), 1), max=round(float(dev.max()), 1)), lake_clearance=dict(plan=worst(cl_lake), as_sketched=worst(cl_sk)), building_clearance=worst(cl_bld, 5), solar_clearance=worst(cl_sol, 3), shapes=dict(GREY=GREY, HALLS=HALLS, PINK=PINK, TURB=TURB, TURB_SK=TURB_SK), moves=MOVES, solar_sketch=SOLAR_SK, solar_plan=SOLAR, zones=zones, grid=dict(front_m_behind_line=8, last_m_behind_line=64, spacing_m=8), forest=perf)
 assert LAP <= 6850, 'over the 6.85 km cap'; assert abs(LAP - LAP_T) < 3, 'lap off target'; assert min(n['gap_m'] for n in near_) > 32, 'two legs too close for walls'; assert R.min() >= 30, 'a hairpin tighter than Llano (r 30)'; assert (abs(grade) < 0.05).all(), 'steeper than planned'
 (OUT / 'stats.json').write_text(json.dumps(stats, indent=1), encoding='utf8')
-(H.parent.parent / 'track-viewer' / 'docs' / 'career-worlds' / 'qingshan.json').write_text(json.dumps(dict(id='qingshan', name='Qingshan Park', lapLength=round(LAP), width=int(HW * 2), sketchScale=float(k), waypoints=[[round(float(a), 2) for a in p] for p in wp], corners=stats['corners']), indent=1), encoding='utf8')
+(H.parent.parent / 'track-viewer' / 'docs' / 'career-worlds' / 'qingshan.json').write_text(json.dumps(dict(id='qingshan', name='Cheongsan Park', lapLength=round(LAP), width=int(HW * 2), sketchScale=float(k), waypoints=[[round(float(a), 2) for a in p] for p in wp], corners=stats['corners']), indent=1), encoding='utf8')
 np.savez(OUT / 'plan_arrays.npz', CL=CL, pxpts=pxpts, V=V, R=R, grade=grade, lake=lake, lake_sk=lake_sk, ROWS=ROWS, CLUMP=CLUMP, FARCARD=FARCARD)
 show = {a: b for a, b in stats.items() if a not in ('forest',)}; print(json.dumps(show, indent=None, default=str)[:7000]); print(json.dumps({a: (b if not isinstance(b, dict) else {c: d for c, d in b.items() if c != 'series'}) for a, b in perf.items()}))

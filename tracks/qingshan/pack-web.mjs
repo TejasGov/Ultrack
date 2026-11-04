@@ -17,6 +17,7 @@ process.env.NO_JOIN ??= '1';            // the tree tiers are separate named set
 process.env.SKIP_SHELL ??= '1';         // no hidden-face pass (needs Blender)
 process.env.SECTOR_RE ??= '.';          // every mesh over 1,500 triangles that spans more than one 768 m cell
 mkdirSync(join(out, 'web'), { recursive: true });
+cpSync(join(out, 'track.json'), join(out, 'web', 'track.json'));      // sync-assets prefers web/, so a stale copy here would ship an old track.json
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const gt = (...args) => execFileSync(npx, ['-y', '@gltf-transform/cli@4', ...args], { stdio: 'inherit', shell: true, cwd: viewer });
 const q16 = ['--level', 'high', '--quantize-position', '16'];
