@@ -87,7 +87,7 @@ export function CareerHubScreen(game) {
     const look = stat('Time of day', [icon(LOOK[R.look][1]), LOOK[R.look][0]]);
     if (w.kind === 'race') return hero('race', `This week · ${ROUND_EVENT[R.event] ?? 'Race weekend'} · Round ${R.round} of ${n}${R.finale ? ' · points ×1.5' : ''}`, R.name,
       h('div.r-stats', {}, stat('Circuit', t.name), look, stat('Weather', [icon(WX_ICON[R.weather]), WEATHER[R.weather].label]), stat('Race', `${R.laps} laps`), stat('Expected', 'P' + cur.expPos)),
-      h('div.cx-objs', {}, cur.objectives.map((o) => h('span', {}, icon(o.mandatory ? 'star' : 'plus'), objectiveText(o), h('small', {}, o.mandatory ? 'Required' : 'Bonus')))),
+      h('div.cx-objs', {}, C.roundObjectives(save).map((o) => h('span', {}, icon(o.mandatory ? 'star' : 'plus'), objectiveText(o), h('small', {}, o.mandatory ? 'Required' : 'Bonus')))),
       notices(save));
     if (w.kind === 'market') return hero('market', 'This week · The market', 'The market is open',
       h('p.cx-note', {}, save.clock.season === 1 ? 'Sponsors can still talk this week. Teams will not: your first season is probation, and they come to you when the season ends.' : 'Teams can talk to you and you can knock on their doors, for this one week. Anything you sign starts next season. Then the window shuts until the season ends.'),

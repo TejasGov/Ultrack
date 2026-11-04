@@ -44,6 +44,7 @@ const absKeepRear = (a) => a.absSteerRear ?? 0.85 + 0.15 * (a.tcs ?? 0.6);
 // rear planted and the car pointing where it is steered). Casual 1, Sport .2, Pro 0 (fixed bias: rotation is the driver's job)
 const biasShift = (a) => a.brakeBias ?? Math.max(0, ((a.tcs ?? 0.6) - 0.5) * 2);
 const REVERSING_BELOW = 14.4;                                   // m/s: backing up on purpose; faster backwards is a spin and keeps its assists
+const WALL_OFF_SPEED = 3, WALL_OFF_ACCEL = 14;   // m/s, m/s2: leaving a barrier with the wheel turned away
 const MAX_SPIN = 7, BALL_SKIN = 0.004, BALL_WIN = 0.01, GROUND_COS = Math.SQRT1_2, AXLE = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);   // wheel-cast cylinder radius = tyre - skin; steepest ground normal 45 deg
 const v3 = () => new THREE.Vector3();
 const toV = (r) => new THREE.Vector3(r.x, r.y, r.z);
@@ -187,6 +188,20 @@ export class Vehicle {
     const driveTotal = (pedals.brake>0 ? 0 : reverse ? -0.25 * spec.mass * G * st.drive : st.drive * tc * Math.min(power / Math.max(Math.abs(vF), 5), spec.mass * G * 1.4)) + engineBrake;
     const bias = biasShift(assist) * Math.min(1, Math.abs(ctl.steer) * 2);
     const nDriven = this.wheels.filter((w) => w.driven).length;
+
+    // ---- a barrier the car is pressed against with the wheel turned away from it: over the corner's grip the tyres can never pull it off, so the wall held it and scrubbed its speed until it
+    // was back under the limit, whatever the driver did. A push off the wall instead, up to the speed of a glancing bounce
+    if (Math.abs(ctl.steer) > 0.3 && speed > 8) world.contactPairsWith(this.collider, (o) => {
+      if (this.pw.surface(o.handle)?.name !== 'wall') return;
+      world.contactPair(this.collider, o, (m, flipped) => {
+        if (!m.numContacts()) return;
+        const N = m.normal(), s = flipped ? 1 : -1, len = Math.hypot(N.x, N.z); if (len < 0.7) return;   // the wall's top or a low edge under the car is not a face to push off
+        const nx = s * N.x / len, nz = s * N.z / len;                        // from the wall to the car
+        if (-ctl.steer * (nx * right.x + nz * right.z) < 0.15) return;       // positive steer is left, away from `right`
+        const out = lin.x * nx + lin.z * nz, dv = Math.min(Math.max(0, WALL_OFF_SPEED - out), WALL_OFF_ACCEL * h) * spec.mass;
+        if (dv > 0) rb.applyImpulse({ x: nx * dv, y: 0, z: nz * dv }, true);
+      });
+    });
 
     // ---- aero: drag (sets top speed) and downforce (front 45%, rear 55%)
     const vv = speed * speed, down = 0.5 * RHO * spec.downforce * vv;

@@ -6,7 +6,7 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf,
 } from './rules.js';
 import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
 import { post, unread, markRead } from './inbox.js';
@@ -210,6 +210,8 @@ export function qualiSetup(save) {
 
 /** where a car qualified, of everyone (a save from before the top-eight format has only the grid) */
 export const qualiPlace = (q, key) => (q.order ?? q.grid).indexOf(key) + 1;
+/** the round's objectives as they stand: once the grid is set, none asks for places that are not there to gain */
+export const roundObjectives = (save) => { const cur = save.season.current; return cur.quali ? cur.objectives.map((o) => objectiveFrom(o, qualiPlace(cur.quali, save.contract.car))) : cur.objectives; };
 /** retries left this round (the screens enforce it): none for a driver who skips qualifying */
 export const retriesLeft = (q) => (q.exempt ? 0 : Math.max(0, 1 + T.series.qualiRetries - (q.tries ?? 1)));
 
@@ -280,7 +282,7 @@ export function finishRace(save, result) {
   const entries = order.map((key, i) => ({ key, team: CAR[key].team, code: key === hero ? save.player.code : seats[key], you: key === hero, dnq: i >= raced.length,
     pts: i >= raced.length ? 0 : key === hero && bench ? 0 : (key === hero && dnf ? 0 : (P.points[i] ?? 0) * mult + (fastestKey === key ? P.fastestLap : 0)) + (poleKey === key ? P.pole : 0) }));
   const x = { expPos: cur.expPos, grid, finish, fastest, clean, duel, dnf, dnq };
-  const objectives = cur.objectives.map((o) => ({ ...o, met: objectiveMet(o, x) }));
+  const objectives = cur.objectives.map((o) => objectiveFrom(o, grid)).map((o) => ({ ...o, met: objectiveMet(o, x) }));
   const mandatory = objectives[0].met, optional = objectives.slice(1).filter((o) => o.met).length;
   const rating = roundRating({ ...x, ...judged, underdog: me.underdog });
   const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry from a higher tier that was expected ahead

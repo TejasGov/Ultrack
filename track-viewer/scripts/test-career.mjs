@@ -184,6 +184,9 @@ try {
   assert.ok(d0.contract.reserve && d0.contract.easier); assert.equal(d0.contract.salary, Math.round(R.TIERS.tiers.rookie.salary.B * 0.6 / 5) * 5); assert.equal(d0.wallet.coins, cash, 'a reserve seat has no signing bonus');
   assert.equal(d0.world.seats.bmw1 === 'YOU', false, 'the old seat went back to the market'); assert.ok(d0.world.seats.bmw1, 'and it was filled');
   const res1 = round(d0, 1, 1); assert.equal(res1.entries[0].pts, 0, 'a reserve driver scores no points in rounds 1-2'); round(d0, 1, 1); assert.ok(round(d0, 1, 1).entries[0].pts > 0, 'from round 3 he does');
+  { const gain = { kind: 'gain', n: 2 }, from = (g, f) => { const o = R.objectiveFrom(gain, g); return [o.kind, R.objectiveMet(o, { grid: g, finish: f })]; };
+    assert.deepEqual(from(1, 1), ['hold', true], 'from pole there are no places to gain: winning meets it'); assert.deepEqual(from(1, 2), ['hold', false]); assert.deepEqual(from(2, 2), ['hold', true], 'nor two from P2');
+    assert.deepEqual(from(3, 1), ['gain', true], 'P3 to a win still gains two'); assert.deepEqual(from(3, 2), ['gain', false]); assert.equal(R.objectiveText(R.objectiveFrom(gain, 1)), 'Finish at or above your grid slot'); }
   assert.ok(R.objectivesFor(G.rng(1, 'x'), 8, true)[0].n === 8 && R.objectivesFor(G.rng(1, 'x'), 8)[0].n === 7, 'a reserve driver only has to finish');
   const rec = signed(107); rec.contract.warning = { left: 2, met: 0 }; round(rec, 1); assert.equal(rec.contract.warning.met, 1); round(rec, 1); assert.equal(rec.contract.warning, null, 'two objectives met: the warning is gone');
 

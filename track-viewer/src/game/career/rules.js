@@ -162,11 +162,14 @@ export const OBJECTIVES = {
   duel: () => 'Out-qualify your teammate',
   clean: () => 'Race clean: no spins, at most one hit',
   gain: (o) => `Gain ${o.n} places from your grid slot`,
+  hold: () => 'Finish at or above your grid slot',
   fastest: () => 'Set the fastest lap of the race',
   podium: () => 'Finish on the podium',
   quali: (o) => `Qualify P${o.n} or better`,
 };
 export const objectiveText = (o) => OBJECTIVES[o.kind](o);
+/** an objective as it stands from this grid slot: places that are not there to gain (P2 asked for two, or pole for any) become holding the slot */
+export const objectiveFrom = (o, grid) => (o.kind === 'gain' && grid - 1 < o.n ? { ...o, kind: 'hold' } : o);
 /** the round's objectives (6.4): one mandatory from the expected finish, two optional from a seeded pool */
 export function objectivesFor(r, expPos, easier = false, exempt = false) {
   const main = expPos > 8 && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, 16) : Math.min(expPos, 15) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, 8) : Math.min(expPos, 7) };   // expected outside the eight: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
@@ -181,7 +184,7 @@ export function qualiExemption(rep, mate) {
   return m >= 0 && m < rep.finish - 1 ? null : { slot: rep.finish, why: rep.finish === 1 ? 'your win' : 'your podium' };
 }
 export function objectiveMet(o, x) {
-  return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n,
+  return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n, hold: () => !x.dnf && x.finish <= x.grid,
     fastest: () => !!x.fastest, podium: () => !x.dnf && x.finish <= 3, quali: () => x.grid <= o.n })[o.kind]();
 }
 
