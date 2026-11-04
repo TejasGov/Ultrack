@@ -47,7 +47,7 @@ try {
         finales.add(cal.at(-1).track); cal.forEach((r) => raced.add(r.track));
       }
       assert.equal(finales.size, 2, `world ${world} rotates its finale`);
-      if (world > 1) assert.equal(raced.size, 9, `world ${world} reaches every track`);
+      assert.ok(!raced.has('drylake'), 'Dry Lake only hosts qualifying'); if (world > 1) assert.equal(raced.size, 8, `world ${world} reaches every race circuit`);
     }
   }
 
@@ -245,10 +245,10 @@ try {
   assert.equal(C.newCareer({ name: 'Quincy Valois', seed: 1, now: 'x' }).player.code, 'QVA', 'a player never shares a code with a driver');
   assert.equal(C.newCareer({ name: 'Valois', seed: 1, now: 'x' }).player.code, 'VAX', 'one name works too');
   { // the hour of a round: an even chance of each look the circuit offers, none it does not; the finale keeps its hour
-    const seen = {}; for (let i = 0; i < 400; i++) for (const r of R.buildCalendar(i, 1, 1, { ...avail, infinia: null })) if (!r.finale) (seen[r.track] ??= {})[r.look] = (seen[r.track][r.look] ?? 0) + 1;
-    assert.deepEqual(Object.keys(seen.drylake).sort(), ['day', 'dusk'], 'a day-and-dusk track stays day and dusk');
+    const seen = {}; for (let i = 0; i < 3000; i++) for (const r of R.buildCalendar(i, 1, 1, { ...avail, infinia: null })) if (!r.finale) (seen[r.track] ??= {})[r.look] = (seen[r.track][r.look] ?? 0) + 1;
+    assert.deepEqual(Object.keys(seen.shajawa).sort(), ['day', 'dusk'], 'a day-and-dusk track stays day and dusk');
     assert.deepEqual(Object.keys(seen.india).sort(), ['bluehour', 'day', 'dusk', 'night'], 'a track with no `times` runs at all four');
-    for (const t of ['drylake', 'india']) { const n = Object.values(seen[t]), even = n.reduce((a, b) => a + b, 0) / n.length; assert.ok(n.every((x) => Math.abs(x - even) < even * 0.25), `${t} looks are even: ${JSON.stringify(seen[t])}`); }
+    for (const t of ['shajawa', 'india']) { const n = Object.values(seen[t]), even = n.reduce((a, b) => a + b, 0) / n.length; assert.ok(n.every((x) => Math.abs(x - even) < even * 0.25), `${t} looks are even: ${JSON.stringify(seen[t])}`); }
   }
   const dn = signed(121); C.finishQuali(dn, 999); const dg = dn.season.current.quali.grid, dh = dn.contract.car, dr2 = C.finishRace(dn, { order: dg, best: Object.fromEntries(dg.map((k) => [k, k === dh ? 60 : 70])), dnf: true });
   assert.equal(dr2.entries.find((e) => e.you).pts, 0, 'a retirement scores no fastest-lap point'); assert.equal(dr2.fastest, false);

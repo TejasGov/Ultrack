@@ -13,12 +13,13 @@
     "tokyo":   { "event": "showpiece", "parLap": 89.3,  "measured": "measured", "names": ["Neon Street", "Tokyo Return"] }
   },
   "worlds": {
-    "1": { "name": "The Proving Grounds", "rounds": 6, "tracks": ["drylake", "shajawa", "india", "qingshan", "llano", "infinia", "marina"],
+    "1": { "name": "The Proving Grounds", "rounds": 6, "tracks": ["shajawa", "india", "qingshan", "llano", "infinia", "marina"],
            "finale": [{ "track": "infinia", "look": "dusk" }, { "track": "india", "look": "dusk" }] },
-    "2": { "name": "The Grand Tour", "rounds": 7, "tracks": ["drylake", "shajawa", "india", "qingshan", "llano", "infinia", "marina", "venice", "tokyo"],
+    "2": { "name": "The Grand Tour", "rounds": 7, "tracks": ["shajawa", "india", "qingshan", "llano", "infinia", "marina", "venice", "tokyo"],
            "finale": [{ "track": "marina", "look": "night" }, { "track": "venice", "look": "night" }] },
-    "3": { "name": "The Crown", "rounds": 8, "tracks": ["drylake", "shajawa", "india", "qingshan", "llano", "infinia", "marina", "venice", "tokyo", "morro"],
+    "3": { "name": "The Crown", "rounds": 8, "tracks": ["shajawa", "india", "qingshan", "llano", "infinia", "marina", "venice", "tokyo", "morro"],
            "finale": [{ "track": "tokyo", "look": "night" }, { "track": "venice", "look": "night" }] }
   },
-  "shootout": { "track": "india", "look": "day", "weather": "dry", "car": "huracan" }
+  "qualifying": "drylake",
+  "shootout": { "track": "drylake", "look": "day", "weather": "dry", "car": "huracan" }
 }

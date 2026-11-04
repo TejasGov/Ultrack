@@ -35,10 +35,10 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
         C.advanceWeek(save); continue;
       }
       const rd = C.currentRound(save), car = save.contract.car, u = save.garage.upgrades[car];
-      const lapNow = () => R.parLap(rd.track, car, rd.weather, [u.engine, u.tyres, u.brakes]) / skill * (1 + noise(0.008));
+      const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, [u.engine, u.tyres, u.brakes]) / skill * (1 + noise(0.008));
       C.finishQuali(save, lapNow()); if (!save.season.current.quali.grid.includes(car)) C.finishQuali(save, lapNow());   // a missed cut uses the one retry
     } else if (save.clock.phase === 'race') {
-      const q = save.season.current.quali, t = Object.fromEntries(q.grid.map((k) => [k, (q.laps[k] ?? (k === save.contract.car ? R.parLap(C.currentRound(save).track, k, C.currentRound(save).weather, ['engine', 'tyres', 'brakes'].map((c) => save.garage.upgrades[k][c])) / skill : 999)) * (1 + noise(0.012 * Math.sqrt(C.currentRound(save).laps / 5)))]));   // a model, not a measurement: fewer laps, fewer places change from the grid
+      const q = save.season.current.quali, t = Object.fromEntries(q.grid.map((k) => [k, (q.laps[k] ?? (k === save.contract.car ? R.parLap(C.qualiVenue(save).track, k, C.qualiVenue(save).weather, ['engine', 'tyres', 'brakes'].map((c) => save.garage.upgrades[k][c])) / skill : 999)) * (1 + noise(0.012 * Math.sqrt(C.currentRound(save).laps / 5)))]));   // a model, not a measurement: fewer laps, fewer places change from the grid
       const order = Object.keys(t).sort((a, b) => t[a] - t[b]), lap = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, v * 0.99]));
       const missed = !q.grid.includes(save.contract.car), rep = missed ? C.finishDnq(save) : C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: rand() < 0.3 ? 1 : 0, spins: rand() < 0.2 ? 1 : 0 });
       log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);

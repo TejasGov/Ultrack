@@ -209,6 +209,8 @@ export function qualiSetup(save) {
 }
 
 /** where a car qualified, of everyone (a save from before the top-eight format has only the grid) */
+/** where every round qualifies, whatever its race circuit: the race map stays fresh for race day. The race's hour if the circuit has it, always dry */
+export const qualiVenue = (save) => { const look = currentRound(save).look; return { track: CAL.qualifying, look: look === 'day' ? 'day' : 'dusk', weather: 'dry' }; };
 export const qualiPlace = (q, key) => (q.order ?? q.grid).indexOf(key) + 1;
 /** the round's objectives as they stand: once the grid is set, none asks for places that are not there to gain */
 export const roundObjectives = (save) => { const cur = save.season.current; return cur.quali ? cur.objectives.map((o) => objectiveFrom(o, qualiPlace(cur.quali, save.contract.car))) : cur.objectives; };
@@ -219,7 +221,7 @@ export const retriesLeft = (q) => (q.exempt ? 0 : Math.max(0, 1 + T.series.quali
 export function finishQuali(save, best, mateRun = null) {
   while (currentWeek(save).kind !== 'race' && advanceWeek(save).ok);   // qualifying belongs to a race week: anything still open is skipped
   const held = save.season.current.quali?.laps[save.contract.car]; if (Number.isFinite(held)) best = Number.isFinite(best) ? Math.min(best, held) : held;
-  const R = currentRound(save), cur = save.season.current, ex = cur.exempt, base = { seed: save.seed, season: save.clock.season, round: save.clock.round, track: R.track, weather: R.weather, difficulty: save.rules.difficulty };
+  const R = currentRound(save), cur = save.season.current, ex = cur.exempt, V = qualiVenue(save), base = { seed: save.seed, season: save.clock.season, round: save.clock.round, track: V.track, weather: V.weather, difficulty: save.rules.difficulty };
   const hero = save.contract.car, mate = teammateCar(save), heldMate = cur.quali?.mate.lap;
   const mateLap = Number.isFinite(mateRun) ? Math.min(mateRun, heldMate ?? Infinity) : heldMate ?? aiLap({ ...base, key: mate, rating: ratingOf(save, mate), dev: devOf(save, mate) });
   const laps = { [hero]: !ex && Number.isFinite(best) ? best : null };

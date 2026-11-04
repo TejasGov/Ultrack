@@ -33,8 +33,8 @@ export function CareerHubScreen(game) {
     game.careerSession('practice', { track: R.track, look: R.look, weather: R.weather, laps: R.laps, car, home: 'careerHub', session: { levels: C.raceSetup(save).levels, drivers: { [car]: playerDriver(save, save.contract.team) } } }, () => game.show('careerHub', 'home'));
   }
   function startQuali(save) {
-    const R = C.currentRound(save), car = save.contract.car, lv = C.raceSetup(save).levels;
-    game.careerSession('quali', { track: R.track, look: R.look, weather: R.weather, laps: R.laps, car, home: 'careerHub',
+    const R = C.currentRound(save), V = C.qualiVenue(save), car = save.contract.car, lv = C.raceSetup(save).levels;
+    game.careerSession('quali', { ...V, laps: R.laps, car, home: 'careerHub',
       session: { ...C.qualiSetup(save), levels: lv, runUp: TUNING.series.qualiRunUp } }, (d) => {
       C.finishQuali(save, d.best, d.mateLap); persist(game);
       const q = save.season.current.quali, p = C.qualiPlace(q, car), lap = q.laps[car], cut = q.laps[q.grid.at(-1)];
@@ -123,7 +123,7 @@ export function CareerHubScreen(game) {
         h('button.btn.btn-secondary', { 'data-nav': '', onclick: () => { if (armed) return sitOut(); armed = true; build(true); } }, icon('close'), 'Sit out'),
         h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => startQuali(save) }, icon('time-trial'), 'Use your retry')];
     }
-    if (w.kind === 'race') return [h('div.cx-next', {}, h('small', {}, 'Race week'), h('span', {}, q ? `One try at the race. Retire classifies you last.` : 'Qualifying first: one valid flying lap')),
+    if (w.kind === 'race') return [h('div.cx-next', {}, h('small', {}, 'Race week'), h('span', {}, q ? `One try at the race. Retire classifies you last.` : `Qualifying first, at ${trackOf(C.qualiVenue(save).track).name}: one valid flying lap`)),
       h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => (q ? startRace(save) : startQuali(save)) }, icon(q ? 'race' : 'time-trial'), q ? 'Start the race' : 'Start qualifying')];
     const spec = C.sideSpec(save), note = armed && warn.length ? warn.join('. ') + '. Press again to go on.' : `Week ${next.week}: ${weekTitle(save, next)}`;
     return [h('div.cx-next', {}, h('small', {}, armed && warn.length ? 'Before you go' : 'Next'), h('span', {}, note)),
@@ -137,7 +137,7 @@ export function CareerHubScreen(game) {
   // ---------------------------------------------------------------------------------------------- Calendar
   function weekDetail(save, i) {
     const w = save.season.weeks[i], R = C.roundOfWeek(save, i), t = R && trackOf(R.track), res = w.result, e = w.event;
-    const body = w.kind === 'race' ? [h('p.cx-note', {}, 'Race weekend: practice is open, the top 8 of 16 in qualifying race, then one try at the race.'),
+    const body = w.kind === 'race' ? [h('p.cx-note', {}, `Race weekend: practice is open, the top 8 of 16 in qualifying at ${trackOf(C.qualiVenue(save).track).name} race, then one try at the race.`),
       h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Round', `${R.round} of ${save.season.calendar.length}${R.finale ? ' · ×1.5' : ''}`), stat('Conditions', [icon(LOOK[R.look][1]), LOOK[R.look][0], ' · ', WEATHER[R.weather].label]), stat('Race', `${R.laps} laps`), res ? stat('Result', res.dnf ? 'Retired' : 'P' + res.finish) : null, res ? stat('Rating', res.rr.toFixed(1)) : null)]
       : w.kind === 'market' ? [h('p.cx-note', {}, save.clock.season === 1 ? 'One week for sponsors. Teams wait for the season end: your first season is probation.' : 'One week when teams can talk to you and you can approach them. Anything you sign starts next season.')]
         : w.kind === 'end' ? [h('p.cx-note', {}, 'The season review, your team\'s verdict, and the market: every offer for next season.')]
