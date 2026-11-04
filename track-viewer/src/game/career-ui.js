@@ -108,7 +108,7 @@ export function CareerStartScreen(game) {
     const p = save.pending, r = p.review, last = save.history.at(-1), list = p.offers, st = C.standings(save), top = st.drivers.slice(0, 5);
     F.sec('review'); F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = 'cx-page cs-review'; statusBar(F.me, save); F.backdrop('cars', last.car);
     const headline = r.drivers === 1 ? 'Champion' : `P${r.drivers}`;
-    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers scored`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), cs('trust', 'Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)))),
+    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), cs('trust', 'Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)))),
         r.dropped ? h('p.cx-note.warn', {}, icon('warning'), rich(`${teamName(last.team)} has let you go: trust fell too far. Reputation ${TUNING.rep.dropped}. A reserve seat is the way back.`)) : null,
         r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins ? h('p.cx-note', {}, icon('trophy'), 'Titles this season: ', rich(`reputation ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))}${r.coins ? `, +${money(r.coins)}` : ''}`), '.') : null,
         h('div', {}, top.map((d, i) => css(h(`div.lrow.cx-mini${d.you ? '.me' : ''}`, {}, h('b.tnum', {}, i + 1), h('i.tbar'), h('span', {}, d.name), h('b.tnum', {}, String(Math.round(d.pts * 10) / 10))), { '--team': teamMark(loreOf(d.team)) })))),
@@ -148,21 +148,21 @@ export function CareerReportScreen(game) {
     onShow(rep) {
       const save = game.career, fastest = Math.min(...Object.values(rep.best ?? {}).filter(Number.isFinite));
       F.sec('report'); F.title(`Round ${rep.round}: ${rep.name}`, `${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`); statusBar(F.me, save); F.backdrop('tracks', rep.track);
-      const verdict = rep.dnf ? 'Retired' : rep.finish === 1 ? 'Victory' : `P${rep.finish}`;
+      const verdict = rep.dnq ? 'Did not qualify' : rep.dnf ? 'Retired' : rep.finish === 1 ? 'Victory' : `P${rep.finish}`;
       const table = h('div.cx-b.cr-table', {}, h('div.lhead.cr-cols', {}, h('span', {}, 'Pos'), h('span'), h('span', {}, 'Driver'), h('span', {}, 'Car'), h('span.val', {}, 'Best lap'), h('span.val', {}, 'Pts')),
-        rep.entries.map((e, k) => css(h('div.lrow.cr-cols' + (e.you ? '.me' : ''), {}, h('b.r-pos.tnum', {}, e.you && rep.dnf ? 'DNF' : k + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, e.you ? save.player.name : C.personOf(save, e.code)?.name ?? e.code), h('small', {}, teamName(e.team))),
+        rep.entries.map((e, k) => (e.dnq && !e.you ? null : css(h('div.lrow.cr-cols' + (e.you ? '.me' : ''), {}, h('b.r-pos.tnum', {}, e.dnq ? 'DNQ' : e.you && rep.dnf ? 'DNF' : k + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, e.you ? save.player.name : C.personOf(save, e.code)?.name ?? e.code), h('small', {}, teamName(e.team))),
           h('span.r-carname', {}, carName(e.key)), h('span.val', {}, rep.best?.[e.key] === fastest ? icon('bolt', { cls: 'r-bolt', label: 'Fastest lap' }) : null, Number.isFinite(rep.best?.[e.key]) ? fmtTime(rep.best[e.key]) : empty()),
-          h('span.val.tnum', {}, e.pts ? '+' + e.pts : empty())), { '--team': teamMark(loreOf(e.team)) })));
+          h('span.val.tnum', {}, e.pts ? '+' + e.pts : empty())), { '--team': teamMark(loreOf(e.team)) }))));
       const mate = C.personOf(save, rep.duel.mateCode)?.name ?? 'your teammate';
       fill(F.page,
-        h('div.cx-b.cr-hero', {}, h('div.cr-pos', {}, h('h2', {}, verdict), h('p.cx-note', {}, `Expected P${rep.expPos}, started P${rep.grid}${rep.pole ? ' (pole)' : ''}${rep.fastest ? ', fastest lap' : ''}`)),
+        h('div.cx-b.cr-hero', {}, h('div.cr-pos', {}, h('h2', {}, verdict), h('p.cx-note', {}, `Expected P${rep.expPos}, ${rep.dnq ? 'qualified' : 'started'} P${rep.grid}${rep.pole ? ' (pole)' : ''}${rep.fastest ? ', fastest lap' : ''}`)),
           h('div.cr-rate', {}, h('small', {}, 'Round rating'), h(`b${rep.rr >= 7 ? '.hi' : rep.rr < 5 ? '.lo' : ''}`, {}, rep.rr.toFixed(1)), h('span', {}, icon(rep.rr >= 7 ? 'chevron-up' : rep.rr < 5 ? 'chevron-down' : 'minus'), rrLabel(rep.rr))),
           h('div.cr-deltas', {}, cs('xp', 'XP', delta(rep.xp)), cs('rep', 'Reputation', delta(rep.rep)), cs('trust', 'Trust', delta(rep.trust)), stat('Earned', coins(rep.coins, true))), rep.levelUp ? h('span.cx-tag.xp', {}, icon('chevrons-up'), `Career Level ${rep.levelUp}`) : null),
         table,
         h('div.cx-b.cr-why', {}, blockHead('specs', 'Why that rating'), lines([['Base', '6.0'], ...rep.rrLines], 'rr'),
           h('div.cx-bh', {}, h('span', {}, 'Objectives')), h('div.cr-objs', {}, rep.objectives.map((o) => h('span' + (o.met ? '.met' : ''), {}, icon(o.met ? 'check' : 'close'), objectiveText(o), o.mandatory ? h('small', {}, 'Required') : null)))),
         h('div.cx-b.cr-money', {}, blockHead('coin', 'What it paid'), lines(rep.coinLines, 'coin'),
-          h('p.cx-note', {}, icon('people'), rep.duel.result === 'level' ? `Level with ${mate} in qualifying.` : `${rep.duel.result === 'won' ? 'You out-qualified' : 'Out-qualified by'} ${mate}: ${rep.duel.mine ? fmtTime(rep.duel.mine) : 'no lap'} vs ${fmtTime(rep.duel.mate)}.`),
+          h('p.cx-note', {}, icon('people'), rep.duel.skipped ? `You skipped qualifying, so no duel with ${mate} this round.` : rep.duel.result === 'level' ? `Level with ${mate} in qualifying.` : `${rep.duel.result === 'won' ? 'You out-qualified' : 'Out-qualified by'} ${mate}: ${rep.duel.mine ? fmtTime(rep.duel.mine) : 'no lap'} vs ${fmtTime(rep.duel.mate)}.`),
           rep.rivals?.length ? h('p.cx-note', {}, icon('people'), rep.rivals.map(([l]) => l).join('. ') + '.') : null,
           rep.midSeason?.warning ? h('p.cx-note.warn', {}, icon('warning'), 'Seat review: ', rich(`trust ${save.contract.trust}`), `. Meet the round objective in the next ${TUNING.trust.recover} rounds.`) : null,
           rep.midSeason?.w1 ? h('p.cx-note', {}, icon('star'), `${teamName(rep.midSeason.w1)} want to talk. Their offer is in your inbox, until the market closes.`) : null));

@@ -23,8 +23,8 @@ export const loreOf = (id) => LORE[id];
 export const CAR = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, { team: t.id, driver: c.driver, number: c.number, seat: TIERS.teams[t.id].A === c.key ? 'A' : 'B' }])));
 export const seatCar = (team, seat) => TIERS.teams[team][seat];
 export const otherSeat = (seat) => (seat === 'A' ? 'B' : 'A');
-/** expected finish of an entry: the team's expPos, one place lower in its B seat (6.1) */
-export const expOf = (expPos, seat) => clamp(expPos + (seat === 'B' ? 1 : 0), 1, 8);
+/** expected place of a driver among the 16: the teams in their expected order, A seat then B (6.1) */
+export const expOf = (expPos, seat) => clamp((expPos - 1) * 2 + (seat === 'B' ? 2 : 1), 1, 16);
 
 // ---------------------------------------------------------------------------------------------- levels
 export const xpForLevel = (L) => Math.round(T.xp.curve[0] * (L - 1) ** T.xp.curve[1]);
@@ -102,11 +102,13 @@ export function duelOf(mine, mate) {
 export const RR_LABELS = [[9, 'Masterclass'], [8, 'Outstanding'], [7, 'Strong'], [6, 'Solid'], [5, 'Poor'], [0, 'Bad']];
 export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
 /** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
-export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf }) {
+export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq }) {
   const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); };
-  const pos = clamp(expPos - finish, -R.posClamp, R.posClamp), q = clamp(expPos - grid, -R.qualiClamp, R.qualiClamp);
-  add(pos >= 0 ? `Finished ${pos} ${pos === 1 ? 'place' : 'places'} above expected` : `Finished ${-pos} ${pos === -1 ? 'place' : 'places'} below expected`, R.pos * pos);
-  add(q >= 0 ? `Qualified ${q} above expected` : `Qualified ${-q} below expected`, R.quali * q);
+  // places are of the 16, and two of them weigh what one did when the table was 8: the rating constants are unchanged. No race, no finish to judge
+  const dp = dnq ? 0 : expPos - finish, dq = expPos - grid, pos = clamp(dp / 2, -R.posClamp, R.posClamp), q = clamp(dq / 2, -R.qualiClamp, R.qualiClamp);
+  add(dp >= 0 ? `Finished ${dp} ${dp === 1 ? 'place' : 'places'} above expected` : `Finished ${-dp} ${dp === -1 ? 'place' : 'places'} below expected`, R.pos * pos);
+  add(dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
+  if (dnq) add('Did not qualify', R.dnq);
   if (fastest) add('Fastest lap of the field', R.fastest);
   if (clean && !dnf) add('Clean race', R.clean);
   if (duel) add(duel.result === 'won' ? 'Beat your teammate' : duel.result === 'lost' ? 'Lost to your teammate' : null, (duel.result === 'won' ? 1 : duel.result === 'lost' ? -1 : 0) * (duel.big ? R.duelBig : R.duel));
@@ -121,7 +123,7 @@ export function xpFor({ finish, expPos, grid, pole, duel, fastest, clean, dnf, m
   add(`Finished P${finish}`, dnf ? 0 : X.place[finish - 1] ?? 0);
   add('Above expected', dnf ? 0 : Math.min(X.overExpMax, Math.max(0, expPos - finish) * X.perPlaceOverExp));
   add('Pole position', pole ? X.pole : 0);
-  add('Qualified above expected', Math.max(0, expPos - grid) * X.qualiPerPlace);
+  add('Qualified above expected', Math.min(T.rating.qualiClamp, Math.max(0, expPos - grid) / 2) * X.qualiPerPlace);
   add('Teammate duel', duel?.result === 'won' ? X.duel : 0);
   add('Fastest lap', fastest ? X.fastest : 0);
   add('Clean race', clean && !dnf ? X.clean : 0);
@@ -156,10 +158,17 @@ export const OBJECTIVES = {
 };
 export const objectiveText = (o) => OBJECTIVES[o.kind](o);
 /** the round's objectives (6.4): one mandatory from the expected finish, two optional from a seeded pool */
-export function objectivesFor(r, expPos, easier = false) {
-  const target = easier ? Math.min(expPos + 1, 8) : Math.min(expPos, 7), pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 1) }];
-  if (expPos <= 4) pool.push({ kind: 'podium' });
-  return [{ kind: 'finish', n: target, mandatory: true }, ...shuffle(r, pool).slice(0, 2)];   // P8 of 8 is no target: last expected asks for P7; a Raw or reserve driver gets one place easier, down to just finishing (3.1, 6.7)
+export function objectivesFor(r, expPos, easier = false, exempt = false) {
+  const main = expPos > 8 && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, 16) : Math.min(expPos, 15) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, 8) : Math.min(expPos, 7) };   // expected outside the eight: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
+  const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 2) }];
+  if (expPos <= 6) pool.push({ kind: 'podium' });
+  return [{ ...main, mandatory: true }, ...shuffle(r, exempt ? pool.filter((o) => o.kind !== 'duel' && o.kind !== 'quali') : pool).slice(0, 2)];
+}
+/** why the player skips the next round's qualifying and where he starts, or null: a podium, with his teammate not ahead of him. Further such rules go here */
+export function qualiExemption(rep, mate) {
+  if (!rep || rep.dnf || rep.dnq || rep.finish > 3) return null;
+  const m = rep.entries.findIndex((e) => e.key === mate);
+  return m >= 0 && m < rep.finish - 1 ? null : { slot: rep.finish, why: rep.finish === 1 ? 'your win' : 'your podium' };
 }
 export function objectiveMet(o, x) {
   return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n,

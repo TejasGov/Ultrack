@@ -50,7 +50,7 @@ Read from the code on 2026-10-31. File references are to `track-viewer/` unless 
 
 | # | Constraint | Consequence for the career |
 |---|---|---|
-| C1 | **One car per team on the grid, 8 slots.** `racersFor()` returns the hero plus each other team's `cars[0]`; `Field.grid()` puts the hero in the last slot (`cars.js` 532-545) | The teammate cannot be on track. The teammate duel is a qualifying-lap duel plus a team-trust number (section 6.3). Grid order needs one small engine change (section 10.3). A 16-car grid is a stretch goal, not a dependency |
+| C1 | **(Career: replaced, see 4.3: all 16 qualify, the fastest 8 race, teammates included.) Free-play races stay one car per team on 8 slots.** `racersFor()` returns the hero plus each other team's `cars[0]`; `Field.grid()` puts the hero in the last slot (`cars.js` 532-545) | The teammate cannot be on track. The teammate duel is a qualifying-lap duel plus a team-trust number (section 6.3). Grid order needs one small engine change (section 10.3). A 16-car grid is a stretch goal, not a dependency |
 | C2 | **Balance of performance flattens the cars.** Per-car `bop` / `bopGrip` push AI solo laps on Marina into a ~144-153 s band, 4% apart (`PHYSICS.md`). A 268 km/h Nissan Z and a 346 km/h Destrier end up close in lap time | The gap between tiers cannot come from stock cars alone. It comes from upgrade levels on the AI cars, driver ratings (AI pace) and the player's own upgrades (section 2.3) |
 | C3 | **AI pace today is the grid index, not the driver**: `new AIDriver(this, c, c.hero ? 1 : 0.93 + 0.012 * k)` (`cars.js` 563), so rivals run 0.942 to 1.014 in the order of `teams.json`. | The career needs a per-entry pace override (one line) driven by driver rating |
 | C4 | **AI cars are never upgraded** at race start (GAME.md; `applyUpgrades(..., store.data.car)`) | See C2: the career sets AI levels from a team-development table |
@@ -259,8 +259,9 @@ Total: a full weekend is about 11 minutes; with both optional events about 15.
 
 ### 4.3 Qualifying and the grid
 
-- Player lap: real. AI lap: `parLap(track, car) / pace(rating) x (1 + N(0, 0.004))`, seeded per (season, round, entry). The teammate (who does not race) is on track with the player, starting 20 m ahead on the same run-up at his race pace: his real lap is the **teammate duel** (6.3). If the player finishes first, his pace so far is carried to the line; a computed lap stands in only when he got less than halfway.
-- Grid order = qualifying order. Today `Field.grid()` always puts the hero last; the career needs an ordered grid (section 10.3). Without this change the player starts last every round, which makes a slow car miserable; with it, qualifying is worth playing.
+- Player lap: real. AI lap: `parLap(track, car) / pace(rating) x (1 + N(0, 0.012))`, seeded per (season, round, entry). The teammate (who does not race) is on track with the player, starting 20 m ahead on the same run-up at his race pace: his real lap is the **teammate duel** (6.3). If the player finishes first, his pace so far is carried to the line; a computed lap stands in only when he got less than halfway.
+- **All 16 drivers qualify and the fastest 8 race**, two cars of one team if both are quick enough; the other 14 laps are computed. Whoever misses the cut classifies by qualifying place, 9th down, with no points. Each round the player gets one qualifying run and one retry (the better lap counts). A podium skips the next round's qualifying, unless the teammate finished ahead: the player starts from the place he finished, with no duel, no pole and no qualifying credit that round (`qualiExemption` in rules.js holds these rules). A player who misses the cut can use his retry or sit the round out (no race, no place money, a rating of the qualifying place with a -1.0 penalty). Expected places are of the 16: the teams in order, A seat then B, and two places in the rating weigh what one did on the old table of 8. A driver expected outside the eight gets a qualifying target as his round objective.
+- Grid order = qualifying order. Before this format, `Field.grid()` always puts the hero last; the career needs an ordered grid (section 10.3). Without this change the player starts last every round, which makes a slow car miserable; with it, qualifying is worth playing.
 - `parLap(track, car)` is stored per track and car (the AI solo lap from `testdrive.js balance()` / `npm run laps`). Until measured, it is `lapLength / avgSpeed(track)` with the Marina / Tokyo / India numbers above.
 
 ### 4.4 Points and standings
@@ -780,7 +781,7 @@ Skeleton of `tuning.json` with the values from this document:
               "points": [25, 18, 15, 12, 10, 8, 6, 4], "pole": 2, "fastestLap": 1, "finaleMult": 1.5 },
   "pace": { "base": 0.94, "perRating": 0.0021, "min": 0.94, "max": 1.02, "jitter": 0.003,
             "difficulty": { "easy": 0.97, "normal": 1.0, "hard": 1.02 } },
-  "quali": { "noiseSigma": 0.004, "duelLevel": 0.0015, "duelBig": 0.003 },
+  "quali": { "noiseSigma": 0.012, "duelLevel": 0.0015, "duelBig": 0.003 },
   "xp": { "curve": [90, 1.7], "place": [120, 95, 75, 60, 45, 35, 25, 20], "perPlaceOverExp": 25, "overExpMax": 100,
           "pole": 30, "duel": 25, "fastest": 20, "clean": 20, "mandatory": 60, "optional": 40, "proAssist": 1.15,
           "tier": [1.0, 1.3, 1.6], "freePlayShare": 0.25 },

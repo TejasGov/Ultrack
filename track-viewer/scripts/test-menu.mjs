@@ -79,9 +79,9 @@ try{
   // Advance: into race week, whose primary is qualifying; the race is locked until then
   click(hub,/^Advance/);assert.equal(C.currentWeek(save).kind,'race');show(hub,'home');t=ok(hub,'race week');assert.ok(t.includes('Start qualifying')&&t.includes('Locked: qualify first')&&t.includes('Required'));
   click(hub,/Locked: qualify first/);assert.match(busy.at(-1),/Qualify first/);
-  C.finishQuali(save,60);show(hub,'home');t=ok(hub,'grid');assert.ok(t.includes('Improve your lap')&&t.includes('Start the race')&&t.includes('The grid'),'the grid and the retry are on Home');
+  C.finishQuali(save,1);show(hub,'home');t=ok(hub,'grid');assert.ok(t.includes('Improve your lap')&&t.includes('Start the race')&&t.includes('The grid'),'the grid and the retry are on Home');
   click(hub,/Start the race/);assert.equal(g.sessions.at(-1)[0],'race');
-  const q=()=>save.season.current.quali.grid,round=(p=4)=>{if(save.clock.phase==='paddock')C.finishQuali(save,60);const me=save.contract.car,o=q().filter(k=>k!==me);o.splice(p-1,0,me);return C.finishRace(save,{order:o,best:{},crashes:0,spins:0});};
+  const q=()=>save.season.current.quali.grid,round=(p=4)=>{if(save.clock.phase==='paddock')C.finishQuali(save,1);const me=save.contract.car,o=q().filter(k=>k!==me);o.splice(p-1,0,me);return C.finishRace(save,{order:o,best:{},crashes:0,spins:0});};
   const r1=round();show(rep,r1);t=ok(rep,'report');for(const w of ['Round rating','Why that rating','What it paid','Objectives','Salary','Continue'])assert.ok(t.includes(w),w);
   // an open week with a sponsor day; Advance warns once a sponsor is signed, then goes
   const so=save.sponsors.offers[0];show(hub,'deals');t=ok(hub,'deals');for(const w of ['On the table','Your contract','Teams','Your sponsors','Market opens week'])assert.ok(t.includes(w),w);assert.ok(t.includes(so.name),'sponsor offers are on the table');
@@ -98,16 +98,16 @@ try{
   show(hub,'home');t=ok(hub,'market week');assert.ok(t.includes('The market is open')&&t.includes('Seat review'));show(hub,'deals');t=ok(hub,'deals in the market');assert.ok(t.includes('Toro: HU')&&t.includes('Open this week')&&t.includes('Probation'),'the market week lists the offer and says why doors are shut');
   show(deal,{id:'w',home:'careerHub'});click(deal,/Sign with/);assert.equal(save.contract.next.team,'toro');assert.deepEqual(save.season.mid,[]);show(hub,'home');assert.ok(ok(hub,'signed').includes('Signed for next season'));
   show(hub,'driver');t=ok(hub,'driver rivals');assert.ok(t.includes('Rivals')&&t.includes('Feud'));
-  C.advanceWeek(save);save.world.seats[save.season.current.entries[0]]='OKA';save.world.academy.OKA={name:'Tobi Okafor',nation:'NGA'};save.world.ratings.OKA=72;
-  C.finishQuali(save,60);show(hub,'home');assert.ok(ok(hub,'academy on the grid').includes('OKA'));
+  C.advanceWeek(save);C.finishQuali(save,1);save.world.seats[save.season.current.quali.grid.find(x=>x!==save.contract.car&&x!==C.teammateCar(save))]='OKA';save.world.academy.OKA={name:'Tobi Okafor',nation:'NGA'};save.world.ratings.OKA=99;
+  C.finishQuali(save,1);show(hub,'home');assert.ok(ok(hub,'academy on the grid').includes('OKA'));
   const r=round(1);show(rep,r);assert.ok(ok(rep,'report').includes('Tobi Okafor'));
   // a dropped season: the review says so, and the reserve seat cannot be haggled
   delete save.contract.next;save.contract.warning={left:0,met:0};while(save.clock.phase!=='review'){save.contract.trust=5;save.contract.warning={left:0,met:0};if(C.currentWeek(save).kind==='race')round(8);else C.advanceWeek(save);}
-  show(start);t=ok(start,'dropped review');assert.ok(save.pending.review.dropped&&t.includes('let you go')&&t.includes('Next season')&&t.includes('drivers scored'));const ro=save.pending.offers.find(o=>o.reserve);assert.ok(ro);
+  show(start);t=ok(start,'dropped review');assert.ok(save.pending.review.dropped&&t.includes('let you go')&&t.includes('Next season')&&/1[0-9] drivers/.test(t));const ro=save.pending.offers.find(o=>o.reserve);assert.ok(ro);
   click(start,/reserve seat at reduced/);assert.equal(shows.at(-1)[1].id,ro.id);show(deal,{id:ro.id,home:'careerStart'});t=ok(deal,'reserve deal');assert.ok(!t.includes('Propose')&&t.includes('Sign with'),'a reserve seat has no levers');
   click(deal,/Sign with/);assert.equal(save.clock.season,2,'and signing starts the next season');show(hub,'home');ok(hub,'season 2');
   // a career from before weeks opens on the new hub, every tab, mid-season and with a market offer waiting
-  const old3=C.newCareer({name:'Old Save',seed:31,now:'x'});C.finishShootout(old3,null);C.acceptOffer(old3,old3.pending.offers[0].id,avail);g.career=old3;for(let i=0;i<3;i++){C.finishQuali(old3,60);const gq=old3.season.current.quali.grid;C.finishRace(old3,{order:gq,best:{},crashes:0,spins:0});}
+  const old3=C.newCareer({name:'Old Save',seed:31,now:'x'});C.finishShootout(old3,null);C.acceptOffer(old3,old3.pending.offers[0].id,avail);g.career=old3;for(let i=0;i<3;i++){C.finishQuali(old3,1);const gq=old3.season.current.quali.grid;C.finishRace(old3,{order:gq,best:{},crashes:0,spins:0});}
   old3.schema=3;delete old3.inbox;delete old3.inboxN;delete old3.sponsors;delete old3.clock.week;delete old3.season.weeks;delete old3.season.mid;delete old3.season.asked;old3.season.w1={offer:{id:'w3',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,interest:0.4,why:'They want you.'},state:'open'};C.migrate(old3);
   for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'migrated '+tab);}assert.ok(hub.el.textContent.includes('Week')&&C.findOffer(old3,'w3'),'the old offer is still on the table');game.screen=prior;
   delete globalThis.localStorage;

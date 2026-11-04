@@ -35,12 +35,13 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
         C.advanceWeek(save); continue;
       }
       const rd = C.currentRound(save), car = save.contract.car, u = save.garage.upgrades[car];
-      C.finishQuali(save, R.parLap(rd.track, car, rd.weather, [u.engine, u.tyres, u.brakes]) / skill * (1 + noise(0.008)));
+      const lapNow = () => R.parLap(rd.track, car, rd.weather, [u.engine, u.tyres, u.brakes]) / skill * (1 + noise(0.008));
+      C.finishQuali(save, lapNow()); if (!save.season.current.quali.grid.includes(car)) C.finishQuali(save, lapNow());   // a missed cut uses the one retry
     } else if (save.clock.phase === 'race') {
-      const q = save.season.current.quali, t = Object.fromEntries(Object.entries(q.laps).map(([k, v]) => [k, (v ?? 999) * (1 + noise(0.012 * Math.sqrt(C.currentRound(save).laps / 5)))]));   // a model, not a measurement: fewer laps, fewer places change from the grid
+      const q = save.season.current.quali, t = Object.fromEntries(q.grid.map((k) => [k, (q.laps[k] ?? (k === save.contract.car ? R.parLap(C.currentRound(save).track, k, C.currentRound(save).weather, ['engine', 'tyres', 'brakes'].map((c) => save.garage.upgrades[k][c])) / skill : 999)) * (1 + noise(0.012 * Math.sqrt(C.currentRound(save).laps / 5)))]));   // a model, not a measurement: fewer laps, fewer places change from the grid
       const order = Object.keys(t).sort((a, b) => t[a] - t[b]), lap = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, v * 0.99]));
-      const rep = C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: rand() < 0.3 ? 1 : 0, spins: rand() < 0.2 ? 1 : 0 });
-      log.rr.push(rep.rr); log.finish.push(rep.finish);
+      const missed = !q.grid.includes(save.contract.car), rep = missed ? C.finishDnq(save) : C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: rand() < 0.3 ? 1 : 0, spins: rand() < 0.2 ? 1 : 0 });
+      log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);
       if (rep.midSeason?.warning) log.warnings++;
       for (const cat of ['engine', 'tyres', 'brakes']) C.buyUpgrade(save, cat, 500);
       log.minWallet = Math.min(log.minWallet, save.wallet.coins); log.money[save.season.tier] = save.wallet.coins;
@@ -74,7 +75,7 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
       const avg = (f) => (runs.reduce((s, r) => s + f(r), 0) / N).toFixed(2);
       const med2 = (f) => med(runs.map(f));
       console.log(`${label.padEnd(8)} skill ${skill}: Maestro offer median season ${med2((r) => r.maestroOffer)} (any ${share((r) => r.maestroOffer)}, in season 1 ${share((r) => r.maestroOffer === 1)}), Legend offer median ${med2((r) => r.legendOffer)} (any ${share((r) => r.legendOffer)}), A-seat offer ${share((r) => r.promotion)},` +
-        ` Number One ${share((r) => r.numberOne)}
+        ` Number One ${share((r) => r.numberOne)}, missed the cut ${Math.round(100 * runs.reduce((a, r) => a + (r.dnq ?? 0), 0) / runs.reduce((a, r) => a + r.rr.length, 0))} % of rounds, skipped qualifying ${Math.round(100 * runs.reduce((a, r) => a + (r.exempt ?? 0), 0) / runs.reduce((a, r) => a + r.rr.length, 0))} %
          avg RR ${avg((r) => r.rr.reduce((a, b) => a + b, 0) / r.rr.length)}, avg finish ${avg((r) => r.finish.reduce((a, b) => a + b, 0) / r.finish.length)}, min wallet ${Math.min(...runs.map((r) => r.minWallet))}, offers/season ${avg((r) => r.offers.reduce((a, b) => a + b, 0) / r.offers.length)} (min ${Math.min(...runs.flatMap((r) => r.offers))}),` +
         ` drops/career ${avg((r) => r.drops)}, warnings ${avg((r) => r.warnings)}, W1 ${avg((r) => r.w1)}, deals ${avg((r) => r.deals)}, withdrawn ${avg((r) => r.withdrawn)}, titles ${avg((r) => r.titles)}, cups ${avg((r) => r.cups)},` +
         ` final tier ${['rookie', 'maestro', 'legend'].map((t) => `${t} ${share((r) => r.tier.at(-1) === t)}`).join(' ')}`);
