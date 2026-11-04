@@ -170,7 +170,7 @@ export class Vehicle {
     st.steer += (want - st.steer) * (1 - Math.exp(-(spec.arcade?.steeringResponse ?? 35) * h));   // the rack tracks the already-smoothed input (driving.json 14-20 would be a second lag)
     // ---- nitro: drains while held, refills slowly and fast while drifting
     st.nitroOn = ctl.nitro > 0.5 && st.nitroTank > 0.02 && pedals.drive > 0.3;
-    st.nitroTank = THREE.MathUtils.clamp(st.nitroTank + h * (st.nitroOn ? -0.22 : 0.015 + 0.25 * st.drift * Math.min(1, speed / 30)), 0, 1);
+    st.nitroTank = THREE.MathUtils.clamp(st.nitroTank + h * (st.nitroOn ? -0.22 / (spec.nitroTank ?? 1) : (0.015 + 0.25 * st.drift * Math.min(1, speed / 30)) * (spec.nitroRefill ?? 1)), 0, 1);
     const power = spec.power * (st.nitroOn ? 1.45 : 1);
     const reverse = pedals.drive < 0;
     // traction control: trims the drive while the car is sliding (never in drift mode, where the throttle holds the angle)

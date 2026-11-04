@@ -187,12 +187,17 @@ if (tests.includes('calibrate')) {                                   // brakeK s
 }
 if (tests.includes('upgrades')) {                                   // the upgrade API: contract checks, then what each category does
   const assert = (await import('node:assert')).default; W.setWeather(WET.dry);
-  assert.deepEqual(H.setUpgrades('av12', { engine: 2, tyres: 9, brakes: -3 }), { engine: 2, tyres: 3, brakes: 0 }, 'levels clamp to 0..3');
-  assert.deepEqual(H.setUpgrades('av12', { brakes: 1 }), { engine: 2, tyres: 3, brakes: 1 }, 'a category left out keeps its level');
-  H.setUpgrades('av12', { engine: 0, tyres: 0, brakes: 0 });
+  assert.deepEqual(H.setUpgrades('av12', { engine: 2, tyres: 9, brakes: -3 }), { engine: 2, tyres: 3, brakes: 0, aero: 0, nitro: 0 }, 'levels clamp to 0..3');
+  assert.deepEqual(H.setUpgrades('av12', { brakes: 1 }), { engine: 2, tyres: 3, brakes: 1, aero: 0, nitro: 0 }, 'a category left out keeps its level');
+  H.setUpgrades('av12', { engine: 0, tyres: 0, brakes: 0, aero: 0, nitro: 0 });
   const base = H.handling('av12'); H.setUpgrades('av12', { engine: 3, tyres: 3, brakes: 3 }); const top = H.handling('av12');
   assert(Math.abs(top.power / base.power - 1.16 * top.mass / base.mass) < 1e-9 && Math.abs(top.grip / base.grip - 1.09) < 1e-9 && Math.abs(top.brakeK / base.brakeK - 1.16) < 1e-9 && top.mass === base.mass + 10, 'level 3 multipliers');
-  assert.equal(H.handling('furari-488').power, H.handling('furari-488').power); assert.deepEqual(H.getUpgrades('ford-gt'), { engine: 0, tyres: 0, brakes: 0 }, 'other cars stay stock');
+  assert.equal(H.handling('furari-488').power, H.handling('furari-488').power); assert.deepEqual(H.getUpgrades('ford-gt'), { engine: 0, tyres: 0, brakes: 0, aero: 0, nitro: 0 }, 'other cars stay stock');
+  // Aero changes the downforce only (power, drag, grip and top speed stay); Nitro changes the tank only; a stock car's spec is exactly the same
+  { H.setUpgrades('av12', { engine: 0, tyres: 0, brakes: 0, aero: 0, nitro: 0 }); const s0 = H.handling('av12'); assert.equal(s0.nitroTank, 1); assert.equal(s0.nitroRefill, 1); assert.equal(s0.downforce, s0.downforceStock);
+    H.setUpgrades('av12', { aero: 3, nitro: 3 }); const s3 = H.handling('av12'); assert.equal(s3.downforce, s0.downforce * 2); assert.equal(s3.nitroTank, 2); assert.equal(s3.nitroRefill, 2);
+    for (const k of ['power', 'dragK', 'grip', 'brakeK', 'mass', 'top', 'cog', 'weightFront']) assert.equal(s3[k], s0[k], k + ' is not Aero or Nitro');
+    H.setUpgrades('av12', { aero: 0, nitro: 0 }); }
   H.setUpgrades('av12', { engine: 0, tyres: 0, brakes: 0 });
   // retune a live car: mass, power and brakes change at once and the car keeps driving
   const v = mk('av12'); settle(v); const m0 = v.rb.mass(); H.setUpgrades('av12', { engine: 3 }); v.retune(H.handling('av12'));

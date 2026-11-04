@@ -34,6 +34,8 @@ export function arcadeTier(stability=1){
 // available lateral acceleration (m/s2): the tier's g, scaled by the car's own grip (upgrades included), wet grip, surface and downforce
 export const arcadeAccel=(tier,carGrip,wetF,surface,downforce,mass,speed)=>
   tier.grip*9.81*Math.min(1.12,Math.max(.88,carGrip/1.2))*wetF*Math.min(1,surface)*(1+.6*downforce*speed*speed/(mass*9.81));
+// what a bought Aero adds to the lateral grip at `speed` (m/s): exactly 1 for a stock car, so the AI's corner speeds only move when downforce was bought
+export const aeroGain=(stockDownforce,downforce,mass,speed)=>downforce===stockDownforce?1:(1+.6*downforce*speed*speed/(mass*9.81))/(1+.6*stockDownforce*speed*speed/(mass*9.81));
 // the share of the turn rate kept at speed: all of it to 110 km/h, .9 at 135, .8 at 160, .74 at 240 (a straight-line twitch is not a turn); smooth, no step
 const sm=(x,a,b)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
 export const yawFade=speed=>1-.2*sm(speed,30.6,44.4)-.06*sm(speed,44.4,66.7);

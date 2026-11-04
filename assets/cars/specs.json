@@ -465,7 +465,7 @@
   },
   "upgrades": {
     "levels": 3,
-    "note": "Physical effects only; costs and currency belong to the UI. Applied by physics/handling.js setUpgrades(key, {engine, tyres, brakes}) on top of the base car; level 0 is stock. Arrays are the effect at levels 1, 2, 3.",
+    "note": "Physical effects only; costs and currency belong to the UI. Applied by physics/handling.js setUpgrades(key, {engine, tyres, brakes, aero, nitro}) on top of the base car; level 0 is stock. Arrays are the effect at levels 1, 2, 3.",
     "categories": {
       "engine": {
         "label": "Engine / motors",
@@ -506,6 +506,19 @@
           1.16
         ],
         "effect": "more brake torque, which lifts the rear brakes toward the tyre limit"
+      },
+      "aero": {
+        "label": "Aero",
+        "applies": "wings, splitter, diffuser and underfloor, all cars",
+        "downforceMul": [1.3, 1.6, 2],
+        "effect": "more downforce at the same drag, so more cornering grip the faster the car goes (nothing at a crawl); the top speed does not move"
+      },
+      "nitro": {
+        "label": "Nitro",
+        "applies": "bottle size and feed, all cars",
+        "tankMul": [1.25, 1.5, 2],
+        "refillMul": [1.25, 1.5, 2],
+        "effect": "a bigger tank (the same burn lasts longer) and a faster refill, drifting or not; the boost itself is unchanged"
       }
     }
   }

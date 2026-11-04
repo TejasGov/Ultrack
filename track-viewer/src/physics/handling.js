@@ -19,14 +19,15 @@ export const BOP = {};        // key -> { power, grip } multipliers
 // owned upgrade levels per car (0 = stock). AI cars never get any. handling() reads them every call, so after a change
 // call vehicle.retune(handling(key)) on a car that already exists
 const OWNED = {};
+const STOCK = { engine: 0, tyres: 0, brakes: 0, aero: 0, nitro: 0 };
 const level = (n) => Math.min(LEVELS, Math.max(0, Math.round(+n || 0)));
-/** set the owned upgrade levels, each 0..3: { engine, tyres, brakes }; a category left out keeps its level. Returns all three */
+/** set the owned upgrade levels, each 0..3: { engine, tyres, brakes, aero, nitro }; a category left out keeps its level. Returns all five */
 export function setUpgrades(key, levels = {}) {
-  const o = OWNED[key] ??= { engine: 0, tyres: 0, brakes: 0 };
+  const o = OWNED[key] ??= { ...STOCK };
   for (const c of Object.keys(o)) if (levels[c] !== undefined) o[c] = level(levels[c]);
   return { ...o };
 }
-export const getUpgrades = (key) => ({ engine: 0, tyres: 0, brakes: 0, ...OWNED[key] });
+export const getUpgrades = (key) => ({ ...STOCK, ...OWNED[key] });
 /** a category's effect array at an owned level (0 = stock = the neutral value) */
 const at = (arr, n, neutral) => (n > 0 ? arr[n - 1] : neutral);
 
@@ -56,7 +57,7 @@ export function handling(key) {
     grip: (1.16 + (H.grip - 1.16) * 0.45) * (H.bopGrip ?? 1) * at(UP.tyres.gripMul, u.tyres, 1) * arcade.gripScale,
     wetRetention: at(UP.tyres.wetRetentionPlus, u.tyres, 0),
     brakeK: H.brakeK * at(UP.brakes.brakeMul, u.brakes, 1),
-    downforce: H.downforce, cog: H.cogM*arcade.cogScale, weightFront: H.weightFront, drive: S.drive ?? H.drive, arcade,
+    downforce: H.downforce * at(UP.aero.downforceMul, u.aero, 1), downforceStock: H.downforce, nitroTank: at(UP.nitro.tankMul, u.nitro, 1), nitroRefill: at(UP.nitro.refillMul, u.nitro, 1), cog: H.cogM*arcade.cogScale, weightFront: H.weightFront, drive: S.drive ?? H.drive, arcade,
     size: S.lengthM ? { length: S.lengthM, width: S.widthM, height: S.heightM } : null,
     powertrain: S.powertrain ?? 'ICE', ev: S.powertrain === 'EV', lag: lagOf(S)*arcade.throttleResponseScale, tractionK: ((S.drive ?? H.drive) === 'RWD' ? 1.4 : 1.2) * (S.powertrain === 'EV' ? 1.07 : 1), upgrades: u,
   };

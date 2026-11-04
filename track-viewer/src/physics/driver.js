@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { neutralControls, padSteer, padIntent, keyboardSteer, keyboardBrake, steerScale, driving } from './player-controls.js';
 import { wetGrip, road } from './weather.js';
+import { aeroGain } from './arcade.js';
 
 /**
  * Player input. Keyboard: W/↑ throttle, S/↓ brake (reverse when stopped), A/← D/→ steer, Space handbrake,
@@ -123,7 +124,7 @@ export class AIDriver {
     // speed: the profile a little ahead (braking points), scaled by grip
     // the slowest point of the next ~45 m (linePts share vt's sampling): never on the power before the corner is done
     let vmin = Infinity; for (let k = 0; k <= 10; k++) vmin = Math.min(vmin, F.vt[(this.i + k) % N]);
-    let vt = vmin * this.pace * Math.sqrt(v.spec.grip / 1.15 * wetGrip()) * (1 - 0.04 * road.wet);   // a wet road lowers every corner speed with the grip, and a little more for the braking margin
+    let vt = vmin * this.pace * Math.sqrt(v.spec.grip / 1.15 * wetGrip() * aeroGain(v.spec.downforceStock, v.spec.downforce, v.spec.mass, vmin * this.pace)) * (1 - 0.04 * road.wet);   // a wet road lowers every corner speed with the grip, and a little more for the braking margin
     if (blk && blk.gap > 1.5 && blk.gap < 12) vt = Math.min(vt, blk.speed * (blk.gap < 6 ? 0.9 : 1));   // follow, then pass once the lane is clear
     const e = vt - speed;
     // no progress for 4 s (stuck in a wall or a gravel trap): ask the field for a respawn
