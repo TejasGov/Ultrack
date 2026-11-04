@@ -34,3 +34,15 @@ Moved to _archive/2026-10-21/assets/polyhaven/ on 2026-10-21 (unused by the trac
 - **Brick Wall 10** (`brick_wall_10`) by Dimitrios Savva: https://polyhaven.com/a/brick_wall_10
 - **Clay Roof Tiles 02** (`clay_roof_tiles_02`) by Amal Kumar: https://polyhaven.com/a/clay_roof_tiles_02
 - **Roof Slates 02** (`roof_slates_02`) by Rob Tuytel: https://polyhaven.com/a/roof_slates_02
+- **Tree Small 02** (`tree_small_02`) by Rico Cilliers: https://polyhaven.com/a/tree_small_02
+- **Island Tree 01** (`island_tree_01`) by Rob Tuytel, Rico Cilliers: https://polyhaven.com/a/island_tree_01
+- **Island Tree 02** (`island_tree_02`) by Rob Tuytel, Rico Cilliers: https://polyhaven.com/a/island_tree_02
+- **Jacaranda Tree** (`jacaranda_tree`) by Rob Tuytel, Rico Cilliers: https://polyhaven.com/a/jacaranda_tree
+- **Shrub 02** (`shrub_02`) by Rico Cilliers: https://polyhaven.com/a/shrub_02
+- **Shrub 03** (`shrub_03`) by Rico Cilliers: https://polyhaven.com/a/shrub_03
+- **Fern 02** (`fern_02`) by Rob Tuytel, Rico Cilliers: https://polyhaven.com/a/fern_02
+- **Forest Leaves 02** (`forest_leaves_02`) by Rob Tuytel: https://polyhaven.com/a/forest_leaves_02
+- **Forest Ground 04** (`forest_ground_04`) by Rob Tuytel, Rico Cilliers: https://polyhaven.com/a/forest_ground_04
+- **Ceramic Roof 01** (`ceramic_roof_01`) by Rob Tuytel: https://polyhaven.com/a/ceramic_roof_01
+- **Box Profile Metal Sheet** (`box_profile_metal_sheet`) by Amal Kumar: https://polyhaven.com/a/box_profile_metal_sheet
+- **Gravel Ground 01** (`gravel_ground_01`) by Rob Tuytel: https://polyhaven.com/a/gravel_ground_01

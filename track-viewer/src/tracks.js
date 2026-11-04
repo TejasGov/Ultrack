@@ -90,6 +90,14 @@ export const TRACKS = {
     venue: () => import('./venue/venice.js'),
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  qingshan: {     // tracks/qingshan/build_qingshan.py: a forest circuit in a Chinese energy park, from the user's sketch (not yet on the career calendar, local only)
+    id: 'qingshan', name: 'Qingshan Park', stem: 'qingshan', dir: '/assets/qingshan/', look: 'day', times: ['day', 'dusk'], fog: 0.45, sun: [0.45, 0.89], tag: null,     // the sun on the halls' and the wind farm's road-facing sides
+    looks: { day: { env: 1.75 }, dusk: { exposure: 0.56, env: 1.6 } },     // more sky light than Llano or Venice: the road sits in the forest's shade for much of the lap and would go black
+    wet: { wet: ['QS | asphalt', 'QS | line white', 'QS | kerb red', 'QS | kerb white', 'QS | hard shoulder'], puddles: ['QS | asphalt'] },
+    voidWalls: true,
+    venue: () => import('./venue/qingshan.js'),
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
   llano: {     // career World 2 (docs/career-worlds/llano.json, tracks/llano/build_llano.py): the big speed track on the empty West Texas plain, Llano Central on its Long Mile
     id: 'llano', name: 'Llano Speedway', stem: 'llano', dir: '/assets/llano/', look: 'dusk', times: ['day', 'dusk'], fog: 0.35, sun: [0.98, -0.18], tag: null,     // the low sun straight ahead down the start straight
     dayNight: { day: /^Backdrop \| range day$/, dayEnd: 0.35 },     // the far range: the day copy over the dusk one, as Mojave's
