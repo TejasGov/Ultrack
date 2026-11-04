@@ -222,8 +222,8 @@ Same record for every contract in the game (the save schema holds it, 10.2):
 A season is a list of **rounds**. Each round is a track, a time of day (`day`, `dusk`, `bluehour`, `night`; the game's `store.settings.look`) and a weather (`dry`, `damp`, `rain`; `store.settings.weather`), so three tracks make a varied year. Rules:
 
 - Rounds per season = `min(8, 2 x tracks available)`: **6 now, 8 once there are 4 or more tracks**.
-- A track appears at most twice per season (three times only if fewer than 3 tracks exist), never in back-to-back rounds.
-- The finale is the marquee track (Tokyo, "the neon street") at a fixed look, worth x1.5 points.
+- A track appears once per season (it only comes back if the game has too few tracks for the rounds), never in back-to-back rounds. Rounds run sprints, then grands prix, then showpieces (`event` in `calendar.json`).
+- The finale is drawn each season from the world's showpieces at a fixed look, worth x1.5 points.
 - Conditions are seeded per season (`seed`, stream `cal`) with an even chance of each look the track offers in the circuit menu (`times` in tracks.js, all four without it); a world's finale keeps its set hour. Rain appears in at most one in three rounds and never in round 1.
 - Race laps = `round(featureMinutes x 60 / parLap)`, clamped to 3-12, with `featureMinutes = 7.5` (**assumed**; the existing 3-lap Marina race is 7.5 min). Today: Marina 3 laps, Tokyo 4, India 5 **(assumed)**.
 

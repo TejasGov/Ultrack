@@ -11,6 +11,7 @@ import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
 import { loreOf, TIERS, CAL, SPONSORS, xpForLevel } from './career/rules.js';
 
+export const ROUND_EVENT = { sprint: 'Sprint', grandprix: 'Grand Prix', showpiece: 'Showpiece', finale: 'Season Finale' };   // calendar.json `event`; a season from before events has none
 export const LOOK = { day: ['Day', 'sun'], dusk: ['Dusk', 'sunset'], bluehour: ['Evening', 'moon-horizon'], night: ['Night', 'moon'] };
 export const WX_ICON = { dry: 'sun', damp: 'cloud-drizzle', rain: 'cloud-rain' };
 export const MEDAL = ['No medal', 'Bronze', 'Silver', 'Gold'];
@@ -67,7 +68,7 @@ export function statusBar(me, save) {
 export const prompts = (...list) => list.map(([k, p, l]) => prompt(k, p, l));
 export const SELECT = [['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'], CHOOSE = ['Enter', 'a', 'Choose'];
 
-const SHORT = { india: 'Ghat', drylake: 'Lake', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano' };
+const SHORT = { india: 'Ghat', drylake: 'Lake', qingshan: 'Forest', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano', venice: 'Venice' };
 const WEEK_LABEL = (save, w) => (w.kind === 'race' ? `R${w.round + 1} ${save.season.calendar[w.round].finale ? 'Finale' : SHORT[save.season.calendar[w.round].track] ?? ''}` : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
 const WEEK_ICON = (w) => (w.kind === 'race' ? 'race' : w.kind === 'market' ? 'contract' : w.kind === 'end' ? 'trophy' : EVENT[w.event.kind][1]);
 export const kindIcon = WEEK_ICON;

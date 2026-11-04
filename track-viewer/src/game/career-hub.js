@@ -9,7 +9,7 @@ import { trackOf } from '../tracks.js';
 import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
 import { TUNING, TIERS, CAR, loreOf, objectiveText, xpForLevel, formOf, STATUS_LABEL, rrLabel, targetText } from './career/rules.js';
-import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, worldName, tierCup, brandMark, cs, delta, rich, kindOf, kindIcon, STORY_KICK, storyPic, storySource, mediaBytes } from './career-shell.js';
+import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, ROUND_EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, worldName, tierCup, brandMark, cs, delta, rich, kindOf, kindIcon, STORY_KICK, storyPic, storySource, mediaBytes } from './career-shell.js';
 import { offerRow, teamRows } from './career-deals.js';
 
 const TABS = [['home', 'Home', 'home'], ['calendar', 'Calendar', 'calendar'], ['events', 'Events', 'track'], ['inbox', 'Inbox', 'mail'], ['media', 'Media', 'camera'], ['deals', 'Deals', 'contract'], ['standings', 'Standings', 'trophy'], ['garage', 'Garage', 'garage'], ['driver', 'Driver', 'helmet']];
@@ -85,7 +85,7 @@ export function CareerHubScreen(game) {
     const w = C.currentWeek(save), R = C.currentRound(save), t = trackOf(R.track), cur = save.season.current, n = save.season.calendar.length, spec = C.sideSpec(save);
     const hero = (kind, kick, title, ...rest) => h(`div.cx-b.cx-week.k-${kind}`, {}, h('img', { src: still('tracks', t.id), alt: '', decoding: 'async' }), h('span.kick', {}, kick), h('h2', {}, title), rest);
     const look = stat('Time of day', [icon(LOOK[R.look][1]), LOOK[R.look][0]]);
-    if (w.kind === 'race') return hero('race', `This week · Race weekend · Round ${R.round} of ${n}${R.finale ? ' · points ×1.5' : ''}`, R.name,
+    if (w.kind === 'race') return hero('race', `This week · ${ROUND_EVENT[R.event] ?? 'Race weekend'} · Round ${R.round} of ${n}${R.finale ? ' · points ×1.5' : ''}`, R.name,
       h('div.r-stats', {}, stat('Circuit', t.name), look, stat('Weather', [icon(WX_ICON[R.weather]), WEATHER[R.weather].label]), stat('Race', `${R.laps} laps`), stat('Expected', 'P' + cur.expPos)),
       h('div.cx-objs', {}, cur.objectives.map((o) => h('span', {}, icon(o.mandatory ? 'star' : 'plus'), objectiveText(o), h('small', {}, o.mandatory ? 'Required' : 'Bonus')))),
       notices(save));
@@ -153,7 +153,7 @@ export function CareerHubScreen(game) {
       const R = C.roundOfWeek(save, i), e = w.event, res = w.result;
       const out = res ? (res.dnq ? 'DNQ' : res.dnf ? 'DNF' : `P${res.finish} · ${res.rr.toFixed(1)}`) : e?.result ? MEDAL[e.result.medal] : e?.skipped ? 'Skipped' : i === now ? 'This week' : '';
       return h(`div.lrow.cx-calrow.k-${kindOf(w)}${i === now ? '.now' : ''}${i < now ? '.past' : ''}`, { 'data-nav': '', 'data-week': i, tabIndex: 0 }, h('b.wk', {}, `WK ${i + 1}`), h('span', {}, h(`span.cx-tag.kt.k-${kindOf(w)}`, {}, icon(kindIcon(w)), kind(w))),
-        h('span.c-name', {}, h('b', {}, w.kind === 'race' ? `R${w.round + 1} ${R.name}` : weekTitle(save, w)), h('small', {}, w.kind === 'race' ? `${trackOf(R.track).name} · ${R.laps} laps` : w.kind === 'market' ? (save.clock.season === 1 ? 'Sponsors only: first season' : 'Teams can talk to you') : w.kind === 'end' ? 'Verdict and offers' : `${trackOf(R.track).name} · optional`)),
+        h('span.c-name', {}, h('b', {}, w.kind === 'race' ? `R${w.round + 1} ${R.name}` : weekTitle(save, w)), h('small', {}, w.kind === 'race' ? `${ROUND_EVENT[R.event] ? `${ROUND_EVENT[R.event]} · ` : ''}${trackOf(R.track).name} · ${R.laps} laps` : w.kind === 'market' ? (save.clock.season === 1 ? 'Sponsors only: first season' : 'Teams can talk to you') : w.kind === 'end' ? 'Verdict and offers' : `${trackOf(R.track).name} · optional`)),
         h('span.ch-cond', {}, w.kind === 'race' ? conds(R) : null), h('span.val', {}, i < now ? icon(e?.skipped ? 'minus' : 'check') : null, out));
     });
     calBox = h(`div.cx-b.cx-detail.k-${kindOf(save.season.weeks[calWeek])}`, {}, weekDetail(save, calWeek));
@@ -166,7 +166,7 @@ export function CareerHubScreen(game) {
   function events(save) {
     const W = save.season.weeks, now = save.clock.week, state = (w) => (w.week - 1 === now ? '.now' : w.week - 1 < now ? '.past' : '');
     const races = W.filter((w) => w.kind === 'race').map((w) => { const R = save.season.calendar[w.round], res = w.result;
-      return eventRow(w, `R${w.round + 1} ${R.name}`, `${trackOf(R.track).name}${R.finale ? ' · points ×1.5' : ''}`, res ? { text: res.dnq ? 'DNQ' : res.dnf ? 'DNF' : `P${res.finish} · ${res.rr.toFixed(1)}` } : w.week - 1 === now ? { text: 'This week', ink: true } : null, state(w),
+      return eventRow(w, `R${w.round + 1} ${R.name}`, `${ROUND_EVENT[R.event] ? `${ROUND_EVENT[R.event]} · ` : ''}${trackOf(R.track).name}${R.finale ? ' · points ×1.5' : ''}`, res ? { text: res.dnq ? 'DNQ' : res.dnf ? 'DNF' : `P${res.finish} · ${res.rr.toFixed(1)}` } : w.week - 1 === now ? { text: 'This week', ink: true } : null, state(w),
         () => (w.week - 1 === now ? go('home') : toast(res ? `Round ${w.round + 1}: ${res.dnq ? 'did not qualify' : res.dnf ? 'retired' : 'P' + res.finish}, rated ${res.rr.toFixed(1)} (${rrLabel(res.rr)}).` : `Week ${w.week}.`))); });
     const side = (kind) => W.map((w, i) => [w, i]).filter(([w]) => w.event?.kind === kind).map(([w, i]) => { const R = C.roundOfWeek(save, i), e = w.event, spec = i === now ? C.sideSpec(save) : null;
       return eventRow(w, C.eventName(save, w), trackOf(R.track).name, e.result ? { text: MEDAL[e.result.medal] } : e.skipped ? { text: 'Skipped' } : spec ? { text: 'Run it', ink: true } : null, state(w),

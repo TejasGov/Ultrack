@@ -41,19 +41,24 @@ export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
 export const lapsFor = (track, length = 'sprint') => clamp(Math.round((T.series.lengths[length] * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
 
 // ---------------------------------------------------------------------------------------------- calendar
+const EVENTS = ['sprint', 'grandprix', 'showpiece'];                      // a season's running order (calendar.json `event`)
 const LOOKS = ['day', 'dusk', 'bluehour', 'night'];                       // a track without `times` (tracks.js) offers them all
 /**
- * A season's rounds for a world (career-worlds.md): its home tracks twice, guests once, cut to the world's round count, the finale
- * last, never the same track twice in a row. `available` maps track id -> its `times` (null: every look) for the tracks the game has.
+ * A season's rounds for a world (career-worlds.md): a finale drawn from the world's showpieces, then the world's other tracks once each, sprints first,
+ * grands prix next, showpieces last, so a season builds. A track only comes back when the game has too few for the rounds, and never twice in a row.
+ * `available` maps track id -> its `times` (null: every look) for the tracks the game has.
  */
 export function buildCalendar(seed, season, world, available, length = 'sprint') {
-  const W = CAL.worlds[world], has = (id) => id in available && CAL.tracks[id];
-  const fin = W.finale.find((f) => has(f.track)) ?? { track: W.home.find(has) ?? Object.keys(available).find(has), look: null };
-  const r = rng(seed, 'cal', season);
-  let pool = [...W.home.filter(has).flatMap((id) => [id, id]), ...shuffle(r, W.guests.filter(has))].slice(0, W.rounds);
-  pool.splice(pool.lastIndexOf(fin.track) >= 0 ? pool.lastIndexOf(fin.track) : pool.length - 1, 1);   // the finale takes one of its track's slots
+  const W = CAL.worlds[world], has = (id) => id in available && CAL.tracks[id], r = rng(seed, 'cal', season);
+  const finales = W.finale.filter((f) => has(f.track));
+  const fin = finales[Math.floor(r() * finales.length)] ?? { track: W.tracks.find(has) ?? Object.keys(available).find(has), look: null };
+  const others = W.tracks.filter((id) => has(id) && id !== fin.track), n = W.rounds - 1;
+  let pool = [];
+  while (pool.length < n && others.length) pool.push(...shuffle(r, others));
+  pool = pool.slice(0, n);
   let order = pool;
-  for (let k = 0; k < 60; k++) {                                       // reshuffle until no back-to-back track (a small pool may never manage)
+  if (new Set(pool).size === pool.length) order = [...pool].sort((a, b) => EVENTS.indexOf(CAL.tracks[a].event) - EVENTS.indexOf(CAL.tracks[b].event));
+  else for (let k = 0; k < 60; k++) {                                  // too few tracks: reshuffle until no back-to-back track (a small pool may never manage)
     order = shuffle(r, pool);
     if ([...order, fin.track].every((t, i, l) => i === 0 || t !== l[i - 1])) break;
   }
@@ -66,7 +71,7 @@ export function buildCalendar(seed, season, world, available, length = 'sprint')
     if (i > 0 && !C.dryOnly && wet.n < T.weather.maxWet) weather = x < T.weather.rain ? 'rain' : x < T.weather.rain + T.weather.damp ? 'damp' : 'dry';
     if (weather !== 'dry') wet.n++;
     const n = (seen[track] = (seen[track] ?? -1) + 1);
-    return { round: i + 1, track, look, weather, laps: lapsFor(track, length), name: finale ? 'Season Finale' : C.names[Math.min(n, C.names.length - 1)], finale };
+    return { round: i + 1, track, event: finale ? 'finale' : C.event, look, weather, laps: lapsFor(track, length), name: finale ? 'Season Finale' : C.names[Math.min(n, C.names.length - 1)], finale };
   });
 }
 

@@ -2,21 +2,23 @@
   "version": 1,
   "note": "Per-track career data and the worlds (track-viewer/docs/career-mode.md 4.1, docs/career-worlds.md). parLap is an AI flying lap at pace 1.00 with the car factor taken out, measured 2026-11-01 with scripts/measure-par-laps.mjs (three cars, flying laps only, dry, no upgrades); re-measure after changing a track or the handling.",
   "tracks": {
-    "india":   { "parLap": 74.0,  "measured": "measured", "names": ["Ghat Climb", "Ghat Return"] },
-    "drylake": { "parLap": 45.3,  "measured": "measured",       "names": ["Boneyard Sprint", "Dry Lake Return"], "dryOnly": true },
-    "infinia": { "parLap": 83.8, "measured": "measured",           "names": ["Sea Link Opener", "Over the Bay"] },
-    "marina":  { "parLap": 114.5, "measured": "measured",    "names": ["Corniche Opener", "Corniche Return"] },
-    "shajawa": { "parLap": 62.3,  "measured": "measured",           "names": ["Stadium Opener", "Bowl Showdown"] },
-    "tokyo":   { "parLap": 89.3,  "measured": "measured",     "names": ["Neon Street", "Season Finale"] },
-    "llano":   { "parLap": 117.5, "measured": "measured",     "names": ["Long Mile", "Llano Return"], "dryOnly": true }
+    "drylake": { "event": "sprint",    "parLap": 45.3,  "measured": "measured", "names": ["Boneyard Sprint", "Dry Lake Return"], "dryOnly": true },
+    "shajawa": { "event": "sprint",    "parLap": 62.3,  "measured": "measured", "names": ["Stadium Sprint", "Bowl Showdown"] },
+    "india":   { "event": "grandprix", "parLap": 74.0,  "measured": "measured", "names": ["Ghat Climb", "Ghat Return"] },
+    "qingshan":{ "event": "grandprix", "parLap": 117.5, "measured": "measured", "names": ["Forest Classic", "Forest Return"] },
+    "llano":   { "event": "grandprix", "parLap": 117.5, "measured": "measured", "names": ["Long Mile", "Llano Return"], "dryOnly": true },
+    "infinia": { "event": "showpiece", "parLap": 83.8,  "measured": "measured", "names": ["Sea Link Showdown", "Over the Bay"] },
+    "marina":  { "event": "showpiece", "parLap": 114.5, "measured": "measured", "names": ["Corniche Grand Prix", "Corniche Return"] },
+    "venice":  { "event": "showpiece", "parLap": 101.0, "measured": "measured", "names": ["Lagoon Grand Prix", "Lagoon Return"] },
+    "tokyo":   { "event": "showpiece", "parLap": 89.3,  "measured": "measured", "names": ["Neon Street", "Tokyo Return"] }
   },
   "worlds": {
-    "1": { "name": "The Proving Grounds", "rounds": 6, "home": ["india", "drylake", "infinia"], "guests": ["marina", "shajawa"],
+    "1": { "name": "The Proving Grounds", "rounds": 6, "tracks": ["drylake", "shajawa", "india", "qingshan", "llano", "infinia", "marina"],
            "finale": [{ "track": "infinia", "look": "dusk" }, { "track": "india", "look": "dusk" }] },
-    "2": { "name": "The Grand Tour", "rounds": 7, "home": ["marina", "shajawa", "llano"], "guests": ["india", "drylake", "infinia", "tokyo"],
-           "finale": [{ "track": "marina", "look": "night" }] },
-    "3": { "name": "The Crown", "rounds": 8, "home": ["tokyo", "morro"], "guests": ["marina", "shajawa", "india", "drylake", "infinia"],
-           "finale": [{ "track": "tokyo", "look": "night" }] }
+    "2": { "name": "The Grand Tour", "rounds": 7, "tracks": ["drylake", "shajawa", "india", "qingshan", "llano", "infinia", "marina", "venice", "tokyo"],
+           "finale": [{ "track": "marina", "look": "night" }, { "track": "venice", "look": "night" }] },
+    "3": { "name": "The Crown", "rounds": 8, "tracks": ["drylake", "shajawa", "india", "qingshan", "llano", "infinia", "marina", "venice", "tokyo", "morro"],
+           "finale": [{ "track": "tokyo", "look": "night" }, { "track": "venice", "look": "night" }] }
   },
   "shootout": { "track": "india", "look": "day", "weather": "dry", "car": "huracan" }
 }

@@ -32,11 +32,24 @@ try {
     assert.equal(cal.at(-1).track, 'india', 'without Infinia the World 1 finale falls back to India'); assert.equal(cal.at(-1).look, 'dusk');
     assert.equal(cal[0].weather, 'dry');
     for (const r of cal) { if (avail[r.track]) assert.ok(avail[r.track].includes(r.look), `${r.track} at ${r.look}`); if (r.track === 'drylake') assert.equal(r.weather, 'dry'); assert.ok(r.laps >= 2 && r.laps <= 12); }
-    assert.ok(cal.filter((r) => r.track === 'india').length <= 2 && cal.filter((r) => r.track === 'drylake').length === 2);
+    assert.ok(cal.filter((r) => r.track === 'india').length <= 3, 'a small pool shares its rounds out');
     assert.ok(cal.filter((r) => r.weather !== 'dry').length <= 2);
   }
   assert.deepEqual(R.buildCalendar(5, 1, 1, avail), R.buildCalendar(5, 1, 1, avail), 'a calendar is seeded');
-  assert.equal(R.buildCalendar(5, 1, 1, { ...avail, infinia: null }).at(-1).track, 'infinia', 'Infinia, when the game has it, is the World 1 finale');
+  { // ---- the whole game's tracks: no track twice in a season, sprints before grands prix before showpieces, finales rotate, and every track gets raced
+    const all = Object.fromEntries(['drylake', 'shajawa', 'india', 'qingshan', 'llano', 'infinia', 'marina', 'venice', 'tokyo'].map((t) => [t, null])), rank = ['sprint', 'grandprix', 'showpiece', 'finale'];
+    for (const world of [1, 2, 3]) {
+      const finales = new Set(), raced = new Set(), rounds = R.buildCalendar(1, 1, world, all).length;
+      for (let s = 1; s <= 120; s++) {
+        const cal = R.buildCalendar(9, s, world, all), ranks = cal.map((r) => rank.indexOf(r.event));
+        assert.equal(cal.length, rounds); assert.equal(new Set(cal.map((r) => r.track)).size, rounds, `world ${world} repeats a track: ${cal.map((r) => r.track)}`);
+        assert.deepEqual(ranks, [...ranks].sort((a, b) => a - b), 'a season builds'); assert.equal(cal.at(-1).event, 'finale');
+        finales.add(cal.at(-1).track); cal.forEach((r) => raced.add(r.track));
+      }
+      assert.equal(finales.size, 2, `world ${world} rotates its finale`);
+      if (world > 1) assert.equal(raced.size, 9, `world ${world} reaches every track`);
+    }
+  }
 
   // ---- race lengths: chosen in minutes, laps per circuit, the default is the short one, nobody is forced into 8 laps
   assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('drylake', l)), [3, 5, 8]); assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('marina', l)), [2, 2, 3]);
@@ -54,7 +67,7 @@ try {
   const q2 = C.newCareer({ seed: 79, now: 'x' }); C.finishShootout(q2, null); C.acceptOffer(q2, q2.pending.offers[0].id, avail); C.finishQuali(q2, 90); const me = q2.contract.car, ai = { ...q2.season.current.quali.laps };
   C.finishQuali(q2, 95); assert.equal(q2.season.current.quali.laps[me], 90, 'a slower retry changes nothing'); C.finishQuali(q2, null); assert.equal(q2.season.current.quali.laps[me], 90, 'no lap on a retry keeps the lap');
   const qs = C.qualiSetup(q2), qm = C.teammateCar(q2); assert.deepEqual(qs.racers, [me, qm], 'the teammate is on track in qualifying'); assert.ok(qs.pace[qm] > 0); assert.equal(qs.drivers[me].name, q2.player.name);
-  const qa = C.newCareer({ seed: 79, now: 'x' }); C.finishShootout(qa, null); C.acceptOffer(qa, qa.pending.offers[0].id, avail); C.finishQuali(qa, 90, 88); assert.equal(qa.season.current.quali.mate.lap, 88, 'his real lap is the duel'); assert.equal(qa.season.current.quali.duel.result, 'lost');
+  const qa = C.newCareer({ seed: 79, now: 'x' }); C.finishShootout(qa, null); C.acceptOffer(qa, qa.pending.offers[0].id, avail); qa.season.calendar[0].track = 'drylake'; C.finishQuali(qa, 90, 88); assert.equal(qa.season.current.quali.mate.lap, 88, 'his real lap is the duel'); assert.equal(qa.season.current.quali.duel.result, 'lost');
   C.finishQuali(qa, 85, 89); assert.equal(qa.season.current.quali.mate.lap, 88, 'a retry keeps his better lap too'); assert.equal(qa.season.current.quali.duel.result, 'won'); C.finishQuali(qa, null); assert.equal(qa.season.current.quali.mate.lap, 88, 'no lap on a retry keeps his lap'); assert.deepEqual(qa.season.current.quali.grid.includes(C.teammateCar(qa)), false, 'he still does not race');
   { const empty = C.newCareer({ seed: 79, now: 'x' }); C.finishShootout(empty, null); C.acceptOffer(empty, empty.pending.offers[0].id, avail); empty.world.seats[C.teammateCar(empty)] = null; assert.deepEqual(C.qualiSetup(empty).racers, [empty.contract.car], 'an empty seat: the player alone'); }
   C.finishQuali(q2, 55); assert.equal(q2.season.current.quali.laps[me], 55); assert.deepEqual({ ...q2.season.current.quali.laps, [me]: 90 }, ai, 'the AI laps are seeded'); assert.equal(q2.clock.phase, 'race');
@@ -130,7 +143,7 @@ try {
   const m = signed(101);
   assert.equal(m.world.seats.bmw1, 'YOU'); assert.deepEqual(m.world.free, ['QUI']); assert.equal(m.career.heat.QUI, 40);
   assert.equal(C.driverAt(m, 'bmw1').you, true); assert.equal(C.driverAt(m, 'jaguarxkjss').code, 'LIN');
-  assert.equal(C.raceSetup((C.finishQuali(m, 80), m)).drivers.bmw1.name, m.player.name, 'the race shows the player in his car');
+  assert.equal(C.raceSetup((C.finishQuali(m, 30), m)).drivers.bmw1.name, m.player.name, 'the race shows the player in his car');
   // ---- rivals: finishing near a driver heats it, 40 is a rival, beating him pays; everyone else cools
   const h0 = signed(102); h0.career.heat = { MAD: 85 }; C.finishQuali(h0, 1);
   const hero0 = h0.contract.car, grid0 = h0.season.current.quali.grid, madCar = Object.keys(h0.world.seats).find((k) => h0.world.seats[k] === 'MAD');

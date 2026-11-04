@@ -18,15 +18,13 @@ A world is a chapter of the career: a region with its own look, venues and spons
 | Colour | Ochre, rust, sodium orange | Green, grey sky, sea blue | Neon, lake blue, villa gold |
 | Season finale | Infinia at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
 
-**Calendar rule** (replaces career-mode.md 4.1's "6 rounds on all tracks" once these tracks exist): the current world's tracks run twice each, every track from earlier worlds runs once, and a season is capped at 8 rounds.
+**Calendar rule:** tracks are events (`assets/career/calendar.json`): **sprints** (Dry Lake, Shajawa), **grands prix** (India, Qingshan, Llano), **showpieces** (Infinia, Marina, Venice, Tokyo). A season draws a finale, then runs the world's other tracks once each, sprints first and showpieces last.
 
-| World | Rounds | Calendar |
-|---|---|---|
-| 1 | 6 | India, Dry Lake, Infinia x2 each |
-| 2 | 7 | Marina, Shajawa x2 each; India, Dry Lake, Infinia once |
-| 3 | 8 | Tokyo, Morro x2 each; 4 of the 5 earlier tracks once (seeded) |
-
-Until Dry Lake and Infinia exist, the MVP season stays as written in career-mode.md 4.1.
+| World | Rounds | Tracks | Finale (drawn each season) |
+|---|---|---|---|
+| 1 | 6 | Sprints, grands prix, Infinia, Marina | Infinia or India at dusk |
+| 2 | 7 | Every track | Marina or Venice at night |
+| 3 | 8 | Every track, plus Morro once it exists | Tokyo or Venice at night |
 
 Every team has a home round (India stays the Open Shootout venue): a hook for the event deck (career-mode.md 7.4), such as a home crowd or a home team's push to win.
 
