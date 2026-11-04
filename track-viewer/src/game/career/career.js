@@ -271,6 +271,7 @@ export function weekNote(save, R) {
   const { open: o, exempt: ex } = save.season.current;
   if (!o) return `Practice is open. ${ex ? `After ${ex.why} you skip qualifying and start P${ex.slot}.` : `All 16 drivers qualify, and the fastest ${T.series.gridSize} race.`}`;
   if (o.kind === 'masters') return o.seeded ? `Ranked ${o.rank}: you are in, as one of the top ${o.seeds.length} of the Ultrack Ranking. Practice is open.` : `Ranked ${o.rank}: only the top ${o.seeds.length} of the Ultrack Ranking race the Masters. It runs without you.`;
+  if (o.stage === 'final' && !o.seeded && o.lcq) return `Through the Last Chance in P${o.lcq.finish}: you start the Final. Practice is open.`;
   return o.seeded ? `Ranked ${o.rank}: straight into the Final. Practice is open.`
     : `Ranked ${o.rank}: one flying lap at Mojave Dry Lake. The fastest ${T.series.gridSize} race the Last Chance Qualifier there, and its top ${T.open.lcqThrough} reach the Final. Practice opens at the Final.`;
 }

@@ -432,6 +432,7 @@
 .cx-mini.cut { box-shadow: inset 0 -2px 0 var(--d-open); }
 .cx-roadhead { flex: none; display: flex; gap: var(--sp-6); }
 .cr-lcq { grid-column: 1 / -1; }
+.cr-lcq .cr-cols { --cols: calc(44 * var(--u)) 4px minmax(0, 1.3fr) minmax(0, 0.9fr) calc(132 * var(--u)) calc(120 * var(--u)); }
 .cx-week.k-open { --k: var(--d-open); }
 .ch-xp { flex: none; align-self: stretch; }
 .ch-xp i { background: var(--s-xp); }
