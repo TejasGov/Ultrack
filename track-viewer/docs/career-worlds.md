@@ -91,7 +91,9 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 
 ## 5. Shajawa Stadium (World 2, the only stadium)
 
-![Shajawa Stadium plan](career-worlds/shajawa.svg)
+![Shajawa Stadium plan](career-worlds/shajawa_b.svg)
+
+**Relaid 2026-11-04 at the user's call (over the sections below, which describe the first 2.2 km oval):** 3.5 km (`career-worlds/shajawa_b.json`), par 62.3 s, tightest corner R61 (it was R31), the rest R118 or wider. A 3.5 km lap in the bowl would need a 1.4 km stadium, so the bowl stays where it was and the road leaves it through a marathon gate in the north-west stand, runs a 1.5 km desert loop and comes back through a gate in the south-west stand. Gulf sponsors on the boards (Aramco, Emirates, ADNOC, Saudia, stc, SABIC, DP World). Saved best laps on the old layout are cleared once on load.
 
 **The idea.** The game's one stadium circuit: a speedway inside a closed bowl of grandstands, the crowd on every side, an infield with the team garages and a giant four-sided screen. The grammar is the big-stadium speedway from the films (towering stands, the roar, the infield village), but the track is **flat**: no banked corners, so it drives like the rest of the game. It is the Grand Tour's showpiece and the loudest round of the season. The bowl and stands are our own design; no real venue or film set is copied.
 

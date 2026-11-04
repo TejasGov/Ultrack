@@ -30,7 +30,9 @@ function load() {
     if (settings.assists !== 'pro') settings.assists = 'rookie';   // Casual and Sport merged into Rookie; Pro stays
     // records were keyed by car alone before tracks: marina was the only circuit then, so the old ones are its records
     const perTrack = (o) => Object.fromEntries(Object.entries(o ?? {}).map(([k, v]) => [k.includes('/') ? k : `marina/${k}`, v]));
-    return migrate({ ...fresh(), ...d, settings, coins: d.coins, best: perTrack(d.best), drift: perTrack(d.drift) });   // old saves: coins undefined -> the starting balance
+    const best = perTrack(d.best);
+    if (!d.relaid?.shajawa) { for (const k of Object.keys(best)) if (k.startsWith('shajawa/')) delete best[k]; d.relaid = { ...d.relaid, shajawa: true }; }   // relaid at 3.5 km: a 2.2 km lap's time could never be beaten
+    return migrate({ ...fresh(), ...d, settings, coins: d.coins, best, drift: perTrack(d.drift) });   // old saves: coins undefined -> the starting balance
   } catch { return fresh(); }
 }
 

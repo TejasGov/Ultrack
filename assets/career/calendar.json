@@ -6,7 +6,7 @@
     "drylake": { "parLap": 45.3,  "measured": "measured",       "names": ["Boneyard Sprint", "Dry Lake Return"], "dryOnly": true },
     "infinia": { "parLap": 83.8, "measured": "measured",           "names": ["Sea Link Opener", "Over the Bay"] },
     "marina":  { "parLap": 114.5, "measured": "measured",    "names": ["Corniche Opener", "Corniche Return"] },
-    "shajawa": { "parLap": 46.8,  "measured": "measured",           "names": ["Stadium Opener", "Bowl Showdown"] },
+    "shajawa": { "parLap": 62.3,  "measured": "measured",           "names": ["Stadium Opener", "Bowl Showdown"] },
     "tokyo":   { "parLap": 89.3,  "measured": "measured",     "names": ["Neon Street", "Season Finale"] },
     "llano":   { "parLap": 117.5, "measured": "measured",     "names": ["Long Mile", "Llano Return"], "dryOnly": true }
   },

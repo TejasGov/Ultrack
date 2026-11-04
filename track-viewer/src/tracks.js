@@ -76,9 +76,9 @@ export const TRACKS = {
     lampPower: 2,     // heads 9 m up and 1.8 m out, as India Ghat's
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
-  shajawa: {     // career World 2 (docs/career-worlds.md, tracks/shajawa/build_shajawa.py): the one stadium, a flat speedway in a bowl of stands
+  shajawa: {     // career World 2 (docs/career-worlds.md, tracks/shajawa/build_shajawa.py): the one stadium, a flat 3.5 km speedway through a bowl of stands and out round the desert
     id: 'shajawa', name: 'Shajawa Stadium', stem: 'shajawa', dir: '/assets/shajawa/', look: 'day', times: ['day', 'dusk'], fog: 0.5, sun: [-0.55, -0.77], tag: null,
-    wet: { wet: ['SJ | asphalt', 'SJ | line white', 'SJ | kerb red', 'SJ | kerb white', 'SJ | paddock'], puddles: ['SJ | asphalt'] },
+    wet: { wet: ['SJ | asphalt', 'SJ | run-off', 'SJ | line white', 'SJ | kerb red', 'SJ | kerb white', 'SJ | paddock', 'SJ | apron'], puddles: ['SJ | asphalt'] },
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
