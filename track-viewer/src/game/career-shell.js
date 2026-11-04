@@ -24,7 +24,7 @@ export const signed = (n, d = 0) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.
 /** a change you can read at a glance: green and up, red and down, grey and level; the arrow and the sign carry it as well as the colour */
 export const delta = (n, d = 0) => h(`span.cx-d.${n > 0 ? 'pos' : n < 0 ? 'neg' : 'zero'}`, {}, icon(n > 0 ? 'chevron-up' : n < 0 ? 'chevron-down' : 'minus'), signed(n, d));
 /** the four numbers of a career, each with its own colour and icon wherever it appears: coin (gold), xp (Level and XP, sky), rep (rose), trust (orange) */
-const SX = { coin: 'coin', xp: 'chevrons-up', rep: 'star', trust: 'assists' };
+const SX = { coin: 'coin', xp: 'chevrons-up', rep: 'star', trust: 'assists', mood: 'energy' };
 export const cs = (k, label, value, unit) => h(`span.stat-r.sx.sx-${k}`, {}, h('small', {}, icon(SX[k]), label), h('b.tnum', {}, value, unit ? h('small', {}, unit) : null));
 /** the engine's sentences, with the amounts in their own colours: "95 U" a coin, "+215 XP", "reputation +36", "trust +7" */
 const RICH = /([+−-]?\d[\d,]*(?:\.\d+)?) ?(U|XP)\b|([Rr]eputation|[Tt]rust) ([+−-]?\d+)/g;
@@ -63,7 +63,7 @@ export function statusBar(me, save) {
   const K = save.career, prev = xpForLevel(K.cl), next = xpForLevel(K.cl + 1), level = cs('xp', 'Level', String(K.cl));
   level.append(css(h('i.sx-bar', {}, h('i')), { '--p': K.cl >= 25 ? 1 : Math.max(0, Math.min(1, (K.xp - prev) / (next - prev))) }));   // the way to the next one, under it
   fill(me, c ? h('span.cx-team', {}, teamLogo(loreOf(c.team)), stat(`${c.seat} seat`, carName(c.car))) : stat('Driver', save.player.name),
-    level, cs('rep', 'Reputation', String(Math.round(K.rep)), '/ 1000'), c ? cs('trust', 'Trust', String(c.trust), '/ 100') : null, cs('coin', 'Wallet', Math.round(save.wallet.coins).toLocaleString('en')));
+    level, cs('rep', 'Reputation', String(Math.round(K.rep)), '/ 1000'), c ? cs('trust', 'Trust', String(c.trust), '/ 100') : null, cs('mood', 'Mood', String(Math.round(save.life.happy))), cs('coin', 'Wallet', Math.round(save.wallet.coins).toLocaleString('en')));
 }
 /** the footer's left: the prompts */
 export const prompts = (...list) => list.map(([k, p, l]) => prompt(k, p, l));
@@ -92,8 +92,8 @@ export function brandMark(id) {
 }
 
 // ---------------------------------------------------------------------------------------------- the press
-export const STORY_KICK = { win: 'Race report', podium: 'Race report', down: 'A bad day', duel: 'Teammates', feud: 'The feud', drama: 'The paddock', move: 'The market', social: 'Fan talk', rumor: 'Rumour', fired: 'The seat' };
-export const storySource = (s) => ({ drama: 'Paddock Whispers', feud: 'Paddock Whispers', rumor: 'Paddock Whispers', move: 'The Transfer Desk', fired: 'The Transfer Desk', social: 'The Feed' }[s.kind] ?? 'Ultrack Wire');
+export const STORY_KICK = { win: 'Race report', podium: 'Race report', down: 'A bad day', duel: 'Teammates', feud: 'The feud', drama: 'The paddock', move: 'The market', social: 'Fan talk', rumor: 'Rumour', fired: 'The seat', life: 'Off the track', scandal: 'Scandal' };
+export const storySource = (s) => ({ drama: 'Paddock Whispers', feud: 'Paddock Whispers', rumor: 'Paddock Whispers', scandal: 'Paddock Whispers', move: 'The Transfer Desk', fired: 'The Transfer Desk', social: 'The Feed' }[s.kind] ?? 'Ultrack Wire');
 /** a story's picture, never cropped: the whole image over a blurred copy of itself, in a frame that shape. If the file is not there (art not uploaded yet) the circuit's still takes over, then a plain frame */
 export function storyPic(save, s, cls = '') {
   const p = storyImage(save, s), track = s.track && still('tracks', s.track), full = p.url ?? track, small = thumbOf(full), big = cls === 'big';

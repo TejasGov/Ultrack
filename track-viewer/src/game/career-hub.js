@@ -1,5 +1,5 @@
-// The career hub (docs/career-mode.md section 13): full screen, one status bar, nine tabs (Q/E, LB/RB), one red button that always does the next thing.
-// Home is this week; Calendar the weeks; Events the three kinds; Inbox every message; Media what the paddock press wrote; Deals the talks, your contract, the teams; Standings, Garage, Driver.
+// The career hub (docs/career-mode.md section 13): full screen, one status bar, ten tabs (Q/E, LB/RB), one red button that always does the next thing.
+// Home is this week; Calendar the weeks; Events the three kinds; Inbox every message; Media what the paddock press wrote; Deals the talks, your contract, the teams; Standings, Garage, Life (mood, fan support, the Shop), Driver.
 import { h, fill, css, seg, stat, still, row, prompt, empty, getNav, teamMark, fadeMore } from './ui.js';
 import { carName, factsOf } from './carinfo.js';
 import { WEATHER, fmtTime } from './store.js';
@@ -8,11 +8,16 @@ import { icon } from './icons.js';
 import { trackOf } from '../tracks.js';
 import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
-import { TUNING, TIERS, CAR, CAL, loreOf, objectiveText, xpForLevel, formOf, STATUS_LABEL, rrLabel, targetText, isSpecial, pointsMult } from './career/rules.js';
+import { TUNING, TIERS, CAR, CAL, SPONSORS, loreOf, objectiveText, xpForLevel, formOf, STATUS_LABEL, rrLabel, targetText, isSpecial, pointsMult } from './career/rules.js';
 import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, ROUND_EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, worldName, tierCup, brandMark, cs, delta, rich, kindOf, kindIcon, STORY_KICK, storyPic, storySource, mediaBytes } from './career-shell.js';
 import { offerRow, teamRows } from './career-deals.js';
 
-const TABS = [['home', 'Home', 'home'], ['calendar', 'Calendar', 'calendar'], ['events', 'Events', 'track'], ['inbox', 'Inbox', 'mail'], ['media', 'Media', 'camera'], ['deals', 'Deals', 'contract'], ['standings', 'Standings', 'trophy'], ['garage', 'Garage', 'garage'], ['driver', 'Driver', 'helmet']];
+const LIFE_BANDS = [...C.LIFE.bands].reverse();
+const SHOP_ICON = { luxury: 'star', party: 'music', off: 'sun', giving: 'people', ad: 'camera', crew: 'assists', engineer: 'upgrade' };
+const STAFF_WHY = { hired: 'Hired', better: 'A better hire works this season', level: (s) => `Needs Career Level ${s.cl}`, coins: (s) => `Needs ${money(s.cost)}` };
+const SHOP_WHY = { max: () => 'You own the most you can', coins: (q) => `Needs ${money(q.price)}`, week: () => 'Needs an open week', taken: () => 'This week is booked', rep: (q) => `Needs reputation ${q.item.minRep}`, cap: () => 'Done as often as a season allows' };
+
+const TABS = [['home', 'Home', 'home'], ['calendar', 'Calendar', 'calendar'], ['events', 'Events', 'track'], ['inbox', 'Inbox', 'mail'], ['media', 'Media', 'camera'], ['deals', 'Deals', 'contract'], ['standings', 'Standings', 'trophy'], ['garage', 'Garage', 'garage'], ['life', 'Life', 'energy'], ['driver', 'Driver', 'helmet']];
 const RACE_LENGTHS = Object.entries(TUNING.series.lengths).map(([id, min]) => [id, `${id[0].toUpperCase()}${id.slice(1)} · ${min} min`]);
 const lengthName = (id) => `${id[0].toUpperCase()}${id.slice(1)}`;
 const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'drift', news: 'mail' };
@@ -101,14 +106,16 @@ export function CareerHubScreen(game) {
     if (spec) return hero(spec.kind, `This week · ${EVENT[spec.kind][0]} · Optional`, spec.name,
       h('p.cx-note', {}, spec.kind === 'test' ? 'One flying lap against the team\'s targets. Gold earns a free upgrade level.' : `Ninety seconds of Drift Attack. It pays by medal${save.sponsors.deals.length ? ', and your sponsor counts the ones you turn up to' : ''}.`),
       h('div.r-stats', {}, stat('Circuit', trackOf(spec.track).name), look, spec.targets.map((v, i) => stat(['Bronze', 'Silver', 'Gold'][i], spec.kind === 'test' ? fmtTime(v) : Math.round(v).toLocaleString('en')))), notices(save));
+    if (w.activity) { const a = C.itemOf(w.activity.id); return hero('practice', `This week · ${C.TYPES.find((t) => t.id === a.type).name}`, a.name, h('p.cx-note', {}, a.type === 'off' ? 'Time off. The optional event this week is skipped.' : a.type === 'ad' ? `The shoot for ${SPONSORS.brands[w.activity.brand]?.name ?? 'your sponsor'} takes the week.` : a.line), notices(save)); }
     const e = w.event;
     return hero(e ? e.kind : 'practice', `This week · ${e ? EVENT[e.kind][0] : 'Pre-season'}`, e?.result ? `${C.eventName(save, w)}: ${MEDAL[e.result.medal]}` : 'Nothing on this week',
       h('p.cx-note', {}, `Next up: ${R.name}, round ${R.round} of ${n}, at ${t.name}.`), notices(save));
   }
   /** the seat review's warning (6.7) and a deal already signed for next season */
   function notices(save) {
-    const me = save.contract, w = me.warning;
-    return [w ? h('p.cx-note.warn', {}, icon('warning'), w.left > 0 ? `Seat review: meet the round objective in each of the next rounds (${w.met} of ${TUNING.trust.recover} done, ${w.left} left).` : `Seat review missed. Trust under ${TUNING.trust.drop} at the finale costs you the seat. Trust is ${me.trust}.`) : null,
+    const me = save.contract, w = me.warning, act = C.currentWeek(save).activity;
+    return [act && !C.currentWeek(save).event?.skipped ? h('p.cx-note', {}, icon('energy'), `Booked this week: ${C.itemOf(act.id).name}.`) : null,
+      w ? h('p.cx-note.warn', {}, icon('warning'), w.left > 0 ? `Seat review: meet the round objective in each of the next rounds (${w.met} of ${TUNING.trust.recover} done, ${w.left} left).` : `Seat review missed. Trust under ${TUNING.trust.drop} at the finale costs you the seat. Trust is ${me.trust}.`) : null,
       me.next ? h('p.cx-note', {}, icon('check'), `Signed for next season: ${teamName(me.next.team)}, ${carName(me.next.car)}.`) : null];
   }
   const mailRow = (m, onclick) => h(`div.lrow.cx-mail.m-${m.kind}${m.read ? '' : '.new'}`, { 'data-nav': '', 'data-mail': m.id, tabIndex: 0, role: 'button', onclick }, icon(MAIL_ICON[m.kind] ?? 'mail'), h('span.c-name', {}, h('b', {}, m.title), h('small', {}, rich(m.body))), h('span.wk', {}, `WK ${m.week}`));
@@ -160,7 +167,7 @@ export function CareerHubScreen(game) {
       : w.kind === 'market' ? [h('p.cx-note', {}, save.clock.season === 1 ? 'One week for sponsors. Teams wait for the season end: your first season is probation.' : 'One week when teams can talk to you and you can approach them. Anything you sign starts next season.')]
         : w.kind === 'end' ? [h('p.cx-note', {}, 'The season review, your team\'s verdict, and the market: every offer for next season.')]
           : [h('p.cx-note', {}, e.kind === 'test' ? 'Optional. One flying lap against the team\'s targets; gold earns a free upgrade level.' : 'Optional. Ninety seconds of Drift Attack; it pays by medal, and a signed sponsor counts the ones you turn up to.'),
-            h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Result', e.result ? MEDAL[e.result.medal] : e.skipped ? 'Skipped' : empty()))];
+            h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Result', e.result ? MEDAL[e.result.medal] : e.skipped ? 'Skipped' : empty()), w.activity ? stat('Activity', C.itemOf(w.activity.id).name) : null)];
     return [blockHead('calendar', `Week ${i + 1}`, i === save.clock.week ? 'This week' : i < save.clock.week ? 'Done' : `In ${i - save.clock.week} ${i - save.clock.week === 1 ? 'week' : 'weeks'}`), h('strong.cx-title', {}, weekTitle(save, w)), body];
   }
   let calBox = null;
@@ -169,7 +176,7 @@ export function CareerHubScreen(game) {
     const now = save.clock.week, kind = (w) => (w.kind === 'race' ? (ROUND_EVENT[w.ev] ?? 'Race') : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
     const rows = save.season.weeks.map((w, i) => {
       const R = C.roundOfWeek(save, i), e = w.event, res = w.result;
-      const out = res ? (res.dnq ? 'DNQ' : res.dnf ? 'DNF' : `P${res.finish} · ${res.rr.toFixed(1)}`) : e?.result ? MEDAL[e.result.medal] : e?.skipped ? 'Skipped' : i === now ? 'This week' : '';
+      const out = res ? (res.dnq ? 'DNQ' : res.dnf ? 'DNF' : `P${res.finish} · ${res.rr.toFixed(1)}`) : e?.result ? MEDAL[e.result.medal] : w.activity ? C.itemOf(w.activity.id).name : e?.skipped ? 'Skipped' : i === now ? 'This week' : '';
       return h(`div.lrow.cx-calrow.k-${kindOf(w)}${i === now ? '.now' : ''}${i < now ? '.past' : ''}`, { 'data-nav': '', 'data-week': i, tabIndex: 0 }, h('b.wk', {}, `WK ${i + 1}`), h('span', {}, h(`span.cx-tag.kt.k-${kindOf(w)}`, {}, icon(kindIcon(w)), kind(w))),
         h('span.c-name', {}, h('b', {}, w.kind === 'race' ? `R${w.round + 1} ${R.name}` : weekTitle(save, w)), h('small', {}, w.kind === 'race' ? `${ROUND_EVENT[R.event] && !isSpecial(R) ? `${ROUND_EVENT[R.event]} · ` : ''}${trackOf(R.track).name} · ${R.laps} laps` : w.kind === 'market' ? (save.clock.season === 1 ? 'Sponsors only: first season' : 'Teams can talk to you') : w.kind === 'end' ? 'Verdict and offers' : `${trackOf(R.track).name} · optional`)),
         h('span.ch-cond', {}, w.kind === 'race' ? conds(R) : null), h('span.val', {}, i < now ? icon(e?.skipped ? 'minus' : 'check') : null, out));
@@ -187,7 +194,7 @@ export function CareerHubScreen(game) {
       return eventRow(w, `R${w.round + 1} ${R.name}`, `${ROUND_EVENT[R.event] && !isSpecial(R) ? `${ROUND_EVENT[R.event]} · ` : ''}${trackOf(R.track).name}${pointsMult(R) > 1 ? ` · points ×${pointsMult(R)}` : ''}`, res ? { text: res.dnq ? 'DNQ' : res.dnf ? 'DNF' : `P${res.finish} · ${res.rr.toFixed(1)}` } : w.week - 1 === now ? { text: 'This week', ink: true } : null, state(w),
         () => (w.week - 1 === now ? go('home') : toast(res ? `Round ${w.round + 1}: ${res.dnq ? 'did not qualify' : res.dnf ? 'retired' : 'P' + res.finish}, rated ${res.rr.toFixed(1)} (${rrLabel(res.rr)}).` : `Week ${w.week}.`))); });
     const side = (kind) => W.map((w, i) => [w, i]).filter(([w]) => w.event?.kind === kind).map(([w, i]) => { const R = C.roundOfWeek(save, i), e = w.event, spec = i === now ? C.sideSpec(save) : null;
-      return eventRow(w, C.eventName(save, w), trackOf(R.track).name, e.result ? { text: MEDAL[e.result.medal] } : e.skipped ? { text: 'Skipped' } : spec ? { text: 'Run it', ink: true } : null, state(w),
+      return eventRow(w, C.eventName(save, w), trackOf(R.track).name, e.result ? { text: MEDAL[e.result.medal] } : e.skipped ? { text: w.activity ? C.itemOf(w.activity.id).name : 'Skipped' } : spec ? { text: 'Run it', ink: true } : null, state(w),
         () => (spec ? startEvent(save, spec) : toast(e.result ? 'One try at each event.' : e.skipped ? 'That week has gone.' : `That is week ${w.week}.`))); });
     const col = (kind, ic, title, right, note, rows) => h(`div.cx-b.k-${kind}`, {}, blockHead(ic, title, right), h('p.cx-note', {}, note), scroller('cx-list', rows.length ? rows : h('p.cx-note', {}, 'None this season.')));
     return [col('race', 'race', 'Race weekends', `Required · ${save.season.calendar.length} rounds`, 'Practice, qualifying, one try at the race. Points, money and your rating.', races),
@@ -285,23 +292,81 @@ export function CareerHubScreen(game) {
         h('p.cx-note', {}, icon('info'), 'Parts stay with the car. Leave it and they are sold back at 60 % of what you paid.'))];
   }
 
+  /** one press on a staff tier, in the Garage or the Shop: the first asks, the second pays (no refund) */
+  function pressStaff(save, s) {
+    const r = C.staffInfo(save, s.id), on = r.reason === 'hired';
+    if (!r.ok) { hiring = null; return toast(on ? `${s.name} is already working for you this season.` : typeof STAFF_WHY[r.reason] === 'function' ? STAFF_WHY[r.reason](s) : STAFF_WHY[r.reason], !on); }
+    if (hiring !== s.id) { hiring = s.id; return build(true); }
+    hiring = null; C.hireStaff(save, s.id); persist(game); toast(`${s.name} hired for season ${save.clock.season}: −${money(s.cost)}`); build(true);
+  }
   /** the personal staff: a crew that cuts repair bills and an engineer that cuts upgrade prices, hired for this season only. The first press on a tier asks, the second pays (no refund) */
   function staff(save) {
-    const why = { hired: 'Hired', better: 'A better hire works this season', level: (s) => `Needs Career Level ${s.cl}`, coins: (s) => `Needs ${money(s.cost)}` };
     const hireRole = (role) => {
       const R = C.STAFF.roles[role], now = C.staffTier(save, role), share = now[R.key];
       return h('div.cx-staff', {}, h('div.c-name', {}, h('b', {}, R.name), h('small', {}, share ? `${now.name}: ${Math.round(share * 100)} % off ${R.key === 'repairs' ? 'repair bills' : 'upgrade prices'}` : `Basic: ${R.does} with a tier below`)),
         h('div.cx-chips', {}, C.STAFF_LIST.filter((s) => s.role === role).map((s) => {
           const r = C.staffInfo(save, s.id), live = hiring === s.id, on = r.reason === 'hired';
-          return h('button.cx-chip' + (on ? '.on' : r.ok ? '' : '.off'), { 'data-nav': '', 'aria-label': `${s.name}, ${money(s.cost)}`, onclick: () => {
-            if (!r.ok) { hiring = null; return toast(on ? `${s.name} is already working for you this season.` : typeof why[r.reason] === 'function' ? why[r.reason](s) : why[r.reason], !on); }
-            if (hiring !== s.id) { hiring = s.id; return build(true); }
-            hiring = null; C.hireStaff(save, s.id); persist(game); toast(`${s.name} hired for season ${save.clock.season}: −${money(s.cost)}`); build(true); } },
+          return h('button.cx-chip' + (on ? '.on' : r.ok ? '' : '.off'), { 'data-nav': '', 'aria-label': `${s.name}, ${money(s.cost)}`, onclick: () => pressStaff(save, s) },
             h('b', {}, s.tier[0].toUpperCase() + s.tier.slice(1)), h('small', {}, live ? 'Hire?' : on ? 'Hired' : r.reason === 'level' ? `Level ${s.cl}` : money(s.cost)), h('small', {}, `−${Math.round(s.share * 100)} %`));
         })));
     };
     return h('div.cx-b', {}, blockHead('people', 'Staff', 'Hired for this season'), ...C.STAFF_ROLES.map(hireRole),
       h('p.cx-note', {}, icon('info'), 'Paid now, not refunded, and they stay with you when you change team.'));
+  }
+
+  // ---------------------------------------------------------------------------------------------- Life
+  /** one press on a Shop item: the first asks, the second buys */
+  function pressShop(save, id) {
+    const q = C.lifeInfo(save, id);
+    if (!q.ok) { hiring = null; return toast(SHOP_WHY[q.reason]?.(q) ?? 'Not available', true); }
+    if (hiring !== id) { hiring = id; return build(true); }
+    hiring = null; const r = C.buyLife(save, id), x = r.item; persist(game);
+    const msg = x.type === 'ad' ? `${x.name} for ${r.brand ? SPONSORS.brands[r.brand].name : 'a sponsor'}: +${money(r.pay)}` : `${x.name}: mood ${signed(r.boost)}${x.fans ? `, fan support +${x.fans}` : ''}`;
+    toast(r.scandal ? `${msg}. The pictures got out: ${r.scandal.sponsor ? `${r.scandal.sponsor} is unhappy` : `team trust −${r.scandal.trust}`}.` : r.skips ? `${msg}. The ${r.skips} is skipped.` : msg, !!r.scandal); build(true);
+  }
+  /** a card of the Shop: a picture (or its icon, if the picture is not there), what it is, what it does, and what it costs or why it cannot be had */
+  function shopCard({ id, ic, name, line, chips, state, tag, own }) {
+    return h(`button.cx-shop.${state}${hiring === id ? '.armed' : ''}`, { 'data-nav': '', 'data-shop': id, 'aria-label': `${name}, ${tag}`, onclick: () => (id.startsWith('crew-') || id.startsWith('engineer-') ? pressStaff(game.career, C.STAFF_LIST.find((s) => s.id === id)) : pressShop(game.career, id)) },
+      h('span.cs-pic', {}, icon(ic), h('img', { src: `/assets/ui/shop/${id}.webp`, alt: '', loading: 'lazy', decoding: 'async', onerror: (e) => e.currentTarget.remove() })),
+      h('span.cs-text', {}, h('b', {}, name, own ? h('em', {}, `Owned ${own}`) : null), h('small', {}, line), h('span.cs-chips', {}, chips.map((c) => h('i', {}, c)))),
+      h('span.cs-act', {}, hiring === id ? 'Press again to buy' : tag));
+  }
+  function life(save) {
+    const L = save.life, band = C.moodOf(save), w = C.currentWeek(save), upkeep = C.upkeepOf(save), tier = TIERS.tiers[save.season.tier];
+    const meter = css(h('div.cl-meter', {}, LIFE_BANDS.map((b) => h('i.b-' + b.id + (b.id === band.id ? '.on' : ''))), h('em')), { '--p': L.happy / 100 });
+    const why = L.why.length ? L.why.map(([label, v]) => h('span', {}, label, h('b.tnum', {}, delta(v, 1)))) : [h('p.cx-note', {}, 'It moves after your first race.')];
+    const demand = h('button.btn.btn-secondary.cl-demand', { 'data-nav': '', onclick: () => {
+      if (hiring !== 'demand') { hiring = 'demand'; return build(true); }
+      hiring = null; const r = C.demandMove(save); persist(game);
+      if (!r.ok) return toast(r.reason === 'asked' ? 'You have already asked this season.' : r.reason === 'race' ? 'Ask in a week without a race.' : 'Not now.', true);
+      toast('You asked for a transfer: the offers are in your Deals tab until you advance the week.'); go('deals'); } }, icon('contract'), hiring === 'demand' ? 'Press again to ask' : 'Demand a transfer');
+    const left = h('div.cx-b.cl-mood', {}, blockHead('energy', 'How life is going', band.name),
+      h('div.cl-big', {}, h('b.tnum', {}, String(Math.round(L.happy))), h('span', {}, 'Mood'), h('small', {}, band.does)), meter,
+      h('div.cl-big.fans', {}, h('b.tnum', {}, String(Math.round(L.fans))), h('span', {}, 'Fan support'), h('small', {}, C.fansName(L.fans))), css(h('div.bar4.cl-fans', {}, h('i')), { '--p': L.fans / 100 }),
+      h('div.cx-bh', {}, h('span', {}, 'Why it moved'), h('span', {}, 'Last race week')), scroller('cx-list.cl-why', h('div.cr-lines', {}, why)),
+      h('p.cx-note', {}, icon('info'), L.sinceOff > 8 ? `${L.sinceOff} weeks without time off: it is wearing you down.` : `${L.sinceOff} ${L.sinceOff === 1 ? 'week' : 'weeks'} since time off.`, upkeep ? ` Upkeep next season: ${money(upkeep)}${save.wallet.coins < upkeep ? ', more than your wallet: something would be sold' : ''}.` : ''),
+      band.id === 'unhappy' ? (C.canDemand(save) ? demand : h('p.cx-note', {}, icon('contract'), 'You have already asked to move this season.')) : null);
+    const slot = w.activity ? `Booked this week: ${C.itemOf(w.activity.id).name}.` : save.clock.phase === 'paddock' && w.event ? `Week ${w.week} is open: one activity.${w.event.result || w.event.skipped ? '' : ` ${C.eventName(save, w)} is optional.`}` : 'No open week now: luxuries only.';
+    const sections = C.TYPES.map((t) => {
+      const cards = C.ITEMS.filter((x) => x.type === t.id).sort((a, b) => (a.price ?? a.pay) - (b.price ?? b.pay)).map((x) => {
+        const q = C.lifeInfo(save, x.id), n = C.ownedN(save, x.id), chips = [];
+        chips.push(x.type === 'ad' ? 'Mood ' + signed(x.boost) : 'Mood ' + signed(q.boost));
+        if (x.fans) chips.push(`Fans +${x.fans}`); if (x.glow) chips.push(`+${x.glow} a round`); if (x.upkeep) chips.push(`${money(x.upkeep)} a season`);
+        if (x.scandal) chips.push(`${Math.round(x.scandal * 100)} % risk of a story`); if (q.skips) chips.push(`Skips the ${q.skips}`); else if (x.skips) chips.push('Takes the week');
+        const r = q.reason;
+        return shopCard({ id: x.id, ic: SHOP_ICON[x.type], name: x.name, line: x.type === 'ad' && q.brand ? `${SPONSORS.brands[q.brand].name}: ${x.line.toLowerCase()}` : x.line, chips, own: n || null,
+          state: !r ? 'ok' : r === 'coins' ? 'poor' : 'off', tag: x.type === 'ad' ? (r ? SHOP_WHY[r](q) : `Pays ${money(q.pay)}`) : r && r !== 'coins' ? SHOP_WHY[r](q) : money(x.price) });
+      });
+      return [h('div.cl-sec', {}, h('b', {}, t.name), h('small', {}, t.note)), h('div.cl-grid', {}, cards)];
+    });
+    const staffCards = C.STAFF_LIST.map((s) => {
+      const r = C.staffInfo(save, s.id), role = C.STAFF_ROLES.includes(s.role) ? C.STAFF.roles[s.role] : null, on = r.reason === 'hired';
+      return shopCard({ id: s.id, ic: SHOP_ICON[s.role], name: s.name, line: role.does[0].toUpperCase() + role.does.slice(1) + '.', chips: [`−${Math.round(s.share * 100)} % ${role.key === 'repairs' ? 'repair bills' : 'upgrade prices'}`, 'This season'],
+        state: on ? 'own' : r.ok ? 'ok' : r.reason === 'coins' ? 'poor' : 'off', tag: on ? 'Hired' : r.ok || r.reason === 'coins' ? money(s.cost) : typeof STAFF_WHY[r.reason] === 'function' ? STAFF_WHY[r.reason](s) : STAFF_WHY[r.reason] });
+    });
+    const shop = h('div.cx-b.cl-shop', {}, blockHead('coin', 'The Shop', money(save.wallet.coins)), h('p.cx-note', {}, icon('info'), slot),
+      scroller('cl-scroll', sections, h('div.cl-sec', {}, h('b', {}, 'Staff'), h('small', {}, 'Hired for this season, paid now, no refund. They stay with you when you change team.')), h('div.cl-grid', {}, staffCards)));
+    return [left, shop];
   }
 
   // ---------------------------------------------------------------------------------------------- Driver
@@ -327,8 +392,8 @@ export function CareerHubScreen(game) {
   }
 
   // ---------------------------------------------------------------------------------------------- the frame
-  const LAYOUT = { home: 'cx-home', calendar: 'cx-cal', events: 'cx-events', inbox: 'cx-inbox', media: 'cx-media', deals: 'cx-deals', standings: 'cx-standings', garage: 'cx-garage', driver: 'cx-driver' };
-  const PAGE = { home, calendar, events, inbox, media, deals, standings, garage, driver };
+  const LAYOUT = { home: 'cx-home', calendar: 'cx-cal', events: 'cx-events', inbox: 'cx-inbox', media: 'cx-media', deals: 'cx-deals', standings: 'cx-standings', garage: 'cx-garage', life: 'cx-life', driver: 'cx-driver' };
+  const PAGE = { home, calendar, events, inbox, media, deals, standings, garage, life, driver };
   function drawTabs(save) {
     const count = { inbox: C.unread(save), media: C.unreadStories(save), deals: save.season.mid.length + save.sponsors.offers.length };
     fill(tabs, prompt('Q', 'lb'), TABS.map(([id, label, ic]) => h('button' + (tab === id ? '.on' : ''), { 'data-t': id, tabIndex: -1, role: 'tab', 'aria-selected': String(tab === id), onclick: (e) => { e.stopPropagation(); go(id); } }, icon(ic), label, count[id] ? h('span.badge.tnum', {}, count[id]) : null)), prompt('E', 'rb'));
