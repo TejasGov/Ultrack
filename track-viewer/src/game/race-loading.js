@@ -12,10 +12,8 @@ export const LOADING_SLIDES = [
   { track: 'infinia', title: 'Over the bay,\nunder the bay.', text: 'The sea link climbs over the water on one long curve; half a lap later you pass beneath it in the undersea tunnel. Then the seafront and its necklace of streetlights.' },
   { track: 'shajawa', title: 'The whole bowl\nis on its feet.', text: 'Stands on every side, then out through a gate under the upper rows for a loop of open desert, and back in through another. The bowl hears you long before it sees you.' },
   { track: 'drylake', title: 'Under the wings\nof the boneyard.', text: 'A test airfield on the edge of a dry lake. The main straight is a runway; the infield is rows of retired airliners. Brake hard at the end of the runway for the hairpin round the parked tail.' },
-  { track: 'venice', title: 'Palazzi on
-both sides.', text: 'Canal bridges, a campanile on the turn-in, and a figure-eight that dives through a tunnel under its own deck. The walls are stone and they stand close.' },
-  { track: 'qingshan', title: 'Forest to
-the kerb.', text: 'Wind turbines on the ridge, solar fields by the lake, and trees right up to the barrier for most of the lap. Long sweeping corners reward a clean line.' },
+  { track: 'venice', title: 'Palazzi on\nboth sides.', text: 'Canal bridges, a campanile on the turn-in, and a figure-eight that dives through a tunnel under its own deck. The walls are stone and they stand close.' },
+  { track: 'qingshan', title: 'Forest to\nthe kerb.', text: 'Wind turbines on the ridge, solar fields by the lake, and trees right up to the barrier for most of the lap. Long sweeping corners reward a clean line.' },
   { track: 'llano', title: 'A long way\nfrom anywhere.', text: 'Red dirt to the horizon and two kilometres of flat-out road down the Long Mile. The race-day train still pulls in at Llano Central. Last Chance is at the far end, and it is well named.' },
 ].map((s) => ({ ...s, image: `/assets/ui/stills/tracks/${s.track}.webp` }));
 const TIP = 'Brake before the corner. Ease off the pedal as you turn, then build throttle on the exit.';
