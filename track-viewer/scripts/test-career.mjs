@@ -54,6 +54,7 @@ try {
   // ---- race lengths: chosen in minutes, laps per circuit, the default is the short one, nobody is forced into 8 laps
   assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('drylake', l)), [3, 5, 8]); assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('marina', l)), [2, 2, 3]);
   assert.ok(R.buildCalendar(5, 1, 1, avail).every((r) => r.laps === R.lapsFor(r.track, 'sprint') && r.laps <= 3), 'Sprint by default');
+  { const base = R.paceOf(80); R.setHardMode(true); assert.ok(Math.abs(R.paceOf(80) / base - R.TUNING.pace.hardMode) < 1e-9, 'Hard mode lifts rival pace'); assert.equal(R.hardPaceFor(false), 1); R.setHardMode(false); assert.equal(R.paceOf(80), base, 'and off puts it back'); }
   assert.equal(R.TUNING.series.qualiValidLaps, 1, 'one valid lap qualifies');
   const len = C.newCareer({ seed: 77, now: 'x' }); assert.equal(len.rules.raceLength, 'sprint'); C.finishShootout(len, null); C.acceptOffer(len, len.pending.offers[0].id, avail);
   C.finishQuali(len, 60); C.finishRace(len, { order: len.season.current.quali.grid, best: {} });

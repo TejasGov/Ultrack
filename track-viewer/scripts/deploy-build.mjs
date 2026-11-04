@@ -3,12 +3,17 @@
 //   node scripts/deploy-build.mjs https://pub-xxxx.r2.dev [outDir=dist-deploy]     then: vercel deploy dist-deploy --prod
 // The bundles go to /app, not Vite's default /assets, so the redirect catches only the bucket's files.
 import { build } from 'vite';
+import { execSync } from 'node:child_process';
 import { cpSync, existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const [assetsUrl, outDir = 'dist-deploy'] = process.argv.slice(2);
 if (!/^https:\/\/\S+[^/]$/.test(assetsUrl ?? '')) throw new Error('Pass the bucket URL, https and no trailing slash');
-await build({ build: { outDir, emptyOutDir: true, assetsDir: 'app', copyPublicDir: false, rollupOptions: { input: { game: 'index.html' } } } });
+// the track files' versions, from git so a checkout without LFS smudging still has them (tracks.js revUrl): a changed file gets a new URL and no browser keeps the old one
+const REV = Object.fromEntries(execSync('git ls-tree -r HEAD -- public/assets', { encoding: 'utf8', maxBuffer: 1 << 26 }).split('\n').map((l) => l.split('\t'))
+  .filter(([, p]) => /(track\.json|lights\.json|vip\.json|_collision\.glb|_visual(_ktx2)?\.glb|stills\/tracks\/\w+\.webp)$/.test(p ?? '')).map(([m, p]) => [p.replace(/^public/, ''), m.split(' ')[2].slice(0, 10)]));
+if (!REV['/assets/shajawa/track.json']) throw new Error('No track file versions from git');
+await build({ define: { __ASSET_REV__: JSON.stringify(REV) }, build: { outDir, emptyOutDir: true, assetsDir: 'app', copyPublicDir: false, rollupOptions: { input: { game: 'index.html' } } } });
 rmSync(join(outDir, 'audio-lab.html'), { force: true });      // a developer tool, the config's second page
 cpSync(join('public', 'basis'), join(outDir, 'basis'), { recursive: true });       // the KTX2 transcoder stays with the page
 cpSync(join('public', 'assets', 'ui', 'icons.svg'), join(outDir, 'assets', 'ui', 'icons.svg'));       // <use href> refuses another domain, so the icon sprite stays too

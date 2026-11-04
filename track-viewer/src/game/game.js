@@ -22,6 +22,7 @@ import { applyUpgrades } from './carinfo.js';
 import { canSelectCar, carProgression } from './progression.js';
 import { RaceLoading } from './race-loading.js';
 import { CareerStartScreen, CareerHubScreen, CareerDealScreen, CareerReportScreen } from './career-ui.js';
+import { hardPaceFor, setHardMode } from './career/rules.js';
 import { trackOf } from '../tracks.js';
 import { TIERS } from '../perf.js';
 
@@ -247,6 +248,7 @@ export class Game {
   // ---------------------------------------------------------------------------------------------- settings
   applySettings() {
     const S = store.settings, { params } = this.ctx;
+    setHardMode(S.hardMode);
     const t = trackOf(S.track), look = t.times && !t.times.includes(S.look) ? t.look : S.look;     // a saved Night never lands on a day-only track (tracks.js `times`)
     if (params.quality !== S.quality) { params.quality = S.quality; this.ctx.applyQuality(); }
     const W = WEATHER[S.weather] ?? WEATHER.damp, tier = S.quality === 'auto' ? this.ctx.device?.tier : S.quality;
@@ -301,7 +303,7 @@ export class Game {
     this.hideScreens();
     applyUpgrades(career?.levels ?? ((k)=>store.levels(k)),career?undefined:store.data.car);   // a career sets every car: AI teams carry their development levels
     this.earned=null;
-    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;F.runUp=career?.runUp??0;   // read by grid() in configure and by enablePhysics
+    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;F.runUp=career?.runUp??0;F.hardPace=hardPaceFor(store.settings.hardMode);   // read by grid() in configure and by enablePhysics
     F.configure({ hero: store.data.car, racers });
     this.cameraFor('chase');
     // Prepare shader variants/textures behind the intro, before the race clock and controls start.

@@ -4,7 +4,7 @@
   "series": { "lengths": { "sprint": 2.5, "standard": 4, "full": 6 }, "lapsMin": 2, "lapsMax": 12, "qualiValidLaps": 1, "qualiRunUp": 250, "gridSize": 8, "qualiRetries": 1,
               "points": [25, 18, 15, 12, 10, 8, 6, 4], "pole": 2, "fastestLap": 1, "finaleMult": 1.5 },
   "pace": { "base": 0.94, "perRating": 0.0021, "min": 0.94, "max": 1.02, "jitter": 0.003, "perDevLevel": 0.01, "carZ": 0.012,
-            "wet": { "dry": 1.0, "damp": 1.04, "rain": 1.08 }, "difficulty": { "easy": 0.97, "normal": 1.0, "hard": 1.02 } },
+            "wet": { "dry": 1.0, "damp": 1.04, "rain": 1.08 }, "difficulty": { "easy": 0.97, "normal": 1.0, "hard": 1.02 }, "hardMode": 1.015 },
   "weather": { "damp": 0.15, "rain": 0.1, "maxWet": 2 },
   "quali": { "noiseSigma": 0.012, "duelLevel": 0.0015, "duelBig": 0.003, "dnqRaceSigma": 0.01 },
   "shootout": { "standout": 0.03, "solid": 0.06, "standoutXp": 300, "baseXp": 100 },

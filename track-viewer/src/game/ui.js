@@ -450,6 +450,7 @@ export function SettingsScreen(game) {
         row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { set('assists')(v); note.textContent = sentence(ASSISTS[v].note); }), note),
         row('Speed in', seg([['kmh', 'km/h'], ['mph', 'mph']], S.units, set('units'))),
         row('Race laps', seg(lapChoices, S.laps, set('laps'))),
+        row('Hard mode', toggle(S.hardMode, set('hardMode')), 'Rivals drive a little quicker and use nitro on the straights, in every race and in your career. Starts with the next session.'),
       ]; },
       audio: () => [
         row('Master', slider(S.master, {}, set('master'))),

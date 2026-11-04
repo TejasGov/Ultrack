@@ -1,6 +1,6 @@
 import './race-loading.css';
 import TEAMS from '../../../assets/teams/teams.json';
-import { TRACKS, trackOf } from '../tracks.js';
+import { TRACKS, trackOf, revUrl } from '../tracks.js';
 import { store, WEATHER } from './store.js';
 import { icon } from './icons.js';
 
@@ -15,7 +15,7 @@ export const LOADING_SLIDES = [
   { track: 'venice', title: 'Palazzi on\nboth sides.', text: 'Canal bridges, a campanile on the turn-in, and a figure-eight that dives through a tunnel under its own deck. The walls are stone and they stand close.' },
   { track: 'qingshan', title: 'Forest to\nthe kerb.', text: 'Wind turbines on the ridge, solar fields by the lake, and trees right up to the barrier for most of the lap. Long sweeping corners reward a clean line.' },
   { track: 'llano', title: 'A long way\nfrom anywhere.', text: 'Red dirt to the horizon and two kilometres of flat-out road down the Long Mile. The race-day train still pulls in at Llano Central. Last Chance is at the far end, and it is well named.' },
-].map((s) => ({ ...s, image: `/assets/ui/stills/tracks/${s.track}.webp` }));
+].map((s) => ({ ...s, image: revUrl(`/assets/ui/stills/tracks/${s.track}.webp`) }));
 const TIP = 'Brake before the corner. Ease off the pedal as you turn, then build throttle on the exit.';
 export const LOAD_STAGES = ['Circuit', 'Grid', 'Track physics', 'Audio', 'Graphics'];
 const STAGE_LABEL = { Circuit: 'Loading the circuit', Grid: 'Preparing the grid', 'Track physics': 'Building track physics', Audio: 'Tuning engine audio', Graphics: 'Warming up graphics' };

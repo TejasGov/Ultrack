@@ -9,7 +9,7 @@ export const DEFAULT_SETTINGS = {
   // display
   quality: 'auto', look: 'dusk', track: 'marina', weather: 'dry', motionBlur: 'full', reduceMotion: false, fovOffset: 0, showFps: false,
   // driving
-  assists: 'rookie', units: 'kmh', laps: 3, opponents: true,
+  assists: 'rookie', units: 'kmh', laps: 3, opponents: true, hardMode: false,
   // audio (0..1)
   master: 0.85, engine: 0.8, effects: 0.8, commentary: 0.9, crowd: 0.5, commentaryOn: true,
 };

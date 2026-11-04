@@ -32,8 +32,12 @@ export function levelOf(xp) { let L = 1; while (L < T.xp.maxLevel && xp >= xpFor
 export const formOf = (rrs) => { const a = avg(rrs.slice(-3)); return rrs.length ? T.form.find(([min]) => a >= min)[1] : 0; };
 
 // ---------------------------------------------------------------------------------------------- pace, laps
+/** the Hard mode setting (store.js hardMode; game.js applySettings): rivals a little quicker in the race and on the qualifying clock alike */
+let hardPace = 1;
+export const hardPaceFor = (on) => (on ? T.pace.hardMode : 1);
+export const setHardMode = (on) => { hardPace = hardPaceFor(on); };
 /** AI pace from a driver rating (2.3): 94 -> 1.011, 76 -> 0.974 */
-export const paceOf = (rating, difficulty = 'normal') => clamp(T.pace.base + (rating - 60) * T.pace.perRating, T.pace.min, T.pace.max) * (T.pace.difficulty[difficulty] ?? 1);
+export const paceOf = (rating, difficulty = 'normal') => clamp(T.pace.base + (rating - 60) * T.pace.perRating, T.pace.min, T.pace.max) * (T.pace.difficulty[difficulty] ?? 1) * hardPace;
 /** an AI flying lap at pace 1.00 in this car, these conditions and these upgrade levels [engine, tyres, brakes] */
 export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
   CAL.tracks[track].parLap * (1 - T.pace.carZ * (TIERS.carZ[car] ?? 0)) * (T.pace.wet[weather] ?? 1) * (1 - T.pace.perDevLevel * avg(dev));

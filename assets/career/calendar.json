@@ -2,15 +2,15 @@
   "version": 1,
   "note": "Per-track career data and the worlds (track-viewer/docs/career-mode.md 4.1, docs/career-worlds.md). parLap is an AI flying lap at pace 1.00 with the car factor taken out, measured 2026-11-01 with scripts/measure-par-laps.mjs (three cars, flying laps only, dry, no upgrades); re-measure after changing a track or the handling.",
   "tracks": {
-    "drylake": { "event": "sprint",    "parLap": 45.0,  "measured": "measured", "names": ["Boneyard Sprint", "Dry Lake Return"], "dryOnly": true },
-    "shajawa": { "event": "sprint",    "parLap": 61.9,  "measured": "measured", "names": ["Stadium Sprint", "Bowl Showdown"] },
-    "india":   { "event": "grandprix", "parLap": 73.5,  "measured": "measured", "names": ["Ghat Climb", "Ghat Return"] },
-    "qingshan":{ "event": "grandprix", "parLap": 116.9, "measured": "measured", "names": ["Forest Classic", "Forest Return"] },
-    "llano":   { "event": "grandprix", "parLap": 116.6, "measured": "measured", "names": ["Long Mile", "Llano Return"], "dryOnly": true },
-    "infinia": { "event": "showpiece", "parLap": 83.1,  "measured": "measured", "names": ["Sea Link Showdown", "Over the Bay"] },
-    "marina":  { "event": "showpiece", "parLap": 113.8, "measured": "measured", "names": ["Corniche Grand Prix", "Corniche Return"] },
-    "venice":  { "event": "showpiece", "parLap": 100.3, "measured": "measured", "names": ["Lagoon Grand Prix", "Lagoon Return"] },
-    "tokyo":   { "event": "showpiece", "parLap": 88.6,  "measured": "measured", "names": ["Neon Street", "Tokyo Return"] }
+    "drylake": { "event": "sprint",    "parLap": 45.3,  "measured": "measured", "names": ["Boneyard Sprint", "Dry Lake Return"], "dryOnly": true },
+    "shajawa": { "event": "sprint",    "parLap": 62.3,  "measured": "measured", "names": ["Stadium Sprint", "Bowl Showdown"] },
+    "india":   { "event": "grandprix", "parLap": 74.0,  "measured": "measured", "names": ["Ghat Climb", "Ghat Return"] },
+    "qingshan":{ "event": "grandprix", "parLap": 117.5, "measured": "measured", "names": ["Forest Classic", "Forest Return"] },
+    "llano":   { "event": "grandprix", "parLap": 117.5, "measured": "measured", "names": ["Long Mile", "Llano Return"], "dryOnly": true },
+    "infinia": { "event": "showpiece", "parLap": 83.8,  "measured": "measured", "names": ["Sea Link Showdown", "Over the Bay"] },
+    "marina":  { "event": "showpiece", "parLap": 114.5, "measured": "measured", "names": ["Corniche Grand Prix", "Corniche Return"] },
+    "venice":  { "event": "showpiece", "parLap": 101.0, "measured": "measured", "names": ["Lagoon Grand Prix", "Lagoon Return"] },
+    "tokyo":   { "event": "showpiece", "parLap": 89.3,  "measured": "measured", "names": ["Neon Street", "Tokyo Return"] }
   },
   "worlds": {
     "1": { "name": "The Proving Grounds", "rounds": 6, "tracks": ["drylake", "shajawa", "india", "qingshan", "llano", "infinia", "marina"],

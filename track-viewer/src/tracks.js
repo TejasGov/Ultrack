@@ -109,12 +109,15 @@ export const TRACKS = {
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
 };
+// A deploy's file versions (deploy-build.mjs): a changed file gets a new URL. The bucket sends no Cache-Control, so a browser may reuse an old copy for hours after an upload.
+const REV = typeof __ASSET_REV__ === 'undefined' ? {} : __ASSET_REV__;
+export const revUrl = (path) => (REV[path] ? `${path}?v=${REV[path]}` : path);
 export const DEFAULT_TRACK = 'marina';
 export const trackOf = (id) => TRACKS[id] ?? TRACKS[DEFAULT_TRACK];
 const FILES = { track: () => 'track.json', lights: () => 'lights.json', vip: () => 'vip.json', collision: (t) => `${t.stem}_collision.glb`,
   visual: (t, tex) => `${t.stem}_visual${tex === 'ktx2' ? '_ktx2' : ''}.glb` };
 /** URL of one of the track's files: what is track | lights | vip | collision | visual (tex: 'ktx2' | 'webp'). */
-export const trackUrl = (t, what, tex = 'ktx2') => t.dir + FILES[what](t, tex);
+export const trackUrl = (t, what, tex = 'ktx2') => revUrl(t.dir + FILES[what](t, tex));
 
 // A dev server (and a static host) answers a missing file with index.html, so "200" proves nothing: judge by type.
 // Two bytes, not one: Vite's dev server (sirv) reads the end of "bytes=0-0" as "to the end of the file" and sent the whole 28 MB
