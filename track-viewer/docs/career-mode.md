@@ -295,7 +295,7 @@ Each new track must supply what `track.json` already has (centreline, `lapLength
 The player's speed is his hands. The career therefore does **not** give him a fake "pace" stat. What it tracks about him is *what he did*:
 
 - **Career Level (CL)**, 1-25, from XP. It is the existing `playerLevel` and it gates things.
-- **Round Rating (RR)**, 1-10 per round, and its rolling average (the *form rating*). It is a number about results versus the car.
+- **Round Rating (RR)**, 1-10 per round, and its rolling average (the *form rating*). It is a number about results versus the car. A win adds +0.5, and a qualifying skip earned by a podium scores its grid slot and a teammate-duel win's +0.4 instead of nothing (changed 2026-11-04 at the user's call).
 - **Driving style**, derived from play (6 and 7): aggressor, technician or showman.
 - Optional **perks** (Phase 3): small, bounded bonuses that touch levers the physics already has.
 

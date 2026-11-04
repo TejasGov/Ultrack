@@ -18,6 +18,10 @@ try {
   assert.equal(ex.rr, 8.4); assert.equal(R.rrLabel(ex.rr), 'Outstanding');
   assert.equal(R.roundRating({ expPos: 1, grid: 1, finish: 8, clean: false, duel: { result: 'level' } }).rr, 3.6, 'P8 in the fastest car is bad');
   assert.ok(R.roundRating({ expPos: 8, grid: 8, finish: 8, dnf: true }).rr < 5, 'a retirement costs');
+  { const won = { expPos: 5, grid: 2, finish: 1, fastest: true, clean: false, duel: { result: 'level', skipped: true } }, skipped = R.roundRating({ ...won, exempt: true }), label = (r) => r.lines.map((l) => l[0]);
+    assert.equal(skipped.rr, 8.8, 'a win from a skip earned by the last result: not punished for it'); assert.ok(label(skipped).includes('Won the race') && label(skipped).includes('Skipped qualifying on merit') && label(skipped).includes('Started 3 above expected'));
+    assert.ok(!label(R.roundRating({ ...won, exempt: true, grid: 7 })).some((l) => /Started|below/.test(l)), 'a worse earned slot costs nothing');
+    assert.ok(label(R.roundRating({ expPos: 3, grid: 3, finish: 1 })).includes('Won the race')); assert.ok(!label(R.roundRating({ expPos: 3, grid: 3, finish: 2 })).includes('Won the race')); assert.ok(!label(R.roundRating({ expPos: 3, grid: 3, finish: 1, dnf: true })).includes('Won the race'), 'a retirement wins nothing'); }
   // ---- pace and levels
   assert.equal(R.paceOf(94).toFixed(3), '1.011'); assert.equal(R.paceOf(76).toFixed(3), '0.974');
   assert.equal(R.xpForLevel(2), 90); assert.equal(R.levelOf(89), 1); assert.equal(R.levelOf(90), 2); assert.equal(R.levelOf(1e9), 25);

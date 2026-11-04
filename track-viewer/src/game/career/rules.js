@@ -112,12 +112,14 @@ export function duelOf(mine, mate) {
 export const RR_LABELS = [[9, 'Masterclass'], [8, 'Outstanding'], [7, 'Strong'], [6, 'Solid'], [5, 'Poor'], [0, 'Bad']];
 export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
 /** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
-export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq }) {
+export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt }) {
   const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); };
   // places are of the 16, and two of them weigh what one did when the table was 8: the rating constants are unchanged. No race, no finish to judge
-  const dp = dnq ? 0 : expPos - finish, dq = expPos - grid, pos = clamp(dp / 2, -R.posClamp, R.posClamp), q = clamp(dq / 2, -R.qualiClamp, R.qualiClamp);
+  const dp = dnq ? 0 : expPos - finish, dq = expPos - grid, pos = clamp(dp / 2, -R.posClamp, R.posClamp), q = exempt ? clamp(dq / 2, 0, R.qualiClamp) : clamp(dq / 2, -R.qualiClamp, R.qualiClamp);   // a slot earned by the last result never counts against
   add(dp >= 0 ? `Finished ${dp} ${dp === 1 ? 'place' : 'places'} above expected` : `Finished ${-dp} ${dp === -1 ? 'place' : 'places'} below expected`, R.pos * pos);
-  add(dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
+  add(exempt ? `Started ${dq} above expected` : dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
+  if (exempt) add('Skipped qualifying on merit', R.duel);     // the skip needs a podium with the teammate not ahead: doing well must not cost the qualifying credit of the next round
+  if (finish === 1 && !dnf && !dnq) add('Won the race', R.win);
   if (dnq) add('Did not qualify', R.dnq);
   if (fastest) add('Fastest lap of the field', R.fastest);
   if (clean && !dnf) add('Clean race', R.clean);

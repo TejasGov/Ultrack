@@ -276,7 +276,7 @@ export function finishRace(save, result) {
   const dnq = !cur.quali.grid.includes(hero), at = result.order.indexOf(hero), raced = result.order.filter((k) => k !== hero);
   if (!dnq) raced.splice(result.dnf || at < 0 ? raced.length : at, 0, hero);   // a retirement is classified last of those who raced
   const order = [...raced, ...(cur.quali.order ?? cur.quali.grid).filter((k) => !raced.includes(k))];
-  const finish = order.indexOf(hero) + 1, grid = qualiPlace(cur.quali, hero), poleKey = cur.quali.pole ?? cur.quali.grid[0], pole = poleKey === hero, judged = cur.quali.exempt ? { grid: cur.expPos } : {};   // a slot he did not qualify for earns no qualifying credit
+  const finish = order.indexOf(hero) + 1, grid = qualiPlace(cur.quali, hero), poleKey = cur.quali.pole ?? cur.quali.grid[0], pole = poleKey === hero, judged = cur.quali.exempt ? { grid: cur.expPos } : {};   // a slot he did not qualify for earns no qualifying XP
   const fastLap = Math.min(...Object.values(result.best).filter(Number.isFinite)), fastestKey = Object.keys(result.best).find((k) => result.best[k] === fastLap);
   const dnf = !!result.dnf, fastest = fastestKey === hero && !dnf, clean = !dnq && (result.spins ?? 0) === 0 && (result.crashes ?? 0) <= 1, duel = cur.quali.duel;
   // points (4.4): per entry, the finale x1.5, pole +2, fastest lap +1; a retirement scores no place and no fastest lap, a reserve driver nothing in rounds 1-2 (6.7)
@@ -286,7 +286,7 @@ export function finishRace(save, result) {
   const x = { expPos: cur.expPos, grid, finish, fastest, clean, duel, dnf, dnq };
   const objectives = cur.objectives.map((o) => objectiveFrom(o, grid)).map((o) => ({ ...o, met: objectiveMet(o, x) }));
   const mandatory = objectives[0].met, optional = objectives.slice(1).filter((o) => o.met).length;
-  const rating = roundRating({ ...x, ...judged, underdog: me.underdog });
+  const rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog });
   const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry from a higher tier that was expected ahead
   const giantKills = dnf || dnq ? 0 : order.slice(finish).filter((k) => tierOf(CAR[k].team).rank > myRank && expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat) < myExp).length;
   const rivals = heatAfter(save, order, hero, dnf);
