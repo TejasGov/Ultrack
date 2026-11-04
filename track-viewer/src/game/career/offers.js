@@ -6,6 +6,7 @@ import {
 } from './rules.js';
 import { driverAt } from './world.js';
 import { post } from './inbox.js';
+import { payMult, offerScale, mood } from './life.js';
 
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
 const rankOf = (team) => tierOf(team).rank;
@@ -125,7 +126,7 @@ export function midSeason(save) {
   const st = statsOf(save), cands = [];
   for (const team of TEAM_IDS.filter((t) => rankOf(t) === rankOf(me.team) + 1)) {
     const interest = interestOf(team, st, { extraRep: T.offers.w1Gate, declined: save.world.teams[team].declined });
-    if (interest !== null && offerRoll(save.seed, season, 'W1', team, interest, T.offers.w1Roll)) cands.push([team, interest]);
+    if (interest !== null && offerRoll(save.seed, season, 'W1', team, interest, T.offers.w1Roll * offerScale(save))) cands.push([team, interest]);
   }
   const best = cands.sort((a, b) => b[1] - a[1])[0], o = best && outsideOffer(save, best[0], best[1], { w1: true, tag: '-w1' });
   if (o) {
@@ -171,7 +172,7 @@ export function approach(save, team) {
   const no = (why) => { post(save, 'deal', `${teamName(team)} said no`, why); return { result: 'no', why }; };
   if (interest === null) return no(`${v.why}. Come back when you clear their bar.`);
   if (sameTier && mean(save.career.rr) < T.offers.sameTierRR) return no(`Their A seat takes an average rating of ${T.offers.sameTierRR.toFixed(1)}. Yours is ${mean(save.career.rr).toFixed(1)}.`);
-  if (!offerRoll(save.seed, season, 'AP', team, interest, sameTier ? T.offers.w1Roll : 1)) return no('They like you, but they have no plans for you this window.');
+  if (!offerRoll(save.seed, season, 'AP', team, interest, (sameTier ? T.offers.w1Roll : 1) * offerScale(save))) return no('They like you, but they have no plans for you this window.');
   const o = outsideOffer(save, team, interest, { tag: '-ap', ...(mid ? { w1: true } : {}) });
   if (!o) return no('The only seat they have is a step down in car, so they did not offer it.');
   if (mid) { o.why += ' You would join them next season.'; save.season.mid.push(o); } else save.pending.offers.push(o);
@@ -199,7 +200,7 @@ export function seasonOffers(save, { cup, title, dropped }) {
     const rank = rankOf(team), same = rank === tier.rank;
     if (team === me.team || rank < tier.rank || rank > tier.rank + 1 || (same && (me.seat === 'A' || !strong))) continue;   // the tier above, or an A seat in this one
     const raw = interestOf(team, st, { declined: save.world.teams[team].declined }), interest = same && raw !== null ? Math.min(raw, T.offers.sameTierInterest) : raw;
-    if (interest === null || !offerRoll(save.seed, season, 'W2', team, interest, same ? T.offers.w1Roll : 1)) continue;
+    if (interest === null || !offerRoll(save.seed, season, 'W2', team, interest, (same ? T.offers.w1Roll : 1) * offerScale(save))) continue;
     const o = outsideOffer(save, team, interest); if (o) outside.push(o);
   }
   list.push(...outside.sort((a, b) => rankOf(b.team) - rankOf(a.team) || b.interest - a.interest).slice(0, T.offers.maxOffers));
@@ -257,22 +258,72 @@ export function signSponsor(save, id) {
 }
 /** a round's money from sponsors, and the target's progress; x is what happened in the race */
 export function sponsorRound(save, x, met) {
-  const lines = [];
+  const lines = [], m = payMult(save);                         // a happy driver is worth more to a sponsor, a frustrated one less (life.js)
   for (const d of save.sponsors?.deals ?? []) {
-    lines.push([`${d.name} retainer`, d.retainer]);
+    lines.push([`${d.name} retainer`, round5(d.retainer * m)]);
     if (d.met || !met(d.target, x)) continue;
     d.progress++;
-    if (d.progress >= d.target.count) { d.met = true; lines.push([`${d.name} bonus`, d.bonus]); post(save, 'sponsor', `${d.name} pays the bonus`, `You hit the target: ${targetText(d.target)}. +${d.bonus.toLocaleString('en')} U.`); }
+    if (d.progress >= d.target.count) { d.met = true; lines.push([`${d.name} bonus`, round5(d.bonus * m)]); post(save, 'sponsor', `${d.name} pays the bonus`, `You hit the target: ${targetText(d.target)}. +${round5(d.bonus * m).toLocaleString('en')} U.`); }
   }
   return lines;
+}
+/** a deal ends: the retainer stops and the reputation takes the hit (a skipped sponsor day, an upset sponsor, an unhappy driver) */
+function endDeal(save, d, body) {
+  save.career.rep = clamp(save.career.rep + T.sponsors.droppedRep, 0, 1000);
+  post(save, 'warn', `${d.name} ended the deal`, body);
+  return false;
+}
+/** one deal loses a step of goodwill; out of goodwill, it ends. Returns whether it stays */
+function goodwillDown(save, d, noticed, ended) {
+  if (--d.mood > 0) { post(save, 'sponsor', `${d.name} ${noticed.title}`, noticed.body(d.mood)); return true; }
+  return endDeal(save, d, ended);
 }
 /** a sponsor day skipped: every signed sponsor marks it down; out of goodwill, the deal ends */
 export function sponsorSkipped(save) {
   const S = save.sponsors;
-  S.deals = S.deals.filter((d) => {
-    if (--d.mood > 0) { post(save, 'sponsor', `${d.name} noticed you did not turn up`, `Miss ${d.mood} more ${d.mood === 1 ? 'sponsor day' : 'sponsor days'} and the deal ends.`); return true; }
-    save.career.rep = clamp(save.career.rep + T.sponsors.droppedRep, 0, 1000);
-    post(save, 'warn', `${d.name} ended the deal`, `You missed too many sponsor days. Reputation ${T.sponsors.droppedRep}, and the retainer stops.`);
-    return false;
-  });
+  S.deals = S.deals.filter((d) => goodwillDown(save, d, { title: 'noticed you did not turn up', body: (m) => `Miss ${m} more ${m === 1 ? 'sponsor day' : 'sponsor days'} and the deal ends.` }, `You missed too many sponsor days. Reputation ${T.sponsors.droppedRep}, and the retainer stops.`));
+}
+/** the pictures got out and a sponsor is not pleased (a party's scandal): the deal picked by the seeded roll `r` loses goodwill and may end. Returns its name, or null with no sponsor */
+export function sponsorUpset(save, r) {
+  const S = save.sponsors; if (!S.deals.length) return null;
+  const d = S.deals[Math.floor(r * S.deals.length)];
+  if (!goodwillDown(save, d, { title: 'is unhappy about the pictures', body: (m) => `One more story like that and the deal could end (goodwill ${m}).` }, `The pictures were the last straw. Reputation ${T.sponsors.droppedRep}, and the retainer stops.`)) S.deals.splice(S.deals.indexOf(d), 1);
+  return d.name;
+}
+/** an unhappy driver loses a sponsor: the one with the least goodwill walks, the same ending as too many skipped days */
+export function sponsorWalks(save) {
+  const S = save.sponsors; if (!S.deals.length) return null;
+  const d = [...S.deals].sort((a, b) => a.mood - b.mood)[0];
+  S.deals.splice(S.deals.indexOf(d), 1); endDeal(save, d, `${d.name} no longer sees a happy face for the poster. Reputation ${T.sponsors.droppedRep}, and the retainer stops.`);
+  return d.name;
+}
+
+// ---------------------------------------------------------------------------------------------- demanding a transfer
+/**
+ * An unhappy driver asks to leave (once a season). The offers come through the mid-season market: up to two teams, from the tier above (if they would talk to him) and from his own
+ * tier (always: he is asking, they answer), each signed with signMid and starting next season, open until he advances the week. Nobody to offer: a reserve seat. His team takes it
+ * badly (trust). Returns { ok, reason?, offers: [ids] }.
+ */
+export function demandTransfer(save) {
+  const me = save.contract, L = save.life;
+  if (mood(save).id !== 'unhappy') return { ok: false, reason: 'happy' };
+  if (me.next) return { ok: false, reason: 'signed' };
+  if (L.demanded === save.clock.season) return { ok: false, reason: 'asked' };
+  if (save.season.weeks[save.clock.week].kind === 'race') return { ok: false, reason: 'race' };      // offers lapse when a week is advanced, and a race week is not
+  const st = statsOf(save), rank = rankOf(me.team), cands = [];
+  for (const team of TEAM_IDS.filter((t) => t !== me.team && rankOf(t) >= rank && rankOf(t) <= rank + 1)) {
+    const same = rankOf(team) === rank, raw = interestOf(team, st, { declined: 0 }), interest = same ? Math.min(Math.max(raw ?? 0, 0.3), T.offers.sameTierInterest) : raw;
+    if (interest !== null) cands.push([team, interest]);
+  }
+  const made = [];
+  for (const [team, interest] of cands.sort((a, b) => rankOf(b[0]) - rankOf(a[0]) || b[1] - a[1]).slice(0, 2)) {
+    const o = outsideOffer(save, team, interest, { w1: true, tag: '-tr' }); if (!o) continue;
+    o.why += ' You asked to move, and they would take you next season.'; o.expires = save.clock.week;
+    save.season.mid.push(o); made.push(o);
+  }
+  if (!made.length) { const o = reserveOffer(save); o.expires = save.clock.week; save.season.mid.push(o); made.push(o); }
+  L.demanded = save.clock.season; L.happy = clamp(L.happy + 5, 0, 100);
+  me.trust = clamp(me.trust - T.offers.ownTrust * 2, 0, 100);
+  post(save, 'deal', 'You asked for a transfer', `${teamName(me.team)} are not pleased (trust -${T.offers.ownTrust * 2}). ${made.length === 1 ? 'One offer is' : `${made.length} offers are`} on the table until you advance the week.`, { deal: made[0].id });
+  return { ok: true, offers: made.map((o) => o.id) };
 }

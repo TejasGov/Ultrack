@@ -140,6 +140,13 @@ export function coverFired(save, team) {
   story(save, 'fired', `${t.name} sacks ${me}`, `After a season below what the seat demands, ${t.principal} has shown ${me} the door. The garage was cleared before the statement went out.`, { you: 'fired', scene: null });
 }
 
+/** an off-track story (life.js, the Shop): a purchase, a party, a scandal, a holiday, a gala, an ad, a mood. `key` is an item id or one of the events in media.json "life"; ctx fills {brand} and {item} */
+export function coverLife(save, key, ctx = {}) {
+  const t = MEDIA.life[key]; if (!t) return;
+  const r = rng(save.seed, 'media', save.clock.season, 'life', save.clock.week ?? 0, key), s = pick(r, t.stories), fill = (x) => x.replace(/\{(\w+)\}/g, (_, k) => ({ me: save.player.name, team: loreOf(save.contract.team).name, brand: ctx.brand ?? 'A sponsor', item: ctx.item ?? 'it' })[k] ?? '');
+  story(save, t.kind ?? 'life', fill(s.title), fill(s.body), { you: t.you ?? null, scene: t.scene ?? null, track: ctx.track ?? null });
+}
+
 // ---------------------------------------------------------------------------------------------- pictures
 export const driverSlug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const driverImage = (save, code, mood) => {

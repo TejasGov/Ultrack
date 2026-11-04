@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "note": "Happiness, fan support and the Shop (track-viewer/docs/career-mode.md, Part 3). Happiness and fan support are meters 0-100 about the driver's life: they move sponsor pay, XP, trust gains, offers and the press, and never the car or a rival's pace. 'round' is what one race week adds to happiness, then it drifts back to 50 by 'drift' of the gap. Item ids are the names of the Shop images at /assets/ui/shop/<id>.webp. Starting values, tuned with scripts/career-sim.mjs.",
+  "happy": { "start": 50, "drift": 0.16 },
+  "bands": [
+    { "min": 80, "id": "top", "name": "On top of the world", "pay": 1.10, "xp": 1.05, "trust": 1, "does": "Sponsors pay 10 % more, XP +5 %, friendly press" },
+    { "min": 60, "id": "content", "name": "Content", "pay": 1.04, "xp": 1, "trust": 1, "does": "Sponsors pay 4 % more" },
+    { "min": 40, "id": "neutral", "name": "Neutral", "pay": 1, "xp": 1, "trust": 1, "does": "Nothing either way" },
+    { "min": 20, "id": "frustrated", "name": "Frustrated", "pay": 0.95, "xp": 1, "trust": 0.5, "does": "Sponsors pay 5 % less, trust grows at half speed" },
+    { "min": 0, "id": "unhappy", "name": "Unhappy", "pay": 0.90, "xp": 1, "trust": 0.5, "does": "Fewer offers, a sponsor may walk, harsh press. You can demand a transfer" }
+  ],
+  "fans": { "start": 20, "baseRep": 0.03, "drift": 0.06, "perRR": 0.8, "max": 3, "win": 2, "podium": 1, "clean": 0.5, "dnf": -1.5, "press": 0.6, "home": 3,
+            "names": [[80, "Adored"], [60, "Loved"], [40, "Well supported"], [20, "A following"], [0, "Few fans"]] },
+  "round": { "perRR": 0.6, "max": 1.8, "win": 1.2, "podium": 0.5, "duel": 0.5, "rival": 0.5, "dnf": -1.2, "dnq": -1.2, "missOpen": -1.5, "poorRun": -0.8, "perFan": 0.02, "perTrust": 0.02,
+             "seat": { "rookie": 0, "maestro": 0.25, "legend": 0.6 }, "belowForm": -1, "home": 1.2, "press": 0.35, "pressMax": 0.7, "bigRepair": 0.3, "repairHit": -1, "glowMax": 2.5, "grindAfter": 9, "grindPer": 0.15, "grindMax": 1.2 },
+  "unhappy": { "walk": 0.3, "offers": 0.6, "story": 0.35 },
+  "upkeep": { "sellBack": 0.5 },
+  "repeat": { "max": 3, "boost": 0.5, "glow": 0.5 },
+  "home": { "IND": ["infinia", "india"], "JPN": ["tokyo"], "KOR": ["qingshan"], "ITA": ["venice"], "UAE": ["shajawa", "marina"], "USA": ["llano"] },
+  "types": [
+    { "id": "luxury", "name": "Luxury", "note": "Buy any time. A big lift now, a smaller glow every round, a yearly upkeep. A second one counts for less." },
+    { "id": "party", "name": "Parties", "note": "Takes the week's activity slot. A quick lift, and a chance the pictures get out." },
+    { "id": "off", "name": "Time off", "note": "Takes the week and skips its optional event." },
+    { "id": "giving", "name": "Giving back", "note": "Takes the week's slot. Costs money, wins fans." },
+    { "id": "ad", "name": "Sponsor ad deals", "note": "Pays you, and takes the week and its optional event. Bigger deals need more reputation." }
+  ],
+  "items": [
+    { "id": "apartment", "type": "luxury", "name": "City apartment", "line": "A place of your own near the garage.", "price": 5000, "upkeep": 300, "boost": 9, "glow": 0.3 },
+    { "id": "penthouse", "type": "luxury", "name": "Penthouse", "line": "Top floor, private lift, a view of the circuit.", "price": 24000, "upkeep": 1200, "boost": 13, "glow": 0.6 },
+    { "id": "mansion", "type": "luxury", "name": "Mansion", "line": "Gates, a garden and a garage for the trophies.", "price": 75000, "upkeep": 3500, "boost": 17, "glow": 1.0 },
+    { "id": "watch", "type": "luxury", "name": "Collector's watch", "line": "A serious watch with a serious price.", "price": 9000, "upkeep": 200, "boost": 7, "glow": 0.2 },
+    { "id": "supercar", "type": "luxury", "name": "Supercar", "line": "A road car that is nearly as quick as the team's.", "price": 140000, "upkeep": 5000, "boost": 15, "glow": 0.6 },
+    { "id": "yacht", "type": "luxury", "name": "Yacht", "line": "Moored in the harbour, with a crew of six.", "price": 320000, "upkeep": 12000, "boost": 20, "glow": 1.0 },
+
+    { "id": "night-out", "type": "party", "name": "Night out", "line": "Friends, a table at the back, no cameras (you hope).", "price": 400, "boost": 4, "scandal": 0.05, "trust": 4 },
+    { "id": "big-party", "type": "party", "name": "Big party", "line": "Half the paddock on the guest list.", "price": 2500, "boost": 7, "scandal": 0.09, "trust": 7 },
+    { "id": "huge-bash", "type": "party", "name": "Huge bash", "line": "A hired hall, a band, the whole Tour.", "price": 9000, "boost": 10, "scandal": 0.15, "trust": 10 },
+
+    { "id": "holiday", "type": "off", "name": "Holiday", "line": "A week somewhere warm with the phone off.", "price": 1500, "boost": 10, "skips": true },
+    { "id": "luxury-holiday", "type": "off", "name": "Luxury holiday", "line": "Seven days of sun and no timing screens.", "price": 7000, "boost": 16, "skips": true },
+
+    { "id": "fan-day", "type": "giving", "name": "Fan day", "line": "Autographs, selfies and a lap in the team van.", "price": 800, "boost": 3, "fans": 8 },
+    { "id": "charity-gala", "type": "giving", "name": "Charity gala", "line": "An evening of auctions for a good cause.", "price": 5000, "boost": 5, "fans": 14, "rep": 4 },
+
+    { "id": "ad-shoot", "type": "ad", "name": "Ad shoot", "line": "A day in front of the lights for a sponsor.", "pay": 300, "boost": -2, "minRep": 0, "cap": 3, "skips": true },
+    { "id": "billboard-deal", "type": "ad", "name": "Billboard deal", "line": "Your face on a wall across the Tour.", "pay": 900, "boost": -3, "minRep": 150, "cap": 2, "skips": true },
+    { "id": "tv-commercial", "type": "ad", "name": "TV commercial", "line": "Thirty seconds on prime time, three days of takes.", "pay": 2200, "boost": -4, "minRep": 400, "cap": 1, "skips": true }
+  ]
+}

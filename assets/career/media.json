@@ -222,5 +222,33 @@
       "body": "A grainy photo after the {gp} has the gossip columns guessing. {team} will only say that drivers are allowed to go for walks.",
       "posts": ["@paddock_daily|That is definitely {me}. Who is the other one, though?", "@apex_annie|{me} has a whole life and did not tell us. Rude."]
     }
-  ]
+  ],
+  "life": {
+    "note": "Off-track stories (media.js coverLife), keyed by item id or event. Tokens: {me}, {team}, {brand}, {item}. kind life reads as Ultrack Wire, scandal as Paddock Whispers. Light and dry; never about driving after a drink, never about anyone's body.",
+    "apartment": { "you": "portrait", "stories": [{ "title": "{me} gets the keys to a city apartment", "body": "A view of the skyline and, for the first time, a fridge nobody else has opened. {team}'s garage is a short drive away." }] },
+    "penthouse": { "you": "portrait", "stories": [{ "title": "{me} moves into a penthouse", "body": "Top floor, a private lift and a neighbour who has already complained about the helmets in the hall." }] },
+    "mansion": { "you": "win", "stories": [{ "title": "{me} buys the big house", "body": "Gates, a garden and a garage with room for the trophies. The paddock is calling it the winner's address." }] },
+    "watch": { "you": "portrait", "stories": [{ "title": "A new watch for {me}", "body": "A serious one with a serious price. The pit wall has asked whether it can be used to time laps." }] },
+    "supercar": { "you": "win", "stories": [{ "title": "{me} takes delivery of a supercar", "body": "Quicker than most road cars and, the garage points out, a lot slower than the race car. It stays parked on race weekends." }] },
+    "yacht": { "you": "win", "stories": [{ "title": "{me} has bought a yacht", "body": "Moored in the harbour with a crew of six and a flag nobody recognises. The whole paddock is angling for an invitation." }] },
+    "night-out": { "you": "portrait", "stories": [{ "title": "A night out for {me}", "body": "Friends, a table at the back and no photographers. At least, that was the plan." }] },
+    "big-party": { "you": "portrait", "stories": [{ "title": "{me} throws a party", "body": "Half the paddock turned up and the other half heard about it by morning." }] },
+    "huge-bash": { "you": "win", "stories": [{ "title": "{me}'s party is the talk of the Tour", "body": "A hired hall, a band and a guest list that kept {team}'s press officer busy until sunrise." }] },
+    "scandal-trust": { "kind": "scandal", "you": "down", "scene": "leak", "stories": [
+      { "title": "{me} caught up in a party row", "body": "Pictures from the night reached the feeds before {me} did. {team} says it is aware of them and would like to move on." },
+      { "title": "Neighbours complain about {me}'s party", "body": "Noise, a visit from the local officers asking for the music to be turned down, and a short statement from {team}: drivers are allowed a life, a quieter one ideally." }] },
+    "scandal-sponsor": { "kind": "scandal", "you": "down", "scene": "leak", "stories": [
+      { "title": "{brand} unhappy with {me}'s night out", "body": "The brand's logo was in too many of the pictures. They have asked for a word, and have been told {me} is listening." }] },
+    "holiday": { "you": "portrait", "stories": [{ "title": "{me} takes a week off", "body": "Somewhere warm, with the phone off. {team} insists the car will not notice." }] },
+    "luxury-holiday": { "you": "portrait", "stories": [{ "title": "{me} is away on a luxury break", "body": "Seven days of sun and no timing screens. The engineers admit they are enjoying the quiet as well." }] },
+    "fan-day": { "scene": "fan-love", "stories": [{ "title": "{me} spends a day with the fans", "body": "Autographs, selfies and a lap of the car park in a team van. The queue was longer than anyone planned for." }] },
+    "charity-gala": { "scene": "fan-love", "stories": [{ "title": "{me} hosts a charity gala", "body": "A night of auctions for a good cause. The signed helmet went for more than anybody guessed." }] },
+    "ad-shoot": { "you": "portrait", "stories": [{ "title": "{me} fronts a {brand} shoot", "body": "A day in front of the lights. The photographer called it a natural. The driver called it a long day." }] },
+    "billboard-deal": { "you": "portrait", "stories": [{ "title": "{me} is on the billboards", "body": "{brand} has put the driver's face on a wall across the Tour. The fans are already adding moustaches." }] },
+    "tv-commercial": { "you": "win", "stories": [{ "title": "{brand} cast {me} in a new advert", "body": "Thirty seconds on prime-time television and three days of takes. {me} says the car was easier." }] },
+    "mood-top": { "you": "win", "stories": [{ "title": "{me} is on top of the world", "body": "Results, a happy garage and a grandstand that sings the driver's name. Nobody in the paddock has seen {me} this relaxed." }] },
+    "mood-unhappy": { "kind": "scandal", "you": "down", "stories": [{ "title": "Is {me} still happy at {team}?", "body": "The body language says no. {team} says everything is fine, in a tone that suggests otherwise." }] },
+    "demand": { "kind": "scandal", "you": "down", "stories": [{ "title": "{me} wants out", "body": "The driver has told {team} that a move is the only way forward. The team says it will not stand in the way." }] },
+    "sold": { "you": "down", "stories": [{ "title": "{me} sells the {item}", "body": "The running costs caught up with the plan, and the {item} went back on the market." }] }
+  }
 }
