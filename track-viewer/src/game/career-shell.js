@@ -5,6 +5,7 @@ import { h, fill, css, prompt, stat, still, teamLogo } from './ui.js';
 import { carName } from './carinfo.js';
 import { storyImage, thumbOf } from './career/career.js';
 import { store } from './store.js';
+import { CATS } from './economy.js';
 import { icon } from './icons.js';
 import { TRACKS } from '../tracks.js';
 import { saveCareer } from './career/save.js';
@@ -38,7 +39,7 @@ export function rich(text) {
 }
 /** what a week is, for the colour that says so: race, test, sponsor, market, review */
 export const kindOf = (w) => (w.kind === 'race' ? (w.ev === 'open' || w.ev === 'masters' ? 'open' : 'race') : w.kind === 'market' ? 'market' : w.kind === 'end' ? 'review' : w.event.kind);
-export const zero = () => ({ engine: 0, tyres: 0, brakes: 0 });
+export const zero = () => Object.fromEntries(CATS.map(([c]) => [c, 0]));
 export const available = () => Object.fromEntries(Object.values(TRACKS).map((t) => [t.id, t.times ?? null]));
 export const teamName = (id) => loreOf(id).name;
 

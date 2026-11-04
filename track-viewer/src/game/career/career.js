@@ -5,11 +5,12 @@
 import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import {
-  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap,
+  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
   buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult,
 } from './rules.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
 import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
+import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
 import { post, unread, markRead } from './inbox.js';
 import { coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
@@ -17,11 +18,13 @@ import {
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorSkipped,
 } from './offers.js';
 
-export const SCHEMA = 5;
+export const SCHEMA = 6;
 export { rankingOf, playerRank };
+export { hire as hireStaff, hireInfo as staffInfo, discount as staffDiscount, tierNow as staffTier, STAFF, STAFF_LIST, ROLES as STAFF_ROLES };
 export { unreadStories, readStory, storyImage, latestBytes };
 export { thumbOf } from './media.js';
 export { releaseCut as releaseCutOf, driverAt, personOf, rivalsOf, unread, markRead, findOffer, mateOf, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, signMid, teamOutlook, approach, sponsorSlots, signSponsor };
+const stock = () => Object.fromEntries(CATS.map(([c]) => [c, 0]));    // a car with no upgrade bought: an old save's entry may hold fewer categories, and a missing one reads as 0
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
 const rankOf = (team) => tierOf(team).rank;
 const mean = (l) => (l.length ? l.reduce((s, v) => s + v, 0) / l.length : 0);
@@ -43,7 +46,7 @@ export function newCareer({ name = 'A. Driver', nation = 'IND', number = 99, see
     clock: { season: 1, round: 0, week: 0, phase: 'shootout' },
     career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {} },
     contract: null, wallet: { coins: T.money.startWallet },
-    garage: { upgrades: {}, paid: {}, package: 0 },
+    garage: { upgrades: {}, paid: {}, package: 0 }, staff: { crew: null, engineer: null },
     world, ranking: newRanking(world.ratings), hall: [], season: null, pending: null, history: [], inbox: [], inboxN: 0, sponsors: { deals: [], offers: [] },
     stats: { starts: 0, wins: 0, podiums: 0, poles: 0, fastest: 0, cups: 0, titles: 0, ...openStats() },
   };
@@ -82,6 +85,11 @@ export function migrate(save) {
     Object.assign(save, { ranking: newRanking(save.world.ratings), hall: [] }); Object.assign(save.stats, openStats());
     save.schema = 5;
   }
+  if (save.schema === 5) {                                    // before running costs: no staff, and upgrade entries that hold only engine, tyres and brakes
+    save.staff = { crew: null, engineer: null };
+    for (const [car, u] of Object.entries(save.garage.upgrades)) save.garage.upgrades[car] = { ...stock(), ...u };
+    save.schema = 6;
+  }
   for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
   return save;
 }
@@ -111,7 +119,7 @@ export function acceptOffer(save, id, available) {
   save.buyback = 0; save.transfer = 0;
   if (old && old.car !== o.car) {                            // leaving a car (a new team, or the A seat): its parts are sold back at 60 % of what was paid (5.4)
     const back = Math.round((save.garage.paid[old.car] ?? 0) * T.money.buyback);
-    save.wallet.coins += back; save.garage.upgrades[old.car] = { engine: 0, tyres: 0, brakes: 0 }; save.garage.paid[old.car] = 0;
+    save.wallet.coins += back; save.garage.upgrades[old.car] = stock(); save.garage.paid[old.car] = 0;
     save.buyback = back;
   }
   if (old && o.team !== old.team && !o.signed && !o.reserve && !old.dropped && old.seasonsLeft > 1) {   // bought out of a running contract: you get the cut (3.3)
@@ -124,7 +132,7 @@ export function acceptOffer(save, id, available) {
     trust: keep ? old.trust : T.trust.startBy[o.status] ?? T.trust.start, duel: { won: 0, lost: 0, level: 0 }, since: keep ? old.since : save.clock.season };
   if (o.keep) Object.assign(save.contract, { seasons: old.seasons, seasonsLeft: old.seasonsLeft - 1, signing: 0 });
   save.wallet.coins += save.contract.signing;
-  save.garage.upgrades[o.car] ??= { engine: 0, tyres: 0, brakes: 0 }; save.garage.paid[o.car] ??= 0;
+  save.garage.upgrades[o.car] ??= stock(); save.garage.paid[o.car] ??= 0;
   const displaced = save.world.seats[o.car];
   takeSeat(save, o.car, old?.car);
   if (!first) nextSeasonWorld(save);
@@ -209,11 +217,13 @@ function absentFinal(save) {
 export function finishLcq(save, result) {
   const cur = save.season.current, o = cur.open, hero = save.contract.car, R = currentRound(save), seats = save.world.seats;
   if (o?.stage !== 'lcq') throw new Error('No Last Chance Qualifier to finish');
+  logHits(save, result.hits);
   const raced = result.order.filter((k) => k !== hero), at = result.order.indexOf(hero);
   raced.splice(result.dnf || at < 0 ? raced.length : at, 0, hero);
   const through = !result.dnf && raced.indexOf(hero) < T.open.lcqThrough;
   const report = { lcq: true, round: R.round, name: 'Last Chance Qualifier', openName: R.name, track: qualiVenue(save).track, laps: R.lcqLaps, finish: raced.indexOf(hero) + 1, dnf: !!result.dnf, through, best: result.best,
-    entries: raced.map((key, i) => ({ key, team: CAR[key].team, code: key === hero ? save.player.code : seats[key], you: key === hero, advanced: i < T.open.lcqThrough && !(key === hero && result.dnf) })) };
+    entries: raced.map((key, i) => ({ key, team: CAR[key].team, code: key === hero ? save.player.code : seats[key], you: key === hero, advanced: i < T.open.lcqThrough && !(key === hero && result.dnf) })),
+    repairs: repairBill(cur.hits ?? [], hero, discount(save, 'crew'), Infinity) };   // the weekend's bill so far; it is paid out of the round's pay, with the cap
   closeLcq(save, raced, result.best);
   if (through) return report;
   const out = absentFinal(save); out.lcq = report; return out;
@@ -285,7 +295,7 @@ export function setRaceLength(save, length) {
 export const currentRound = (save) => save.season?.calendar[save.clock.round] ?? null;
 const ratingOf = (save, key) => save.world.ratings[save.world.seats[key]];
 const devOf = (save, key) => save.world.teams[CAR[key].team].dev;
-const myLevels = (save) => ({ engine: 0, tyres: 0, brakes: 0, ...save.garage.upgrades[save.contract.car] });
+const myLevels = (save) => ({ ...stock(), ...save.garage.upgrades[save.contract.car] });
 export const teammateCar = (save) => seatCar(save.contract.team, otherSeat(save.contract.seat));
 
 /** a rival's pace this round: his rating, with seeded jitter */
@@ -305,6 +315,11 @@ export const qualiPlace = (q, key) => (q.order ?? q.grid).indexOf(key) + 1;
 export const roundObjectives = (save) => { const cur = save.season.current; return cur.quali ? cur.objectives.map((o) => objectiveFrom(o, qualiPlace(cur.quali, save.contract.car))) : cur.objectives; };
 /** retries left this round (the screens enforce it): none for a driver who skips qualifying */
 export const retriesLeft = (q) => (q.exempt || q.fixed ? 0 : Math.max(0, 1 + T.series.qualiRetries - (q.tries ?? 1)));
+
+/** the weekend's crashes (km/h of velocity each hard hit took away, from a qualifying or the Last Chance): they are billed with the round's pay, in finishRace. Practice, test and sponsor days never call this */
+export function logHits(save, hits) {
+  const cur = save.season?.current; if (cur && hits?.length) (cur.hits ??= []).push(...hits.filter(Number.isFinite).map(Math.round));
+}
 
 /** qualifying is done (the player's best valid lap or null, and the teammate's lap on track or null): every driver's lap, the duel, and the fastest eight make the grid (4.3). Another try before the race keeps each driver's better lap; the other teams' laps are seeded, so they do not move, and the teammate's computed lap only stands in when he set none */
 export function finishQuali(save, best, mateRun = null) {
@@ -329,7 +344,7 @@ export function finishQuali(save, best, mateRun = null) {
 export function raceSetup(save) {
   const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at Dry Lake
   const racers = cur.quali?.grid ?? [hero], pace = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => [key, aiPace(save, key, lcq ? ['lcq'] : [])]));
-  const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2] });
+  const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
   return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
     label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null,
     drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
@@ -339,7 +354,7 @@ export function raceSetup(save) {
 /** this week's event, ready to drive: the next round's circuit and look, dry, the player's car, the targets */
 export function sideSpec(save) {
   const w = currentWeek(save), e = w?.event; if (!e || e.result || e.skipped || save.clock.phase !== 'paddock') return null;
-  const R = freshRound(save, currentRound(save)), car = save.contract.car, L = myLevels(save), par = parLap(R.track, car, 'dry', [L.engine, L.tyres, L.brakes]);
+  const R = freshRound(save, currentRound(save)), car = save.contract.car, L = myLevels(save), par = parLap(R.track, car, 'dry', [L.engine, L.tyres, L.brakes, L.aero]);
   return { kind: e.kind, name: eventName(save, w), track: R.track, look: R.look, weather: 'dry', car, par, targets: e.kind === 'test' ? T.side.test.map((x) => par * x) : [...T.side.sponsor] };
 }
 /** an event is done: value is the best lap (test day) or the drift score (sponsor day). Medal, XP, pay or a free upgrade level; gold cheers a sponsor up */
@@ -396,6 +411,9 @@ export function finishRace(save, result) {
   if (optional) coins.push(['Bonus objectives', optional * Tr.objective[1]]);
   if (!dnf && finish === 1) coins.push(['Win bonus', Tr.bonus.win * E.prize]); else if (!dnf && finish <= 3) coins.push(['Podium bonus', Tr.bonus.podium * E.prize]);
   coins.push(...sponsorRound(save, x, targetMet));
+  // repairs (Part 2): every hard hit of the weekend's qualifying, Last Chance and race, less the crew's share, never more than 40 % of what the round paid and never below an empty wallet
+  const gross = coins.reduce((s, l) => s + Math.max(0, l[1]), 0), fix = repairBill([...(cur.hits ?? []), ...(result.hits ?? [])], hero, discount(save, 'crew'), gross);   // the bill is under 40 % of the pay, so the wallet cannot go below what it held
+  if (fix.bill) coins.push([`Repairs: ${fix.hits} ${fix.hits === 1 ? 'hit' : 'hits'}`, -fix.bill]);
   const earned = coins.reduce((s, l) => s + l[1], 0);
   // apply
   const clBefore = save.career.cl;
@@ -411,7 +429,7 @@ export function finishRace(save, result) {
   entries.forEach((e, i) => { if (!e.dnq && !(e.you && dnf)) day[seats[e.key]] = rankPoints(i, kind); });
   addDay(save, day);
   const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, expPos: cur.expPos, dnf, dnq, pole, fastest, clean,
-    rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins,
+    rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
     entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines,
     rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null } } : {}) };
@@ -514,15 +532,15 @@ function gainXp(save, n) { save.career.xp += n; save.career.cl = levelOf(save.ca
 /** what the next level of `cat` costs on the career car, and why it cannot be bought (cap by tier, CL gate, coins); a team package level is free */
 export function upgradeInfo(save, cat, hp) {
   const car = save.contract.car, cur = save.garage.upgrades[car]?.[cat] ?? 0, cap = TIERS.tiers[TIERS.teams[save.contract.team].tier].cap;
-  const next = cur + 1, free = (save.garage.package ?? 0) > 0, cost = next <= MAX_LEVEL ? (free ? 0 : costOf(hp, next)) : null, gate = T.upgrades.clGate[next - 1];
+  const next = cur + 1, free = (save.garage.package ?? 0) > 0, off = discount(save, 'engineer'), list = next <= MAX_LEVEL ? costOf(hp, next) : null, cost = list === null ? null : free ? 0 : round5(list * (1 - off)), gate = T.upgrades.clGate[next - 1];
   const reason = next > MAX_LEVEL ? 'maxed' : next > cap ? 'cap' : free ? null : save.career.cl < gate ? 'level' : save.wallet.coins < cost ? 'coins' : null;
-  return { level: cur, next, cost, cap, gate, free, reason };
+  return { level: cur, next, cost, list, off, cap, gate, free, reason };   // list: the price before the engineer's share
 }
 export function buyUpgrade(save, cat, hp) {
   if (!CATS.some(([c]) => c === cat)) return { ok: false, reason: 'unknown' };
   const u = upgradeInfo(save, cat, hp); if (u.reason) return { ok: false, ...u };
   const car = save.contract.car;
-  save.wallet.coins -= u.cost; save.garage.upgrades[car] = { engine: 0, tyres: 0, brakes: 0, ...save.garage.upgrades[car], [cat]: u.next };
+  save.wallet.coins -= u.cost; save.garage.upgrades[car] = { ...stock(), ...save.garage.upgrades[car], [cat]: u.next };
   save.garage.paid[car] = (save.garage.paid[car] ?? 0) + u.cost;
   if (u.free) save.garage.package--;
   return { ok: true, ...u, level: u.next };

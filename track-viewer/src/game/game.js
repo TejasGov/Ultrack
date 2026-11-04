@@ -323,7 +323,7 @@ export class Game {
     const h0 = handling(F.hero.key);
     const ev = EV.has(F.hero.key) || this.audio.engine?.ev;
     this.gearbox = new Gearbox(h0.top, this.audio.engine?.prof.redline ?? 8000, ev);
-    this.careerRun = career && { ...career, crashes: 0, spins: 0 };
+    this.careerRun = career && { ...career, crashes: 0, spins: 0, hits: [] };   // hits: the km/h of each hard hit, billed by the career (qualifying and races only)
     this.session = new Session(F, mode, { laps: S.laps, drivers: career?.drivers });     // last: update() runs a session only once it is complete
     this.setBusy('');
     this.mode = mode; this.lastLaps = S.laps;
@@ -449,6 +449,7 @@ export class Game {
         break;
       case 'invalid': H.message('Lap invalid', 'track limits', 'bad', 2.2); break;
       case 'offTrack': this.say('off_track', { priority: 2, cooldown: 14 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
+      case 'impact': this.careerRun?.hits.push(e.kmh); break;
       case 'crash': if (this.careerRun) this.careerRun.crashes++; A.crash(e.kmh); this.say(e.kmh > 70 ? 'hard_crash' : 'soft_crash', { priority: 3, cooldown: 10 }); A.play('crowd/gasp.ogg', { bus: 'crowd', gain: 0.5 }); break;
       case 'spin': if (this.careerRun) this.careerRun.spins++; this.say('spin', { priority: 2, cooldown: 12 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
       case 'driftBank': H.message(`+${Math.round(e.pts).toLocaleString('en')}`, `×${e.mult.toFixed(1)}`, 'gold', 1.6); A.play('race/checkpoint.ogg', { gain: 0.5 }); break;
@@ -505,7 +506,7 @@ export class Game {
   careerDone(retired = false) {
     const run = this.careerRun, s = this.session; if (!run || !s) return;
     const T = s.trk.get(this.field.hero), rows = s.mode === 'race' ? s.results() : null;
-    const data = { kind: run.kind, best: T.best, mateLap: s.rivalLap(), score: s.drift?.score ?? null, dnf: retired, crashes: run.crashes, spins: run.spins, pro: store.settings.assists === 'pro',
+    const data = { kind: run.kind, best: T.best, mateLap: s.rivalLap(), score: s.drift?.score ?? null, dnf: retired, crashes: run.crashes, hits: run.hits, spins: run.spins, pro: store.settings.assists === 'pro',
       order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])) };
     this.careerRun = null; this.hideScreens(); this.endSession(); this.lineup(); this.state = 'menu'; this.cameraFor('menu');
     run.done(data);

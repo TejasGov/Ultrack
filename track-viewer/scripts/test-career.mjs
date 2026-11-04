@@ -381,7 +381,7 @@ try {
   // ---- an old save: schema 4 gets the ranking and the records, and a season under way finishes on the rounds it rolled (no Opens, no Last Chance)
   { const s = signed(350), cal = s.season.calendar; cal.forEach((r) => { delete r.kind; delete r.lcqLaps; r.event = 'sprint'; }); round(s, 3, 1); delete s.season.current.open;
     s.schema = 4; delete s.ranking; delete s.hall; for (const k of ['openWins', 'masters', 'triple', 'slams']) delete s.stats[k];
-    C.migrate(s); assert.equal(s.schema, 5); assert.equal(s.ranking.n, 0); assert.deepEqual(s.hall, []); assert.deepEqual(s.stats.openWins, { tokyo: 0, infinia: 0, venice: 0 }); assert.equal(C.rankingOf(s).length, 16);
+    C.migrate(s); assert.equal(s.schema, 6); assert.equal(s.ranking.n, 0); assert.deepEqual(s.hall, []); assert.deepEqual(s.stats.openWins, { tokyo: 0, infinia: 0, venice: 0 }); assert.equal(C.rankingOf(s).length, 16);
     for (let i = 0; i < 4; i++) { const rep = round(s, 3, 1); assert.equal(rep.kind, 'tour', 'an old round plays as a Tour round'); assert.ok(!s.season.current.open); }
     assert.equal(s.ranking.n, 4, 'and still scores the ranking'); toReview(s, 3, 1); assert.equal(s.season.results.length, 10); assert.equal(s.clock.phase, 'review');
     assert.equal(R.pointsMult({ finale: true }), 1.5); assert.equal(R.pointsMult({ kind: 'tour' }), 1); assert.equal(R.pointsMult({ kind: 'open' }), 1.5); }
@@ -389,6 +389,50 @@ try {
   // ---- whole careers through the new format never dead-end, and the same seed replays the same Opens
   { const a = play(M, 19, 1.0, 3), b = play(M, 19, 1.0, 3); assert.equal(JSON.stringify(a.save), JSON.stringify(b.save)); assert.ok(a.save.hall.length >= 9, 'four winners a season are remembered'); assert.ok(a.log.rr.length >= 27, 'every round of every season was rated');
     for (const skill of [0.96, 1.0, 1.03]) for (let i = 0; i < 6; i++) { const { log, save } = play(M, 700 + i, skill, 3); assert.ok(log.minWallet >= 0 && log.offers.every((n) => n >= 1), 'no dead end'); assert.ok(save.hall.every((h) => h.who), 'every winner has a name'); } }
+
+  // ---- running costs: repairs from crash speed, five upgrade categories, staff (Part 2)
+  { assert.equal(R.hitBill(100, 'bmw1'), 400, 'about 400 for a 100 km/h hit in a mid-class car'); assert.equal(R.hitBill(49, 'bmw1'), 0, 'a scrape or light contact is free'); assert.equal(R.hitBill(0, 'bmw1'), 0);
+    assert.ok(R.hitBill(160, 'bmw1') > R.hitBill(100, 'bmw1') && R.hitBill(100, 'destrier') > R.hitBill(100, 'bmw1') && R.hitBill(100, 'nissan-z') < R.hitBill(100, 'bmw1'), 'faster hits and bigger cars cost more');
+    assert.deepEqual(R.repairBill([100, 100, 30], 'bmw1', 0, 5000), { bill: 800, raw: 800, hits: 2, capped: false });
+    assert.equal(R.repairBill([100, 100], 'bmw1', 0.25, 5000).bill, 600, 'the crew takes its share'); assert.deepEqual(R.repairBill([200, 200], 'bmw1', 0, 1000), { bill: 400, raw: 3200, hits: 2, capped: true }, 'never more than 40 % of the pay');
+    assert.equal(R.repairBill([250], 'bmw1', 0, 0).bill, 0, 'a round that paid nothing bills nothing');
+    // stock par laps do not move, and a dev of 0 means no Aero; the Aero a team wears follows its development levels
+    const base = R.CAL.tracks.india.parLap * (1 - R.TUNING.pace.carZ * R.TIERS.carZ.bmw1); assert.equal(R.parLap('india', 'bmw1'), base); assert.equal(R.parLap('india', 'bmw1', 'dry', [0, 0, 0]), base); assert.equal(R.parLap('india', 'bmw1', 'dry', [0, 0, 0, 0]), base);
+    assert.ok(Math.abs(R.parLap('india', 'bmw1', 'dry', [1, 1, 1]) / base - (1 - 0.01 - R.TUNING.pace.perAeroLevel)) < 1e-12, 'a team at dev 1 wears Aero 1'); assert.ok(R.parLap('india', 'bmw1', 'dry', [1, 1, 1, 3]) < R.parLap('india', 'bmw1', 'dry', [1, 1, 1, 0]), 'bought Aero speeds the player');
+    assert.equal(R.aeroOf([2, 2, 1]), 2); assert.equal(R.aeroOf([0, 0, 0]), 0);
+    const E = await server.ssrLoadModule('/src/game/economy.js'); assert.deepEqual(E.levelsOf({ upgrades: { x: { engine: 2 } } }, 'x'), { engine: 2, tyres: 0, brakes: 0, aero: 0, nitro: 0 }, 'a category an old save lacks reads 0'); assert.equal(E.CATS.length, 5);
+    assert.deepEqual(E.migrate({ upgrades: { x: { engine: 1, tyres: 9 } } }).upgrades.x, { engine: 1, tyres: 3, brakes: 0, aero: 0, nitro: 0 }); assert.equal([1, 2, 3].reduce((n, l) => n + E.costOf(600, l), 0) * E.CATS.length, 30000, 'maxing a mid-class car costs about 30,000');
+    // a round's crashes: the weekend's qualifying hits and the race's are billed once, in What it paid
+    const mk = (seed) => { const s = signed(seed); C.finishQuali(s, 1); s.wallet.coins = 800; return s; };
+    const race = (s, hits) => { const hero = s.contract.car, o = s.season.current.quali.grid.filter((k) => k !== hero); o.splice(2, 0, hero); return C.finishRace(s, { order: o, best: {}, crashes: hits?.length ?? 0, spins: 0, hits }); };
+    { const clean = race(mk(910)), s = mk(910); const rep = race(s, [30, 45]); assert.equal(rep.coins, clean.coins, 'scrapes and light contact are free'); assert.ok(!rep.coinLines.some((l) => /Repairs/.test(l[0]))); assert.equal(rep.repairs.hits, 0);
+      const t = mk(910); C.logHits(t, [100]); const hit = race(t, [100, 20]), line = hit.coinLines.find((l) => /Repairs/.test(l[0])); const gross = clean.coinLines.reduce((a, l) => a + Math.max(0, l[1]), 0);
+      assert.ok(line && line[1] === -Math.min(800, Math.floor(gross * 0.4 / 5) * 5), 'qualifying and race hits bill together as one negative line'); assert.equal(hit.coins, clean.coins + line[1]); assert.equal(hit.repairs.hits, 2);
+      assert.equal(t.wallet.coins, 800 + hit.coins, 'the wallet moves by exactly what the report says'); assert.ok(t.wallet.coins >= 0);
+      const big = mk(910); const b = race(big, [250, 250, 250]); assert.ok(b.repairs.capped && -b.coinLines.find((l) => /Repairs/.test(l[0]))[1] <= Math.floor(gross * 0.4 / 5) * 5 && big.wallet.coins > 800, 'a bad weekend is capped and still pays'); }
+    // the Last Chance Qualifier: its crashes are logged, shown on its report and billed in the Open's round
+    { const s = signed(920); while (s.season.current.open?.kind !== 'open') round(s, 4, 999); const hero = s.contract.car;
+      if (s.season.current.open.stage === 'quali') C.finishQuali(s, 1); assert.equal(s.season.current.open.stage, 'lcq', 'a flying lap at Dry Lake puts the player in the Last Chance'); const q = s.season.current.quali, rl = C.finishLcq(s, { order: [hero, ...q.grid.filter((k) => k !== hero)].slice(0, 8), best: {}, hits: [120] });
+      assert.equal(rl.lcq, true); assert.equal(rl.repairs.hits, 1); assert.equal(rl.repairs.raw, R.hitBill(120, hero)); assert.deepEqual(s.season.current.hits, [120]);
+      const o = s.season.current.quali.grid.filter((k) => k !== hero); o.splice(2, 0, hero); const fin = C.finishRace(s, { order: o, best: {}, hits: [] }); assert.ok(fin.coinLines.some((l) => /Repairs/.test(l[0]) && l[1] < 0), 'billed with the Final'); assert.equal(fin.repairs.hits, 1); }
+    { const s = signed(921); while (s.season.current.open?.kind !== 'open') round(s, 4, 999); assert.equal(s.season.current.hits, undefined, 'a new round starts with no crashes'); }
+    // staff: unlocked by Career Level, paid up front, a discount this season only, kept across teams
+    const s = signed(930); s.wallet.coins = 20000; s.career.cl = 2; assert.equal(C.staffInfo(s, 'crew-pro').reason, 'level'); assert.equal(C.staffInfo(s, 'nope').reason, 'unknown'); assert.equal(C.staffDiscount(s, 'crew'), 0);
+    s.career.cl = 3; assert.ok(C.hireStaff(s, 'crew-pro').ok); assert.equal(s.wallet.coins, 18500); assert.equal(C.hireStaff(s, 'crew-pro').reason, 'hired', 'no double charge'); assert.equal(s.wallet.coins, 18500); assert.equal(C.staffInfo(s, 'crew-elite').reason, 'level');
+    s.career.cl = 15; assert.ok(C.hireStaff(s, 'crew-factory').ok); assert.equal(C.staffInfo(s, 'crew-pro').reason, 'better', 'a lower tier is not hired over a higher one'); assert.equal(C.staffDiscount(s, 'crew'), 0.6); assert.equal(s.wallet.coins, 9500, 'no refund for the Pro crew');
+    assert.equal(R.repairBill([100, 100], 'bmw1', C.staffDiscount(s, 'crew'), 9999).bill, 320);
+    s.wallet.coins = 100; assert.equal(C.staffInfo(s, 'engineer-pro').reason, 'coins');
+    const e = signed(931); e.wallet.coins = 20000; e.career.cl = 8; e.garage.package = 0; const list = C.upgradeInfo(e, 'aero', 503); assert.equal(list.cost, list.list); C.hireStaff(e, 'engineer-elite'); const disc = C.upgradeInfo(e, 'aero', 503); assert.equal(disc.cost, Math.round(list.list * 0.8 / 5) * 5); assert.equal(disc.list, list.list);
+    const before = e.wallet.coins, b = C.buyUpgrade(e, 'aero', 503); assert.ok(b.ok && e.wallet.coins === before - disc.cost && e.garage.paid[e.contract.car] === disc.cost, 'upgrades are paid at the discount and the ledger keeps what was paid'); assert.equal(e.garage.upgrades[e.contract.car].aero, 1);
+    assert.ok(C.buyUpgrade(e, 'nitro', 503).ok); assert.equal(C.buyUpgrade(e, 'nitro', 503).reason, 'cap', 'Nitro obeys the tier cap like the rest');
+    const paid = e.garage.paid[e.contract.car]; assert.ok(paid > disc.cost); toReview(e, 8, 999); assert.equal(C.staffTier(e, 'engineer').id, 'elite', 'still hired until the season rolls'); const old = e.contract.car, offer = e.pending.offers.find((x) => x.car !== old) ?? e.pending.offers[0];
+    C.acceptOffer(e, offer.id, avail); if (offer.car !== old) assert.equal(e.buyback, Math.round(paid * 0.6), 'parts sell back at 60 % of what was paid, discount included'); assert.equal(e.clock.season, 2); assert.equal(C.staffTier(e, 'engineer').id, 'basic', 'the contract ran out with the season'); assert.equal(e.staff.engineer.tier, 'elite', 'the record stays with the driver');
+    e.wallet.coins = 20000; e.career.cl = 8; assert.ok(C.hireStaff(e, 'engineer-elite').ok, 'and can be hired again, on any team'); assert.equal(C.staffTier(e, 'engineer').id, 'elite');
+    // an old save: staff appear, upgrade entries gain the new categories as 0, a season under way is untouched
+    const o = signed(932); o.schema = 5; delete o.staff; o.garage.upgrades = { bmw1: { engine: 1, tyres: 0, brakes: 0 } }; C.migrate(o); assert.equal(o.schema, 6); assert.deepEqual(o.staff, { crew: null, engineer: null }); assert.deepEqual(o.garage.upgrades.bmw1, { engine: 1, tyres: 0, brakes: 0, aero: 0, nitro: 0 }); assert.equal(C.staffDiscount(o, 'crew'), 0);
+    const o2 = signed(933); o2.garage.upgrades = { 'bmw1': { engine: 1 } }; assert.equal(C.upgradeInfo(o2, 'aero', 503).level, 0, 'a missing category reads 0 even before migration'); assert.equal(C.raceSetup(o2).levels('bmw1').aero, 0);
+    // rivals wear Aero with their development; they have no Nitro bought
+    const w = signed(934); C.finishQuali(w, 1); const lv = C.raceSetup(w).levels, rival = w.season.current.quali.grid.find((k) => k !== w.contract.car), dev = w.world.teams[R.CAR[rival].team].dev; assert.equal(lv(rival).aero, R.aeroOf(dev)); assert.equal(lv(rival).nitro, 0, 'rivals have no Nitro bought'); assert.deepEqual(Object.keys(lv(rival)).sort(), ['aero', 'brakes', 'engine', 'nitro', 'tyres'], 'every category is named, so a level left over from free play cannot leak to a rival'); }
 
   // ---- three save slots, each its own career, guarded when storage is missing
   const S = await server.ssrLoadModule('/src/game/career/save.js'), mem = {};

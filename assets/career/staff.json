@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "note": "Personal staff (docs/career-mode.md, Part 2): hired for one season, paid up front, no refund, and they follow the driver to any team. A role works at Basic (free, no discount) unless a tier was hired this season. Ids are role-tier (crew-pro ... engineer-factory) and are the names of the Shop images at /assets/ui/shop/<id>.webp. cl is the Career Level that unlocks the tier; repairs and upgrades are the share taken off a repair bill and off an upgrade price.",
+  "roles": {
+    "crew": { "name": "Crew", "key": "repairs", "does": "cuts your repair bills" },
+    "engineer": { "name": "Engineer", "key": "upgrades", "does": "cuts upgrade prices" }
+  },
+  "tiers": [
+    { "id": "basic", "name": "Basic", "cost": 0, "cl": 1, "repairs": 0, "upgrades": 0 },
+    { "id": "pro", "name": "Pro", "cost": 1500, "cl": 3, "repairs": 0.25, "upgrades": 0.10 },
+    { "id": "elite", "name": "Elite", "cost": 4000, "cl": 8, "repairs": 0.40, "upgrades": 0.20 },
+    { "id": "factory", "name": "Factory", "cost": 9000, "cl": 15, "repairs": 0.60, "upgrades": 0.30 }
+  ]
+}

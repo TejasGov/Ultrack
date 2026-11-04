@@ -20,10 +20,10 @@ const conds = (R) => [icon(LOOK[R.look][1], { label: LOOK[R.look][0] }), icon(WX
 const scroller = (cls, ...kids) => h(`div.lscroll.${cls}`, { onscroll: (e) => fadeMore(e.currentTarget) }, ...kids);
 
 export function CareerHubScreen(game) {
-  let tab = 'home', armed = false, calWeek = null, mailId = null, storyId = null;
+  let tab = 'home', armed = false, hiring = null, calWeek = null, mailId = null, storyId = null;
   const tabs = h('div.stabs', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'tablist', 'aria-label': 'Career tabs', onadjust: (e) => { api.onKeyTab(e.detail); getNav().reset(getNav().items().indexOf(tabs)); }, onclick: () => api.onKeyTab(1) });     // Left and Right stay on the strip, so holding one cycles the tabs
   const F = frame('career-hub', tabs);
-  const go = (t) => { tab = t; armed = false; build(); };
+  const go = (t) => { tab = t; armed = false; hiring = null; build(); };
   const open = (id) => game.show('careerDeal', { id, home: 'careerHub' });
   const toast = (msg, err) => game.setBusy(msg, err ? { kind: 'error', ms: 4000 } : {});
 
@@ -36,7 +36,7 @@ export function CareerHubScreen(game) {
     const R = C.currentRound(save), V = C.qualiVenue(save), car = save.contract.car, lv = C.raceSetup(save).levels;
     game.careerSession('quali', { ...V, laps: R.laps, car, home: 'careerHub',
       session: { ...C.qualiSetup(save), levels: lv, runUp: TUNING.series.qualiRunUp } }, (d) => {
-      C.finishQuali(save, d.best, d.mateLap); persist(game);
+      C.logHits(save, d.hits); C.finishQuali(save, d.best, d.mateLap); persist(game);
       const q = save.season.current.quali, p = C.qualiPlace(q, car), lap = q.laps[car], cut = q.laps[q.grid.at(-1)];
       const next = C.retriesLeft(q) ? 'Use your retry, or sit this one out.' : 'You sit this one out.';
       game.show('careerHub', 'home'); toast(!Number.isFinite(lap) ? `No valid lap: the top ${q.grid.length} race without you. ${next}` : q.grid.includes(car) ? `Qualified P${p}: ${fmtTime(lap)}. ${q.mate.code} ${fmtTime(q.mate.lap)}: duel ${q.duel.result}.` : `P${p}: ${(lap - cut).toFixed(3)} s off the top ${q.grid.length}. ${next}`, !q.grid.includes(car));
@@ -53,7 +53,7 @@ export function CareerHubScreen(game) {
     const X = C.raceSetup(save), lcq = save.season.current.open?.stage === 'lcq';
     game.careerSession('race', { track: X.track, look: X.look, weather: X.weather, laps: X.laps, car: X.hero, home: 'careerHub',
       session: { racers: X.racers, gridOrder: X.gridOrder, pace: X.pace, levels: X.levels, drivers: X.drivers, label: X.label, field: X.field } }, (d) => {
-      const result = { order: d.order, best: d.bests, dnf: d.dnf, crashes: d.crashes, spins: d.spins, pro: d.pro };
+      const result = { order: d.order, best: d.bests, dnf: d.dnf, crashes: d.crashes, hits: d.hits, spins: d.spins, pro: d.pro };
       const report = lcq ? C.finishLcq(save, result) : C.finishRace(save, result);      // the Last Chance Qualifier is its own short report; the Final is the round's
       persist(game); game.show('careerReport', report);
     });
@@ -271,9 +271,9 @@ export function CareerHubScreen(game) {
   function garage(save) {
     const car = save.contract.car, hp = factsOf(car).powerHp, tier = TIERS.tiers[TIERS.teams[save.contract.team].tier], free = save.garage.package ?? 0;
     const why = { cap: `${tier.name} seats are capped at level ${tier.cap}`, maxed: 'Fully upgraded', level: (u) => `Needs Career Level ${u.gate}`, coins: (u) => `Needs ${money(u.cost)}` };
-    const DOES = { engine: 'More power on the straights', tyres: 'More grip through the corners', brakes: 'Later braking, shorter stops' };
-    return [css(h('div.cx-b.cx-gcar', {}, blockHead(null, `${teamName(save.contract.team)} · ${save.contract.seat} seat`, '#' + (save.player.number)), h('img', { src: still('cars', car), alt: '', decoding: 'async' }), h('strong.cx-title', {}, carName(car)),
-        h('div.cx-kv', {}, stat('Power', `${hp} hp`), stat('Upgrade cap', 'Level ' + tier.cap), cs('xp', 'Career Level', String(save.career.cl)), cs('coin', 'Wallet', Math.round(save.wallet.coins).toLocaleString('en')))), { '--team': teamMark(loreOf(save.contract.team)) }),
+    const DOES = { engine: 'More power on the straights', tyres: 'More grip through the corners', brakes: 'Later braking, shorter stops', aero: 'More grip through the fast corners', nitro: 'A bigger tank that refills faster' };
+    return [h('div.cx-stack', {}, css(h('div.cx-b.cx-gcar', {}, blockHead(null, `${teamName(save.contract.team)} · ${save.contract.seat} seat`, '#' + (save.player.number)), h('img', { src: still('cars', car), alt: '', decoding: 'async' }), h('strong.cx-title', {}, carName(car)),
+        h('div.cx-kv', {}, stat('Power', `${hp} hp`), stat('Upgrade cap', 'Level ' + tier.cap), cs('xp', 'Career Level', String(save.career.cl)), cs('coin', 'Wallet', Math.round(save.wallet.coins).toLocaleString('en')))), { '--team': teamMark(loreOf(save.contract.team)) }), staff(save)),
       h('div.cx-b', {}, blockHead('upgrade', 'Upgrades', free ? `${free} free from the team` : 'Paid from your wallet'),
         CATS.map(([cat, label]) => { const u = C.upgradeInfo(save, cat, hp), r = u.reason;
           return h('div.lrow.cx-up' + (r ? (r === 'maxed' ? '.done' : r === 'coins' ? '.poor' : '.off') : ''), { 'data-nav': '', tabIndex: 0, role: 'button', 'aria-label': `${label} upgrade`, onclick: () => {
@@ -281,8 +281,27 @@ export function CareerHubScreen(game) {
             persist(game); toast(`${label} level ${b.level}: ${b.free ? 'from the team package' : `−${money(b.cost)}`}`); build(true); } },
             icon(!r ? 'upgrade' : r === 'maxed' ? 'check' : r === 'coins' ? 'coin' : 'lock'), h('span.c-name', {}, h('b', {}, label), h('small', {}, DOES[cat])),
             h('span.ch-pips', {}, [1, 2, 3].map((k) => h('i' + (k <= u.level ? '.on' : k > tier.cap ? '.cap' : '')))),
-            h('span.val', {}, r ? h('small', {}, rich(typeof why[r] === 'function' ? why[r](u) : why[r])) : u.free ? h('span.cx-tag.ok', {}, 'Free') : coins(u.cost))); }),
+            h('span.val', {}, r ? h('small', {}, rich(typeof why[r] === 'function' ? why[r](u) : why[r])) : u.free ? h('span.cx-tag.ok', {}, 'Free') : [u.off ? h('s.cx-was', {}, Math.round(u.list).toLocaleString('en')) : null, coins(u.cost)])); }),
         h('p.cx-note', {}, icon('info'), 'Parts stay with the car. Leave it and they are sold back at 60 % of what you paid.'))];
+  }
+
+  /** the personal staff: a crew that cuts repair bills and an engineer that cuts upgrade prices, hired for this season only. The first press on a tier asks, the second pays (no refund) */
+  function staff(save) {
+    const why = { hired: 'Hired', better: 'A better hire works this season', level: (s) => `Needs Career Level ${s.cl}`, coins: (s) => `Needs ${money(s.cost)}` };
+    const hireRole = (role) => {
+      const R = C.STAFF.roles[role], now = C.staffTier(save, role), share = now[R.key];
+      return h('div.cx-staff', {}, h('div.c-name', {}, h('b', {}, R.name), h('small', {}, share ? `${now.name}: ${Math.round(share * 100)} % off ${R.key === 'repairs' ? 'repair bills' : 'upgrade prices'}` : `Basic: ${R.does} with a tier below`)),
+        h('div.cx-chips', {}, C.STAFF_LIST.filter((s) => s.role === role).map((s) => {
+          const r = C.staffInfo(save, s.id), live = hiring === s.id, on = r.reason === 'hired';
+          return h('button.cx-chip' + (on ? '.on' : r.ok ? '' : '.off'), { 'data-nav': '', 'aria-label': `${s.name}, ${money(s.cost)}`, onclick: () => {
+            if (!r.ok) { hiring = null; return toast(on ? `${s.name} is already working for you this season.` : typeof why[r.reason] === 'function' ? why[r.reason](s) : why[r.reason], !on); }
+            if (hiring !== s.id) { hiring = s.id; return build(true); }
+            hiring = null; C.hireStaff(save, s.id); persist(game); toast(`${s.name} hired for season ${save.clock.season}: −${money(s.cost)}`); build(true); } },
+            h('b', {}, s.tier[0].toUpperCase() + s.tier.slice(1)), h('small', {}, live ? 'Hire?' : on ? 'Hired' : r.reason === 'level' ? `Level ${s.cl}` : money(s.cost)), h('small', {}, `−${Math.round(s.share * 100)} %`));
+        })));
+    };
+    return h('div.cx-b', {}, blockHead('people', 'Staff', 'Hired for this season'), ...C.STAFF_ROLES.map(hireRole),
+      h('p.cx-note', {}, icon('info'), 'Paid now, not refunded, and they stay with you when you change team.'));
   }
 
   // ---------------------------------------------------------------------------------------------- Driver

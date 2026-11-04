@@ -107,7 +107,11 @@ export class Session {
       if (s.offT > 0.8 && !this.offSaid) { this.offSaid = true; this.emit('offTrack'); }
       if (s.offT === 0) this.offSaid = false;
       const decel = -hv.aBody.x, kmh = hv.speed * 3.6;
-      if ((decel > 24 || Math.abs(hv.aBody.z) > 34) && this.t - (this.crashT ?? -9) > 2) { this.crashT = this.t; this.emit('crash', { kmh: Math.max(kmh, (this.lastKmh ?? kmh)) }); }
+      if ((decel > 24 || Math.abs(hv.aBody.z) > 34) && this.t - (this.crashT ?? -9) > 2) { this.crashT = this.t; this.emit('crash', { kmh: Math.max(kmh, (this.lastKmh ?? kmh)) }); const v0 = this.lastVel ?? hv.rb?.linvel(); if (v0) this.hit = { t: this.t, v0, peak: 0 }; }
+      // how hard the hit really was, for the repair bill: the most velocity it took away in the 0.4 s after the first spike (a rub along the barrier deflects the car and takes little, a wall head-on takes it all)
+      const vel = hv.rb?.linvel();   // (a test's stand-in car has no body)
+      if (vel && this.hit) { const w = this.hit; w.peak = Math.max(w.peak, Math.hypot(vel.x - w.v0.x, vel.z - w.v0.z) * 3.6); if (this.t - w.t >= 0.4) { this.hit = null; this.emit('impact', { kmh: Math.round(w.peak) }); } }
+      if (vel) this.lastVel = { x: vel.x, z: vel.z };
       if (Math.abs(hv.state.beta) > 1.9 && hv.state.drift < 0.5 && this.t - (this.spinT ?? -9) > 4) { this.spinT = this.t; this.emit('spin'); }
       this.lastKmh = kmh;
       if (this.drift) this.driftUpdate(dt, hv, s);

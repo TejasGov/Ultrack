@@ -6,6 +6,8 @@ import CAL from '../../../../assets/career/calendar.json';
 import DRIVERS from '../../../../assets/career/drivers.json';
 import SPONSORS from '../../../../assets/career/sponsors.json';
 import TEAMS from '../../../../assets/teams/teams.json';
+import SPECS from '../../../../assets/cars/specs.json';
+import { classOf } from '../economy.js';
 import { rng, gauss, shuffle } from './rng.js';
 
 export { TUNING, TIERS, CAL, DRIVERS, SPONSORS };
@@ -38,11 +40,26 @@ export const hardPaceFor = (on) => (on ? T.pace.hardMode : 1);
 export const setHardMode = (on) => { hardPace = hardPaceFor(on); };
 /** AI pace from a driver rating (2.3): 94 -> 1.011, 76 -> 0.974 */
 export const paceOf = (rating, difficulty = 'normal') => clamp(T.pace.base + (rating - 60) * T.pace.perRating, T.pace.min, T.pace.max) * (T.pace.difficulty[difficulty] ?? 1) * hardPace;
-/** an AI flying lap at pace 1.00 in this car, these conditions and these upgrade levels [engine, tyres, brakes] */
+/** the Aero level a rival's car wears: his team's development levels [engine, tyres, brakes] averaged (a team's `dev` stays three long) */
+export const aeroOf = (dev) => Math.round(avg(dev.slice(0, 3)));
+/** an AI flying lap at pace 1.00 in this car, these conditions and these upgrade levels [engine, tyres, brakes, aero]; a three-long dev (a team's) wears the Aero its levels imply, none at all is stock */
 export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
-  CAL.tracks[track].parLap * (1 - T.pace.carZ * (TIERS.carZ[car] ?? 0)) * (T.pace.wet[weather] ?? 1) * (1 - T.pace.perDevLevel * avg(dev));
+  CAL.tracks[track].parLap * (1 - T.pace.carZ * (TIERS.carZ[car] ?? 0)) * (T.pace.wet[weather] ?? 1) * (1 - T.pace.perDevLevel * avg(dev.slice(0, 3)) - T.pace.perAeroLevel * (dev[3] ?? aeroOf(dev)));
 /** race laps from the length the player picked, in minutes (tuning.json series.lengths): laps differ per circuit, the time does not, down to the 2-lap minimum */
 export const lapsFor = (track, length = 'sprint') => clamp(Math.round((T.series.lengths[length] * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
+
+// ---------------------------------------------------------------------------------------------- repairs
+/** the repair bill of one crash in this car, `kmh` being the velocity the hit took away (session.js `impact`): nothing under repairs.minKmh (a rub along a barrier, light contact), then base x (kmh/100)^exp x the car's class price (400 for 100 km/h in a Sports car) */
+export const hitBill = (kmh, car) => (kmh < T.repairs.minKmh ? 0 : round5(T.repairs.base * classOf(SPECS.cars[car]?.powerHp).mult * (kmh / 100) ** T.repairs.exp));
+const round5 = (n) => Math.round(n / 5) * 5;
+/**
+ * What a round's crashes (km/h list) cost: the sum, less the crew's `share`, never more than repairs.cap of the round's earnings (`gross`, before this bill). Returns { bill, raw, hits, capped }:
+ * raw is the bill before the cap, hits the crashes that count.
+ */
+export function repairBill(hits, car, share, gross) {
+  const raw = round5(hits.reduce((s, k) => s + hitBill(k, car), 0) * (1 - share)), cap = Math.floor(Math.max(0, gross) * T.repairs.cap / 5) * 5, bill = Math.min(raw, cap);
+  return { bill, raw, hits: hits.filter((k) => k >= T.repairs.minKmh).length, capped: bill < raw };
+}
 
 // ---------------------------------------------------------------------------------------------- calendar
 const LOOKS = ['day', 'dusk', 'bluehour', 'night'];                       // a track without `times` (tracks.js) offers them all

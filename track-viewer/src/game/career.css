@@ -410,6 +410,15 @@
 
 /* Garage */
 .cx-garage { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+.cx-garage .cx-stack { grid-template-rows: minmax(0, 1fr) auto; }
+.cx-was { margin-right: var(--sp-1); font-size: var(--fs-micro); color: var(--c-ink-3); font-variant-numeric: tabular-nums; }
+.cx-staff { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-3); }
+.cx-staff .c-name small { display: block; font-size: var(--fs-micro); letter-spacing: 0.04em; text-transform: none; color: var(--c-ink-2); }
+.cx-chips { display: flex; gap: var(--sp-2); }
+.cx-chip { display: grid; gap: 1px; min-width: calc(92 * var(--u)); padding: var(--sp-2) var(--sp-3); border: 1px solid var(--c-line-2); border-radius: var(--r-2); background: var(--c-fill-2); color: var(--c-ink-1); text-align: left; cursor: pointer; }
+.cx-chip small { font-size: var(--fs-micro); letter-spacing: 0.04em; color: var(--c-ink-2); font-variant-numeric: tabular-nums; }
+.cx-chip.on { border-color: color-mix(in srgb, var(--pos) 60%, transparent); background: color-mix(in srgb, var(--pos) 14%, transparent); }
+.cx-chip.off { color: var(--c-ink-2); }
 .cx-gcar img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: contain; }
 .cx-up { --cols: var(--icon-m) minmax(0, 1fr) auto calc(200 * var(--u)); cursor: pointer; min-height: calc(64 * var(--u)); }
 .cx-up > .icon { color: var(--d-garage); }
