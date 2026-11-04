@@ -149,5 +149,6 @@ def fill(x0, x1, y0, y1, kinds):
     return cnt
 n_city = sum(fill(*r_, ('timber', 'timber', 'plaster', 'plaster', 'brick')) for r_ in ((365, 760, 730, 782), (365, 760, 830, 898))) + sum(fill(*r_, ('brick', 'brick', 'plaster', 'timber')) for r_ in ((790, 1125, 730, 782), (790, 1125, 830, 898)))
 log('town houses', n_city)
+build_palazzi(PALAZZI); campanile(pc, gz)
 exec(compile((H / 'venice_decor.py').read_text(encoding='utf8'), str(H / 'venice_decor.py'), 'exec'))
 CT.done(); KT.done(); KR.done(planar=False, smooth=True)

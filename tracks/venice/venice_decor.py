@@ -233,9 +233,9 @@ for k_, (c0, n0, o_, u_, w_, d_, h_) in enumerate(HB_):
 log('shops', n_shop, 'laundry lines', n_laundry)
 for c_, wd, dp, yaw, h_ in [p_ for p_ in PALAZZI if road_d(p_[0]) < 130]:      # Venetian chimneys, an inverted cone on a brick stack, and a wooden roof terrace on some
     for q in range(Dn.randint(1, 3)):
-        p = at(c_, yaw, Dn.uniform(-wd * 0.32, wd * 0.32), Dn.uniform(-dp * 0.3, dp * 0.3), h_ + 0.8); KT.block(p, (0.6, 0.6, 2.8), yaw, 'brick'); lathe_k(p + UP * 2.8, [(0.2, 0), (0.54, 0.95), (0.6, 1.02), (0.28, 1.1)], 'brick', (0.9, 0.7, 0.6), n=8)
+        p = at(c_, yaw, Dn.uniform(-wd * 0.32, wd * 0.32), Dn.uniform(-dp * 0.3, dp * 0.3), h_ + 2.2 + min(wd, dp) * 0.13); KT.block(p, (0.6, 0.6, 2.8), yaw, 'brick'); lathe_k(p + UP * 2.8, [(0.2, 0), (0.54, 0.95), (0.6, 1.02), (0.28, 1.1)], 'brick', (0.9, 0.7, 0.6), n=8)
     if Dn.random() < 0.28:
-        p = at(c_, yaw, wd * 0.15, -dp * 0.2, h_ + 3.3); KT.block(p, (4.6, 3.2, 0.14), yaw, 'stake', (0.62, 0.48, 0.38))
+        p = at(c_, yaw, wd * 0.15, -dp * 0.2, h_ + 3.0 + min(wd, dp) * 0.15); KT.block(p, (4.6, 3.2, 0.14), yaw, 'stake', (0.62, 0.48, 0.38))
         for sx in (-1, 1):
             for sy in (-1, 1):
                 beam(at(p, yaw, sx * 2.1, sy * 1.4, -3.0), at(p, yaw, sx * 2.1, sy * 1.4, 1.0), 0.05, 'stake', (0.62, 0.48, 0.38))
@@ -357,11 +357,11 @@ def scatter(name, model, spots):
         me.materials.append(m)
     VIS.objects.link(bpy.data.objects.new(name, me)); log(name, len(spots)); return me
 SRCM = H / 'source'
-gmodel = load_model(SRCM / 'gondola' / 'gondola.glb', length=11.0, decimate=0.14)
+gmodel = load_model(SRCM / 'gondola' / 'gondola.glb', length=11.0, decimate=0.1)
 scatter('VE gondolas', gmodel, [(p - UP * 0.42, yaw + Dn.uniform(-0.04, 0.04), (1, 1, 1)) for p, yaw, _ in GOND])
 bmodel = load_model(SRCM / 'venetian_boat' / 'venetian_boat.glb', length=6.0, cut=0.43, decimate=0.1)
 scatter('VE boats', bmodel, [(p - UP * 0.42, yaw, (1, 1, 1)) for p, yaw, _ in BOATS])
-tree_m = load_model(SRCM / 'tree' / 'tree.glb', height=14.0, decimate=0.17)
+tree_m = load_model(SRCM / 'tree' / 'tree.glb', height=14.0, decimate=0.155)
 TREES = []
 SKIP_N, SKIP_S = ((2846, 2890), (2905, 3000)), ((3060, 3130), (3226, 3262))
 for s_ in range(2650, 3430, 28):

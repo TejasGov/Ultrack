@@ -8,12 +8,13 @@ hoods; cornices overhang; columns have a base, an entasis and a capital; every w
   palazzo          Italianate plaster over a rusticated base, stone quoins, pedimented windows, a heavy cornice
   monument_column  a free-standing column on a pedestal, no statue
 A frame W is a wall: origin o, direction u, outward normal n = u x up. Faces are wound to face out, for the web's back-face culling later."""
-UP = Vector((0, 0, 1)); KIT_YAW = 0.0
+UP = Vector((0, 0, 1)); KIT_YAW = 0.0; LOD_FORCE = None      # set when a caller has worked out what a driver can see itself (the palazzi)
 def road_d(p): return near(p.x, p.y)[1]
 def facing_road(p, n_):
     i, d = near(p.x, p.y); return (CL[i] - p).to_2d().dot(n_.to_2d()) > -0.3 * max(d, 1.0)      # the side walls count: you see them coming
 def lod(p, n_=None):
     """2: real depth. 1: a flat shape on the wall. 0: plain wall. Set by what a driver can see: the web's budget goes on what is close to the road"""
+    if LOD_FORCE is not None: return LOD_FORCE
     d = road_d(p)
     if n_ is not None and not facing_road(p, n_): return 0
     return 2 if d < 62 else 1 if d < 175 else 0
@@ -116,11 +117,11 @@ def rusticate(w, a0, a1, z0, z1, k, col, band=0.85, gap=0.13, depth=0.14):
     z = z0; rect(w, a0, a1, z0, z1, 0, k, (col[0] * 0.55, col[1] * 0.55, col[2] * 0.55)); q = 0
     while z < z1:
         relief(w, a0, a1, z, min(z + band, z1), 0, depth, k, col, top=True, bottom=False); z += band + gap
-def balustrade(w, a0, a1, z, k, col, h=1.1, pitch=0.62):
+def balustrade(w, a0, a1, z, k, col, h=1.1, pitch=0.62, solid_past=34):
     pm = w.p((a0 + a1) / 2, z); dm = road_d(pm)
     if not facing_road(pm, w.n) or dm > 170: return
     relief(w, a0, a1, z + h - 0.16, z + h, -0.3, 0.02, k, col, bottom=False)
-    if dm > 34 or a1 - a0 > 60 and dm > 26: rect(w, a0, a1, z, z + h - 0.16, -0.12, k, (col[0] * 0.72, col[1] * 0.72, col[2] * 0.72)); return      # a solid rail: balusters can't be told apart past here
+    if dm > solid_past or a1 - a0 > 60 and dm > 26: rect(w, a0, a1, z, z + h - 0.16, -0.12, k, (col[0] * 0.72, col[1] * 0.72, col[2] * 0.72)); return      # a solid rail: balusters can't be told apart past here
     relief(w, a0, a1, z, z + 0.16, -0.28, 0.0, k, col)
     q = a0 + pitch / 2; c_ = 0
     while q < a1:
@@ -157,8 +158,8 @@ def walls_of(o, u, L_, D_):
     KIT_YAW = math.atan2(u.y, u.x); f_ = W(o, u); n_ = f_.n
     return f_, W(o + u * L_, -n_), W(o + u * L_ - n_ * D_, -u), W(o - n_ * D_, n_)
 ROOF_COL = {'slate': (0.42, 0.44, 0.5), 'lead': (0.62, 0.66, 0.66), 'tile': (0.92, 0.86, 0.8)}
-def roof_hip(c0, u, n_, L_, D_, z, rise, k, col, over=0.5):
-    col = ROOF_COL.get(k, col)
+def roof_hip(c0, u, n_, L_, D_, z, rise, k, col, over=0.5, tint=None):
+    col = tint or ROOF_COL.get(k, col)
     """a hipped roof: c0 the front-left corner, the block going along u and back against n_"""
     a = c0 - u * over + n_ * over + UP * z; b = c0 + u * (L_ + over) + n_ * over + UP * z; c_ = c0 + u * (L_ + over) - n_ * (D_ + over) + UP * z; d_ = c0 - u * over - n_ * (D_ + over) + UP * z
     r_ = max(0.0, (L_ - D_) / 2); mid = c0 + u * L_ / 2 - n_ * D_ / 2 + UP * (z + rise); e, f = mid - u * r_ if L_ >= D_ else mid, mid + u * r_ if L_ >= D_ else mid
@@ -461,3 +462,145 @@ def house(o, u, w_, d_, h_, kind):
                     relief(wl, q * st_w, q * st_w + st_w, z_ + st_h - 0.12, z_ + st_h, -0.38, 0.1, 'lime', WARM, bottom=False); relief(wl, w_ - q * st_w - st_w, w_ - q * st_w, z_ + st_h - 0.12, z_ + st_h, -0.38, 0.1, 'lime', WARM, bottom=False)
                 else: rect(wl, q * st_w, w_ - q * st_w, z_, z_ + st_h, 0.05, wall, wcol)
 HR = random.Random(83)
+
+# ------------------------------------------------------------------------------------------------ the palazzi on the upper loop: where the triangles go is decided by what a driver can actually see from the road, wall by wall
+def pal_sight(FP, lv3=58.0, lv2=170.0, reach=420.0):
+    """for each palazzo's four walls (front, right, back, left, as walls_of): 3 full depth, 2 real but cheap recesses, 1 flat, for a wall only seen far off or over a lower roof, 0 never seen. Rays from the road, in plan, stopped by the other palazzi"""
+    R_ = [(p.to_2d(), Vector((math.cos(y), math.sin(y))), w_ / 2, d_ / 2, h_) for p, w_, d_, y, h_ in FP]
+    ST_ = [(i, CL[i].to_2d()) for i in range(0, N, 4)]
+    def blocked(a, b, skip, min_h):
+        ab = b - a; L_ = ab.length
+        for j, (c, u, hw_, hd_, h_) in enumerate(R_):
+            if j == skip or h_ < min_h or (c - a).length > L_ + hw_ + hd_: continue
+            v = Vector((-u.y, u.x)); t0, t1 = 0.0, 1.0; da = a - c
+            for o_, e_, lim in ((da.dot(u), ab.dot(u), hw_), (da.dot(v), ab.dot(v), hd_)):
+                if abs(e_) < 1e-9:
+                    if abs(o_) > lim: t0 = 2.0
+                    continue
+                t_a, t_b = sorted(((-lim - o_) / e_, (lim - o_) / e_)); t0, t1 = max(t0, t_a), min(t1, t_b)
+            if t0 <= t1: return True
+        return False
+    out = []
+    for j, (c, u, hw_, hd_, h_) in enumerate(R_):
+        v = Vector((-u.y, u.x)); lv = []
+        for cen, n_, ax, half in ((c - v * hd_, -v, u, hw_), (c + u * hw_, u, v, hd_), (c + v * hd_, v, u, hw_), (c - u * hw_, -u, v, hd_)):
+            best, over = 1e9, 1e9
+            for t_ in (0.0, -0.75, 0.75):
+                q = cen + ax * (t_ * half) + n_ * 0.5
+                cand = sorted(((p - q).length, i) for i, p in ST_ if (p - q).length < reach and (p - q).dot(n_) > 0.08 * (p - q).length)
+                for d_, i in cand:
+                    if d_ >= best: break
+                    if not blocked(q, CL[i].to_2d(), j, 0.0): best = d_; break
+                for d_, i in cand[:: 6]:
+                    if d_ >= over: break
+                    if not blocked(q, CL[i].to_2d(), j, h_ - 2.5): over = d_; break
+            lv.append(3 if best < lv3 else 2 if best < lv2 else 1 if min(best, over) < reach else 0)
+        out.append(lv)
+    return out
+def dim(c, f): return (c[0] * f, c[1] * f, c[2] * f)
+def recess(w, a, z0, wd, ht, k, col, trim, tcol, panel, depth=0.55, rise=0.0, pointed=False, **_):
+    """the second rank's window: a real hole with shaded reveals and a dark back, a stone sill and a stone head. No glazing bars, no mouldings: about 30 triangles"""
+    a0, a1, z1 = a - wd / 2, a + wd / 2, z0 + ht; P0, P1, Pz0, Pz1 = panel
+    rect(w, P0, a0, Pz0, Pz1, 0, k, col); rect(w, a1, P1, Pz0, Pz1, 0, k, col); rect(w, a0, a1, Pz0, z0, 0, k, col)
+    if rise > 0:
+        ap = arch_pts(a0, a1, z1, rise, n=4, pointed=pointed); ao = arch_pts(a0 - 0.2, a1 + 0.2, z1, rise + 0.2, n=4, pointed=pointed)
+        for (x0, z_0), (x1, z_1), (y0, u_0), (y1, u_1) in zip(ap, ap[1:], ao, ao[1:]):
+            KT.face([w.p(x0, z_0), w.p(x1, z_1), w.p(x1, Pz1), w.p(x0, Pz1)], k, col)
+            KT.face([w.p(x1, z_1, 0), w.p(x0, z_0, 0), w.p(x0, z_0, -depth), w.p(x1, z_1, -depth)], k, dim(col, 0.42))
+            KT.face([w.p(x0, z_0, 0.09), w.p(x1, z_1, 0.09), w.p(y1, u_1, 0.09), w.p(y0, u_0, 0.09)], trim, tcol)      # the stone arch
+        KT.face([w.p(a0, z0, -depth), w.p(a1, z0, -depth)] + [w.p(x, z_, -depth) for x, z_ in ap[::-1]], 'glass')
+    else:
+        rect(w, a0, a1, z1, Pz1, 0, k, col); KT.face([w.p(a1, z1, 0), w.p(a0, z1, 0), w.p(a0, z1, -depth), w.p(a1, z1, -depth)], k, dim(col, 0.42))
+        rect(w, a0, a1, z0, z1, -depth, 'glass', WHITE)
+        rect(w, a0 - 0.2, a1 + 0.2, z1, z1 + 0.3, 0.13, trim, tcol); KT.face([w.p(a0 - 0.2, z1 + 0.3, 0.13), w.p(a1 + 0.2, z1 + 0.3, 0.13), w.p(a1 + 0.2, z1 + 0.3, 0), w.p(a0 - 0.2, z1 + 0.3, 0)], trim, tcol)      # the lintel, and the light on its top
+    KT.face([w.p(a0, z0, -depth), w.p(a1, z0, -depth), w.p(a1, z0, 0), w.p(a0, z0, 0)], k, dim(col, 0.8))
+    KT.face([w.p(a0, z0, -depth), w.p(a0, z0, 0), w.p(a0, z1, 0), w.p(a0, z1, -depth)], k, dim(col, 0.6)); KT.face([w.p(a1, z0, 0), w.p(a1, z0, -depth), w.p(a1, z1, -depth), w.p(a1, z1, 0)], k, dim(col, 0.6))
+    rect(w, a0 - 0.26, a1 + 0.26, z0 - 0.18, z0, 0.16, trim, tcol); KT.face([w.p(a0 - 0.26, z0, 0.16), w.p(a1 + 0.26, z0, 0.16), w.p(a1 + 0.26, z0, 0), w.p(a0 - 0.26, z0, 0)], trim, tcol)      # the sill
+def eave_band(w, a0, a1, z0, z1, k, col, f=0.68):
+    """the wall under the eaves, darkening as it goes up: the eaves' shadow when the sun isn't on this wall"""
+    fc = KT.face([w.p(a0, z0), w.p(a1, z0), w.p(a1, z1), w.p(a0, z1)], k, col)
+    for l in fc.loops:
+        if l.vert.co.z > (z0 + z1) / 2 + w.o.z: l[KT.vc] = (l[KT.vc][0] * f, l[KT.vc][1] * f, l[KT.vc][2] * f, 1)
+def balcony(w, a0, a1, z, trim, tcol, lv):
+    relief(w, a0, a1, z - 0.24, z, 0, 1.15, trim, tcol)
+    balustrade(W(w.p(0, 0, 1.08), w.u), a0, a1, z, trim, tcol, h=1.05, pitch=0.5, solid_past=75 if lv == 3 else 0)
+    for a_ in (a0, a1 - 0.1): relief(w, a_, a_ + 0.1, z, z + 1.05, 0, 1.08, trim, tcol, bottom=False)
+    if lv == 3:
+        for a_ in (a0 + 0.5, (a0 + a1) / 2, a1 - 0.5): relief(w, a_ - 0.17, a_ + 0.17, z - 0.8, z - 0.24, 0, 0.75, trim, tcol)      # stone brackets
+SHUTTER = (0.3, 0.42, 0.33)
+def pal_wall(w, LL, lv, S, front):
+    global LOD_FORCE
+    gh, fh, n_up, top, k, col, kg, colg, trim, tcol, sty, bay, sc = (S[q] for q in ('gh', 'fh', 'n_up', 'top', 'k', 'col', 'kg', 'colg', 'trim', 'tcol', 'sty', 'bay', 'sc'))
+    if lv == 0: rect(w, 0, LL, -1.2, top + sc, 0, k, col); return
+    nb = max(2, int(LL / (bay if front else bay * 1.3)))
+    if front and nb % 2 == 0: nb = max(3, nb - 1)
+    bw = LL / nb; zn = gh + fh + 0.7; ZS = [(gh, zn, 'nobile')] + [(zn + q * fh, zn + (q + 1) * fh, 'attic' if q == n_up - 2 else 'upper') for q in range(n_up - 1)]; ztop = top - 1.1
+    relief(w, 0, LL, -1.2, 0.7, 0, 0.16, trim, tcol, bottom=False)      # the stone foot, as Venice's walls have against the damp
+    if lv == 1:      # far off, or seen only over a lower roof: flat shapes and the lines that carry at this range
+        rect(w, 0, LL, 0.7, top, 0, k, col)
+        for s_ in range(nb):
+            a = (s_ + 0.5) * bw
+            for z0, z1, kd in ZS:
+                ww, wh = bw * 0.3, z1 - z0 - (1.9 if kd != 'attic' else 2.4); rect(w, a - ww / 2, a + ww / 2, z0 + 1.0, z0 + 1.0 + wh, 0.09, 'glass', WHITE)
+        rect(w, 0, LL, gh - 0.1, gh + 0.2, 0.12, trim, tcol); cornice(w, -0.7, LL + 0.7, top, sc, trim, tcol); return
+    LOD_FORCE = 2; win = window if lv == 3 else recess
+    mid_ = (nb - 1) / 2; group = front and nb >= 3 and sty != 'plain'
+    for s_ in range(nb):
+        a0, a1 = s_ * bw, (s_ + 1) * bw; a = (a0 + a1) / 2; centre = group and abs(s_ - mid_) <= 1.0
+        door = front and (s_ - nb // 2) % 2 == 0
+        if door:
+            wd = min(2.8, bw * 0.62); win(w, a, 0.7, wd, gh - 0.7 - wd / 2 - 0.9, kg, colg, trim=trim, tcol=tcol, depth=0.95, rise=wd / 2, panel=(a0, a1, 0.7, gh), sill=False, glass=True)
+        else: win(w, a, 1.7, min(1.25, bw * 0.3), min(1.7, gh - 2.7), kg, colg, trim=trim, tcol=tcol, depth=0.55, panel=(a0, a1, 0.7, gh), hood=None)
+        for z0, z1, kd in ZS:
+            z2 = min(z1, ztop); wl = z2 - z0
+            if kd == 'nobile':
+                wd = bw * (0.6 if centre else 0.4); rs = {'gothic': wd * 0.62, 'renaissance': wd * 0.5}.get(sty, 0.0); ht = wl - 1.45 - rs
+                win(w, a, z0 + 1.0, wd, ht, k, col, trim=trim, tcol=tcol, depth=0.7, rise=rs, pointed=sty == 'gothic', hood=None if rs else 'tri' if s_ % 2 else 'seg', panel=(a0, a1, z0, z2))
+            else:
+                wd = min(1.6, bw * 0.36); rs = wd * 0.45 if sty == 'gothic' and kd == 'upper' else 0.0; ht = wl - (2.0 if kd == 'upper' else 1.45) - rs
+                win(w, a, z0 + 1.0, wd, ht, k, col, trim=trim, tcol=tcol, depth=0.5, rise=rs, pointed=rs > 0, hood='flat' if kd == 'upper' and not rs else None, panel=(a0, a1, z0, z2))
+                if sty == 'plain' or sty == 'brick' and (s_ + int(z0)) % 3 == 0:      # shutters folded back: weathered wood, and only on some
+                    for sg in (-1, 1):
+                        x0, x1 = sorted((a + sg * wd / 2 + sg * 0.26, a + sg * wd / 2 + sg * (0.26 + wd * 0.46)))
+                        if lv == 3: relief(w, x0, x1, z0 + 1.0, z0 + 1.0 + ht, 0, 0.1, 'stake', SHUTTER, top=False, bottom=False)
+                        else: rect(w, x0, x1, z0 + 1.0, z0 + 1.0 + ht, 0.09, 'stake', SHUTTER)
+    eave_band(w, 0, LL, ztop, top, k, col)
+    relief(w, 0, LL, gh - 0.12, gh + 0.18, 0, 0.24, trim, tcol); relief(w, 0, LL, zn - 0.08, zn + 0.1, 0, 0.13, trim, tcol)      # string courses
+    if front and nb >= 3 and sty != 'plain': balcony(w, (mid_ - 1.4) * bw + bw / 2, (mid_ + 1.4) * bw + bw / 2, gh + 0.9, trim, tcol, lv)
+    if lv == 3 and sty == 'renaissance':      # quoins
+        z_ = 0.7
+        while z_ < ztop - 0.6:
+            for a_ in (0.0, LL - 1.0): relief(w, a_, a_ + 1.0, z_, z_ + 0.72, 0, 0.1, trim, tcol, bottom=False)
+            z_ += 1.44
+    else:
+        for a_ in (0.0, LL - 0.8): relief(w, a_, a_ + 0.8, 0.7, ztop, 0, 0.09, trim, tcol, top=False, bottom=False)      # a stone edge up the corner
+    cornice(w, -0.7, LL + 0.7, top, sc, trim, tcol, modillions=lv == 3)
+    LOD_FORCE = None
+PS = random.Random(47)
+def build_palazzi(FP):
+    SIGHT = pal_sight(FP); cnt = [0, 0, 0, 0]
+    for (p3, w_, d_, yaw, h_), lvs in zip(FP, SIGHT):
+        for v_ in lvs: cnt[v_] += 1
+        u = Vector((math.cos(yaw), math.sin(yaw), 0)); v = Vector((-math.sin(yaw), math.cos(yaw), 0)); o = Vector((p3.x, p3.y, p3.z + 0.8)) - u * w_ / 2 - v * d_ / 2
+        sty = PS.choice(('gothic', 'gothic', 'renaissance', 'renaissance', 'brick', 'plain', 'plain')); t_ = PS.uniform(0.86, 1.06)
+        k = {'gothic': PS.choice(('rose', 'ochre', 'red', 'rose')), 'renaissance': PS.choice(('ochre', 'red', 'rose')), 'brick': PS.choice(('brick', 'brick', 'dbrick')), 'plain': PS.choice(('ochre', 'red', 'rose', 'worn'))}[sty]
+        col = (1.5, 1.42, 1.36) if k == 'dbrick' else (t_, t_ * 0.84, t_ * 0.68) if k == 'ochre' else (t_, t_ * PS.uniform(0.97, 1.0), t_ * PS.uniform(0.93, 1.0))      # the plaster set's yellow goes olive under the game's lights: warm it to Venetian ochre
+        fh = PS.uniform(3.7, 4.2); gh = PS.uniform(4.6, 5.4); n_up = max(2, int((h_ - gh - 0.7) / fh)); fh = (h_ - gh - 0.7) / n_up; ston = sty == 'renaissance'
+        S = dict(gh=gh, fh=fh, n_up=n_up, top=h_, k=k, col=col, kg='lime' if ston else k, colg=WARM if ston else col, trim='lime', tcol=PS.choice((WARM, PALE, (0.88, 0.82, 0.72))), sty=sty, bay=PS.uniform(4.2, 5.3), sc=PS.uniform(0.95, 1.3))
+        f_, r_, b_, l_ = walls_of(o, u, w_, d_)
+        for q, (wall, LL) in enumerate(((f_, w_), (r_, d_), (b_, w_), (l_, d_))): pal_wall(wall, LL, lvs[q], S, q == 0)
+        rt = PS.uniform(0.86, 1.06); roof_hip(o, u, f_.n, w_, d_, h_ + S['sc'], min(w_, d_) * 0.2 + 0.6, 'tile', WHITE, tint=(0.92 * rt, 0.86 * rt, 0.8 * rt))
+    log('palazzi walls by level (hidden, flat, recessed, full)', cnt)
+def campanile(c, gz_):
+    """the skyline's anchor, the type of the San Marco tower: a stone foot, a brick shaft with tall recessed strips, an open belfry, an attic, a lead spire. Same heights as the massing: 62 m shaft, 74 m belfry, 99 m tip"""
+    global LOD_FORCE
+    L_ = 12.0; o = Vector((c.x - L_ / 2, c.y - L_ / 2, gz_)); u = Vector((1, 0, 0)); LOD_FORCE = 2; LI = (0.9, 0.87, 0.8)
+    for w in walls_of(o, u, L_, L_):
+        relief(w, -0.5, L_ + 0.5, -1, 3.5, 0, 0.5, 'lime', LI); rect(w, 0, L_, 3.5, 60, -0.35, 'brick', WHITE)
+        for a0, a1 in ((0, 1.4), (3.5, 4.5), (7.5, 8.5), (L_ - 1.4, L_)): relief(w, a0, a1, 3.5, 60, -0.35, 0, 'brick', WHITE, top=False, bottom=False)
+        relief(w, 0, L_, 60, 62, -0.35, 0, 'brick', WHITE, top=False); cornice(w, -0.4, L_ + 0.4, 62, 0.9, 'lime', LI)
+        for q, a in enumerate((2.2, 6.0, 9.8)): window(w, a, 63.6, 2.3, 4.6, 'lime', LI, trim='lime', tcol=LI, depth=1.6, rise=1.15, panel=(a - 1.9 if q else 0, a + 1.9 if q < 2 else L_, 63, 72), sill=False, surround=False)
+        cornice(w, -0.3, L_ + 0.3, 72, 0.8, 'lime', LI); relief(w, 0.2, L_ - 0.2, 72.8, 74, -0.3, 0, 'lime', LI, top=False, bottom=False)
+    p_ = Vector((c.x, c.y, gz_ + 99)); cs = [Vector((c.x + a_ * 5.8, c.y + b_ * 5.8, gz_ + 74)) for a_, b_ in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+    for q in range(4): KT.face([cs[q], cs[(q + 1) % 4], p_], 'lead', (0.62, 0.8, 0.72))
+    LOD_FORCE = None

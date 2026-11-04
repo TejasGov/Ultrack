@@ -451,28 +451,7 @@ gq = ground_z(cq.x, cq.y)[0]
 HQ_O = (cq - ux * HW_ / 2 - uy * HD_ / 2).to_3d(); HQ_O.z = Z(3.0); HQ_U = ux.to_3d(); HQ_C = cq.to_3d(); HQ_C.z = Z(3.0); HQ_N = uy.to_3d()      # level with the top straight beside it: its arcade must not stand in a pit      # the kit builds it, once it exists
 
 # ------------------------------------------------------------------------------------------------ the palazzi: the sketch's three yellow blocks, in rows with narrow calli, faced to the road; a campanile as the skyline's anchor
-PZ = Sheet('VE palazzi', ['plaster', 'dark', 'roof', 'stone'])
-UP_Z = Vector((0, 0, 1)); PR = random.Random(31); n_pal = 0; PALAZZI = []
-def palazzo(c, w_, d_, yaw, h_, col):
-    gz = ground_z(c.x, c.y)[0] - 0.8; p3 = Vector((c.x, c.y, gz)); PALAZZI.append((p3.copy(), w_, d_, yaw, h_)); PZ.block(p3, (w_, d_, h_ + 0.8), yaw, 'plaster', col, top=False)
-    Mx = Matrix.Translation((c.x, c.y, gz + h_ + 0.8)) @ Matrix.Rotation(yaw, 4, 'Z'); e = Mx @ Vector((0, 0, 2.6))
-    cs = [Mx @ Vector(v) for v in ((-w_ / 2, -d_ / 2, 0), (w_ / 2, -d_ / 2, 0), (w_ / 2, d_ / 2, 0), (-w_ / 2, d_ / 2, 0))]
-    for q in range(4): PZ.face([cs[q], cs[(q + 1) % 4], e], 'roof', TILE)
-    ux_, uy_ = Vector((math.cos(yaw), math.sin(yaw), 0)), Vector((-math.sin(yaw), math.cos(yaw), 0)); base = p3 + Vector((0, 0, 0.8))
-    floors = max(2, int(h_ / 3.8))
-    for fc, u_, L_ in ((base - uy_ * d_ / 2, ux_, w_), (base + ux_ * w_ / 2, uy_, d_), (base + uy_ * d_ / 2, -ux_, w_), (base - ux_ * w_ / 2, -uy_, d_)):
-        cols = max(2, int(L_ / 3.8))
-        for f_ in range(floors):
-            noble = f_ == 1      # the piano nobile: the largest windows
-            for q in range(cols):
-                t_ = (q + 0.5) / cols - 0.5
-                z0 = 1.2 + f_ * 3.8
-                if f_ == 0:
-                    if q % 3 == 1: opening(PZ, fc + u_ * t_ * L_, u_, 2.2, 0.0, 2.0, 0.9, out=0.1, gothic=False)
-                else:
-                    wd_o = 1.5 if noble else 1.15; ht_o = 2.0 if noble else 1.4; opening(PZ, fc + u_ * t_ * L_, u_, wd_o, z0, z0 + ht_o, 0.9 if noble else 0.5, out=0.1)
-                    n3 = Vector((u_.y, -u_.x, 0)); a3 = fc + u_ * t_ * L_ + n3 * 0.06
-                    for sg_o in ((-1, 1) if near(a3.x, a3.y)[1] < 60 else ()): PZ.face([a3 + u_ * sg_o * wd_o / 2 + UP_Z * z0, a3 + u_ * sg_o * (wd_o / 2 + wd_o * 0.48) + UP_Z * z0, a3 + u_ * sg_o * (wd_o / 2 + wd_o * 0.48) + UP_Z * (z0 + ht_o), a3 + u_ * sg_o * wd_o / 2 + UP_Z * (z0 + ht_o)][::sg_o], 'plaster', (0.09, 0.2, 0.15))
+PR = random.Random(31); JOG = random.Random(9); n_pal = 0; PALAZZI = []      # the kit builds them (venice_kit.build_palazzi), once it exists and every footprint is known: what a driver sees depends on all of them
 for blk in BLOCKS:
     xs_, ys_ = [p[0] for p in blk], [p[1] for p in blk]; cb_ = Vector((sum(xs_) / len(xs_), sum(ys_) / len(ys_)))
     iN, _ = near(cb_.x, cb_.y); yaw = HEAD[iN]
@@ -483,18 +462,12 @@ for blk in BLOCKS:
         while x_ < span:
             wd = PR.uniform(13, 24); c = cb_ + u_ * (x_ + wd / 2) + v_ * (y_ + dep / 2); corners_ = [c + u_ * a_ * wd / 2 + v_ * b_ * dep / 2 for a_, b_ in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
             if all(in_poly(q.x, q.y, blk) for q in corners_) and min(near(q.x, q.y)[1] for q in corners_) > 34:
-                palazzo(c, wd, dep, yaw, PR.uniform(13, 22), PR.choice(OCHRE)); n_pal += 1
+                h_ = PR.uniform(13, 22); PR.choice(OCHRE); c_j = c + v_ * JOG.uniform(-1.6, 1.6)      # a street line that wanders, so one front throws a shadow on the next
+                PALAZZI.append((Vector((c_j.x, c_j.y, ground_z(c_j.x, c_j.y)[0] - 0.8)), wd, dep, yaw, h_)); n_pal += 1
             x_ += wd + PR.choice((0.3, 0.3, 4.0))
         y_ += dep + PR.uniform(7, 11)
 log('palazzi', n_pal)
 pc = Vector(PX(975, 165)); gz = ground_z(pc.x, pc.y)[0] - 1
-PZ.block(Vector((pc.x, pc.y, gz)), (12, 12, 62), 0, 'plaster', OCHRE[5])
-PZ.block(Vector((pc.x, pc.y, gz + 62)), (12.6, 12.6, 12), 0, 'stone', ISTRIAN)
-for fc, u_ in ((Vector((pc.x, pc.y - 6.3, gz + 62)), Vector((1, 0, 0))), (Vector((pc.x + 6.3, pc.y, gz + 62)), Vector((0, 1, 0))), (Vector((pc.x, pc.y + 6.3, gz + 62)), Vector((-1, 0, 0))), (Vector((pc.x - 6.3, pc.y, gz + 62)), Vector((0, -1, 0)))):
-    for q in (-3.4, 0, 3.4): opening(PZ, fc + u_ * q, u_, 2.4, 2.0, 7.0, 1.2, out=0.1, gothic=False)
-e = Vector((pc.x, pc.y, gz + 99)); cs = [Vector((pc.x + a_ * 6.3, pc.y + b_ * 6.3, gz + 74)) for a_, b_ in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
-for q in range(4): PZ.face([cs[q], cs[(q + 1) % 4], e], 'stone', WEATHERED)
-PZ.done()
 
 exec(compile((H / 'venice_city.py').read_text(encoding='utf8'), str(H / 'venice_city.py'), 'exec'))
 
