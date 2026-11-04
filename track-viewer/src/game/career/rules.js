@@ -6,7 +6,7 @@ import CAL from '../../../../assets/career/calendar.json';
 import DRIVERS from '../../../../assets/career/drivers.json';
 import SPONSORS from '../../../../assets/career/sponsors.json';
 import TEAMS from '../../../../assets/teams/teams.json';
-import { rng, gauss, weighted, shuffle } from './rng.js';
+import { rng, gauss, shuffle } from './rng.js';
 
 export { TUNING, TIERS, CAL, DRIVERS, SPONSORS };
 const T = TUNING;
@@ -41,6 +41,7 @@ export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
 export const lapsFor = (track, length = 'sprint') => clamp(Math.round((T.series.lengths[length] * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
 
 // ---------------------------------------------------------------------------------------------- calendar
+const LOOKS = ['day', 'dusk', 'bluehour', 'night'];                       // a track without `times` (tracks.js) offers them all
 /**
  * A season's rounds for a world (career-worlds.md): its home tracks twice, guests once, cut to the world's round count, the finale
  * last, never the same track twice in a row. `available` maps track id -> its `times` (null: every look) for the tracks the game has.
@@ -58,9 +59,9 @@ export function buildCalendar(seed, season, world, available, length = 'sprint')
   }
   const seen = {}, wet = { n: 0 };
   return [...order, fin.track].map((track, i, all) => {
-    const C = CAL.tracks[track], times = available[track], finale = i === all.length - 1;
-    const looks = Object.entries(C.looks).filter(([l]) => !times || times.includes(l));
-    const look = finale && fin.look && (!times || times.includes(fin.look)) ? fin.look : weighted(r, looks.length ? looks : [[times?.[0] ?? 'day', 1]]);
+    const C = CAL.tracks[track], looks = available[track] ?? LOOKS, finale = i === all.length - 1;
+    const pick = looks[Math.floor(r() * looks.length)];                 // an even chance of each hour this circuit offers in the menu
+    const look = finale && fin.look && looks.includes(fin.look) ? fin.look : pick;
     let weather = 'dry', x = r();
     if (i > 0 && !C.dryOnly && wet.n < T.weather.maxWet) weather = x < T.weather.rain ? 'rain' : x < T.weather.rain + T.weather.damp ? 'damp' : 'dry';
     if (weather !== 'dry') wet.n++;

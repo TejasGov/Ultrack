@@ -224,7 +224,7 @@ A season is a list of **rounds**. Each round is a track, a time of day (`day`, `
 - Rounds per season = `min(8, 2 x tracks available)`: **6 now, 8 once there are 4 or more tracks**.
 - A track appears at most twice per season (three times only if fewer than 3 tracks exist), never in back-to-back rounds.
 - The finale is the marquee track (Tokyo, "the neon street") at a fixed look, worth x1.5 points.
-- Conditions are seeded per season (`seed`, stream `cal`) from the track's allowed looks (`track.json weather.looks`). Rain appears in at most one in three rounds and never in round 1.
+- Conditions are seeded per season (`seed`, stream `cal`) with an even chance of each look the track offers in the circuit menu (`times` in tracks.js, all four without it); a world's finale keeps its set hour. Rain appears in at most one in three rounds and never in round 1.
 - Race laps = `round(featureMinutes x 60 / parLap)`, clamped to 3-12, with `featureMinutes = 7.5` (**assumed**; the existing 3-lap Marina race is 7.5 min). Today: Marina 3 laps, Tokyo 4, India 5 **(assumed)**.
 
 Season 1 (three tracks, the MVP):

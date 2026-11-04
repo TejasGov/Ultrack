@@ -17,12 +17,6 @@ function mulberry32(a) {
 export const rng = (seed, stream, ...keys) => mulberry32(hash([seed, stream, ...keys].join('|')));
 /** a standard normal draw (Box-Muller) */
 export const gauss = (r) => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
-/** [[value, weight], ...] -> one value */
-export function weighted(r, pairs) {
-  const total = pairs.reduce((s, [, w]) => s + w, 0); let x = r() * total;
-  for (const [v, w] of pairs) { x -= w; if (x < 0) return v; }
-  return pairs.at(-1)[0];
-}
 /** a seeded Fisher-Yates shuffle (a copy) */
 export function shuffle(r, list) {
   const a = [...list];
