@@ -20,6 +20,7 @@ car-lab/verification/
 *.fbx
 sources/**/*.glb
 sources/**/*.blend
+sources/driver-media/
 /La_furari.glb
 /mercedes_amg_one.glb
 

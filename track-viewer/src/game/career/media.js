@@ -1,0 +1,107 @@
+// The paddock press (docs/career-mode.md 13): stories written from what really happened in a career, a save goes in and comes out changed, like the rest of career/.
+// A story is plain data in save.media; its picture is worked out when it is drawn (storyImage), so new art reaches old stories and a missing image only falls back.
+import MEDIA from '../../../../assets/career/media.json';
+import { TUNING as T, CAR, loreOf } from './rules.js';
+import { rng } from './rng.js';
+import { YOU, personOf, rivalsOf } from './world.js';
+
+const MAX = 40;
+const pick = (r, list) => list[Math.floor(r() * list.length)];
+const carOf = (save, code) => Object.keys(save.world.seats).find((k) => save.world.seats[k] === code) ?? null;
+/** the lore rivals of a teams.json driver, by code */
+const LORE = Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, c.driver]));
+
+export function story(save, kind, title, body, { driver = null, mood = 'portrait', track = null, pair = null } = {}) {
+  const box = (save.media ??= []), S = save.season;
+  box.unshift({ id: (save.mediaN = (save.mediaN ?? 0) + 1), season: save.clock.season, week: (save.clock.week ?? 0) + 1, kind, title, body, driver, mood, track: track ?? S?.calendar?.[save.clock.round]?.track ?? S?.calendar?.at(-1)?.track ?? null, pair, read: false });
+  box.length = Math.min(box.length, MAX);
+}
+/** the media bytes on Home and the race report: the newest week's stories in the order they were written (the lead first), then older ones */
+export function latestBytes(save, n = 3) {
+  const box = save.media ?? [], top = box[0], now = top ? box.filter((s) => s.season === top.season && s.week === top.week).reverse() : [];
+  return [...now, ...box.filter((s) => !now.includes(s))].slice(0, n);
+}
+export const unreadStories = (save) => (save.media ?? []).filter((s) => !s.read).length;
+export function readStory(save, id) { const s = save.media?.find((x) => x.id === id); if (s) s.read = true; return s ?? null; }
+
+const quote = (code, mood, r) => { const q = MEDIA.quotes[code]?.[mood]; return q ? `"${pick(r, q)}" ${LORE[code].name.split(' ').at(-1)} told the press.` : ''; };
+const placeName = (entry, i) => (entry.dnq ? 'missed the cut' : `P${i + 1}`);
+
+/** the round's press, after the race (finishRace). Who won, how the player did, the teammate, a feud, and sometimes paddock drama. */
+export function coverRound(save, report) {
+  const { season, round } = save.clock, r = rng(save.seed, 'media', season, round), E = report.entries, me = save.player, track = report.track, gp = report.name;
+  const winner = E[0], at = E.findIndex((e) => e.you), mine = E[at], mate = E.find((e) => !e.you && e.team === mine.team), mateAt = E.indexOf(mate);
+  const nameOf = (c) => (c === me.code ? me.name : personOf(save, c)?.name ?? c), surname = (c) => nameOf(c).split(' ').at(-1);
+
+  // the lead: the winner
+  if (winner.you) story(save, 'win', `${me.name} wins the ${gp}`, `From P${report.grid} to the top step, with ${nameOf(E[1].code)} second.`, { track });
+  else story(save, 'win', pick(r, [`${nameOf(winner.code)} takes the ${gp}`, `${surname(winner.code)} wins the ${gp}`]), `${loreOf(winner.team).name} on the top step, ${nameOf(E[1].code)} second. ${quote(winner.code, 'win', r)}`, { driver: winner.code, mood: 'win', track });
+
+  // the player, unless the lead already was
+  if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track });
+  else if (report.dnf) story(save, 'down', `Retirement for ${me.name}`, `Out of the ${gp} after starting P${report.grid}. No points, and a long walk back to the garage.`, { track });
+  else if (!winner.you && report.finish <= 3) story(save, 'podium', `Podium for ${me.name}`, `P${report.finish} from P${report.grid} at the ${gp}, in a car expected ${report.expPos > report.finish ? `no higher than P${report.expPos}` : `to be up here`}.`, { track });
+  else if (!winner.you && report.expPos - report.finish >= 4) story(save, 'podium', `${me.name} punches above the car`, `P${report.finish} when the paddock expected P${report.expPos}. People are starting to ask who ${me.name} is.`, { track });
+
+  // the teammate, by the finishing order (a missed cut counts as behind)
+  if (mate) {
+    const lost = mateAt < at, gap = Math.abs(mateAt - at);
+    if (report.dnq && !mate.dnq) story(save, 'duel', `${surname(mate.code)} races, ${me.name} does not`, `${nameOf(mate.code)} made the cut at the ${gp} and finished P${mateAt + 1}. In the same car, the comparison writes itself. ${quote(mate.code, 'win', r)}`, { driver: mate.code, mood: 'win', track });
+    else if (gap >= 2 && !report.dnf && !mate.dnq && !mine.dnq) story(save, 'duel', lost ? `${surname(mate.code)} beats ${me.name} again` : `${me.name} beats ${surname(mate.code)} in the same car`, `${placeName(lost ? mate : mine, lost ? mateAt : at)} against ${placeName(lost ? mine : mate, lost ? at : mateAt)} at the ${gp}. ${quote(mate.code, lost ? 'win' : 'down', r)}`, { driver: mate.code, mood: lost ? 'win' : 'down', track });
+  }
+
+  // a feud with the player that is still alive
+  const feud = rivalsOf(save).find((x) => x.feud && x.key && E.some((e) => e.key === x.key));
+  if (feud) {
+    const theirs = E.findIndex((e) => e.key === feud.key), beat = theirs > at && !report.dnf && !report.dnq;
+    story(save, 'feud', beat ? `${me.name} wins the latest round with ${surname(feud.code)}` : `${surname(feud.code)} has the last word over ${me.name}`, beat ? `${nameOf(feud.code)} finished behind at the ${gp}, and did not stop for a handshake.` : `The feud goes on after the ${gp}. Neither camp is pretending otherwise.`, { driver: feud.code, mood: beat ? 'down' : 'win', track });
+  }
+
+  // paddock drama among the others, from the order they really finished in: teammates running together, or lore rivals side by side
+  if (r() < MEDIA.dramaChance) {
+    const raced = E.filter((e) => !e.dnq && !e.you), side = raced.slice(1).map((e, i) => [raced[i], e]);
+    const same = side.find(([a, b]) => a.team === b.team), rivals = side.find(([a, b]) => LORE[a.code]?.rivals.includes(b.code) || LORE[b.code]?.rivals.includes(a.code));
+    if (same) {
+      const [a, b] = same, line = pick(r, [`Team orders at ${loreOf(a.team).name}?`, `${surname(a.code)} and ${surname(b.code)}: who waved whom through?`]);
+      story(save, 'drama', line, `Finishing one place apart at the ${gp}, ${nameOf(a.code)} ahead of ${nameOf(b.code)}. ${loreOf(a.team).principal} says nobody asked anybody to do anything. Nobody in the paddock believes it.`, { driver: b.code, mood: 'down', track, pair: [a.code, b.code] });
+    } else if (rivals) {
+      const [a, b] = rivals, line = pick(r, [`${surname(a.code)} and ${surname(b.code)}: it is not over`, `Words in the pit lane: ${surname(a.code)} against ${surname(b.code)}`]);
+      story(save, 'drama', line, `They crossed the line one place apart at the ${gp} and then argued about how. ${loreOf(b.team).name} is asking the stewards to look at it; ${loreOf(a.team).name} says the replay speaks for itself.`, { driver: a.code, mood: 'portrait', track, pair: [a.code, b.code] });
+    }
+  }
+}
+
+/** the market between seasons: compare the seats before and after (nextSeasonWorld) and write up who moved */
+export function coverMoves(save, before, retired) {
+  const now = save.world.seats, r = rng(save.seed, 'media', save.clock.season, 'market'), was = Object.fromEntries(Object.entries(before).map(([k, c]) => [c, k]));
+  const track = null;
+  for (const code of retired) { const d = personOf(save, code); story(save, 'move', `${d?.name ?? code} retires`, `The paddock loses one of its own. ${pick(r, ['The tributes began before the announcement ended.', 'A seat is open, and everyone knows it.'])}`, { driver: code, mood: 'portrait', track }); }
+  for (const [key, code] of Object.entries(now)) {
+    if (!code || code === YOU || was[code] === key) continue;
+    const d = personOf(save, code), team = loreOf(CAR[key].team).name;
+    if (was[code]) story(save, 'move', `${d.name} moves to ${team}`, `Out of ${loreOf(CAR[was[code]].team).name}, and into a ${team} seat for next season. Contract talks were not friendly.`, { driver: code, mood: 'portrait', track });
+    else if (d.name && !LORE[code]) story(save, 'move', `${team} promotes ${d.name}`, `An academy rookie, called up for next season. ${team} says the data made the decision.`, { track });
+    else story(save, 'move', `${d.name} returns with ${team}`, `A year without a seat is over.`, { driver: code, mood: 'portrait', track });
+  }
+}
+/** the player took the seat of a driver who now has no drive (acceptOffer) */
+export function coverDisplaced(save, code, team) {
+  const d = personOf(save, code); if (!d) return;
+  story(save, 'drama', `${d.name} out at ${loreOf(team).name}`, `The seat has gone to ${save.player.name}. ${d.name} found out from the team's statement, and is not hiding it.`, { driver: code, mood: 'down' });
+}
+
+// ---------------------------------------------------------------------------------------------- pictures
+export const driverSlug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const driverImage = (save, code, mood) => {
+  const have = MEDIA.images[code], name = LORE[code]?.name; if (!have || !name) return null;     // the player and academy rookies have no press photo
+  const pic = have.includes(mood) ? mood : have.includes('portrait') ? 'portrait' : have[0];
+  return pic ? `/assets/drivers/${driverSlug(name)}/media/${pic}.webp` : null;
+};
+/** the picture for a story: the pair's shot, else the driver in that mood, else their portrait, else the circuit, else nothing. `moved`: the driver has since changed team, so the suit is an older one */
+export function storyImage(save, s) {
+  const pair = s.pair && MEDIA.pairs.find((p) => s.pair.every((c) => p.drivers.includes(c)));
+  if (pair) return { pair: true, url: `/assets/drivers/pairs/${pair.id}.webp` };
+  const url = s.driver && driverImage(save, s.driver, s.mood), key = s.driver && carOf(save, s.driver);
+  if (url) return { url, driver: true, moved: !!key && CAR[key].driver.code !== s.driver };
+  return s.track ? { track: s.track } : {};
+}

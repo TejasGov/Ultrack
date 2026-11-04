@@ -310,6 +310,62 @@ try {
   assert.equal(JSON.parse(mem['ultrack.v1']).car, 'av12', 'and the restored profile is on disk at once'); assert.equal(JSON.parse(mem['ultrack.v1']).freePlay, undefined);
   delete globalThis.localStorage;
 
+  // ---- the press (career/media.js): stories come from what happened, and a picture always falls back cleanly
+  {
+    const Md = await server.ssrLoadModule('/src/game/career/media.js');
+    const base = (seed = 77) => { const s = C.newCareer({ name: 'Ana Test', seed, now: 'x' }); C.finishShootout(s, null); C.acceptOffer(s, s.pending.offers[0].id, avail); return s; };
+    const raceWeek = (s) => { while (C.currentWeek(s).kind !== 'race') C.advanceWeek(s); };
+    const raceIt = (s, place) => {
+      raceWeek(s); C.finishQuali(s, 1, null);                        // a lap of 1 s: pole, into the race
+      const q = s.season.current.quali, hero = s.contract.car, rest = q.grid.filter((k) => k !== hero); rest.splice(place - 1, 0, hero);
+      const before = s.mediaN ?? 0; C.finishRace(s, { order: rest, best: {}, dnf: false }); return s.media.filter((x) => x.id > before);
+    };
+    let s = base(), got = raceIt(s, 1);
+    assert.ok(got.some((x) => x.kind === 'win' && x.title.includes('Ana Test')), 'a win makes the lead'); assert.ok(Md.unreadStories(s) > 0);
+    assert.ok(got.every((x) => x.track), 'every story knows its circuit');
+    assert.equal(got.filter((x) => x.title.includes('Ana Test') && x.kind === 'podium').length, 0, 'a win is not also a podium story');
+    s = base(); got = raceIt(s, 3);
+    assert.ok(got.some((x) => x.kind === 'podium'), 'a podium is covered'); const lead = got.find((x) => x.kind === 'win'); assert.ok(lead.driver && lead.mood === 'win', 'another driver won: the story is about them');
+    s = base(); raceWeek(s); C.finishQuali(s, 1e6, null); assert.ok(!s.season.current.quali.grid.includes(s.contract.car), 'too slow'); let n0 = s.mediaN ?? 0;
+    C.finishDnq(s); got = s.media.filter((x) => x.id > n0);
+    assert.ok(got.some((x) => x.kind === 'down' && x.title.includes('misses the cut')), 'a missed cut is covered');
+    {                                                            // the same, with a teammate who did make the grid
+      let d = null;
+      for (let seed = 1; !d && seed < 200; seed++) { const t = base(seed); raceWeek(t); C.finishQuali(t, 1e6, null); if (t.season.current.quali.grid.includes(t.season.current.quali.mate.car)) d = t; }
+      const mate = d.season.current.quali.mate.code; n0 = d.mediaN ?? 0; C.finishDnq(d);
+      assert.ok(d.media.some((x) => x.id > n0 && x.kind === 'duel' && x.driver === mate), 'the teammate who made it is the comparison');
+    }
+    // reading clears the count; the box stays capped
+    const u = Md.unreadStories(s); Md.readStory(s, s.media[0].id); assert.equal(Md.unreadStories(s), u - 1);
+    for (let i = 0; i < 60; i++) Md.story(s, 'drama', 't', 'b'); assert.equal(s.media.length, 40, 'the save keeps the newest stories only');
+    // pictures: the mood, then the portrait, then the circuit, then nothing; only the art that exists
+    const pic = (driver, mood, track = 'marina', pair = null) => Md.storyImage(s, { driver, mood, track, pair });
+    assert.deepEqual(pic(null, 'portrait'), { track: 'marina' }, 'a story about the player shows the circuit');
+    assert.deepEqual(pic('XXX', 'win'), { track: 'marina' }, 'an academy rookie has no photo');
+    assert.deepEqual(pic(null, 'portrait', null), {}, 'nothing to show is allowed');
+    const MJ = (await import('node:fs')).readFileSync(new URL('../../assets/career/media.json', import.meta.url), 'utf8'), media = JSON.parse(MJ), fs = await import('node:fs');
+    for (const [code, moods] of Object.entries(media.images)) {
+      const name = Object.values(R.CAR).find((c) => c.driver.code === code).driver.name;
+      assert.ok(pic(code, 'portrait').url?.includes(Md.driverSlug(name)) || !moods.includes('portrait'), code);
+      if (moods.includes('portrait') && !moods.includes('down')) assert.ok(pic(code, 'down').url.endsWith('/media/portrait.webp'), code + ': a missing mood falls back to the portrait');
+      for (const m of moods) assert.ok(fs.existsSync(new URL(`../public/assets/drivers/${Md.driverSlug(name)}/media/${m}.webp`, import.meta.url)), `${code} ${m} is listed and on disk`);
+    }
+    for (const pr of media.pairs) {
+      assert.ok(fs.existsSync(new URL(`../public/assets/drivers/pairs/${pr.id}.webp`, import.meta.url)), `pair ${pr.id} is on disk`);
+      assert.ok(pic(pr.drivers[0], 'portrait', 'marina', [...pr.drivers].reverse()).url.endsWith(`/pairs/${pr.id}.webp`), 'a pair of drivers has their own shot, whichever finished first');
+    }
+    if (media.pairs.length) assert.ok(!pic('CAL', 'down', 'marina', ['CAL', 'KAR']).url?.includes('/pairs/'), 'two drivers with no shot together fall back to the driver');
+    for (const c of Object.values(R.CAR)) assert.equal(media.quotes[c.driver.code]?.win?.length > 0 && media.quotes[c.driver.code]?.down?.length > 0, true, `${c.driver.code} has lines`);
+    // a market move is written up: a driver the market moved, and one who retired
+    const m = base(), key = Object.keys(m.world.seats).find((k) => m.world.seats[k] !== 'YOU'), code = m.world.seats[key], other = Object.keys(m.world.seats).find((k) => k !== key && m.world.seats[k] !== 'YOU'), before = { ...m.world.seats };
+    [m.world.seats[key], m.world.seats[other]] = [m.world.seats[other], code]; Md.coverMoves(m, before, []);
+    assert.ok(m.media.some((x) => x.kind === 'move' && x.driver === code && x.title.includes(R.loreOf(R.CAR[other].team).name)), 'the move names the new team');
+    assert.equal(Md.storyImage(m, { driver: code, mood: 'portrait', track: 'marina' }).moved ?? false, Boolean(media.images[code]?.length), 'a moved driver with a photo: it is a file photo');
+    // the drama rolls never touch the career's other streams: same seed, same world
+    assert.equal(JSON.stringify(play(M, 11, 1.0, 2).save.media), JSON.stringify(play(M, 11, 1.0, 2).save.media), 'the press replays');
+    assert.ok(play(M, 11, 1.0, 2).save.media.some((x) => x.kind === 'drama' || x.kind === 'move' || x.kind === 'duel'), 'a two-season career has more than results in the papers');
+  }
+
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays
   assert.equal(JSON.stringify(play(M, 11, 1.0, 9).save), JSON.stringify(play(M, 11, 1.0, 9).save), 'nine seasons replay identically');
   let legends = 0;

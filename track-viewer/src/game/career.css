@@ -7,7 +7,7 @@
      a change:   green up, red down (.cx-d), always with the arrow and the sign
    A state is never colour alone: locked has a lock, a dashed edge and hatching; done a check; the current week a ring and "Now". */
 .cx {
-  --d-home: #ff5a52; --d-calendar: #2dd4bf; --d-events: #a78bfa; --d-inbox: #5b9dff; --d-deals: #ff9447; --d-standings: #ff6fae; --d-garage: #3fd18a; --d-driver: #4cc9ff;
+  --d-home: #ff5a52; --d-calendar: #2dd4bf; --d-events: #a78bfa; --d-inbox: #5b9dff; --d-media: #ffc94a; --d-deals: #ff9447; --d-standings: #ff6fae; --d-garage: #3fd18a; --d-driver: #4cc9ff;
   --d-race: #ff5a52; --d-test: #a6e04a; --d-sponsor: #ff9447; --d-market: #a78bfa; --d-review: #ff6fae; --d-practice: #9db2c9;
   --s-coin: #ffd24a; --s-xp: var(--d-driver); --s-rep: var(--d-standings); --s-trust: var(--d-deals);
   --pos: #3fca7f; --neg: #ff6b66;
@@ -238,6 +238,63 @@
 
 /* small tables */
 .cx-mini { --cols: calc(28 * var(--u)) 4px minmax(0, 1fr) auto; }
+.cx[data-sec=media] { --sec: var(--d-media); --wm: url('/assets/ui/icons/camera.svg'); }
+.cx .stabs > button[data-t=media] { --t: var(--d-media); }
+:is(.cx-b:has(> .cx-bh[data-ic=camera])) { --wm: url('/assets/ui/icons/camera.svg'); }
+/* a picture is never cropped: the whole image, over a blurred copy of itself that fills what the frame's shape leaves over */
+.cx-pic { position: relative; overflow: hidden; contain: paint; aspect-ratio: 3 / 2; width: 100%; background: var(--c-panel-2); }
+.cx-pic > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cx-pic > .bg { object-fit: cover; filter: blur(calc(14 * var(--u))) saturate(1.2) brightness(0.55); transform: scale(1.15); }
+.cx-pic > .fg { object-fit: contain; }
+/* the media page: the front page, then the feed of tiles */
+.cx-media { grid-template-columns: minmax(0, 1.72fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+.cx-frontpage { padding: 0; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+.cx-frontpage::after { display: none; }
+.cx-story { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; box-shadow: inset 0 calc(4 * var(--u)) 0 var(--team); }
+.cx-story > .cx-pic { flex: 1 1 0; min-height: 0; aspect-ratio: auto; }
+.cx-storytext { flex: none; display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4) var(--sp-5) var(--sp-4); background: linear-gradient(0deg, var(--c-panel-1, rgba(8, 10, 14, 0.9)), transparent); }
+.cx-storytext .kick { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--d-media); }
+.cx-storytext .kick i { width: calc(4 * var(--u)); height: calc(4 * var(--u)); border-radius: 50%; background: var(--c-ink-3); }
+.cx-storytext h2 { margin: 0; font-style: italic; font-weight: 900; font-size: var(--fs-title); line-height: 1.05; letter-spacing: var(--track-title); text-transform: uppercase; text-wrap: balance; }
+.cx-storytext p { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-1); max-width: 70ch; }
+.cx-storytext blockquote { margin: 0; padding-left: var(--sp-3); border-left: calc(3 * var(--u)) solid var(--team); font-size: var(--fs-value); font-style: italic; font-weight: 700; line-height: 1.2; color: var(--c-ink-1); display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-1) var(--sp-3); }
+.cx-storytext cite { font-size: var(--fs-micro); font-style: normal; font-weight: 500; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-2); }
+.cx-storyfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); min-height: 0; }
+.cx-storyfoot:empty { display: none; }
+.cx-storywho { --bar: var(--team); display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-label); font-weight: 700; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-1); }
+.cx-storywho .tbar { width: calc(4 * var(--u)); height: 1.2em; background: var(--team); border-radius: 1px; }
+.cx-storywho small { font-size: var(--fs-micro); font-weight: 500; color: var(--c-ink-2); }
+.cx-file { font-size: var(--fs-micro); color: var(--c-ink-2); }
+.cx-pressempty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); padding: var(--sp-7); text-align: center; color: var(--c-ink-2); }
+.cx-pressempty .icon { font-size: calc(56 * var(--u)); color: var(--d-media); }
+.cx-pressempty b { font-size: var(--fs-title); font-style: italic; font-weight: 900; text-transform: uppercase; color: var(--c-ink-1); }
+.cx-pressempty p { margin: 0; font-size: var(--fs-body); }
+.cx-feed { min-height: 0; }
+.cx-tiles { flex: 1 1 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: max-content; align-content: start; gap: var(--sp-2); padding: var(--sp-1); }
+.cx .cx-tile { display: flex; flex-direction: column; gap: var(--sp-1); padding: 0 0 var(--sp-2); overflow: hidden; text-align: left; font: inherit; color: var(--c-ink-2); cursor: pointer; border: 1px solid var(--c-line); border-radius: var(--r-2); background: var(--c-panel-2); }
+.cx-tile > .cx-pic { flex: none; }
+.cx-tile:hover { background: color-mix(in srgb, var(--d-media) 12%, var(--c-panel-2)); }
+.cx-tile > small { display: flex; justify-content: space-between; gap: var(--sp-2); padding: var(--sp-1) var(--sp-2) 0; font-size: var(--fs-micro); letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-ink-3); }
+.cx-tile > small > :first-child { color: var(--d-media); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cx-tile > small > :last-child { flex: none; }
+.cx-tile > b { padding: 0 var(--sp-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: 2.4em; font-size: var(--fs-body); font-weight: 700; line-height: 1.2; }
+.cx-tile.new > b { color: var(--c-ink-1); }
+.cx-tile.new > small > :first-child::after { content: ''; display: inline-block; width: 0.5em; height: 0.5em; margin-left: 0.5em; border-radius: 50%; background: var(--d-media); vertical-align: 0.1em; }
+/* media bytes: headline cards on Home and the race report, each opens its story */
+.cx-bytes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); min-width: 0; }
+.cx .cx-byte { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: stretch; height: calc(72 * var(--u)); padding: 0; overflow: hidden; text-align: left; font: inherit; color: var(--c-ink-1); cursor: pointer; border: 1px solid color-mix(in srgb, var(--d-media) 28%, var(--c-line)); border-radius: var(--r-2); background: var(--c-panel-2); }
+.cx-byte:hover { background: color-mix(in srgb, var(--d-media) 12%, var(--c-panel-2)); }
+.cx-byte > .cx-pic { width: auto; height: 100%; }
+.cx-byte > span { min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: var(--sp-1) var(--sp-3); }
+.cx-byte small { font-size: var(--fs-micro); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--d-media); }
+.cx-byte.new small::after { content: ''; display: inline-block; width: 0.5em; height: 0.5em; margin-left: 0.5em; border-radius: 50%; background: var(--d-media); vertical-align: 0.1em; }
+.cx-byte b { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: var(--fs-body); font-weight: 700; line-height: 1.2; }
+.cx-home:has(> .cx-bytes) { grid-template-rows: auto minmax(0, 1fr) auto auto; }
+.cx-home > .cx-bytes { grid-column: 1; grid-row: 3; }
+.cx-home:has(> .cx-bytes) > .cx-modes { grid-row: 4; }
+.cx-home:has(> .cx-bytes) > .cx-side { grid-row: 2 / 5; }
+.cx-report:has(> .cx-bytes) { grid-template-rows: auto minmax(0, 1fr) auto; }
+.cx-report > .cx-bytes { grid-column: 1 / -1; }
 .cx-mini.lrow { min-height: calc(36 * var(--u)); font-size: var(--fs-body); }
 
 /* Calendar */
@@ -471,6 +528,9 @@
   .cx-page { display: block; overflow-y: auto; }
   .cx-page > * { margin-bottom: var(--sp-3); }
   .cx-side, .cx-stack { display: block; }
+  .cx-bytes { grid-template-columns: minmax(0, 1fr); }
+  .cx-story > .cx-pic { flex: none; aspect-ratio: 3 / 2; }
+  .cx-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cx-me .sx:nth-child(n + 3) { display: none; }
   .of-row, .cs-grades { grid-template-columns: minmax(0, 1fr); }
 }

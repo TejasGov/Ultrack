@@ -10,12 +10,14 @@ import {
 } from './rules.js';
 import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
 import { post, unread, markRead } from './inbox.js';
+import { coverRound, coverMoves, coverDisplaced, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorSkipped,
 } from './offers.js';
 
 export const SCHEMA = 4;
+export { unreadStories, readStory, storyImage, latestBytes };
 export { releaseCut as releaseCutOf, driverAt, personOf, rivalsOf, unread, markRead, findOffer, mateOf, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, signMid, teamOutlook, approach, sponsorSlots, signSponsor };
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
 const rankOf = (team) => tierOf(team).rank;
@@ -129,6 +131,7 @@ function startSeason(save, available, displaced = null) {
   prepareRound(save);
   post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${save.garage.package ? `You have ${save.garage.package === 1 ? 'a free upgrade level' : `${save.garage.package} free upgrade levels`}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
   if (displaced) post(save, 'team', `${personOf(save, displaced)?.name ?? displaced} lost the seat to you`, 'A free agent now, and not one to forget it.');
+  if (displaced) coverDisplaced(save, displaced, me.team);
   sponsorOffers(save, save.season.weeks.findIndex((w) => w.kind === 'market'));
 }
 /** the next round's expected place and objectives; the race week shows them */
@@ -309,6 +312,7 @@ export function finishRace(save, result) {
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
     entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines };
   save.season.results.push(report);
+  coverRound(save, report);
   const wk = currentWeek(save); wk.result = { finish, rr: rating.rr, dnf, dnq };
   post(save, 'race', `Round ${R.round}: ${dnq ? `did not qualify, P${grid}` : `${dnf ? 'retired' : `P${finish}`} from P${grid}`}, rating ${rating.rr.toFixed(1)}`, `+${xp.xp} XP, +${earned.toLocaleString('en')} U, reputation ${rep.rep >= 0 ? '+' : ''}${rep.rep}, trust ${trust >= 0 ? '+' : ''}${trust}.`);
   if (report.levelUp) post(save, 'news', `Career Level ${report.levelUp}`, 'Better upgrades and more teams open up as your level rises.', { tab: 'garage' });
@@ -372,7 +376,9 @@ function endSeason(save) {
 function nextSeasonWorld(save) {
   const W = save.world, h = save.history.at(-1), cat = (save.clock.season - 1) % 3, order = [1, 0, 2][cat], gone = W.retired.length;   // tyres, engine, brakes in turn
   for (const id of TEAM_IDS) { const t = W.teams[id], cap = tierOf(id).cap; t.dev[order] = Math.min(cap, t.dev[order] + 1); }
+  const before = { ...W.seats };
   marketMoves(save);
+  coverMoves(save, before, W.retired.slice(gone));
   if (h?.teamOrder) {
     const v = Object.fromEntries(TEAM_IDS.map((id) => [id, 0.5 * W.teams[id].expPos + 0.5 * (h.teamOrder.indexOf(id) + 1)]));
     [...TEAM_IDS].sort((a, b) => v[a] - v[b] || W.teams[a].expPos - W.teams[b].expPos).forEach((id, i) => { W.teams[id].expPos = i + 1; });

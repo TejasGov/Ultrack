@@ -1,5 +1,5 @@
-// The career hub (docs/career-mode.md section 13): full screen, one status bar, eight tabs (Q/E, LB/RB), one red button that always does the next thing.
-// Home is this week; Calendar the weeks; Events the three kinds; Inbox every message; Deals the talks, your contract, the teams; Standings, Garage, Driver.
+// The career hub (docs/career-mode.md section 13): full screen, one status bar, nine tabs (Q/E, LB/RB), one red button that always does the next thing.
+// Home is this week; Calendar the weeks; Events the three kinds; Inbox every message; Media what the paddock press wrote; Deals the talks, your contract, the teams; Standings, Garage, Driver.
 import { h, fill, css, seg, stat, still, row, prompt, empty, getNav, teamMark, fadeMore } from './ui.js';
 import { carName, factsOf } from './carinfo.js';
 import { WEATHER, fmtTime } from './store.js';
@@ -9,10 +9,10 @@ import { trackOf } from '../tracks.js';
 import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
 import { TUNING, TIERS, CAR, loreOf, objectiveText, xpForLevel, formOf, STATUS_LABEL, rrLabel, targetText } from './career/rules.js';
-import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, worldName, tierCup, brandMark, cs, delta, rich, kindOf, kindIcon } from './career-shell.js';
+import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, worldName, tierCup, brandMark, cs, delta, rich, kindOf, kindIcon, STORY_KICK, storyPic, storySource, mediaBytes } from './career-shell.js';
 import { offerRow, teamRows } from './career-deals.js';
 
-const TABS = [['home', 'Home', 'home'], ['calendar', 'Calendar', 'calendar'], ['events', 'Events', 'track'], ['inbox', 'Inbox', 'mail'], ['deals', 'Deals', 'contract'], ['standings', 'Standings', 'trophy'], ['garage', 'Garage', 'garage'], ['driver', 'Driver', 'helmet']];
+const TABS = [['home', 'Home', 'home'], ['calendar', 'Calendar', 'calendar'], ['events', 'Events', 'track'], ['inbox', 'Inbox', 'mail'], ['media', 'Media', 'camera'], ['deals', 'Deals', 'contract'], ['standings', 'Standings', 'trophy'], ['garage', 'Garage', 'garage'], ['driver', 'Driver', 'helmet']];
 const RACE_LENGTHS = Object.entries(TUNING.series.lengths).map(([id, min]) => [id, `${id[0].toUpperCase()}${id.slice(1)} · ${min} min`]);
 const lengthName = (id) => `${id[0].toUpperCase()}${id.slice(1)}`;
 const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'drift', news: 'mail' };
@@ -20,7 +20,7 @@ const conds = (R) => [icon(LOOK[R.look][1], { label: LOOK[R.look][0] }), icon(WX
 const scroller = (cls, ...kids) => h(`div.lscroll.${cls}`, { onscroll: (e) => fadeMore(e.currentTarget) }, ...kids);
 
 export function CareerHubScreen(game) {
-  let tab = 'home', armed = false, calWeek = null, mailId = null;
+  let tab = 'home', armed = false, calWeek = null, mailId = null, storyId = null;
   const tabs = h('div.stabs', { 'data-nav': '', 'data-adjust': '', tabIndex: 0, role: 'tablist', 'aria-label': 'Career tabs', onadjust: (e) => { api.onKeyTab(e.detail); getNav().reset(getNav().items().indexOf(tabs)); }, onclick: () => api.onKeyTab(1) });     // Left and Right stay on the strip, so holding one cycles the tabs
   const F = frame('career-hub', tabs);
   const go = (t) => { tab = t; armed = false; build(); };
@@ -132,7 +132,7 @@ export function CareerHubScreen(game) {
         C.advanceWeek(save); persist(game); armed = false; build();
       } }, icon('chevron-right'), spec ? 'Skip and advance' : 'Advance')];
   }
-  const home = (save) => [strip(save), thisWeek(save), homeSide(save), modes(save)];
+  const home = (save) => [strip(save), thisWeek(save), homeSide(save), mediaBytes(save, C.latestBytes(save), (id) => { storyId = id; go('media'); }), modes(save)];
 
   // ---------------------------------------------------------------------------------------------- Calendar
   function weekDetail(save, i) {
@@ -191,6 +191,28 @@ export function CareerHubScreen(game) {
     mailBox = h('div.cx-b.cx-mailbody', {}, mailDetail(save, m));
     const list = scroller('cx-list', save.inbox.map((x) => mailRow(x, () => { mailId = x.id; build(true); })));
     return [h('div.cx-b', {}, blockHead('mail', 'Inbox', `${C.unread(save)} new`), list), mailBox];
+  }
+
+  // ---------------------------------------------------------------------------------------------- Media
+  let storyBox = null;
+  /** a tile in the feed: the whole picture, the source and week, the headline */
+  const storyTile = (save, s, onclick) => h(`button.cx-tile${s.read ? '' : '.new'}`, { 'data-nav': '', 'data-story': s.id, onclick }, storyPic(save, s), h('small', {}, h('span', {}, STORY_KICK[s.kind] ?? 'The paddock'), h('span', {}, `S${s.season} · WK ${s.week}`)), h('b', {}, s.title));
+  /** the front page: the picture, whole; the headline; the story; a driver's quote pulled out; who it is about */
+  function storyDetail(save, s) {
+    if (!s) return h('div.cx-pressempty', {}, icon('camera'), h('b', {}, 'No press yet'), h('p', {}, 'The paddock starts talking after your first race.'));
+    const q = /^(.*?)\s*"(.+)" (\S+) told the press\.\s*$/s.exec(s.body), who = s.driver && C.personOf(save, s.driver), key = who && Object.keys(save.world.seats).find((k) => save.world.seats[k] === s.driver), team = key && loreOf(CAR[key].team), pic = C.storyImage(save, s);
+    return css(h('div.cx-story', {}, storyPic(save, s, 'big'),
+      h('div.cx-storytext', {}, h('span.kick', {}, STORY_KICK[s.kind] ?? 'The paddock', h('i'), storySource(s), h('i'), `Season ${s.season}, week ${s.week}`), h('h2', {}, s.title),
+        h('p', {}, q ? q[1] : s.body), q ? h('blockquote', {}, `"${q[2]}"`, h('cite', {}, who?.name ?? q[3])) : null,
+        h('div.cx-storyfoot', {}, who ? h('span.cx-storywho', {}, h('i.tbar'), who.name, team ? h('small', {}, team.name) : h('small', {}, 'Free agent')) : null, pic.moved ? h('small.cx-file', {}, 'File photo: taken before the driver changed teams') : null))),
+    { '--team': team ? teamMark(team) : 'var(--d-media)' });
+  }
+  function media(save) {
+    const box = save.media ?? []; storyId ??= box[0]?.id ?? null;
+    const s = box.find((x) => x.id === storyId) ?? box[0]; if (s) { C.readStory(save, s.id); persist(game); }
+    storyBox = h('div.cx-b.cx-frontpage', {}, storyDetail(save, s));
+    const n = C.unreadStories(save);
+    return [storyBox, h('div.cx-b.cx-feed', {}, blockHead('camera', 'The press', n ? `${n} new` : 'All read'), scroller('cx-tiles', box.map((x) => storyTile(save, x, (e) => getNav().reset(getNav().items().indexOf(e.currentTarget))))))];   // onSel opens it
   }
 
   // ---------------------------------------------------------------------------------------------- Deals
@@ -260,10 +282,10 @@ export function CareerHubScreen(game) {
   }
 
   // ---------------------------------------------------------------------------------------------- the frame
-  const LAYOUT = { home: 'cx-home', calendar: 'cx-cal', events: 'cx-events', inbox: 'cx-inbox', deals: 'cx-deals', standings: 'cx-standings', garage: 'cx-garage', driver: 'cx-driver' };
-  const PAGE = { home, calendar, events, inbox, deals, standings, garage, driver };
+  const LAYOUT = { home: 'cx-home', calendar: 'cx-cal', events: 'cx-events', inbox: 'cx-inbox', media: 'cx-media', deals: 'cx-deals', standings: 'cx-standings', garage: 'cx-garage', driver: 'cx-driver' };
+  const PAGE = { home, calendar, events, inbox, media, deals, standings, garage, driver };
   function drawTabs(save) {
-    const count = { inbox: C.unread(save), deals: save.season.mid.length + save.sponsors.offers.length };
+    const count = { inbox: C.unread(save), media: C.unreadStories(save), deals: save.season.mid.length + save.sponsors.offers.length };
     fill(tabs, prompt('Q', 'lb'), TABS.map(([id, label, ic]) => h('button' + (tab === id ? '.on' : ''), { 'data-t': id, tabIndex: -1, role: 'tab', 'aria-selected': String(tab === id), onclick: (e) => { e.stopPropagation(); go(id); } }, icon(ic), label, count[id] ? h('span.badge.tnum', {}, count[id]) : null)), prompt('E', 'rb'));
   }
   function build(keep = false) {
@@ -279,17 +301,20 @@ export function CareerHubScreen(game) {
     const L = getNav().items(), first = L.findIndex((e) => e.classList.contains('cx-go'));
     if (keep) return void getNav().reset(Math.min(cur, L.length - 1));
     const event = tab === 'home' ? L.findIndex((e) => e.classList.contains('next')) : -1;
-    const here = L.findIndex((e) => e.classList.contains('now') || e.classList.contains('me'));   // the Calendar and Events open on this week, Standings on your row
+    const here = L.findIndex((e) => e.classList.contains('now') || e.classList.contains('me') || (storyId && +e.dataset.story === storyId));   // the Calendar and Events open on this week, Standings on your row
     getNav().reset(tab === 'home' ? Math.max(0, event >= 0 ? event : first) : here >= 0 ? here : Math.max(0, L.findIndex((e) => e.closest('.cx-page'))));
   }
   const api = {
     el: F.el, nav: true, grid: true,
-    onShow(t) { if (!game.career) return void game.show('careerStart'); if (t) tab = t; armed = false; calWeek = null; mailId = null; build(); },
+    onShow(t) { if (!game.career) return void game.show('careerStart'); if (t) tab = t.story ? 'media' : t; armed = false; calWeek = null; mailId = null; storyId = t?.story ?? null; build(); },
     onKeyTab(d) { go(TABS[(TABS.findIndex(([id]) => id === tab) + d + TABS.length) % TABS.length][0]); },
-    /** the Calendar's and the Inbox's detail panels follow the focus */
+    /** the Calendar's, the Inbox's and the Media tab's detail panels follow the focus */
     onSel(el) {
       const save = game.career; if (!save || !el) return;
       if (tab === 'calendar' && el.dataset.week !== undefined && calBox) { calWeek = +el.dataset.week; fill(calBox, weekDetail(save, calWeek).flat(Infinity)); calBox.className = `cx-b cx-detail k-${kindOf(save.season.weeks[calWeek])}`; }
+      if (tab === 'media' && el.dataset.story !== undefined && storyBox && +el.dataset.story !== storyId) {
+        storyId = +el.dataset.story; const m = C.readStory(save, storyId); el.classList.remove('new'); persist(game); fill(storyBox, [storyDetail(save, m)].flat(Infinity)); drawTabs(save);
+      }
       if (tab === 'inbox' && el.dataset.mail !== undefined && mailBox && +el.dataset.mail !== mailId) {
         mailId = +el.dataset.mail; const m = C.markRead(save, mailId); el.classList.remove('new'); persist(game); fill(mailBox, [mailDetail(save, m)].flat(Infinity)); drawTabs(save);
       }

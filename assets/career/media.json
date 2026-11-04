@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "note": "The career's paddock press (track-viewer/src/game/career/media.js). 'images': which press photos exist per driver, in track-viewer/public/assets/drivers/<slug>/media/<mood>.webp (portrait, win, down); a missing mood falls back to the portrait, then to the circuit. 'pairs': two-driver shots in drivers/pairs/<id>.webp. 'quotes': invented lines in each driver's voice from assets/teams/teams.json. Provenance of the art: assets/career/MEDIA-IMAGES.md.",
+  "dramaChance": 0.5,
+  "images": {
+    "CAL": ["down", "portrait", "win"],
+    "BAR": ["down", "portrait", "win"],
+    "VAR": ["down", "portrait", "win"],
+    "ORT": ["down", "portrait", "win"],
+    "ASH": ["down", "portrait", "win"],
+    "WHI": ["down", "portrait", "win"],
+    "LIN": ["down", "portrait", "win"],
+    "QUI": ["down", "portrait", "win"],
+    "VAL": ["down", "portrait", "win"],
+    "BEA": ["down", "portrait", "win"],
+    "MAD": ["down", "portrait", "win"],
+    "HOL": ["down", "portrait", "win"],
+    "KAR": ["down", "portrait", "win"],
+    "QAS": ["down", "portrait", "win"],
+    "MIZ": ["down", "portrait", "win"],
+    "KUR": ["down", "portrait", "win"]
+  },
+  "pairs": [
+    {
+      "id": "calderini-ortega",
+      "drivers": ["CAL", "ORT"]
+    },
+    {
+      "id": "lindqvist-mizuno",
+      "drivers": ["LIN", "MIZ"]
+    },
+    {
+      "id": "maddox-hollis",
+      "drivers": ["MAD", "HOL"]
+    },
+    {
+      "id": "mizuno-kuroda",
+      "drivers": ["MIZ", "KUR"]
+    },
+    {
+      "id": "valois-beaulieu",
+      "drivers": ["VAL", "BEA"]
+    },
+    {
+      "id": "valois-kareem",
+      "drivers": ["VAL", "KAR"]
+    },
+    {
+      "id": "varrone-ashcombe",
+      "drivers": ["VAR", "ASH"]
+    },
+    {
+      "id": "varrone-barreto",
+      "drivers": ["VAR", "BAR"]
+    }
+  ],
+  "quotes": {
+    "CAL": {
+      "win": ["The plan worked. It usually does.", "I saw this result around lap two."],
+      "down": ["A bad position. There will be another game.", "I will study it tonight, then it is over."]
+    },
+    "BAR": {
+      "win": ["Tonight Saetta sings, and I sing the loudest!", "Tell Varrone I saved him a seat in the crowd."],
+      "down": ["Even the best opera has a bad act.", "I smile anyway. You should see the other guy's lap times."]
+    },
+    "VAR": {
+      "win": ["I brake later. That is the whole secret.", "Whistle all you like. I heard you from the top step."],
+      "down": ["I apologise to no one, and I am not starting today.", "Ask me after I have looked at who pushed whom."]
+    },
+    "ORT": {
+      "win": ["They charged. I stepped aside. It is not complicated.", "Do not call me La Torera. Call me the winner."],
+      "down": ["Patience costs you, some days.", "The bull had a good afternoon. There are other afternoons."]
+    },
+    "ASH": {
+      "win": ["Terribly sorry to everyone I passed. I shall write.", "My grandfather would have enjoyed that one."],
+      "down": ["My apologies to the team. And to the barrier.", "The note is already in the post."]
+    },
+    "WHI": {
+      "win": ["Same lap as always. The others got slower.", "No rush. Never was."],
+      "down": ["Bit of a slow one. Good surf next week, though.", "You don't fix that by hurrying."]
+    },
+    "LIN": {
+      "win": ["Grip is overrated.", "It was sideways for most of it. That was the good part."],
+      "down": ["It stopped sliding. That was the problem.", "Fine. Next."]
+    },
+    "QUI": {
+      "win": ["Valois can keep his crown warm for me.", "Tell the old guys I am only getting started."],
+      "down": ["One lap I have. Racecraft I am learning, okay?", "I will be faster next time. Write that down."]
+    },
+    "VAL": {
+      "win": ["A lovely afternoon, wouldn't you say?", "Very kind of them all to leave me the room."],
+      "down": ["Even a champion may enjoy the view from further back.", "Jazz helps. Ask me tomorrow, I shall be charming."]
+    },
+    "BEA": {
+      "win": ["One does not hurry. One arrives.", "Le Prince may have the photographs. I shall take the points."],
+      "down": ["A sigh will suffice.", "The tyres were pristine. It is some comfort."]
+    },
+    "MAD": {
+      "win": ["That's how we do it at the county fair.", "Stewards can have the replay. I'm keeping the trophy."],
+      "down": ["Somebody hit me first. I'll check who later.", "Put it on my tab with the stewards."]
+    },
+    "HOL": {
+      "win": ["All waypoints nominal. Mission complete.", "Flew the plan. Nothing further to report."],
+      "down": ["Deviation logged. We will review the checklist.", "Not the flight plan I filed."]
+    },
+    "KAR": {
+      "win": ["This one belongs to the whole Corniche.", "Valois, I am coming for that crown."],
+      "down": ["I am sorry to everyone who stood up for me today.", "A city's patience is long. Mine is shorter."]
+    },
+    "QAS": {
+      "win": ["I lost count of the passes. Did you?", "Desert roads are harder than this. And there, nobody waves a flag."],
+      "down": ["I ran out of people to pass. That never helps.", "Tomorrow I smile again. Tonight, a little less."]
+    },
+    "MIZ": {
+      "win": ["The apex is a suggestion. Today it was a good one.", "Kuroda will tell you it was murder on the tyres. She is right, and I won."],
+      "down": ["Too much angle. Maybe. Lindqvist will say so, loudly.", "I bowed to the marshal who helped me out of the gravel."]
+    },
+    "KUR": {
+      "win": ["Lap fourteen, four tenths. That was the race.", "It is in the logbook."],
+      "down": ["Two tenths on entry. It is in the logbook.", "There is nothing to say that the numbers have not said."]
+    }
+  }
+}

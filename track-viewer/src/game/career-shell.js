@@ -3,6 +3,7 @@
 import './career.css';
 import { h, fill, css, prompt, stat, still, teamLogo } from './ui.js';
 import { carName } from './carinfo.js';
+import { storyImage } from './career/career.js';
 import { store } from './store.js';
 import { icon } from './icons.js';
 import { TRACKS } from '../tracks.js';
@@ -87,3 +88,16 @@ export function brandMark(id) {
   box.append(h('img', { src: `/assets/sponsors/logos/${id}.png`, alt: B.name, decoding: 'async', onerror: () => fill(box, h('b', {}, B.name)) }));
   return box;
 }
+
+// ---------------------------------------------------------------------------------------------- the press
+export const STORY_KICK = { win: 'Race report', podium: 'Race report', down: 'A bad day', duel: 'Teammates', feud: 'The feud', drama: 'The paddock', move: 'The market' };
+export const storySource = (s) => ({ drama: 'Paddock Whispers', feud: 'Paddock Whispers', move: 'The Transfer Desk' }[s.kind] ?? 'Ultrack Wire');
+/** a story's picture, never cropped: the whole image over a blurred copy of itself, in a frame that shape. If the file is not there (art not uploaded yet) the circuit's still takes over, then a plain frame */
+export function storyPic(save, s, cls = '') {
+  const p = storyImage(save, s), track = s.track && still('tracks', s.track), src = p.url ?? track;
+  const bg = src ? h('img.bg', { src, alt: '', loading: 'lazy', decoding: 'async' }) : null;
+  const fg = src ? h('img.fg', { src, alt: '', decoding: cls === 'big' ? 'sync' : 'async', onerror: () => { if (track && fg.getAttribute('src') !== track) { fg.src = track; bg.src = track; } else { fg.remove(); bg.remove(); } } }) : null;
+  return h(`div.cx-pic${cls ? '.' + cls : ''}`, {}, bg, fg);
+}
+/** media bytes: a row of headline cards, each opening its story on the media page */
+export const mediaBytes = (save, stories, open) => (stories.length ? h('div.cx-bytes', {}, stories.map((s) => h(`button.cx-byte${s.read ? '' : '.new'}`, { 'data-nav': '', onclick: () => open(s.id) }, storyPic(save, s), h('span', {}, h('small', {}, STORY_KICK[s.kind] ?? 'The paddock'), h('b', {}, s.title))))) : null);

@@ -64,7 +64,7 @@ try{
   click(deal,/Accept their counter/);t=ok(deal,'agreed');assert.ok(o0.agreed&&t.includes('Sign with')&&!t.includes('Propose'),'agreed: only signing left');assert.match(getNavItem(g).textContent,/Sign with/,'focus goes to Sign, never to Walk away');
   click(deal,/Sign with/);assert.deepEqual(shows.at(-1),['careerHub','home'],'signing goes to the hub');const save=g.career;assert.equal(save.clock.phase,'paddock');
   // every tab of the hub, in a pre-season week
-  for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'tab '+tab);}
+  for(const tab of ['home','calendar','events','inbox','media','deals','standings','garage','driver']){show(hub,tab);ok(hub,'tab '+tab);}
   show(hub,'home');t=ok(hub,'home');for(const w of ['Week 1 of','Practice','Test day','Qualifying','Race','Sprint race','Inbox','Skip and advance'])assert.ok(t.includes(w),w);
   // the race length is a Home tile and a Driver setting; Left/Right steps it
   click(hub,/Sprint race/);assert.equal(save.rules.raceLength,'standard');click(hub,/Standard race/);click(hub,/Full race/);assert.equal(save.rules.raceLength,'sprint');
@@ -83,6 +83,10 @@ try{
   click(hub,/Start the race/);assert.equal(g.sessions.at(-1)[0],'race');
   const q=()=>save.season.current.quali.grid,round=(p=4)=>{if(save.clock.phase==='paddock')C.finishQuali(save,1);const me=save.contract.car,o=q().filter(k=>k!==me);o.splice(p-1,0,me);return C.finishRace(save,{order:o,best:{},crashes:0,spins:0});};
   const r1=round();show(rep,r1);t=ok(rep,'report');for(const w of ['Round rating','Why that rating','What it paid','Objectives','Salary','Continue'])assert.ok(t.includes(w),w);
+  // media bytes: the round's lead on the report and on Home, and a click opens that story on the media page (the season review has no hub to go to, so none there)
+  {const lead=C.latestBytes(save)[0],re=(x)=>new RegExp(x.title.replace(/[^\w ]/g,'.'));assert.ok(lead&&t.includes(lead.title),'the report carries the press');click(rep,re(lead));assert.deepEqual(shows.at(-1),['careerHub',{story:lead.id}],'a byte on the report opens its story');
+   show(hub,'home');t=ok(hub,'home bytes');assert.ok(t.includes(lead.title),'Home carries the press');const third=C.latestBytes(save)[2];assert.ok(third);click(hub,re(third));assert.ok(third.read,'a byte on Home opens its story, not the newest');assert.ok(ok(hub,'media from a byte').includes(third.body.slice(0,30)));
+   show(hub,{story:lead.id});assert.ok(ok(hub,'media from the report').includes(lead.body.slice(0,30)));show(hub,'home');const ph=save.clock.phase;save.clock.phase='review';show(rep,r1);assert.ok(!rep.el.textContent.includes(lead.title),'no bytes on the season review');save.clock.phase=ph;}
   // an open week with a sponsor day; Advance warns once a sponsor is signed, then goes
   const so=save.sponsors.offers[0];show(hub,'deals');t=ok(hub,'deals');for(const w of ['On the table','Your contract','Teams','Your sponsors','Market opens week'])assert.ok(t.includes(w),w);assert.ok(t.includes(so.name),'sponsor offers are on the table');
   click(hub,new RegExp(so.name+': personal sponsor'));assert.deepEqual(shows.at(-1),['careerDeal',{id:so.id,home:'careerHub'}]);show(deal,{id:so.id,home:'careerHub'});t=ok(deal,'sponsor deal');assert.ok(t.includes('Retainer')&&t.includes('Bonus')&&t.includes('Their target'));click(deal,/Sign with/);assert.equal(save.sponsors.deals.length,1);
@@ -92,6 +96,10 @@ try{
   show(hub,'calendar');t=ok(hub,'calendar');assert.ok(t.includes('Skipped')&&t.includes('Race')&&t.includes('Review'));show(hub,'events');t=ok(hub,'events');for(const w of ['Race weekends','Test days','Sponsor events','Required','Optional'])assert.ok(t.includes(w),w);
   // the inbox: a row opens with its action, reading it clears the count
   show(hub,'inbox');t=ok(hub,'inbox');assert.ok(t.includes('Inbox')&&t.includes('Round 1'));
+  // the media tab: a story per real event, a picture that can always fall back, reading clears the count
+  show(hub,'media');t=ok(hub,'media');assert.ok(t.includes('The press')&&/Ultrack Wire|Paddock Whispers/.test(t));assert.ok(g.career.media.length>0,'the first race made the papers');assert.ok(C.unreadStories(g.career)<g.career.media.length,'the open story is read');
+  {const old=g.career.media.at(-1);click(hub,new RegExp(old.title.replace(/[^\w ]/g,'.')));assert.ok(old.read,'a row opens and reads its story');assert.ok(hub.el.textContent.includes(old.body.slice(0,30)));}
+  {const saved=g.career.media;g.career.media=undefined;show(hub,'media');assert.ok(ok(hub,'empty press').includes('No press yet'),'an old save has no press and says so');g.career.media=saved;}
   // rivals, a seat review warning and a market offer; a moved driver shows his own name
   while(C.currentWeek(save).kind!=='market'){if(C.currentWeek(save).kind==='race')round();else C.advanceWeek(save);}
   save.career.heat={LIN:50,MAD:90};save.contract.warning={left:1,met:1};const mo={id:'w',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,w1:true,interest:0.4,why:'They want you.'};save.season.mid=[mo];
@@ -109,7 +117,7 @@ try{
   // a career from before weeks opens on the new hub, every tab, mid-season and with a market offer waiting
   const old3=C.newCareer({name:'Old Save',seed:31,now:'x'});C.finishShootout(old3,null);C.acceptOffer(old3,old3.pending.offers[0].id,avail);g.career=old3;for(let i=0;i<3;i++){C.finishQuali(old3,1);const gq=old3.season.current.quali.grid;C.finishRace(old3,{order:gq,best:{},crashes:0,spins:0});}
   old3.schema=3;delete old3.inbox;delete old3.inboxN;delete old3.sponsors;delete old3.clock.week;delete old3.season.weeks;delete old3.season.mid;delete old3.season.asked;old3.season.w1={offer:{id:'w3',team:'toro',seat:'B',car:'huracan',tier:'maestro',status:'junior',salary:600,signing:1200,seasons:2,interest:0.4,why:'They want you.'},state:'open'};C.migrate(old3);
-  for(const tab of ['home','calendar','events','inbox','deals','standings','garage','driver']){show(hub,tab);ok(hub,'migrated '+tab);}assert.ok(hub.el.textContent.includes('Week')&&C.findOffer(old3,'w3'),'the old offer is still on the table');game.screen=prior;
+  for(const tab of ['home','calendar','events','inbox','media','deals','standings','garage','driver']){show(hub,tab);ok(hub,'migrated '+tab);}assert.ok(hub.el.textContent.includes('Week')&&C.findOffer(old3,'w3'),'the old offer is still on the table');game.screen=prior;
   delete globalThis.localStorage;
  }
  const credits=UI.CreditsScreen(game);for(const who of ['ar.jethin','evolveduk','sunnykhude'])assert.ok(credits.el.textContent.includes(who),'Infinia CC BY model credited: '+who);assert.ok(credits.el.textContent.includes('_shobh19'));assert.ok(credits.el.textContent.includes('blackcube4'));assert.ok(credits.el.textContent.includes('CC BY-NC-SA 4.0'));assert.ok(credits.el.textContent.includes('Airbus A320 Airliner')&&credits.el.textContent.includes('Kyaie'),'the Dry Lake airliner (CC BY) is credited');assert.ok(['Modular Stadium','Stadium Light','davi.pereira.souza.0001','thundermind'].every(t=>credits.el.textContent.includes(t)),'the Shajawa stands and towers (CC BY) are credited');

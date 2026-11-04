@@ -8,7 +8,7 @@ import { trackOf } from '../tracks.js';
 import { SLOTS, listCareers, loadCareer, saveCareer, activeSlot } from './career/save.js';
 import * as C from './career/career.js';
 import { TUNING, TIERS, CAR, loreOf, rrLabel, objectiveText, parLap, STATUS_LABEL } from './career/rules.js';
-import { frame, statusBar, coins, money, signed, delta, cs, rich, teamName, persist, playerDriver, zero, prompts, SELECT, CHOOSE, blockHead } from './career-shell.js';
+import { frame, statusBar, coins, money, signed, delta, cs, rich, teamName, persist, playerDriver, zero, prompts, SELECT, CHOOSE, blockHead, mediaBytes } from './career-shell.js';
 import { CareerHubScreen } from './career-hub.js';
 import { CareerDealScreen, offerRow, teamRows } from './career-deals.js';
 
@@ -165,7 +165,8 @@ export function CareerReportScreen(game) {
           h('p.cx-note', {}, icon('people'), rep.duel.skipped ? `You skipped qualifying, so no duel with ${mate} this round.` : rep.duel.result === 'level' ? `Level with ${mate} in qualifying.` : `${rep.duel.result === 'won' ? 'You out-qualified' : 'Out-qualified by'} ${mate}: ${rep.duel.mine ? fmtTime(rep.duel.mine) : 'no lap'} vs ${fmtTime(rep.duel.mate)}.`),
           rep.rivals?.length ? h('p.cx-note', {}, icon('people'), rep.rivals.map(([l]) => l).join('. ') + '.') : null,
           rep.midSeason?.warning ? h('p.cx-note.warn', {}, icon('warning'), 'Seat review: ', rich(`trust ${save.contract.trust}`), `. Meet the round objective in the next ${TUNING.trust.recover} rounds.`) : null,
-          rep.midSeason?.w1 ? h('p.cx-note', {}, icon('star'), `${teamName(rep.midSeason.w1)} want to talk. Their offer is in your inbox, until the market closes.`) : null));
+          rep.midSeason?.w1 ? h('p.cx-note', {}, icon('star'), `${teamName(rep.midSeason.w1)} want to talk. Their offer is in your inbox, until the market closes.`) : null),
+        save.clock.phase === 'review' ? null : mediaBytes(save, C.latestBytes(save), (id) => game.show('careerHub', { story: id })));   // the season review has no hub to open them in; they wait for next season
       const next = h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => api.back() }, icon('chevron-right'), 'Continue');
       fill(F.foot, prompts(CHOOSE), h('div.sp'), next);
       getNav().reset(getNav().items().indexOf(next));
