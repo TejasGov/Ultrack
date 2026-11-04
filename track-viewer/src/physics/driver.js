@@ -59,6 +59,12 @@ export class PlayerInput {
 }
 
 /**
+ * A rival's nitro: it fires in bursts from half a tank, well under its target speed (m/s) with the wheel straight, so never into a braking zone;
+ * a corner, a car to follow or a low tank ends the burst. The target speed still caps the car, so a slower driver gains less.
+ */
+export const aiNitro = (on, short, wheel, speed, tank) => (on ? short > 3 && wheel < 0.25 && tank > 0.1 : short > 8 && wheel < 0.12 && speed > 20 && tank > 0.5);
+
+/**
  * AI driver on the racing line: pure-pursuit steering at a look-ahead that grows with speed, and a target speed
  * from the field's grip-limited speed profile (Field.vt) scaled by the car's grip and the driver's pace.
  * `lane` (m, + = left of the line) lets the field spread out and pass.
@@ -128,6 +134,11 @@ export class AIDriver {
     // past full lock and drifting off its lane (pushed wide by a car alongside): lift and brake a little rather than drive on
     // at full lock into the outside wall; a clean lap never gets here, so its lap time is untouched
     if (Math.abs(want) > 1.15 && speed > 12 && Math.abs(myLat - this.laneNow) > 1.5) return { throttle: 0, brake: THREE.MathUtils.clamp((Math.abs(want) - 1) * 0.6, 0, 0.5), steer, handbrake: 0, nitro: 0 };
-    return { throttle: THREE.MathUtils.clamp(0.25 + e * 0.35, 0, 1), brake: THREE.MathUtils.clamp(-e * 0.18 - 0.05, 0, 1), steer, handbrake: 0, nitro: 0 };
+    // a burst starts only with the lane ahead clear and 3 s after the last one (read runs at 120 Hz): the fastest car, catching traffic, fired 16 stubs a race
+    this.nitroRest = Math.max(0, (this.nitroRest ?? 0) - 1);
+    const nitro = !this.car.hero && road.wet < 0.5 && (this.nitroOn || (!blk && !this.nitroRest)) && aiNitro(this.nitroOn, e, Math.abs(want), speed, v.state.nitroTank);
+    if (this.nitroOn && !nitro) this.nitroRest = 360;
+    this.nitroOn = nitro;
+    return { throttle: THREE.MathUtils.clamp(0.25 + e * 0.35, 0, 1), brake: THREE.MathUtils.clamp(-e * 0.18 - 0.05, 0, 1), steer, handbrake: 0, nitro: this.nitroOn ? 1 : 0 };
   }
 }
