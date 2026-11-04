@@ -15,9 +15,10 @@ const N = 16, HALF_W = 13, KEEP = { spec: 0.03, diff: 0.1 };     // segments; ha
 const DIR_LIGHT = 'getDirectionalLightInfo( directionalLight, directLight );';
 const BLOOM_IN = { night: 0.35 };                // bloom strength kept with the camera fully in the tunnel, per look
 
-export async function create({ root, track, bloom }) {
+// opts, for another track's tunnel (venue/venice.js): mats, its materials; roof, its roof mesh's name; halfW, half the tunnel's width; fill, the tunnel's own lamps as an even light under the roof (linear rgb)
+export async function create({ root, track, bloom }, { mats = MATS, roof = ROOF, halfW = HALF_W, label = 'tokyo', fill = null } = {}) {
   const box = new THREE.Box3();
-  root.traverse((o) => { if (o.isMesh && ROOF.test(o.name)) box.expandByObject(o); });
+  root.traverse((o) => { if (o.isMesh && roof.test(o.name)) box.expandByObject(o); });
   if (box.isEmpty() || !THREE.ShaderChunk.lights_fragment_begin.includes(DIR_LIGHT)) return { dispose() {} };
   const C = track.centerline;
   // the covered run: the centerline inside the roof's footprint and well under its top
@@ -35,14 +36,14 @@ export async function create({ root, track, bloom }) {
         float t = clamp(dot(p.xz - a, ab) / max(dot(ab, ab), 1e-4), 0.0, 1.0);
         d = min(d, length(p.xz - a - ab * t));
       }
-      return 1.0 - smoothstep(${HALF_W.toFixed(1)}, ${(HALF_W + 6).toFixed(1)}, d);      // past the portals the cover fades over ~6 m
+      return 1.0 - smoothstep(${halfW.toFixed(1)}, ${(halfW + 6).toFixed(1)}, d);      // past the portals the cover fades over ~6 m
     }
   `;
   const lightsBegin = THREE.ShaderChunk.lights_fragment_begin.replace(DIR_LIGHT, `${DIR_LIGHT}\n\t\tdirectLight.color *= 1.0 - gTunCov;`);
   const patched = [];
   root.traverse((o) => {
     for (const m of [].concat(o.material ?? [])) {
-      if (!o.isMesh || !MATS.has(m.name) || m.userData.tunnelLight) continue;
+      if (!o.isMesh || !mats.has(m.name) || m.userData.tunnelLight) continue;
       m.userData.tunnelLight = true;
       const prev = m.onBeforeCompile, prevKey = m.customProgramCacheKey;
       m.onBeforeCompile = function (sh, r) {
@@ -53,7 +54,7 @@ export async function create({ root, track, bloom }) {
           .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  float gTunCov = tunnelCover(vTunW);')
           .replace('#include <lights_fragment_begin>', lightsBegin)                 // the sun (main.js's directional light)
           .replace('#include <lights_fragment_maps>', `#include <lights_fragment_maps>
-            radiance *= 1.0 - ${(1 - KEEP.spec).toFixed(2)} * gTunCov; iblIrradiance *= 1.0 - ${(1 - KEEP.diff).toFixed(2)} * gTunCov;
+            radiance *= 1.0 - ${(1 - KEEP.spec).toFixed(2)} * gTunCov; iblIrradiance *= 1.0 - ${(1 - KEEP.diff).toFixed(2)} * gTunCov;${fill ? ` iblIrradiance += vec3(${fill.map((v) => v.toFixed(3)).join(', ')}) * gTunCov;` : ''}
             #ifdef USE_CLEARCOAT
               clearcoatRadiance *= 1.0 - ${(1 - KEEP.spec).toFixed(2)} * gTunCov;     // the asphalt's wet coat mirrored the open sky
             #endif`)
@@ -74,11 +75,11 @@ export async function create({ root, track, bloom }) {
       const t = Math.min(1, Math.max(0, (px * bx + pz * bz) / Math.max(bx * bx + bz * bz, 1e-4)));
       d = Math.min(d, Math.hypot(px - bx * t, pz - bz * t));
     }
-    return 1 - THREE.MathUtils.smoothstep(d, HALF_W, HALF_W + 30);
+    return 1 - THREE.MathUtils.smoothstep(d, halfW, halfW + 30);
   };
   let base = bloom?.strength, k = 1;             // base: the look's strength, set by main.js applyAll just before setLook (never compounds)
   let lowered = false;                           // only an fx that wrote the bloom restores it (an aborted load's base is another track's stale value)
-  console.info(`tokyo tunnel light: ${patched.length} materials, roof top ${box.max.y.toFixed(1)} m, centerline ${pts[0].i}-${pts.at(-1).i} under it`);
+  console.info(`${label} tunnel light: ${patched.length} materials, roof top ${box.max.y.toFixed(1)} m, centerline ${pts[0].i}-${pts.at(-1).i} under it`);
   return {
     setLook(look, params) { base = bloom?.strength; k = BLOOM_IN[params?.look] ?? 1; },
     update(t, camera) { if (bloom && k < 1) { lowered = true; bloom.strength = base * (1 - (1 - k) * camCover(camera.position)); } },

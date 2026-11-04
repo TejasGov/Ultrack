@@ -82,6 +82,14 @@ export const TRACKS = {
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  venice: {     // tracks/venice/build_venice.py: a fictional street circuit on a lagoon island, a figure-eight with a tunnel under the deck (not yet on the career calendar, local only)
+    id: 'venice', name: 'Venice', stem: 'venice', dir: '/assets/venice/', look: 'dusk', times: ['day', 'dusk'], fog: 0.5, sun: [0.3, 0.95], tag: null,     // the sun from the south, across the tunnel: a low sun along it runs the sunset's glow down the inside (see venue/tokyo/tunnel-light.js); the pillared fronts north of the two straights take the light
+    looks: { day: { env: 1.3 }, dusk: { exposure: 0.54, env: 1.2 } },     // more sky light than most, as Llano: else the road goes black
+    wet: { wet: ['VE | asphalt', 'VE | line white', 'VE | kerb red', 'VE | kerb white', 'VE | paving'], puddles: ['VE | asphalt'] },
+    voidWalls: true,
+    venue: () => import('./venue/venice.js'),
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
   llano: {     // career World 2 (docs/career-worlds/llano.json, tracks/llano/build_llano.py): the big speed track on the empty West Texas plain, Llano Central on its Long Mile
     id: 'llano', name: 'Llano Speedway', stem: 'llano', dir: '/assets/llano/', look: 'dusk', times: ['day', 'dusk'], fog: 0.35, sun: [0.98, -0.18], tag: null,     // the low sun straight ahead down the start straight
     dayNight: { day: /^Backdrop \| range day$/, dayEnd: 0.35 },     // the far range: the day copy over the dusk one, as Mojave's

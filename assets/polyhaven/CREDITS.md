@@ -26,3 +26,11 @@ Moved to _archive/2026-10-21/assets/polyhaven/ on 2026-10-21 (unused by the trac
 - **Pavement 01** (`pavement_01`) by Rob Tuytel: https://polyhaven.com/a/pavement_01 (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
 - **Lacquered Cherry Wood** (`lacquered_cherry_wood`) by Jenelle van Heerden, Rico Cilliers: https://polyhaven.com/a/lacquered_cherry_wood (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
 - **Japanese Stone Wall** (`japanese_stone_wall`) by Rico Cilliers, Charlotte Baglioni, Dario Barresi: https://polyhaven.com/a/japanese_stone_wall (1k diff/nor_gl/arm JPG, downloaded 2026-10-26 for the Tokyo refactor)
+- **Large Sandstone Blocks** (`large_sandstone_blocks`) by Rob Tuytel: https://polyhaven.com/a/large_sandstone_blocks
+- **Medieval Blocks 03** (`medieval_blocks_03`) by Rob Tuytel: https://polyhaven.com/a/medieval_blocks_03
+- **Damaged Plaster** (`damaged_plaster`) by Amal Kumar: https://polyhaven.com/a/damaged_plaster
+- **Plastered Stone Wall** (`plastered_stone_wall`) by Rob Tuytel: https://polyhaven.com/a/plastered_stone_wall
+- **Medieval Red Brick** (`medieval_red_brick`) by Rob Tuytel: https://polyhaven.com/a/medieval_red_brick
+- **Brick Wall 10** (`brick_wall_10`) by Dimitrios Savva: https://polyhaven.com/a/brick_wall_10
+- **Clay Roof Tiles 02** (`clay_roof_tiles_02`) by Amal Kumar: https://polyhaven.com/a/clay_roof_tiles_02
+- **Roof Slates 02** (`roof_slates_02`) by Rob Tuytel: https://polyhaven.com/a/roof_slates_02
