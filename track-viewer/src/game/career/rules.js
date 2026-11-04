@@ -45,39 +45,40 @@ export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
 export const lapsFor = (track, length = 'sprint') => clamp(Math.round((T.series.lengths[length] * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
 
 // ---------------------------------------------------------------------------------------------- calendar
-const EVENTS = ['sprint', 'grandprix', 'showpiece'];                      // a season's running order (calendar.json `event`)
 const LOOKS = ['day', 'dusk', 'bluehour', 'night'];                       // a track without `times` (tracks.js) offers them all
+/** an Open or the Masters: a round with its own entry rules (a ranking decides who races), not a plain Tour round. Rounds from before the format have no `kind` and play as Tour */
+export const isSpecial = (R) => R?.kind === 'open' || R?.kind === 'masters';
 /**
- * A season's rounds for a world (career-worlds.md): a finale drawn from the world's showpieces, then the world's other tracks once each, sprints first,
- * grands prix next, showpieces last, so a season builds. A track only comes back when the game has too few for the rounds, and never twice in a row.
- * `available` maps track id -> its `times` (null: every look) for the tracks the game has.
+ * A season's rounds (docs/career-mode.md, "The Tour, the Opens, the ranking"): CAL.format in order. Tour rounds draw the five Tour circuits once each and one
+ * of them again, never twice in a row; each Open is raced on its own circuit and nowhere else; the Masters closes the season. `world` is unused: one Tour for every tier.
+ * `available` maps track id -> its `times` (null: every look) for the tracks the game has; an Open or Tour circuit the game lacks drops out.
  */
 export function buildCalendar(seed, season, world, available, length = 'sprint') {
-  const W = CAL.worlds[world], has = (id) => id in available && CAL.tracks[id], r = rng(seed, 'cal', season);
-  const finales = W.finale.filter((f) => has(f.track));
-  const fin = finales[Math.floor(r() * finales.length)] ?? { track: W.tracks.find(has) ?? Object.keys(available).find(has), look: null };
-  const others = W.tracks.filter((id) => has(id) && id !== fin.track), n = W.rounds - 1;
-  let pool = [];
-  while (pool.length < n && others.length) pool.push(...shuffle(r, others));
-  pool = pool.slice(0, n);
+  const has = (id) => id in available && CAL.tracks[id], r = rng(seed, 'cal', season), M = CAL.masters;
+  const fmt = CAL.format.filter((f) => (f === 'tour' ? true : f === 'masters' ? has(M.track) : has(f)));
+  const tour = CAL.tour.filter(has), n = fmt.filter((f) => f === 'tour').length, end = fmt.includes('masters') ? M.track : null;
+  const base = tour.length ? tour : Object.keys(available).filter(has), pool = [];
+  while (pool.length < n && base.length) pool.push(...shuffle(r, base));
+  pool.length = Math.min(n, pool.length);
   let order = pool;
-  if (new Set(pool).size === pool.length) order = [...pool].sort((a, b) => EVENTS.indexOf(CAL.tracks[a].event) - EVENTS.indexOf(CAL.tracks[b].event));
-  else for (let k = 0; k < 60; k++) {                                  // too few tracks: reshuffle until no back-to-back track (a small pool may never manage)
-    order = shuffle(r, pool);
-    if ([...order, fin.track].every((t, i, l) => i === 0 || t !== l[i - 1])) break;
-  }
-  const seen = {}, wet = { n: 0 };
-  return [...order, fin.track].map((track, i, all) => {
+  for (let k = 0; k < 200 && ![...order, end].every((t, i, l) => i === 0 || t !== l[i - 1]); k++) order = shuffle(r, pool);   // too few circuits may never manage
+  const seen = {}, wet = { n: 0 }; let t = 0;
+  return fmt.map((f, i, all) => {
+    const kind = f === 'tour' ? 'tour' : f === 'masters' ? 'masters' : 'open', track = f === 'tour' ? order[t++] : f === 'masters' ? M.track : f;
     const C = CAL.tracks[track], looks = available[track] ?? LOOKS, finale = i === all.length - 1;
     const pick = looks[Math.floor(r() * looks.length)];                 // an even chance of each hour this circuit offers in the menu
-    const look = finale && fin.look && looks.includes(fin.look) ? fin.look : pick;
+    const look = kind === 'masters' && looks.includes(M.look) ? M.look : pick;
     let weather = 'dry', x = r();
     if (i > 0 && !C.dryOnly && wet.n < T.weather.maxWet) weather = x < T.weather.rain ? 'rain' : x < T.weather.rain + T.weather.damp ? 'damp' : 'dry';
     if (weather !== 'dry') wet.n++;
-    const n = (seen[track] = (seen[track] ?? -1) + 1);
-    return { round: i + 1, track, event: finale ? 'finale' : C.event, look, weather, laps: lapsFor(track, length), name: finale ? 'Season Finale' : C.names[Math.min(n, C.names.length - 1)], finale };
+    const c = (seen[track] = (seen[track] ?? -1) + 1);
+    const name = kind === 'open' ? CAL.opens[f].name : kind === 'masters' ? M.name : C.names[Math.min(c, C.names.length - 1)];
+    return { round: i + 1, track, kind, event: kind, look, weather, laps: lapsFor(track, length), ...(kind === 'open' ? { lcqLaps: lapsFor(CAL.qualifying, length) } : {}), name, finale };
   });
 }
+
+/** the points multiplier of a round: its event kind's, or the old finale's x1.5 for a season from before the Tour */
+export const pointsMult = (R) => (R.kind ? T.events[R.kind].pts : R.finale ? T.series.finaleMult : 1);
 
 // ---------------------------------------------------------------------------------------------- weeks (section 13)
 /**
@@ -155,8 +156,8 @@ export function repFor({ rr, tier, finish, pole, fastest, giantKills, dnf }) {
   if (dnf) add('Retired', P.dnf);
   return { rep: lines.reduce((s, l) => s + l[1], 0), lines };
 }
-/** team trust change for a round (6.2) */
-export const trustFor = ({ rr, mandatory, optional, duel }) => Math.round((rr - T.rating.base) * T.trust.perRR + (mandatory ? T.trust.mandatory : -T.trust.mandatory) + optional * T.trust.optional + (duel?.result === 'won' ? T.trust.duel : duel?.result === 'lost' ? -T.trust.duel : 0));
+/** team trust change for a round (6.2); `neutral`: the round objective was a place in an Open or the Masters, which the ranking decides, so missing it neither earns nor costs the team's trust */
+export const trustFor = ({ rr, mandatory, optional, duel, neutral = false }) => Math.round((rr - T.rating.base) * T.trust.perRR + (neutral ? 0 : mandatory ? T.trust.mandatory : -T.trust.mandatory) + optional * T.trust.optional + (duel?.result === 'won' ? T.trust.duel : duel?.result === 'lost' ? -T.trust.duel : 0));
 
 // ---------------------------------------------------------------------------------------------- objectives
 export const OBJECTIVES = {
@@ -168,13 +169,14 @@ export const OBJECTIVES = {
   fastest: () => 'Set the fastest lap of the race',
   podium: () => 'Finish on the podium',
   quali: (o) => `Qualify P${o.n} or better`,
+  reach: (o) => `Reach ${o.to}`,
 };
 export const objectiveText = (o) => OBJECTIVES[o.kind](o);
 /** an objective as it stands from this grid slot: places that are not there to gain (P2 asked for two, or pole for any) become holding the slot */
 export const objectiveFrom = (o, grid) => (o.kind === 'gain' && grid - 1 < o.n ? { ...o, kind: 'hold' } : o);
 /** the round's objectives (6.4): one mandatory from the expected finish, two optional from a seeded pool */
-export function objectivesFor(r, expPos, easier = false, exempt = false) {
-  const main = expPos > 8 && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, 16) : Math.min(expPos, 15) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, 8) : Math.min(expPos, 7) };   // expected outside the eight: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
+export function objectivesFor(r, expPos, easier = false, exempt = false, reach = null) {
+  const main = reach ? { kind: 'reach', to: reach } : expPos > 8 && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, 16) : Math.min(expPos, 15) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, 8) : Math.min(expPos, 7) };   // expected outside the eight: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
   const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 2) }];
   if (expPos <= 6) pool.push({ kind: 'podium' });
   return [{ ...main, mandatory: true }, ...shuffle(r, exempt ? pool.filter((o) => o.kind !== 'duel' && o.kind !== 'quali') : pool).slice(0, 2)];
@@ -187,7 +189,7 @@ export function qualiExemption(rep, mate) {
 }
 export function objectiveMet(o, x) {
   return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n, hold: () => !x.dnf && x.finish <= x.grid,
-    fastest: () => !!x.fastest, podium: () => !x.dnf && x.finish <= 3, quali: () => x.grid <= o.n })[o.kind]();
+    fastest: () => !!x.fastest, podium: () => !x.dnf && x.finish <= 3, quali: () => x.grid <= o.n, reach: () => !x.dnq })[o.kind]();
 }
 
 // ---------------------------------------------------------------------------------------------- offers

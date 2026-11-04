@@ -7,7 +7,7 @@ export async function loadCareer(server) {
   const C = await server.ssrLoadModule('/src/game/career/career.js'), R = await server.ssrLoadModule('/src/game/career/rules.js');
   return { C, R };
 }
-const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], llano: ['day', 'dusk'], tokyo: null };
+const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], llano: ['day', 'dusk'], tokyo: null, qingshan: null, venice: null };
 
 /** the sim's pick at a review: the highest tier, the A seat, then the highest pay; a reserve seat only when nothing else is left */
 const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
@@ -18,7 +18,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
   const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
   const sh = C.shootout(); C.finishShootout(save, R.parLap(sh.track, sh.car) / skill * (1 + noise(0.01)));
-  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0 };
+  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0, opens: 0, finals: 0, openWins: 0, lcqs: 0, masters: 0, rank: [], absent: 0 };
   // ask for a bit more, sometimes too much: a refusal or a withdrawal must never strand the career
   const haggle = (o) => { if (!C.canNegotiate(o)) return; const a = C.negotiate(save, o.id, { salary: rand() < 0.3 ? 0.3 : 0.1, seasons: o.seasons, status: o.status });
     if (a.result === 'accepted') log.deals++; if (a.result === 'withdrawn') log.withdrawn++; if (a.result === 'countered') C.negotiate(save, o.id, a.terms); };
@@ -38,9 +38,17 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
       const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, [u.engine, u.tyres, u.brakes]) / skill * (1 + noise(0.008));
       C.finishQuali(save, lapNow()); if (!save.season.current.quali.grid.includes(car)) C.finishQuali(save, lapNow());   // a missed cut uses the one retry
     } else if (save.clock.phase === 'race') {
-      const q = save.season.current.quali, t = Object.fromEntries(q.grid.map((k) => [k, (q.laps[k] ?? (k === save.contract.car ? R.parLap(C.qualiVenue(save).track, k, C.qualiVenue(save).weather, ['engine', 'tyres', 'brakes'].map((c) => save.garage.upgrades[k][c])) / skill : 999)) * (1 + noise(0.012 * Math.sqrt(C.currentRound(save).laps / 5)))]));   // a model, not a measurement: fewer laps, fewer places change from the grid
+      const q = save.season.current.quali, cur = save.season.current, o = cur.open, car = save.contract.car, lcq = o?.stage === 'lcq', V = o && !lcq ? C.currentRound(save) : C.qualiVenue(save);   // the laps in q.laps are Dry Lake's, so the model stays on that scale unless it is a Final
+      // a model, not a measurement: an AI car's pace is its par lap over its pace; a Tour round uses the qualifying laps, an Open's Final (whose seeds flew none) the model for every car
+      const model = (k) => { const u = save.garage.upgrades[k], dev = k === car ? [u.engine, u.tyres, u.brakes] : save.world.teams[R.CAR[k].team].dev; return R.parLap(V.track, k, V.weather, dev) / (k === car ? skill : R.paceOf(save.world.ratings[save.world.seats[k]])); };
+      const t = Object.fromEntries(q.grid.map((k) => [k, (o && !lcq ? model(k) : q.laps[k] ?? (k === car ? model(k) : 999)) * (1 + noise(0.012 * Math.sqrt((lcq ? C.currentRound(save).lcqLaps : C.currentRound(save).laps) / 5)))]));   // fewer laps, fewer places change from the grid
       const order = Object.keys(t).sort((a, b) => t[a] - t[b]), lap = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, v * 0.99]));
-      const missed = !q.grid.includes(save.contract.car), rep = missed ? C.finishDnq(save) : C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: rand() < 0.3 ? 1 : 0, spins: rand() < 0.2 ? 1 : 0 });
+      const missed = !q.grid.includes(save.contract.car);
+      if (lcq && !missed) log.lcqs++;
+      const rep = missed ? C.finishDnq(save) : lcq ? C.finishLcq(save, { order, best: lap, dnf: rand() < 0.03 }) : C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: rand() < 0.3 ? 1 : 0, spins: rand() < 0.2 ? 1 : 0 });
+      if (rep.lcq === true) continue;                            // through to the Final: the loop comes back for it
+      if (o?.kind === 'open') { log.opens++; if (!rep.dnq) log.finals++; if (!rep.dnq && !rep.dnf && rep.finish === 1) log.openWins++; }
+      if (o?.kind === 'masters') { if (!rep.dnq) log.masters++; else log.absent++; }
       log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);
       if (rep.midSeason?.warning) log.warnings++;
       for (const cat of ['engine', 'tyres', 'brakes']) C.buyUpgrade(save, cat, 500);
@@ -59,7 +67,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint') 
       if (save.contract.status === 'number1' && log.numberOne === null) log.numberOne = save.clock.season;
     } else throw new Error('stuck in ' + save.clock.phase);
   }
-  log.titles = save.stats.titles; log.cups = save.stats.cups;
+  log.rank = save.history.map((h) => h.rank); log.titles = save.stats.titles; log.cups = save.stats.cups;
   return { save, log };
 }
 
@@ -79,6 +87,7 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
          avg RR ${avg((r) => r.rr.reduce((a, b) => a + b, 0) / r.rr.length)}, avg finish ${avg((r) => r.finish.reduce((a, b) => a + b, 0) / r.finish.length)}, min wallet ${Math.min(...runs.map((r) => r.minWallet))}, offers/season ${avg((r) => r.offers.reduce((a, b) => a + b, 0) / r.offers.length)} (min ${Math.min(...runs.flatMap((r) => r.offers))}),` +
         ` drops/career ${avg((r) => r.drops)}, warnings ${avg((r) => r.warnings)}, W1 ${avg((r) => r.w1)}, deals ${avg((r) => r.deals)}, withdrawn ${avg((r) => r.withdrawn)}, titles ${avg((r) => r.titles)}, cups ${avg((r) => r.cups)},` +
         ` final tier ${['rookie', 'maestro', 'legend'].map((t) => `${t} ${share((r) => r.tier.at(-1) === t)}`).join(' ')}`);
+      console.log(`         Opens per career ${avg((r) => r.opens)}: reached the Final ${avg((r) => r.finals)}, Last Chance races ${avg((r) => r.lcqs)}, Open wins ${avg((r) => r.openWins)}, in the Masters ${avg((r) => r.masters)}, ranking at season end ${avg((r) => r.rank.reduce((a, b) => a + b, 0) / r.rank.length)}`);
     }
     // the race lengths, same driver: progress must not depend on how long you race (the race noise is modelled, see above)
     for (const length of ['sprint', 'standard', 'full']) {

@@ -38,7 +38,8 @@ export function coverRound(save, report) {
   else story(save, 'win', pick(r, [`${nameOf(winner.code)} takes the ${gp}`, `${surname(winner.code)} wins the ${gp}`]), `${loreOf(winner.team).name} on the top step, ${nameOf(E[1].code)} second. ${quote(winner.code, 'win', r)}`, { driver: winner.code, mood: 'win', track });
 
   // the player, unless the lead already was
-  if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });
+  if (report.dnq && report.open) story(save, 'down', `${me.name} misses the ${report.kind === 'masters' ? gp : `${gp} Final`}`, report.kind === 'masters' ? `Outside the top ${T.series.gridSize} of the Ultrack Ranking, ${me.name} watched the Masters from the grandstand.` : `The Final went ahead without ${me.name}, who finished the weekend P${report.grid} of 16. The ranking will remember it.`, { track, you: 'dnq' });
+  else if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });
   else if (report.dnf) story(save, 'down', `Retirement for ${me.name}`, `Out of the ${gp} after starting P${report.grid}. No points, and a long walk back to the garage.`, { track, you: 'down' });
   else if (!winner.you && report.finish <= 3) story(save, 'podium', `Podium for ${me.name}`, `P${report.finish} from P${report.grid} at the ${gp}, in a car expected ${report.expPos > report.finish ? `no higher than P${report.expPos}` : `to be up here`}.`, { track, you: 'podium' });
   else if (!winner.you && report.expPos - report.finish >= 4) story(save, 'podium', `${me.name} punches above the car`, `P${report.finish} when the paddock expected P${report.expPos}. People are starting to ask who ${me.name} is.`, { track, you: 'podium' });
@@ -70,6 +71,14 @@ export function coverRound(save, report) {
     }
   }
   coverSocial(save, report, r);
+}
+
+/** an Open or the Masters is over (finishRace): the road the player took to the Final, and the honours he earned */
+export function coverOpen(save, report) {
+  const me = save.player.name, gp = report.name, track = report.track, o = report.open;
+  if (!report.dnq && !o.seeded && o.lcq) story(save, 'podium', `${me} came through the Last Chance`, `P${o.lcq} at Mojave Dry Lake was enough for a place in the ${gp} Final.`, { track, you: 'podium' });
+  if (report.honours.includes('triple')) story(save, 'win', `${me} completes the Triple Crown`, 'Japan, India and Venice: all three Opens won in one career. Nobody in the paddock is calling it luck.', { track, you: 'win' });
+  if (report.honours.includes('slam')) story(save, 'win', `${me} takes the Grand Slam`, 'All three Opens in a single season. The record books have been opened to a new page.', { track, you: 'win' });
 }
 
 /** the fans and the gossip columns, one post a round at most, from what really happened: a rare rumour, else anger at a bad day, love for a good one, a war between rival stands, or a leak about whoever underperformed */
