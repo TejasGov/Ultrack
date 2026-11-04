@@ -6,7 +6,7 @@ import {teamLogoUrl} from '../team-logos.js';
 import { carName, ROSTER } from './carinfo.js';
 import { MODES } from './session.js';
 import { store, ASSISTS, WEATHER, fmtTime } from './store.js';
-import { trackOf, availableTracks, optionalJson, trackUrl } from '../tracks.js';
+import { trackOf, availableTracks, optionalJson, trackUrl, revUrl } from '../tracks.js';
 import { icon } from './icons.js';
 
 export const TEAM_OF = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, t])));
@@ -43,7 +43,7 @@ const root = () => globalThis.document?.documentElement;   // absent in the node
 export function setInput(kind) { const d = root(); if (d && d.dataset.input !== kind) d.dataset.input = kind; }
 /** html[data-motion=reduce] from the in-game setting: ui-tokens.css zeroes every duration and slide under it */
 export function syncMotion() { const d = root(); if (d) d.dataset.motion = store.settings.reduceMotion ? 'reduce' : 'full'; }
-export const still = (kind, id) => `/assets/ui/stills/${kind}/${id}.webp`;   // tracks/<id>, cars/<key> (make-ui-stills.mjs)
+export const still = (kind, id) => revUrl(`/assets/ui/stills/${kind}/${id}.webp`);   // tracks/<id>, cars/<key> (make-ui-stills.mjs)
 /** the one empty value: an em dash in ink-4, the same on every screen */
 export const empty = () => h('span.empty', { 'aria-label': 'None' }, '—');
 const cap = (k) => (k.startsWith('arrow-') ? h('kbd', { 'aria-label': k.slice(6) }, icon(k)) : h('kbd', {}, k));   // an arrow cap is its icon, named for screen readers

@@ -15,7 +15,7 @@
       if (!/^[a-z0-9_]+$/.test(track)) track = 'marina';
       var dir = track === 'marina' ? '' : track + '/';   // src/tracks.js: Marina's files sit in /assets/, the others in /assets/<id>/
       var hdri = { day: 'qwantani_noon_puresky_2k.hdr', dusk: 'belfast_sunset_puresky_2k.hdr', bluehour: 'qwantani_dusk_1_puresky_2k.hdr', night: 'qwantani_night_puresky_2k.hdr' }[look] || 'belfast_sunset_puresky_2k.hdr';
-      var files = q.get('dev') === '1' ? [dir + track + (q.get('tex') === 'webp' ? '_visual.glb' : '_visual_ktx2.glb'), dir + 'track.json', dir + 'lights.json', 'hdri/' + hdri] : [dir + 'track.json'];
+      var files = q.get('dev') === '1' ? [dir + track + (q.get('tex') === 'webp' ? '_visual.glb' : '_visual_ktx2.glb'), dir + 'track.json', dir + 'lights.json', 'hdri/' + hdri] : [];
       files.forEach(function (f) {
         var l = document.createElement('link'); l.rel = 'preload'; l.as = 'fetch'; l.crossOrigin = 'anonymous'; l.href = '/assets/' + f; document.head.appendChild(l);
       });
