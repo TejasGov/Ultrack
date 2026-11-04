@@ -204,6 +204,7 @@ export function CareerHubScreen(game) {
     return css(h('div.cx-story', {}, storyPic(save, s, 'big'),
       h('div.cx-storytext', {}, h('span.kick', {}, STORY_KICK[s.kind] ?? 'The paddock', h('i'), storySource(s), h('i'), `Season ${s.season}, week ${s.week}`), h('h2', {}, s.title),
         h('p', {}, q ? q[1] : s.body), q ? h('blockquote', {}, `"${q[2]}"`, h('cite', {}, who?.name ?? q[3])) : null,
+        s.posts ? h('div.cx-posts', {}, s.posts.map((x) => h('div.cx-post', {}, h('b', {}, x.h), h('p', {}, x.t), h('small', {}, `${x.l} likes`)))) : null,
         h('div.cx-storyfoot', {}, who ? h('span.cx-storywho', {}, h('i.tbar'), who.name, team ? h('small', {}, team.name) : h('small', {}, 'Free agent')) : null, pic.moved ? h('small.cx-file', {}, 'File photo: taken before the driver changed teams') : null))),
     { '--team': team ? teamMark(team) : 'var(--d-media)' });
   }

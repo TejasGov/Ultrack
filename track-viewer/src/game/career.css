@@ -269,15 +269,20 @@
 .cx-pressempty .icon { font-size: calc(56 * var(--u)); color: var(--d-media); }
 .cx-pressempty b { font-size: var(--fs-title); font-style: italic; font-weight: 900; text-transform: uppercase; color: var(--c-ink-1); }
 .cx-pressempty p { margin: 0; font-size: var(--fs-body); }
+.cx-posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
+.cx-post { display: flex; flex-direction: column; gap: 2px; padding: var(--sp-2) var(--sp-3); border: 1px solid var(--c-line); border-radius: var(--r-2); background: var(--c-panel-2); }
+.cx-post b { font-size: var(--fs-micro); color: var(--d-media); letter-spacing: 0.02em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cx-storytext .cx-post p { font-size: var(--fs-micro); line-height: 1.3; }
+.cx-post small { font-size: var(--fs-micro); color: var(--c-ink-3); }
 .cx-feed { min-height: 0; }
-.cx-tiles { flex: 1 1 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: max-content; align-content: start; gap: var(--sp-2); padding: var(--sp-1); }
-.cx .cx-tile { display: flex; flex-direction: column; gap: var(--sp-1); padding: 0 0 var(--sp-2); overflow: hidden; text-align: left; font: inherit; color: var(--c-ink-2); cursor: pointer; border: 1px solid var(--c-line); border-radius: var(--r-2); background: var(--c-panel-2); }
-.cx-tile > .cx-pic { flex: none; }
+.cx-tiles { flex: 1 1 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-auto-rows: max-content; align-content: start; gap: var(--sp-2); padding: var(--sp-1); }
+.cx .cx-tile { display: grid; grid-template-columns: calc(150 * var(--u)) minmax(0, 1fr); grid-template-rows: 1fr auto auto 1fr; column-gap: var(--sp-3); row-gap: var(--sp-1); padding: 0; overflow: hidden; text-align: left; font: inherit; color: var(--c-ink-2); cursor: pointer; border: 1px solid var(--c-line); border-radius: var(--r-2); background: var(--c-panel-2); }
+.cx-tile > .cx-pic { grid-column: 1; grid-row: 1 / -1; }
 .cx-tile:hover { background: color-mix(in srgb, var(--d-media) 12%, var(--c-panel-2)); }
-.cx-tile > small { display: flex; justify-content: space-between; gap: var(--sp-2); padding: var(--sp-1) var(--sp-2) 0; font-size: var(--fs-micro); letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-ink-3); }
+.cx-tile > small { grid-column: 2; grid-row: 2; display: flex; justify-content: space-between; gap: var(--sp-2); padding: 0 var(--sp-3) 0 0; font-size: var(--fs-micro); letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-ink-3); }
 .cx-tile > small > :first-child { color: var(--d-media); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .cx-tile > small > :last-child { flex: none; }
-.cx-tile > b { padding: 0 var(--sp-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: 2.4em; font-size: var(--fs-body); font-weight: 700; line-height: 1.2; }
+.cx-tile > b { grid-column: 2; grid-row: 3; padding: 0 var(--sp-3) 0 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: var(--fs-body); font-weight: 700; line-height: 1.2; }
 .cx-tile.new > b { color: var(--c-ink-1); }
 .cx-tile.new > small > :first-child::after { content: ''; display: inline-block; width: 0.5em; height: 0.5em; margin-left: 0.5em; border-radius: 50%; background: var(--d-media); vertical-align: 0.1em; }
 /* media bytes: headline cards on Home and the race report, each opens its story */
@@ -530,7 +535,6 @@
   .cx-side, .cx-stack { display: block; }
   .cx-bytes { grid-template-columns: minmax(0, 1fr); }
   .cx-story > .cx-pic { flex: none; aspect-ratio: 3 / 2; }
-  .cx-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cx-me .sx:nth-child(n + 3) { display: none; }
   .of-row, .cs-grades { grid-template-columns: minmax(0, 1fr); }
 }

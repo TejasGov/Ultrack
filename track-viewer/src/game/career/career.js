@@ -10,7 +10,7 @@ import {
 } from './rules.js';
 import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
 import { post, unread, markRead } from './inbox.js';
-import { coverRound, coverMoves, coverDisplaced, unreadStories, readStory, storyImage, latestBytes } from './media.js';
+import { coverRound, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorSkipped,
@@ -18,6 +18,7 @@ import {
 
 export const SCHEMA = 4;
 export { unreadStories, readStory, storyImage, latestBytes };
+export { thumbOf } from './media.js';
 export { releaseCut as releaseCutOf, driverAt, personOf, rivalsOf, unread, markRead, findOffer, mateOf, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, signMid, teamOutlook, approach, sponsorSlots, signSponsor };
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
 const rankOf = (team) => tierOf(team).rank;
@@ -119,6 +120,7 @@ export function acceptOffer(save, id, available) {
   takeSeat(save, o.car, old?.car);
   if (!first) nextSeasonWorld(save);
   startSeason(save, available, old?.team !== o.team && displaced !== YOU ? displaced : null);
+  if (old?.team !== o.team) coverSigning(save, o.team);
   return save;
 }
 
@@ -320,6 +322,7 @@ export function finishRace(save, result) {
   const n = save.season.calendar.length;
   if (save.clock.round === Math.ceil(n / 2) && save.clock.round < n) {
     report.midSeason = midSeason(save);
+    if (report.midSeason.warning) coverHotSeat(save, me.team);
     if (report.midSeason.warning) post(save, 'warn', 'Seat review', `Team trust is ${me.trust}. Meet the round objective in the next ${T.trust.recover} rounds, or a low trust at the finale costs you the seat.`);
   }
   save.clock.week++;
@@ -369,6 +372,7 @@ function endSeason(save) {
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
   save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
   save.clock.phase = 'review';
+  if (dropped) coverFired(save, me.team);
   post(save, dropped ? 'warn' : 'race', `Season ${save.clock.season} is over: P${drvPos} in the Drivers'`, dropped ? `${teamName(me.team)} has let you go.` : 'The review and the market are waiting.');
 }
 

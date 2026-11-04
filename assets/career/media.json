@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "The career's paddock press (track-viewer/src/game/career/media.js). 'images': which press photos exist per driver, in track-viewer/public/assets/drivers/<slug>/media/<mood>.webp (portrait, win, down); a missing mood falls back to the portrait, then to the circuit. 'pairs': two-driver shots in drivers/pairs/<id>.webp. 'quotes': invented lines in each driver's voice from assets/teams/teams.json. Provenance of the art: assets/career/MEDIA-IMAGES.md.",
+  "note": "The career's paddock press (track-viewer/src/game/career/media.js). 'images': press photos per driver, in track-viewer/public/assets/drivers/<slug>/media/<mood>.webp (portrait, win, down); a missing mood falls back to the portrait, then to the circuit. 'pairs': two-driver shots in drivers/pairs/. 'you': the player, never showing a face, in drivers/you/. 'principals': team principals by team id. 'scenes': shared scenes in drivers/scenes/. Every image has a -thumb.webp for tiles and bytes. scripts/make-driver-media.mjs rewrites these lists. 'quotes': invented lines in each driver's voice. 'social' and 'rumors': invented fan talk, with handle|text posts; fan anger stays on driving and results, and rumours are unconfirmed and never sexual. Provenance of the art: assets/career/MEDIA-IMAGES.md.",
   "dramaChance": 0.5,
   "images": {
     "CAL": ["down", "portrait", "win"],
@@ -119,5 +119,108 @@
       "win": ["Lap fourteen, four tenths. That was the race.", "It is in the logbook."],
       "down": ["Two tenths on entry. It is in the logbook.", "There is nothing to say that the numbers have not said."]
     }
-  }
+  },
+  "socialChance": 0.7,
+  "rumorChance": 0.18,
+  "you": ["dnq", "down", "fired", "podium", "portrait", "sign-aurum", "sign-corvid", "sign-hayate", "sign-liberty", "sign-mojave", "sign-saetta", "sign-sarab", "sign-toro", "win"],
+  "principals": ["aurum", "corvid", "hayate", "liberty", "mojave", "saetta", "sarab", "toro"],
+  "scenes": ["fan-hate", "fan-love", "fan-war-blues", "fan-war-reds", "fired", "leak", "rumor-anon", "rumor-calderini-varrone", "rumor-kareem-qasimi", "rumor-lindqvist-mizuno"],
+  "social": {
+    "love": [
+      {
+        "title": "The fans have picked a favourite: {who}",
+        "body": "After the {gp} the feeds belong to {who}. Somebody has already made the scarf.",
+        "scene": "fan-love",
+        "posts": ["@paddock_daily|{who} for president of everything.", "@grandstand_gran|I am 74 and I have a new favourite driver. Sorry, husband."]
+      },
+      {
+        "title": "{who} is having a moment online",
+        "body": "The clip from the {gp} has gone round the world twice. The comments are unusually kind.",
+        "scene": "fan-love",
+        "posts": ["@lap_one_louis|Watched that overtake nine times. Late for work. Worth it.", "@{team}_ultras|Ours. All ours. Do not touch."]
+      },
+      {
+        "title": "Love letters for {who}",
+        "body": "The {team} mailroom has asked for a second bin.",
+        "scene": "fan-love",
+        "posts": ["@apex_annie|Name a better driver. You cannot. I will wait.", "@wet_tyre_wally|Cried at a racing result again. Normal week."]
+      }
+    ],
+    "hate": [
+      {
+        "title": "{who} gets it from the fans after the {gp}",
+        "body": "The comments under {team}'s post were closed within the hour. The screenshots were not.",
+        "scene": "fan-hate",
+        "posts": ["@{team}_ultras|My nan brakes later than that.", "@lap_one_louis|Sell the driver, keep the mechanic."]
+      },
+      {
+        "title": "Boos for {who}",
+        "body": "The result at the {gp} did not land well, and the grandstand said so before the car had stopped.",
+        "scene": "fan-hate",
+        "posts": ["@grandstand_gran|I paid for a race. I got a slow parade.", "@paddock_daily|{team} deserve better than that, and they know it."]
+      },
+      {
+        "title": "\"Drop {who}\" is trending",
+        "body": "Three hours after the {gp}, the {team} faithful have opinions on the seat, and they are not shy about them.",
+        "scene": "fan-hate",
+        "posts": ["@apex_annie|Week {week}, and still looking for the first good lap.", "@wet_tyre_wally|Bring back literally anyone."]
+      }
+    ],
+    "war": [
+      {
+        "title": "Fan war: {team} against {rival}",
+        "body": "It started with a replay of the {gp} and has now reached the supporters' clubs, who have taken it extremely seriously.",
+        "posts": ["@{team}_ultras|Clean move. Learn the rules, {rival}.", "@{rival}_ultras|Watch it again, in slow motion, with your eyes open."]
+      },
+      {
+        "title": "The {team} and {rival} stands have stopped pretending",
+        "body": "Two sets of flags, one fence and a long afternoon. Security describes the singing as \"inventive\".",
+        "posts": ["@{rival}_ultras|We were louder. We were faster. Next.", "@{team}_ultras|Your whole team fits in our garage. Polite wave."]
+      }
+    ],
+    "leak": [
+      {
+        "title": "Who was at the {rival} motorhome?",
+        "body": "A grainy photo from the {gp} paddock shows a hooded figure leaving by the back door. {team} say they have no idea who it is. They have asked twice.",
+        "scene": "leak",
+        "posts": ["@paddock_daily|That is {who}'s walk. I would know that walk anywhere.", "@lap_one_louis|Contract talks in a hoodie. Cinema."]
+      },
+      {
+        "title": "Is {who} on the way out?",
+        "body": "Nobody at {team} will say it out loud after the {gp}, and that is what has people talking.",
+        "scene": "leak",
+        "posts": ["@apex_annie|Three sources. All of them my cousin. Still.", "@{team}_ultras|If this is true we riot. Politely."]
+      }
+    ]
+  },
+  "rumors": [
+    {
+      "scene": "rumor-calderini-varrone",
+      "drivers": ["CAL", "VAR"],
+      "title": "Calderini and Varrone: just dinner?",
+      "body": "A long-lens photo from a lakeside restaurant has the whole paddock looking at its phone. Former teammates, current rivals, one small table. Neither camp confirms a thing, and one of them calls it \"a dinner\".",
+      "posts": ["@paddock_daily|She out-qualified him for a year. Of course he is in love.", "@apex_annie|That is not how you look at someone you are racing on Sunday."]
+    },
+    {
+      "scene": "rumor-kareem-qasimi",
+      "drivers": ["KAR", "QAS"],
+      "title": "Kareem and Qasimi: the marina is talking",
+      "body": "Two teammates, one sunset and a photographer on a very long lens. Both say they were discussing tyre strategy. Nobody has ever laughed that hard about tyre strategy.",
+      "posts": ["@corniche_kid|I have stood up for them both. I will stand up for this.", "@lap_one_louis|\"Friendly rivalry that splits the crowd.\" Sure."]
+    },
+    {
+      "scene": "rumor-lindqvist-mizuno",
+      "drivers": ["LIN", "MIZ"],
+      "title": "Lindqvist and Mizuno, seen arguing over noodles",
+      "body": "Two seasons of bickering about who is better sideways, and now a late-night photo on a bench. She says it was an argument. He says it was a great argument.",
+      "posts": ["@wet_tyre_wally|They are either dating or solving physics.", "@grandstand_gran|I have seen this film. It ends with a wedding."]
+    },
+    {
+      "scene": "rumor-anon",
+      "drivers": [],
+      "title": "Who was {me} with at the marina?",
+      "body": "A grainy photo after the {gp} has the gossip columns guessing. {team} will only say that drivers are allowed to go for walks.",
+      "posts": ["@paddock_daily|That is definitely {me}. Who is the other one, though?", "@apex_annie|{me} has a whole life and did not tell us. Rude."]
+    }
+  ]
 }

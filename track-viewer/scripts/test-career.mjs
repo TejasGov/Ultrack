@@ -348,7 +348,7 @@ try {
       const name = Object.values(R.CAR).find((c) => c.driver.code === code).driver.name;
       assert.ok(pic(code, 'portrait').url?.includes(Md.driverSlug(name)) || !moods.includes('portrait'), code);
       if (moods.includes('portrait') && !moods.includes('down')) assert.ok(pic(code, 'down').url.endsWith('/media/portrait.webp'), code + ': a missing mood falls back to the portrait');
-      for (const m of moods) assert.ok(fs.existsSync(new URL(`../public/assets/drivers/${Md.driverSlug(name)}/media/${m}.webp`, import.meta.url)), `${code} ${m} is listed and on disk`);
+      for (const m of moods) for (const f of [m, m + '-thumb']) assert.ok(fs.existsSync(new URL(`../public/assets/drivers/${Md.driverSlug(name)}/media/${f}.webp`, import.meta.url)), `${code} ${f} is listed and on disk`);
     }
     for (const pr of media.pairs) {
       assert.ok(fs.existsSync(new URL(`../public/assets/drivers/pairs/${pr.id}.webp`, import.meta.url)), `pair ${pr.id} is on disk`);
@@ -356,6 +356,26 @@ try {
     }
     if (media.pairs.length) assert.ok(!pic('CAL', 'down', 'marina', ['CAL', 'KAR']).url?.includes('/pairs/'), 'two drivers with no shot together fall back to the driver');
     for (const c of Object.values(R.CAR)) assert.equal(media.quotes[c.driver.code]?.win?.length > 0 && media.quotes[c.driver.code]?.down?.length > 0, true, `${c.driver.code} has lines`);
+    // every other listed image and its thumbnail are on disk; a thumbnail is the small copy of a driver's art, and a circuit still is left alone
+    for (const [dir, list] of [['you', media.you], ['principals', media.principals], ['scenes', media.scenes]]) for (const n of list) for (const f of [n, n + '-thumb']) assert.ok(fs.existsSync(new URL(`../public/assets/drivers/${dir}/${f}.webp`, import.meta.url)), `${dir}/${f} is on disk`);
+    assert.equal(Md.thumbOf('/assets/drivers/you/win.webp'), '/assets/drivers/you/win-thumb.webp'); assert.equal(Md.thumbOf('/assets/ui/stills/tracks/marina.webp'), '/assets/ui/stills/tracks/marina.webp');
+    // the player's own moments: a signing, a hot seat, the sack. Without the art they show the circuit; a signing never falls back to a shot in the wrong colours
+    {
+      const y = base(), first = y.media.find((x) => x.you?.startsWith('sign-')); assert.ok(first && first.you === 'sign-' + y.contract.team && first.title.includes('signs for'), 'the first contract is news');
+      Md.coverHotSeat(y, y.contract.team); assert.ok(y.media[0].kind === 'fired' && y.media[0].principal === y.contract.team, 'a hot seat is about the principal');
+      Md.coverFired(y, y.contract.team); assert.ok(y.media[0].title.includes('sacks') && y.media[0].you === 'fired', 'the sack is news');
+      const shot = Md.storyImage(y, { you: 'sign-nobody', track: 'marina' }); assert.deepEqual(shot, { track: 'marina' }, 'no signing shot for a team: the circuit, not another team\'s suit');
+    }
+    // the fan talk: every template fills cleanly and names no unknown token, and a season of it has posts with a handle, a line and likes
+    for (const t of [...Object.values(media.social).flat(), ...media.rumors]) {
+      assert.ok(t.title && t.body && t.posts.length === 2, 'a post needs a title, a body and two posts'); assert.ok(t.posts.every((x) => x.includes('|')), 'handle|text');
+      for (const k of JSON.stringify(t).match(/\{(\w+)\}/g) ?? []) assert.ok(['{me}', '{who}', '{team}', '{rival}', '{gp}', '{week}'].includes(k), 'known token: ' + k);
+    }
+    for (const r of media.rumors) assert.ok(!r.drivers.includes('QUI'), 'no romance rumours about the 20-year-old rookie');
+    {
+      const P = play(M, 12, 1.0, 3).save.media.filter((x) => x.posts), j = JSON.stringify(P);
+      assert.ok(P.length > 0 && P.every((x) => x.posts.every((p) => p.h.startsWith('@') && p.t && /K$/.test(p.l))), 'posts are whole'); assert.ok(!/[{}]\w*[{}]/.test(j.replace(/[{}]"/g, '').replace(/"[{}]/g, '')) && !j.includes('{team}') && !j.includes('{who}'), 'no token left unfilled');
+    }
     // a market move is written up: a driver the market moved, and one who retired
     const m = base(), key = Object.keys(m.world.seats).find((k) => m.world.seats[k] !== 'YOU'), code = m.world.seats[key], other = Object.keys(m.world.seats).find((k) => k !== key && m.world.seats[k] !== 'YOU'), before = { ...m.world.seats };
     [m.world.seats[key], m.world.seats[other]] = [m.world.seats[other], code]; Md.coverMoves(m, before, []);

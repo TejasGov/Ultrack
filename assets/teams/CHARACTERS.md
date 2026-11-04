@@ -40,3 +40,26 @@ Saetta: deep red `#c8102e`, gold `#f2b705`, cream. Toro: giallo yellow `#ffd60a`
 Team orders, on-track feuds, contract rows, steward penalties. Nothing sexual, hateful or defamatory, and nothing about anyone real.
 
 Feuds the lore already has: Varrone against Ashcombe, Calderini and Barreto; Valois against Kareem, Quintero, Beaulieu and Kuroda; Maddox against Lindqvist and Hollis; Mizuno against Lindqvist and Kuroda; Calderini against Ortega; Kareem and Qasimi (friendly).
+
+## You, the player
+
+The player can be anyone, so the art never shows their face: full-face helmet with the visor down, or seen from behind. A plain charcoal-grey suit in the general shots; the team's colours in that team's signing scene.
+
+## Team principals
+
+Fictional, like the drivers. None had a picture before, so this sheet is the first definition of all eight looks.
+
+| Principal | Team | Look |
+|---|---|---|
+| **Vittoria Saldani** | Saetta | Italian, 58. Silver bob, sharp red-framed glasses, tailored deep-red blazer, small gold bolt brooch, imperious |
+| **Ettore Montanari** | Toro | Italian, 64. Bald, barrel-chested, thick white moustache, black shirt, yellow scarf, a grin like a threat |
+| **Sir Hugo Ravensworth** | Corvid | English, 67. Very tall and thin, neat grey moustache, tweed waistcoat, green tie, brass raven pin, dry |
+| **Cal Beaumont** | Mojave | American, 55. Sun-leathered, silver ponytail, denim shirt, navy vest, old orange work cap, slow smile |
+| **Helene Aurelle** | Aurum | Monegasque, 52. Champagne-blonde chignon, midnight-blue dress suit, thin gold necklace, gives nothing away |
+| **Harlan Whitfield** | Liberty | American, 61. Tall, silver crew cut, big white smile, royal-blue blazer, red tie, plain star pin |
+| **Rashid Al-Mansouri** | Sarab | Emirati, 49. Neat greying beard, pearl-white suit, teal pocket square, calm and proud |
+| **Tatsuo Hamamoto** | Hayate | Japanese, 68. Slim, grey brush cut, wire glasses, violet windbreaker, pencil behind one ear, patient |
+
+## Gossip, kept to what a tabloid would print
+
+Dating and kissing rumours only between adult drivers close in age, as distant long-lens shots of people fully dressed, and always reported as unconfirmed and denied. Fan anger is about driving and results, never a nation, a gender or a religion. Nothing sexual.

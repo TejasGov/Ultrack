@@ -3,7 +3,7 @@
 import './career.css';
 import { h, fill, css, prompt, stat, still, teamLogo } from './ui.js';
 import { carName } from './carinfo.js';
-import { storyImage } from './career/career.js';
+import { storyImage, thumbOf } from './career/career.js';
 import { store } from './store.js';
 import { icon } from './icons.js';
 import { TRACKS } from '../tracks.js';
@@ -90,14 +90,16 @@ export function brandMark(id) {
 }
 
 // ---------------------------------------------------------------------------------------------- the press
-export const STORY_KICK = { win: 'Race report', podium: 'Race report', down: 'A bad day', duel: 'Teammates', feud: 'The feud', drama: 'The paddock', move: 'The market' };
-export const storySource = (s) => ({ drama: 'Paddock Whispers', feud: 'Paddock Whispers', move: 'The Transfer Desk' }[s.kind] ?? 'Ultrack Wire');
+export const STORY_KICK = { win: 'Race report', podium: 'Race report', down: 'A bad day', duel: 'Teammates', feud: 'The feud', drama: 'The paddock', move: 'The market', social: 'Fan talk', rumor: 'Rumour', fired: 'The seat' };
+export const storySource = (s) => ({ drama: 'Paddock Whispers', feud: 'Paddock Whispers', rumor: 'Paddock Whispers', move: 'The Transfer Desk', fired: 'The Transfer Desk', social: 'The Feed' }[s.kind] ?? 'Ultrack Wire');
 /** a story's picture, never cropped: the whole image over a blurred copy of itself, in a frame that shape. If the file is not there (art not uploaded yet) the circuit's still takes over, then a plain frame */
 export function storyPic(save, s, cls = '') {
-  const p = storyImage(save, s), track = s.track && still('tracks', s.track), src = p.url ?? track;
-  const bg = src ? h('img.bg', { src, alt: '', loading: 'lazy', decoding: 'async' }) : null;
-  const fg = src ? h('img.fg', { src, alt: '', decoding: cls === 'big' ? 'sync' : 'async', onerror: () => { if (track && fg.getAttribute('src') !== track) { fg.src = track; bg.src = track; } else { fg.remove(); bg.remove(); } } }) : null;
-  return h(`div.cx-pic${cls ? '.' + cls : ''}`, {}, bg, fg);
+  const p = storyImage(save, s), track = s.track && still('tracks', s.track), full = p.url ?? track, small = thumbOf(full), big = cls === 'big';
+  if (!full) return h(`div.cx-pic${big ? '.big' : ''}`);
+  // tiles and bytes take the small copy, and only once they scroll into view; only the front page pays for the full image
+  const bg = h('img.bg', { src: small, alt: '', loading: 'lazy', decoding: 'async' });
+  const fg = h('img.fg', { src: big ? full : small, alt: '', decoding: big ? 'sync' : 'async', ...(big ? {} : { loading: 'lazy' }), onerror: () => { if (track && fg.getAttribute('src') !== track) { fg.src = track; bg.src = track; } else { fg.remove(); bg.remove(); } } });
+  return h(`div.cx-pic${big ? '.big' : ''}`, {}, bg, fg);
 }
 /** media bytes: a row of headline cards, each opening its story on the media page */
 export const mediaBytes = (save, stories, open) => (stories.length ? h('div.cx-bytes', {}, stories.map((s) => h(`button.cx-byte${s.read ? '' : '.new'}`, { 'data-nav': '', onclick: () => open(s.id) }, storyPic(save, s), h('span', {}, h('small', {}, STORY_KICK[s.kind] ?? 'The paddock'), h('b', {}, s.title))))) : null);

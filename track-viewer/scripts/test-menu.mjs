@@ -97,7 +97,7 @@ try{
   // the inbox: a row opens with its action, reading it clears the count
   show(hub,'inbox');t=ok(hub,'inbox');assert.ok(t.includes('Inbox')&&t.includes('Round 1'));
   // the media tab: a story per real event, a picture that can always fall back, reading clears the count
-  show(hub,'media');t=ok(hub,'media');assert.ok(t.includes('The press')&&/Ultrack Wire|Paddock Whispers/.test(t));assert.ok(g.career.media.length>0,'the first race made the papers');assert.ok(C.unreadStories(g.career)<g.career.media.length,'the open story is read');
+  show(hub,'media');t=ok(hub,'media');assert.ok(t.includes('The press')&&/Ultrack Wire|Paddock Whispers|The Feed|The Transfer Desk/.test(t));assert.ok(g.career.media.length>0,'the first race made the papers');assert.ok(C.unreadStories(g.career)<g.career.media.length,'the open story is read');
   {const old=g.career.media.at(-1);click(hub,new RegExp(old.title.replace(/[^\w ]/g,'.')));assert.ok(old.read,'a row opens and reads its story');assert.ok(hub.el.textContent.includes(old.body.slice(0,30)));}
   {const saved=g.career.media;g.career.media=undefined;show(hub,'media');assert.ok(ok(hub,'empty press').includes('No press yet'),'an old save has no press and says so');g.career.media=saved;}
   // rivals, a seat review warning and a market offer; a moved driver shows his own name
