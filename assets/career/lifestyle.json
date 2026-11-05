@@ -3,17 +3,17 @@
   "note": "Happiness, fan support and the Shop (track-viewer/docs/career-mode.md, Part 3). Happiness and fan support are meters 0-100 about the driver's life: they move sponsor pay, XP, trust gains, offers and the press, and never the car or a rival's pace. 'round' is what one race week adds to happiness, then it drifts back to 50 by 'drift' of the gap. Item ids are the names of the Shop images at /assets/ui/shop/<id>.webp. Starting values, tuned with scripts/career-sim.mjs.",
   "happy": { "start": 50, "drift": 0.16 },
   "bands": [
-    { "min": 80, "id": "top", "name": "On top of the world", "pay": 1.10, "xp": 1.05, "trust": 1, "does": "Sponsors pay 10 % more, XP +5 %, friendly press" },
-    { "min": 60, "id": "content", "name": "Content", "pay": 1.04, "xp": 1, "trust": 1, "does": "Sponsors pay 4 % more" },
-    { "min": 40, "id": "neutral", "name": "Neutral", "pay": 1, "xp": 1, "trust": 1, "does": "Nothing either way" },
-    { "min": 20, "id": "frustrated", "name": "Frustrated", "pay": 0.95, "xp": 1, "trust": 0.5, "does": "Sponsors pay 5 % less, trust grows at half speed" },
-    { "min": 0, "id": "unhappy", "name": "Unhappy", "pay": 0.90, "xp": 1, "trust": 0.5, "does": "Fewer offers, a sponsor may walk, harsh press. You can demand a transfer" }
+    { "min": 80, "id": "top", "name": "On top of the world", "pay": 1.10, "xp": 1.05, "trust": 1.3, "offers": 1.25, "leverage": 1, "does": "Sponsors +10 %, XP +5 %, trust +30 %, more offers, stronger in contract talks" },
+    { "min": 60, "id": "content", "name": "Content", "pay": 1.04, "xp": 1, "trust": 1, "offers": 1.1, "leverage": 0.5, "does": "Sponsors +4 %, a few more offers, a little stronger in contract talks" },
+    { "min": 40, "id": "neutral", "name": "Neutral", "pay": 1, "xp": 1, "trust": 1, "offers": 1, "leverage": 0, "does": "Nothing either way" },
+    { "min": 20, "id": "frustrated", "name": "Frustrated", "pay": 0.95, "xp": 1, "trust": 0.5, "offers": 1, "leverage": 0, "does": "Sponsors pay 5 % less, trust grows at half speed" },
+    { "min": 0, "id": "unhappy", "name": "Unhappy", "pay": 0.90, "xp": 1, "trust": 0.5, "offers": 0.6, "leverage": 0, "does": "Fewer offers, a sponsor may walk, harsh press. You can demand a transfer" }
   ],
   "fans": { "start": 20, "baseRep": 0.03, "drift": 0.06, "perRR": 0.8, "max": 3, "win": 2, "podium": 1, "clean": 0.5, "dnf": -1.5, "press": 0.6, "home": 3,
             "names": [[80, "Adored"], [60, "Loved"], [40, "Well supported"], [20, "A following"], [0, "Few fans"]] },
   "round": { "perRR": 0.6, "max": 1.8, "win": 1.2, "podium": 0.5, "duel": 0.5, "rival": 0.5, "dnf": -1.2, "dnq": -1.2, "missOpen": -1.5, "poorRun": -0.8, "perFan": 0.02, "perTrust": 0.02,
              "seat": { "rookie": 0, "maestro": 0.25, "legend": 0.6 }, "belowForm": -1, "home": 1.2, "press": 0.35, "pressMax": 0.7, "bigRepair": 0.3, "repairHit": -1, "glowMax": 2.5, "grindAfter": 9, "grindPer": 0.15, "grindMax": 1.2 },
-  "unhappy": { "walk": 0.3, "offers": 0.6, "story": 0.35 },
+  "unhappy": { "walk": 0.3, "story": 0.35 },
   "upkeep": { "sellBack": 0.5 },
   "repeat": { "max": 3, "boost": 0.5, "glow": 0.5 },
   "home": { "IND": ["infinia", "india"], "JPN": ["tokyo"], "KOR": ["qingshan"], "ITA": ["venice"], "UAE": ["shajawa", "marina"], "USA": ["llano"] },

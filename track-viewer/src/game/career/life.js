@@ -15,11 +15,12 @@ export const fansBase = (rep) => LIFE.fans.start + LIFE.fans.baseRep * rep;
 export const bandOf = (happy) => LIFE.bands.find((b) => happy >= b.min);
 export const fansName = (fans) => LIFE.fans.names.find(([min]) => fans >= min)[1];
 export const mood = (save) => bandOf(save.life.happy);
-/** the multipliers of the current band: sponsor pay, XP, the speed trust grows at; and how many outside offers get made (fewer when unhappy) */
+/** what the current band changes: sponsor pay, XP, the speed trust grows at, the odds of an outside offer, and the extra push in contract talks */
 export const payMult = (save) => mood(save).pay;
 export const xpMult = (save) => mood(save).xp;
 export const trustMult = (save) => mood(save).trust;
-export const offerScale = (save) => (mood(save).id === 'unhappy' ? LIFE.unhappy.offers : 1);
+export const offerScale = (save) => mood(save).offers;
+export const leverageBonus = (save) => mood(save).leverage;
 /** may the player demand a transfer: unhappy, once a season */
 export const canDemand = (save) => mood(save).id === 'unhappy' && save.life.demanded !== save.clock.season;
 export const isHome = (save, track) => !!LIFE.home[save.player.nation]?.includes(track);

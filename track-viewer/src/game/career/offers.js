@@ -6,7 +6,7 @@ import {
 } from './rules.js';
 import { driverAt } from './world.js';
 import { post } from './inbox.js';
-import { payMult, offerScale, mood } from './life.js';
+import { payMult, offerScale, leverageBonus, mood } from './life.js';
 
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
 const rankOf = (team) => tierOf(team).rank;
@@ -32,11 +32,11 @@ export const releaseCut = (c) => round50(T.offers.release * c.salary * (c.season
 const say = (o, who, text) => { (o.log ??= []).push({ who, text }); };
 
 // ---------------------------------------------------------------------------------------------- negotiation (6.5)
-/** how far the player can push this offer: 1 + 4 x interest + 1 per other team's offer in hand */
+/** how far the player can push this offer: 1 + 4 x interest + 1 per other team's offer in hand + the mood's bonus (life.js) */
 export function leverageOf(save, o) {
   if (o.sponsor) return 1 + Math.max(0, formOf(save.career.rr)) * 0.5 + (save.sponsors.offers.length - 1);
   const others = new Set((save.pending?.offers ?? []).filter((x) => x.team !== o.team).map((x) => x.team)).size;
-  return 1 + 4 * (o.interest ?? T.offers.firstJobInterest) + others;
+  return 1 + 4 * (o.interest ?? T.offers.firstJobInterest) + others + leverageBonus(save);
 }
 export const canNegotiate = (o) => !o.keep && !o.reserve && !o.signed && !o.agreed;
 /** the levers an offer allows, for the screen: salary and signing steps, lengths, statuses; or a sponsor's retainer and bonus */

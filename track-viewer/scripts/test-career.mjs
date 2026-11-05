@@ -489,8 +489,13 @@ try {
     // what a band does: sponsor pay, XP, the speed trust grows, the offers
     { const s = signed(1110); s.sponsors.deals.push({ brand: 'jio', name: 'Jio', retainer: 100, bonus: 500, target: { kind: 'win', count: 1 }, progress: 0, met: false, mood: 3 });
       for (const [h, mult] of [[90, 1.10], [70, 1.04], [50, 1], [30, 0.95], [5, 0.90]]) { s.life.happy = h; assert.equal(O.sponsorRound(s, { dnf: true }, () => false)[0][1], Math.round(100 * mult / 5) * 5, `sponsor pay at mood ${h}`); }
-      s.life.happy = 90; assert.equal(Lf.xpMult(s), 1.05); s.life.happy = 30; assert.equal(Lf.trustMult(s), 0.5); assert.equal(Lf.offerScale(s), 1); s.life.happy = 10; assert.equal(Lf.offerScale(s), LIFE.unhappy.offers);
-      const xp = (hap) => { const a = signed(1111); a.life.happy = hap; return round(a, 2, 1).xp; }; assert.ok(xp(90) > xp(50), 'a driver on top of the world earns more XP'); }
+      s.life.happy = 90; assert.equal(Lf.xpMult(s), 1.05); s.life.happy = 30; assert.equal(Lf.trustMult(s), 0.5); assert.equal(Lf.offerScale(s), 1); s.life.happy = 10; assert.equal(Lf.offerScale(s), 0.6);
+      const xp = (hap) => { const a = signed(1111); a.life.happy = hap; return round(a, 2, 1).xp; }; assert.ok(xp(90) > xp(50), 'a driver on top of the world earns more XP');
+      // the upside: faster trust, likelier offers, more room in contract talks
+      const trust = (hap) => { const a = signed(1111); a.life.happy = hap; return round(a, 2, 1).trust; }; assert.ok(trust(90) > trust(50), `a happy driver earns trust faster: ${trust(90)} against ${trust(50)}`); assert.ok(trust(30) < trust(50), 'a frustrated one slower');
+      for (const [h, scale, bonus] of [[90, 1.25, 1], [70, 1.1, 0.5], [50, 1, 0], [30, 1, 0], [10, 0.6, 0]]) { s.life.happy = h; assert.equal(Lf.offerScale(s), scale, `offers at mood ${h}`); assert.equal(Lf.leverageBonus(s), bonus, `leverage at mood ${h}`); }
+      const o = { team: 'x', interest: 0.5 }, lev = (hap) => { s.life.happy = hap; return O.leverageOf(s, o); }; assert.equal(lev(90), lev(50) + 1, 'more room in contract talks');
+      const so = { sponsor: true }; assert.equal((s.life.happy = 90, O.leverageOf(s, so)), (s.life.happy = 50, O.leverageOf(s, so)), 'sponsor talks already pay through the mood'); }
     // an unhappy driver: a sponsor can walk (the same ending as too many skipped days), harsh press, and the way out is a transfer through the market
     { let walked = 0, harsh = 0; for (let seed = 1300; seed < 1340; seed++) { const s = signed(seed); s.life.happy = 4; s.sponsors.deals.push({ brand: 'jio', name: 'Jio', retainer: 80, bonus: 400, target: { kind: 'clean', count: 3 }, progress: 0, met: false, mood: 3 }); const rep0 = s.career.rep; round(s, 8, 999); if (!s.sponsors.deals.length) { walked++; assert.ok(s.inbox.some((m) => m.title === 'Jio ended the deal'), 'the same message as a skipped sponsor day'); } if (s.media.some((m) => m.title.includes('still happy'))) harsh++; }
       assert.ok(harsh >= 5, 'harsh press'); assert.ok(walked >= 3 && walked <= 25, `an unhappy driver loses a sponsor now and then (${walked} of 40)`);

@@ -412,7 +412,7 @@ export function finishRace(save, result) {
   const rep = repFor({ rr: rating.rr, tier, finish, pole, fastest, giantKills, dnf });
   if (E.rep !== 1) { rep.lines = rep.lines.map(([l, v]) => [l, v > 0 ? Math.round(v * E.rep) : v]); rep.rep = rep.lines.reduce((a, l) => a + l[1], 0); }   // an Open or the Masters pays reputation, never costs more of it
   rep.lines.push(...rivals.lines); rep.rep += rivals.rep;
-  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust;   // a frustrated driver earns trust at half speed
+  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
   // money (5.5): salary, the race prize x the tier's multiplier, objective and contract bonuses, sponsors
   const Tr = TIERS.tiers[tier], coins = [['Salary', me.salary]];
   for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: raced.length, laps: R.laps, finished: !dnf && !dnq, retired: dnf || dnq, fastest }).lines) coins.push([label, round5(v * Tr.prize * E.prize)]);
