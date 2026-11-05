@@ -102,3 +102,25 @@ The player (`you/`), the eight principals (`principals/`) and the shared scenes 
 | 2026-11-03 | Scene | fired | 1536x1024 | chatgpt.com/c/6aeac18a-d618-83ea-abcf-213c2b7b033c | Still life, no people: a cardboard box on a pit wall at dusk holding a pair of racing gloves, a plain cap and a framed photo turned face down, an empty garage with its lights going off behind it. |
 | 2026-11-04 | You | sign-toro | 1536x1024 | chatgpt.com/c/6aeabaad-ac14-83ea-8cad-0cdf280b9cbe | Nobody is shaking hands. Everyone has exactly two arms and two hands, and every hand is clearly visible. Keep the principal's head well inside the frame. New signing: a press conference. The principal and an anonymous new driver sit side by side behind a long table with two plain microphones on it, facing the camera, camera flashes in the blurred foreground. The driver wears a racing suit in giallo yellow with black horn-blade panels and bone-white piping and keeps a plain full-face helmet on with the dark visor down, so their face is never visible, both hands resting flat on the table. The principal laughs, both hands on the table. A plain yellow backdrop behind them. |
 | 2026-11-04 | You | sign-corvid | 1536x1024 | chatgpt.com/c/6aeabb26-b6d0-83e9-b584-dde21fe42e07 | Nobody is shaking hands. Everyone has exactly two arms and two hands, and every hand is clearly visible. Keep the principal's head well inside the frame. New signing: an anonymous new driver sits at a desk with their back to the camera, seen over their shoulder, wearing a plain dark cap and a racing suit in cream with British-racing-green panels and thin brass piping, their face never visible. Their right hand signs a blank contract with a pen and their left hand rests flat on the desk. The principal stands across the desk with his hands clasped behind his back and a dry, pleased smile, in a wood-panelled office with a rainy pit lane through the window. |
+
+## Shop images
+
+`track-viewer/public/assets/ui/shop/<id>.webp`, 512x512. Each prompt also says photorealistic, no text, no logos; those with a car say not an open-wheel car. Raw PNGs: `sources/driver-media/shop/` (local only).
+
+The other nine (apartment, penthouse, mansion, watch, supercar, yacht, night-out, big-party, huge-bash) came from Meshy `nano-banana`.
+
+| Date | Id | Size | Chat | Scene |
+|---|---|---|---|---|
+| 2026-11-04 | holiday | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Empty tropical beach, palm trees, one wooden sun lounger, turquoise sea, morning light |
+| 2026-11-04 | luxury-holiday | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Infinity pool at a clifftop resort over the ocean at sunset, stone terrace |
+| 2026-11-04 | fan-day | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | From behind a driver in a plain team jacket signing a cap for fans behind a barrier in the paddock |
+| 2026-11-04 | charity-gala | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Formal gala, round tables, guests from behind, a plain racing helmet on a lit plinth |
+| 2026-11-04 | ad-shoot | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Commercial photo studio, softboxes and a camera aimed at a plain red racing suit on a stand |
+| 2026-11-04 | billboard-deal | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Illuminated city billboard at dusk with only the silhouette of a driver holding a helmet |
+| 2026-11-04 | tv-commercial | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | TV commercial set, cinema camera on a dolly, closed-cockpit GT car in plain livery |
+| 2026-11-04 | crew-pro | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | One mechanic at a wheel of a closed-cockpit GT car in a small garage |
+| 2026-11-04 | crew-elite | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Crew of four in plain overalls on a closed-cockpit GT car in a tidy garage |
+| 2026-11-04 | crew-factory | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Large factory workshop, GT hypercar on lifts, big uniformed crew |
+| 2026-11-04 | engineer-pro | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Race engineer from behind with data traces on a laptop beside a GT car |
+| 2026-11-04 | engineer-elite | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Race engineer from behind on a pit wall stand at dusk, monitors of data graphs |
+| 2026-11-04 | engineer-factory | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Engineering control room, wall of graphs, GT car on a dyno through glass |
