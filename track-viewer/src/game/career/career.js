@@ -8,7 +8,7 @@ import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
   buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult, SPONSORS,
 } from './rules.js';
-import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
+import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
 import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
 import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
@@ -412,6 +412,7 @@ export function finishRace(save, result) {
   const rep = repFor({ rr: rating.rr, tier, finish, pole, fastest, giantKills, dnf });
   if (E.rep !== 1) { rep.lines = rep.lines.map(([l, v]) => [l, v > 0 ? Math.round(v * E.rep) : v]); rep.rep = rep.lines.reduce((a, l) => a + l[1], 0); }   // an Open or the Masters pays reputation, never costs more of it
   rep.lines.push(...rivals.lines); rep.rep += rivals.rep;
+  const happyRep = Math.round(rep.rep * (repMult(save) - 1)); if (happyRep > 0) { rep.lines.push([mood(save).name, happyRep]); rep.rep += happyRep; }   // a happy driver is talked about more; a bad round costs the same in any mood
   const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
   // money (5.5): salary, the race prize x the tier's multiplier, objective and contract bonuses, sponsors
   const Tr = TIERS.tiers[tier], coins = [['Salary', me.salary]];
