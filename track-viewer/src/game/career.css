@@ -472,7 +472,7 @@
 .cs-text > small { font-size: var(--fs-micro); letter-spacing: 0.04em; color: var(--c-ink-2); line-height: var(--lh-body); }
 .cs-chips { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-top: auto; padding-top: var(--sp-1); }
 .cs-chips i { font-style: normal; padding: 1px var(--sp-2); border-radius: var(--r-1); background: var(--c-fill-2); font-size: var(--fs-micro); color: var(--c-ink-1); font-variant-numeric: tabular-nums; }
-.cs-act { grid-column: 2; justify-self: end; font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; color: var(--s-coin); font-variant-numeric: tabular-nums; text-align: right; }
+.cx-shop .cs-act { grid-column: 2; justify-self: end; font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; color: var(--s-coin); font-variant-numeric: tabular-nums; text-align: right; }
 .cx-shop.ok { border-color: color-mix(in srgb, var(--d-life) 40%, transparent); }
 .cx-shop.poor .cs-act { color: var(--c-ink-2); }
 .cx-shop.own { border-color: color-mix(in srgb, var(--pos) 60%, transparent); background: color-mix(in srgb, var(--pos) 10%, transparent); }
