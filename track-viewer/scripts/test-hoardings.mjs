@@ -36,7 +36,7 @@ try{
  const points=[new THREE.Vector3(),new THREE.Vector3(100,0,0),new THREE.Vector3(100,0,100),new THREE.Vector3(0,0,100)];
  const field={all:[],N:4,length:400,linePts:points,configure({hero,racers}){this.cars=racers.map(key=>({key,hero:key===hero}));this.all=this.cars;this.hero=this.cars[0];},enablePhysics(){this.input={clear(){},setEnabled(){}};this.cars.forEach(car=>{car.vehicle={cur:{pos:points[0].clone()}};});}};
  let finishGraphics,selected;
- const game=Object.assign(Object.create(Game.prototype),{field,ctx:{params:{},newTrails(){},setDriverHoardings:async keys=>{selected=keys;},prepareRaceRenderer:()=>new Promise(resolve=>{finishGraphics=resolve;})},screen:{},ensureVehicles:async()=>{},hideScreens(){this.screen=null;},cameraFor(){},say(){},setBusy(){},hud:{show(){},reset(){}},audio:{engineOff(){},nitro(){},engineFor:async()=>{},commentary:{stop(){},setTags(){}}}});
+ const game=Object.assign(Object.create(Game.prototype),{field,ctx:{params:{},newTrails(){},setDriverHoardings:async keys=>{selected=keys;},prepareRaceRenderer:()=>new Promise(resolve=>{finishGraphics=resolve;})},screen:{},ensureVehicles:async()=>{},hideScreens(){this.screen=null;},cameraFor(){},say(){},setBusy(){},hud:{show(){},reset(){},goals(){}},audio:{engineOff(){},nitro(){},engineFor:async()=>{},commentary:{stop(){},setTags(){}}}});
  const start=game.startSession('race');await new Promise(resolve=>setImmediate(resolve));
  assert.equal(game.session,null);assert.equal(selected.length,teams.length);assert.equal(game.driverIntro,undefined);
  finishGraphics();await start;assert.equal(game.session.t,0);assert.equal(game.session.state,'grid');game.endSession();
