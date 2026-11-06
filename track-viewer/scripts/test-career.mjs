@@ -850,6 +850,16 @@ try {
       C.finishQuali(s, 1); const g2 = s.season.current.quali.grid, k2 = g2.find((k) => k !== me); s.season.current.flag = { kind: 'callout', who: s.world.seats[k2] };
       const lost = round(s, 8).repLines.find((l) => /^Callout lost/.test(l[0])); assert.deepEqual(lost?.[1], CH.callout.lose.rep, 'finishing behind costs'); assert.ok(L.latest(s, { kinds: ['callout_lost'] }));
       const f = { kind: 'callout', who }; s.season.current.flag = f; assert.ok(X.settleCallout(s, g, me, false)); assert.equal(X.settleCallout(s, g, me, false), null, 'one payment per flag'); delete s.season.current.flag; }
+    { const s = signed(3016), cut = CH.callout.composure, code = ctxOf(s).who, key = Object.keys(s.world.seats).find((k) => s.world.seats[k] === code), T = X.TRIGGERS.callout;   // who can call the player out, and for which round
+      CH.callout.composure = 2; s.career.heat[code] = 90;
+      try {
+        const c = T(s); assert.equal(c?.who, code); assert.equal(c.round, s.season.current.round);
+        X.pose(s, 'callout', c); assert.equal(T(s), null, 'one callout a round: a second flag would replace the first');
+        s.season.choices = {}; s.season.current.flag = { kind: 'callout', who: code }; assert.equal(T(s), null); delete s.season.current.flag;
+        s.season.current.open = { kind: 'masters', seeded: false, seeds: [key] }; assert.equal(T(s), null, 'no callout for a Masters the player is not in');
+        s.season.current.open = { kind: 'masters', seeded: true, seeds: [s.contract.car] }; assert.equal(T(s), null, 'nor from a driver outside its eight');
+        s.season.current.open.seeds.push(key); assert.equal(T(s)?.who, code);
+      } finally { CH.callout.composure = cut; } }
     { const s = signed(3012), code = Object.values(s.world.seats).find((c) => c !== W.YOU && c !== s.world.seats[C.teammateCar(s)]), name = C.personOf(s, code).name;   // callbacks name a real ledger entry
       L.note(s, 'bold_press', { who: code }); const cb = Md.callbackOf(s, 'offer', { kinds: ['bold_press'] });
       assert.ok(s.career.ledger.includes(cb.entry) && cb.text.includes(name) && cb.text.includes('Season 1'), cb.text);

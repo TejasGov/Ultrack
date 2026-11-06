@@ -88,7 +88,7 @@ try {
     console.log(`  info  ${sc.reduce((a, b) => a + b, 0)} scenes over ${sc.length} seasons; ${called} callouts accepted, ${A.paid} paid out`);
     check('choice scenes per season (avg)', sc.reduce((a, b) => a + b, 0) / Math.max(1, sc.length), 2, 5);
     check('choice scenes in one season (most seen)', Math.max(...sc), 0, 5, (x) => String(x));
-    check('callouts paid out per callout accepted', A.paid / Math.max(1, called), 0, 1, (x) => x.toFixed(2));
+    check('callouts paid out per callout accepted', called ? A.paid / called : 1, 1, 1, (x) => x.toFixed(2));   // one stated stake, one payment: a second callout for the same round once replaced the first
     if (label === 'strong') { check('Legend offer, any', any((l) => l.legendOffer !== null), 0.95, 1, pct); check('Legend offer, median season', median(L.map((l) => l.legendOffer)), 0, 3, (x) => String(x)); }
   }
 } finally { await server.close(); }

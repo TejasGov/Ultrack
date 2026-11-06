@@ -16,18 +16,23 @@ const SCENES = Object.fromEntries(CH.scenes.map((s) => [s.id, s]));
 const kindOf = (e) => Object.keys(e).find((k) => k in EFFECTS);
 
 /** when a scene can arrive, from the save as it stands on entering a week: its context, or null */
-const TRIGGERS = {
+export const TRIGGERS = {
   /** a rumour from the market week (offers.js rumours) that has the player on a shortlist */
   rumour: (save) => {
     const x = save.season.weeks[save.clock.week]?.kind === 'market' && (save.season.rumours ?? []).find((r) => r.list.includes(YOU));
     return x ? { who: x.code, team: CAR[x.car].team } : null;
   },
-  /** the hottest driver at 70+ will race the next round and is easily rattled (composure under callout.composure) */
+  /**
+   * The hottest driver at 70+ is easily rattled (composure under callout.composure) and enters the next round, which the player can race: all sixteen enter a Tour round
+   * or an Open, a Masters only its seeds. One callout a round, since a second flag would replace the first and its stated stake would never be paid
+   */
   callout: (save) => {
-    const W = save.world, n = nemesisAmong(save, Object.keys(W.seats)), R = save.season.calendar[save.clock.round];
-    if (!n || !R || composureOf(W.ratings[n.code], W.ages[n.code]) >= CH.callout.composure) return null;
+    const W = save.world, S = save.season, cur = S.current, o = cur?.open, R = S.calendar[save.clock.round];
+    if (!R || cur.flag || (o?.kind === 'masters' && !o.seeded) || Object.values(S.choices ?? {}).some((c) => c.scene === 'callout' && c.ctx.round === R.round)) return null;
+    const n = nemesisAmong(save, o?.kind === 'masters' ? o.seeds : Object.keys(W.seats));
+    if (!n || composureOf(W.ratings[n.code], W.ages[n.code]) >= CH.callout.composure) return null;
     const higher = tierOf(CAR[n.key].team).rank > tierOf(save.contract.team).rank;
-    return { who: n.code, team: CAR[n.key].team, gp: R.name, stake: Math.round(CH.callout.win.rep * (higher ? CH.callout.higherTier : 1)) };
+    return { who: n.code, team: CAR[n.key].team, gp: R.name, round: R.round, stake: Math.round(CH.callout.win.rep * (higher ? CH.callout.higherTier : 1)) };
   },
   /**
    * The week after a round the papers write the player up for (media.js coverRound): a podium, a finish press.gap or more places either side of the
