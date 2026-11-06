@@ -6,7 +6,8 @@ import bpy, json, math, sys
 from pathlib import Path
 from mathutils import Vector
 H = Path(globals().get('__file__') or sys.argv[sys.argv.index('-P') + 1]).resolve().parent; OUT = H / 'out' / 'review'; OUT.mkdir(parents=True, exist_ok=True); PH = H.parents[1] / 'assets' / 'polyhaven'
-HERO = 'hero' in (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+ARGV = ','.join(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []).split(','); HERO = 'hero' in ARGV
+ONLY = [a[5:].split('+') for a in ARGV if a.startswith('only=')]     # only=quay-day+canyon-day: a few stills, no review blend
 T = json.loads((H / 'out' / 'track.json').read_text()); C = [Vector((p[0], -p[2], p[1])) for p in T['centerline']]; n = len(C)
 def at(i, up=0.0, lat=0.0):
     i %= n; t = (C[(i + 1) % n] - C[i - 1]).normalized(); nl = Vector((-t.y, t.x, 0)).normalized()
@@ -30,7 +31,8 @@ def look(name):
     sun.rotation_euler = (math.radians(48 if name == 'day' else 81), 0, math.radians(140 if name == 'day' else 100)); sun.data.energy = 3.4 if name == 'day' else 4.0; sun.data.color = (1, 0.96, 0.9) if name == 'day' else (1, 0.6, 0.32)
 cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam; cam.data.lens = 24; cam.data.clip_end = 20000
 for o in bpy.data.collections['collision'].objects: o.hide_render = True
-bpy.data.objects['NT lines'].visible_shadow = False      # 3 cm over the road: EEVEE's shadow pages turn it into dark blocks
+for _n in ('NT lines', 'NT yard lines'):
+    if _n in bpy.data.objects: bpy.data.objects[_n].visible_shadow = False      # 3-4 cm over the road and yard: EEVEE's shadow pages turn them into dark blocks
 mid = sum(C, Vector()) / n
 S = lambda c, t: (at(c[0], c[1], c[2]), at(t[0], t[1], t[2]))       # [station, up, side] as maps-spec.md section 9.5
 VIEWS = {'quay': S((690, 3.5, 2), (30, 12, 2)), 'crane-hairpin': S((95, 4, 3), (108, 2, 0)), 'canyon': S((185, 3, 2), (200, 3, 0)),
@@ -38,6 +40,7 @@ VIEWS = {'quay': S((690, 3.5, 2), (30, 12, 2)), 'crane-hairpin': S((95, 4, 3), (
 OVER = (mid + Vector((-220, -330, 250)), mid + Vector((0, 40, -10)))
 if HERO: SHOTS = [('quay', 'dusk'), ('canyon', 'day')]
 else: SHOTS = [(v, lk) for lk in ('day', 'dusk') for v in VIEWS] + [('overview', 'dusk')]
+if ONLY: SHOTS = [(v, lk) for v, lk in SHOTS if f'{v}-{lk}' in ONLY[0]]; HERO = True
 for name, lk in SHOTS:
     look(lk); p, q = OVER if name == 'overview' else VIEWS[name]
     cam.location = p; cam.rotation_euler = (q - p).to_track_quat('-Z', 'Y').to_euler()
