@@ -3,8 +3,9 @@
     (-Rest --no-export,stretch: the hero stretch, descent and switchback, for review stills first)
 Layout: track-viewer/docs/career-worlds/pilbara.json (1.75 km, 18 m from rim to floor). Shared pieces: tracks/career_lib.py. Day and dusk only: no lights.json.
   road      15 m, kerbs below R140, jersey barriers 14 m out, a gravel run-off strip between them (flush with the road), a visual-only windrow behind each barrier
-  ground    one 4 m heightfield: 6 m benches (4.5 m faces, 9.5 m berms) cut down from every road leg inside the loop and up from it outside, the max / min of
-            continuous per-station terms (no cracks where two legs' terraces meet), a dry floor at -5.6 m, a lake basin under a static pit lake at -6.5 m
+  ground    one 2.5 m heightfield with the bench toes and crests cut in as breaklines (collision on its own 4 m grid): 6 m benches (4.5 m faces,
+            9.5 m berms) cut down from every road leg inside the loop and up from it outside, the max / min of continuous per-station terms
+            (no cracks where two legs' terraces meet), a dry floor at -5.6 m, a lake basin under a static pit lake at -6.5 m
   far       a radial ring to 8.5 km on the rim plateau with waste-rock dumps, Dry Lake's goegap range on five arcs 6.5 km out
   plant     the crusher on the floor by the chicane, an enclosed conveyor gallery over the floor road up the south wall, a workshop shed and a water tank on the rim
   rocks     250 boulders on berms and floor, baked into one mesh"""
@@ -65,9 +66,10 @@ mesh_obj(f'{PFX} gravel', bm, ['gravel'], smooth=True)
 
 # ------------------------------------------------------------------------------------------------ ground: the benched heightfield
 CA = np.array([[p.x, p.y, p.z] for p in CL]); NA_ = np.array([[n.x, n.y] for n in NL]); BDL, BDR = np.array(BD[1]), np.array(BD[-1])
+TA = np.roll(CA[:, :2], -1, 0) - np.roll(CA[:, :2], 1, 0); TA /= np.linalg.norm(TA, axis=1)[:, None]
 ZF = float(CA[:, 2].min())      # the floor road; the start line on the rim is z 0
 LAKE, FLOOR, BASIN = ZF - 6.5, ZF - 5.6, ZF - 8.6        # the water 0.9 m under the dry floor and 2.1 m over the basin: nothing near it is coplanar
-CELL = 4.0; X0, X1, Y0, Y1 = min(xs) - 120, max(xs) + 120, min(ys) - 120, max(ys) + 120
+CELL = 2.5; X0, X1, Y0, Y1 = min(xs) - 120, max(xs) + 120, min(ys) - 120, max(ys) + 120
 GX, GY = int(math.ceil((X1 - X0) / CELL)), int(math.ceil((Y1 - Y0) / CELL)); X1, Y1 = X0 + GX * CELL, Y0 + GY * CELL
 CX, CY = (X0 + X1) / 2, (Y0 + Y1) / 2
 PADS = []      # (x, y, radius, z): flat sites for the plant
@@ -86,15 +88,19 @@ def heights(px, py):
     for a in range(0, n, 1500):
         s_ = slice(a, a + 1500); x, y = px[s_], py[s_]; r = np.arange(len(x))
         dx, dy = x[:, None] - CA[None, :, 0], y[:, None] - CA[None, :, 1]; d2 = dx * dx + dy * dy
-        # each road leg speaks once, at its foot (a local minimum of the distance, refined on the parabola d^2 makes along a straight):
-        # with every station in the max, the uphill ones win on a grade and the bench lines go ragged
-        a2, c2 = np.roll(d2, 1, 1), np.roll(d2, -1, 1); den = np.maximum(a2 - 2 * d2 + c2, 1e-6); u = np.clip((a2 - c2) / (2 * den), -0.5, 0.5)
-        d = np.sqrt(np.maximum(d2 - (a2 - c2) ** 2 / (8 * den), 0)); zr = CA[None, :, 2] + u * (np.roll(CA[:, 2], -1) - np.roll(CA[:, 2], 1))[None] / 2 - 0.35
+        # each road leg speaks at its foot: with every station in the max at full weight, the uphill ones win on a grade and the bench lines go ragged.
+        # t: where the point projects along each station's tangent, in stations; outside a curve consecutive projections spread apart (by rho / R),
+        # so there t counts in their spacing g. A station speaks fully while its foot lies within its own 2.5 m (|t| <= 0.5) and fades by 6 m per
+        # station beyond: on a straight that is one station, near a hairpin's centre the whole arc. A hard local-minimum mask, or a fade keyed
+        # to the distance parabola (whose spacing falls to 0 there), made 1-2 m cliffs wherever two minima of the distance merged
+        t0 = (dx * TA[None, :, 0] + dy * TA[None, :, 1]) / STEP; t = t0 / np.maximum((np.roll(t0, 1, 1) - np.roll(t0, -1, 1)) / 2, 1)
+        u = np.clip(t, -0.5, 0.5); pen = 6 * np.maximum(np.abs(t) - 0.5, 0)
+        d = np.sqrt(np.maximum(d2 - (t0 * STEP) ** 2, 0) + ((t0 - u) * STEP) ** 2); zr = CA[None, :, 2] + u * (np.roll(CA[:, 2], -1) - np.roll(CA[:, 2], 1))[None] / 2 - 0.35
         bd = np.where(dx * NA_[None, :, 0] + dy * NA_[None, :, 1] > 0, BDL[None], BDR[None]); ex = d - bd - 6
         s = ex + 3 * n40[s_, None] * sm(0, 5, ex)       # the bench lines wander a few metres, fading in past the run-off so nothing steps there
         rise = np.where(s < 0, 0.0, 6 * np.floor(np.maximum(s, 0) / 14) + 6 * sm(0, 4.5, np.mod(np.maximum(s, 0), 14)))
-        far = (d > 220) | (d2 > a2) | (d2 > c2)
-        tin, tout = np.where(far, -1e9, zr - rise), np.where(far, 1e9, zr + rise); jin, jout = tin.argmax(1), tout.argmin(1); zin, zout = tin[r, jin], tout[r, jout]
+        far = d > 220
+        tin, tout = np.where(far, -1e9, zr - rise - pen), np.where(far, 1e9, zr + rise + pen); jin, jout = tin.argmax(1), tout.argmin(1); zin, zout = tin[r, jin], tout[r, jout]
         k = d2.argmin(1); dmin, bdk, znear = d[r, k], bd[r, k], zr[r, k]
         lake = sm(50, 90, dmin + 20 * nlake[s_])
         for (sx, sy, sr, _) in PADS: lake = lake * sm(sr + 10, sr + 40, np.hypot(x - sx, y - sy))
@@ -113,16 +119,26 @@ i5 = st(next(c['at'] for c in SRC['corners'] if c['n'] == 5)); CR = off(i5, -(BD
 iS, iT = st(90), st(LAP - 60); SH, TK = off(iS, 62), off(iT, 52)
 PADS += [(SH.x, SH.y, 20.0, ZF + 20.5), (TK.x, TK.y, 10.0, ZF + 20.5)]
 
+for x_, y_ in ((290.9, -222.7), (-104.6, -62.3)):     # where the foot masks once made 1-2 m cliffs: at most a bench face's slope (6 cm per cm) here
+    zz = heights(np.full(600, x_), y_ + np.arange(-300, 300) / 100)[0]; assert np.abs(np.diff(zz)).max() < 0.06, ('the ground jumps near', x_, y_, np.abs(np.diff(zz)).max())
 gxs, gys = np.meshgrid(X0 + CELL * np.arange(GX + 1), Y0 + CELL * np.arange(GY + 1)); GZ, GD, GB, GI, GS, GT = (a.reshape(gxs.shape) for a in heights(gxs.ravel(), gys.ravel()))
-# a 4 m grid samples a 4.5 m bench face about once, and the crests come out as sawtooth: so every vertex near a bench toe or crest (s = 0 or 4.5,
-# mod 14) moves onto it along the gradient of s, by under 0.4 of a cell (neighbours never cross), where s is smooth (one station sets it all round)
+# a 2.5 m grid still samples a 4.5 m bench face only twice, and the crests come out as sawtooth: so every vertex near a bench toe or crest (s = 0 or 4.5,
+# mod 14) moves onto it along the gradient of s, by under half a cell, where s is smooth (one station sets it all round), unless the move folds a quad
 gsy, gsx = np.gradient(GS, CELL); g2 = gsx ** 2 + gsy ** 2; rr = np.mod(GS, 14)
 brk = np.where(rr < 2.25, -rr, np.where(rr < 9.25, 4.5 - rr, 14 - rr)); mx_, my_ = brk * gsx / np.maximum(g2, 1e-9), brk * gsy / np.maximum(g2, 1e-9)
 ok = GT.copy(); ok[0, :] = ok[-1, :] = ok[:, 0] = ok[:, -1] = False
 ok[1:-1, 1:-1] &= GT[:-2, 1:-1] & GT[2:, 1:-1] & GT[1:-1, :-2] & GT[1:-1, 2:]
-ok &= (g2 > 0.6 ** 2) & (g2 < 1.5 ** 2) & (np.hypot(mx_, my_) < 0.4 * CELL)
+ok &= (g2 > 0.6 ** 2) & (g2 < 1.5 ** 2) & (np.hypot(mx_, my_) < 0.48 * CELL)
+for _ in range(6):      # every grid quad stays convex, so neither diagonal can fold a triangle over
+    sx_, sy_ = gxs + np.where(ok, mx_, 0), gys + np.where(ok, my_, 0)
+    P_ = [(sx_[:-1, :-1], sy_[:-1, :-1]), (sx_[:-1, 1:], sy_[:-1, 1:]), (sx_[1:, 1:], sy_[1:, 1:]), (sx_[1:, :-1], sy_[1:, :-1])]
+    fold = np.zeros(ok.shape, bool); bad = np.zeros(fold[:-1, :-1].shape, bool)
+    for k in range(4): (ax, ay), (bx, by), (cx_, cy_) = P_[k - 1], P_[k], P_[(k + 1) % 4]; bad |= (bx - ax) * (cy_ - by) - (by - ay) * (cx_ - bx) < 0.1 * CELL * CELL
+    if not bad.any(): break
+    fold[:-1, :-1] |= bad; fold[:-1, 1:] |= bad; fold[1:, 1:] |= bad; fold[1:, :-1] |= bad; ok &= ~fold
 gxs, gys = gxs + np.where(ok, mx_, 0), gys + np.where(ok, my_, 0)
-for a_, v_ in zip((GZ, GD, GB, GI), heights(gxs[ok], gys[ok])[:4]): a_[ok] = v_
+for a_, v_ in zip((GZ, GD, GB, GI, GS), heights(gxs[ok], gys[ok])[:5]): a_[ok] = v_
+assert not bad.any(), 'snapping folded a ground quad'
 log('vertices snapped to bench lines', int(ok.sum()), 'of', int(GT.sum()), 'on terraces; |grad s| ok', int(((g2 > 0.36) & (g2 < 2.25) & GT).sum()), 'near a line', int(((np.abs(brk) < 1.6) & GT).sum()))
 _lo = np.unravel_index(GZ.argmin(), GZ.shape)
 log('ground grid', GX, 'x', GY, 'z', round(float(GZ.min()), 1), '..', round(float(GZ.max()), 1), 'lowest at', round(float(gxs[_lo]), 1), round(float(gys[_lo]), 1), 'inside', bool(GI[_lo]), 'd', round(float(GD[_lo]), 1))
@@ -133,11 +149,47 @@ for r in range(GY):
         idx = ((r, c), (r, c + 1), (r + 1, c + 1), (r + 1, c))
         if max(GD[q] for q in idx) < HW - 0.6 or all(GD[q] < GB[q] for q in idx): continue      # under the road or the run-off strip
         q = [G[a][b_] for a, b_ in idx]
-        if min(GD[q_] - GB[q_] for q_ in idx) < 7: ground_col.append([v.co.copy() for v in q])     # the barrier is the wall: 7 m behind it is the safety net (15k-triangle budget)
         z_ = [GZ[q_] for q_ in idx]      # split along the diagonal that follows the contour
         for t_ in (((0, 1, 2), (0, 2, 3)) if abs(z_[0] - z_[2]) <= abs(z_[1] - z_[3]) else ((0, 1, 3), (1, 2, 3))):
             f = bm.faces.new([q[k] for k in t_]); f.material_index = 0; f.smooth = True
 for v in [v for v in bm.verts if not v.link_faces]: bm.verts.remove(v)
+# breaklines: every triangle edge that a bench toe or crest crosses (s = 0 or 4.5, mod 14) is split on the line, and the two cuts in a triangle are
+# joined, so no triangle bevels across a crest (the pale notches a heightfield leaves wherever no vertex sits on the line)
+VS = {G[r][c]: (GS[r, c], GT[r, c]) for r in range(GY + 1) for c in range(GX + 1) if G[r][c].is_valid}
+cuts = []
+for e in bm.edges:
+    a, b_ = e.verts; (sa, ta), (sb, tb) = VS[a], VS[b_]
+    if not (ta and tb) or abs(sa - sb) > 1.5 * e.calc_length(): continue       # one station sets s all along the edge
+    lo, hi = min(sa, sb), max(sa, sb)
+    cuts += [(e, a, b_, (L - sa) / (sb - sa), L, sb - sa) for L in (14 * k + o for k in range(int(lo // 14), int(hi // 14) + 1) for o in (0, 4.5)) if L >= 0 and lo + 0.05 < L < hi - 0.05]
+if cuts:
+    F = np.array([c[3] for c in cuts]); A = np.array([c[1].co.to_2d() for c in cuts]); D_ = np.array([(c[2].co - c[1].co).to_2d() for c in cuts])
+    P = A + F[:, None] * D_; F = np.clip(F + (np.array([c[4] for c in cuts]) - heights(P[:, 0], P[:, 1])[4]) / np.array([c[5] for c in cuts]), 0.02, 0.98)     # one secant step onto the line
+    P = A + F[:, None] * D_; PZ = heights(P[:, 0], P[:, 1])[0]
+    by_edge, NV = {}, {}
+    for c, f_, p, z in zip(cuts, F, P, PZ): by_edge.setdefault(c[0], []).append((f_, c[4], p, z, c[1], c[2]))
+    for e, cs in by_edge.items():
+        cs.sort(key=lambda t: t[0]); cur = e
+        for f_, L, p, z, a, b_ in cs:
+            ne, v = bmesh.utils.edge_split(cur, a, 0.5); v.co = Vector((float(p[0]), float(p[1]), float(z))); NV[v] = L
+            cur = next(e2 for e2 in v.link_edges if b_ in e2.verts); a = v
+    pairs = set()
+    for f in {f for v in NV for f in v.link_faces}:
+        lv = {}
+        for v in f.verts:
+            if v in NV: lv.setdefault(NV[v], []).append(v)
+        pairs |= {frozenset(vs) for vs in lv.values() if len(vs) == 2}
+    for v1, v2 in pairs:
+        if not any(v2 in e.verts for e in v1.link_edges): bmesh.ops.connect_verts(bm, verts=[v1, v2])
+    bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3], quad_method='BEAUTY', ngon_method='BEAUTY')
+    log('breaklines: edges cut', len(by_edge), 'vertices', len(NV), 'joins', len(pairs))
+# collision on its own 4 m grid (15k-triangle budget): the barrier is the wall, the 7 m behind it the safety net, and that band is never a snapped terrace
+WX, WY = np.meshgrid(X0 + 4 * np.arange(int((X1 - X0) / 4) + 1), Y0 + 4 * np.arange(int((Y1 - Y0) / 4) + 1)); WZ, WD, WB = (a.reshape(WX.shape) for a in heights(WX.ravel(), WY.ravel())[:3])
+for r in range(WX.shape[0] - 1):
+    for c in range(WX.shape[1] - 1):
+        idx = ((r, c), (r, c + 1), (r + 1, c + 1), (r + 1, c))
+        if max(WD[q] for q in idx) < HW - 0.6 or all(WD[q] < WB[q] for q in idx) or min(WD[q] - WB[q] for q in idx) >= 7: continue
+        ground_col.append([Vector((float(WX[q]), float(WY[q]), float(WZ[q]))) for q in idx])
 bm.normal_update(); uv = bm.loops.layers.uv.verify()
 QD = [Vector((math.cos(a), math.sin(a), 0)) for a in (0, math.pi / 4, math.pi / 2, 3 * math.pi / 4)]
 for f in bm.faces:      # slope UVs: bench faces projected along their own horizontal facing (one of four), so the laterite never stretches by more than 8 %
