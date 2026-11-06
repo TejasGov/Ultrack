@@ -375,8 +375,8 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero, 
     w.spin.add(low);
     simple.push(low);
   }
-  // far proxy: the four stand-in wheels merged into one static mesh per material (2 draws instead of ~20); beyond
-  // FAR_M nobody sees a wheel spin or steer
+  // far proxy: static clones of the four stand-in wheels (5 meshes each, so 20 draws; docs/10x/wp2-merge-wheels.patch
+  // merges them to 2); beyond FAR_M nobody sees a wheel spin or steer
   car.updateMatrixWorld(true);
   const inv = car.matrixWorld.clone().invert(), proxy = new THREE.Group();
   proxy.name = 'wheels-far';
