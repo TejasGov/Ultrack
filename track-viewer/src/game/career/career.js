@@ -6,23 +6,26 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult, SPONSORS,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
-import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
+import { YOU, newWorld, contractFor, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
 import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
 import { post, unread, markRead } from './inbox.js';
-import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, unreadStories, readStory, storyImage, latestBytes } from './media.js';
+import { note } from './ledger.js';
+import { poseWeek, settleChoices, settleCallout, answerChoice, choiceOf, openChoices } from './choices.js';
+import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
-  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer,
+  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours, holdsSeat, fallbackOffer,
 } from './offers.js';
 
-export const SCHEMA = 7;
+export const SCHEMA = 10;
 export { rankingOf, playerRank };
 export { hire as hireStaff, hireInfo as staffInfo, discount as staffDiscount, tierNow as staffTier, STAFF, STAFF_LIST, ROLES as STAFF_ROLES };
 export { unreadStories, readStory, storyImage, latestBytes };
+export { answerChoice, choiceOf, openChoices };
 export { LIFE, ITEMS, TYPES, itemOf, mood as moodOf, bandOf, fansName, payMult, canDemand, ownedN, boostOf, glowOf, upkeepOf };
 export { thumbOf } from './media.js';
 export { releaseCut as releaseCutOf, driverAt, personOf, rivalsOf, unread, markRead, findOffer, mateOf, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, signMid, teamOutlook, approach, sponsorSlots, signSponsor };
@@ -41,12 +44,12 @@ function codeOf(name) {
 
 /** a new career: the driver, a seed, the world as data; the next step is the Open Shootout (3.1) */
 export function newCareer({ name = 'A. Driver', nation = 'IND', number = 99, seed = (Math.random() * 2 ** 31) >>> 0, difficulty = 'normal', raceLength = 'sprint', now = new Date().toISOString() } = {}) {
-  const world = newWorld();
+  const world = newWorld(seed);
   return {
     schema: SCHEMA, id: 'c_' + seed.toString(36), createdAt: now, seed, rules: { difficulty, raceLength },
     player: { name: name.trim() || 'A. Driver', code: codeOf(name), nation, number },
     clock: { season: 1, round: 0, week: 0, phase: 'shootout' },
-    career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {} },
+    career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {}, rivalry: {}, ledger: [] },
     contract: null, wallet: { coins: T.money.startWallet },
     garage: { upgrades: {}, paid: {}, package: 0 }, staff: { crew: null, engineer: null }, life: newLife(),
     world, ranking: newRanking(world.ratings), hall: [], season: null, pending: null, history: [], inbox: [], inboxN: 0, sponsors: { deals: [], offers: [] },
@@ -96,7 +99,23 @@ export function migrate(save) {
     save.life = newLife(save.career.rep);
     save.schema = 7;
   }
+  if (save.schema === 7) {                                    // before earned rivalries: heat that came from finishing near someone is capped short of a nemesis, and a rival keeps that as their cause
+    const K = save.career, RV = (K.rivalry = {}), mate = save.contract && save.world.seats[teammateCar(save)];
+    for (const [c, h] of Object.entries(K.heat)) { K.heat[c] = Math.min(h, 60); if (h >= T.rivals.rival) RV[c] = { cause: 'grid', since: [save.clock.season, 0], w: 0, l: 0 }; }
+    if (mate && mate !== YOU) { K.heat[mate] = Math.max(K.heat[mate] ?? 0, T.rivals.mate); RV[mate] ??= { cause: 'teammate', since: [save.clock.season, 0], w: 0, l: 0 }; }
+    save.schema = 8;
+  }
+  if (save.schema === 8) {                                    // before AI contracts: every seated driver gets the 1-3 seasons a new career would roll, and the career remembers nothing yet
+    const W = save.world; W.contracts = Object.fromEntries(Object.values(W.seats).filter((c) => c && c !== YOU).map((c) => [c, contractFor(save.seed, c)]));
+    save.career.ledger = [];
+    save.schema = 9;
+  }
+  if (save.schema === 9) {                                    // before choice scenes: a season under way has posed none
+    if (save.season) save.season.choices ??= {};
+    save.schema = 10;
+  }
   for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
+  for (const d of save.sponsors?.deals ?? []) d.mood = Math.min(d.mood, SPONSORS.startMood + 3);   // drift days raised goodwill with no cap: over it, the next gold would read as goodwill down
   return save;
 }
 
@@ -131,7 +150,6 @@ export function acceptOffer(save, id, available) {
   if (old && o.team !== old.team && !o.signed && !o.reserve && !old.dropped && old.seasonsLeft > 1) {   // bought out of a running contract: you get the cut (3.3)
     save.transfer = releaseCut(old); save.wallet.coins += save.transfer;
   }
-  for (const x of save.pending.offers) if (x.team !== o.team && x.team !== old?.team) save.world.teams[x.team].declined++;   // declined three times, a team cools (6.5)
   const keep = old && old.team === o.team && !old.dropped;
   save.contract = { team: o.team, seat: o.seat, car: o.car, status: o.status, seasons: o.seasons, seasonsLeft: o.seasons, salary: o.salary, signing: o.signing ?? 0,
     underdog: !!o.underdog || !!(keep && old.underdog && old.car === o.car), easier: !!(o.easier || o.reserve || (o.keep && old.easier)), reserve: !!o.reserve,
@@ -139,9 +157,9 @@ export function acceptOffer(save, id, available) {
   if (o.keep) Object.assign(save.contract, { seasons: old.seasons, seasonsLeft: old.seasonsLeft - 1, signing: 0 });
   save.wallet.coins += save.contract.signing;
   save.garage.upgrades[o.car] ??= stock(); save.garage.paid[o.car] ??= 0;
-  const displaced = save.world.seats[o.car];
+  const displaced = save.world.seats[o.car], before = { ...save.world.seats }, moved = old && old.team !== o.team;
   takeSeat(save, o.car, old?.car);
-  if (!first) nextSeasonWorld(save);
+  if (!first) nextSeasonWorld(save, before, { displaced: moved && displaced !== YOU ? displaced : null, vacated: moved ? old.car : null });
   startSeason(save, available, old?.team !== o.team && displaced !== YOU ? displaced : null);
   if (old?.team !== o.team) coverSigning(save, o.team);
   return save;
@@ -150,7 +168,7 @@ export function acceptOffer(save, id, available) {
 // ---------------------------------------------------------------------------------------------- seasons and weeks
 function startSeason(save, available, displaced = null) {
   const me = save.contract, tier = TIERS.teams[me.team].tier, world = TIERS.tiers[tier].world, calendar = buildCalendar(save.seed, save.clock.season, world, available, save.rules.raceLength);
-  save.season = { tier, world, calendar, weeks: buildWeeks(calendar, TIERS.teams[me.team].side ?? 'test'), results: [], current: null, mid: [], asked: {} };
+  save.season = { tier, world, calendar, weeks: buildWeeks(calendar, TIERS.teams[me.team].side ?? 'test'), results: [], current: null, mid: [], asked: {}, choices: {} };
   save.pending = null; save.clock.round = 0; save.clock.week = 0;
   save.garage.package = (save.garage.package ?? 0) + (me.trust >= T.trust.package ? (me.status === 'number1' ? 2 : 1) : 0);   // the team's free level at the season start (5.4), on top of any not yet spent
   prepareRound(save);
@@ -242,11 +260,15 @@ export const roundOfWeek = (save, i) => { const w = save.season.weeks.slice(i).f
 const freshRound = (save, R) => (R?.kind !== 'open' ? R : save.season.calendar.find((x) => x.round > R.round && x.kind !== 'open') ?? save.season.calendar.findLast((x) => x.round < R.round && x.kind !== 'open') ?? R);
 /** why practice is shut, or null: an Open circuit opens at the Final, for whoever reaches it */
 export const practiceLocked = (save) => { const R = currentRound(save); return R?.kind === 'open' && save.season.current.open?.stage !== 'final' ? `The ${R.name} circuit stays fresh until the Final.` : null; };
-/** an event's name on every screen: a sponsor day carries the signed sponsor's name */
+/** the deal a sponsor day serves: the signed deals take turns, by how many sponsor days came before it this season; null with none */
+const dealOf = (save, week) => { const D = save.sponsors?.deals ?? [], W = save.season?.weeks ?? []; return D.length ? D[W.slice(0, Math.max(0, W.indexOf(week))).filter((w) => w.event?.kind === 'sponsor').length % D.length] : null; };
+/** the Sponsor Challenge a deal (or an offer) asks for: named after it and its wish, e.g. 'Shell Overtake Challenge', with its objectives; with no deal, the team's Overtake Challenge */
+export const challengeOf = (d) => { const kind = d?.target.kind ?? 'top', goals = T.side.challenge.objectives[kind]; return { name: `${d?.name ?? 'Team'} ${T.side.challenge.name[kind]} Challenge`, goals, objectives: goals.map(challengeText) }; };
+/** an event's name on every screen: a done challenge keeps the name it ran under (the deals' turns shift when one is signed or ends) */
 export function eventName(save, week) {
   const e = week.event; if (!e) return null;
   if (e.kind === 'test') return week.kind === 'pre' ? 'Pre-season shakedown' : 'Team test';
-  return `${save.sponsors?.deals?.[0]?.name ?? 'Team'} drift day`;
+  return e.result?.name ?? challengeOf(dealOf(save, week)).name;
 }
 /** what pressing Advance would cost, in words; empty when nothing is lost */
 export function advanceWarnings(save) {
@@ -263,9 +285,10 @@ export function advanceWarnings(save) {
 /** Advance: the next week. A race week does not advance (it ends with the race); a skipped event is marked, offers past their date lapse and the inbox says so */
 export function advanceWeek(save) {
   const w = currentWeek(save), i = save.clock.week, S = save.sponsors; if (!w || w.kind === 'race' || w.kind === 'end' || save.clock.phase !== 'paddock') return { ok: false };
+  settleChoices(save);                                       // a scene left unanswered takes its default as the week ends
   if (w.event && !w.event.result && !w.event.skipped) { w.event.skipped = true; if (w.event.kind === 'sponsor' && S.deals.length) sponsorSkipped(save); }   // already skipped: a holiday or an ad took the week
   for (const o of save.season.mid.filter((x) => x.expires === i || x.expires === undefined)) {
-    save.season.mid.splice(save.season.mid.indexOf(o), 1); save.world.teams[o.team].declined++;
+    save.season.mid.splice(save.season.mid.indexOf(o), 1);   // a lapse is no refusal: the team remembers nothing (6.5)
     post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the market closed.');
   }
   for (const o of S.offers.filter((x) => x.expires === i)) { S.offers.splice(S.offers.indexOf(o), 1); post(save, 'sponsor', `${o.name}'s offer lapsed`, 'You did not answer in time.'); }
@@ -282,7 +305,17 @@ function enterWeek(save) {
   } else if (w.kind === 'market') {
     post(save, 'deal', 'The market is open', save.clock.season === 1 ? 'Sponsors can still talk. Teams will not: your first season is probation, and they come to you at the season end.' : 'For this one week teams can talk to you, and you can knock on their doors. Anything you sign starts next season.', { tab: 'deals' });
     sponsorOffers(save, save.clock.week + 2);   // the open week after the next round: late enough to answer, early enough to hit a target
+    marketRumours(save);
   }
+  poseWeek(save);
+}
+/** the market week's rumours (offers.js rumours): one inbox line for the seats up for renewal and one story for the first; kept for the season end (world.js marketMoves) */
+function marketRumours(save) {
+  const rs = (save.season.rumours = rumours(save)), name = (c) => (c === YOU ? 'you' : personOf(save, c)?.name ?? c);
+  if (!rs.length) return;
+  const and = (l) => (l.length > 1 ? `${l.slice(0, -1).join(', ')} and ${l.at(-1)}` : l[0] ?? 'nobody yet');
+  post(save, 'deal', `Rumours: ${rs.length} ${rs.length === 1 ? 'seat' : 'seats'} up for renewal`, rs.map((x) => `${name(x.code)} at ${teamName(CAR[x.car].team)} is up for renewal. Shortlist: ${and(x.list.map(name))}.`).join(' '), { tab: 'deals' });
+  coverRumour(save, rs[0], and(rs[0].list.map(name)));
 }
 /** what a race week's message adds: how the player gets to the grid */
 export function weekNote(save, R) {
@@ -348,14 +381,33 @@ export function finishQuali(save, best, mateRun = null) {
   return save;
 }
 
-/** what game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels and who drives each car */
+/**
+ * What game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels, who drives each car, and
+ * how the rivals drive near the player (6.6, driver.js): ai[key] = { role, composure, seed, k } for every AI car, this race's team orders (none in an Open: its trophy is the driver's, not the team's) and
+ * the teammate's car. Roles: the nemesis, then a rival (heat 40+), then the teammate; team orders go to the teammate's car whatever its role.
+ */
 export function raceSetup(save) {
   const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at Dry Lake
   const racers = cur.quali?.grid ?? [hero], pace = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => [key, aiPace(save, key, lcq ? ['lcq'] : [])]));
-  const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
-  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
-    label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null,
-    drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
+  const { nemesis, ai, mateKey, drivers, levels } = fieldOf(save, racers);
+  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis, ai, orders: cur.open ? null : ordersFor(save), mateKey, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
+    label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null, drivers, levels };
+}
+/** what every career race on track shares: the nemesis among the racers, each AI car's profile (6.6, driver.js), who drives each car and its upgrade levels */
+function fieldOf(save, racers) {
+  const hero = save.contract.car, lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
+  const nemesis = nemesisAmong(save, racers), mateKey = teammateCar(save), W = save.world, H = save.career.heat ?? {};
+  const ai = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => { const code = W.seats[key];
+    return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: composureOf(W.ratings[code], W.ages[code]),
+      seed: Math.floor(rng(save.seed, 'ai-profile', save.clock.season, save.clock.round, key)() * 2 ** 32), k: structuredClone(T.rivals.track) }]; }));
+  return { nemesis, ai, mateKey, drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
+}
+/** a Sponsor Challenge's field (4.2): the teammate and the seated cars expected closest to the player, five in all, at the challenge pace; the grid best expected first, the teammate P5 and the player last */
+export function challengeSetup(save) {
+  const X = T.side.challenge, hero = save.contract.car, mate = teammateCar(save), exp = (k) => expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat), mine = exp(hero);
+  const near = Object.keys(save.world.seats).filter((k) => k !== hero && k !== mate && save.world.seats[k]).sort((a, b) => Math.abs(exp(a) - mine) - Math.abs(exp(b) - mine) || exp(a) - exp(b));
+  const withMate = !!save.world.seats[mate], others = near.slice(0, X.field - (withMate ? 1 : 0)).sort((a, b) => exp(a) - exp(b)), racers = [...others, ...(withMate ? [mate] : []), hero];
+  return { racers, gridOrder: racers, mate: withMate ? mate : null, pace: Object.fromEntries(racers.filter((k) => k !== hero).map((k) => [k, aiPace(save, k, ['challenge']) * X.pace])), ...fieldOf(save, racers) };
 }
 
 // ---------------------------------------------------------------------------------------------- events (4.2, section 13)
@@ -363,24 +415,32 @@ export function raceSetup(save) {
 export function sideSpec(save) {
   const w = currentWeek(save), e = w?.event; if (!e || e.result || e.skipped || save.clock.phase !== 'paddock') return null;
   const R = freshRound(save, currentRound(save)), car = save.contract.car, L = myLevels(save), par = parLap(R.track, car, 'dry', [L.engine, L.tyres, L.brakes, L.aero]);
-  return { kind: e.kind, name: eventName(save, w), track: R.track, look: R.look, weather: 'dry', car, par, targets: e.kind === 'test' ? T.side.test.map((x) => par * x) : [...T.side.sponsor] };
+  const base = { kind: e.kind, name: eventName(save, w), track: R.track, look: R.look, weather: 'dry', car, par };
+  if (e.kind === 'test') return { ...base, targets: T.side.test.map((x) => par * x) };
+  const deal = dealOf(save, w), { goals, objectives } = challengeOf(deal);
+  return { ...base, deal, target: deal?.target ?? null, goals, objectives, hero: car, laps: T.side.challenge.laps, ...challengeSetup(save) };
 }
-/** an event is done: value is the best lap (test day) or the drift score (sponsor day). Medal, XP, pay or a free upgrade level; gold cheers a sponsor up */
+/**
+ * An event is done: value is the best lap (test day) or the challenge race (sponsor day: { order, bests, contacts, offTrack, totals, dnf }). Medal, XP, pay or a free upgrade level.
+ * The deal a challenge serves takes its goodwill from the result: gold +1, no medal -1, kept within 1 (0 would end the deal, offers.js) and startMood + 3. Its first gold of the season is a step toward the deal's target
+ */
 export function finishSide(save, value) {
   const spec = sideSpec(save); if (!spec) return null;
-  const medal = sideMedal(spec.kind, value, spec.par), tier = TIERS.tiers[save.season.tier];
-  const xp = medal ? T.side.xp[medal - 1] : 0, coins = spec.kind === 'sponsor' && medal ? round5(T.side.pay[medal - 1] * tier.sponsor * (1 + T.side.formPay * formOf(save.career.rr)) * payMult(save)) : 0;
-  const pkg = spec.kind === 'test' && medal === 3 ? 1 : 0;
+  const met = spec.kind === 'sponsor' ? challengeMet(spec, value) : null, medal = sideMedal(spec.kind, met ?? value, spec.par), tier = TIERS.tiers[save.season.tier], d = spec.deal;
+  const xp = medal ? T.side.xp[medal - 1] : 0, pay = met && medal ? round5(T.side.pay[medal - 1] * tier.sponsor * (1 + T.side.formPay * formOf(save.career.rr)) * payMult(save)) : 0;
+  const credit = d && medal === 3 && !d.dayCredit && !d.met, bonus = credit ? ((d.dayCredit = true), sponsorCredit(save, d)) : 0, pkg = spec.kind === 'test' && medal === 3 ? 1 : 0, coins = pay + bonus;
+  const was = d?.mood; if (d) d.mood = clamp(d.mood + (medal === 3 ? 1 : medal ? 0 : -1), 1, SPONSORS.startMood + 3);
   gainXp(save, xp); save.wallet.coins += coins; save.garage.package += pkg;
-  if (spec.kind === 'sponsor' && medal === 3) for (const d of save.sponsors.deals) d.mood++;
-  const r = (currentWeek(save).event.result = { kind: spec.kind, value: Number.isFinite(value) ? value : null, medal, xp, coins, package: pkg });
-  post(save, 'event', `${spec.name}: ${['no medal', 'bronze', 'silver', 'gold'][medal]}`, [xp ? `+${xp} XP` : null, coins ? `+${coins.toLocaleString('en')} U` : null, pkg ? 'a free upgrade level, in the Garage' : null].filter(Boolean).join(', ') || 'Nothing earned this time.', pkg ? { tab: 'garage' } : null);
+  const r = (currentWeek(save).event.result = { kind: spec.kind, value: Number.isFinite(value) ? value : null, ...(met ? { met, name: spec.name, objectives: spec.objectives } : {}), medal, xp, coins, package: pkg });
+  const lines = [xp ? `+${xp} XP` : null, coins ? `+${coins.toLocaleString('en')} U` : null, pkg ? 'a free upgrade level, in the Garage' : null, credit ? `a step toward ${d.name}'s target` : null, d ? `${d.name} goodwill ${d.mood > was ? 'up to' : d.mood < was ? 'down to' : 'stays at'} ${d.mood}` : null];
+  post(save, 'event', `${spec.name}: ${met ? `${medal}/${met.length}, ` : ''}${['no medal', 'bronze', 'silver', 'gold'][medal]}`, lines.filter(Boolean).join(', ') || 'Nothing earned this time.', pkg ? { tab: 'garage' } : null);
   return r;
 }
 
 // ---------------------------------------------------------------------------------------------- the race
 /**
- * The feature race is done. result: { order: [car keys, finishing order], best: { key: seconds | null }, dnf, crashes, spins, pro }.
+ * The feature race is done. result: { order: [car keys, finishing order], best: { key: seconds | null }, dnf, crashes, spins, pro, contacts: { key: n | [km/h] }, passes: { key: n } (the two heat rivals, 6.6),
+ *   orders: { kind: 'toMate', obeyed } | null (the player was told to let the teammate by: obeying earns trust, ignoring costs trust and heats the teammate) }.
  * Scores the round (points, Round Rating, XP, REP, trust, objectives, money, rivals), stores it, opens the mid-season market after the
  * middle round, and moves on to the next week or the season review. Returns the round report the results screen shows.
  * The classification is everyone: the race, then those who missed the cut in qualifying order, the player among them if he did.
@@ -389,6 +449,7 @@ export function finishRace(save, result) {
   const R = currentRound(save), cur = save.season.current, me = save.contract, hero = me.car, tier = save.season.tier, seats = save.world.seats, kind = R.kind ?? 'tour', E = T.events[kind];
   if (cur.open && cur.open.stage !== 'final') return absentFinal(save);   // an Open whose Final was never reached (a reload mid-weekend): it runs without him
   if (!cur.quali) finishQuali(save, null);                  // never qualified (a reload mid-weekend): no lap, so no race
+  settleChoices(save);                                       // the race week ends: a scene still open takes its default before the race is scored
   const dnq = !cur.quali.grid.includes(hero), at = result.order.indexOf(hero), raced = result.order.filter((k) => k !== hero);
   if (!dnq) raced.splice(result.dnf || at < 0 ? raced.length : at, 0, hero);   // a retirement is classified last of those who raced
   const order = [...raced, ...(cur.quali.order ?? cur.quali.grid).filter((k) => !raced.includes(k))];
@@ -405,15 +466,19 @@ export function finishRace(save, result) {
   const rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog });
   const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry from a higher tier that was expected ahead
   const giantKills = dnf || dnq ? 0 : order.slice(finish).filter((k) => tierOf(CAR[k].team).rank > myRank && expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat) < myExp).length;
-  const rivals = heatAfter(save, order, hero, dnf);
+  const rivals = heatAfter(save, raced, hero, dnf, { contacts: result.contacts ?? {}, passes: result.passes ?? {}, duel: duel.skipped || dnq ? null : cur.quali.mate.code });   // the qualifying duel heats the teammate, only in a round the player raced
   const xp = xpFor({ ...x, ...judged, pole, mandatory, optional, tier, pro: result.pro, underdog: me.underdog });
-  if (rivals.xp) { xp.lines.push(['Feud won', rivals.xp]); xp.xp += rivals.xp; }
+  if (rivals.xp) { xp.lines.push(['Nemesis beaten', rivals.xp]); xp.xp += rivals.xp; }
+  const call = settleCallout(save, order, hero, dnf);        // an accepted callout (choices.js) pays once
+  if (call?.xp) { xp.lines.push(['Callout won', call.xp]); xp.xp += call.xp; }
   const happyXp = Math.round(xp.xp * (xpMult(save) - 1)); if (happyXp > 0) { xp.lines.push([mood(save).name, happyXp]); xp.xp += happyXp; }   // life.js: a driver on top of the world learns a little faster
   const rep = repFor({ rr: rating.rr, tier, finish, pole, fastest, giantKills, dnf });
   if (E.rep !== 1) { rep.lines = rep.lines.map(([l, v]) => [l, v > 0 ? Math.round(v * E.rep) : v]); rep.rep = rep.lines.reduce((a, l) => a + l[1], 0); }   // an Open or the Masters pays reputation, never costs more of it
   rep.lines.push(...rivals.lines); rep.rep += rivals.rep;
+  if (call) { rep.lines.push([`Callout ${call.won ? 'won' : 'lost'}: ${call.name}`, call.rep]); rep.rep += call.rep; }
   const happyRep = Math.round(rep.rep * (repMult(save) - 1)); if (happyRep > 0) { rep.lines.push([mood(save).name, happyRep]); rep.rep += happyRep; }   // a happy driver is talked about more; a bad round costs the same in any mood
-  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
+  const ord = result.orders?.kind === 'toMate' && typeof result.orders.obeyed === 'boolean' && !dnq ? result.orders : null, ordTrust = ord ? (ord.obeyed ? T.trust.orders.obeyed : -T.trust.orders.ignored) : 0;
+  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = (rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust) + ordTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
   // money (5.5): salary, the race prize x the tier's multiplier, objective and contract bonuses, sponsors
   const Tr = TIERS.tiers[tier], coins = [['Salary', me.salary]];
   for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: raced.length, laps: R.laps, finished: !dnf && !dnq, retired: dnf || dnq, fastest }).lines) coins.push([label, round5(v * Tr.prize * E.prize)]);
@@ -430,6 +495,9 @@ export function finishRace(save, result) {
   gainXp(save, xp.xp); save.career.rep = clamp(save.career.rep + rep.rep, 0, 1000);
   save.career.rr = [...save.career.rr, rating.rr].slice(-6); me.trust = clamp(me.trust + trust, 0, 100);
   if (!duel.skipped) me.duel[duel.result]++; save.wallet.coins += earned;
+  const mateCode = seats[teammateCar(save)];
+  if (ord && !ord.obeyed && mateCode) { heatUp(save, mateCode, T.rivals.ordersIgnored, 'orders'); coverOrders(save, mateCode, me.team); }
+  if (ord) note(save, ord.obeyed ? 'orders_obeyed' : 'orders_ignored', { who: mateCode ?? null, team: me.team });   // the principal quotes it at the season end (media.js coverPrincipal)
   if (me.warning) {                                          // the seat review's recovery objective: the round objective, twice running (6.7)
     me.warning.left--; if (mandatory) me.warning.met++;
     if (me.warning.met >= T.trust.recover) me.warning = null;
@@ -441,7 +509,8 @@ export function finishRace(save, result) {
   const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, expPos: cur.expPos, dnf, dnq, pole, fastest, clean,
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
-    entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines,
+    entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines, orders: ord && { obeyed: ord.obeyed, trust: ordTrust },
+    nemesis: rivals.nemesis && { code: rivals.nemesis.code, name: personOf(save, rivals.nemesis.code)?.name ?? rivals.nemesis.code, beat: rivals.nemesis.beat },
     rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null } } : {}) };
   if (cur.open) recordOpen(save, R, entries[0], report);
   save.season.results.push(report);
@@ -535,28 +604,27 @@ function endSeason(save) {
   if (cupPos === 1) { rep += T.rep.cup; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }
   if (teamPos === 1) rep += T.rep.teams;
   if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; }
-  // the seat review at the finale (6.7): under 15, or under 25 with a warning not recovered, the team lets you go
-  const dropped = !me.next && (me.trust < T.trust.dropAny || (me.trust < T.trust.drop && !!me.warning));
+  // the seat review at the finale (6.7): under 15, or under 25 with a warning not recovered, the team lets you go; a Legend driver rated like one the team would re-sign stays (holdsSeat)
+  const dropped = !me.next && (me.trust < T.trust.dropAny || (me.trust < T.trust.drop && !!me.warning)) && !holdsSeat(save);
   if (dropped) { rep += T.rep.dropped; me.dropped = true; }
   save.career.rep = clamp(save.career.rep + rep, 0, 1000); save.wallet.coins += coins;
   const avgRR = mean(rs.map((r) => r.rr));
   save.history.push({ season: save.clock.season, team: me.team, seat: me.seat, car: me.car, tier: save.season.tier, drivers: drvPos, teams: teamPos, cup: cupPos,
     points: st.drivers[drvPos - 1]?.pts ?? 0, rank: playerRank(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: st.teams.map((t) => t.team), dropped });
   for (const d of S.deals) if (!d.met) post(save, 'sponsor', `${d.name}: target missed`, `You did not ${targetText(d.target)}. No bonus this year.`);
-  for (const o of save.season.mid.splice(0)) { save.world.teams[o.team].declined++; post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
+  for (const o of save.season.mid.splice(0)) { post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
   save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save) }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
   save.clock.phase = 'review';
-  if (dropped) coverFired(save, me.team);
+  if (dropped) coverFired(save, me.team); else coverPrincipal(save, me.team);
   post(save, dropped ? 'warn' : 'race', `Season ${save.clock.season} is over: P${drvPos} in the Drivers'`, dropped ? `${teamName(me.team)} has let you go.` : 'The review and the market are waiting.');
 }
 
-/** between seasons (6.8, 2.3): AI development, the driver market, expected finishes from the Teams' table */
-function nextSeasonWorld(save) {
+/** between seasons (6.8, 2.3): AI development, the driver market, expected finishes from the Teams' table. before: the seats before the player signed; moved: the driver they displaced and the seat they left */
+function nextSeasonWorld(save, before, moved) {
   const W = save.world, h = save.history.at(-1), cat = (save.clock.season - 1) % 3, order = [1, 0, 2][cat], gone = W.retired.length;   // tyres, engine, brakes in turn
   for (const id of TEAM_IDS) { const t = W.teams[id], cap = tierOf(id).cap; t.dev[order] = Math.min(cap, t.dev[order] + 1); }
-  const before = { ...W.seats };
-  marketMoves(save);
+  marketMoves(save, moved);
   coverMoves(save, before, W.retired.slice(gone));
   if (h?.teamOrder) {
     const v = Object.fromEntries(TEAM_IDS.map((id) => [id, 0.5 * W.teams[id].expPos + 0.5 * (h.teamOrder.indexOf(id) + 1)]));

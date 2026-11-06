@@ -210,11 +210,32 @@ export function objectiveMet(o, x) {
 }
 
 // ---------------------------------------------------------------------------------------------- offers
-/** a team's interest in the player (6.5) and whether its seeded roll makes an offer */
-export function interestOf(team, { rep, rrs, cl, form }, { extraRep = 0, declined = 0 } = {}) {
+/**
+ * A team's interest in the player (6.5) as its named terms: reputation and round rating over its bar, form, its own want (offers.js wantOf) and the
+ * coolness of a refusal it remembers (both worked out by the caller, as fractions of interest); null below its bar
+ */
+export function interestTerms(team, { rep, rrs, cl, form }, { extraRep = 0, want = 0, cool = 0, lean = 0 } = {}) {
   const g = TIERS.teams[team].gate, a = avg(rrs.slice(-6));
   if (rep < g.rep + extraRep || a < g.rr || cl < g.cl) return null;
-  return clamp((0.5 * (rep - g.rep)) / Math.max(g.rep, 100) + 0.15 * (a - g.rr) + 0.05 * form - (declined >= T.offers.declineAfter ? T.offers.declinePenalty : 0), 0, 1);
+  return { rep: (0.5 * (rep - g.rep)) / Math.max(g.rep, 100), rating: 0.15 * (a - g.rr), form: 0.05 * form, want, cool: -cool, lean };   // lean: a rumour the player stoked (choices.js), this season
+}
+/** a team's interest in the player, 0-1, or null below its bar */
+export const interestOf = (team, st, x) => { const t = interestTerms(team, st, x); return t && clamp(t.rep + t.rating + t.form + t.want + t.cool + t.lean, 0, 1); };
+/**
+ * The player's market rating (6.5), on the AI's scale: each qualifying duel this season is the teammate's rating plus the gap between them at
+ * paceOf's 0.21 % a point, averaged; with no duel yet, the teammate's rating. 60-99
+ */
+export function playerRating(save) {
+  const W = save.world, me = save.contract, mate = me && W.seats[seatCar(me.team, otherSeat(me.seat))];
+  const duels = (save.season?.results ?? []).map((r) => r.duel).filter((d) => d && Number.isFinite(d.mine) && Number.isFinite(d.mate) && W.ratings[d.mateCode] !== undefined);
+  const r = duels.length ? avg(duels.map((d) => W.ratings[d.mateCode] - (d.mine - d.mate) / d.mate / T.pace.perRating)) : W.ratings[mate] ?? avg(Object.values(W.ratings));
+  return Math.round(clamp(r, 60, 99));
+}
+/** a driver's form this season for the market, -1 to 1: places finished above the expected, a quarter point each, over the rounds raced ('YOU' is the player) */
+export function seasonForm(save, code) {
+  const d = [];
+  for (const r of save.season?.results ?? []) r.entries.forEach((e, i) => { if (!e.dnq && (code === 'YOU' ? e.you : e.code === code && !e.you)) d.push((expOf(save.world.teams[e.team].expPos, CAR[e.key].seat) - (i + 1)) / 4); });
+  return clamp(avg(d), -1, 1);
 }
 /** the seeded roll (6.5): window 'W1' (mid-season poaching, halved) or 'W2' (the season-end market) */
 export const offerRoll = (seed, season, window, team, interest, scale = 1) => rng(seed, 'offer', season, window, team)() < (T.offers.base + T.offers.slope * interest) * scale;
@@ -255,9 +276,34 @@ export const targetText = (t) => ({ top: `finish P${t.n} or better ${times(t.cou
 export const targetMet = (t, x) => ({ top: () => !x.dnf && x.finish <= t.n, quali: () => x.grid <= t.n, podium: () => !x.dnf && x.finish <= 3, win: () => !x.dnf && x.finish === 1, clean: () => !x.dnf && x.clean, duel: () => x.duel?.result === 'won' })[t.kind]();
 
 // ---------------------------------------------------------------------------------------------- side events
-/** a test-day or sponsor-day result against its targets (4.2): 0 none, 1 bronze, 2 silver, 3 gold */
+/** a test-day result against its targets, or a Sponsor Challenge's objectives met (4.2): 0 none, 1 bronze, 2 silver, 3 gold */
 export function sideMedal(kind, value, par) {
-  const S = T.side;
-  if (kind === 'test') return Number.isFinite(value) ? S.test.filter((x) => value <= par * x).length : 0;
-  return S.sponsor.filter((x) => value >= x).length;
+  if (kind === 'test') return Number.isFinite(value) ? T.side.test.filter((x) => value <= par * x).length : 0;
+  return value.filter(Boolean).length;
+}
+/** a Sponsor Challenge's objectives (spec: goals, hero, mate, racers, par) against the race v = { order, bests, contacts, offTrack, totals: [[key, s]], dnf }: [bool, bool, bool]. A retirement meets none */
+export function challengeMet(spec, v) {
+  if (v.dnf || !v.order?.includes(spec.hero)) return spec.goals.map(() => false);
+  const p = v.order.indexOf(spec.hero) + 1, best = v.bests?.[spec.hero], tot = Object.fromEntries(v.totals ?? []), mine = tot[spec.hero], mate = v.order.indexOf(spec.mate) + 1;
+  const hits = Object.values(v.contacts ?? {}).reduce((a, x) => a + (Array.isArray(x) ? x.length : x), 0), off = v.offTrack ?? 0, lap = Number.isFinite(best);
+  const ahead = (k, s) => Number.isFinite(tot[k]) && Number.isFinite(mine) && tot[k] - mine >= s;
+  const test = { gain: (n) => spec.racers.length - p >= n, top: (n) => p <= n, podiumClean: () => p <= 3 && !hits, winBy: (s) => p === 1 && (!v.order[1] || ahead(v.order[1], s)),
+    noContact: () => !hits, offMax: (n) => off <= n, cleanTop: (n) => p <= n && !hits && !off,
+    lapPar: (x) => lap && best <= spec.par * x, fastest: () => lap && Object.values(v.bests).every((b) => !Number.isFinite(b) || best <= b),
+    passMate: () => mate > p, beatMate: () => mate > 0 && lap && !(Number.isFinite(v.bests[spec.mate]) && v.bests[spec.mate] < best), beatMateBy: (s) => mate > p && ahead(spec.mate, s) };
+  return spec.goals.map(([k, n]) => test[k](n));
+}
+/** one objective in words */
+export const challengeText = ([k, n]) => ({ gain: `Gain ${n} places`, top: n === 1 ? 'Win' : `Finish in the top ${n}`, podiumClean: 'A podium with no contact', winBy: `Win by ${n} s`, noContact: 'No contact', offMax: n ? `Off the track ${n} times at most` : 'Never off the track',
+  cleanTop: `Top ${n}, no contact, never off the track`, lapPar: `A lap within ${+((n - 1) * 100).toFixed(1)} % of par`, fastest: 'Fastest lap of the race', passMate: 'Finish ahead of your teammate', beatMate: 'A faster best lap than your teammate', beatMateBy: `Finish ${n} s ahead of your teammate` })[k];
+
+// ---------------------------------------------------------------------------------------------- rivals on track (6.6, driver.js)
+/** how well a driver holds their nerve with the player on their gearbox, 0.2-0.95: the rating, and a little more past 30 */
+export const composureOf = (rating, age) => clamp(0.35 + (rating - 70) * 0.02 + (age > 30 ? 0.1 : 0), 0.2, 0.95);
+/** this race's team orders: 'toYou' (the teammate lets the player by on the last lap), 'toMate' (the player is asked to let them by) or null */
+export function ordersFor(save) {
+  const me = save.contract, O = T.trust.orders; if (!me) return null;
+  if (me.seat === 'A' || (me.trust >= O.toYou && me.duel.won > me.duel.lost)) return 'toYou';
+  const grid = save.season?.current?.quali?.grid ?? [], mate = grid.indexOf(seatCar(me.team, otherSeat(me.seat))), mine = grid.indexOf(me.car);
+  return me.seat === 'B' && me.trust < O.toMate && mate >= 0 && mine > mate ? 'toMate' : null;
 }

@@ -1,6 +1,6 @@
 // Self-check for the session's lap line and gaps, and the per-track records in the store: no browser, a fake field on a
 // circular racing line. Backing over the line is no lap, a finished car's cool-down lap is no lap, gaps stay seconds after
-// a finish, and best laps / drift records are kept per circuit (old car-only keys become marina's).
+// a finish, a pass and a hard hit name the other car (the career's rivals), and best laps / drift records are kept per circuit (old car-only keys become marina's).
 import assert from 'node:assert/strict';
 import { createServer } from 'vite';
 const server = await createServer({ root: new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom' });
@@ -14,7 +14,8 @@ try {
 
   const N = 100, R = 100, line = Array.from({ length: N }, (_, k) => new THREE.Vector3(Math.cos(k / N * Math.PI * 2) * R, 0, Math.sin(k / N * Math.PI * 2) * R));
   const car = (key, idx) => ({ key, idx, vehicle: { cur: { pos: line[idx].clone(), quat: new THREE.Quaternion() }, wheels: [], speed: 40, aBody: { x: 0, z: 0 }, state: { beta: 0, drift: 0 } } });
-  const field = (cars) => ({ N, length: 2 * Math.PI * R, linePts: line, cars, hero: cars[0] });
+  const up = new THREE.Vector3(0, 1, 0), left = line.map((p, k) => new THREE.Vector3().crossVectors(up, line[(k + 1) % N].clone().sub(p).normalize()));   // as Field builds lineLeft (cars.js)
+  const field = (cars) => ({ N, length: 2 * Math.PI * R, linePts: line, lineLeft: left, cars, hero: cars[0] });
   const step = (S, dt = 0.1) => S.update(dt);
   const go = (S) => { while (S.state === 'grid') step(S); };
   /** move a car sample by sample (one per step) to `to`, forwards (+1) or backwards (-1) */
@@ -54,6 +55,14 @@ try {
     const laps = H.laps.length, ev = drive(S, hero, 99); ev.push(...drive(S, hero, 0));
     assert.equal(H.laps.length, laps, "a finished car's cool-down lap is not recorded");
     assert(!ev.some((e) => e.type === 'lap'), 'no lap event after the finish');
+  }
+
+  // ---- the career's rival plumbing: a pass names the car passed, a hard hit names the car within 6 m (and a lone hit nobody)
+  {
+    const hero = car('av12', 95), rival = car('rv', 97), S = new Session(field([hero, rival]), 'race', { laps: 3 }); go(S);
+    const pos = drive(S, hero, 10).find((e) => e.type === 'position'); assert.deepEqual([pos.from, pos.to, pos.by], [2, 1, 'rv'], 'the pass names the car passed');
+    S.events = []; rival.vehicle.cur.pos.copy(hero.vehicle.cur.pos).add(new THREE.Vector3(3, 0, 2)); S.contactAt(hero.vehicle.cur.pos, 45); assert.deepEqual(S.events, [{ type: 'contact', key: 'rv', kmh: 45 }]);
+    S.events = []; rival.vehicle.cur.pos.add(new THREE.Vector3(5, 0, 0)); S.contactAt(hero.vehicle.cur.pos, 45); assert.deepEqual(S.events, [], 'nobody within 6 m');
   }
 
   // ---- records per track, with the old car-only keys migrated to marina

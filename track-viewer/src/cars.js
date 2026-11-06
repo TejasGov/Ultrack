@@ -581,7 +581,7 @@ export class Field {
     }
     this.cars.forEach((c, k) => {
       c.vehicle = new Vehicle(pw, handling(c.key), c.profile, { pos: c.root.position.clone(), yaw: c.root.rotation.y });
-      c.ai = new AIDriver(this, c, c.hero ? 1 : this.paceFor?.(c.key) ?? (0.93 + 0.012 * k) * (this.hardPace ?? 1));   // paceFor: the career's driver ratings, Hard mode already in them
+      c.ai = new AIDriver(this, c, c.hero ? 1 : this.paceFor?.(c.key) ?? (0.93 + 0.012 * k) * (this.hardPace ?? 1), c.hero ? null : this.aiFor?.(c.key) ?? null);   // paceFor: the career's driver ratings, Hard mode already in them; aiFor: its rival profiles (driver.js), never on the hero
       c.ai.lane = c.hero ? 0 : (k % 2 ? -1 : 1) * 0.6;
       if (this.runUp) c.ai.i = this.nearestLine(c.root.position);   // read() walks forward from i: from 0 it would chase a line 250 m up the road
       c.chassis.scale = 0.5;                           // the rigid body pitches and rolls on its own springs too

@@ -250,5 +250,69 @@
     "mood-unhappy": { "kind": "scandal", "you": "down", "stories": [{ "title": "Is {me} still happy at {team}?", "body": "The body language says no. {team} says everything is fine, in a tone that suggests otherwise." }] },
     "demand": { "kind": "scandal", "you": "down", "stories": [{ "title": "{me} wants out", "body": "The driver has told {team} that a move is the only way forward. The team says it will not stand in the way." }] },
     "sold": { "you": "down", "stories": [{ "title": "{me} sells the {item}", "body": "The running costs caught up with the plan, and the {item} went back on the market." }] }
+  },
+  "reasons": {
+    "rep": [
+      "{team} know the name: reputation {rep}, where their bar is {gate}.",
+      "Your name carries in the paddock now, and {team} have heard it: reputation {rep}.",
+      "{team} want a driver people talk about. At {rep} reputation, that is you."
+    ],
+    "rating": [
+      "Your rounds rate {rr} on average, over the {bar} {team} ask for.",
+      "{team} like the numbers: an average round rating of {rr}.",
+      "An average round rating of {rr} clears the {bar} {team} look for."
+    ],
+    "form": [
+      "{team} have watched your last three rounds, and liked them.",
+      "You are in form, and {team} noticed.",
+      "Your recent rounds are the best of your season, and {team} want them in their car."
+    ],
+    "want": [
+      "{team} want {wants}: you {stat}.",
+      "What {team} value is {wants}, and you {stat}.",
+      "{team} are after {wants}. You {stat}."
+    ]
+  },
+  "wantText": {
+    "cups": "have won {n} cup{s} and title{s}",
+    "poles": "took {n} pole{s} this season",
+    "gained": "gained {n} place{s} this season",
+    "clean": "raced {n} clean race{s} this season",
+    "seasonsHere": "have spent {n} season{s} with one team",
+    "duel": "out-qualified your teammate {n} time{s} this season",
+    "rrTrend": "raised your round rating by {n} over your last rounds",
+    "fromBehind": "came through from behind {n} time{s} this season"
+  },
+  "callbacks": {
+    "note": "Lines that quote the career's ledger back (media.js callbackOf, from ledger.latest): offer is an outside offer's reason or a cool team's line, principal the team principal's story at the season-end market, rival the feud story after a race. {who} is the driver in the entry, {me} the player, {team} and {principal} its team, {season} the season it happened in.",
+    "offer": {
+      "spurned": ["{team} have not forgotten you walked out of talks in Season {season}.", "{team} remember Season {season}, when you walked out of talks with them."],
+      "callout_won": ["They saw you answer {who}'s callout in Season {season}.", "You beat {who} after they called you out in Season {season}, and it was noticed."],
+      "bold_press": ["They liked what you said about {who} in Season {season}.", "Your words about {who} in Season {season} are still quoted."],
+      "orders_obeyed": ["They know you let {who} through when {team} asked, in Season {season}."],
+      "orders_ignored": ["They know you kept your place against {team}'s orders in Season {season}."]
+    },
+    "principal": {
+      "orders_obeyed": ["{principal}, on the season: \"When we asked for {who}, the place was given. That is a team driver.\"", "\"We asked once, and it was done,\" {principal} said of the team order with {who}."],
+      "orders_ignored": ["{principal}, on the season: \"We asked for one thing, one place for {who}, and did not get it. We have not forgotten.\"", "\"Team orders are not a suggestion,\" {principal} said, still thinking of {who}."]
+    },
+    "rival": {
+      "callout_won": ["{who} called {me} out in Season {season}, and lost that one.", "This goes back to the callout {who} lost in Season {season}."],
+      "callout_lost": ["{who} won the callout in Season {season}, and has not let anyone forget it."],
+      "bold_press": ["It has been personal since the press conference in Season {season}."],
+      "orders_ignored": ["It goes back to the team order that was ignored in Season {season}."]
+    }
+  },
+  "rumour": {
+    "title": [
+      "{driver}'s seat at {team} is up for renewal",
+      "{team}: {driver} is up for renewal",
+      "Who drives for {team} next season? {driver} is up for renewal"
+    ],
+    "body": [
+      "{driver}'s contract with {team} runs out at the end of the season. The paddock shortlist: {list}.",
+      "{team} have not re-signed {driver} yet, and the names in the paddock are {list}.",
+      "With {driver} up for renewal, {team} are said to be looking at {list}."
+    ]
   }
 }
