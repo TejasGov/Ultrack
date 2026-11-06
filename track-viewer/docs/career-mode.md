@@ -501,25 +501,42 @@ Renewal: in the last contract season, from round 4, a team with trust >= 50 offe
 
 **Who.** A team makes an offer if all of these hold:
 
-| Team | Tier | REP gate | Form rating gate (avg RR, last 6) | CL gate | Wants |
+| Team | Tier | REP gate | Form rating gate (avg RR, last 6) | CL gate | Wants (`want`: the stat, and its norm) |
 |---|---|---|---|---|---|
-| Hayate, Mojave, Liberty | Rookie | 0 | 0 | 1 | (opening offers) |
-| Corvid | Maestro | 200 | 6.5 | 6 | clean races (+0.1 interest per clean 5-race run) |
-| Sarab | Maestro | 200 | 6.5 | 6 | loyalty (+0.1 if the player stayed 2+ seasons) |
-| Toro | Maestro | 230 | 6.6 | 7 | overtakes and giant-kills |
-| Saetta | Legend | 600 | 7.3 | 14 | wins and poles |
-| Aurum | Legend | 650 | 7.5 | 15 | titles |
+| Hayate | Rookie | 0 | 0 | 1 | qualifying precision (`duel`: duels won this season, 5) |
+| Mojave | Rookie | 0 | 0 | 1 | improvement (`rrTrend`: the last 3 round ratings over the 3 before, 1.5) |
+| Liberty | Rookie | 0 | 0 | 1 | grit (`fromBehind`: races finished 3+ places above the grid slot, 3) |
+| Corvid | Maestro | 200 | 6.5 | 6 | clean races (`clean`: clean races this season, 6) |
+| Sarab | Maestro | 200 | 6.5 | 6 | loyalty (`seasonsHere`: seasons with the current team, 3) |
+| Toro | Maestro | 230 | 6.6 | 7 | overtakes and giant-kills (`gained`: places gained from the grid this season, 20) |
+| Saetta | Legend | 600 | 7.3 | 14 | wins and poles (`poles`: poles this season, 3) |
+| Aurum | Legend | 650 | 7.5 | 15 | titles (`cups`: cups and titles in the career, 2) |
 
-plus: a seat is open (a contract ends, a driver retires or is dropped, a seeded AI-market move; 6.8), and the seat's car is not more than 0.3 z worse than the current one (5.3).
+plus: the seat is open to the player (`seatFor`, offers.js), and the seat's car is not more than 0.3 z worse than the current one (5.3).
+
+**Seats.** A team offers a seat only when its driver is gone, his contract ends this season (1 season left), the player outrates him, or the team is keen enough to buy him out (interest 0.85+). A driver rated 90+ (`offers.star`) with more than one season left is never dropped for the player, whatever the player's rating. The seat follows interest (A at 0.6+); if that seat is not open, the other one is tried, under the same 0.3 z car rule. With both seats signed, the Deals tab says so: "Both seats are signed: Beaulieu to S3, Valois to S4" (the last season of each contract), and an approach hears the same.
+
+**Market rating.** The player's rating on the AI drivers' scale, shown on every outside offer: for each qualifying duel this season, the teammate's rating plus the gap between them at `paceOf`'s 0.21 % of pace a point, averaged; with no duel yet, the teammate's rating; 60-99 (`playerRating`, rules.js). It is what "the player outrates him" compares against.
 
 **Interest and the roll.**
 
 ```
-interest = clamp( 0.5 x (REP - gate) / gate + 0.15 x (avgRR - rrGate) + 0.05 x form + wants + 0.1 x (other offers in hand), 0, 1 )
+interest = clamp( rep + rating + form + want - cool, 0, 1 )
+  rep    = 0.5 x (REP - gate) / max(gate, 100)
+  rating = 0.15 x (avgRR - rrGate)
+  form   = 0.05 x form
+  want   = 0.15 x clamp(stat / norm, 0, 1)                    the team's want, from this season's results (table above)
+  cool   = min(0.3, 0.1 x what it remembers of a refusal)     ledger.js: a refusal weighs 2 and fades by 1 a season
 offer made if  rng('offer', season, window, team) < 0.30 + 0.55 x interest
 ```
 
-The roll is seeded, so reloading a save gives the same offers; an excellent year makes an offer likely, not certain, and a good-not-great year can still surprise. Terms scale with interest: seat A if interest >= 0.6 else B; salary = tier salary x (0.9 + 0.3 x interest); length 1-3 seasons, longer when interest is high; signing = 2-4 x salary; objectives from 6.4.
+The roll is seeded, so reloading a save gives the same offers; an excellent year makes an offer likely, not certain, and a good-not-great year can still surprise. Terms scale with interest: salary = tier salary x (0.9 + 0.3 x interest); length 1-3 seasons, longer when interest is high; signing = 2-4 x salary; objectives from 6.4.
+
+**Why.** Each outside offer says why in the team's words, from the two largest of rep, rating, form and want (`media.json` reasons, a seeded pick of three wordings each), for example "Toro want overtakes and giant-killing: you gained 31 places this season." A team that remembers a refusal adds a line of its own ("Corvid have not forgotten that you turned them down").
+
+**Refusals.** Only a real refusal is remembered: walking away from an offer, and pushing a haggle until the team walks away. An offer left to lapse, the other offers when the player signs elsewhere, and the other mid-season offers when one is signed count for nothing. The old rule (three declines, -0.2 interest for good) is gone; `teams[].declined` stays in old saves, unused.
+
+**Two bids.** With two or more outside offers at the season end, the least of them (lowest tier, then lowest interest) matches the best one: +10 % salary, never above the best one's, and the line "Sarab have matched Toro". The cap keeps a match from outbidding the offer it matches; uncapped, the sim's pick by salary moved Legend offers at average skill from 19 % to 47 %.
 
 **Counter-offer from the current team.** With at least one outside offer in hand and trust >= 50, the current team counters 60% of the time: +15% salary and a promised A seat. The choice is loyalty versus tier.
 
@@ -532,7 +549,7 @@ The roll is seeded, so reloading a save gives the same offers; an excellent year
 | Livery clause | 1 |
 | Length shorter than offered | 0.5 per season cut |
 
-The team accepts if total demand <= leverage `L = 1 + 4 x interest + 1 x (other offers in hand)`. Otherwise it returns the nearest acceptable terms. Refuse twice and the offer is withdrawn with REP -5 ("unrealistic demands"); the haggle-and-leak risk is taken from the F1 career design (Appendix A). Declining outright is free, but declining the same team three times lowers its interest by 0.2.
+The team accepts if total demand <= leverage `L = 1 + 4 x interest + 1 x (other offers in hand)`. Otherwise it returns the nearest acceptable terms. Refuse twice and the offer is withdrawn with REP -5 ("unrealistic demands"); the haggle-and-leak risk is taken from the F1 career design (Appendix A). Declining outright is free, but the team remembers it for a while (Refusals, above).
 
 **Unsigned.** If no offer is accepted before the season starts, the player is a free agent and takes a Rookie-team reserve seat at 60% salary (6.7).
 
@@ -562,9 +579,22 @@ Rivalries are earned on track, from the cars the player actually raced (`world.j
 - **The way back**: Rookie teams always have a reserve seat for a free agent: B seat, 60% salary, no Cup points until round 3, and an objective set one place easier. The player can climb again from rung 1. An unpaid school (Wrestling Revolution's start) would be too harsh for a racing game; a pay cut is enough.
 - **Optional hard rule, off by default ("Iron Career")**: a third drop ends the career in a retirement card.
 
-### 6.8 The AI market (lite)
+### 6.8 The AI market
 
-The AI drivers also move, but cheaply: at season end, seeded, each AI driver's rating drifts (age under 24 +2, 24-29 +1, 30-33 0, 34-37 -1, 38+ -2); drivers aged 38 or more retire with 50% chance (Whitlow is first); retirements and the player's departure create openings; openings are filled from the free-agent pool (the displaced Rookie driver, dropped drivers) and then from a short **academy list** of generated drivers (name, nation, rating 70-78, a plain team-colour portrait, because there is no art for new drivers: risk R7). Team development levels rise by the schedule in 2.3 (data in `tiers.json`). Nobody else negotiates; no bidding wars.
+Every AI driver has a contract (`world.contracts`: seasons left, this one included), 1-3 seasons at the start of a career, seeded per driver. Between seasons `marketMoves` (world.js) runs seeded phases:
+
+1. Everyone is a year older and ratings drift by age (under 24 +2, 24-29 +1, 30-33 0, 34-37 -1, 38+ -2).
+2. Drivers aged 38 or more retire with 50 % chance.
+3. Contracts run down by one. A driver out of contract re-signs if rated at least the tier's average less `renewGap` and the team's roll is under `renew`; otherwise he goes free.
+4. A team drops a driver rated at or below the tier's average less `dropGap` whose teammate outscored him this season.
+5. The open seats fill, the best team first and the A seat before the B. The shortlist is the free agents plus the drivers in their last season at a team that is expected lower; the best market score wins (rating + 2 x the season's form + a seeded +-1; form is a quarter point for each place finished above the expected, -1 to 1). A seated driver who moves opens his own seat, which joins the queue: a cascade of `maxMoves` seated moves at most. The driver the player displaced this window does not take the player's old seat while another seat is open.
+6. Seats nobody takes go to the academy: the twelve named drivers in `drivers.json` first, then seeded names from `academyNames` (30 first names, 30 surnames, 12 nations), never one already in the paddock, rated 70-78, aged 19-22.
+
+Every signing runs 2-3 seasons (`market.signing`). The press writes up each move ("Okafor moves to Toro"), each call-up and each retirement (`coverMoves`). The ratings themselves never change here beyond the age drift: no form drift, no budgets, no transfer fees.
+
+**Rumours.** In the market week the inbox and the press name the seats at other teams whose driver has one season left (three at most, best team first), each with the top three of today's shortlist by market score. The player is on it when that team, in their tier or the one above, clears its bar for them. A rumoured seat opens at the season end unless its driver re-signs. A shortlisted driver who takes a seat the player was shortlisted for gains heat +30 (`rivals.seatLost`, cause 'seat').
+
+**Tuning as measured** (`career-metrics.mjs 100 6`). The spec's first guesses were renew 0.6, renewGap 2, maxMoves 3. They move 3.1 AI drivers a season (target 1-3), and the extra churn puts the best drivers in the Legend cars (their average rating +1.25), which kept strong players under the Legend round-rating gate: Legend offers at skill 1.015 fell to 87 % (target 95 %+). Shipped: renew 0.9, renewGap 6, maxMoves 1, dropGap 6. Per season 1.2-1.4 AI-to-AI moves, the displaced driver in the player's old seat 7-19 %, 0.9-1.2 teams of 8 unchanged after six seasons, seated AI average rating 83.46.
 
 ## 7. Randomness and events
 
@@ -923,7 +953,7 @@ Three kinds, three columns on the Events tab. **Race weekends** are required. **
 
 ### 13.3 Negotiations
 
-`careerDeal` is one screen for contracts, offers, team moves and sponsors. Levers: salary, signing bonus, length, status (a sponsor: retainer, bonus). Accepted when the demand fits the leverage (6.5). Otherwise the team names the nearest terms it would sign and loses patience: 3 refusals (a sponsor: 2), and an ask past 1.5x the leverage costs two. Out of patience it walks: REP -5 and no more talks this window. Your own team refusing costs 3 trust each time. Walking away is free but counts as a decline. The gauge says As offered, Comfortable, Pushing it, Too much or Unrealistic; "Pushing it" runs to 1.15x the leverage, so the limit is near what it shows but not exact. Their counter can always be accepted. Agreed terms still need Sign.
+`careerDeal` is one screen for contracts, offers, team moves and sponsors. Levers: salary, signing bonus, length, status (a sponsor: retainer, bonus). Accepted when the demand fits the leverage (6.5). Otherwise the team names the nearest terms it would sign and loses patience: 3 refusals (a sponsor: 2), and an ask past 1.5x the leverage costs two. Out of patience it walks: REP -5 and no more talks this window. Your own team refusing costs 3 trust each time. Walking away is free, but the team remembers it for a while (6.5, Refusals). The gauge says As offered, Comfortable, Pushing it, Too much or Unrealistic; "Pushing it" runs to 1.15x the leverage, so the limit is near what it shows but not exact. Their counter can always be accepted. Agreed terms still need Sign.
 
 Team moves the player starts: in the market week or at the season end he can approach a team (`approach`). One try per team per window. Under their bar he hears the real reason; over it, a seeded roll on their interest. The tier above, or an A seat in his own tier with an average rating of 7.0. Not in the first season's market week. In mid-season a talk can leak (30 %: trust -5). A deal signed in mid-season starts next season and costs 8 trust; the release cut is paid at once. Unanswered, it lapses when the market closes.
 
