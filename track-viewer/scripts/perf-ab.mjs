@@ -2,7 +2,7 @@
 // plus A against itself (the noise floor). The page freezes performance.now, the grain and the cars' update between the renders, so
 // the only difference left is the saving. Mean absolute difference is on the 0..255 scale over RGB.
 //   node scripts/qa-lock.mjs -- node scripts/perf-ab.mjs [track=tokyo] [looks=night,day] [--weather dry] [--off a,b|all]
-//        [--views 0,1] [--save qa/perf/ab-x] [--url ...] [--query ...]
+//        [--views 0,1] [--save qa/perf/ab-x] [--url ...] [--query ...] [--revisit llano]   (--revisit: leave for that track and come back first, so a saving is judged on a second visit)
 import sharp from 'sharp';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -14,7 +14,7 @@ const weather = flag('weather', 'dry'), off = flag('off', 'all'), save = flag('s
 const sets = Object.fromEntries((flag('set', '') || '').split(',').filter(Boolean).map((kv) => { const [k, v] = kv.split('='); return [k, v === 'true' ? true : v === 'false' ? false : Number.isNaN(+v) ? v : +v]; }));
 const { C, N, V: VIEWS, names: viewNames } = views(track, flag('views', null));
 if (save) mkdirSync(join(root, save), { recursive: true });
-const { browser, page, errors } = await openViewer({ track, look: looks[0], weather, mode, base: flag('url', 'http://127.0.0.1:5180'), query: flag('query', '') });
+const { browser, page, errors } = await openViewer({ track, look: looks[0], weather, mode, base: flag('url', 'http://127.0.0.1:5180'), query: flag('query', ''), revisit: flag('revisit', null) });
 const names = await page.evaluate(() => Object.keys(window.viewer.perf ?? {}));
 console.log(`${track}: savings available: ${names.join(', ') || '(none)'}; A = off: ${off}`);
 const offList = off === 'all' ? names : off.split(',');

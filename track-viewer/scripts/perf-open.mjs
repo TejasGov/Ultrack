@@ -36,7 +36,7 @@ export function views(track, pick) {
 }
 
 /** returns { browser, page, errors, env } with window.viewer ready; mode 'game' (Free Drive) or 'dev' */
-export async function openViewer({ track, look, weather = 'dry', mode = 'game', base = 'http://127.0.0.1:5180', query = '', width = 1920, height = 1080, dpr = 1 }) {
+export async function openViewer({ track, look, weather = 'dry', mode = 'game', base = 'http://127.0.0.1:5180', query = '', width = 1920, height = 1080, dpr = 1, revisit = null }) {
   const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
   const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
   const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr });
@@ -60,6 +60,7 @@ export async function openViewer({ track, look, weather = 'dry', mode = 'game', 
       await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
       await page.keyboard.press('Enter');
       await page.waitForSelector('.bento-tile[data-id=free]', { state: 'visible' });
+      if (revisit) console.log('revisit:', await page.evaluate(async (ids) => { const seen = []; for (const id of ids) { await window.game.selectTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
       await page.click('.bento-tile[data-id=free]');
       await page.waitForSelector('.panel.setup button.cta', { state: 'visible' });
       await page.click('.panel.setup button.cta');
@@ -70,6 +71,7 @@ export async function openViewer({ track, look, weather = 'dry', mode = 'game', 
       opened = 'dev'; await dev();
     }
   } else await dev();
+  if (revisit && opened === 'dev') console.log('revisit:', await page.evaluate(async (ids) => { const seen = []; for (const id of ids) { await window.viewer.setTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
   await page.waitForTimeout(3000);
   ready = true;
   return { browser, page, errors, mode: opened };

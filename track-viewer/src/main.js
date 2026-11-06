@@ -565,6 +565,7 @@ function unloadVenue() {
   if (glows) { scene.remove(glows.points); disposeTree(glows.points); glows = null; }
   sceneryExperiment?.dispose(); sceneryExperiment = null;
   people.clear(); driverHoardings.clear(); life.reset();
+  for (const m of allMats) singles.delete(m);   // the singlePass registry would otherwise keep every visited venue's materials alive
   allMats.clear(); wetMats.length = 0;
   for (let i = glass.length - 1; i >= 0; i--) if (!glass[i].car) { twins.delete(glass[i].real); if (glass[i].on) glassOn--; glass.splice(i, 1); }   // the twin map would keep every visited venue's glass and textures alive
   for (const light of [...pool.flood, ...pool.stand, ...pool.street]) { light.userData.lamp = null; light.userData.want = 0; light.intensity = 0; }   // not parked at the old lamps
