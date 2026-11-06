@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "note": "The career's choice scenes (track-viewer/src/game/career/choices.js, docs/career-mode.md 6.9). A scene arrives in the inbox when its trigger holds (the predicate is in choices.js) and the week's seeded roll is under its chance: one a week at most, perSeason a season. Each option's effects come from a fixed list: trust, rep, xp, heat (on the scene's driver, with a cause), interest (the scene's team, this season), note (a ledger entry), flag (one race), mood (every sponsor's goodwill, within the Sponsor Challenge cap) and story. effectText is what the button says; {who}, {surname}, {team}, {stake} and {gp} are filled from the scene. An unanswered scene takes its default option when the week ends, and the inbox says so. Text is invented; no LLM writes it.",
+  "perSeason": 5,
+  "callout": { "composure": 0.6, "win": { "rep": 12, "xp": 60 }, "higherTier": 1.5, "lose": { "rep": -4 } },
+  "press": { "gap": 4, "dnq": "You missed the cut", "dnf": "You retired" },
+  "scenes": [
+    { "id": "rumour", "trigger": "rumour", "chance": 1,
+      "title": "The papers link you with {team}",
+      "body": "{who}'s seat at {team} is up for renewal, and your name is on the shortlist. The press want to know if you are talking to them.",
+      "options": [
+        { "label": "Deny it", "effectText": "Team trust +2", "effects": [{ "trust": 2 }] },
+        { "label": "Keep them guessing", "effectText": "Reputation +4, team trust -3, and {team} keener on you this season", "effects": [{ "rep": 4 }, { "trust": -3 }, { "interest": 0.1 }, { "story": "stoke" }] }
+      ],
+      "default": "Deny it",
+      "story": { "stoke": { "kind": "rumor", "title": "{me} will not rule out {team}", "body": "Asked about {who}'s seat at {team}, {me} smiled and changed the subject. Their own team did not smile." } } },
+    { "id": "callout", "trigger": "callout", "chance": 0.6,
+      "title": "{who} calls you out",
+      "body": "{who} told the press they will finish ahead of you at the {gp}. The paddock is waiting for your answer.",
+      "options": [
+        { "label": "Accept the challenge", "effectText": "Finish ahead of {surname} at the {gp}: reputation +{stake} and 60 XP. Finish behind: reputation -4", "effects": [{ "flag": "callout" }, { "story": "accept" }] },
+        { "label": "Let it go", "effectText": "Reputation -2", "effects": [{ "rep": -2 }] }
+      ],
+      "default": "Let it go",
+      "story": {
+        "accept": { "kind": "feud", "title": "{me} accepts {surname}'s challenge", "body": "\"See you on Sunday,\" {me} said about {who}. The {gp} has a second race inside it now." },
+        "won": { "kind": "feud", "title": "{me} answers {surname}", "body": "{who} said they would finish ahead. At the {gp} they did not, and {me} made sure everyone noticed." },
+        "lost": { "kind": "feud", "title": "{surname} wins the callout", "body": "{who} promised to finish ahead of {me} at the {gp}, and did. {me} had nothing to say afterwards." } } },
+    { "id": "press", "trigger": "press", "chance": 0.45,
+      "title": "Press conference after the {gp}",
+      "body": "{result} at the {gp}, where the paddock expected P{exp}. The microphones are waiting. How do you play it?",
+      "options": [
+        { "label": "Credit the team", "effectText": "Team trust +3", "effects": [{ "trust": 3 }] },
+        { "label": "Take aim at {surname}", "effectText": "Reputation +5, heat +15 with {surname}", "effects": [{ "rep": 5 }, { "heat": 15, "cause": "bold" }, { "note": "bold_press" }, { "story": "bold" }] },
+        { "label": "Put on a show", "effectText": "Every sponsor's goodwill +1", "effects": [{ "mood": 1 }] }
+      ],
+      "default": "Credit the team",
+      "story": { "bold": { "kind": "feud", "title": "{me} takes aim at {surname}", "body": "After the {gp}, {me} had more to say about {who} than about their own race. {surname} has been told." } } }
+  ]
+}

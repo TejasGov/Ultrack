@@ -50,7 +50,8 @@ export class Hud {
         h('div.head', {},
           h('div.blk.posblk', {}, label('position', 'POSITION'), this.pEl = h('div.big', {}, this.pA = h('span'), this.pB = h('small'))),
           h('div.blk.lapblk', {}, label('lap', 'LAP'), h('div.big.lap', {}, this.lapA = h('span'), this.lapB = h('small')))),
-        this.standEl = h('div.standings', {}))),
+        this.standEl = h('div.standings', {})),
+        h('div.tile.goals', {}, this.goalsName = h('span.k', {}, icon('coin'), h('span')), this.goalsList = h('div.gl'), h('small', {}, '1 bronze · 2 silver · 3 gold'))),
       this.tc = h('div.grp.tc', {},
         this.timingEl = h('div.tile.timing', {},
           h('div.col.lapcol', {}, label('lap', 'LAP'), this.tLap = h('div.time')),
@@ -64,7 +65,7 @@ export class Hud {
           h('div.drec', {}, label('trophy', 'RECORD'), this.dRec = h('div.rec')),
           h('div.chainrow', {}, this.dChain = h('div.chain'), this.dMult = h('div.mult')),
           h('div.chainbar', {}, this.dBar = h('i'))),
-        this.rivalEl = h('div.tile.rival', {}, this.rivalMark = h('i'), this.rivalCode = h('span.code'), this.rivalVal = h('span.g'))),
+        this.rivalEl = h('div.tile.rival', {}, this.rivalRole = h('span.role'), this.rivalMark = h('i'), this.rivalCode = h('span.code'), this.rivalVal = h('span.g'))),
       this.tr = h('div.grp.tr', {}, this.fpsEl = h('div.fps')),
       this.bl = h('div.grp.bl', {}, this.map.el),
       this.br = h('div.grp.br', {}, this.gauge.el),
@@ -89,6 +90,11 @@ export class Hud {
   /** a track switch builds a new Hud: the window listeners would keep this one (and its baked minimap) alive */
   dispose() { removeEventListener('resize', this.fit); removeEventListener('keydown', this.onKey); this.el.remove(); }
 
+  /** a Sponsor Challenge's three objectives under the standings for the whole race (career-hub startEvent), or none: { label, objectives } | null */
+  goals(c) {
+    this.el.classList.toggle('goalsmode', !!c?.objectives);
+    if (c?.objectives) { this.goalsName.lastChild.textContent = c.label; this.goalsList.replaceChildren(...c.objectives.map((t) => h('span', {}, icon('plus'), t))); }
+  }
   /** a new session: nothing from the last one (lights, a message, the countdown, the lap delta) carries over */
   reset() {
     this.lights(0); this.lapDelta(null); this.topMult = 1;
@@ -190,10 +196,11 @@ export class Hud {
         this.progs.forEach((e, k) => e.style.transform = `scaleX(${Math.min(1, Math.max(0, (p - this.sec[k]) / (this.sec[k + 1] - this.sec[k]))).toFixed(3)})`);
       }
     }
-    // career qualifying: the teammate, his gap on the road until he has set a lap, then the lap to beat
+    // career qualifying: the teammate, their gap on the road until they have set a lap, then the lap to beat. A career race: the nemesis (else the teammate), the gap on the road
     const R = s.rival; this.flag(this.el, 'duel', !!R);
     if (R) {
-      const d = s.driver(R), lap = s.trk.get(R).best, gap = s.rivalGap();
+      const d = s.driver(R), lap = s.mode === 'quali' ? s.trk.get(R).best : null, gap = s.rivalGap();
+      this.set(this.rivalRole, 'rr', s.mode === 'race' && R.key === s.field.nemesisKey ? 'NEMESIS' : 'TEAMMATE');
       this.set(this.rivalCode, 'rc', d.code); if (this.cache.rm !== d.code) { this.cache.rm = d.code; this.rivalMark.style.background = teamMark(d.team); }
       this.set(this.rivalVal, 'rv', lap !== null ? fmtTime(lap) : `${gap > 0 ? 'AHEAD' : 'BEHIND'} ${Math.abs(gap).toFixed(1)}`);
     }

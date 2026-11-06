@@ -25,6 +25,7 @@ export class Session {
     this.order = [...field.cars].sort((a, b) => this.score(b) - this.score(a));
     this.heroPos = this.order.indexOf(field.hero) + 1; this.posHold = 0;
     this.wrong = 0; this.offT = 0;
+    field.aiEvents = []; field.finalLap = false;                   // what the career's rival profiles did (driver.js), and the hero's last lap, for team orders
     this.drift = mode === 'drift' ? { score: 0, chain: 0, mult: 1, chainT: 0, gap: 0, left: this.M.seconds, best: 0, banked: [] } : null;
     field.hold = this.M.start !== 'none';
     if (this.M.start === 'none') this.state = 'running';
@@ -85,7 +86,7 @@ export class Session {
           if (s.cross > 0 && !s.finished) this.lapDone(c, s);                             // a finished car's cool-down lap is not a lap
           s.cross++; s.mid = false; s.lapStart = this.raceT; s.valid = true;
           if (this.M.laps && s.cross >= this.laps + 1 && !s.finished) this.finish(c, s);
-          else if (this.M.laps && c === hero && s.cross === this.laps) this.emit('finalLap');
+          else if (this.M.laps && c === hero && s.cross === this.laps) { F.finalLap = true; this.emit('finalLap'); }
         }
       } else if (prev < N * 0.1 && s.idx > N * 0.9 && s.cross > 0) { s.cross--; s.recross = true; }   // backwards over the line
       // track limits (time trial): the lap is void after a second with all four wheels off
@@ -98,7 +99,7 @@ export class Session {
     // a new position counts once it has held for 0.6 s (side by side, the order flickers)
     const pos = this.order.indexOf(hero) + 1;
     this.posHold = pos !== this.heroPos ? this.posHold + dt : 0;
-    if (this.posHold > 0.6) { if (this.state === 'running' && this.M.rivals) this.emit('position', { from: this.heroPos, to: pos }); this.heroPos = pos; this.posHold = 0; }   // a race's: qualifying has no places on the road
+    if (this.posHold > 0.6) { if (this.state === 'running' && this.M.rivals) this.emit('position', { from: this.heroPos, to: pos, by: this.order[this.heroPos - 1]?.key }); this.heroPos = pos; this.posHold = 0; }   // a race's: qualifying has no places on the road. by: the car now in the hero's old place, the one the hero passed or that passed the hero
     // ---- the hero: wrong way, off track, crashes, spins
     if (this.state === 'running') {
       const s = this.trk.get(hero), L = this.field.linePts, a = L[s.idx], b = L[(s.idx + 3) % this.N];
@@ -110,15 +111,37 @@ export class Session {
       if ((decel > 24 || Math.abs(hv.aBody.z) > 34) && this.t - (this.crashT ?? -9) > 2) { this.crashT = this.t; this.emit('crash', { kmh: Math.max(kmh, (this.lastKmh ?? kmh)) }); const v0 = this.lastVel ?? hv.rb?.linvel(); if (v0) this.hit = { t: this.t, v0, peak: 0 }; }
       // how hard the hit really was, for the repair bill: the most velocity it took away in the 0.4 s after the first spike (a rub along the barrier deflects the car and takes little, a wall head-on takes it all)
       const vel = hv.rb?.linvel();   // (a test's stand-in car has no body)
-      if (vel && this.hit) { const w = this.hit; w.peak = Math.max(w.peak, Math.hypot(vel.x - w.v0.x, vel.z - w.v0.z) * 3.6); if (this.t - w.t >= 0.4) { this.hit = null; this.emit('impact', { kmh: Math.round(w.peak) }); } }
+      if (vel && this.hit) { const w = this.hit; w.peak = Math.max(w.peak, Math.hypot(vel.x - w.v0.x, vel.z - w.v0.z) * 3.6); if (this.t - w.t >= 0.4) { this.hit = null; this.emit('impact', { kmh: Math.round(w.peak) }); this.contactAt(hv.cur.pos, Math.round(w.peak)); } }
       if (vel) this.lastVel = { x: vel.x, z: vel.z };
       if (Math.abs(hv.state.beta) > 1.9 && hv.state.drift < 0.5 && this.t - (this.spinT ?? -9) > 4) { this.spinT = this.t; this.emit('spin'); }
       this.lastKmh = kmh;
       if (this.drift) this.driftUpdate(dt, hv, s);
+      // side by side for a second: an AI car under 2.5 m to the side and 2 m along the track (the booth's line)
+      if (this.M.rivals) {
+        const L = F.lineLeft[s.idx], hp = hv.cur.pos;
+        const by = F.cars.find((c) => { if (c === hero) return false; const q = c.vehicle.cur.pos, dx = q.x - hp.x, dz = q.z - hp.z; return Math.abs(dx * L.x + dz * L.z) < 2.5 && Math.abs(dz * L.x - dx * L.z) < 2; });
+        this.sbsT = by ? (this.sbsT ?? 0) + dt : 0;
+        if (this.sbsT > 1 && !this.sbsSaid) { this.sbsSaid = true; this.emit('sideBySide', { key: by.key }); }
+        if (!by) this.sbsSaid = false;
+      }
+    }
+    // the rival profiles' moves (driver.js): a defend is reported once a lap per car
+    const ai = F.aiEvents ?? []; F.aiEvents = [];
+    if (this.state === 'running') for (const a of ai) {
+      const lap = this.trk.get(F.cars.find((c) => c.key === a.key))?.cross ?? 0;
+      if (a.type !== 'defend') this.emit(a.type === 'orders' ? 'ordersDone' : a.type, { key: a.key, kind: a.kind });
+      else if ((this.defLap ??= {})[a.key] !== lap) { this.defLap[a.key] = lap; this.emit('defend', { key: a.key }); }
     }
     if (this.state === 'done') this.doneT = (this.doneT ?? 0) + dt;
     const ev = this.events; this.events = [];
     return ev;
+  }
+
+  /** a hard hit with another car within 6 m: whose it was, for the career's rivals (a hit alone on the barrier names nobody) */
+  contactAt(p, kmh) {
+    let near = null, best = 36;
+    for (const c of this.field.cars) { const d = c === this.field.hero ? Infinity : c.vehicle.cur.pos.distanceToSquared(p); if (d < best) { best = d; near = c; } }
+    if (near) this.emit('contact', { key: near.key, kmh });
   }
 
   lapDone(c, s) {
@@ -160,7 +183,9 @@ export class Session {
   }
 
   /** career qualifying's other car: the teammate on track with the player */
-  get rival() { return this.mode === 'quali' ? this.field.cars.find((c) => c !== this.field.hero) ?? null : null; }
+  get rival() { return this.mode === 'quali' ? this.field.cars.find((c) => c !== this.field.hero) ?? null : this.mode === 'race' ? this.raceRival() : null; }
+  /** a career race's: the nemesis, else the teammate (game.js F.nemesisKey, F.mateKey); null in free play */
+  raceRival() { const F = this.field, by = (k) => k && F.cars.find((c) => c !== F.hero && c.key === k); return by(F.nemesisKey) || by(F.mateKey) || null; }
   /** the rival's flying lap: the best he has set or, past halfway on his first, his pace so far carried to the line; before that, null */
   rivalLap() {
     const c = this.rival, s = c && this.trk.get(c); if (!s) return null;

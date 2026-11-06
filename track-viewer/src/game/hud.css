@@ -71,6 +71,17 @@
 .hud.duel .rival { display: flex; }
 .hud .rival i { width: 4px; height: 14px; border-radius: 1px; box-shadow: 0 0 0 1px var(--c-line-2); }
 .hud .rival .g { font-size: 16px; color: var(--c-ink-2); letter-spacing: 0.04em; }
+.hud .rival .role { font-size: 13px; letter-spacing: var(--track-label); color: var(--c-ink-3); }
+.hud.duel .msg { top: 200px; }   /* below the rival tile, never over it */
+@media (max-width: 600px) { .hud .tl { top: calc(var(--sp-5) + 164px * var(--s)); } .hud .msg, .hud.duel .msg { top: 640px; } }   /* a phone held upright: the timing tile and the rival take the top, the standings go under them */
+/* a Sponsor Challenge: its three objectives under the standings */
+.hud .goals { display: none; width: 256px; margin-top: var(--sp-2); padding: 10px 16px 12px; }
+.hud.goalsmode .goals { display: block; }
+.hud .goals .k { align-items: flex-start; white-space: normal; color: var(--c-ink-2); }
+.hud .goals .gl { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; font-size: 16px; line-height: 1.2; letter-spacing: 0.02em; color: var(--c-ink-1); }
+.hud .goals .gl span { display: flex; align-items: flex-start; gap: 6px; }
+.hud .goals .gl .icon { flex: none; margin-top: 2px; font-size: 14px; color: var(--c-ink-3); }
+.hud .goals small { display: block; margin-top: 8px; font-size: 13px; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-3); }
 
 /* ---- drift attack: a ring timer with the seconds | the score | the record; the chain and its multiplier (always shown) under them */
 .hud .drift { display: none; width: 448px; grid-template-columns: 64px 1fr 96px; align-items: start; column-gap: 24px; padding: 16px 24px; }

@@ -16,7 +16,7 @@ export const ROUND_EVENT = { tour: 'Tour', open: 'Open', masters: 'Masters', spr
 export const LOOK = { day: ['Day', 'sun'], dusk: ['Dusk', 'sunset'], bluehour: ['Evening', 'moon-horizon'], night: ['Night', 'moon'] };
 export const WX_ICON = { dry: 'sun', damp: 'cloud-drizzle', rain: 'cloud-rain' };
 export const MEDAL = ['No medal', 'Bronze', 'Silver', 'Gold'];
-export const EVENT = { test: ['Test day', 'time-trial'], sponsor: ['Sponsor day', 'drift'] };
+export const EVENT = { test: ['Test day', 'time-trial'], sponsor: ['Sponsor day', 'coin'] };
 /** coins are gold with the coin, wherever an amount is shown (the .cx-coin colour is the wallet's) */
 export const coins = (n, plus = false) => h('span.cx-coin', {}, icon('coin'), (plus && n > 0 ? '+' : '') + Math.round(n).toLocaleString('en'));
 export const money = (n) => `${Math.round(n).toLocaleString('en')} U`;

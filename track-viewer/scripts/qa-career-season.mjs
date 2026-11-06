@@ -1,5 +1,5 @@
 // One whole career season in the real game, through the real screens, with the AI driving the player's car: a new driver by keyboard, the Shootout, a negotiated first
-// contract, then every week of the season by the hub's own buttons (a test day, a sponsor day ended from the pause menu, practice, the market, every qualifying and race),
+// contract, then every week of the season by the hub's own buttons (a test day, a sponsor day's 2-lap challenge retired from the pause menu, practice, the market, every qualifying and race),
 // the round reports, the season review, a signing into season 2, a reload and the save slots.
 //   node scripts/qa-lock.mjs -- node scripts/qa-career-season.mjs [url=http://127.0.0.1:5180]      (RACE_LAPS=1: the race distance)
 // Out: qa/career-season/*.png, report.json; the summary is printed. About half an hour.
@@ -65,11 +65,11 @@ try {
   await go('.cx-go'); await onScreen('career-hub'); await shot('home-week-1');
 
   // ---- every tab, with Q and E
-  for (const t of ['calendar', 'events', 'inbox', 'deals', 'standings', 'garage', 'driver']) { await key('KeyE'); await shot('tab-' + t); }
+  for (const t of ['calendar', 'events', 'inbox', 'media', 'deals', 'standings', 'garage', 'life', 'driver']) { await key('KeyE'); await shot('tab-' + t); }
   await key('KeyE'); report.keys.tabsWrap = await page.evaluate(() => document.querySelector('.career-hub .stabs button.on')?.textContent.startsWith('Home'));
 
   // ---- buy the free upgrade level, sign the first sponsor offer
-  await key('KeyQ'); await key('KeyQ'); await page.click('.screen.on .cx-up >> nth=0'); await page.waitForTimeout(250); report.upgrade = await page.evaluate(() => window.game.career.garage.upgrades[window.game.career.contract.car]);
+  await page.click('.stabs button:has-text("Garage")'); await page.click('.screen.on .cx-up >> nth=0'); await page.waitForTimeout(250); report.upgrade = await page.evaluate(() => window.game.career.garage.upgrades[window.game.career.contract.car]);
   await page.click('.stabs button:has-text("Deals")'); await page.click('.screen.on .cx-offer >> nth=0'); await onScreen('career-deal'); await shot('deal-sponsor');
   await go('.cx-go'); await onScreen('career-hub'); await page.waitForTimeout(250); report.sponsor = await page.evaluate(() => window.game.career.sponsors.deals[0]); await shot('deals-signed');
   await page.click('.stabs button:has-text("Home")');
@@ -82,23 +82,37 @@ try {
     if (S.kind === 'race') {
       if (!ranPractice) { ranPractice = true; await tile('Practice'); await sessionUp(); await page.waitForTimeout(6000); await shot('practice'); await pauseEnd('End practice'); await onScreen('career-hub'); await page.waitForTimeout(300); log('  practice done'); }
       await shot(`race-week-${S.round + 1}`);
-      await go('.cx-go:has-text("Start qualifying")'); await sessionUp(); await lapDone(); await onScreen('career-hub'); await page.waitForSelector('.screen.on .cx-go:has-text("Start the race")', { timeout: 30000 });
+      // qualifying, unless this stage has its grid (an Open's Final after the Last Chance, the Masters); only the grid races: a missed cut sits out (Sit out asks twice while a retry is left)
+      const inGrid = () => page.evaluate(() => { const s = window.game.career, q = s.season.current.quali; return q ? q.grid.includes(s.contract.car) : null; });
+      if ((await inGrid()) === null) { await go('.cx-go:has-text("Start qualifying")'); await sessionUp(); await lapDone(); await onScreen('career-hub'); await page.waitForTimeout(300); }
+      if (!(await inGrid())) {
+        if (await page.$('.screen.on .cx-go:has-text("Sit out this round")')) await go('.cx-go:has-text("Sit out this round")');
+        else { await go('button:has-text("Sit out")'); await page.waitForTimeout(250); await go('button:has-text("Sit out")'); }
+        await page.waitForFunction(() => window.game.screenName === 'careerReport', null, { timeout: 30000 });
+        if (!report.dnqShot) { report.dnqShot = true; await shot(`report-dnq-${S.round + 1}`); } report.rounds.push({ round: S.round, dnq: true }); log('  missed the cut: sat out');
+        await go('.cx-go'); await page.waitForFunction(() => ['careerHub', 'careerStart'].includes(window.game.screenName)); await page.waitForTimeout(300); continue;
+      }
+      await page.waitForSelector('.screen.on .cx-go:has-text("Start the")', { timeout: 30000 });   // the race, the Last Chance or the Final
       if (!raced) await shot('home-grid');
-      await page.evaluate((n) => { const c = window.game.career; c.season.calendar[c.clock.round].laps = n; }, raceLaps);
-      await go('.cx-go:has-text("Start the race")'); await page.waitForFunction(() => window.game?.session?.mode === 'race' && window.game.session.field.rig && !window.game.raceLoading.active, null, { timeout: 300000 });
+      await page.evaluate((n) => { const c = window.game.career, R = c.season.calendar[c.clock.round]; R.laps = n; if (R.lcqLaps) R.lcqLaps = n; }, raceLaps);
+      await go('.cx-go:has-text("Start the")'); await page.waitForFunction(() => window.game?.session?.mode === 'race' && window.game.session.field.rig && !window.game.raceLoading.active, null, { timeout: 300000 });
       if (!raced) report.field = await page.evaluate(() => { const F = window.game.field, g = F.gridOrder; return { gridOrder: g, cars: F.cars.map((c) => ({ key: c.key, pace: +c.ai.pace.toFixed(4), slot: g?.indexOf(c.key) })), hero: window.game.session.driver(F.hero).name }; });
       await page.evaluate(() => window.game.session.field.setPlayer(false));
       await page.waitForFunction(() => window.game.screenName === 'careerReport', null, { timeout: 600000, polling: 1000 });
       await shot(`report-${S.round + 1}`);
-      const r = await page.evaluate(() => { const r = window.game.career.season.results.at(-1); return { round: r.round, track: r.track, finish: r.finish, grid: r.grid, rr: r.rr, xp: r.xp, rep: r.rep, trust: r.trust, coins: r.coins, objectives: r.objectives.map((o) => [o.kind, o.met]) }; }); report.rounds.push(r); raced++; log('  round', JSON.stringify(r));
+      const r = await page.evaluate(() => { const r = window.game.career.season.results.at(-1); if (!r) return null; return { round: r.round, track: r.track, finish: r.finish, grid: r.grid, rr: r.rr, xp: r.xp, rep: r.rep, trust: r.trust, coins: r.coins, objectives: (r.objectives ?? []).map((o) => [o.kind, o.met]) }; }); report.rounds.push(r); raced++; log('  round', JSON.stringify(r));
       await go('.cx-go'); await page.waitForFunction(() => ['careerHub', 'careerStart'].includes(window.game.screenName)); await page.waitForTimeout(300);
     } else if (S.event === 'test' && !S.done && !ranTest) {
       ranTest = true; await shot('home-test-week'); await tile('Test day'); await sessionUp(); await lapDone(); await onScreen('career-hub'); await page.waitForTimeout(300); report.testDay = await page.evaluate(async () => (await import('/src/game/career/career.js')).currentWeek(window.game.career).event.result); await shot('home-after-test'); log('  test day', JSON.stringify(report.testDay));
       await go('.cx-go'); await page.waitForTimeout(300);
     } else if (S.event === 'sponsor' && !S.done && !ranSponsor) {
-      ranSponsor = true; await shot('home-sponsor-week'); await tile('Sponsor day'); await sessionUp(); await page.waitForTimeout(6000);
+      // the Sponsor Challenge: a 2-lap race from the back of six; retired from the pause menu, it is a DNF and no medal
+      ranSponsor = true; await shot('home-sponsor-week'); await tile('Sponsor day'); await sessionUp(); await page.waitForTimeout(6000); await shot('sponsor-race');
+      report.sponsorRace = await page.evaluate(() => { const g = window.game, F = g.field; return { mode: g.session.mode, laps: g.session.laps, cars: F.cars.length, slot: F.gridOrder?.indexOf(F.hero.key) + 1 }; });
       await key('Escape'); await page.waitForTimeout(350); report.sponsorPause = await page.evaluate(() => [...document.querySelectorAll('.screen.on button')].map((x) => x.textContent.trim())); await key('Escape'); await page.waitForTimeout(300);
-      await pauseEnd('End sponsor day'); await onScreen('career-hub'); await page.waitForTimeout(300); report.sponsorDay = await page.evaluate(async () => (await import('/src/game/career/career.js')).currentWeek(window.game.career).event.result); log('  sponsor day', JSON.stringify(report.sponsorDay));
+      await key('Escape'); await page.waitForTimeout(350); await page.click('.screen.on button:has-text("Retire")'); await page.waitForTimeout(250); await page.click('.screen.on button:has-text("Retire") >> nth=-1');
+      await onScreen('career-hub'); await page.waitForTimeout(300); report.sponsorDay = await page.evaluate(async () => (await import('/src/game/career/career.js')).currentWeek(window.game.career).event.result); log('  sponsor day', JSON.stringify(report.sponsorRace), JSON.stringify(report.sponsorDay));
+      report.sponsorOk = report.sponsorRace.mode === 'race' && report.sponsorRace.cars === 6 && report.sponsorRace.slot === 6 && report.sponsorRace.laps === 2 && report.sponsorDay?.medal === 0 && report.sponsorDay.met?.every((m) => !m);
       await go('.cx-go'); await page.waitForTimeout(300);
     } else if (S.kind === 'market') {
       await shot('home-market'); await page.click('.stabs button:has-text("Deals")'); await shot('deals-market');
@@ -121,5 +135,5 @@ try {
   await page.click('.stabs button:has-text("Driver")'); await page.click('.screen.on button:has-text("Other careers")'); await page.waitForSelector('.cs-slot'); await shot('slots'); await page.click('.cs-slot >> nth=1'); await page.waitForSelector('.cs-input'); await key('Escape'); await page.waitForSelector('.cs-slot'); report.keys.escToSlots = true;
   await page.click('.cs-slot >> nth=0'); await onScreen('career-hub'); await page.click('.screen.on button:has-text("Menu")'); await onScreen('home'); report.freePlay = await page.evaluate(() => ({ car: JSON.parse(localStorage.getItem('ultrack.v1')).car, track: window.game.ctx.trackId() }));
 } catch (e) { errors.push('qa: ' + e.message); await page.screenshot({ path: join(out, 'failed.png') }).catch(() => {}); }
-save(); console.log(JSON.stringify({ keys: report.keys, rounds: report.rounds.length, advanceWarned: report.advanceWarned, season2: report.season2, afterReload: report.afterReload, errors }, null, 1));
+save(); console.log(JSON.stringify({ keys: report.keys, rounds: report.rounds.length, sponsorOk: report.sponsorOk ?? null, advanceWarned: report.advanceWarned, season2: report.season2, afterReload: report.afterReload, errors }, null, 1));
 await browser.close();

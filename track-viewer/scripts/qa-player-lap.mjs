@@ -16,7 +16,7 @@ await ctx.addInitScript(([t, c]) => { try { localStorage.setItem('ultrack.v1', J
 const page = await ctx.newPage(), errors = [];
 if (process.env.COLLISION) await page.route(`**/${track}_collision.glb`, (r) => r.fulfill({ path: process.env.COLLISION, contentType: 'model/gltf-binary' }));
 page.on('pageerror', (e) => errors.push(e.message));
-await page.goto('http://127.0.0.1:5180');
+await page.goto(process.env.QA_URL ?? 'http://127.0.0.1:5180');   // QA_URL: another session's Vite
 await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
 await page.keyboard.press('Enter');
 await page.click('.bento-tile[data-id=free]');
