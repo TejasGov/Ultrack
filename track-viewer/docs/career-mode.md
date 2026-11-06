@@ -596,6 +596,8 @@ Every signing runs 2-3 seasons (`market.signing`). The press writes up each move
 
 **Tuning as measured** (`career-metrics.mjs 100 6`). The spec's first guesses were renew 0.6, renewGap 2, maxMoves 3. They move 3.1 AI drivers a season (target 1-3), and the extra churn puts the best drivers in the Legend cars (their average rating +1.25), which kept strong players under the Legend round-rating gate: Legend offers at skill 1.015 fell to 87 % (target 95 %+). Shipped: renew 0.9, renewGap 6, maxMoves 1, dropGap 6. Per season 1.2-1.4 AI-to-AI moves, the displaced driver in the player's old seat 7-19 %, 0.9-1.2 teams of 8 unchanged after six seasons, seated AI average rating 83.46.
 
+**Open: Legend got harder to hold.** Before the market, a retired Legend driver's seat went to whichever free agent or academy rookie came first, so the Legend grid's average rating fell from 89.3 to 85.4 over six seasons. Now the best free agent or lesser-team driver takes it, and the Legend grid stays at 89-90. Average players (skill 0.995, 400 careers x 6 seasons) who reach Legend now finish lower than their team expects, lose trust and miss the renewal: 34 of 66 fall out of Legend, against 12 of 73 before, and their wallet at the end of Legend is 85 % of the old one. The WP3 guard (wallet at the end of Legend within 10 % of 101082, measured on the old market) fails at 89 % in `career-metrics.mjs 100 6`. Fixing it is a design call: measure that guard again on the new market, or make a Legend seat easier to keep (the trust needed to renew, or offers from other Legend teams for a driver whose team lets them go).
+
 ## 7. Randomness and events
 
 ### 7.1 What the reference games teach
