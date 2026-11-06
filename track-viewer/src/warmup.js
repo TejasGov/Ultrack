@@ -3,6 +3,19 @@ import * as THREE from 'three';
 export const paintFrame = () => new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const yieldMain = () => new Promise(resolve => setTimeout(resolve, 0));
 
+// A compiled program's first draw still reads its logs, uniforms and attributes back from the GPU process (three's onFirstUse), each a
+// blocking round trip: ~160 programs cost one 250-320 ms task at the first race frame. Read them now, a few per task (a program drawn already returns at once; one read here is skipped next time).
+// One still linking would block the read until it links: it waits for a later frame (for up to `ms`; a link can take ~0.4 s), after which its first draw pays as before.
+const usedOnce=new WeakSet();
+export async function firstUse(renderer, { isCancelled = ()=>false, per = 8, ms = 3000 } = {}) {
+  const all=renderer.info.programs,until=performance.now()+ms;let left=all.filter(p=>!usedOnce.has(p));
+  while(left.length&&!isCancelled()){
+    const ready=left.filter(p=>p.isReady());left=left.filter(p=>!p.isReady()&&all.includes(p));   // a released program leaves the list (and is never read)
+    for(let i=0;i<ready.length&&!isCancelled();i+=per){ready.slice(i,i+per).forEach(p=>{if(all.includes(p)){p.getUniforms();usedOnce.add(p);}});await yieldMain();}
+    if(left.length&&performance.now()<until)await paintFrame();else break;
+  }
+}
+
 // WebGLRenderer.compileAsync traverses invisible objects too. Compile only visible drawables,
 // in small chunks, with the real scene supplying lights/fog/environment for identical programs.
 // Chunks are submitted back to back and awaited together: the driver compiles them in parallel, while each
@@ -30,8 +43,8 @@ export async function compileVisible(renderer, scene, camera, { frustum = false,
       while(active.size>=(inflight.call?inflight():inflight)&&!isCancelled())await Promise.race(active);   // the driver compiles on the GPU process: a deep queue starves the compositor (a 7 s freeze on a menu click)
       if(isCancelled())break;
       const group=new THREE.Group();
-      for(const original of list.slice(i,i+32))group.add(swap?swap(original):original.clone(false));
       around(()=>wrap(()=>{
+        for(const original of list.slice(i,i+32))group.add(swap?swap(original):original.clone(false));   // in around's state: the race swaps the cars' glass for its world-glass twins
         const previous=renderer.getRenderTarget(),previousFace=renderer.getActiveCubeFace(),previousMip=renderer.getActiveMipmapLevel();
         // the shadow pass draws with an empty scene: lights but no fog (a fogged key would never match)
         const fog=swap?scene.fog:null;if(swap)scene.fog=null;

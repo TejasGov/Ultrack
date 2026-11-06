@@ -1,0 +1,87 @@
+diff --git a/track-viewer/scripts/perf-frame.mjs b/track-viewer/scripts/perf-frame.mjs
+index 5008c9f..d7b73e1 100644
+--- a/track-viewer/scripts/perf-frame.mjs
++++ b/track-viewer/scripts/perf-frame.mjs
+@@ -6,6 +6,7 @@
+ //        [--programs] [--url http://127.0.0.1:5180] [--out qa/perf/frame-<track>.json]
+ //   --ab <flag>       runtime saving: one page, blocks with viewer.perf[flag] = false (A) then true (B), A B A B ...
+ //   --ab-load <flag>  load-time saving: a fresh browser per block on one shared profile, A = /?perf=<flag> (saving off), B = /, A B A B ...
++//   Every block asserts (unless ?perf=mergeWheels or off) that each car's stand-in wheels and far proxy are at most 2 meshes each (WP2).
+ //   --programs        the shader programs that exist when the menu warm-up (game.preloadP) is done, and again after the blocks and 10 s more
+ //                     racing with a nitro and a wall hit: lists the programs created after the warm-up, counts the program info-log reads
+ //                     after it (a program's first use), and exits 1 if there are any of either
+@@ -88,7 +89,10 @@ function census() {
+     const b = bands[c.band] ??= { cars: 0, draws: 0 }; b.cars++; b.draws += draws;
+   }
+   for (const b of Object.values(bands)) b.perCar = +(b.draws / b.cars).toFixed(1);
+-  return { bands, heroDraws: hero, programs: v.renderer.info.programs.length, session: !!window.game.session };
++  // WP2: with mergeWheels on, every stand-in wheel and every far proxy is at most 2 meshes (rubber, rim)
++  const meshes = (g) => { let n = 0; g.traverse((o) => { if (o.isMesh) n++; }); return n; }, merged = !/(^|,)(off|mergeWheels)(,|$)/.test(new URLSearchParams(location.search).get('perf') ?? '');
++  const unmerged = merged ? f.all.flatMap((c) => [...c.simple.map((g, i) => [c.key + ' wheel-lod ' + i, meshes(g)]), [c.key + ' wheels-far', meshes(c.proxy)]]).filter(([, n]) => n > 2) : [];
++  return { bands, heroDraws: hero, programs: v.renderer.info.programs.length, session: !!window.game.session, unmerged };
+ }
+ 
+ const avg = (a) => a.reduce((s, x) => s + x, 0) / Math.max(1, a.length), pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(s.length * p))] ?? 0; };
+@@ -113,6 +117,7 @@ async function block(page) {
+   const frames = await page.evaluate(() => { window.__R.on = false; return window.__R.frames; });
+   const c = await page.evaluate(census);
+   if (!c.session) throw Error('the race session ended during the block');
++  if (c.unmerged.length) throw Error('stand-in wheels not merged: ' + c.unmerged.map(([k, n]) => `${k} ${n} meshes`).join(', '));
+   const col = (k) => frames.map((f) => f[k] ?? 0), iv = frames.slice(1).map((f, i) => f.t - frames[i].t);
+   return {
+     frames: frames.length, 'tick.avg': r2(avg(col('tick'))), 'tick.p95': r2(pct(col('tick'), 0.95)), 'tick.p99': r2(pct(col('tick'), 0.99)), 'tick.max': r2(Math.max(...col('tick'))),
+diff --git a/track-viewer/src/cars.js b/track-viewer/src/cars.js
+index d973cba..7cbc405 100644
+--- a/track-viewer/src/cars.js
++++ b/track-viewer/src/cars.js
+@@ -101,7 +101,7 @@ function modelLamps(profile, m) {
+  * that moves as one (a wheel's spinning part, the calipers, glass, mirrors, lamps) merge the meshes per material;
+  * lamp states still switch, because car-lab drives them through the shared materials. Lights stay as they are.
+  */
+-function mergeByMaterial(group, castShadow = false) {
++function mergeByMaterial(group, castShadow = false, receive = true) {
+   group.updateMatrixWorld(true);
+   const inv = new THREE.Matrix4().copy(group.matrixWorld).invert(), buckets = new Map(), drop = [];
+   group.traverse((o) => {
+@@ -131,7 +131,7 @@ function mergeByMaterial(group, castShadow = false) {
+     const merged = mergeGeometries(b.geos);
+     if (!merged) continue;
+     const mesh = new THREE.Mesh(merged, mat);
+-    mesh.castShadow = castShadow; mesh.receiveShadow = true; mesh.renderOrder = b.order;
++    mesh.castShadow = castShadow; mesh.receiveShadow = receive; mesh.renderOrder = b.order;
+     group.add(mesh);
+   }
+ }
+@@ -139,6 +139,8 @@ function mergeByMaterial(group, castShadow = false) {
+ const DETAIL_M = 22;      // full car-lab wheels within this distance, stand-ins beyond
+ const FAR_M = 60;         // beyond this, one static wheel proxy and no side mirrors
+ const SHADOW_M = 50;      // cars cast into the sun's shadow map only within this distance
++// ?perf=mergeWheels (or ?perf=off) keeps the stand-in wheels and the far proxy as separate meshes (5 a wheel, 20 a proxy), for docs/10x WP2's A/B
++const MERGE_WHEELS = !/(^|,)(off|mergeWheels)(,|$)/.test((typeof location !== 'undefined' && new URLSearchParams(location.search).get('perf')) || '');
+ // each car wears its team's base colour and finish (assets/teams/teams.json); decals come with the liveries
+ const TEAM_OF = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, t])));
+ // every team car that can be assembled (a car-lab profile and a derived body, or a complete model); a car without one is skipped
+@@ -371,12 +373,13 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero,
+       wall.position.z = sgn * W * 0.5; if (sgn < 0) wall.rotation.y = Math.PI;
+       low.add(face, wall);
+     }
++    if (MERGE_WHEELS) mergeByMaterial(low, false, false);   // 5 meshes -> 2 (rubber, rim); the stand-ins neither cast nor receive, as before
+     low.visible = false;
+     w.spin.add(low);
+     simple.push(low);
+   }
+-  // far proxy: static clones of the four stand-in wheels (5 meshes each, so 20 draws; docs/10x/wp2-merge-wheels.patch
+-  // merges them to 2); beyond FAR_M nobody sees a wheel spin or steer
++  // far proxy: the four stand-in wheels merged into one static mesh per material (2 draws instead of 20); beyond
++  // FAR_M nobody sees a wheel spin or steer
+   car.updateMatrixWorld(true);
+   const inv = car.matrixWorld.clone().invert(), proxy = new THREE.Group();
+   proxy.name = 'wheels-far';
+@@ -387,6 +390,7 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero,
+     proxy.add(cl);
+   }
+   car.add(proxy);
++  if (MERGE_WHEELS) mergeByMaterial(proxy, false, false);
+   for (const g of body.children) if (g !== lod) mergeByMaterial(g);
+   proxy.visible = false;
+   const shadow = contactShadow(bodyBox({ lod, profile }), profile.wheels), pf = profile.wheels.front, pr = profile.wheels.rear;

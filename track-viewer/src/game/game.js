@@ -82,6 +82,7 @@ export class Game {
     const keys=this.racersFor(store.data.car,true),id=keys.join();
     if(this.preloading===id)return;this.preloading=id;
     const stop=()=>this.session||this.screenName==='garage'||this.preloading!==id;   // the garage changes the hero under us
+    if(this.ctx.prefetchVenue){this.ctx.prefetchVenue();PhysicsWorld.preload(this.ctx.collisionUrl).catch(()=>{});}   // earlyBytes: the downloads start now, only the parsing waits for idle
     this.preloadP=(async()=>{   // Start awaits all of it: a warm-up that starts after Start would overlap race prep and be cut short
       await new Promise(r=>setTimeout(r,800));
       await new Promise(r=>globalThis.requestIdleCallback?requestIdleCallback(()=>r(),{timeout:2000}):setTimeout(r,200));

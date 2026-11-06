@@ -1,0 +1,11 @@
+day-T1.png                         mean abs diff   0.000  >8: 0.003%  >32: 0.0003%  max 63
+day-canopy.png                     mean abs diff   0.000  >8: 0.000%  >32: 0.0000%  max 0
+day-grid-far.png                   mean abs diff   0.001  >8: 0.005%  >32: 0.0018%  max 106
+day-grid-mid.png                   mean abs diff   0.001  >8: 0.005%  >32: 0.0030%  max 106
+day-grid-near.png                  mean abs diff   0.001  >8: 0.004%  >32: 0.0019%  max 110
+night-T1.png                       mean abs diff   0.000  >8: 0.001%  >32: 0.0000%  max 23
+night-canopy.png                   mean abs diff   0.000  >8: 0.000%  >32: 0.0000%  max 0
+night-grid-far.png                 mean abs diff   0.000  >8: 0.005%  >32: 0.0000%  max 34
+night-grid-mid.png                 mean abs diff   0.000  >8: 0.004%  >32: 0.0002%  max 42
+night-grid-near.png                mean abs diff   0.000  >8: 0.003%  >32: 0.0000%  max 41
+mean over 10 shots: 0.001

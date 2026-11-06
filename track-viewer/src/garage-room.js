@@ -3,6 +3,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { setLamps } from './carkit/lamps.js';
 
+// ?perf=lazyRoomEnv (or ?perf=off) builds the room's PMREM in the constructor again, which runs during main.js's module evaluation, before
+// load() starts any fetch (~600 ms); lazily it is built at the first compile()/render(), after the fetches are on the wire (docs/10x WP6)
+const LAZY_ENV = !/(^|,)(off|lazyRoomEnv)(,|$)/.test((typeof location !== 'undefined' && new URLSearchParams(location.search).get('perf')) || '');
+
 /** Small standalone showroom. Shares the selected car, never the circuit or its render passes. */
 export class GarageRoom {
   constructor(renderer) {
@@ -14,9 +18,7 @@ export class GarageRoom {
     Object.assign(this.controls, { enabled: false, autoRotate: true, autoRotateSpeed: .35, enableDamping: true,
       enablePan: false, minDistance: 6, maxDistance: 11.5, maxPolarAngle: Math.PI * .48 });
     this.controls.target.set(0, .7, 0);
-    const pmrem = new THREE.PMREMGenerator(renderer), room = new RoomEnvironment();
-    this.environment = pmrem.fromScene(room, .04); this.scene.environment = this.environment.texture;
-    room.dispose(); pmrem.dispose();
+    if(!LAZY_ENV)this.ensureEnvironment();
     this.scene.add(new THREE.HemisphereLight(0xe8f4ff, 0x5b6170, 2.2));
     for (const [x,z,power] of [[-4,2,70],[3,-3,90]]) {
       const light = new THREE.PointLight(0xf4f5ff, power, 18, 2); light.position.set(x,4,z); this.scene.add(light);
@@ -61,7 +63,15 @@ export class GarageRoom {
     return ready;
   }
 
-  render(car,dt,{garage=false,shift=0,reduceMotion=false,draw}={}) {this.shift=reduceMotion?shift:(this.shift??0)+(shift-(this.shift??0))*Math.min(1,dt*10);   // eased over ~250 ms, snapped under reduce motion
+  ensureEnvironment(){
+    if(this.environment)return;
+    const pmrem = new THREE.PMREMGenerator(this.renderer), room = new RoomEnvironment();
+    this.environment = pmrem.fromScene(room, .04); this.scene.environment = this.environment.texture;
+    room.dispose(); pmrem.dispose();
+  }
+
+  render(car,dt,{garage=false,shift=0,reduceMotion=false,draw}={}) {this.ensureEnvironment();   // compile() draws through here too
+    this.shift=reduceMotion?shift:(this.shift??0)+(shift-(this.shift??0))*Math.min(1,dt*10);   // eased over ~250 ms, snapped under reduce motion
     if(!car)return;
     const renderer=this.renderer,root=car.root,parent=root.parent,visible=root.visible;
     this.savedPosition.copy(root.position);this.savedQuaternion.copy(root.quaternion);
