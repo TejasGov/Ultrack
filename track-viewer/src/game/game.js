@@ -440,8 +440,9 @@ export class Game {
         break;
       }
       case 'finalLap': {
-        // team orders, the player's call (career races): told to let a teammate who is behind by
-        const mate = this.field.orders === 'toMate' && this.field.cars.find((c) => c.key === this.field.mateKey), told = mate && s.order.indexOf(mate) > s.order.indexOf(hero);
+        // team orders, the player's call (career races): told to let a teammate by only when they are within mateGap s behind, so it never asks the player to give up a real lead
+        const F = this.field, mate = F.orders === 'toMate' && F.cars.find((c) => c.key === F.mateKey), O = mate && F.aiFor?.(F.mateKey)?.k.orders;
+        const behindS = O ? (s.progress(hero) - s.progress(mate)) / s.N * s.len / Math.max(20, mate.vehicle.speed) : Infinity, told = !!O && behindS > 0 && behindS < O.mateGap;
         if (told && this.careerRun) this.careerRun.orders = { kind: 'toMate' };
         H.message('Final lap', told ? `Team: let ${s.driver(mate).name} by` : '', 'gold', told ? 4 : 2.6); A.play('race/final-lap-bell.ogg'); this.say('final_lap', { priority: 3 }); break;
       }

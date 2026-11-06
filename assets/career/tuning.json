@@ -27,10 +27,10 @@
   "sponsors": { "retainerStep": 0.15, "retainerMax": 0.3, "bonusStep": 0.25, "bonusMax": 0.5, "refusals": 2, "withdrawnRep": -2, "droppedRep": -3 },
   "rivals": { "near": 1, "close": 6, "beat": 3, "decay": 5, "sitOut": 1, "contact": 8, "contactHard": 14, "pass": 3, "mate": 20, "duel": 8, "duelMax": 60, "seatLost": 30, "nemesis": 70, "teamChange": 10, "displaced": 30, "rival": 40, "feud": 80, "rep": 4, "higherTier": 1.5, "feudRep": 1.5, "feudXp": 25, "ordersIgnored": 15,
     "track": { "follow": 1.0, "followMul": 0.95, "laneRate": 0.03,
-      "defend": { "on": true, "rate": 0.012, "holdS": 4, "behind": [1, 15], "lat": 3.5 },
+      "defend": { "on": true, "rate": 0.012, "holdS": 4, "behind": [6, 15], "lat": 3.5 },
       "mistake": { "on": true, "base": 0.05, "rival": 1.6, "nemesis": 1.3, "window": 0.6, "after": 3, "lift": 0.95, "liftS": 0.5, "wide": 0.8 },
       "nitro": { "on": true, "from": 10, "to": 50 },
-      "orders": { "lift": 0.97, "s": 3, "aside": 2, "gap": 1.0 } } },
+      "orders": { "lift": 0.97, "s": 3, "aside": 2, "gap": 1.0, "mateGap": 2.0 } } },
   "market": { "retireAge": 38, "retireChance": 0.5, "academyRating": [70, 78], "academyAge": [19, 22] },
   "side": { "test": [1.03, 1.015, 1.005], "sponsor": [15000, 25000, 40000], "xp": [25, 50, 75], "pay": [100, 175, 275], "formPay": 0.05 }
 }

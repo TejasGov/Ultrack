@@ -64,7 +64,7 @@ const json = (x) => JSON.stringify(x);
 {
   const track = { halfWidth: Array(N).fill(4), racingLine: Array(N).fill(0) }, hi = 4 - 1.6;   // room 2.4 m either side
   const hero = car('hero', 14, 3, 35, true), nem = car('nem', 20, 0, 35);
-  const { lanes, F } = run([nem, hero], (c) => (c.hero ? null : prof('nemesis')), 120 * 7, { track, script: (c) => c.hero && ((c.s = nem.s - 6), (c.sp = nem.sp), true) });
+  const { lanes, F } = run([nem, hero], (c) => (c.hero ? null : prof('nemesis')), 120 * 7, { track, script: (c) => c.hero && ((c.s = nem.s - 8), (c.sp = nem.sp), true) });
   const def = F.aiEvents.filter((e) => e.type === 'defend');
   assert.equal(def.length, 1, 'one defend on the straight, though the player stays behind after the hold');
   const move = lanes.filter((l) => l.def).map((l) => l.lane);
@@ -74,7 +74,10 @@ const json = (x) => JSON.stringify(x);
   assert.ok(lanes.every((l) => l.lane <= hi + 1e-9 && l.lane >= -hi - 1e-9), 'the lane stays inside lo/hi');
   // a car without the nemesis role does not defend
   const n2 = car('nem', 20, 0, 35), h2 = car('hero', 14, 3, 35, true);
-  assert.equal(run([n2, h2], (c) => (c.hero ? null : prof('rival')), 600, { track, script: (c) => c.hero && ((c.s = n2.s - 6), (c.sp = n2.sp), true) }).F.aiEvents.filter((e) => e.type === 'defend').length, 0);
+  assert.equal(run([n2, h2], (c) => (c.hero ? null : prof('rival')), 600, { track, script: (c) => c.hero && ((c.s = n2.s - 8), (c.sp = n2.sp), true) }).F.aiEvents.filter((e) => e.type === 'defend').length, 0);
+  // a player whose nose overlaps the nemesis (centres 4 m apart, cars about 4.5 m long) is never chopped
+  const n3 = car('nem', 20, 0, 35), h3 = car('hero', 16, 3, 35, true);
+  assert.equal(run([n3, h3], (c) => (c.hero ? null : prof('nemesis')), 600, { track, script: (c) => c.hero && ((c.s = n3.s - 4), (c.sp = n3.sp), true) }).F.aiEvents.filter((e) => e.type === 'defend').length, 0, 'no defend on a car partly alongside');
 }
 
 // 3. the mistake roll: the same seed, corner and lap give the same answer; with the player not within 0.6 s, nothing ever happens
@@ -116,6 +119,12 @@ const json = (x) => JSON.stringify(x);
   const m2 = car('mate', 50, 0, 50), h2 = car('hero', 30, 0, 50, true);
   assert.equal(run([m2, h2], (c) => (c.hero ? null : prof('mate')), 120 * 5, { F0: { orders: 'toYou', mateKey: 'mate', finalLap: false }, script: (c) => c.hero && ((c.s = m2.s - 20), (c.sp = 50), true) }).F.aiEvents.length, 0, 'not before the final lap');
   assert.ok(out.length > 0);
+  // a teammate who is also the nemesis yields and never defends while obeying, though the player sits right behind on its line
+  const m3 = car('mate', 50, 0, 50), h3 = car('hero', 42, 0, 50, true);
+  const y = run([m3, h3], (c) => (c.hero ? null : prof('nemesis')), 120 * 3, { track: { halfWidth: Array(N).fill(6), racingLine: Array(N).fill(0) }, F0: { orders: 'toYou', mateKey: 'mate', finalLap: true }, script: (c) => c.hero && ((c.s = m3.s - 8), (c.sp = 50), true) });
+  assert.equal(y.F.aiEvents.filter((e) => e.type === 'orders').length, 1, 'the nemesis teammate yields');
+  assert.equal(y.F.aiEvents.filter((e) => e.type === 'defend').length, 0, 'and does not defend');
+  assert.ok(y.lanes.every((l) => !l.def) && Math.max(...y.lanes.map((l) => Math.abs(l.lane))) > 1.5, 'it steps aside');
 }
 // 6. clear air: with the player out of reach (over 55 m), every role drives exactly as no profile, so a rival's pace alone never changes
 {

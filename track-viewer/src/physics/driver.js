@@ -136,22 +136,23 @@ export class AIDriver {
     else if (!near) this.passSide = 0;                                // hold the passing lane until the car is 6 m behind
     let laneWant = this.passSide ? this.lane + this.passSide * 3 : this.lane;   // passSide is unset until a first car is near
     const clamp = THREE.MathUtils.clamp, prev = this.laneNow ?? this.lane, press = P && blk?.car === F.hero && (P.role === 'rival' || P.role === 'nemesis');
-    // A. the nemesis defends: with the player 1-15 m behind and on its line on a straight, it eases across onto the player's line, once a
-    // straight; the move ends after holdS, at the braking zone or a bend, or once the player is alongside (squeezing a car alongside is a crash).
-    // A straight: no braking zone ahead, and the line bends under 3 degrees to the pursuit target (at the limit in a long corner vmin alone reads as one)
-    const D = K && K.defend, behindIn = D && pl && pl.gap <= -D.behind[0] && pl.gap >= -D.behind[1];
-    if (P && P.role === 'nemesis' && D.on) {
-      if (vmin < speed * 0.95 || Math.abs(lat(line[j], this.i)) > 0.05 * look) { this.defT = 0; this.defUsed = false; }
-      else if (!this.defUsed && behindIn && Math.abs(pl.lat - myLat) < D.lat) { this.defUsed = true; this.defT = D.holdS * 120; (F.aiEvents ??= []).push({ type: 'defend', key: this.car.key }); }
-      if (!behindIn) this.defT = 0;
-    }
     // D. team orders: on the final lap the teammate lets a player within gap seconds through, lifting and stepping aside, once
     const O = K && K.orders;
     if (P && F.orders === 'toYou' && this.car.key === F.mateKey && F.finalLap && !this.yielded && behind < O.gap) {
       this.yielded = true; this.yieldT = O.s * 120; this.yieldLane = prev + (Math.sign(myLat - pl.lat) || 1) * O.aside;
       (F.aiEvents ??= []).push({ type: 'orders', key: this.car.key });
     }
-    if (this.yieldT > 0) laneWant = this.yieldLane;
+    if (this.yieldT > 0) { laneWant = this.yieldLane; this.defT = 0; }   // a teammate who is also the nemesis yields, never defends, while obeying
+    // A. the nemesis defends: with the player behind[0]-behind[1] m behind and on its line on a straight, it eases across onto the player's line, once a
+    // straight; the move ends after holdS, at the braking zone or a bend, or once the player closes inside behind[0]. The gap is between car centres:
+    // behind[0] is a car length and a margin, so a player whose nose overlaps the rear wheel is never chopped (squeezing a car alongside is a crash).
+    // A straight: no braking zone ahead, and the line bends under 3 degrees to the pursuit target (at the limit in a long corner vmin alone reads as one)
+    const D = K && K.defend, behindIn = D && pl && pl.gap <= -D.behind[0] && pl.gap >= -D.behind[1];
+    if (P && P.role === 'nemesis' && D.on) {
+      if (vmin < speed * 0.95 || Math.abs(lat(line[j], this.i)) > 0.05 * look) { this.defT = 0; this.defUsed = false; }
+      else if (!this.defUsed && !(this.yieldT > 0) && behindIn && Math.abs(pl.lat - myLat) < D.lat) { this.defUsed = true; this.defT = D.holdS * 120; (F.aiEvents ??= []).push({ type: 'defend', key: this.car.key }); }
+      if (!behindIn) this.defT = 0;
+    }
     // 0.4 s out, 0.8 s back: the pursuit target never snaps; clamped as eased, so the way back never runs off the asphalt either. B: a rival chasing the player moves out faster
     this.laneNow = clamp(prev + (laneWant - prev) * (blk ? (press ? K.laneRate : 0.02) : 0.01), lo, hi);
     if (this.defT > 0) { this.defT--; this.laneNow = clamp(prev + (pl.lat - prev) * D.rate, lo, hi); }

@@ -356,7 +356,7 @@ export function finishQuali(save, best, mateRun = null) {
 
 /**
  * What game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels, who drives each car, and
- * how the rivals drive near the player (6.6, driver.js): ai[key] = { role, composure, seed, k } for every AI car, this race's team orders and
+ * how the rivals drive near the player (6.6, driver.js): ai[key] = { role, composure, seed, k } for every AI car, this race's team orders (none in an Open: its trophy is the driver's, not the team's) and
  * the teammate's car. Roles: the nemesis, then a rival (heat 40+), then the teammate; team orders go to the teammate's car whatever its role.
  */
 export function raceSetup(save) {
@@ -367,7 +367,7 @@ export function raceSetup(save) {
   const ai = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => { const code = W.seats[key];
     return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: composureOf(W.ratings[code], W.ages[code]),
       seed: Math.floor(rng(save.seed, 'ai-profile', save.clock.season, save.clock.round, key)() * 2 ** 32), k: structuredClone(T.rivals.track) }]; }));
-  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis, ai, orders: ordersFor(save), mateKey, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
+  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis, ai, orders: cur.open ? null : ordersFor(save), mateKey, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
     label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null,
     drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
 }
