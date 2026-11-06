@@ -14,7 +14,8 @@ try {
 
   const N = 100, R = 100, line = Array.from({ length: N }, (_, k) => new THREE.Vector3(Math.cos(k / N * Math.PI * 2) * R, 0, Math.sin(k / N * Math.PI * 2) * R));
   const car = (key, idx) => ({ key, idx, vehicle: { cur: { pos: line[idx].clone(), quat: new THREE.Quaternion() }, wheels: [], speed: 40, aBody: { x: 0, z: 0 }, state: { beta: 0, drift: 0 } } });
-  const field = (cars) => ({ N, length: 2 * Math.PI * R, linePts: line, cars, hero: cars[0] });
+  const up = new THREE.Vector3(0, 1, 0), left = line.map((p, k) => new THREE.Vector3().crossVectors(up, line[(k + 1) % N].clone().sub(p).normalize()));   // as Field builds lineLeft (cars.js)
+  const field = (cars) => ({ N, length: 2 * Math.PI * R, linePts: line, lineLeft: left, cars, hero: cars[0] });
   const step = (S, dt = 0.1) => S.update(dt);
   const go = (S) => { while (S.state === 'grid') step(S); };
   /** move a car sample by sample (one per step) to `to`, forwards (+1) or backwards (-1) */
