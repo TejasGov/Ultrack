@@ -1,6 +1,6 @@
 // Bit-exact check of every track's collision world (docs/10x/perf-spec.md, WP0 e): in a ?dev=1 page, PhysicsWorld.create builds each track's
 // world twice, and a SHA-256 covers every collider (in handle order: shape type, vertices, indices, friction, restitution) plus the void-wall
-// mesh. The first run writes the baseline (qa/perf/collision-hash.json); a later run fails if a hash differs from it, or build 1 from build 2.
+// mesh. It also checks that concurrent creates share one collision load and that a failed load is not cached. The first run writes the baseline (qa/perf/collision-hash.json); a later run fails if a hash differs from it, or build 1 from build 2.
 //   node scripts/qa-lock.mjs -- node scripts/test-collision-hash.mjs [--url http://127.0.0.1:5301] [--rebase]
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -30,9 +30,21 @@ const got = await page.evaluate(async () => {
     }
     out[t.id] = builds;
   }
+  // WP5's promise cache: the load is in the cache while it runs, so a second create shares it (three's FileLoader already shares the download,
+  // not the parse), and a failed load leaves no entry behind, so a retry loads again
+  const url = trackUrl(TRACKS.marina, 'collision');
+  delete PhysicsWorld.cache[url];
+  const first = PhysicsWorld.create(url); await new Promise((r) => setTimeout(r, 0));
+  const pending = PhysicsWorld.cache[url];
+  (await Promise.all([first, PhysicsWorld.create(url)])).forEach((w) => w.dispose());
+  const bad = '/assets/no-such-collision.glb', failed = await PhysicsWorld.create(bad).then(() => false, () => true);
+  out.cache = { sharedWhileLoading: typeof pending?.then === 'function' && PhysicsWorld.cache[url] === pending, failedRejects: failed, failedCached: bad in PhysicsWorld.cache };
   return out;
 });
 await browser.close();
+const cache = got.cache; delete got.cache;
+const cacheOk = cache.sharedWhileLoading && cache.failedRejects && !cache.failedCached;
+console.log('promise cache:', JSON.stringify(cache), cacheOk ? 'ok' : 'FAILED');
 const base = existsSync(file) && !has('rebase') ? JSON.parse(readFileSync(file, 'utf8')) : null;
 let bad = 0;
 for (const [id, [b1, b2]] of Object.entries(got)) {
@@ -43,4 +55,4 @@ for (const [id, [b1, b2]] of Object.entries(got)) {
 }
 if (!base) { mkdirSync(join(root, 'qa', 'perf'), { recursive: true }); writeFileSync(file, JSON.stringify(Object.fromEntries(Object.entries(got).map(([id, [b]]) => [id, { sha: b.sha, colliders: b.colliders, voidWalls: b.voidWalls }])), null, 1) + '\n'); console.log('baseline written:', file); }
 console.log('errors:', errors.length ? errors.slice(0, 4) : 'none');
-process.exit(bad ? 1 : 0);
+process.exit(bad || !cacheOk ? 1 : 0);

@@ -91,14 +91,15 @@ function withoutSteepFaces(v, idx) {
 
 export class PhysicsWorld {
   static cache = {};
+  static walls = new Map();                          // url -> voidWalls result: it depends only on the collision mesh, so a rebuild reuses it
   static async create(url, { voidWalls: walls = false } = {}) {
     await initPhysics();
     const w = new PhysicsWorld();
     w.world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
     w.world.timestep = STEP;
     w.surfaceOf = new Map();                         // collider handle -> SURFACES entry
-    // the collision mesh loads once; every session (src/game) builds a fresh world from it
-    const gltf = PhysicsWorld.cache[url] ??= await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url);
+    // the collision mesh loads once (the promise is cached, so concurrent creates share one load); every session (src/game) builds a fresh world from it
+    const gltf = await (PhysicsWorld.cache[url] ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url).catch((e) => { delete PhysicsWorld.cache[url]; throw e; }));
     gltf.scene.updateMatrixWorld(true);
     const ground = [], wallMeshes = [];
     gltf.scene.traverse((o) => {
@@ -129,7 +130,7 @@ export class PhysicsWorld {
       w.surfaceOf.set(col.handle, s);
     }
     w.world.step();                                  // builds the query pipeline
-    w.voidWalls = walls ? voidWalls(w.world, ground) : { count: 0 };
+    w.voidWalls = !walls ? { count: 0 } : PhysicsWorld.walls.get(url) ?? PhysicsWorld.walls.set(url, voidWalls(w.world, ground)).get(url);
     if (w.voidWalls.count) { const col = w.world.createCollider(RAPIER.ColliderDesc.trimesh(w.voidWalls.v, w.voidWalls.idx).setFriction(0.35).setRestitution(0.15)); w.surfaceOf.set(col.handle, SURFACES.col_wall); w.world.step(); }
     w.acc = 0;
     return w;
