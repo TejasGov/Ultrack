@@ -69,7 +69,7 @@ export function statusBar(me, save) {
 export const prompts = (...list) => list.map(([k, p, l]) => prompt(k, p, l));
 export const SELECT = [['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'], CHOOSE = ['Enter', 'a', 'Choose'];
 
-const SHORT = { india: 'Ghat', drylake: 'Lake', qingshan: 'Forest', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano', venice: 'Venice' }, OPEN_SHORT = { open: 'Open', masters: 'Masters' };
+const SHORT = { india: 'Ghat', drylake: 'Lake', qingshan: 'Forest', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano', venice: 'Venice', pilbara: 'Pit', terminal: 'Port' }, OPEN_SHORT = { open: 'Open', masters: 'Masters' };
 const WEEK_LABEL = (save, w) => (w.kind === 'race' ? `R${w.round + 1} ${OPEN_SHORT[w.ev] ?? (save.season.calendar[w.round].finale ? 'Finale' : SHORT[save.season.calendar[w.round].track] ?? '')}` : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
 const WEEK_ICON = (w) => (w.kind === 'race' ? (w.ev ? (w.ev === 'tour' ? 'race' : 'trophy') : 'race') : w.kind === 'market' ? 'contract' : w.kind === 'end' ? 'trophy' : EVENT[w.event.kind][1]);
 export const kindIcon = WEEK_ICON;

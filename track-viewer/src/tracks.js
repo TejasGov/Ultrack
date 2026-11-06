@@ -68,6 +68,19 @@ export const TRACKS = {
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  pilbara: {     // a qualifying venue (docs/10x/maps-spec.md, tracks/pilbara/build_pilbara.py): a haul road down an open-cut iron mine, 18 m of drop
+    id: 'pilbara', name: 'Pilbara Pit', stem: 'pilbara', dir: '/assets/pilbara/', look: 'day', times: ['day', 'dusk'], fog: 0.6, sun: [-0.55, -0.77], tag: null,
+    dayNight: { day: /^Backdrop \| goegap day$/, dayEnd: 0.35 },     // Mojave's photographed range, reused: the day copy over the dusk one
+    wet: { wet: ['PP | asphalt', 'PP | line white', 'PP | kerb red', 'PP | kerb white'], puddles: ['PP | asphalt'] },
+    voidWalls: true,
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
+  terminal: {     // a qualifying venue (docs/10x/maps-spec.md, tracks/terminal/build_terminal.py): a flat container terminal on a North Sea quay; the sea is the horizon, so no backdrop
+    id: 'terminal', name: 'North Sea Terminal', stem: 'terminal', dir: '/assets/terminal/', look: 'day', times: ['day', 'dusk'], fog: 0.7, sun: [-0.55, -0.77], tag: null,
+    wet: { wet: ['NT | asphalt', 'NT | line white', 'NT | kerb red', 'NT | kerb white'], puddles: ['NT | asphalt'] },
+    voidWalls: true,
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
   infinia: {     // the main India circuit (docs/career-worlds.md section 4, tracks/infinia/build_infinia.py): a sea link over an undersea tunnel
     id: 'infinia', name: 'Infinia', stem: 'infinia', dir: '/assets/infinia/', look: 'dusk', fog: 0.7, sun: [-0.94, 0.34], tag: null,
     dayNight: { day: /(?!)/, night: /^IF window glow night/ },     // a lit-window shell over the facades, from evening on
