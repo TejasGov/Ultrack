@@ -35,7 +35,7 @@ export function views(track, pick) {
   return { C, N, V, names: use };
 }
 
-/** returns { browser, page, errors, env } with window.viewer ready; mode 'game' (Free Drive) or 'dev' */
+/** returns { browser, page, errors, env } with window.viewer ready; mode 'game' (Free Drive), 'title' (the title screen) or 'dev' */
 export async function openViewer({ track, look, weather = 'dry', mode = 'game', base = 'http://127.0.0.1:5180', query = '', width = 1920, height = 1080, dpr = 1, revisit = null }) {
   const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
   const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
@@ -53,8 +53,11 @@ export async function openViewer({ track, look, weather = 'dry', mode = 'game', 
     await page.waitForFunction(() => window.viewer && !document.getElementById('loading') && performance.getEntriesByType('mark').some((m) => m.name === 'ultrack:venue-ready'), null, { timeout: 300000 });
   };
   let opened = mode;
-  if (mode === 'game') {
-    await ctx.addInitScript(([track, look, weather]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look, weather } })); } catch { /* none */ } }, [track, look, weather]);
+  if (mode !== 'dev') await ctx.addInitScript(([track, look, weather]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look, weather } })); } catch { /* none */ } }, [track, look, weather]);
+  if (mode === 'title') {   // the game build up to its title screen and showroom (perf-stills --title)
+    await page.goto(base + (query ? '/?' + query : ''));
+    await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
+  } else if (mode === 'game') {
     try {
       await page.goto(base + (query ? '/?' + query : ''));
       await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });

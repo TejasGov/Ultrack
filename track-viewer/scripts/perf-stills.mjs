@@ -7,6 +7,7 @@
 //   --toggle <flag>: in one session, <dir>/A (viewer.perf[flag] off), <dir>/A2 (off again: the floor) and <dir>/B (on), then pixel-diff of each
 //   --dump-wheels: also writes <dir>/wheels.json, every car's stand-in wheels and far proxy as car-local triangles (position, normal, uv)
 //        per material plus each mesh's castShadow, receiveShadow, renderOrder, frustumCulled and visible (WP2's geometry check)
+//   --title: instead, <dir>/title.png, the title screen's showroom (the game build) from a fixed camera (WP6's check: run it in two sessions)
 //   node scripts/perf-stills.mjs --compare-wheels <a/wheels.json> <b/wheels.json>: exits 1 unless both hold the same triangles per material
 //        (each triangle matched once, any starting vertex, same winding, within 1e-4: float32 baking moves values across a 1e-5 rounding
 //        step, so rounded values alone do not compare) and the same flag sets
@@ -60,6 +61,27 @@ if (flag('compare-wheels', null)) {
   console.log(bad.length ? 'DIFFERENT:\n  ' + bad.join('\n  ') : `same: ${A.length} cars, ${tris} triangles matched, flag sets equal`);
   process.exit(bad.length ? 1 : 0);
 }
+// everything that loads late (LOD1 bodies, the crowd, team artwork, the menu's race preload) must be in before the first still, or two sessions differ by timing
+const settle = (page) => page.evaluate(async () => {
+  const sig = () => performance.getEntriesByType('resource').length + ':' + window.viewer.people();
+  let last = sig(), still = 0;
+  for (let k = 0; k < 120 && still < 5; k++) { await new Promise((r) => setTimeout(r, 1000)); const s = sig(); still = s === last ? still + 1 : 0; last = s; }
+});
+if (has('title')) {   // --title: the title screen's showroom frame (the game build), from the room's start camera with the turntable stopped
+  const save = flag('save', null); if (!save) { console.error('usage: node scripts/perf-stills.mjs <track> --title --save <dir> [--query perf=x]'); process.exit(2); }
+  const { browser, page, errors } = await openViewer({ track: pos[0] ?? 'qingshan', look: 'day', mode: 'title', base: flag('url', 'http://127.0.0.1:5301'), query: flag('query', '') });
+  await settle(page);
+  const png = await page.evaluate(() => {
+    const v = window.viewer, g = v.garageRoom, c = g.controls, damping = c.enableDamping;
+    // undamped, one update spends the turntable's leftover spin; then the fixed camera, drawn and read in the same task as tick's frames
+    c.enableDamping = false; c.update(0); g.camera.position.set(7.5, 2.8, 6.6); g.shift = 0;
+    try { g.render(v.field().hero, 0, { reduceMotion: true }); return v.renderer.domElement.toDataURL('image/png'); } finally { c.enableDamping = damping; }
+  });
+  mkdirSync(join(root, save), { recursive: true });
+  writeFileSync(join(root, save, 'title.png'), Buffer.from(png.split(',')[1], 'base64'));
+  console.log('saved title.png; errors:', errors.length ? errors.slice(0, 6) : 'none');
+  await browser.close(); process.exit(0);
+}
 const track = pos[0] ?? 'qingshan', save = flag('save', null), looks = flag('looks', 'day').split(','), toggle = flag('toggle', null);
 if (!save) { console.error('usage: node scripts/perf-stills.mjs <track> --save <dir> [--looks day,night] [--query perf=x] [--toggle x] [--url ...]'); process.exit(2); }
 const { C, N, V } = views(track);
@@ -68,12 +90,7 @@ const VIEWS = { 'grid-near': -12, 'grid-mid': -40, 'grid-far': -90, T1: cum[V.T1
 const query = [track === 'tokyo' ? '' : 'track=' + track, flag('query', '')].filter(Boolean).join('&');
 const { browser, page, errors } = await openViewer({ track, look: looks[0], mode: 'dev', base: flag('url', 'http://127.0.0.1:5301'), query });
 
-// everything that loads late (LOD1 bodies, the crowd, team artwork) must be in before the first still, or two sessions differ by timing
-await page.evaluate(async () => {
-  const sig = () => performance.getEntriesByType('resource').length + ':' + window.viewer.people();
-  let last = sig(), still = 0;
-  for (let k = 0; k < 120 && still < 5; k++) { await new Promise((r) => setTimeout(r, 1000)); const s = sig(); still = s === last ? still + 1 : 0; last = s; }
-});
+await settle(page);
 const info = await page.evaluate(() => ({ tier: window.viewer.device.tier, quality: window.viewer.params.quality, people: window.viewer.people(), track: window.viewer.trackId() }));
 console.log(`${track}: viewer on ${info.track}, tier ${info.tier} (quality ${info.quality}), ${info.people} people`);
 if (info.track !== track) { console.error('the viewer opened the wrong track'); process.exit(1); }
