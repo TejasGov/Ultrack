@@ -8,6 +8,8 @@ import {
 import { YOU, driverAt, personOf, marketScore, shortlistOf } from './world.js';
 import { note, remembers } from './ledger.js';
 import { post } from './inbox.js';
+import { callbackOf } from './media.js';
+import { leanOf } from './choices.js';
 import { payMult, offerScale, leverageBonus, mood } from './life.js';
 
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
@@ -120,7 +122,7 @@ export function wantOf(save, team) {
 }
 /** how cool a team is on the player after a refusal it remembers (6.5): cool a weight, up to coolMax, fading a step a season */
 export const coolOf = (save, team) => Math.min(T.offers.coolMax, T.offers.cool * remembers(save, { team, kinds: ['spurned'] }));
-const extraOf = (save, team, { extraRep = 0, cool = true } = {}) => ({ extraRep, want: wantOf(save, team).term, cool: cool ? coolOf(save, team) : 0 });
+const extraOf = (save, team, { extraRep = 0, cool = true } = {}) => ({ extraRep, want: wantOf(save, team).term, cool: cool ? coolOf(save, team) : 0, lean: leanOf(save, team) });
 /** a team's interest in the player as its terms (rules.js interestTerms) or as one number, null below its bar; cool: false for a move the player asked for */
 export const termsFor = (save, team, x) => interestTerms(team, statsOf(save), extraOf(save, team, x));
 export const interestFor = (save, team, x) => interestOf(team, statsOf(save), extraOf(save, team, x));
@@ -148,8 +150,10 @@ export function whyOf(save, team, terms, tag = '') {
   const line = (k) => { const l = MEDIA.reasons[k]; return l[Math.floor(r() * l.length)].replace(/\{(\w+)\}/g, (_, x) => ctx[x] ?? ''); };
   return top.length ? top.map(line).join(' ') : `${ctx.team} have a seat for you, and your numbers clear their bar.`;
 }
-/** the line on an offer from a team that remembers a refusal */
-const coolLine = (save, team) => { const l = MEDIA.reasons.cool; return l[Math.floor(rng(save.seed, 'why', save.clock.season, team, 'cool')() * l.length)].replace(/\{team\}/g, teamName(team)); };
+/** the line on an offer from a team that remembers a refusal: the refusal, quoted from the ledger with its season (media.json callbacks) */
+const coolLine = (save, team) => callbackOf(save, 'offer', { team, kinds: ['spurned'] }, Infinity)?.text ?? `${teamName(team)} have not forgotten that you turned them down.`;
+/** what the paddock remembers of the player's choices (choices.js, team orders), quoted on an outside offer: callout won, press, orders; empty when nothing recent */
+const choiceLine = (save) => { const cb = callbackOf(save, 'offer', { kinds: ['callout_won', 'bold_press', 'orders_obeyed', 'orders_ignored'] }); return cb ? ` ${cb.text}` : ''; };
 /** an offer from another team at this interest: the seat by interest, or the other one when it is not open (seatFor) or a big step down in car (5.3); null when neither fits */
 export function outsideOffer(save, team, interest, extra = {}) {
   const myZ = TIERS.carZ[save.contract.car] ?? 0, same = rankOf(team) === rankOf(save.contract.team), fast = (x) => (TIERS.carZ[seatCar(team, x)] ?? 0) >= myZ - T.offers.maxCarDropZ;
@@ -157,7 +161,7 @@ export function outsideOffer(save, team, interest, extra = {}) {
   if (!seat) return null;
   const tier = tierOf(team), salary = round50(tier.salary[seat] * (0.9 + 0.3 * interest)), terms = termsFor(save, team), cool = coolOf(save, team);
   return offer(save, team, seat, { salary, signing: round50(salary * (1.5 + 1.5 * interest)), seasons: 1 + Math.round(2 * interest), interest: Math.round(interest * 100) / 100,
-    why: whyOf(save, team, terms, extra.tag), rating: playerRating(save), ...(cool ? { cool: coolLine(save, team) } : {}), ...extra });
+    why: whyOf(save, team, terms, extra.tag) + choiceLine(save), rating: playerRating(save), ...(cool ? { cool: coolLine(save, team) } : {}), ...extra });
 }
 /** the market after the middle round (6.5): under the seat review a warning; from season 2 one poaching offer from the tier above, open until the market week ends */
 export function midSeason(save) {

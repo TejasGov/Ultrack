@@ -4,6 +4,7 @@ import MEDIA from '../../../../assets/career/media.json';
 import { TUNING as T, CAR, loreOf } from './rules.js';
 import { rng } from './rng.js';
 import { YOU, personOf, rivalsOf } from './world.js';
+import { latest } from './ledger.js';
 
 const MAX = 40;
 const pick = (r, list) => list[Math.floor(r() * list.length)];
@@ -55,7 +56,8 @@ export function coverRound(save, report) {
   const feud = rivalsOf(save).find((x) => x.feud && x.key && E.some((e) => e.key === x.key));
   if (feud) {
     const theirs = E.findIndex((e) => e.key === feud.key), beat = theirs > at && !report.dnf && !report.dnq;
-    story(save, 'feud', beat ? `${me.name} wins the latest round with ${surname(feud.code)}` : `${surname(feud.code)} has the last word over ${me.name}`, beat ? `${nameOf(feud.code)} finished behind at the ${gp}, and did not stop for a handshake.` : `The feud goes on after the ${gp}. Neither camp is pretending otherwise.`, { driver: feud.code, mood: beat ? 'down' : 'win', track });
+    const why = callbackOf(save, 'rival', { who: feud.code })?.text;   // what started it, from the ledger
+    story(save, 'feud', beat ? `${me.name} wins the latest round with ${surname(feud.code)}` : `${surname(feud.code)} has the last word over ${me.name}`, `${beat ? `${nameOf(feud.code)} finished behind at the ${gp}, and did not stop for a handshake.` : `The feud goes on after the ${gp}. Neither camp is pretending otherwise.`}${why ? ` ${why}` : ''}`, { driver: feud.code, mood: beat ? 'down' : 'win', track });
   }
 
   // paddock drama among the others, from the order they really finished in: teammates running together, or lore rivals side by side
@@ -144,6 +146,21 @@ export function coverHotSeat(save, team) {
 export function coverOrders(save, code, team) {
   const t = loreOf(team), me = save.player.name, d = personOf(save, code);
   story(save, 'duel', `${me} ignores team orders`, `${t.name} told ${me} to let ${d?.name ?? 'their teammate'} through on the last lap. ${me} kept the place, and ${t.principal} was not smiling in the garage.`, { driver: code, mood: 'down', principal: team });
+}
+/** the principal at the season-end market (endSeason), when the player was given a team order this season: they quote how it went */
+export function coverPrincipal(save, team) {
+  const cb = callbackOf(save, 'principal', { team, kinds: ['orders_obeyed', 'orders_ignored'] }, 0); if (!cb) return;
+  story(save, 'duel', `${loreOf(team).principal} on team orders`, cb.text, { principal: team, driver: cb.entry.who });
+}
+/**
+ * A line that quotes the ledger back (media.json callbacks[context]): the newest entry that matches `filter` (ledger.js) and has a line in this context, no older than
+ * `seasons`; { text, entry } or null. The pick of wording is seeded on the entry, so a line reads the same every time it is shown
+ */
+export function callbackOf(save, context, filter = {}, seasons = 1) {
+  const L = MEDIA.callbacks[context], e = latest(save, { ...filter, kinds: (filter.kinds ?? Object.keys(L)).filter((k) => L[k]) });
+  if (!e || save.clock.season - e.s > seasons) return null;
+  const who = e.who ? personOf(save, e.who)?.name ?? e.who : '', lore = e.team ? loreOf(e.team) : null, ctx = { who, me: save.player.name, team: lore?.name ?? '', principal: lore?.principal ?? '', season: e.s };
+  return { text: pick(rng(save.seed, 'callback', context, e.kind, e.s, e.r), L[e.kind]).replace(/\{(\w+)\}/g, (_, k) => ctx[k] ?? ''), entry: e };
 }
 /** the player is let go at the season end for bad results (endSeason) */
 export function coverFired(save, team) {

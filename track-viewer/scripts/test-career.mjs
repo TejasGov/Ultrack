@@ -817,6 +817,58 @@ try {
     assert.equal(race({ kind: 'toMate' }).dt, none.dt, 'an order with no outcome (a retirement) settles nothing');
   }
 
+  // ---- choices with consequences (6.9, choices.js): the fixed effects and their bounds, defaults, the callout paid once, callbacks that quote the ledger, replay
+  { const X = await server.ssrLoadModule('/src/game/career/choices.js'), W = await server.ssrLoadModule('/src/game/career/world.js'), O = await server.ssrLoadModule('/src/game/career/offers.js');
+    const Md = await server.ssrLoadModule('/src/game/career/media.js'), L = await server.ssrLoadModule('/src/game/career/ledger.js'), CH = X.CHOICES, cap = R.SPONSORS.startMood + 3;
+    const ctxOf = (s) => { const who = s.world.seats[Object.keys(s.world.seats).find((k) => s.world.seats[k] !== W.YOU && R.CAR[k].team !== s.contract.team)]; return { who, team: 'toro', gp: 'Test GP', stake: 12, exp: 5, result: 'P1' }; };
+    for (const sc of CH.scenes) {
+      assert.ok(sc.options.length >= 2 && sc.options.length <= 3 && sc.options.some((o) => o.label === sc.default), `${sc.id}: 2-3 options, the default among them`);
+      for (const o of sc.options) for (const e of o.effects) {
+        const k = Object.keys(e).filter((x) => x in X.EFFECTS); assert.equal(k.length, 1, `one effect from the fixed list: ${JSON.stringify(e)}`);
+        if (X.EFFECTS[k[0]] !== null) assert.ok(Math.abs(e[k[0]]) <= X.EFFECTS[k[0]], `within its bound: ${JSON.stringify(e)}`);
+        if (k[0] === 'story') assert.ok(sc.story[e.story]);
+      }
+      for (let i = 0; i < sc.options.length; i++) for (const edge of [0, 100]) {     // every option at the edges of trust, reputation and goodwill stays in bounds
+        const s = signed(3000 + edge); s.contract.trust = edge; s.career.rep = edge * 10; s.sponsors.deals.push({ brand: 'x', name: 'X', mood: edge ? cap : 1, target: { kind: 'top', count: 9 }, progress: 0, met: false });
+        const ch = X.pose(s, sc.id, ctxOf(s)), m = s.inbox[0];
+        assert.deepEqual(m.action, { choice: ch.id }); assert.equal(m.kind, 'choice'); assert.ok(!/[{}]/.test(m.title + m.body + ch.options.map((o) => o.label + o.effectText).join('')), 'every token filled');
+        X.answerChoice(s, ch.id, i); assert.equal(X.answerChoice(s, ch.id, 0), null, 'answered once');
+        assert.ok(s.contract.trust >= 0 && s.contract.trust <= 100 && s.career.rep >= 0 && s.career.rep <= 1000 && s.sponsors.deals.every((d) => d.mood >= 1 && d.mood <= cap));
+        assert.ok(Object.values(s.career.heat).every((h) => h >= 0 && h <= 100)); assert.ok(m.read, 'an answered scene is read');
+      }
+    }
+    { const s = signed(3010), t0 = s.contract.trust, ch = X.pose(s, 'press', ctxOf(s));      // unanswered: the default at the end of the week, with a note
+      assert.equal(X.openChoices(s).length, 1); C.advanceWeek(s);
+      const c = X.choiceOf(s, ch.id); assert.equal(c.answer, CH.scenes.find((x) => x.id === 'press').options.findIndex((o) => o.label === 'Credit the team')); assert.ok(c.auto);
+      assert.equal(s.contract.trust, t0 + 3); assert.ok(s.inbox.some((m) => /^No answer: Press conference/.test(m.title) && /Credit the team/.test(m.body)), 'and a note says so'); }
+    { const s = signed(3011); C.finishQuali(s, 1); const g = s.season.current.quali.grid, me = s.contract.car, key = g.find((k) => k !== me), who = s.world.seats[key];   // the callout
+      const ch = X.pose(s, 'callout', { ...ctxOf(s), who }); X.answerChoice(s, ch.id, 0); assert.deepEqual(s.season.current.flag, { kind: 'callout', who });
+      const r1 = round(s, 1), line = r1.repLines.find((l) => /^Callout won/.test(l[0])), higher = R.tierOf(R.CAR[key].team).rank > R.tierOf(s.contract.team).rank;
+      assert.ok(line, 'beating them pays'); assert.equal(line[1], higher ? 18 : 12); assert.ok(r1.xpLines.some((l) => l[0] === 'Callout won' && l[1] === 60));
+      assert.equal(L.latest(s, { kinds: ['callout_won'] }).who, who); assert.ok(s.media.some((m) => m.title.includes('answers')), 'and the press writes it');
+      assert.equal(s.season.current.flag, undefined, 'the flag clears after one race'); assert.ok(!round(s, 1).repLines.some((l) => /^Callout/.test(l[0])), 'and pays once');
+      C.finishQuali(s, 1); const g2 = s.season.current.quali.grid, k2 = g2.find((k) => k !== me); s.season.current.flag = { kind: 'callout', who: s.world.seats[k2] };
+      const lost = round(s, 8).repLines.find((l) => /^Callout lost/.test(l[0])); assert.deepEqual(lost?.[1], CH.callout.lose.rep, 'finishing behind costs'); assert.ok(L.latest(s, { kinds: ['callout_lost'] }));
+      const f = { kind: 'callout', who }; s.season.current.flag = f; assert.ok(X.settleCallout(s, g, me, false)); assert.equal(X.settleCallout(s, g, me, false), null, 'one payment per flag'); delete s.season.current.flag; }
+    { const s = signed(3012), code = Object.values(s.world.seats).find((c) => c !== W.YOU && c !== s.world.seats[C.teammateCar(s)]), name = C.personOf(s, code).name;   // callbacks name a real ledger entry
+      L.note(s, 'bold_press', { who: code }); const cb = Md.callbackOf(s, 'offer', { kinds: ['bold_press'] });
+      assert.ok(s.career.ledger.includes(cb.entry) && cb.text.includes(name) && cb.text.includes('Season 1'), cb.text);
+      s.career.rep = 700; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 20; let o = null; for (const t of R.TEAM_IDS) o ??= O.outsideOffer(s, t, 0.5);
+      assert.ok(o && o.why.endsWith(cb.text), 'an offer quotes it'); L.note(s, 'spurned', { team: o.team, w: 2 }); assert.equal(O.outsideOffer(s, o.team, 0.5).cool, Md.callbackOf(s, 'offer', { team: o.team, kinds: ['spurned'] }).text, 'a cool team quotes the refusal');
+      assert.match(O.outsideOffer(s, o.team, 0.5).cool, /Season 1/); s.clock.season += 2; assert.equal(Md.callbackOf(s, 'offer', { kinds: ['bold_press'] }), null, 'two seasons on, it is forgotten'); s.clock.season -= 2;
+      const p = signed(3013); C.finishQuali(p, 1); const mt = C.teammateCar(p), mc = p.world.seats[mt], gp = p.season.current.quali.grid; p.season.current.quali.grid = [mt, p.contract.car, ...gp.filter((k) => k !== mt && k !== p.contract.car)].slice(0, gp.length);
+      C.finishRace(p, { order: p.season.current.quali.grid, best: {}, crashes: 0, spins: 0, orders: { kind: 'toMate', obeyed: false } }); assert.equal(L.latest(p, { kinds: ['orders_ignored'] }).who, mc);
+      toReview(p, 3); const st = p.media.find((m) => /on team orders$/.test(m.title)); assert.ok(st && st.principal === p.contract.team && st.body.includes(C.personOf(p, mc).name), 'the principal quotes it at the season end'); }
+    { const s = signed(3014); s.career.rep = 700; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 20;    // stoking a rumour: that team keener this season, and only this season
+      const team = R.TEAM_IDS.find((t) => { const i = O.interestFor(s, t); return i !== null && i < 0.85; }), i0 = O.interestFor(s, team), ch = X.pose(s, 'rumour', { ...ctxOf(s), team });
+      X.answerChoice(s, ch.id, 1); s.career.rep = 700; assert.ok(Math.abs(O.interestFor(s, team) - i0 - 0.1) < 1e-9, 'the reputation it also paid aside'); assert.equal(X.leanOf(s, R.TEAM_IDS.find((t) => t !== team)), 0); s.season.choices = {}; assert.equal(O.interestFor(s, team), i0); }
+    { const s = signed(3015); s.schema = 9; delete s.season.choices; C.migrate(s); assert.equal(s.schema, C.SCHEMA); assert.deepEqual(s.season.choices, {}, 'a schema-9 save gets no scenes'); }
+    const { createHash } = await import('node:crypto'), run = (seed) => { const { save } = play(M, seed, 0.995, 3); return [JSON.stringify(save.career.ledger), createHash('sha1').update(save.media.map((m) => m.title).join('|')).digest('hex')]; };
+    assert.deepEqual(run(3100), run(3100), 'the same seed and answers: the same ledger and stories');
+    const kinds = new Set(); for (let i = 3101; i < 3111; i++) for (const e of play(M, i, [0.975, 0.995][i % 2], 3).save.career.ledger) kinds.add(e.kind);
+    assert.ok(['bold_press', 'callout_won', 'callout_lost'].some((k) => kinds.has(k)), `choices reach the ledger: ${[...kinds]}`);
+  }
+
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays
   assert.equal(JSON.stringify(play(M, 11, 1.0, 9).save), JSON.stringify(play(M, 11, 1.0, 9).save), 'nine seasons replay identically');
   let legends = 0;

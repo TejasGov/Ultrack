@@ -214,13 +214,13 @@ export function objectiveMet(o, x) {
  * A team's interest in the player (6.5) as its named terms: reputation and round rating over its bar, form, its own want (offers.js wantOf) and the
  * coolness of a refusal it remembers (both worked out by the caller, as fractions of interest); null below its bar
  */
-export function interestTerms(team, { rep, rrs, cl, form }, { extraRep = 0, want = 0, cool = 0 } = {}) {
+export function interestTerms(team, { rep, rrs, cl, form }, { extraRep = 0, want = 0, cool = 0, lean = 0 } = {}) {
   const g = TIERS.teams[team].gate, a = avg(rrs.slice(-6));
   if (rep < g.rep + extraRep || a < g.rr || cl < g.cl) return null;
-  return { rep: (0.5 * (rep - g.rep)) / Math.max(g.rep, 100), rating: 0.15 * (a - g.rr), form: 0.05 * form, want, cool: -cool };
+  return { rep: (0.5 * (rep - g.rep)) / Math.max(g.rep, 100), rating: 0.15 * (a - g.rr), form: 0.05 * form, want, cool: -cool, lean };   // lean: a rumour the player stoked (choices.js), this season
 }
 /** a team's interest in the player, 0-1, or null below its bar */
-export const interestOf = (team, st, x) => { const t = interestTerms(team, st, x); return t && clamp(t.rep + t.rating + t.form + t.want + t.cool, 0, 1); };
+export const interestOf = (team, st, x) => { const t = interestTerms(team, st, x); return t && clamp(t.rep + t.rating + t.form + t.want + t.cool + t.lean, 0, 1); };
 /**
  * The player's market rating (6.5), on the AI's scale: each qualifying duel this season is the teammate's rating plus the gap between them at
  * paceOf's 0.21 % a point, averaged; with no duel yet, the teammate's rating. 60-99

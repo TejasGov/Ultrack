@@ -1,5 +1,5 @@
 // Measures seeded stub careers (career-sim.mjs play()) against the career's design targets and prints PASS or FAIL for each; exits 1 on any FAIL.
-// `node scripts/career-metrics.mjs [careers=100] [seasons=6]`. The targets are in docs/10x/career-spec.md (WP1: rivalries that are earned; WP3: the Sponsor Challenge; WP4: the contract market).
+// `node scripts/career-metrics.mjs [careers=100] [seasons=6]`. The targets are in docs/10x/career-spec.md (WP1: rivalries that are earned; WP3: the Sponsor Challenge; WP4: the contract market; WP5: choices with consequences).
 // It watches through wrapped copies of the career functions, so the careers play exactly as they do in career-sim.
 import { createServer } from 'vite';
 import assert from 'node:assert/strict';
@@ -14,7 +14,7 @@ const TEAMS0 = (C, R) => Object.fromEntries(R.TEAM_IDS.map((t) => [t, [R.TIERS.t
 try {
   const M = await loadCareer(server), { C, R } = M;
   for (const [label, skill] of [['weak', 0.975], ['average', 0.995], ['strong', 1.015]]) {
-    const A = { days: 0, medals: [0, 0, 0, 0], moodMax: 0, money: { rookie: [], maestro: [], legend: [] }, rounds: 0, raced: 0, nemRounds: 0, nemRaced: 0, nemMate: 0, repLines: 0, rivalsEnd: 0, feudsEnd: 0, causes: {}, h2h: 0, firstRival: [], windows: 0, moves: 0, displaced: 0, inOldSeat: 0, unchanged: 0, starOffers: 0, whys: {}, offersSeen: 0, rating: 0, seated: 0, logs: [] };
+    const A = { days: 0, medals: [0, 0, 0, 0], moodMax: 0, money: { rookie: [], maestro: [], legend: [] }, rounds: 0, raced: 0, nemRounds: 0, nemRaced: 0, nemMate: 0, repLines: 0, rivalsEnd: 0, feudsEnd: 0, causes: {}, h2h: 0, firstRival: [], windows: 0, moves: 0, displaced: 0, inOldSeat: 0, unchanged: 0, starOffers: 0, whys: {}, offersSeen: 0, rating: 0, seated: 0, logs: [], paid: 0 };
     for (let i = 0; i < N; i++) {
       let n = 0, first = null;
       /** every round's report, however the round was run (raced, missed the cut, out of an Open's Last Chance) */
@@ -22,6 +22,7 @@ try {
         if (rep.lcq === true) return rep;                                   // through the Last Chance: the Final is still to come
         n++; A.rounds++; A.repLines += rep.rivals?.length ?? 0; if (rep.nemesis) A.nemRounds++; if (!rep.dnq) { A.raced++; if (rep.nemesis) A.nemRaced++; if (rep.nemesis?.code === rep.duel?.mateCode) A.nemMate++; }
         assert.ok(rep.nemesis === null || typeof rep.nemesis.code === 'string', 'one nemesis a round at most');
+        const calls = (rep.repLines ?? []).filter((l) => /^Callout/.test(l[0])).length; assert.ok(calls <= 1, 'a callout pays once a round at most'); A.paid += calls;
         assert.ok(C.rivalsOf(save).filter((r) => r.nemesis).length <= 1, 'one nemesis a weekend at most');
         if (first === null && C.rivalsOf(save).length) first = n;
         return rep;
@@ -82,6 +83,12 @@ try {
     check('seated AI average rating at the end (today 83.47)', A.rating / A.seated, 83.17, 83.77);
     check('every market has an offer (fewest seen)', Math.min(...L.flatMap((l) => l.offers)), 1, Infinity, (x) => String(x));
     if (label === 'average') { check('Maestro offer, any', any((l) => l.maestroOffer !== null), 0.92, 1, pct); check('Maestro offer, median season', median(L.map((l) => l.maestroOffer)), 1, 3, (x) => String(x)); check('Legend offer, any', any((l) => l.legendOffer !== null), 0.14, 0.24, pct); }
+    // WP5: choice scenes
+    const sc = L.flatMap((l) => l.scenes), called = L.reduce((a, l) => a + (l.callouts ?? 0), 0);
+    console.log(`  info  ${sc.reduce((a, b) => a + b, 0)} scenes over ${sc.length} seasons; ${called} callouts accepted, ${A.paid} paid out`);
+    check('choice scenes per season (avg)', sc.reduce((a, b) => a + b, 0) / Math.max(1, sc.length), 2, 5);
+    check('choice scenes in one season (most seen)', Math.max(...sc), 0, 5, (x) => String(x));
+    check('callouts paid out per callout accepted', A.paid / Math.max(1, called), 0, 1, (x) => x.toFixed(2));
     if (label === 'strong') { check('Legend offer, any', any((l) => l.legendOffer !== null), 0.95, 1, pct); check('Legend offer, median season', median(L.map((l) => l.legendOffer)), 0, 3, (x) => String(x)); }
   }
 } finally { await server.close(); }

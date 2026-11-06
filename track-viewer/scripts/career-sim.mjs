@@ -19,7 +19,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
   const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
   const sh = C.shootout(); C.finishShootout(save, R.parLap(sh.track, sh.car) / skill * (1 + noise(0.01)));
-  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, hits: 0, gross: 0, firstStaff: null, repairs: 0, capped: 0, staffSpent: 0, staffHires: 0, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0, opens: 0, finals: 0, openWins: 0, lcqs: 0, masters: 0, rank: [], absent: 0, mood: [], life: {}, lifeSpent: 0, adPay: 0, scandals: 0, sold: 0, upkeep: 0, free: {} };
+  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, hits: 0, gross: 0, firstStaff: null, repairs: 0, capped: 0, staffSpent: 0, staffHires: 0, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0, opens: 0, finals: 0, openWins: 0, lcqs: 0, masters: 0, rank: [], absent: 0, mood: [], life: {}, scenes: [], lifeSpent: 0, adPay: 0, scandals: 0, sold: 0, upkeep: 0, free: {} };
   // ask for a bit more, sometimes too much: a refusal or a withdrawal must never strand the career
   const haggle = (o) => { if (!C.canNegotiate(o)) return; const a = C.negotiate(save, o.id, { salary: rand() < 0.3 ? 0.3 : 0.1, seasons: o.seasons, status: o.status });
     if (a.result === 'accepted') log.deals++; if (a.result === 'withdrawn') log.withdrawn++; if (a.result === 'countered') C.negotiate(save, o.id, a.terms); };
@@ -42,6 +42,8 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
     let t = spec.laps * spec.par; const totals = order.map((k, i) => [k, (t += i ? 0.2 + xr() * 2.5 : 0)]);
     return { order, bests, totals, contacts: xr() < 0.25 ? { [order[p] ?? order[p - 2]]: 1 } : {}, offTrack: Math.floor(xr() * 3), dnf: false };
   };
+  // the inbox's choice scenes (choices.js) on dice of their own: four in five answered with a seeded option, the rest left to take their default
+  const qr = dice(0x1b873593), answer = () => { for (const c of C.openChoices(save)) if (qr() < 0.8) C.answerChoice(save, c.id, Math.floor(qr() * c.options.length)); };
   const tryBuy = (id) => { const q = C.lifeInfo(save, id); if (!q.ok) return false; const r = C.buyLife(save, id); if (!r.ok) return false; log.life[id] = (log.life[id] ?? 0) + 1; if (q.pay) log.adPay += q.pay; else log.lifeSpent += q.price; if (r.scandal) log.scandals++; return true; };
   const weekly = () => {
     const L = save.life, coins = save.wallet.coins, keep = 1500 + 2 * C.upkeepOf(save), afford = (id, k = 3) => coins > C.itemOf(id).price * k + keep;
@@ -59,6 +61,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   };
   while (save.clock.season <= seasons) {
     if (save.clock.phase === 'paddock') {
+      answer();
       if (life && C.currentWeek(save).kind !== 'race') weekly();
       const spec = C.sideSpec(save);
       if (spec) { const m = C.finishSide(save, spec.kind === 'test' ? spec.par / skill * (1 + noise(0.01)) : (rand(), challenge(spec))); log.medals += m.medal; }   // rand(): the draw the old drift stub took, kept so the career's own dice replay as before the challenge
@@ -93,6 +96,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       log.mood.push({ i: save.season.results.length, happy: save.life.happy, fans: save.life.fans, band: C.moodOf(save).id, why: save.life.why });
       log.minWallet = Math.min(log.minWallet, save.wallet.coins); log.money[save.season.tier] = save.wallet.coins;
     } else if (save.clock.phase === 'review') {
+      const ch = Object.values(save.season.choices ?? {}); log.scenes.push(ch.length); log.callouts = (log.callouts ?? 0) + ch.filter((c) => c.scene === 'callout' && c.answer === 0).length;
       log.seasonEnd.push({ tier: save.history.at(-1).tier, coins: save.wallet.coins, trust: save.contract.trust, rep: Math.round(save.career.rep), cl: save.career.cl });
       const offers = save.pending.offers, season = save.clock.season; log.offers.push(offers.length);
       if (save.pending.review.dropped) log.drops++;
