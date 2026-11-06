@@ -1,0 +1,113 @@
+{
+ "track": "qingshan",
+ "throttle": {
+  "mbit": 50,
+  "rtt": 40
+ },
+ "rounds": 3,
+ "abLoad": null,
+ "arms": {
+  "base": {
+   "rounds": [
+    {
+     "firstAsset": 1546,
+     "firstUrl": "/assets/qingshan/track.json",
+     "carReady": 3322,
+     "loaded": 3745,
+     "preloadDone": 18373,
+     "venueReady": 19074,
+     "startToGrid": 2139,
+     "title.task": 1328,
+     "title.loaf": 1335,
+     "menu.task": 897,
+     "menu.loaf": 907,
+     "Start.task": 582,
+     "Start.loaf": 589,
+     "grid.task": 0,
+     "grid.loaf": 105,
+     "GO.task": 0,
+     "GO.loaf": 0,
+     "errors": 0
+    },
+    {
+     "firstAsset": 1458,
+     "firstUrl": "/assets/qingshan/track.json",
+     "carReady": 3236,
+     "loaded": 3523,
+     "preloadDone": 18124,
+     "venueReady": 17845,
+     "startToGrid": 2156,
+     "title.task": 1248,
+     "title.loaf": 1256,
+     "menu.task": 1020,
+     "menu.loaf": 1021,
+     "Start.task": 596,
+     "Start.loaf": 602,
+     "grid.task": 0,
+     "grid.loaf": 112,
+     "GO.task": 0,
+     "GO.loaf": 0,
+     "errors": 0
+    },
+    {
+     "firstAsset": 1455,
+     "firstUrl": "/assets/qingshan/track.json",
+     "carReady": 3117,
+     "loaded": 3272,
+     "preloadDone": 17290,
+     "venueReady": 17487,
+     "startToGrid": 1334,
+     "title.task": 1239,
+     "title.loaf": 1246,
+     "menu.task": 627,
+     "menu.loaf": 636,
+     "Start.task": 326,
+     "Start.loaf": 329,
+     "grid.task": 0,
+     "grid.loaf": 57,
+     "GO.task": 0,
+     "GO.loaf": 0,
+     "errors": 0
+    }
+   ],
+   "median": {
+    "firstAsset": 1458,
+    "carReady": 3236,
+    "loaded": 3523,
+    "preloadDone": 18124,
+    "venueReady": 17845,
+    "startToGrid": 2139,
+    "title.task": 1248,
+    "title.loaf": 1256,
+    "menu.task": 897,
+    "menu.loaf": 907,
+    "Start.task": 582,
+    "Start.loaf": 589,
+    "grid.task": 0,
+    "grid.loaf": 105,
+    "GO.task": 0,
+    "GO.loaf": 0,
+    "errors": 0
+   },
+   "spread": {
+    "firstAsset": 91,
+    "carReady": 205,
+    "loaded": 473,
+    "preloadDone": 1083,
+    "venueReady": 1587,
+    "startToGrid": 822,
+    "title.task": 89,
+    "title.loaf": 89,
+    "menu.task": 393,
+    "menu.loaf": 385,
+    "Start.task": 270,
+    "Start.loaf": 273,
+    "grid.task": 0,
+    "grid.loaf": 55,
+    "GO.task": 0,
+    "GO.loaf": 0,
+    "errors": 0
+   }
+  }
+ }
+}
