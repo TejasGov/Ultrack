@@ -111,8 +111,8 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
   for (const x of save.season?.rumours ?? []) { const now = W.seats[x.car]; if (x.list.includes(YOU) && now !== YOU && now !== x.code && x.list.includes(now)) heatUp(save, now, T.rivals.seatLost, 'seat'); }
 }
 function callUp(save) {
-  const W = save.world, M = T.market, N = DRIVERS.academyNames, taken = new Set([...Object.keys(W.ratings), ...DRIVERS.academy.map((a) => a.code), save.player.code]);
-  const next = DRIVERS.academy.find((a) => !taken.has(a.code)), n = Object.keys(W.academy).length, r = rng(save.seed, 'market', 'academy', next?.code ?? n);
+  const W = save.world, M = T.market, N = DRIVERS.academyNames, used = new Set([...Object.keys(W.ratings), save.player.code]);
+  const taken = new Set([...used, ...DRIVERS.academy.map((a) => a.code)]), next = DRIVERS.academy.find((a) => !used.has(a.code)), n = Object.keys(W.academy).length, r = rng(save.seed, 'market', 'academy', next?.code ?? n);
   let { code, name, nation } = next ?? {};
   if (!next) {                                                   // past the list: a seeded name nobody in the paddock has, its code from the surname
     const names = new Set([...Object.values(BASE), ...Object.values(W.academy), ...DRIVERS.academy].map((d) => d.name).concat(save.player.name)), pick = (l) => l[Math.floor(r() * l.length)];
