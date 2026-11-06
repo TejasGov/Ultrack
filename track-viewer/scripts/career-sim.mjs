@@ -34,6 +34,14 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   // the race's contacts and passes (6.6) on dice of their own, so every other number is the same with or without them: 0.3 contacts a race with a car within one place, one pass with one
   const cr = dice(0x27d4eb2f), touches = (order, me) => { const nb = [order[me - 1], order[me + 1]].filter(Boolean), pick = () => nb[Math.floor(cr() * nb.length)], contacts = {}, passes = {};
     if (me < 0 || !nb.length) return { contacts, passes }; if (cr() < 0.3) contacts[pick()] = 1; passes[pick()] = 1; return { contacts, passes }; };
+  // a Sponsor Challenge (4.2) on dice of its own: the place from skill, a contact one race in four, 0-2 times off the track, the lap par / skill; the field's laps (par / pace) and the gaps are a model
+  const xr = dice(0x68e31da4), xn = (s) => (xr() + xr() + xr() - 1.5) * s;
+  const challenge = (spec) => {
+    const me = save.contract.car, n = spec.racers.length, p = Math.min(n, Math.max(1, Math.round(6 - (skill - 0.95) * 60 + xn(1.5)))), ai = spec.gridOrder.filter((k) => k !== me), order = [...ai.slice(0, p - 1), me, ...ai.slice(p - 1)];
+    const bests = Object.fromEntries(order.map((k) => [k, (k === me ? spec.par / skill : R.parLap(spec.track, k, 'dry', save.world.teams[R.CAR[k].team].dev) / spec.pace[k]) * (1 + xn(0.01))]));
+    let t = spec.laps * spec.par; const totals = order.map((k, i) => [k, (t += i ? 0.2 + xr() * 2.5 : 0)]);
+    return { order, bests, totals, contacts: xr() < 0.25 ? { [order[p] ?? order[p - 2]]: 1 } : {}, offTrack: Math.floor(xr() * 3), dnf: false };
+  };
   const tryBuy = (id) => { const q = C.lifeInfo(save, id); if (!q.ok) return false; const r = C.buyLife(save, id); if (!r.ok) return false; log.life[id] = (log.life[id] ?? 0) + 1; if (q.pay) log.adPay += q.pay; else log.lifeSpent += q.price; if (r.scandal) log.scandals++; return true; };
   const weekly = () => {
     const L = save.life, coins = save.wallet.coins, keep = 1500 + 2 * C.upkeepOf(save), afford = (id, k = 3) => coins > C.itemOf(id).price * k + keep;
@@ -53,7 +61,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
     if (save.clock.phase === 'paddock') {
       if (life && C.currentWeek(save).kind !== 'race') weekly();
       const spec = C.sideSpec(save);
-      if (spec) { const m = C.finishSide(save, spec.kind === 'test' ? spec.par / skill * (1 + noise(0.01)) : 12000 + rand() * 30000); log.medals += m.medal; }
+      if (spec) { const m = C.finishSide(save, spec.kind === 'test' ? spec.par / skill * (1 + noise(0.01)) : (rand(), challenge(spec))); log.medals += m.medal; }   // rand(): the draw the old drift stub took, kept so the career's own dice replay as before the challenge
       for (const o of [...save.sponsors.offers]) { if (C.negotiate(save, o.id, { retainer: 0.15, bonus: 0 }).result !== 'withdrawn' && C.signSponsor(save, o.id).ok) log.sponsors++; }
       if (C.currentWeek(save).kind !== 'race') {
         for (const m of [...save.season.mid]) { log.w1++; if (rand() < 0.5) C.signMid(save, m.id); else C.walkAway(save, m.id); }

@@ -281,7 +281,12 @@ try {
   const spec = C.sideSpec(wk); assert.equal(spec.kind, 'test', "Mojave's favourite is the test day"); assert.equal(spec.weather, 'dry'); assert.equal(spec.track, C.currentRound(wk).track, "it runs at the next round's circuit");
   const gold = C.finishSide(wk, spec.par * 1.001); assert.equal(gold.medal, 3); assert.equal(gold.package, 1); assert.equal(C.sideSpec(wk), null, 'one try'); assert.equal(C.finishSide(wk, 1), null);
   C.advanceWeek(wk); round(wk, 4); const nxt = C.currentWeek(wk); assert.equal(nxt.kind, 'open'); const sp2 = C.sideSpec(wk); assert.equal(sp2.kind, 'sponsor', 'then the other kind');
-  const before2 = wk.wallet.coins, medal = C.finishSide(wk, 26000); assert.equal(medal.medal, 2); assert.ok(medal.coins > 0); assert.equal(wk.wallet.coins, before2 + medal.coins); assert.equal(medal.xp, R.TUNING.side.xp[1]);
+  // a Sponsor Challenge: six cars at the next round's circuit, the teammate P5 and the player last, two laps; with no deal it is the team's, an Overtake Challenge
+  assert.equal(sp2.name, 'Team Overtake Challenge'); assert.deepEqual(sp2.goals, R.TUNING.side.challenge.objectives.top); assert.equal(sp2.objectives.length, 3); assert.equal(sp2.laps, 2); assert.equal(sp2.track, C.roundOfWeek(wk, wk.clock.week).track);
+  assert.equal(sp2.racers.length, 6); assert.equal(sp2.gridOrder.at(-1), sp2.hero, 'the player starts last'); assert.equal(sp2.gridOrder[4], C.teammateCar(wk), 'the teammate starts P5'); assert.deepEqual(Object.keys(sp2.pace).sort(), sp2.racers.filter((k) => k !== sp2.hero).sort()); assert.ok(Object.values(sp2.pace).every((v) => v > 0.9 && v < 1));
+  assert.equal(new Set(sp2.racers).size, 6); assert.deepEqual(Object.keys(sp2.ai).sort(), Object.keys(sp2.pace).sort(), 'every AI car has its rival profile');
+  const ai2 = sp2.gridOrder.slice(0, 5), before2 = wk.wallet.coins, medal = C.finishSide(wk, { order: [ai2[0], ai2[1], sp2.hero, ...ai2.slice(2)], bests: {}, contacts: {}, offTrack: 0, totals: [], dnf: false });
+  assert.deepEqual(medal.met, [true, true, false], 'P3 from P6: two objectives'); assert.equal(medal.medal, 2); assert.ok(medal.coins > 0); assert.equal(wk.wallet.coins, before2 + medal.coins); assert.equal(medal.xp, R.TUNING.side.xp[1]);
   const nope = signed(111); C.advanceWeek(nope); round(nope, 4); assert.equal(C.finishSide(nope, null).medal, 0, 'no valid lap, no medal');
   const qd = signed(112); C.finishQuali(qd, 90); assert.equal(qd.season.weeks[0].event.skipped, true, 'qualifying skips what is still open'); assert.equal(C.currentWeek(qd).kind, 'race');
   // the inbox: every change leaves a line, unread until opened, and it never grows without limit
@@ -338,7 +343,54 @@ try {
   const rr1 = round(sp, 4); assert.ok(!rr1.coinLines.some(([l]) => /bonus/.test(l)), 'once');
   const sk = signed(129), so1 = sk.sponsors.offers[0]; C.signSponsor(sk, so1.id); assert.ok(sk.sponsors.deals.length); sk.sponsors.deals[0].mood = 1; C.advanceWeek(sk); round(sk, 4); const wS = sk.season.weeks.find((x, i) => i >= sk.clock.week && x.event?.kind === 'sponsor'); while (C.currentWeek(sk) !== wS) { if (C.currentWeek(sk).kind === 'race') round(sk, 4); else C.advanceWeek(sk); }
   assert.ok(C.advanceWarnings(sk).some((t) => /ends your deal/.test(t)), 'on the last of the goodwill, Advance says the deal ends'); sk.sponsors.deals[0].mood = 2; assert.ok(C.advanceWarnings(sk).some((t) => /goodwill/.test(t))); sk.sponsors.deals[0].mood = 1; const repS = sk.career.rep; C.advanceWeek(sk); assert.deepEqual(sk.sponsors.deals, [], 'out of goodwill, the deal ends'); assert.equal(sk.career.rep, Math.max(0, repS + R.TUNING.sponsors.droppedRep));
-  assert.equal(C.eventName(sk, { kind: 'open', event: { kind: 'sponsor' } }), 'Team drift day');
+  assert.equal(C.eventName(sk, { kind: 'open', event: { kind: 'sponsor' } }), 'Team Overtake Challenge');
+
+  // ---- the Sponsor Challenge (4.2): every objective, every kind, a retirement, the deals taking turns, goodwill and its cap, gold toward the target once a season, an old drift result
+  { const X = R.TUNING.side.challenge, spec = { hero: 'H', mate: 'M', racers: ['A', 'B', 'C', 'D', 'M', 'H'], par: 100 };
+    const base = { order: ['A', 'B', 'H', 'C', 'D', 'M'], bests: { A: 101, B: 101, C: 101, D: 101, M: 101, H: 100.4 }, contacts: {}, offTrack: 0, totals: [['A', 200], ['B', 201], ['H', 202], ['C', 203], ['D', 204], ['M', 206]], dnf: false };
+    const win = { ...base, order: ['H', 'A', 'B', 'C', 'D', 'M'], totals: [['H', 200], ['A', 202], ['B', 203], ['C', 204], ['D', 205], ['M', 206]] };
+    const one = (goal, v) => R.challengeMet({ ...spec, goals: [goal] }, v)[0];
+    const table = [
+      [['gain', 2], base, true], [['gain', 2], { ...base, order: ['A', 'B', 'C', 'D', 'H', 'M'] }, false],
+      [['top', 3], base, true], [['top', 3], { ...base, order: ['A', 'B', 'C', 'H', 'D', 'M'] }, false], [['top', 1], win, true], [['top', 1], base, false],
+      [['podiumClean', 0], base, true], [['podiumClean', 0], { ...base, contacts: { A: [22] } }, false],
+      [['winBy', 1.5], win, true], [['winBy', 1.5], { ...win, totals: [['H', 200], ['A', 201]] }, false],
+      [['noContact', 0], base, true], [['noContact', 0], { ...base, contacts: { C: 1 } }, false],
+      [['offMax', 0], base, true], [['offMax', 0], { ...base, offTrack: 1 }, false], [['offMax', 2], { ...base, offTrack: 2 }, true],
+      [['cleanTop', 3], base, true], [['cleanTop', 3], { ...base, offTrack: 1 }, false], [['cleanTop', 3], { ...base, contacts: { A: [10, 40] } }, false],
+      [['lapPar', 1.02], base, true], [['lapPar', 1.005], base, true], [['lapPar', 1.005], { ...base, bests: { ...base.bests, H: 100.6 } }, false], [['lapPar', 1.02], { ...base, bests: { ...base.bests, H: null } }, false],
+      [['fastest', 0], base, true], [['fastest', 0], { ...base, bests: { ...base.bests, B: 100.1 } }, false],
+      [['passMate', 0], base, true], [['passMate', 0], { ...base, order: ['A', 'B', 'M', 'H', 'C', 'D'] }, false],
+      [['beatMate', 0], base, true], [['beatMate', 0], { ...base, bests: { ...base.bests, M: 100 } }, false],
+      [['beatMateBy', 2], base, true], [['beatMateBy', 2], { ...base, totals: [['H', 202], ['M', 203]] }, false],
+    ];
+    for (const [goal, v, want] of table) assert.equal(one(goal, v), want, `${goal.join(' ')} should be ${want}`);
+    const types = new Set(table.map(([[k]]) => k));
+    for (const [kind, goals] of Object.entries(X.objectives)) {
+      assert.ok(kind in X.name && goals.length === 3, kind); assert.ok(goals.every(([k]) => types.has(k) && R.challengeText([k, 1])), `every ${kind} objective is tested and has words`);
+      const met = R.challengeMet({ ...spec, goals }, win); assert.ok(met.length === 3 && met.every((b) => typeof b === 'boolean'));
+      assert.deepEqual(R.challengeMet({ ...spec, goals }, { ...win, dnf: true }), [false, false, false], `a retirement meets no ${kind} objective`); }
+    assert.deepEqual(R.challengeMet({ ...spec, goals: X.objectives.top }, win), [true, true, true]); assert.equal(R.sideMedal('sponsor', [true, false, true]), 2);
+    assert.equal(R.challengeText(['lapPar', 1.005]), 'A lap within 0.5 % of par'); assert.equal(R.challengeText(['top', 1]), 'Win');
+    // the deals take turns, by sponsor days already gone this season; the name is the deal's and its wish
+    const deal = (brand, name, kind, mood = 2, count = 3) => ({ brand, name, retainer: 80, bonus: 400, target: { kind, n: 1, count }, progress: 0, met: false, mood });   // n 1: the P4 races between never meet it
+    const rot = signed(1400); rot.sponsors.deals.push(deal('shell', 'Shell', 'top'), deal('rolex', 'Rolex', 'quali')); const sw = rot.season.weeks.filter((w) => w.event?.kind === 'sponsor');
+    assert.ok(sw.length >= 3, 'three or more sponsor days a season'); assert.deepEqual(sw.slice(0, 3).map((w) => C.eventName(rot, w)), ['Shell Overtake Challenge', 'Rolex Hot Lap Challenge', 'Shell Overtake Challenge']);
+    const toDay = (s) => { while (C.currentWeek(s).event?.kind !== 'sponsor' || C.currentWeek(s).event.result) { if (C.currentWeek(s).kind === 'race') round(s, 4); else C.advanceWeek(s); } return C.sideSpec(s); };
+    const run = (s, place) => { const x = toDay(s), ai = x.gridOrder.filter((k) => k !== x.hero); return C.finishSide(s, place ? { order: [...ai.slice(0, place - 1), x.hero, ...ai.slice(place - 1)], bests: {}, contacts: {}, offTrack: 0, totals: [], dnf: false } : { order: [...ai, x.hero], dnf: true }); };
+    assert.equal(toDay(rot).deal.name, 'Shell'); assert.deepEqual(toDay(rot).goals, X.objectives.top); run(rot, 4); assert.equal(toDay(rot).deal.name, 'Rolex', 'the next day serves the other deal'); assert.deepEqual(toDay(rot).goals, X.objectives.quali);
+    // goodwill: gold +1 up to startMood + 3, silver and bronze nothing, no medal -1 down to 1 (never ending the deal); only the deal the day serves
+    const cap = R.SPONSORS.startMood + 3, gw = signed(1401); gw.sponsors.deals.push(deal('shell', 'Shell', 'top', cap));
+    assert.equal(run(gw, 1).medal, 3); assert.equal(gw.sponsors.deals[0].mood, cap, 'capped'); assert.equal(run(gw, 4).medal, 1); assert.equal(gw.sponsors.deals[0].mood, cap, 'bronze: no change');
+    const dnf = run(gw, 0); assert.equal(dnf.medal, 0, 'a retirement: no medal'); assert.deepEqual(dnf.met, [false, false, false]); assert.equal(dnf.coins, 0); assert.equal(gw.sponsors.deals[0].mood, cap - 1, 'no medal: -1');
+    const lo = signed(1402); lo.sponsors.deals.push(deal('shell', 'Shell', 'top', 1), deal('rolex', 'Rolex', 'quali', 2)); assert.equal(run(lo, 6).medal, 0); assert.equal(lo.sponsors.deals.length, 2, 'a bad result never ends a deal'); assert.deepEqual(lo.sponsors.deals.map((d) => d.mood), [1, 2], 'floored at 1, and only the served deal moves');
+    // a gold is a step toward the served deal's season target, once a season; on the last step it pays the bonus
+    const tg = signed(1403); tg.sponsors.deals.push(deal('shell', 'Shell', 'top', 2, 3)); run(tg, 1); assert.equal(tg.sponsors.deals[0].progress, 1); run(tg, 1); assert.equal(tg.sponsors.deals[0].progress, 1, 'once a season');
+    const tb = signed(1404); tb.sponsors.deals.push(deal('shell', 'Shell', 'top', 2, 1)); toDay(tb); const c0 = tb.wallet.coins, g1 = run(tb, 1); assert.ok(tb.sponsors.deals[0].met); assert.ok(g1.coins >= 400, 'the bonus comes with the gold'); assert.equal(tb.wallet.coins, c0 + g1.coins); assert.ok(tb.inbox.some((m) => m.title === 'Shell pays the bonus'));
+    // an old save's drift result (a score) still reads: the screens show the medal, never the value
+    const od = signed(1405); toDay(od); C.currentWeek(od).event.result = { kind: 'sponsor', value: 26000, medal: 2, xp: 50, coins: 300, package: 0 }; const od2 = JSON.parse(JSON.stringify(od)); C.migrate(od2);
+    assert.equal(C.sideSpec(od2), null, 'done is done'); assert.equal(C.currentWeek(od2).event.result.medal, 2); assert.match(C.eventName(od2, C.currentWeek(od2)), /Overtake Challenge$/);
+    const fs = await import('node:fs'); for (const f of ['career-hub.js', 'career-ui.js', 'career-deals.js']) assert.ok(!/result\??\.value/.test(fs.readFileSync(new URL(`../src/game/${f}`, import.meta.url), 'utf8')), `${f} reads the medal, not the value`); }
 
   // ---- migration: a P1 save gets the seat map, and an unknown schema is not guessed at
   const old = signed(113); delete old.world.seats; delete old.world.free; delete old.world.retired; delete old.world.academy; delete old.career.heat; delete old.garage.package; old.schema = 1;

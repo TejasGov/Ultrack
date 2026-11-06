@@ -262,10 +262,16 @@ export function sponsorRound(save, x, met) {
   for (const d of save.sponsors?.deals ?? []) {
     lines.push([`${d.name} retainer`, round5(d.retainer * m)]);
     if (d.met || !met(d.target, x)) continue;
-    d.progress++;
-    if (d.progress >= d.target.count) { d.met = true; lines.push([`${d.name} bonus`, round5(d.bonus * m)]); post(save, 'sponsor', `${d.name} pays the bonus`, `You hit the target: ${targetText(d.target)}. +${round5(d.bonus * m).toLocaleString('en')} U.`); }
+    const bonus = sponsorCredit(save, d); if (bonus) lines.push([`${d.name} bonus`, bonus]);
   }
   return lines;
+}
+/** one step toward a deal's season target (a race that met it, or a gold in its Sponsor Challenge): the bonus it pays on the last step, else 0 */
+export function sponsorCredit(save, d) {
+  if (d.met || ++d.progress < d.target.count) return 0;
+  const bonus = round5(d.bonus * payMult(save)); d.met = true;
+  post(save, 'sponsor', `${d.name} pays the bonus`, `You hit the target: ${targetText(d.target)}. +${bonus.toLocaleString('en')} U.`);
+  return bonus;
 }
 /** a deal ends: the retainer stops and the reputation takes the hit (a skipped sponsor day, an upset sponsor, an unhappy driver) */
 function endDeal(save, d, body) {

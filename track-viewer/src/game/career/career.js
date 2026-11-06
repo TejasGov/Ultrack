@@ -6,7 +6,7 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
@@ -16,7 +16,7 @@ import { post, unread, markRead } from './inbox.js';
 import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
-  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer,
+  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer,
 } from './offers.js';
 
 export const SCHEMA = 8;
@@ -248,11 +248,15 @@ export const roundOfWeek = (save, i) => { const w = save.season.weeks.slice(i).f
 const freshRound = (save, R) => (R?.kind !== 'open' ? R : save.season.calendar.find((x) => x.round > R.round && x.kind !== 'open') ?? save.season.calendar.findLast((x) => x.round < R.round && x.kind !== 'open') ?? R);
 /** why practice is shut, or null: an Open circuit opens at the Final, for whoever reaches it */
 export const practiceLocked = (save) => { const R = currentRound(save); return R?.kind === 'open' && save.season.current.open?.stage !== 'final' ? `The ${R.name} circuit stays fresh until the Final.` : null; };
-/** an event's name on every screen: a sponsor day carries the signed sponsor's name */
+/** the deal a sponsor day serves: the signed deals take turns, by how many sponsor days came before it this season; null with none */
+const dealOf = (save, week) => { const D = save.sponsors?.deals ?? [], W = save.season?.weeks ?? []; return D.length ? D[W.slice(0, Math.max(0, W.indexOf(week))).filter((w) => w.event?.kind === 'sponsor').length % D.length] : null; };
+/** the Sponsor Challenge a deal (or an offer) asks for: named after it and its wish, e.g. 'Shell Overtake Challenge', with its objectives; with no deal, the team's Overtake Challenge */
+export const challengeOf = (d) => { const kind = d?.target.kind ?? 'top', goals = T.side.challenge.objectives[kind]; return { name: `${d?.name ?? 'Team'} ${T.side.challenge.name[kind]} Challenge`, goals, objectives: goals.map(challengeText) }; };
+/** an event's name on every screen */
 export function eventName(save, week) {
   const e = week.event; if (!e) return null;
   if (e.kind === 'test') return week.kind === 'pre' ? 'Pre-season shakedown' : 'Team test';
-  return `${save.sponsors?.deals?.[0]?.name ?? 'Team'} drift day`;
+  return challengeOf(dealOf(save, week)).name;
 }
 /** what pressing Advance would cost, in words; empty when nothing is lost */
 export function advanceWarnings(save) {
@@ -362,14 +366,25 @@ export function finishQuali(save, best, mateRun = null) {
 export function raceSetup(save) {
   const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at Dry Lake
   const racers = cur.quali?.grid ?? [hero], pace = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => [key, aiPace(save, key, lcq ? ['lcq'] : [])]));
-  const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
+  const { nemesis, ai, mateKey, drivers, levels } = fieldOf(save, racers);
+  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis, ai, orders: cur.open ? null : ordersFor(save), mateKey, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
+    label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null, drivers, levels };
+}
+/** what every career race on track shares: the nemesis among the racers, each AI car's profile (6.6, driver.js), who drives each car and its upgrade levels */
+function fieldOf(save, racers) {
+  const hero = save.contract.car, lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
   const nemesis = nemesisAmong(save, racers), mateKey = teammateCar(save), W = save.world, H = save.career.heat ?? {};
   const ai = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => { const code = W.seats[key];
     return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: composureOf(W.ratings[code], W.ages[code]),
       seed: Math.floor(rng(save.seed, 'ai-profile', save.clock.season, save.clock.round, key)() * 2 ** 32), k: structuredClone(T.rivals.track) }]; }));
-  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis, ai, orders: cur.open ? null : ordersFor(save), mateKey, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
-    label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null,
-    drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
+  return { nemesis, ai, mateKey, drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
+}
+/** a Sponsor Challenge's field (4.2): the teammate and the seated cars expected closest to the player, five in all, at the challenge pace; the grid best expected first, the teammate P5 and the player last */
+export function challengeSetup(save) {
+  const X = T.side.challenge, hero = save.contract.car, mate = teammateCar(save), exp = (k) => expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat), mine = exp(hero);
+  const near = Object.keys(save.world.seats).filter((k) => k !== hero && k !== mate && save.world.seats[k]).sort((a, b) => Math.abs(exp(a) - mine) - Math.abs(exp(b) - mine) || exp(a) - exp(b));
+  const withMate = !!save.world.seats[mate], others = near.slice(0, X.field - (withMate ? 1 : 0)).sort((a, b) => exp(a) - exp(b)), racers = [...others, ...(withMate ? [mate] : []), hero];
+  return { racers, gridOrder: racers, mate: withMate ? mate : null, pace: Object.fromEntries(racers.filter((k) => k !== hero).map((k) => [k, aiPace(save, k, ['challenge']) * X.pace])), ...fieldOf(save, racers) };
 }
 
 // ---------------------------------------------------------------------------------------------- events (4.2, section 13)
@@ -377,18 +392,25 @@ export function raceSetup(save) {
 export function sideSpec(save) {
   const w = currentWeek(save), e = w?.event; if (!e || e.result || e.skipped || save.clock.phase !== 'paddock') return null;
   const R = freshRound(save, currentRound(save)), car = save.contract.car, L = myLevels(save), par = parLap(R.track, car, 'dry', [L.engine, L.tyres, L.brakes, L.aero]);
-  return { kind: e.kind, name: eventName(save, w), track: R.track, look: R.look, weather: 'dry', car, par, targets: e.kind === 'test' ? T.side.test.map((x) => par * x) : [...T.side.sponsor] };
+  const base = { kind: e.kind, name: eventName(save, w), track: R.track, look: R.look, weather: 'dry', car, par };
+  if (e.kind === 'test') return { ...base, targets: T.side.test.map((x) => par * x) };
+  const deal = dealOf(save, w), { goals, objectives } = challengeOf(deal);
+  return { ...base, deal, target: deal?.target ?? null, goals, objectives, hero: car, laps: T.side.challenge.laps, ...challengeSetup(save) };
 }
-/** an event is done: value is the best lap (test day) or the drift score (sponsor day). Medal, XP, pay or a free upgrade level; gold cheers a sponsor up */
+/**
+ * An event is done: value is the best lap (test day) or the challenge race (sponsor day: { order, bests, contacts, offTrack, totals, dnf }). Medal, XP, pay or a free upgrade level.
+ * The deal a challenge serves takes its goodwill from the result: gold +1, no medal -1, kept within 1 (0 would end the deal, offers.js) and startMood + 3. Its first gold of the season is a step toward the deal's target
+ */
 export function finishSide(save, value) {
   const spec = sideSpec(save); if (!spec) return null;
-  const medal = sideMedal(spec.kind, value, spec.par), tier = TIERS.tiers[save.season.tier];
-  const xp = medal ? T.side.xp[medal - 1] : 0, coins = spec.kind === 'sponsor' && medal ? round5(T.side.pay[medal - 1] * tier.sponsor * (1 + T.side.formPay * formOf(save.career.rr)) * payMult(save)) : 0;
-  const pkg = spec.kind === 'test' && medal === 3 ? 1 : 0;
+  const met = spec.kind === 'sponsor' ? challengeMet(spec, value) : null, medal = sideMedal(spec.kind, met ?? value, spec.par), tier = TIERS.tiers[save.season.tier], d = spec.deal;
+  const xp = medal ? T.side.xp[medal - 1] : 0, pay = met && medal ? round5(T.side.pay[medal - 1] * tier.sponsor * (1 + T.side.formPay * formOf(save.career.rr)) * payMult(save)) : 0;
+  const credit = d && medal === 3 && !d.dayCredit && !d.met, bonus = credit ? ((d.dayCredit = true), sponsorCredit(save, d)) : 0, pkg = spec.kind === 'test' && medal === 3 ? 1 : 0, coins = pay + bonus;
+  if (d) d.mood = clamp(d.mood + (medal === 3 ? 1 : medal ? 0 : -1), 1, SPONSORS.startMood + 3);
   gainXp(save, xp); save.wallet.coins += coins; save.garage.package += pkg;
-  if (spec.kind === 'sponsor' && medal === 3) for (const d of save.sponsors.deals) d.mood++;
-  const r = (currentWeek(save).event.result = { kind: spec.kind, value: Number.isFinite(value) ? value : null, medal, xp, coins, package: pkg });
-  post(save, 'event', `${spec.name}: ${['no medal', 'bronze', 'silver', 'gold'][medal]}`, [xp ? `+${xp} XP` : null, coins ? `+${coins.toLocaleString('en')} U` : null, pkg ? 'a free upgrade level, in the Garage' : null].filter(Boolean).join(', ') || 'Nothing earned this time.', pkg ? { tab: 'garage' } : null);
+  const r = (currentWeek(save).event.result = { kind: spec.kind, value: Number.isFinite(value) ? value : null, ...(met ? { met } : {}), medal, xp, coins, package: pkg });
+  const lines = [xp ? `+${xp} XP` : null, coins ? `+${coins.toLocaleString('en')} U` : null, pkg ? 'a free upgrade level, in the Garage' : null, credit ? `a step toward ${d.name}'s target` : null, d ? `${d.name} goodwill ${d.mood}` : null];
+  post(save, 'event', `${spec.name}: ${met ? `${medal}/${met.length}, ` : ''}${['no medal', 'bronze', 'silver', 'gold'][medal]}`, lines.filter(Boolean).join(', ') || 'Nothing earned this time.', pkg ? { tab: 'garage' } : null);
   return r;
 }
 

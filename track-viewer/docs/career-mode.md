@@ -43,7 +43,7 @@ Every number here is a starting value for a data file (section 10.5), not a prom
 1. **One championship, one grid, three classes.** All eight teams race every round (the grid is eight slots, one car per team). The eight teams are split into three tiers: **Rookies** (Hayate, Mojave, Liberty), **Maestros** (Toro, Sarab, Corvid), **Legends** (Aurum, Saetta). Each tier also keeps its own class table (the Rookie Cup, the Maestro Cup, the Legend Cup), so a player in a slow car always has a title he can win.
 2. **The player is a seat, not a team.** He takes the **B seat** (the team's weaker car) at a Rookie team, earns the A seat, then moves to better teams by offer. Seat plus tier is the **Ladder** (7 rungs, section 5.3).
 3. **Results are judged against the car.** Every round gets a **Round Rating** (1-10) from finish vs. expected finish, qualifying vs. expected, a teammate duel and a few clean-racing flags. Finishing P5 in the slowest car beats winning in the fastest. This single number drives reputation, team trust, offers and getting dropped.
-4. **The weekend is Qualifying (Time Trial) then the Feature race**, about 11 minutes. Drift Attack becomes the **sponsor event**, Time Trial the **test day**, Free Drive the **practice**. All four existing modes are used; none is rebuilt.
+4. **The weekend is Qualifying (Time Trial) then the Feature race**, about 11 minutes. A short Race becomes the **sponsor event** (the Sponsor Challenge, 4.2), Time Trial the **test day**, Free Drive the **practice**. Drift Attack stays in free play. No mode is rebuilt.
 5. **A season is 6 rounds on today's 3 tracks** (each twice, in different conditions), **8 rounds** once the planned tracks arrive. A full climb is about 9 seasons; the first two (Rookie) are the MVP.
 6. **Progression has three separate dials**: Career Level (XP, 1-25, the existing `playerLevel`, gates car access and upgrade levels), Reputation (0-1000, drives offers), Team Trust (0-100, drives job security). Upgrades are the existing engine / tyres / brakes, 0-3, capped by tier (1 / 2 / 3).
 7. **Offers come at two windows** (mid-season poaching, end-of-season market), decided by thresholds plus a seeded roll. The player can negotiate three terms (salary, length, status). Overreaching gets the offer withdrawn.
@@ -283,9 +283,22 @@ Paddock -> Briefing -> Qualifying (Time Trial) -> Race (Feature) -> Round report
 | **Qualifying** | Time Trial | Ends after **3 valid laps** or when the player ends it; best valid lap counts; an invalid lap (4 wheels off for 1 s) does not. AI laps are computed (4.3). Sets the grid | ~4 min |
 | **Race** | Race | Laps from 4.1; grid from qualifying; AI pace from ratings; AI upgrade levels from team development; no Restart (7.5); results feed the Round Rating | ~7.5 min |
 | Test day (between rounds, optional) | Time Trial | Target lap = par x 1.015 / 1.005; hitting it pays the E09 reward, an early free upgrade level (7.4) | ~3 min |
-| **Sponsor day** (between rounds, optional) | Drift Attack | A sponsor sets a target score (bronze / silver / gold); pay and sponsor mood. Today's drift pay saturates at 50,000 points (2,000 U), so targets are 15,000 / 25,000 / 40,000 **(placeholder; calibrate from play)** | 90 s |
+| **Sponsor day** (between rounds, optional) | Race | The **Sponsor Challenge**: 2 laps, dry, at the next round's circuit, from P6 of a 6-car field (below) | ~3 min |
 
 Total: a full weekend is about 11 minutes; with both optional events about 15.
+
+**The Sponsor Challenge** (`career.sideSpec`, `challengeSetup`, `rules.challengeMet`; numbers in `tuning.json` `side.challenge`). Each sponsor day serves one signed deal: the deals take turns, by how many sponsor days came before it in the season. It is named after the deal and its target kind, for example "Shell Overtake Challenge"; with no deal it is the "Team Overtake Challenge". The field is the teammate and the seated cars expected closest to the player, five in all, at their race pace x 0.97, with the rival profiles of a career race (6.6) and no team orders. The grid is the four others by expected place, then the teammate, and the player last. Three objectives come from the target kind, all relative to the field, the player's par or the teammate, so they are fair at every circuit, car and tier:
+
+| Kind | Name | Objectives |
+|---|---|---|
+| top | Overtake | gain 2 places; top 3; win |
+| podium | Podium | top 4; top 3; a podium with no contact |
+| win | Victory | top 3; win; win by 1.5 s |
+| clean | Clean Air | no contact; never off the track; top 3 with neither |
+| quali | Hot Lap | a lap within 2 % of par; the fastest lap of the race; a lap within 0.5 % of par |
+| duel | Duel | finish ahead of the teammate; a faster best lap than the teammate; finish 2 s ahead of the teammate |
+
+Bronze is one objective met, silver two, gold three. A retirement (Retire in the pause menu) meets none. Pay and XP by medal are as before (`side.pay`, `side.xp`); repairs are not billed. The deal served takes its goodwill from the result: gold +1, silver and bronze nothing, no medal -1, kept within 1 and startMood + 3 = 5 (goodwill 0 ends a deal, so a bad result never does; a skipped day still costs every deal 1). The first gold of the season is also a step toward that deal's season target, the same counter a race that meets it moves, and pays the bonus on the last step. Measured with `scripts/career-metrics.mjs 100 6` (the stub result in `career-sim.mjs` is a model, not a race): at skill 0.995, 93 % bronze or better, 60 % silver or better, 30 % gold; at 0.975, 33 % silver or better.
 
 ### 4.3 Qualifying and the grid
 
@@ -314,7 +327,7 @@ The user is adding 2-3 smaller tracks. The three existing ones are long (5.47, 5
 |---|---|---|---|
 | **Short technical** | tight, 10-14 corners, one long-ish straight, a hairpin, kerbs | 1.3-1.8 km, ~45-60 s | Rookie-tier home. Races of 7-10 laps with many overtaking chances (helpful because the AI does not defend, C5). Cheap qualifying |
 | **Fast flowing** | 4-7 fast corners, long straights, a big braking zone | 2.0-2.6 km, ~55-70 s | Rewards the engine and the brakes upgrade, makes tier gaps visible; a showcase for Legends |
-| **Slide track** | hairpins, elevation, a mountain or industrial setting, low-grip sections | 1.6-2.2 km, ~60-75 s | Rewards tyres and drift; natural host for Drift Attack sponsor days and Hayate's story |
+| **Slide track** | hairpins, elevation, a mountain or industrial setting, low-grip sections | 1.6-2.2 km, ~60-75 s | Rewards tyres and drift; natural host for Drift Attack in free play and Hayate's story |
 
 Each new track must supply what `track.json` already has (centreline, `lapLength`, `corners`, 8 `gridSlots`, `sectors`, `weather.looks`) plus a `TRACKS` entry in `src/tracks.js`. The career adds one data row per track in `assets/career/calendar.json` (10.5): `parLap`, `character` tags, `lookWeights`, `featureMinutes` (optional override), and `bias` (`power`, `grip`, `brake`, each -1 to +1) which shifts the AI's expected result slightly (a power-biased track favours engine-heavy teams) and gives the briefing screen a sentence to show. Two to three new short tracks bring the season to 8 rounds (about 90 minutes of play), with Feature races of 7-10 laps on the short ones.
 
@@ -904,7 +917,7 @@ The user's words: "full screen UI polished like FC27, have proper segregation fo
 
 ### 13.2 Events and modes
 
-Three kinds, three columns on the Events tab. **Race weekends** are required. **Test days** (Time Trial against targets; gold is a free upgrade level) and **sponsor events** (Drift Attack, 90 s, pays by medal) are optional, one per open week, at the next round's circuit, the team's favourite kind first; `event.result` or `event.skipped` stays on the calendar.
+Three kinds, three columns on the Events tab. **Race weekends** are required. **Test days** (Time Trial against targets; gold is a free upgrade level) and **sponsor events** (the Sponsor Challenge, 4.2: a 2-lap race with three objectives, pays by medal) are optional, one per open week, at the next round's circuit, the team's favourite kind first; `event.result` or `event.skipped` stays on the calendar.
 
 "Modes" was read as what the player can drive and when: Practice (new: Free Drive at the next round's circuit, nothing at stake), Qualifying, Race, Test day, Sponsor day, shown as tiles on Home, each open, next, locked or done with its reason. The race length is a tile beside them, because it changes between rounds.
 
@@ -916,7 +929,7 @@ Team moves the player starts: in the market week or at the season end he can app
 
 ### 13.4 Personal sponsors
 
-`assets/career/sponsors.json`: brands from the sponsor folder by tier (no car makers, no political party). Slots: the tier's rank. Two offers before the season and in the market if a slot is free. A one-season deal: a retainer every round, a bonus on a target (top N, qualifying, podiums, a win, clean races, duels), and sponsor days: goodwill starts at 2, a skipped day costs 1, gold gives 1 back, and at 0 the deal ends (REP -3).
+`assets/career/sponsors.json`: brands from the sponsor folder by tier (no car makers, no political party). Slots: the tier's rank. Two offers before the season and in the market if a slot is free. A one-season deal: a retainer every round, a bonus on a target (top N, qualifying, podiums, a win, clean races, duels), and sponsor days: goodwill starts at 2, a skipped day costs 1, and at 0 the deal ends (REP -3). In the Sponsor Challenge the deal served gets +1 for gold and -1 for no medal, within 1 and 5 (4.2).
 
 ### 13.5 Screens
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Career tiers, seats and team data (track-viewer/docs/career-mode.md sections 2, 3, 5.5, 6.5). side: the team's favourite side event (4.2: sponsor = Drift Attack, test = Time Trial). Starting values, not measurements.",
+  "note": "Career tiers, seats and team data (track-viewer/docs/career-mode.md sections 2, 3, 5.5, 6.5). side: the team's favourite side event (4.2: sponsor = the Sponsor Challenge, a short race; test = Time Trial). Starting values, not measurements.",
   "tiers": {
     "rookie": { "rank": 1, "name": "Rookies", "cup": "Rookie Cup", "world": 1, "cap": 1, "dev": [0, 0, 0], "xp": 1.0, "rep": 1.0, "prize": 0.4,
                 "salary": { "B": 300, "A": 400 }, "sponsor": 1.0, "objective": [60, 30], "bonus": { "podium": 75, "win": 150, "cup": 600 } },

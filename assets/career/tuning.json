@@ -32,5 +32,14 @@
       "nitro": { "on": true, "from": 10, "to": 50 },
       "orders": { "lift": 0.97, "s": 3, "aside": 2, "gap": 1.0, "mateGap": 2.0 } } },
   "market": { "retireAge": 38, "retireChance": 0.5, "academyRating": [70, 78], "academyAge": [19, 22] },
-  "side": { "test": [1.03, 1.015, 1.005], "sponsor": [15000, 25000, 40000], "xp": [25, 50, 75], "pay": [100, 175, 275], "formPay": 0.05 }
+  "side": { "test": [1.03, 1.015, 1.005], "xp": [25, 50, 75], "pay": [100, 175, 275], "formPay": 0.05,
+    "challenge": { "laps": 2, "field": 5, "pace": 0.97,
+      "name": { "top": "Overtake", "podium": "Podium", "win": "Victory", "clean": "Clean Air", "quali": "Hot Lap", "duel": "Duel" },
+      "objectives": {
+        "top": [["gain", 2], ["top", 3], ["top", 1]],
+        "podium": [["top", 4], ["top", 3], ["podiumClean", 0]],
+        "win": [["top", 3], ["top", 1], ["winBy", 1.5]],
+        "clean": [["noContact", 0], ["offMax", 0], ["cleanTop", 3]],
+        "quali": [["lapPar", 1.02], ["fastest", 0], ["lapPar", 1.005]],
+        "duel": [["passMate", 0], ["beatMate", 0], ["beatMateBy", 2]] } } }
 }
