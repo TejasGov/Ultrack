@@ -166,9 +166,13 @@ try {
       assert.ok(!(code(s, raced[3]) in s.career.heat), 'two places away: nothing');
       const mc = code(s, out[0]); W.heatAfter(s, raced, me, false, { contacts: {}, passes: {}, duel: mc }); assert.equal(s.career.heat[mc], RT.duel, 'the qualifying duel heats the teammate, raced or not'); assert.equal(s.career.rivalry[mc].cause, 'teammate');
       const sat = s.career.heat[mc]; W.heatAfter(s, raced.slice(1), me, false); assert.equal(s.career.heat[mc], sat - RT.sitOut, 'a round the player sat out cools slowly'); }
+    { const s = signed(175), mc = s.world.seats[C.teammateCar(s)]; C.finishQuali(s, 999); assert.ok(!s.season.current.quali.duel.skipped && !s.season.current.quali.grid.includes(s.contract.car));
+      s.career.heat[mc] = 30; C.finishDnq(s); assert.equal(s.career.heat[mc], 30 - RT.sitOut, 'a missed cut: no duel heat, the teammate cools as anyone the player did not race'); }
     { const { s, me, raced, out } = at(173), mc = code(s, out[0]), duel = { contacts: {}, passes: {}, duel: mc };
-      s.career.heat[mc] = RT.duelMax - 3; W.heatAfter(s, raced, me, false, duel); assert.equal(s.career.heat[mc], RT.duelMax, 'the duel alone stops short of a nemesis'); assert.ok(RT.duelMax < RT.nemesis);
-      W.heatAfter(s, raced, me, false, duel); assert.equal(s.career.heat[mc], RT.duelMax, 'and holds there while the duels go on');
+      s.career.heat[mc] = RT.duelMax - 3; W.heatAfter(s, raced, me, false, duel); assert.equal(s.career.heat[mc], RT.duelMax, 'the duel alone stops short of a rival'); assert.ok(RT.duelMax < RT.rival);
+      W.heatAfter(s, raced, me, false, duel); assert.equal(s.career.heat[mc], RT.duelMax - RT.decay, 'at the cap a duel adds nothing, so the round cools as any other');
+      W.heatAfter(s, raced, me, false, duel); assert.equal(s.career.heat[mc], RT.duelMax, 'and the next duel tops it up to the cap, never past it');
+      const far = code(s, raced.at(-1)); s.career.heat[far] = 50; W.heatAfter(s, raced, me, false, { contacts: {}, passes: { [raced.at(-1)]: 1 } }); assert.equal(s.career.heat[far], 50 - RT.decay + RT.pass, 'a pass adds to the cooling, it does not stop it (spec 6.6)');
       const mk = raced[1], mcode = code(s, mk); s.career.heat[mcode] = RT.nemesis - 1; W.heatAfter(s, raced, me, false, { contacts: { [mk]: 1 }, passes: {}, duel: mcode }); assert.ok(s.career.heat[mcode] >= RT.nemesis, 'racing them on top of the duel can make a nemesis'); }
     { const s = signed(174), any = Object.values(s.world.seats).filter((c) => c !== W.YOU).slice(0, 2); s.career.heat = { [any[0]]: 92, [any[1]]: 88 }; const before = JSON.stringify(s.career.heat);
       C.raceSetup(s); assert.equal(JSON.stringify(s.career.heat), before, 'opening a session (no grid yet) changes no heat');
@@ -176,7 +180,8 @@ try {
     { const { s, me, raced } = at(171), [a, b, c] = [raced[3], raced[4], raced[5]];
       W.heatAfter(s, raced, me, false, { contacts: { [a]: 1, [b]: [45], [c]: [12, 50] }, passes: { [a]: 5 } }); s.career.heat[code(s, a)] = 90; W.heatAfter(s, raced, me, false, { contacts: { [a]: 9, [b]: 9 } }); assert.equal(Object.values(s.career.heat).filter((h) => h >= RT.feud).length, 1, 'after a race too, one feud at most');
       s.career.heat = {}; W.heatAfter(s, raced, me, false, { contacts: { [a]: 1, [b]: [45], [c]: [12, 50] }, passes: { [a]: 5 } });
-      assert.equal(s.career.heat[code(s, a)], RT.contact + 2 * RT.pass, 'a contact +8, and passes count twice at most'); assert.equal(s.career.heat[code(s, b)], RT.contactHard, 'over 30 km/h: +14'); assert.equal(s.career.heat[code(s, c)], RT.contact + RT.contactHard); }
+      // three places and more away, so each also cools by the decay, as everyone does (6.6)
+      assert.equal(s.career.heat[code(s, a)], RT.contact + 2 * RT.pass - RT.decay, 'a contact +8, and passes count twice at most'); assert.equal(s.career.heat[code(s, b)], RT.contactHard - RT.decay, 'over 30 km/h: +14'); assert.equal(s.career.heat[code(s, c)], RT.contact + RT.contactHard - RT.decay); }
     { const { s, me, raced } = at(172), x = code(s, raced[2]), y = code(s, raced[5]);
       s.career.heat = { [x]: 75, [y]: 75 }; const n1 = W.nemesisOf(s, raced), s2 = at(172).s; s2.career.heat = { [x]: 75, [y]: 75 };
       assert.deepEqual(n1, W.nemesisOf(s2, raced), 'the pick between equals is seeded'); assert.ok([x, y].includes(n1.code)); assert.equal(n1.key, raced.find((k) => code(s, k) === n1.code));
@@ -198,7 +203,7 @@ try {
       assert.deepEqual(s.career.rivalry.AAA, { cause: 'grid', since: [1, 0], w: 0, l: 0 }); assert.equal(s.career.rivalry[mc].cause, 'teammate'); }
     // the result plumbing: a race's contacts and passes reach the heat
     { const s = signed(176); C.finishQuali(s, 1); s.career.heat = {}; const g = s.season.current.quali.grid, me = s.contract.car, far = g.filter((k) => k !== me).at(-1), order = [me, ...g.filter((k) => k !== me)];
-      C.finishRace(s, { order, best: {}, contacts: { [far]: [40] }, passes: { [far]: 1 } }); assert.equal(s.career.heat[code(s, far)], RT.contactHard + RT.pass, 'far apart in the order, but they touched: no cooling'); }
+      C.finishRace(s, { order, best: {}, contacts: { [far]: [40] }, passes: { [far]: 1 } }); assert.equal(s.career.heat[code(s, far)], RT.contactHard + RT.pass - RT.decay, 'far apart in the order: the contact and the pass count, and the round cools them as anyone'); }
   }
 
   // ---- team package: the first level of the season is free, and it goes through the cap

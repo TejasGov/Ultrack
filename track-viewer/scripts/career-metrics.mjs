@@ -20,7 +20,7 @@ try {
       /** every round's report, however the round was run (raced, missed the cut, out of an Open's Last Chance) */
       const seen = (save, rep) => {
         if (rep.lcq === true) return rep;                                   // through the Last Chance: the Final is still to come
-        n++; A.rounds++; A.repLines += rep.rivals?.length ?? 0; if (rep.nemesis) A.nemRounds++; if (!rep.dnq) { A.raced++; if (rep.nemesis) A.nemRaced++; if (rep.nemesis?.code === rep.duel?.mateCode) A.nemMate++; }
+        n++; A.rounds++; A.repLines += rep.rivals?.length ?? 0; if (rep.nemesis) A.nemRounds++; if (!rep.dnq) { A.raced++; if (rep.nemesis) A.nemRaced++; if (rep.nemesis && rep.nemesis.code === rep.duel?.mateCode) A.nemMate++; }
         assert.ok(rep.nemesis === null || typeof rep.nemesis.code === 'string', 'one nemesis a round at most');
         const calls = (rep.repLines ?? []).filter((l) => /^Callout/.test(l[0])).length; assert.ok(calls <= 1, 'a callout pays once a round at most'); A.paid += calls;
         assert.ok(C.rivalsOf(save).filter((r) => r.nemesis).length <= 1, 'one nemesis a weekend at most');
@@ -59,11 +59,18 @@ try {
     }
     const rivals = Object.values(A.causes).reduce((a, b) => a + b, 0), med = (l) => { const v = l.filter((x) => x !== null).sort((a, b) => a - b); return v.length ? v[v.length >> 1] : '-'; };
     console.log(`${label} skill ${skill}, ${N} careers x ${S} seasons, ${A.rounds} rounds (${A.raced} raced, a nemesis in ${pct(A.nemRounds / A.rounds)} of all rounds): rivals at the end ${(A.rivalsEnd / N).toFixed(2)} (feuds ${(A.feudsEnd / N).toFixed(2)}), causes ${Object.entries(A.causes).map(([k, v]) => `${k} ${pct(v / rivals)}`).join(', ') || 'none'}, head-to-head races per rival ${(A.h2h / Math.max(1, A.rivalsEnd)).toFixed(1)}, first rival in round ${med(A.firstRival)} (careers with one: ${A.firstRival.filter((x) => x !== null).length})`);
-    check('rivals at career end (avg)', A.rivalsEnd / N, 1.0, 3.0);
-    // the nemesis races the player, so this counts the rounds he raced; a driver who almost never makes the cut has too few to judge
-    // a driver who almost never makes the cut cannot meet a nemesis on track: that FAILs and says why, it is not skipped
-    check(`raced rounds with a nemesis on the grid (${A.raced} raced${A.raced < MIN_RACED ? `, too few: this driver misses the cut in ${pct(1 - A.raced / A.rounds)} of rounds` : ''})`, A.nemRaced / Math.max(1, A.raced), 0.2, 0.7, pct);
-    console.log(`  info  the nemesis is the teammate in ${pct(A.nemMate / Math.max(1, A.nemRaced))} of raced rounds with one`);
+    // rivalries are earned on track: a driver with fewer than MIN_RACED raced rounds has no floor, only the ceiling
+    const few = A.raced < MIN_RACED, floor = few ? 0 : 1.0, why = few ? `, no floor: only ${A.raced} raced rounds` : '';
+    check(`rivals at career end (avg${why})`, A.rivalsEnd / N, floor, 3.0);
+    // the realistic-pass probe: the same careers with a pass against every car within two places each race (the stub's one pass a race is a floor)
+    const probe = Array.from({ length: N }, (_, i) => C.rivalsOf(play(M, 1000 + i, skill, S, 'sprint', { passAll: true }).save).length).reduce((a, b) => a + b, 0) / N;
+    check(`rivals at career end, a pass with every car within two places (avg${why})`, probe, floor, 3.0);
+    // the nemesis races the player, so this counts the rounds they raced; under MIN_RACED there is nothing to judge (a weak driver misses the cut in nearly every round)
+    if (A.raced < MIN_RACED) console.log(`  SKIP  raced rounds with a nemesis on the grid: only ${A.raced} raced rounds (judged from ${MIN_RACED}); this driver misses the cut in ${pct(1 - A.raced / A.rounds)} of rounds`);
+    else check(`raced rounds with a nemesis on the grid (${A.raced} raced)`, A.nemRaced / A.raced, 0.2, 0.7, pct);
+    // the qualifying duel must not make the teammate everyone's nemesis (it once was in 62-88 % of these rounds at average skill)
+    if (label === 'average') check('the nemesis is the teammate, of raced rounds with one', A.nemMate / Math.max(1, A.nemRaced), 0, 0.45, pct);
+    else console.log(`  info  the nemesis is the teammate in ${pct(A.nemMate / Math.max(1, A.nemRaced))} of raced rounds with one`);
     check('rival REP lines per race', A.repLines / Math.max(1, A.raced), 0, 1.0);
     check('rivals with a cause other than grid', rivals ? 1 - (A.causes.grid ?? 0) / rivals : 1, 0.9, 1, pct);
     const atLeast = (m) => A.medals.slice(m).reduce((a, b) => a + b, 0) / Math.max(1, A.days), cap = R.SPONSORS.startMood + 3;

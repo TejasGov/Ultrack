@@ -465,7 +465,7 @@ export function finishRace(save, result) {
   const rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog });
   const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry from a higher tier that was expected ahead
   const giantKills = dnf || dnq ? 0 : order.slice(finish).filter((k) => tierOf(CAR[k].team).rank > myRank && expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat) < myExp).length;
-  const rivals = heatAfter(save, raced, hero, dnf, { contacts: result.contacts ?? {}, passes: result.passes ?? {}, duel: duel.skipped ? null : cur.quali.mate.code });   // the qualifying duel heats the teammate
+  const rivals = heatAfter(save, raced, hero, dnf, { contacts: result.contacts ?? {}, passes: result.passes ?? {}, duel: duel.skipped || dnq ? null : cur.quali.mate.code });   // the qualifying duel heats the teammate, only in a round the player raced
   const xp = xpFor({ ...x, ...judged, pole, mandatory, optional, tier, pro: result.pro, underdog: me.underdog });
   if (rivals.xp) { xp.lines.push(['Nemesis beaten', rivals.xp]); xp.xp += rivals.xp; }
   const call = settleCallout(save, order, hero, dnf);        // an accepted callout (choices.js) pays once

@@ -147,9 +147,9 @@ export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {
       lines.push([`${nem ? 'Nemesis' : 'Rival'} beaten: ${personOf(save, code).name}`, v]);
     }
     const hits = (g && ev.contacts?.[g.key]) || 0, contact = (Array.isArray(hits) ? hits : Array(Math.max(0, hits | 0)).fill(0)).reduce((a, kmh) => a + (kmh > 30 ? R.contactHard : R.contact), 0);
-    // the duel alone stops at duelMax, short of a nemesis: a teammate becomes one only by racing you close, touching or passing you
+    // the duel alone stops at duelMax, short of a rival: a teammate becomes one only by racing you close, touching or passing you
     const pass = g ? Math.min(ev.passes?.[g.key] ?? 0, 2) * R.pass : 0, duel = code === ev.duel ? clamp(R.duelMax - was, 0, R.duel) : 0, near = g && me >= 0 && Math.abs(g.i - me) <= R.near;
-    H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : contact || pass || code === ev.duel ? 0 : -(me < 0 ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // no cooling for a driver you touched, passed or fought in qualifying; a round you sat out cools slowly (you never met)
+    H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : duel ? 0 : -(me < 0 ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // contacts and passes add to the cooling, as the spec has it; a duel that adds heat skips it; a round you sat out cools slowly (you never met)
     if (!H[code]) { delete H[code]; delete RV[code]; continue; }   // the save keeps only live rivalries
     if (!RV[code] && (contact || pass || duel || H[code] >= R.rival)) RV[code] = { cause: contact ? 'contact' : pass ? 'pass' : duel ? 'teammate' : 'grid', since, w: 0, l: 0 };   // a contact, a pass or a duel starts the record; racing close only once it is a rivalry
     if (RV[code] && g && h2h) RV[code][g.i > me ? 'w' : 'l']++;

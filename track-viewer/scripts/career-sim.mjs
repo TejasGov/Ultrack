@@ -14,7 +14,7 @@ const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dus
 const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
 
 /** one career for `seasons` seasons; skill is the player's pace (1.00 = an AI of rating ~88) */
-export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', { life = false } = {}) {
+export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', { life = false, passAll = false } = {}) {
   let r = seed >>> 0; const rand = () => ((r = (Math.imul(r ^ (r >>> 15), 2246822507) + 0x9e3779b9) >>> 0) / 4294967296);
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
   const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
@@ -33,7 +33,9 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   const dice = (salt) => { let q = (seed ^ salt) >>> 0; return () => ((q = (Math.imul(q ^ (q >>> 15), 2246822507) + 0x9e3779b9) >>> 0) / 4294967296); }, lr = dice(0x5bd1e995);
   // the race's contacts and passes (6.6) on dice of their own, so every other number is the same with or without them: 0.3 contacts a race with a car within one place, one pass with one
   const cr = dice(0x27d4eb2f), touches = (order, me) => { const nb = [order[me - 1], order[me + 1]].filter(Boolean), pick = () => nb[Math.floor(cr() * nb.length)], contacts = {}, passes = {};
-    if (me < 0 || !nb.length) return { contacts, passes }; if (cr() < 0.3) contacts[pick()] = 1; passes[pick()] = 1; return { contacts, passes }; };
+    if (me < 0 || !nb.length) return { contacts, passes }; if (cr() < 0.3) contacts[pick()] = 1; passes[pick()] = 1;
+    if (passAll) return { contacts, passes: Object.fromEntries(order.filter((k, i) => i !== me && Math.abs(i - me) <= 2).map((k) => [k, 1])) };   // the realistic-pass probe (career-metrics): a pass with every car within two places
+    return { contacts, passes }; };
   // a Sponsor Challenge (4.2) on dice of its own: the place from skill, a contact one race in four, 0-2 times off the track, the lap par / skill; the field's laps (par / pace) and the gaps are a model
   const xr = dice(0x68e31da4), xn = (s) => (xr() + xr() + xr() - 1.5) * s;
   const challenge = (spec) => {
