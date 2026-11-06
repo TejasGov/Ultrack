@@ -252,11 +252,11 @@ export const practiceLocked = (save) => { const R = currentRound(save); return R
 const dealOf = (save, week) => { const D = save.sponsors?.deals ?? [], W = save.season?.weeks ?? []; return D.length ? D[W.slice(0, Math.max(0, W.indexOf(week))).filter((w) => w.event?.kind === 'sponsor').length % D.length] : null; };
 /** the Sponsor Challenge a deal (or an offer) asks for: named after it and its wish, e.g. 'Shell Overtake Challenge', with its objectives; with no deal, the team's Overtake Challenge */
 export const challengeOf = (d) => { const kind = d?.target.kind ?? 'top', goals = T.side.challenge.objectives[kind]; return { name: `${d?.name ?? 'Team'} ${T.side.challenge.name[kind]} Challenge`, goals, objectives: goals.map(challengeText) }; };
-/** an event's name on every screen */
+/** an event's name on every screen: a done challenge keeps the name it ran under (the deals' turns shift when one is signed or ends) */
 export function eventName(save, week) {
   const e = week.event; if (!e) return null;
   if (e.kind === 'test') return week.kind === 'pre' ? 'Pre-season shakedown' : 'Team test';
-  return challengeOf(dealOf(save, week)).name;
+  return e.result?.name ?? challengeOf(dealOf(save, week)).name;
 }
 /** what pressing Advance would cost, in words; empty when nothing is lost */
 export function advanceWarnings(save) {
@@ -408,7 +408,7 @@ export function finishSide(save, value) {
   const credit = d && medal === 3 && !d.dayCredit && !d.met, bonus = credit ? ((d.dayCredit = true), sponsorCredit(save, d)) : 0, pkg = spec.kind === 'test' && medal === 3 ? 1 : 0, coins = pay + bonus;
   if (d) d.mood = clamp(d.mood + (medal === 3 ? 1 : medal ? 0 : -1), 1, SPONSORS.startMood + 3);
   gainXp(save, xp); save.wallet.coins += coins; save.garage.package += pkg;
-  const r = (currentWeek(save).event.result = { kind: spec.kind, value: Number.isFinite(value) ? value : null, ...(met ? { met } : {}), medal, xp, coins, package: pkg });
+  const r = (currentWeek(save).event.result = { kind: spec.kind, value: Number.isFinite(value) ? value : null, ...(met ? { met, name: spec.name, objectives: spec.objectives } : {}), medal, xp, coins, package: pkg });
   const lines = [xp ? `+${xp} XP` : null, coins ? `+${coins.toLocaleString('en')} U` : null, pkg ? 'a free upgrade level, in the Garage' : null, credit ? `a step toward ${d.name}'s target` : null, d ? `${d.name} goodwill ${d.mood}` : null];
   post(save, 'event', `${spec.name}: ${met ? `${medal}/${met.length}, ` : ''}${['no medal', 'bronze', 'silver', 'gold'][medal]}`, lines.filter(Boolean).join(', ') || 'Nothing earned this time.', pkg ? { tab: 'garage' } : null);
   return r;

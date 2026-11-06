@@ -188,6 +188,8 @@
 .cx-objs span { display: flex; align-items: center; gap: var(--sp-2); }
 .cx-objs small { font-size: var(--fs-micro); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-2); }
 .cx-objs .icon { flex: none; font-size: var(--icon-s); }
+.cx-objs .miss { color: var(--c-ink-2); }
+.cx-objs .miss .icon { color: var(--neg); }
 .cx-side { grid-column: 2; grid-row: 2 / 4; display: grid; grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--sp-4); min-height: 0; }
 .cx-gridlist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1) var(--sp-4); }
 .cx-slot { display: grid; grid-template-columns: calc(20 * var(--u)) 4px minmax(0, 1fr) auto; align-items: center; gap: var(--sp-2); padding: 2px var(--sp-2); font-size: var(--fs-body); border-radius: var(--r-1); }

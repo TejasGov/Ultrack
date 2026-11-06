@@ -25,7 +25,7 @@ const CAUSE = { contact: 'Contact on track', pass: 'Swapped places on track', te
 const record = ({ w, l }) => (!w && !l ? 'no finish together yet' : w > l ? `${w}-${l} to you` : w < l ? `${l}-${w} to them` : `${w}-${l}`);
 /** what a sponsor day is, wherever one is described */
 const CHALLENGE = 'Two laps from the back of a six-car field, judged on what your sponsor wants to see: bronze for one objective, silver for two, gold for all three. Gold lifts their goodwill and counts toward their target once a season; no medal costs goodwill.';
-const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'drift', news: 'mail' };
+const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'coin', news: 'mail' };
 const conds = (R) => [icon(LOOK[R.look][1], { label: LOOK[R.look][0] }), icon(WX_ICON[R.weather], { label: WEATHER[R.weather].label })];
 const scroller = (cls, ...kids) => h(`div.lscroll.${cls}`, { onscroll: (e) => fadeMore(e.currentTarget) }, ...kids);
 
@@ -118,9 +118,11 @@ export function CareerHubScreen(game) {
           h('div.cx-objs', {}, spec.objectives.map((t) => h('span', {}, icon('plus'), t)))], notices(save));
     if (w.activity) { const a = C.itemOf(w.activity.id); return hero('practice', `This week · ${C.TYPES.find((t) => t.id === a.type).name}`, a.name, h('p.cx-note', {}, a.type === 'off' ? 'Time off. The optional event this week is skipped.' : a.type === 'ad' ? `The shoot for ${SPONSORS.brands[w.activity.brand]?.name ?? 'your sponsor'} takes the week.` : a.line), notices(save)); }
     const e = w.event;
-    return hero(e ? e.kind : 'practice', `This week · ${e ? EVENT[e.kind][0] : 'Pre-season'}`, e?.result ? `${C.eventName(save, w)}: ${MEDAL[e.result.medal]}` : 'Nothing on this week',
+    return hero(e ? e.kind : 'practice', `This week · ${e ? EVENT[e.kind][0] : 'Pre-season'}`, e?.result ? `${C.eventName(save, w)}: ${MEDAL[e.result.medal]}` : 'Nothing on this week', metList(e?.result),
       h('p.cx-note', {}, `Next up: ${R.name}, round ${R.round} of ${n}, at ${t.name}.`), notices(save));
   }
+  /** a done challenge's objectives, each ticked or crossed (an old drift result has none) */
+  const metList = (r) => (r?.met && r.objectives ? h('div.cx-objs', {}, r.objectives.map((t, i) => h(r.met[i] ? 'span' : 'span.miss', {}, icon(r.met[i] ? 'check' : 'close'), t))) : null);
   /** the seat review's warning (6.7) and a deal already signed for next season */
   function notices(save) {
     const me = save.contract, w = me.warning, act = C.currentWeek(save).activity;
@@ -177,7 +179,7 @@ export function CareerHubScreen(game) {
       : w.kind === 'market' ? [h('p.cx-note', {}, save.clock.season === 1 ? 'One week for sponsors. Teams wait for the season end: your first season is probation.' : 'One week when teams can talk to you and you can approach them. Anything you sign starts next season.')]
         : w.kind === 'end' ? [h('p.cx-note', {}, 'The season review, your team\'s verdict, and the market: every offer for next season.')]
           : [h('p.cx-note', {}, e.kind === 'test' ? 'Optional. One flying lap against the team\'s targets; gold earns a free upgrade level.' : `Optional. ${CHALLENGE}`),
-            h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Result', e.result ? MEDAL[e.result.medal] : e.skipped ? 'Skipped' : empty()), w.activity ? stat('Activity', C.itemOf(w.activity.id).name) : null)];
+            h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Result', e.result ? MEDAL[e.result.medal] : e.skipped ? 'Skipped' : empty()), w.activity ? stat('Activity', C.itemOf(w.activity.id).name) : null), metList(e.result)];
     return [blockHead('calendar', `Week ${i + 1}`, i === save.clock.week ? 'This week' : i < save.clock.week ? 'Done' : `In ${i - save.clock.week} ${i - save.clock.week === 1 ? 'week' : 'weeks'}`), h('strong.cx-title', {}, weekTitle(save, w)), body];
   }
   let calBox = null;
@@ -209,7 +211,7 @@ export function CareerHubScreen(game) {
     const col = (kind, ic, title, right, note, rows) => h(`div.cx-b.k-${kind}`, {}, blockHead(ic, title, right), h('p.cx-note', {}, note), scroller('cx-list', rows.length ? rows : h('p.cx-note', {}, 'None this season.')));
     return [col('race', 'race', 'Race weekends', `Required · ${save.season.calendar.length} rounds`, 'Practice, qualifying, one try at the race. Points, money and your rating.', races),
       col('test', 'time-trial', 'Test days', 'Optional', 'One flying lap against your team\'s targets. Gold earns a free upgrade level.', side('test')),
-      col('sponsor', 'drift', 'Sponsor events', 'Optional', CHALLENGE, side('sponsor'))];
+      col('sponsor', 'coin', 'Sponsor events', 'Optional', CHALLENGE, side('sponsor'))];
   }
 
   // ---------------------------------------------------------------------------------------------- Inbox

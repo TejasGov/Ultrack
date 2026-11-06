@@ -485,7 +485,7 @@ export class Game {
       A.cheer(p <= 3);
       if (p === 1) { A.play('fireworks/big-finale.ogg', { bus: 'crowd', gain: 0.9, delay: 0.6 }); this.sayLater('winner_fireworks', { priority: 2 }, 7000); }
     } else if (s.mode === 'drift') {
-      if (!this.careerRun) {                     // a sponsor day pays by its own targets (career.finishSide)
+      if (!this.careerRun) {
         this.driftRecord = store.driftRecord(hero.key, e.score);
         this.pay({ mode: 'drift', score: e.score, record: this.driftRecord });
       }

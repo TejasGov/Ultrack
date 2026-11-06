@@ -361,7 +361,7 @@ try {
       [['lapPar', 1.02], base, true], [['lapPar', 1.005], base, true], [['lapPar', 1.005], { ...base, bests: { ...base.bests, H: 100.6 } }, false], [['lapPar', 1.02], { ...base, bests: { ...base.bests, H: null } }, false],
       [['fastest', 0], base, true], [['fastest', 0], { ...base, bests: { ...base.bests, B: 100.1 } }, false],
       [['passMate', 0], base, true], [['passMate', 0], { ...base, order: ['A', 'B', 'M', 'H', 'C', 'D'] }, false],
-      [['beatMate', 0], base, true], [['beatMate', 0], { ...base, bests: { ...base.bests, M: 100 } }, false],
+      [['beatMate', 0], base, true], [['beatMate', 0], { ...base, bests: { ...base.bests, M: 100 } }, false], [['beatMate', 0], { ...base, bests: { ...base.bests, M: null } }, true],
       [['beatMateBy', 2], base, true], [['beatMateBy', 2], { ...base, totals: [['H', 202], ['M', 203]] }, false],
     ];
     for (const [goal, v, want] of table) assert.equal(one(goal, v), want, `${goal.join(' ')} should be ${want}`);
@@ -379,6 +379,9 @@ try {
     const toDay = (s) => { while (C.currentWeek(s).event?.kind !== 'sponsor' || C.currentWeek(s).event.result) { if (C.currentWeek(s).kind === 'race') round(s, 4); else C.advanceWeek(s); } return C.sideSpec(s); };
     const run = (s, place) => { const x = toDay(s), ai = x.gridOrder.filter((k) => k !== x.hero); return C.finishSide(s, place ? { order: [...ai.slice(0, place - 1), x.hero, ...ai.slice(place - 1)], bests: {}, contacts: {}, offTrack: 0, totals: [], dnf: false } : { order: [...ai, x.hero], dnf: true }); };
     assert.equal(toDay(rot).deal.name, 'Shell'); assert.deepEqual(toDay(rot).goals, X.objectives.top); run(rot, 4); assert.equal(toDay(rot).deal.name, 'Rolex', 'the next day serves the other deal'); assert.deepEqual(toDay(rot).goals, X.objectives.quali);
+    // a done day keeps the name and objectives it ran under, whatever the deals do later
+    const d0 = sw.find((w) => w.event.result); assert.equal(d0.event.result.name, 'Shell Overtake Challenge'); assert.deepEqual(d0.event.result.objectives, X.objectives.top.map(R.challengeText)); assert.equal(d0.event.result.met.length, 3);
+    rot.sponsors.deals.unshift(deal('jio', 'Jio', 'quali')); assert.equal(C.eventName(rot, d0), 'Shell Overtake Challenge', 'a signing never renames a past day'); rot.sponsors.deals.shift();
     // goodwill: gold +1 up to startMood + 3, silver and bronze nothing, no medal -1 down to 1 (never ending the deal); only the deal the day serves
     const cap = R.SPONSORS.startMood + 3, gw = signed(1401); gw.sponsors.deals.push(deal('shell', 'Shell', 'top', cap));
     assert.equal(run(gw, 1).medal, 3); assert.equal(gw.sponsors.deals[0].mood, cap, 'capped'); assert.equal(run(gw, 4).medal, 1); assert.equal(gw.sponsors.deals[0].mood, cap, 'bronze: no change');

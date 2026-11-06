@@ -269,7 +269,7 @@ export function challengeMet(spec, v) {
   const test = { gain: (n) => spec.racers.length - p >= n, top: (n) => p <= n, podiumClean: () => p <= 3 && !hits, winBy: (s) => p === 1 && (!v.order[1] || ahead(v.order[1], s)),
     noContact: () => !hits, offMax: (n) => off <= n, cleanTop: (n) => p <= n && !hits && !off,
     lapPar: (x) => lap && best <= spec.par * x, fastest: () => lap && Object.values(v.bests).every((b) => !Number.isFinite(b) || best <= b),
-    passMate: () => mate > p, beatMate: () => mate > 0 && lap && !(v.bests[spec.mate] < best), beatMateBy: (s) => mate > p && ahead(spec.mate, s) };
+    passMate: () => mate > p, beatMate: () => mate > 0 && lap && !(Number.isFinite(v.bests[spec.mate]) && v.bests[spec.mate] < best), beatMateBy: (s) => mate > p && ahead(spec.mate, s) };
   return spec.goals.map(([k, n]) => test[k](n));
 }
 /** one objective in words */
