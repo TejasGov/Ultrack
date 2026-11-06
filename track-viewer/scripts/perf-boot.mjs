@@ -5,7 +5,10 @@
 // times the venue and collision GLBs were downloaded (exits 1 unless each was downloaded exactly once in every round). Runs against a production build:
 //   npx vite build --outDir qa/10x-scratch/dist && npx vite preview --host 127.0.0.1 --port 5391 --strictPort --outDir qa/10x-scratch/dist
 //   node scripts/qa-lock.mjs -- node scripts/perf-boot.mjs <track> [--throttle 50,40] [--rounds 3] [--ab-load <flag>] [--url http://127.0.0.1:5391]
-//        [--out qa/perf/boot-<track>.json]
+//        [--garage 0] [--out qa/perf/boot-<track>.json]
+//   --garage <ms>: right after Enter, open the garage for that long, then Escape. The garage pauses the menu preload before it reaches
+//   ensureVenue, so a car's 1.8 s LOD1 timer fires first (Enter -> preload done then includes the garage time).
+//   With farAfterVenue on, it also exits 1 if any LOD1 body was requested before venue-ready (farEarly).
 //   --ab-load <flag>: A = /?perf=<flag> (the saving off), B = /, alternating A B A B ...
 import { chromium } from 'playwright-core';
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -13,7 +16,7 @@ import { join, dirname } from 'node:path';
 import { args as parseArgs, root } from './perf-open.mjs';
 
 const { flag, pos } = parseArgs(process.argv.slice(2));
-const track = pos[0] ?? 'qingshan', [mbit, rtt] = flag('throttle', '50,40').split(',').map(Number), ROUNDS = +flag('rounds', 3), abLoad = flag('ab-load', null);
+const track = pos[0] ?? 'qingshan', [mbit, rtt] = flag('throttle', '50,40').split(',').map(Number), ROUNDS = +flag('rounds', 3), abLoad = flag('ab-load', null), garage = +flag('garage', 0);
 const base = flag('url', 'http://127.0.0.1:5391'), out = flag('out', `qa/perf/boot-${track}${abLoad ? '-abload-' + abLoad : ''}.json`);
 const CHROME = { executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] };
 const PHASES = ['title', 'menu', 'Start', 'grid', 'GO'];
@@ -39,6 +42,7 @@ async function run(query) {
   await page.waitForFunction(() => window.game?.loaded, null, { timeout: 600000, polling: 50 });
   at.loaded = await now();
   await page.keyboard.press('Enter'); at.enter = await now();
+  if (garage) { await page.evaluate(() => window.game.show('garage')); await page.waitForTimeout(garage); await page.keyboard.press('Escape'); }
   await page.waitForFunction(() => window.game.preloadP, null, { timeout: 60000 });
   at.preloaded = await page.evaluate(() => window.game.preloadP.then(() => performance.now(), () => -performance.now()));
   await page.click('.bento-tile[data-id=race]');
@@ -67,10 +71,11 @@ async function run(query) {
   const ms = (x) => Math.round(x);
   return { firstAsset: ms(r.first[0]), firstUrl: r.first[1].slice(0, 60), carReady: ms(r.marks['car-ready'] ?? -1), loaded: ms(at.loaded), titleReady: ms(r.ready), preloadDone: ms(at.preloaded - at.enter), venueReady: ms(r.marks['venue-ready'] ?? -1),
     venueGets: r.gets[0], collisionGets: r.gets[1], farStart: ms(r.far[0]), farEnd: ms(r.far[1]), goAt: ms(at.go),
+    farEarly: !/(^|,)(off|farAfterVenue)(,|$)/.test(new URLSearchParams(query).get('perf') ?? '') && r.far[0] >= 0 && r.far[0] < (r.marks['venue-ready'] ?? Infinity) ? 1 : 0,
     startToGrid: ms(at.grid - at.start), ...longest, errors: errors.length };
 }
 
-const result = { track, throttle: { mbit, rtt }, rounds: ROUNDS, abLoad, arms: {} };
+const result = { track, throttle: { mbit, rtt }, rounds: ROUNDS, abLoad, garage, arms: {} };
 for (let k = 0; k < ROUNDS; k++) for (const [arm, q] of abLoad ? [['A', 'perf=' + abLoad], ['B', '']] : [['base', '']]) {
   const r = await run(q);
   (result.arms[arm] ??= { rounds: [] }).rounds.push(r);
@@ -93,3 +98,5 @@ writeFileSync(join(root, out), JSON.stringify(result, null, 1));
 console.log('written', out);
 const twice = Object.values(result.arms).flatMap((a) => a.rounds).filter((r) => r.venueGets !== 1 || r.collisionGets !== 1);
 if (twice.length) { console.log(`FAIL: ${twice.length} round(s) without exactly one venue and one collision GLB download`); process.exit(1); }
+const early = Object.values(result.arms).flatMap((a) => a.rounds).filter((r) => r.farEarly);
+if (early.length) { console.log(`FAIL: ${early.length} round(s) requested a LOD1 car body before venue-ready with farAfterVenue on`); process.exit(1); }

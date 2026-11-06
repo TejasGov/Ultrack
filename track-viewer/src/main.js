@@ -512,7 +512,7 @@ const SCENERY_TEST = new URLSearchParams(location.search).get('scenery') === '1'
 const gpuTimer = new GpuTimer(renderer);
 const dynres = new DynamicResolution();
 const hdriCache = new Map();
-let gltfLoader, venuePromise, venueRoot = null, venueGen = 0, venueBytes = null;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
+let gltfLoader, venuePromise, venueRoot = null, venueGen = 0, venueBytes = null, openFar = null;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
 const garageRoom = DEV ? null : new GarageRoom(renderer);
 // the room's PMREM (~0.5 s, garage-room.js ensureEnvironment) in the task after the first car GLB request goes out, so it runs during
 // that download (~0.7 s at 50 Mbit) instead of before any fetch; nothing else uses the default manager's onStart
@@ -525,6 +525,7 @@ async function load() {
   // The garage needs only the selected car and small track metadata. Venue geometry is deferred until Start.
   field = new Field(scene, { loadCar: async (...a) => { const c = await assemble(...a); applyRainGlass(c.materials.glass); return c; } });   // rain beads on the glass (finish.js)
   field.stableCapture = PERF.stableCapture;   // the warm-up compiles the capture's programs too
+  holdFar();
   field.fx = new CarFx(scene);                 // exhaust, pops, nitro, tyre smoke (carkit/fx.js)
   field.fx.attach(composer, camera);           // its smoke and spray: a soft-particle pass after the scene (fx-smoke.js SmokePass)
   const carsReady = field.load(gltfLoader, game ? [game.startupCar] : undefined);
@@ -556,10 +557,14 @@ function prefetchVenue() {
   p.catch(() => {});   // loadVenue falls back to its own download
   venueBytes = { url, p };
 }
+// farAfterVenue: the distant car bodies are held from the start, so a car whose 1.8 s timer fires before the first ensureVenue (the hero
+// on boot, a car picked while the player lingers on the title) waits too; ensureVenue opens the gate with its own promise. Every race passes
+// through ensureVenue, and a gate still held at a track switch carries over, so no car is left without its LOD1.
+function holdFar() { if (PERF.farAfterVenue && !openFar) field.farGate = new Promise((r) => { openFar = r; }); }
 function ensureVenue() {
   // a load that failed part-way may have installed the GLB and glows already: unload it, or the retry stacks a second copy
   const p = venuePromise ??= loadVenue().catch((error) => { if (venuePromise === p) unloadVenue(); throw error; });
-  if (PERF.farAfterVenue) field.farGate = p.catch(() => {});   // a venue that fails never holds the distant car bodies back
+  if (PERF.farAfterVenue) { field.farGate = p.catch(() => {}); openFar?.(field.farGate); openFar = null; }   // a venue that fails never holds the distant car bodies back
   return p;
 }
 
@@ -591,7 +596,7 @@ function unloadVenue() {
 async function setTrack(id) {
   const next = trackOf(id), prev = TRACK;
   if (next === prev) return;
-  unloadVenue(); warming = null; field.farGate = Promise.resolve();
+  unloadVenue(); warming = null; holdFar();
   TRACK = next; mergeLooks();
   try { track = await fetchTrack(); } catch (error) { TRACK = prev; mergeLooks(); track = await fetchTrack(); aimSun(LOOKS[params.look]); throw error; }
   buildPath(); field.setTrack(curve, curveLength); field.grid(track); newTrails(field.cars);
