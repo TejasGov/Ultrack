@@ -323,7 +323,7 @@ export class Game {
     const h0 = handling(F.hero.key);
     const ev = EV.has(F.hero.key) || this.audio.engine?.ev;
     this.gearbox = new Gearbox(h0.top, this.audio.engine?.prof.redline ?? 8000, ev);
-    this.careerRun = career && { ...career, crashes: 0, spins: 0, hits: [], contacts: {}, passes: {}, offTrack: 0 };   // hits: the km/h of each hard hit, billed by the career (qualifying and races only); contacts (km/h by car) and passes (by car) heat rivals
+    this.careerRun = career && { ...career, crashes: 0, spins: 0, hits: [], contacts: {}, passes: {}, offTrack: 0, orders: null };   // hits: the km/h of each hard hit, billed by the career (qualifying and races only); contacts (km/h by car) and passes (by car) heat rivals; orders: a team order given in this race (career.orders is only what the team would ask)
     this.session = new Session(F, mode, { laps: S.laps, drivers: career?.drivers });     // last: update() runs a session only once it is complete
     this.setBusy('');
     this.mode = mode; this.lastLaps = S.laps;
