@@ -98,7 +98,7 @@ export class Session {
     // a new position counts once it has held for 0.6 s (side by side, the order flickers)
     const pos = this.order.indexOf(hero) + 1;
     this.posHold = pos !== this.heroPos ? this.posHold + dt : 0;
-    if (this.posHold > 0.6) { if (this.state === 'running' && this.M.rivals) this.emit('position', { from: this.heroPos, to: pos }); this.heroPos = pos; this.posHold = 0; }   // a race's: qualifying has no places on the road
+    if (this.posHold > 0.6) { if (this.state === 'running' && this.M.rivals) this.emit('position', { from: this.heroPos, to: pos, by: this.order[this.heroPos - 1]?.key }); this.heroPos = pos; this.posHold = 0; }   // a race's: qualifying has no places on the road. by: the car now in the hero's old place, the one the hero passed or that passed the hero
     // ---- the hero: wrong way, off track, crashes, spins
     if (this.state === 'running') {
       const s = this.trk.get(hero), L = this.field.linePts, a = L[s.idx], b = L[(s.idx + 3) % this.N];
@@ -110,7 +110,7 @@ export class Session {
       if ((decel > 24 || Math.abs(hv.aBody.z) > 34) && this.t - (this.crashT ?? -9) > 2) { this.crashT = this.t; this.emit('crash', { kmh: Math.max(kmh, (this.lastKmh ?? kmh)) }); const v0 = this.lastVel ?? hv.rb?.linvel(); if (v0) this.hit = { t: this.t, v0, peak: 0 }; }
       // how hard the hit really was, for the repair bill: the most velocity it took away in the 0.4 s after the first spike (a rub along the barrier deflects the car and takes little, a wall head-on takes it all)
       const vel = hv.rb?.linvel();   // (a test's stand-in car has no body)
-      if (vel && this.hit) { const w = this.hit; w.peak = Math.max(w.peak, Math.hypot(vel.x - w.v0.x, vel.z - w.v0.z) * 3.6); if (this.t - w.t >= 0.4) { this.hit = null; this.emit('impact', { kmh: Math.round(w.peak) }); } }
+      if (vel && this.hit) { const w = this.hit; w.peak = Math.max(w.peak, Math.hypot(vel.x - w.v0.x, vel.z - w.v0.z) * 3.6); if (this.t - w.t >= 0.4) { this.hit = null; this.emit('impact', { kmh: Math.round(w.peak) }); this.contactAt(hv.cur.pos, Math.round(w.peak)); } }
       if (vel) this.lastVel = { x: vel.x, z: vel.z };
       if (Math.abs(hv.state.beta) > 1.9 && hv.state.drift < 0.5 && this.t - (this.spinT ?? -9) > 4) { this.spinT = this.t; this.emit('spin'); }
       this.lastKmh = kmh;
@@ -119,6 +119,13 @@ export class Session {
     if (this.state === 'done') this.doneT = (this.doneT ?? 0) + dt;
     const ev = this.events; this.events = [];
     return ev;
+  }
+
+  /** a hard hit with another car within 6 m: whose it was, for the career's rivals (a hit alone on the barrier names nobody) */
+  contactAt(p, kmh) {
+    let near = null, best = 36;
+    for (const c of this.field.cars) { const d = c === this.field.hero ? Infinity : c.vehicle.cur.pos.distanceToSquared(p); if (d < best) { best = d; near = c; } }
+    if (near) this.emit('contact', { key: near.key, kmh });
   }
 
   lapDone(c, s) {

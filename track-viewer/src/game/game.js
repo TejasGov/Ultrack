@@ -323,7 +323,7 @@ export class Game {
     const h0 = handling(F.hero.key);
     const ev = EV.has(F.hero.key) || this.audio.engine?.ev;
     this.gearbox = new Gearbox(h0.top, this.audio.engine?.prof.redline ?? 8000, ev);
-    this.careerRun = career && { ...career, crashes: 0, spins: 0, hits: [] };   // hits: the km/h of each hard hit, billed by the career (qualifying and races only)
+    this.careerRun = career && { ...career, crashes: 0, spins: 0, hits: [], contacts: {}, passes: {}, offTrack: 0 };   // hits: the km/h of each hard hit, billed by the career (qualifying and races only); contacts (km/h by car) and passes (by car) heat rivals
     this.session = new Session(F, mode, { laps: S.laps, drivers: career?.drivers });     // last: update() runs a session only once it is complete
     this.setBusy('');
     this.mode = mode; this.lastLaps = S.laps;
@@ -441,6 +441,7 @@ export class Game {
       }
       case 'finalLap': H.message('Final lap', '', 'gold', 2.6); A.play('race/final-lap-bell.ogg'); this.say('final_lap', { priority: 3 }); break;
       case 'position':
+        if (this.careerRun && e.by) this.careerRun.passes[e.by] = (this.careerRun.passes[e.by] ?? 0) + 1;
         A.play(e.to < e.from ? 'race/position-up.ogg' : 'race/position-down.ogg', { gain: 0.6 });
         if (e.to === 1) this.say('lead_taken', { priority: 3, cooldown: 15 });
         else if (e.from === 1) this.say('lead_lost', { priority: 3, cooldown: 15 });
@@ -448,8 +449,9 @@ export class Game {
         if (e.to < e.from) A.play('crowd/hoots.ogg', { bus: 'crowd', gain: 0.4 });
         break;
       case 'invalid': H.message('Lap invalid', 'track limits', 'bad', 2.2); break;
-      case 'offTrack': this.say('off_track', { priority: 2, cooldown: 14 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
+      case 'offTrack': if (this.careerRun) this.careerRun.offTrack++; this.say('off_track', { priority: 2, cooldown: 14 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
       case 'impact': this.careerRun?.hits.push(e.kmh); break;
+      case 'contact': if (this.careerRun) (this.careerRun.contacts[e.key] ??= []).push(e.kmh); break;
       case 'crash': if (this.careerRun) this.careerRun.crashes++; A.crash(e.kmh); this.say(e.kmh > 70 ? 'hard_crash' : 'soft_crash', { priority: 3, cooldown: 10 }); A.play('crowd/gasp.ogg', { bus: 'crowd', gain: 0.5 }); break;
       case 'spin': if (this.careerRun) this.careerRun.spins++; this.say('spin', { priority: 2, cooldown: 12 }); A.play('crowd/groan.ogg', { bus: 'crowd', gain: 0.5 }); break;
       case 'driftBank': H.message(`+${Math.round(e.pts).toLocaleString('en')}`, `×${e.mult.toFixed(1)}`, 'gold', 1.6); A.play('race/checkpoint.ogg', { gain: 0.5 }); break;
@@ -507,7 +509,7 @@ export class Game {
     const run = this.careerRun, s = this.session; if (!run || !s) return;
     const T = s.trk.get(this.field.hero), rows = s.mode === 'race' ? s.results() : null;
     const data = { kind: run.kind, best: T.best, mateLap: s.rivalLap(), score: s.drift?.score ?? null, dnf: retired, crashes: run.crashes, hits: run.hits, spins: run.spins, pro: store.settings.assists === 'pro',
-      order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])) };
+      order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])), contacts: run.contacts, passes: run.passes, offTrack: run.offTrack, totals: rows?.map((r) => [r.key, r.total]) };
     this.careerRun = null; this.hideScreens(); this.endSession(); this.lineup(); this.state = 'menu'; this.cameraFor('menu');
     run.done(data);
   }
