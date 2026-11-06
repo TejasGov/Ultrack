@@ -341,7 +341,7 @@ XP per round, before the tier multiplier (x1.0 / 1.3 / 1.6):
 
 | Source | XP |
 |---|---|
-| Finish place P1 to P8 | 120 / 95 / 75 / 60 / 45 / 35 / 25 / 20 |
+| Finish place P1 to P8 | 145 / 120 / 100 / 85 / 70 / 60 / 50 / 45 |
 | Each place above the expected finish | +25 (max +100) |
 | Pole | +30 |
 | Qualifying ahead of the expected grid slot | +10 per place |
@@ -527,12 +527,13 @@ The team accepts if total demand <= leverage `L = 1 + 4 x interest + 1 x (other 
 
 Rivalries are earned on track, from the cars the player actually raced (`world.js` `heatAfter`, `tuning.json` `rivals`):
 
-- **Rival heat** (0-100) per driver, per race the player is in: +6 for finishing next to a driver, +3 more for beating them; +8 for each contact (+14 over 30 km/h, from the session's `contact` event: a hard hit with a car within 6 m); +3 for each pass between the two (two at most a race, from the `position` event's `by`); +8 to the teammate for each qualifying duel. A driver who did none of these that round cools by 5 (by 1 in a round the player sat out: they never met). -10 to everyone when the player changes team. At 0 the rivalry is gone.
+- **Rival heat** (0-100) per driver, per race the player is in: +6 for finishing next to a driver, +3 more for beating them; +8 for each contact (+14 over 30 km/h, from the session's `contact` event: a hard hit with a car within 6 m); +3 for each pass between the two (two at most a race, from the `position` event's `by`); +8 to the teammate for each qualifying duel, but the duel alone never lifts them past 60 (`duelMax`): a teammate becomes the nemesis only by racing the player close, touching or passing them. A driver who did none of these that round cools by 5 (by 1 in a round the player sat out: they never met). -10 to everyone when the player changes team. At 0 the rivalry is gone.
 - **Causes and the record.** `save.career.rivalry[code] = { cause, since: [season, round], w, l }`. The first contact or pass starts it (cause `contact` or `pass`), and so do a duel (`teammate`) and a signing: the new teammate starts at heat 20 (`teammate`), the driver the player displaced at 30 (`displaced`). Heat that reaches 40 from racing close alone is `grid`, as are rivalries migrated from schema 7. `w`/`l` count the races both finished. The Driver tab's Rivals block shows the cause and the record ("Contact on track · 4-2 to you").
 - **40 or more** is a rival: beating one pays REP +4 (x1.5 from a higher tier).
 - **The nemesis** (`nemesisOf`): each weekend, the hottest driver on the grid at 70 or more (a seeded pick between equals), at most one. Everyone else is held at 79, so a *feud* (80+) is only ever the nemesis. Beating the nemesis pays REP x1.5 and XP +25; the race report names them and the Rivals block marks them.
 - No effect on physics or pace. Lore pairs from `teams.json` `rivals` feed the press, not the player's heat.
-- The REP that used to come from rivals near the player in the 16-car classification (about 16 a race) now comes from the Round Rating: 16 REP per point above 6.0 (was 9), and a retirement costs 11 (was 6), so the Maestro and Legend offers arrive when they did (`scripts/career-metrics.mjs`, `scripts/career-sim.mjs`).
+- The REP and XP that used to come from rivals near the player in the 16-car classification (about 16 REP a race, and 400-700 XP a season from feuds for an average or strong driver) now come from the race itself: 18 REP per Round Rating point above 6.0 (was 9), a retirement costs 11 REP (was 6), and the finish places pay 25 XP more each (P1 145, was 120), so the Maestro and Legend offers, and the Number One seat, arrive when they did (`scripts/career-metrics.mjs`, `scripts/career-sim.mjs`).
+- `raceSetup` names the nemesis with `nemesisAmong`, which only looks: opening a session (practice, qualifying, an event) never changes anyone's heat. Only `heatAfter` holds the others at 79.
 
 ### 6.7 Getting dropped, and the way back
 
@@ -920,7 +921,7 @@ The paddock press (career/media.js): after each round a story on the winner, the
 
 ### 13.6 Balance, as retuned (career-sim, 80 careers each)
 
-Rating above 8.5 counts half. Trust: per rating point 2, objective ±3, bonus objective 1, duel ±2. REP: per rating point 9, win 8, podium 4, Drivers' title 100, Teams' 60. XP: over-expected cap 60, quali per place 5, bonus objective 25, events 25 / 50 / 75. Prize multipliers 0.4 / 0.6 / 1.0, salaries Maestro 450 / 650, Legend 800 / 1,200 / 1,800, signing 1.5-3 x salary.
+Rating above 8.5 counts half. Trust: per rating point 2, objective ±3, bonus objective 1, duel ±2. REP: per rating point 18, retirement -11, win 8, podium 4, Drivers' title 100, Teams' 60. XP: finish place 145 to 45, over-expected cap 60, quali per place 5, bonus objective 25, events 25 / 50 / 75. Prize multipliers 0.4 / 0.6 / 1.0, salaries Maestro 450 / 650, Legend 800 / 1,200 / 1,800, signing 1.5-3 x salary.
 
 ### 13.7 Fixed from the audit
 

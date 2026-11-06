@@ -81,7 +81,7 @@ function callUp(save) {
 
 /**
  * Rival heat after a race (6.6), over the cars that raced (`raced`, in finishing order): finishing next to a driver and beating them heats
- * the rivalry, so does each contact (harder over 30 km/h), each pass between you (two at most) and the teammate's qualifying duel; everyone else
+ * the rivalry, so does each contact (harder over 30 km/h), each pass between you (two at most) and the teammate's qualifying duel (up to duelMax); everyone else
  * cools. ev: { contacts: { key: n | [km/h, ...] }, passes: { key: n }, duel: the teammate's code or null }. Returns the REP and XP the
  * rivals beaten earn (a rival is heat 40+; the nemesis pays more), judged on the heat from before this race, and this race's nemesis
  * with whether they were beaten.
@@ -96,11 +96,12 @@ export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {
     if (beat && was >= R.rival) {
       const nem = code === nemesis?.code, v = Math.round(R.rep * (tierOf(CAR[g.key].team).rank > myRank ? R.higherTier : 1) * (nem ? R.feudRep : 1));
       rep += v; if (nem) xp += R.feudXp;
-      lines.push([`${nem ? 'Feud' : 'Rival'} beaten: ${personOf(save, code).name}`, v]);
+      lines.push([`${nem ? 'Nemesis' : 'Rival'} beaten: ${personOf(save, code).name}`, v]);
     }
-    const hits = (g && ev.contacts?.[g.key]) || 0, contact = (Array.isArray(hits) ? hits : Array(hits).fill(0)).reduce((a, kmh) => a + (kmh > 30 ? R.contactHard : R.contact), 0);
-    const pass = g ? Math.min(ev.passes?.[g.key] ?? 0, 2) * R.pass : 0, duel = code === ev.duel ? R.duel : 0, near = g && me >= 0 && Math.abs(g.i - me) <= R.near;
-    H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : contact || pass || duel ? 0 : -(me < 0 ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // no cooling for a driver you touched, passed or fought in qualifying; a round you sat out cools slowly (you never met)
+    const hits = (g && ev.contacts?.[g.key]) || 0, contact = (Array.isArray(hits) ? hits : Array(Math.max(0, hits | 0)).fill(0)).reduce((a, kmh) => a + (kmh > 30 ? R.contactHard : R.contact), 0);
+    // the duel alone stops at duelMax, short of a nemesis: a teammate becomes one only by racing you close, touching or passing you
+    const pass = g ? Math.min(ev.passes?.[g.key] ?? 0, 2) * R.pass : 0, duel = code === ev.duel ? clamp(R.duelMax - was, 0, R.duel) : 0, near = g && me >= 0 && Math.abs(g.i - me) <= R.near;
+    H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : contact || pass || code === ev.duel ? 0 : -(me < 0 ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // no cooling for a driver you touched, passed or fought in qualifying; a round you sat out cools slowly (you never met)
     if (!H[code]) { delete H[code]; delete RV[code]; continue; }   // the save keeps only live rivalries
     if (!RV[code] && (contact || pass || duel || H[code] >= R.rival)) RV[code] = { cause: contact ? 'contact' : pass ? 'pass' : duel ? 'teammate' : 'grid', since, w: 0, l: 0 };   // a contact, a pass or a duel starts the record; racing close only once it is a rivalry
     if (RV[code] && g && h2h) RV[code][g.i > me ? 'w' : 'l']++;
@@ -113,10 +114,12 @@ export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {
  * Everyone else is held at 79 or less, so a feud is only ever the nemesis.
  */
 export function nemesisOf(save, keys) {
-  const H = save.career.heat, code = pickNemesis(save, keys);
-  for (const c of Object.keys(H)) if (c !== code) H[c] = Math.min(H[c], T.rivals.nemesis + 9);
-  return code ? { code, key: keys.find((k) => save.world.seats[k] === code) } : null;
+  const H = save.career.heat, n = nemesisAmong(save, keys);
+  for (const c of Object.keys(H)) if (c !== n?.code) H[c] = Math.min(H[c], T.rivals.nemesis + 9);
+  return n;
 }
+/** nemesisOf without holding anyone: for a look before the race (raceSetup), which must not change the save */
+export const nemesisAmong = (save, keys) => { const code = pickNemesis(save, keys); return code ? { code, key: keys.find((k) => save.world.seats[k] === code) } : null; };
 function pickNemesis(save, keys) {
   const H = save.career.heat ?? {}, hot = keys.map((k) => save.world.seats[k]).filter((c) => c && c !== YOU && (H[c] ?? 0) >= T.rivals.nemesis);
   const top = Math.max(...hot.map((c) => H[c])), tied = hot.filter((c) => H[c] === top).sort();

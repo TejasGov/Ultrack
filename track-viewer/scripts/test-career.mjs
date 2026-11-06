@@ -154,7 +154,7 @@ try {
   if (!grid0.includes(madCar)) h0.season.current.quali.grid = grid0.map((k) => (R.CAR[k].team === R.CAR[madCar].team ? madCar : k));
   const order0 = [hero0, ...h0.season.current.quali.grid.filter((k) => k !== hero0 && k !== madCar), madCar];
   const r0 = C.finishRace(h0, { order: order0, best: {}, crashes: 0, spins: 0 });
-  assert.ok(r0.repLines.some(([l]) => /Feud beaten/.test(l)), 'beating a feud rival pays REP'); assert.ok(r0.xpLines.some(([l]) => l === 'Feud won'));
+  assert.ok(r0.repLines.some(([l]) => /Nemesis beaten/.test(l)), 'beating the nemesis pays REP'); assert.ok(r0.xpLines.some(([l]) => l === 'Nemesis beaten'));
   assert.ok(h0.career.heat.MAD < 85, 'a driver far away in the order cools'); assert.ok(C.rivalsOf(h0).some((x) => x.code === 'MAD'));
   assert.deepEqual(r0.nemesis, { code: 'MAD', name: C.personOf(h0, 'MAD').name, beat: true }, 'the report names the nemesis');
   // ---- earned rivalries (6.6): only the cars that raced heat up; contacts and passes count; one nemesis a weekend; a head-to-head record
@@ -166,6 +166,13 @@ try {
       assert.ok(!(code(s, raced[3]) in s.career.heat), 'two places away: nothing');
       const mc = code(s, out[0]); W.heatAfter(s, raced, me, false, { contacts: {}, passes: {}, duel: mc }); assert.equal(s.career.heat[mc], RT.duel, 'the qualifying duel heats the teammate, raced or not'); assert.equal(s.career.rivalry[mc].cause, 'teammate');
       const sat = s.career.heat[mc]; W.heatAfter(s, raced.slice(1), me, false); assert.equal(s.career.heat[mc], sat - RT.sitOut, 'a round the player sat out cools slowly'); }
+    { const { s, me, raced, out } = at(173), mc = code(s, out[0]), duel = { contacts: {}, passes: {}, duel: mc };
+      s.career.heat[mc] = RT.duelMax - 3; W.heatAfter(s, raced, me, false, duel); assert.equal(s.career.heat[mc], RT.duelMax, 'the duel alone stops short of a nemesis'); assert.ok(RT.duelMax < RT.nemesis);
+      W.heatAfter(s, raced, me, false, duel); assert.equal(s.career.heat[mc], RT.duelMax, 'and holds there while the duels go on');
+      const mk = raced[1], mcode = code(s, mk); s.career.heat[mcode] = RT.nemesis - 1; W.heatAfter(s, raced, me, false, { contacts: { [mk]: 1 }, passes: {}, duel: mcode }); assert.ok(s.career.heat[mcode] >= RT.nemesis, 'racing them on top of the duel can make a nemesis'); }
+    { const s = signed(174), any = Object.values(s.world.seats).filter((c) => c !== W.YOU).slice(0, 2); s.career.heat = { [any[0]]: 92, [any[1]]: 88 }; const before = JSON.stringify(s.career.heat);
+      C.raceSetup(s); assert.equal(JSON.stringify(s.career.heat), before, 'opening a session (no grid yet) changes no heat');
+      C.finishQuali(s, 1); const st = C.raceSetup(s); assert.equal(JSON.stringify(s.career.heat), before, 'nor does the race setup'); assert.deepEqual(st.nemesis, W.nemesisAmong(s, st.racers)); }
     { const { s, me, raced } = at(171), [a, b, c] = [raced[3], raced[4], raced[5]];
       W.heatAfter(s, raced, me, false, { contacts: { [a]: 1, [b]: [45], [c]: [12, 50] }, passes: { [a]: 5 } }); s.career.heat[code(s, a)] = 90; W.heatAfter(s, raced, me, false, { contacts: { [a]: 9, [b]: 9 } }); assert.equal(Object.values(s.career.heat).filter((h) => h >= RT.feud).length, 1, 'after a race too, one feud at most');
       s.career.heat = {}; W.heatAfter(s, raced, me, false, { contacts: { [a]: 1, [b]: [45], [c]: [12, 50] }, passes: { [a]: 5 } });
