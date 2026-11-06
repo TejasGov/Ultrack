@@ -26,6 +26,11 @@ export class DriverHoardings{
     this.post=new THREE.BoxGeometry(.18,3,.18);
     this.metal=new THREE.MeshStandardMaterial({color:0x1b2028,roughness:.65});
   }
+  /** a board's meshes before any poster has loaded, for the menu warm-up: the same programs (a stand-in map; its material stays alive, or its program would go with it) */
+  sample(){
+    this.sampleMat??=new THREE.MeshBasicMaterial({map:new THREE.Texture(),toneMapped:false});
+    const board=new THREE.Group();board.add(new THREE.Mesh(this.frame,this.metal),new THREE.Mesh(this.plane,this.sampleMat));return board;
+  }
   clear(){this.revision++;this.entries=[];this.root.clear();for(const m of this.materials??[])m.dispose();this.materials=[];}
   async set(keys,track){
     this.clear();const revision=this.revision,entries=racingPosters(keys);

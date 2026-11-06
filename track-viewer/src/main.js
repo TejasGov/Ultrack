@@ -742,7 +742,7 @@ async function prepareRaceRenderer({isCancelled=()=>false}={}) {
   // Both program sets (the frame and the hero's cube capture) are submitted together so the driver builds them in
   // parallel; after a menu warm-up (warmRace) every one is already cached.
   let ready;
-  const {compileVisible}=await import('./warmup.js');
+  const {compileVisible,firstUse}=await import('./warmup.js');
   const compileStarted=performance.now();
   try{renderer.setRenderTarget(composer.readBuffer);ready=compileVisible(renderer,scene,camera,{frustum:true,isCancelled,depth:SHADOW_PASSES});}
   finally{renderer.setRenderTarget(target);}
@@ -752,12 +752,23 @@ async function prepareRaceRenderer({isCancelled=()=>false}={}) {
   const reflectStarted=performance.now();
   await field.prepareReflection(renderer,hiddenForCapture(),isCancelled);
   if(isCancelled())return;
+  await heroEnvPrograms(isCancelled);   // after a menu warm-up these are cached
+  if(isCancelled())return;
+  await firstUse(renderer,{isCancelled,ms:500});   // and their first use paid (Start waits at most half a second on one still linking)
+  if(isCancelled())return;
   timings.reflectionsMs=Math.round(performance.now()-reflectStarted);
   // First texture uploads, post shaders and shadow maps are paid before the starting lights.
   const renderStarted=performance.now();composer.render();
   timings.firstFrameMs=Math.round(performance.now()-renderStarted);
   timings.programs=renderer.info.programs.length;
   console.info('Graphics preparation:',timings);
+}
+/** prepareReflection hands the hero's paint, glass and lights the capture's envMap after the frame's programs were built: build those variants too. */
+async function heroEnvPrograms(isCancelled,inflight){
+  const {compileVisible}=await import('./warmup.js'),was=renderer.getRenderTarget();let ready;
+  try{renderer.setRenderTarget(composer.readBuffer);ready=compileVisible(renderer,scene,camera,{extra:[field.hero.root],around:raceState,isCancelled,depth:SHADOW_PASSES,inflight});}
+  finally{renderer.setRenderTarget(was);}
+  return ready;
 }
 // what the hero's cube capture leaves out (Field.update and prepareReflection do the same)
 const hiddenForCapture=()=>[rain,people.group,glows?.points,reflector,trails?.mesh,field.fx?.smoke,field.fx?.fire];
@@ -783,14 +794,26 @@ function compilePost(){
   const none={outputColorSpace:renderer.outputColorSpace,toneMapping:renderer.toneMapping,toneMappingExposure:renderer.toneMappingExposure,setRenderTarget(){},render(){},clear(){}};
   composer.passes.find(p=>'_toneMapping' in p)?.render(none,composer.writeBuffer,composer.readBuffer);
   const last=composer.passes.map(p=>p.enabled).lastIndexOf(true),seen=new Set(),jobs=[];
+  const compile=(screen,object,cam=camera,lit=empty)=>{
+    try{renderer.setRenderTarget(screen?null:composer.readBuffer);jobs.push(renderer.compileAsync(object,cam,lit));}   // the last pass draws to the screen (sRGB), the rest to linear targets
+    finally{renderer.setRenderTarget(was);}
+  };
   composer.passes.forEach((pass,i)=>{
     const group=new THREE.Group();
-    for(const v of Object.values(pass).flat())
-      if(v?.isShaderMaterial&&!seen.has(v)){seen.add(v);group.add(new THREE.Mesh(quad,v));}
-    if(!group.children.length)return;
-    try{renderer.setRenderTarget(i===last?null:composer.readBuffer);jobs.push(renderer.compileAsync(group,camera,empty));}   // the last pass draws to the screen (sRGB), the rest to linear targets
-    finally{renderer.setRenderTarget(was);}
+    for(const v of Object.values(pass).flat()){
+      const m=v?.isShaderMaterial?v:v?._mesh?.material;   // its own materials, or the one inside a FullScreenQuad of its own (the smoke composite)
+      if(m?.isShaderMaterial&&!seen.has(m)){seen.add(m);group.add(new THREE.Mesh(quad,m));}
+    }
+    if(i===0)for(const q of [avgCells,avgOne])group.add(new THREE.Mesh(quad,q.material));   // the RenderPass's world-glass average, drawn only while a twin is on
+    if(group.children.length)compile(i===last,group);
   });
+  // the smoke pass draws two scenes of its own: the sky probe (lit by the scene's environment alone) and the soft particles
+  const smoke=field?.fx?.pass,world=smoke?.world;
+  if(smoke){
+    const p=smoke.probe;
+    if(world.environment){p.environment=world.environment;p.environmentIntensity=world.environmentIntensity;p.environmentRotation.copy(world.environmentRotation);compile(false,p,smoke.probeCam,p);}   // what its render sets
+    compile(false,smoke.scene,smoke.camera,smoke.scene);   // both into its own linear targets
+  }
   return Promise.all(jobs);
 }
 const WARM_INFLIGHT=+(new URLSearchParams(location.search).get('inflight')||3),warmInflight=()=>game?.starting?Infinity:WARM_INFLIGHT;   // Start is waiting on it: no reason to hold back
@@ -801,20 +824,21 @@ function warmRace(keys,stop=()=>false){
   const id=keys.join();
   if(warming?.id===id)return warming.done;
   if(!field?.hero||!venueLights)return;
-  const roots=keys.map(k=>field.all.find(c=>c.key===k)?.root).filter(Boolean);
+  const roots=keys.map(k=>field.all.find(c=>c.key===k)?.root).filter(Boolean),boards=TRACK.has.hoardings?[driverHoardings.sample()]:[];   // Start puts up the drivers' boards
   const started=performance.now();
   const done=(async()=>{
-    const {compileVisible}=await import('./warmup.js');
+    const {compileVisible,firstUse}=await import('./warmup.js');
     const was=renderer.getRenderTarget();let frame;
-    try{renderer.setRenderTarget(composer.readBuffer);frame=compileVisible(renderer,scene,camera,{extra:roots,around:raceState,isCancelled:stop,depth:SHADOW_PASSES,inflight:warmInflight});}   // the race renders into the composer's target: no tone mapping in its programs
+    try{renderer.setRenderTarget(composer.readBuffer);frame=compileVisible(renderer,scene,camera,{extra:[...roots,...boards],around:raceState,isCancelled:stop,depth:SHADOW_PASSES,inflight:warmInflight});}   // the race renders into the composer's target: no tone mapping in its programs
     finally{renderer.setRenderTarget(was);}
     await Promise.all([
       frame,
-      field.compileCube(renderer,{extra:roots.filter(r=>r!==field.hero.root),around:fn=>raceState(()=>cubeHide(fn)),isCancelled:stop,inflight:warmInflight}),
+      field.compileCube(renderer,{extra:[...roots.filter(r=>r!==field.hero.root),...boards],around:fn=>raceState(()=>cubeHide(fn)),isCancelled:stop,inflight:warmInflight}),
       compilePost(),
     ]);
-    // the first capture also builds the hero's envMap variants (the capture's PMREM has its own size) and the PMREM filters
-    if(!stop()&&!game?.session)await field.prepareReflection(renderer,hiddenForCapture(),stop);   // mid-session it has run at Start, and it hides the hero across frames
+    // the first capture builds the PMREM filters and gives the hero its envMap (the capture's PMREM has its own size): then the hero's variants with it
+    if(!stop()&&!game?.session){await field.prepareReflection(renderer,hiddenForCapture(),stop);await heroEnvPrograms(stop,warmInflight);}   // mid-session it has run at Start, and it hides the hero across frames
+    await firstUse(renderer,{isCancelled:stop});
     console.info('Race shaders warmed:',Math.round(performance.now()-started),'ms,',renderer.info.programs.length,'programs');
   })().finally(()=>{if(stop()&&warming?.done===done)warming=null;});   // a cancelled warm-up may be retried
   warming={id,done};return done;
