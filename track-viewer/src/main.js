@@ -121,9 +121,10 @@ const params = {
 //   mirrorFirst     the road mirror draws before the frame, not nested inside it: a nested render has lights of its own, so three re-keyed every material it shares with the frame, twice a frame
 //   singlePass      transparent double-sided sheets (fences, glass) draw once: three otherwise draws them twice, back then front, re-keying the material on both draws
 //   stableCapture   the hero's reflection capture keeps the frame's light count and shadow flag, so three neither re-keys every lit material around it nor keeps a second program set: see Field.captureLights
+//   farAfterVenue   the distant (LOD1) car bodies download after the venue GLB, not against it: field.farGate, set in ensureVenue
 // ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
 const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
-const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst'), postMsaa: saving('postMsaa') };
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst'), postMsaa: saving('postMsaa'), farAfterVenue: saving('farAfterVenue') };
 const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
@@ -547,6 +548,7 @@ const NO_LIGHTS = { floodlights: [], standLamps: [], streetLamps: [] };   // a t
 function ensureVenue() {
   // a load that failed part-way may have installed the GLB and glows already: unload it, or the retry stacks a second copy
   const p = venuePromise ??= loadVenue().catch((error) => { if (venuePromise === p) unloadVenue(); throw error; });
+  if (PERF.farAfterVenue) field.farGate = p.catch(() => {});   // a venue that fails never holds the distant car bodies back
   return p;
 }
 
@@ -578,7 +580,7 @@ function unloadVenue() {
 async function setTrack(id) {
   const next = trackOf(id), prev = TRACK;
   if (next === prev) return;
-  unloadVenue(); warming = null;
+  unloadVenue(); warming = null; field.farGate = Promise.resolve();
   TRACK = next; mergeLooks();
   try { track = await fetchTrack(); } catch (error) { TRACK = prev; mergeLooks(); track = await fetchTrack(); aimSun(LOOKS[params.look]); throw error; }
   buildPath(); field.setTrack(curve, curveLength); field.grid(track); newTrails(field.cars);

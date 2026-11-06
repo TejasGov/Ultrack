@@ -400,7 +400,7 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero, 
 // ------------------------------------------------------------------------------------------------ the field
 
 export class Field {
-  constructor(scene,{loadCar=assemble}={}) { this.loadCar=loadCar;this.queue=new AssetQueue(2);this.pending=new Map();this.scene = scene; this.cars = []; this.parked = []; this.all = []; this.envT = 0; this.lightMode = 'low'; }
+  constructor(scene,{loadCar=assemble}={}) { this.loadCar=loadCar;this.queue=new AssetQueue(2);this.farGate=Promise.resolve();this.pending=new Map();this.scene = scene; this.cars = []; this.parked = []; this.all = []; this.envT = 0; this.lightMode = 'low'; }
 
   async load(loader, keys = DEFAULT_LINEUP) {
     this.loader=loader;
@@ -426,8 +426,9 @@ export class Field {
           const c=await this.loadCar(this.loader,key,KEYS.indexOf(key),key===this.firstKey);
           c.root.visible=false;this.all.push(c);
           // The distant body is not needed for the first menu/showroom frame. Its meshes arrive casting: a car already out of
-          // the shadow band turns them off here (forgetting c.cast instead would also drop its 3 m hysteresis state).
-          const timer=setTimeout(()=>this.queue.run(()=>c.lod.userData.loadFar().then(()=>{if(c.cast===false)c.lod.traverse((o)=>{if(o.isMesh)o.castShadow=false;});}),{low:true}).catch(e=>console.warn('Distant car LOD:',e)),1800);timer.unref?.();
+          // the shadow band turns them off here (forgetting c.cast instead would also drop its 3 m hysteresis state). farGate (main.js
+          // ensureVenue) holds them until the venue is in, so their bytes do not compete with the race-critical download.
+          const timer=setTimeout(()=>this.farGate.then(()=>this.queue.run(()=>c.lod.userData.loadFar().then(()=>{if(c.cast===false)c.lod.traverse((o)=>{if(o.isMesh)o.castShadow=false;});}),{low:true})).catch(e=>console.warn('Distant car LOD:',e)),1800);timer.unref?.();
           return c;
         }).catch(error=>{this.pending.delete(key);throw error;});
         this.pending.set(key,promise);
