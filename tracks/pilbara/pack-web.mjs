@@ -9,6 +9,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const out = join(root, 'tracks', 'pilbara', 'out');
 const viewer = join(root, 'track-viewer');
 process.env.TRACK = 'pilbara';
+process.env.npm_config_offline ??= 'true';       // npx inherits it: the pack never reaches the registry, even when the caller forgets the variable
 process.env.TEX_MAX ??= '2048';
 process.env.TEX_CAPS ??= join(root, 'tracks', 'pilbara', 'texture_caps.json');      // 1k for everything but the road set (maps-spec.md section 6)
 
