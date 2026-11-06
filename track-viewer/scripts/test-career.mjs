@@ -608,6 +608,14 @@ try {
       const d = signed(1350); assert.equal(O.demandTransfer(d).reason, 'happy', 'a content driver cannot demand'); d.life.happy = 8; round(d, 8, 999); d.life.happy = 8; assert.equal(C.currentWeek(d).kind, 'open'); const t0 = d.contract.trust, r = O.demandTransfer(d);
       assert.ok(r.ok && r.offers.length >= 1 && r.offers.length <= 2); assert.ok(d.season.mid.every((o) => r.offers.includes(o.id) && o.team !== d.contract.team && o.w1), 'offers through the mid-season market'); assert.equal(d.contract.trust, t0 - 6); assert.equal(d.life.demanded, 1); assert.equal(O.demandTransfer(d).reason, 'asked', 'once a season');
       const id = r.offers[0]; assert.ok(C.findOffer(d, id)); const sg = C.signMid(d, id); assert.ok(sg && d.contract.next, 'it can be signed like any W1 offer'); toReview(d, 8, 999); assert.equal(d.pending.offers.length, 1, 'the signed deal stands'); assert.equal(d.pending.offers[0].team, d.contract.next.team); assert.ok(d.pending.offers.length >= 1);
+      { const L = await server.ssrLoadModule('/src/game/career/ledger.js'); let g, os = [];
+        for (const mt of R.TEAM_IDS.filter((t) => R.TIERS.teams[t].tier === 'maestro')) {   // a Maestro driver with no reputation: below every Maestro bar, and the other Maestro teams answer anyway
+          if (os.some((o) => O.interestFor(g, o.team, { cool: false }) === null)) break;
+          g = signed(1353); g.life.happy = 8; round(g, 8, 999); g.life.happy = 8; for (const t of R.TEAM_IDS) L.note(g, 'spurned', { team: t, w: 2 });
+          const car = R.seatCar(mt, 'B'), Wg = g.world; Wg.seats[g.contract.car] = Wg.seats[car]; Wg.seats[car] = 'YOU'; Object.assign(g.contract, { team: mt, seat: 'B', car }); g.season.tier = 'maestro'; g.career.rep = 0;
+          const ids = O.demandTransfer(g).offers; os = g.season.mid.filter((o) => ids.includes(o.id) && !o.reserve); }
+        for (const o of os) { assert.equal(o.cool, undefined, 'the demand ignores refusals, so no cool line'); if (O.interestFor(g, o.team, { cool: false }) === null) assert.ok(!/clear their bar/.test(o.why) && /were not looking at you/.test(o.why), `below the bar, a true reason: ${o.why}`); }
+        assert.ok(os.some((o) => O.interestFor(g, o.team, { cool: false }) === null), 'a team below whose bar the player is answers too'); }
       const e = signed(1351); e.life.happy = 8; round(e, 8, 999); e.life.happy = 8; O.demandTransfer(e); C.advanceWeek(e); assert.equal(e.season.mid.length, 0, 'offers lapse when the week is advanced'); assert.equal(C.currentWeek(e).kind, 'race');
       const f = signed(1352); f.life.happy = 8; assert.equal(C.currentWeek(f).kind, 'pre'); C.advanceWeek(f); assert.equal(O.demandTransfer(f).reason, 'race', 'not in a race week'); }
     // upkeep: paid at the season's start, and what the wallet cannot carry is sold at half price: never a negative wallet, never a debt
@@ -787,8 +795,9 @@ try {
         W.marketMoves(s); assert.equal(Wd.seats[k], 'ZZX'); return s.career; };
       assert.equal(lost(false).heat.ZZX, undefined, 'a shortlisted driver takes a seat the player never talked about: no rivalry');
       const K = lost(true); assert.equal(K.heat.ZZX, R.TUNING.rivals.seatLost); assert.equal(K.rivalry.ZZX.cause, 'seat', 'the team made an offer or was approached: a rivalry over the seat'); }
-    { let m = null; for (let i = 2200; i < 2400 && !m; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 1); const out = s.pending.offers.filter((o) => o.team !== s.contract.team && !o.reserve); if (out.length >= 2 && out.some((o) => /have matched/.test(o.why))) m = out; }   // two bids: the lesser one matches
-      assert.ok(m, 'two outside offers, one matching the other, on some seeds'); const lo = m.find((o) => /have matched/.test(o.why)); assert.equal(lo, m.at(-1), 'the lesser one'); assert.ok(lo.salary <= Math.max(...m.map((o) => o.salary))); }
+    { let m = null; for (let i = 2200; i < 2400 && !m; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 1); const out = s.pending.offers.filter((o) => o.team !== s.contract.team && !o.reserve); if (out.length >= 2 && out.some((o) => /have (matched|raised their offer)/.test(o.why))) m = out; }   // two bids: the lesser one matches
+      assert.ok(m, 'two outside offers, one answering the other, on some seeds'); const lo = m.find((o) => /have (matched|raised their offer)/.test(o.why)); assert.equal(lo, m.at(-1), 'the lesser one');
+      assert.equal(/have matched/.test(lo.why), lo.salary >= Math.max(...m.slice(0, -1).map((o) => o.salary)), 'it says matched only when it pays as much'); assert.ok(lo.salary <= Math.max(...m.map((o) => o.salary))); }
     { const s = signed(2010); s.schema = 8; delete s.world.contracts; delete s.career.ledger; C.migrate(s); assert.equal(s.schema, C.SCHEMA);   // a schema-8 save gets contracts and an empty ledger
       assert.deepEqual(Object.keys(s.world.contracts).sort(), Object.values(s.world.seats).filter((c) => c !== W.YOU).sort()); assert.deepEqual(s.career.ledger, []); }
   }

@@ -286,7 +286,7 @@ export function seasonOffers(save, { cup, title, dropped }) {
   }
   const bids = outside.sort((a, b) => rankOf(b.team) - rankOf(a.team) || b.interest - a.interest).slice(0, T.offers.maxOffers);
   const lo = bids.length >= 2 && bids.at(-1), hi = bids[0], up = lo && Math.min(round50(lo.salary * 1.1), Math.max(lo.salary, hi.salary));   // two teams bidding: the lesser one matches the other, a step up in pay but never past it
-  if (up > lo.salary) { lo.salary = up; lo.why += ` ${teamName(lo.team)} have matched ${teamName(hi.team)}.`; }
+  if (up > lo.salary) { const pct = Math.round((up / lo.salary - 1) * 100); lo.salary = up; lo.why += up >= hi.salary ? ` ${teamName(lo.team)} have matched ${teamName(hi.team)}.` : ` ${teamName(lo.team)} have raised their offer ${pct} % to answer ${teamName(hi.team)}.`; }
   list.push(...bids); for (const o of bids) talked(save, o.team);
   if (!dropped && outside.length && me.trust >= T.trust.renew && !list.some((o) => o.team === me.team) && rng(save.seed, 'counter', season)() < T.offers.counter)
     list.push(offer(save, me.team, 'A', { status: me.status === 'number1' ? 'number1' : 'lead', salary: round5(Math.max(me.salary, tier.salary.A) * (1 + T.offers.counterRaise)), signing: 0, seasons: 2, interest: T.offers.promoteInterest, tag: '-counter',
@@ -411,6 +411,8 @@ export function demandTransfer(save) {
   const made = [];
   for (const [team, interest] of cands.sort((a, b) => rankOf(b[0]) - rankOf(a[0]) || b[1] - a[1]).slice(0, 2)) {
     const o = outsideOffer(save, team, interest, { w1: true, tag: '-tr' }); if (!o) continue;
+    delete o.cool;                                            // this interest leaves any refusal out (cool: false), so the offer does not quote one
+    if (interestFor(save, team, { cool: false }) === null) o.why = `${teamName(team)} were not looking at you (${teamOutlook(save, team).why}), but they have a seat.${choiceLine(save)}`;   // below their bar: their reasons would be untrue
     o.why += ' You asked to move, and they would take you next season.'; o.expires = save.clock.week;
     save.season.mid.push(o); made.push(o); talked(save, team);
   }
