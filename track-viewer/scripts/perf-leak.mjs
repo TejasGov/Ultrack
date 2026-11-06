@@ -2,12 +2,12 @@
 // cycle two forced GCs, then the JS heap (used + ArrayBuffer backing stores) and three's GPU object counts. Exit 1 if the heap grows by more than
 // 40 MB from cycle 1 to the last cycle: a venue switch must give back what the venue took. Each venue loads from prefetched bytes, as the game's
 // menu does (WP8 earlyBytes), so the buffer must be let go too.
-//   node scripts/qa-lock.mjs -- node scripts/perf-leak.mjs [--cycles 3] [--tracks llano,marina,qingshan] [--url http://127.0.0.1:5301]
+//   node scripts/qa-lock.mjs -- node scripts/perf-leak.mjs [--cycles 3] [--tracks llano,marina,qingshan] [--url http://127.0.0.1:5180]
 import { openViewer, args as parseArgs } from './perf-open.mjs';
 
 const { flag } = parseArgs(process.argv.slice(2));
 const cycles = +flag('cycles', 3), tracks = flag('tracks', 'llano,marina,qingshan').split(','), LIMIT = 40;
-const { browser, page, errors } = await openViewer({ track: 'marina', mode: 'dev', base: flag('url', 'http://127.0.0.1:5301') });
+const { browser, page, errors } = await openViewer({ track: 'marina', mode: 'dev', base: flag('url', 'http://127.0.0.1:5180') });
 const cdp = await page.context().newCDPSession(page);
 await cdp.send('HeapProfiler.enable');
 const MB = (b) => +(b / 2 ** 20).toFixed(1), rows = [];

@@ -1,14 +1,14 @@
 // Bit-exact check of every track's collision world (docs/10x/perf-spec.md, WP0 e): in a ?dev=1 page, PhysicsWorld.create builds each track's
 // world twice, and a SHA-256 covers every collider (in handle order: shape type, vertices, indices, friction, restitution) plus the void-wall
 // mesh. It also checks that concurrent creates share one collision load and that a failed load is not cached. The first run writes the baseline (qa/perf/collision-hash.json); a later run fails if a hash differs from it, or build 1 from build 2.
-//   node scripts/qa-lock.mjs -- node scripts/test-collision-hash.mjs [--url http://127.0.0.1:5301] [--rebase]
+//   node scripts/qa-lock.mjs -- node scripts/test-collision-hash.mjs [--url http://127.0.0.1:5180] [--rebase]   (npm run test:collision-hash, with npm run dev up)
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { openViewer, args as parseArgs, root } from './perf-open.mjs';
 
 const { flag, has } = parseArgs(process.argv.slice(2));
 const file = join(root, 'qa', 'perf', 'collision-hash.json');
-const { browser, page, errors } = await openViewer({ track: 'marina', mode: 'dev', base: flag('url', 'http://127.0.0.1:5301') });
+const { browser, page, errors } = await openViewer({ track: 'marina', mode: 'dev', base: flag('url', 'http://127.0.0.1:5180') });
 const got = await page.evaluate(async () => {
   const { PhysicsWorld } = await import('/src/physics/world.js'), { TRACKS, trackUrl } = await import('/src/tracks.js');
   const hash = async (w) => {

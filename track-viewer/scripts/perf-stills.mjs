@@ -3,7 +3,7 @@
 // and pixel-diff.mjs between them is the harness floor. Views: grid-near / grid-mid / grid-far (camera 12, 40 and 90 m behind the start line:
 // the parked cars in LOD bands 0, 1 and 2), T1 and canopy (perf-open.mjs views()).
 //   node scripts/qa-lock.mjs -- node scripts/perf-stills.mjs <track> --save <dir> [--looks day,night] [--query perf=<flag>] [--toggle <flag>]
-//        [--url http://127.0.0.1:5301]
+//        [--url http://127.0.0.1:5180]
 //   --toggle <flag>: in one session, <dir>/A (viewer.perf[flag] off), <dir>/A2 (off again: the floor) and <dir>/B (on), then pixel-diff of each
 //   --dump-wheels: also writes <dir>/wheels.json, every car's stand-in wheels and far proxy as car-local triangles (position, normal, uv)
 //        per material plus each mesh's castShadow, receiveShadow, renderOrder, frustumCulled and visible (WP2's geometry check)
@@ -69,7 +69,7 @@ const settle = (page) => page.evaluate(async () => {
 });
 if (has('title')) {   // --title: the title screen's showroom frame (the game build), from the room's start camera with the turntable stopped
   const save = flag('save', null); if (!save) { console.error('usage: node scripts/perf-stills.mjs <track> --title --save <dir> [--query perf=x]'); process.exit(2); }
-  const { browser, page, errors } = await openViewer({ track: pos[0] ?? 'qingshan', look: 'day', mode: 'title', base: flag('url', 'http://127.0.0.1:5301'), query: flag('query', '') });
+  const { browser, page, errors } = await openViewer({ track: pos[0] ?? 'qingshan', look: 'day', mode: 'title', base: flag('url', 'http://127.0.0.1:5180'), query: flag('query', '') });
   await settle(page);
   const png = await page.evaluate(() => {
     const v = window.viewer, g = v.garageRoom, c = g.controls, damping = c.enableDamping;
@@ -88,7 +88,7 @@ const { C, N, V } = views(track);
 const cum = [0]; for (let i = 1; i < N; i++) cum.push(cum[i - 1] + Math.hypot(C[i][0] - C[i - 1][0], C[i][2] - C[i - 1][2]));   // main.js buildPath's cumLen: dist along the lap
 const VIEWS = { 'grid-near': -12, 'grid-mid': -40, 'grid-far': -90, T1: cum[V.T1], canopy: cum[V.canopy] };
 const query = [track === 'tokyo' ? '' : 'track=' + track, flag('query', '')].filter(Boolean).join('&');
-const { browser, page, errors } = await openViewer({ track, look: looks[0], mode: 'dev', base: flag('url', 'http://127.0.0.1:5301'), query });
+const { browser, page, errors } = await openViewer({ track, look: looks[0], mode: 'dev', base: flag('url', 'http://127.0.0.1:5180'), query });
 
 await settle(page);
 const info = await page.evaluate(() => ({ tier: window.viewer.device.tier, quality: window.viewer.params.quality, people: window.viewer.people(), track: window.viewer.trackId() }));

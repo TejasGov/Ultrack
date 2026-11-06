@@ -3,7 +3,7 @@
 // of --frames rendered frames, --rounds times; per arm it prints the median of the per-round values and their spread (max - min).
 // A win counts only when the difference of the arm medians exceeds the larger arm's spread (the same bench moves ~2.5 ms between runs).
 //   node scripts/qa-lock.mjs -- node scripts/perf-frame.mjs <track> [--look day] [--frames 720] [--rounds 4] [--ab <flag>] [--ab-load <flag>]
-//        [--programs] [--url http://127.0.0.1:5301] [--out qa/perf/frame-<track>.json]
+//        [--programs] [--url http://127.0.0.1:5180] [--out qa/perf/frame-<track>.json]
 //   --ab <flag>       runtime saving: one page, blocks with viewer.perf[flag] = false (A) then true (B), A B A B ...
 //   --ab-load <flag>  load-time saving: a fresh browser per block on one shared profile, A = /?perf=<flag> (saving off), B = /, A B A B ...
 //   --programs        the shader programs that exist when the menu warm-up (game.preloadP) is done, and again after the blocks and 10 s more
@@ -20,7 +20,7 @@ import { args as parseArgs, setupLook, root } from './perf-open.mjs';
 
 const { flag, pos, has } = parseArgs(process.argv.slice(2));
 const track = pos[0] ?? 'qingshan', look = flag('look', 'day'), FRAMES = +flag('frames', 720), ROUNDS = +flag('rounds', 4);
-const ab = flag('ab', null), abLoad = flag('ab-load', null), base = flag('url', 'http://127.0.0.1:5301'), W = 1600, H = 900;
+const ab = flag('ab', null), abLoad = flag('ab-load', null), base = flag('url', 'http://127.0.0.1:5180'), W = 1600, H = 900;
 const out = flag('out', `qa/perf/frame-${track}${ab ? '-ab-' + ab : abLoad ? '-abload-' + abLoad : has('quit') ? '-quit' : ''}.json`);
 const CHROME = { executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] };
 const log = (...a) => console.log(`[${track}]`, ...a), errors = [];
