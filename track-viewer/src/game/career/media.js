@@ -76,7 +76,7 @@ export function coverRound(save, report) {
 /** an Open or the Masters is over (finishRace): the road the player took to the Final, and the honours he earned */
 export function coverOpen(save, report) {
   const me = save.player.name, gp = report.name, track = report.track, o = report.open;
-  if (!report.dnq && !o.seeded && o.lcq) story(save, 'podium', `${me} came through the Last Chance`, `P${o.lcq} at Mojave Dry Lake was enough for a place in the ${gp} Final.`, { track, you: 'podium' });
+  if (!report.dnq && !o.seeded && o.lcq) story(save, 'podium', `${me} came through the Last Chance`, `P${o.lcq} at ${o.lcqAt} was enough for a place in the ${gp} Final.`, { track, you: 'podium' });
   if (report.honours.includes('triple')) story(save, 'win', `${me} completes the Triple Crown`, 'Japan, India and Venice: all three Opens won in one career. Nobody in the paddock is calling it luck.', { track, you: 'win' });
   if (report.honours.includes('slam')) story(save, 'win', `${me} takes the Grand Slam`, 'All three Opens in a single season. The record books have been opened to a new page.', { track, you: 'win' });
 }

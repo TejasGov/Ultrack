@@ -8,7 +8,7 @@ export async function loadCareer(server) {
   const C = await server.ssrLoadModule('/src/game/career/career.js'), R = await server.ssrLoadModule('/src/game/career/rules.js');
   return { C, R };
 }
-const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], llano: ['day', 'dusk'], tokyo: null, qingshan: null, venice: null };
+const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], llano: ['day', 'dusk'], tokyo: null, qingshan: null, venice: null, pilbara: ['day', 'dusk'], terminal: ['day', 'dusk'] };
 
 /** the sim's pick at a review: the highest tier, the A seat, then the highest pay; a reserve seat only when nothing else is left */
 const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
@@ -62,7 +62,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (rand() < 0.1) { const h = [Math.round(50 + rand() * 130)]; C.logHits(save, h); log.hits++; }   // a crash in qualifying
       C.finishQuali(save, lapNow()); if (!save.season.current.quali.grid.includes(car)) C.finishQuali(save, lapNow());   // a missed cut uses the one retry
     } else if (save.clock.phase === 'race') {
-      const q = save.season.current.quali, cur = save.season.current, o = cur.open, car = save.contract.car, lcq = o?.stage === 'lcq', V = o && !lcq ? C.currentRound(save) : C.qualiVenue(save);   // the laps in q.laps are Dry Lake's, so the model stays on that scale unless it is a Final
+      const q = save.season.current.quali, cur = save.season.current, o = cur.open, car = save.contract.car, lcq = o?.stage === 'lcq', V = o && !lcq ? C.currentRound(save) : C.qualiVenue(save);   // the laps in q.laps are the qualifying venue's, so the model stays on that scale unless it is a Final
       // a model, not a measurement: an AI car's pace is its par lap over its pace; a Tour round uses the qualifying laps, an Open's Final (whose seeds flew none) the model for every car
       const model = (k) => { const u = save.garage.upgrades[k], dev = k === car ? [u.engine, u.tyres, u.brakes, u.aero] : save.world.teams[R.CAR[k].team].dev; return R.parLap(V.track, k, V.weather, dev) / (k === car ? skill : R.paceOf(save.world.ratings[save.world.seats[k]])); };
       const t = Object.fromEntries(q.grid.map((k) => [k, (o && !lcq ? model(k) : q.laps[k] ?? (k === car ? model(k) : 999)) * (1 + noise(0.012 * Math.sqrt((lcq ? C.currentRound(save).lcqLaps : C.currentRound(save).laps) / 5)))]));   // fewer laps, fewer places change from the grid

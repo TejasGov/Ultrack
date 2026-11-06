@@ -147,3 +147,27 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 3. Morro Noturno is World 3 with Tokyo: should it be the career finale instead of Tokyo?
 4. Poly Haven CC0 texture sets the new surfaces need (lake bed, brick, setts, rusty metal, terracotta, rock): OK to download them when each build starts?
 5. Are the names right (Mojave Dry Lake, Infinia Track, Shajawa Stadium, Morro Noturno; The Proving Grounds, The Grand Tour, The Crown)?
+
+## 10. Pilbara Pit (qualifying venue)
+
+![Pilbara Pit plan](career-worlds/pilbara.svg)
+
+Built in `tracks/pilbara/build_pilbara.py`; the full spec is `docs/10x/maps-spec.md`.
+
+**Layout.** A haul road down an open-cut iron-ore mine in Western Australia: 1.75 km, 7 corners, 18 m of drop and climb. The start is on the rim, the lap descends through one r21 switchback and the bench esses to the pit floor, passes under the conveyor gallery, and climbs back over a blind crest onto the rim. Smoothed grade at most 6.1 %. Measured par 43.6 s. Day and dusk only, dry only.
+
+**Materials.** All local CC0 Poly Haven sets: red laterite on the terraced benches (slope-projected UVs), gravel on the run-off strip and windrows behind the jersey barriers, rusty corrugated iron and box-profile cladding on the crusher and shed, concrete on the barriers, asphalt on the road. The pit lake is plain water; the horizon is the goegap backdrop.
+
+**Budget (measured).** KTX2 visual 11.82 MB (cap 12), 210,900 triangles (cap 250k), 16 draws, 15 materials; collision 0.41 MB, 13,756 triangles. perf-mac: 8.16 ms average, 9.9 ms p95 at dusk, against Dry Lake's 8.34 ms in the same sitting.
+
+## 11. North Sea Terminal (qualifying venue)
+
+![North Sea Terminal plan](career-worlds/terminal.svg)
+
+Built in `tracks/terminal/build_terminal.py`; the full spec is `docs/10x/maps-spec.md`.
+
+**Layout.** A flat, walled container terminal on a North Sea quay, unbranded: 1.75 km, 6 corners. A 320 m quay straight runs between the legs of three ship-to-shore cranes with booms up, into the crane hairpin, square canyon corners between container stacks 1-5 high, the decreasing-radius reefer corner and a flick. Measured par 45.6 s. Day and dusk only, dry only.
+
+**Materials.** All local CC0 Poly Haven sets or textures derived from them: grey interlocking pavers for the yard (a grey derivative of the brown photo), box-profile steel for the containers in 7 muted tints (a grey derivative of the red-oxide photo) and the crane steel, seaworn stone on the quay edge, dirty concrete for the far ring and bases, asphalt on the road. The fenders use Llano's generated rubber strip. The sea is a static plane 2.5 m below the quay. No text or logos.
+
+**Budget (measured).** KTX2 visual 11.93 MB (cap 12), 129,796 triangles, 16 draws, 15 materials; collision 0.34 MB, 10,380 triangles. perf-mac: 8.18 ms average, 9.8 ms p95 at dusk.

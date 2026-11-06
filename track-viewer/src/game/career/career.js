@@ -4,6 +4,7 @@
 // Every roll happens once, when its moment comes, and its outcome is stored, so a reload never re-rolls (7.2).
 import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
+import { trackOf } from '../../tracks.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
   buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult, SPONSORS,
@@ -168,7 +169,7 @@ function prepareRound(save) {
   save.clock.phase = 'paddock';
 }
 // ---------------------------------------------------------------------------------------------- the Opens and the Masters
-// An Open (Japan, India, Venice) is one round in three stages. The top 4 of the Ultrack Ranking go straight to the Final. The other twelve fly one lap at Mojave Dry Lake
+// An Open (Japan, India, Venice) is one round in three stages. The top 4 of the Ultrack Ranking go straight to the Final. The other twelve fly one lap at the round's qualifying venue
 // (the round's qualifying), the fastest 8 race the Last Chance Qualifier there, and its top 4 reach the Final on the Open's own circuit. The Final grid is the four seeds in
 // ranking order, then the four Last Chance finishers in the order they finished: a season of results buys the front rows. The Masters is the Final alone, for the top 8 of the ranking.
 // cur.open = { kind, name, rank, seeds: [cars], seeded, stage: 'quali' | 'lcq' | 'final', to, lcq? }. Races the player is not in are computed from seeded laps, as a Tour qualifying is.
@@ -197,7 +198,7 @@ function closeLcq(save, order, best) {
   o.lcq = { order, best, through, finish: order.includes(hero) ? order.indexOf(hero) + 1 : null };
   setFinal(save, [...o.seeds, ...through], [...order.slice(T.open.lcqThrough), ...cur.quali.order.filter((k) => !order.includes(k))]);
   const name = (k) => (k === hero ? save.player.name : personOf(save, seats[k])?.name ?? seats[k]);
-  post(save, 'race', `Last Chance Qualifier: ${through.map(name).join(', ')} reach the ${R.name} Final`, `${name(order[0])} won it at Mojave Dry Lake.${through.includes(hero) ? ' You are in.' : o.seeded ? '' : ' You are out.'}`);
+  post(save, 'race', `Last Chance Qualifier: ${through.map(name).join(', ')} reach the ${R.name} Final`, `${name(order[0])} won it at ${qualiName(R)}.${through.includes(hero) ? ' You are in.' : o.seeded ? '' : ' You are out.'}`);
 }
 /** the week of an Open for a player who flies no lap: the Masters' top 8 are set at once, and a seed's Last Chance is run without him */
 function openWeek(save) {
@@ -291,13 +292,13 @@ export function weekNote(save, R) {
   if (o.kind === 'masters') return o.seeded ? `Ranked ${o.rank}: you are in, as one of the top ${o.seeds.length} of the Ultrack Ranking. Practice is open.` : `Ranked ${o.rank}: only the top ${o.seeds.length} of the Ultrack Ranking race the Masters. It runs without you.`;
   if (o.stage === 'final' && !o.seeded && o.lcq) return `Through the Last Chance in P${o.lcq.finish}: you start the Final. Practice is open.`;
   return o.seeded ? `Ranked ${o.rank}: straight into the Final. Practice is open.`
-    : `Ranked ${o.rank}: one flying lap at Mojave Dry Lake. The fastest ${T.series.gridSize} race the Last Chance Qualifier there, and its top ${T.open.lcqThrough} reach the Final. Practice opens at the Final.`;
+    : `Ranked ${o.rank}: one flying lap at ${qualiName(R)}. The fastest ${T.series.gridSize} race the Last Chance Qualifier there, and its top ${T.open.lcqThrough} reach the Final. Practice opens at the Final.`;
 }
 /** the player's race length (tuning.json series.lengths): every round not yet raced takes it; points and XP do not depend on it */
 export function setRaceLength(save, length) {
   if (!(length in T.series.lengths)) return save;
   save.rules.raceLength = length;
-  save.season?.calendar.forEach((r, i) => { if (i >= save.clock.round) { r.laps = lapsFor(r.track, length); if (r.lcqLaps) r.lcqLaps = lapsFor(CAL.qualifying, length); } });
+  save.season?.calendar.forEach((r, i) => { if (i >= save.clock.round) { r.laps = lapsFor(r.track, length); if (r.lcqLaps) r.lcqLaps = lapsFor(r.qualiTrack ?? CAL.qualifying, length); } });
   return save;
 }
 export const currentRound = (save) => save.season?.calendar[save.clock.round] ?? null;
@@ -317,7 +318,9 @@ export function qualiSetup(save) {
 
 /** where a car qualified, of everyone (a save from before the top-eight format has only the grid) */
 /** where every round qualifies, whatever its race circuit: the race map stays fresh for race day. The race's hour if the circuit has it, always dry */
-export const qualiVenue = (save) => { const look = currentRound(save).look; return { track: CAL.qualifying, look: look === 'day' ? 'day' : 'dusk', weather: 'dry' }; };
+export const qualiVenue = (save) => { const R = currentRound(save), look = R.look; return { track: R.qualiTrack ?? CAL.qualifying, look: look === 'day' ? 'day' : 'dusk', weather: 'dry' }; };
+/** the qualifying venue's name for messages (a round from before the rotation qualifies at CAL.qualifying) */
+const qualiName = (R) => trackOf(R?.qualiTrack ?? CAL.qualifying).name;
 export const qualiPlace = (q, key) => (q.order ?? q.grid).indexOf(key) + 1;
 /** the round's objectives as they stand: once the grid is set, none asks for places that are not there to gain */
 export const roundObjectives = (save) => { const cur = save.season.current; return cur.quali ? cur.objectives.map((o) => objectiveFrom(o, qualiPlace(cur.quali, save.contract.car))) : cur.objectives; };
@@ -350,7 +353,7 @@ export function finishQuali(save, best, mateRun = null) {
 
 /** what game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels and who drives each car */
 export function raceSetup(save) {
-  const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at Dry Lake
+  const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at the round's qualifying venue
   const racers = cur.quali?.grid ?? [hero], pace = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => [key, aiPace(save, key, lcq ? ['lcq'] : [])]));
   const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
   return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
@@ -442,7 +445,7 @@ export function finishRace(save, result) {
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
     entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines,
-    rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null } } : {}) };
+    rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null, lcqAt: qualiName(R) } } : {}) };
   if (cur.open) recordOpen(save, R, entries[0], report);
   save.season.results.push(report);
   const press0 = save.mediaN ?? 0;
