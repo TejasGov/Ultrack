@@ -22,7 +22,7 @@ const RACE_LENGTH_NOTE = 'About how long each race takes; the laps depend on the
 /** one screen for every step outside the season: the landing (saves, new, delete), create the driver, the Shootout, the first offers, and each season review */
 export function CareerStartScreen(game) {
   const F = frame('career-start');
-  let creating = false, deleting = false, target = null, modal = null, cancelModal = null, form = { name: '', nation: 'IND', number: 99, difficulty: 'normal', raceLength: 'sprint' };
+  let creating = false, deleting = false, target = null, modal = null, cancelModal = null, closing = false, form = { name: '', nation: 'IND', number: 99, difficulty: 'normal', raceLength: 'sprint' };
   const primary = (ic, label, onclick) => h('button.btn.btn-primary.cs-go', { 'data-nav': '', onclick }, icon(ic), label);
   const secondary = (ic, label, onclick) => h('button.btn.btn-secondary', { 'data-nav': '', onclick }, icon(ic), label);
   const steps = (at) => h('div.cx-stages', {}, ['Your driver', 'Open Shootout', 'First contract'].flatMap((s, i) => [h(i === at ? 'b' : i < at ? 'span.done' : 'span', {}, i < at ? icon('check') : h('i', {}, i + 1), s), i < 2 ? icon('chevron-right') : null]));
@@ -105,22 +105,40 @@ export function CareerStartScreen(game) {
   }
   /** the season's verdict on the left, next season's seats on the right */
   function review(save) {
-    const p = save.pending, r = p.review, last = save.history.at(-1), list = p.offers, st = C.standings(save), top = st.drivers.slice(0, 5);
-    F.sec('review'); F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = 'cx-page cs-review'; statusBar(F.me, save); F.backdrop('cars', last.car);
+    const p = save.pending, r = p.review, last = save.history.at(-1), list = p.offers, st = C.standings(save), top = st.drivers.slice(0, 5), w = C.windowInfo(save);
+    F.sec('review'); F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = `cx-page cs-review${w ? ' win' : ''}`; statusBar(F.me, save); F.backdrop('cars', last.car);
     const headline = r.drivers === 1 ? 'Champion' : `P${r.drivers}`;
     return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), cs('trust', 'Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)), r.rank ? stat('Ranking', 'P' + r.rank, '/ 16') : null, last.opens?.length ? stat('Opens won', String(last.opens.length), '/ 3') : null)),
         r.dropped ? h('p.cx-note.warn', {}, icon('warning'), rich(`${teamName(last.team)} has let you go: trust fell too far. Reputation ${TUNING.rep.dropped}. A reserve seat is the way back.`)) : null,
         r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins ? h('p.cx-note', {}, icon('trophy'), 'Titles this season: ', rich(`reputation ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))}${r.coins ? `, +${money(r.coins)}` : ''}`), '.') : null,
         h('div', {}, top.map((d, i) => css(h(`div.lrow.cx-mini${d.you ? '.me' : ''}`, {}, h('b.tnum', {}, i + 1), h('i.tbar'), h('span', {}, d.name), h('b.tnum', {}, String(Math.round(d.pts * 10) / 10))), { '--team': teamMark(loreOf(d.team)) })))),
-      h('div.cx-b', {}, blockHead('contract', 'Next season', list.length > 1 ? 'Open one to talk or sign' : 'One way forward'), h('div.lscroll.cx-list', { onscroll: (e) => fadeMore(e.currentTarget) }, list.map((o) => offerRow(save, o, () => openDeal(o.id))))),
-      h('div.cx-b', {}, blockHead('people', 'Teams', 'Enter to approach'), h('div.lscroll.cx-list', { onscroll: (e) => fadeMore(e.currentTarget) }, teamRows(save, game, () => build(true))))];
+      h('div.cx-b.cs-next', {}, blockHead('contract', 'Next season', list.length > 1 ? 'Open one to talk or sign' : 'One way forward'), windowBar(save), h('div.lscroll.cx-list', { onscroll: (e) => fadeMore(e.currentTarget) }, list.map((o) => offerRow(save, o, () => openDeal(o.id))))),
+      w ? h('div.cx-b.cs-news', {}, blockHead('mail', 'Transfer news', w.closed ? 'Window closed' : `Day ${w.day + 1}`), h('div.lscroll.cx-list.cs-feed', { onscroll: (e) => fadeMore(e.currentTarget) }, w.news.map((n, i) => h(`div.cs-line${i === 0 ? '.new' : ''}`, {}, h('small', {}, `Day ${n.day + 1}`), h('span', {}, n.text))))) : null,
+      h('div.cx-b.cs-teams', {}, blockHead('people', 'Teams', 'Enter to approach'), h('div.lscroll.cx-list', { onscroll: (e) => fadeMore(e.currentTarget) }, teamRows(save, game, () => build(true))))];
+  }
+  /** the transfer window (6.10): the day, a dot a day with the last one the deadline, and what is at stake today */
+  function windowBar(save) {
+    const w = C.windowInfo(save); if (!w) return null;
+    const dots = h('span.cs-days', { 'aria-hidden': 'true' }, Array.from({ length: w.days }, (_, i) => h(`i${i < w.day || w.closed ? '.past' : i === w.day ? '.now' : ''}${i === w.days - 1 ? '.dl' : ''}`)));
+    return h('div.cs-window', {}, dots, h('b', {}, w.closed ? 'The window is closed' : w.deadline ? `Deadline day: Day ${w.day + 1} of ${w.days}` : `Day ${w.day + 1} of ${w.days}`),
+      h('small', {}, w.closed ? 'Sign what is left on the table.' : w.deadline ? 'Anything not agreed lapses when the window closes.' : 'Teams answer, and rivals sign, as the days pass.'));
+  }
+  /** Advance day, or Close the window on deadline day; a second press when offers would lapse or go to a rival */
+  function windowFoot(save) {
+    const w = C.windowInfo(save); if (!w || w.closed) return [];
+    const warn = C.windowWarnings(save), label = closing && warn.length ? 'Press again to go on' : w.deadline ? 'Close the window' : 'Advance day';   // a phone hides the note beside it
+    return [h('div.cx-next', {}, h('small', {}, closing && warn.length ? 'Before you go' : w.deadline ? 'Deadline day' : `Day ${w.day + 1} of ${w.days}`), h('span', {}, closing && warn.length ? `${warn.join('. ')}. Press again to go on.` : w.deadline ? 'Close it when you are ready: what is not agreed lapses.' : `Next: Day ${w.day + 2}${w.day + 2 === w.days ? ', deadline day' : ''}`)),
+      h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => {
+        if (warn.length && !closing) { closing = true; return build(true); }
+        closing = false; C.windowDay(save); persist(game); build(true);
+      } }, icon('chevron-right'), label)];
   }
   const route = () => game.show(game.career && !['shootout', 'offers', 'review'].includes(game.career.clock.phase) ? 'careerHub' : 'careerStart', game.career && !['shootout', 'offers', 'review'].includes(game.career.clock.phase) ? 'home' : undefined);
   function build(keep = false) {
     const save = game.career, cur = keep ? getNav().i : 0, all = save ? null : listCareers();
     const nodes = !save ? (creating ? create() : slots(all)) : save.clock.phase === 'shootout' ? shootout(save) : save.clock.phase === 'offers' ? firstOffers(save) : review(save);
     fill(F.page, nodes.flat(Infinity));
-    fill(F.foot, prompts(SELECT, CHOOSE), h('div.sp'), h('button.btn.btn-ghost', { 'data-nav': '', onclick: () => api.back() }, icon('back'), 'Back', prompt('Esc', 'b')));
+    fill(F.foot, prompts(SELECT, CHOOSE), h('div.sp'), save?.clock.phase === 'review' ? windowFoot(save) : null, h('button.btn.btn-ghost', { 'data-nav': '', onclick: () => api.back() }, icon('back'), 'Back', prompt('Esc', 'b')));
     F.page.querySelectorAll('.lscroll').forEach(fadeMore);
     const L = getNav().items();
     getNav().reset(keep ? Math.min(cur, L.length - 1) : save?.clock.phase === 'shootout' ? Math.max(0, L.findIndex((e) => e.classList.contains('btn-primary'))) : 0);   // the Shootout starts on Drive, not Skip
@@ -130,7 +148,7 @@ export function CareerStartScreen(game) {
     get modal() { return modal; },     // Nav: only the modal's buttons
     /** the Career tile: always the landing, where a save is picked up */
     open() { game.career = null; game.show('careerStart'); },
-    onShow() { closeModal(); creating = deleting = false; target = null; build(); },
+    onShow() { closeModal(); creating = deleting = closing = false; target = null; build(); },
     /** from the modal, the new-career form or picking a save to delete, one step back to the landing; from the landing out to the menu */
     back() { if (modal) cancelModal(); else if (!game.career && (creating || deleting)) { creating = deleting = false; build(); } else game.leaveCareer(); },
   };
