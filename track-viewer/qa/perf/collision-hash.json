@@ -1,0 +1,47 @@
+{
+ "marina": {
+  "sha": "61e946511661e7539ad08b6c2e15e013a24c109acac12e4780af906c76ebd72a",
+  "colliders": 10,
+  "voidWalls": 0
+ },
+ "tokyo": {
+  "sha": "bed3c2133dfc3b94b95b6c51efb460b25ab88a18cb0210d8d33533ce4500174c",
+  "colliders": 6,
+  "voidWalls": 0
+ },
+ "india": {
+  "sha": "fb8c3d1263de4357f9d025c2915aa25734808e1b8e4c1e4cb53ac32c7510127d",
+  "colliders": 7,
+  "voidWalls": 4694
+ },
+ "drylake": {
+  "sha": "2bb67a35573dc2b8480a440fadfd1d0989abae073bba5e22d6d177067431d972",
+  "colliders": 7,
+  "voidWalls": 1594
+ },
+ "infinia": {
+  "sha": "9f55c904170da92fbfc8f38bc56f9f9c9146394ce23f02ecb586ec4ed76fb2ab",
+  "colliders": 7,
+  "voidWalls": 8715
+ },
+ "shajawa": {
+  "sha": "fc8bbcf40f4ff15b24440e0f355e888ab0e3ee919ebfdd7c77954b536f69c955",
+  "colliders": 7,
+  "voidWalls": 4019
+ },
+ "venice": {
+  "sha": "9059a55e725a6bdeed5e3ce5246c522ee55a017a293347e5808fd6630d370e0f",
+  "colliders": 7,
+  "voidWalls": 8399
+ },
+ "qingshan": {
+  "sha": "9a1eba39b1b9aecd58e04900eec7c1ec3d4e5353876a76fe8f7d24371afc9f7e",
+  "colliders": 7,
+  "voidWalls": 5383
+ },
+ "llano": {
+  "sha": "a9d2e8e808ceb5a2a63a31116f24f6a882701233f5b1bb807321c950088c82d4",
+  "colliders": 7,
+  "voidWalls": 7329
+ }
+}

@@ -15,7 +15,10 @@ export function args(argv) {
 }
 
 export function views(track, pick) {
-  const C = JSON.parse(readFileSync(join(root, '..', 'tracks', track, 'out', 'track.json'), 'utf8')).centerline, N = C.length;
+  // the build output, else the served copy (a worktree has no tracks/<id>/out; Marina's sits at the assets root)
+  const src = [join(root, '..', 'tracks', track, 'out', 'track.json'), join(root, 'public', 'assets', track, 'track.json'), ...(track === 'marina' ? [join(root, 'public', 'assets', 'track.json')] : [])].find(existsSync);
+  if (!src) throw Error(`no track.json for ${track}`);
+  const C = JSON.parse(readFileSync(src, 'utf8')).centerline, N = C.length;
   const V = track === 'tokyo'
     ? { 'start': -4, 'neon street': 207, 'bridge': 642, 'tunnel': 1003, 'garden': 'garden' }
     : { 'start': -4, 'T1': Math.round(N * 0.06), 'bridge': Math.round(N * 0.36), 'canopy': Math.round(N * 0.7), 'boardwalk': Math.round(N * 0.88) };
@@ -32,8 +35,8 @@ export function views(track, pick) {
   return { C, N, V, names: use };
 }
 
-/** returns { browser, page, errors, env } with window.viewer ready; mode 'game' (Free Drive) or 'dev' */
-export async function openViewer({ track, look, weather = 'dry', mode = 'game', base = 'http://127.0.0.1:5180', query = '', width = 1920, height = 1080, dpr = 1 }) {
+/** returns { browser, page, errors, env } with window.viewer ready; mode 'game' (Free Drive), 'title' (the title screen) or 'dev' */
+export async function openViewer({ track, look, weather = 'dry', mode = 'game', base = 'http://127.0.0.1:5180', query = '', width = 1920, height = 1080, dpr = 1, revisit = null }) {
   const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
   const browser = await chromium.launch({ executablePath: chrome, headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] });
   const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: dpr });
@@ -50,13 +53,18 @@ export async function openViewer({ track, look, weather = 'dry', mode = 'game', 
     await page.waitForFunction(() => window.viewer && !document.getElementById('loading') && performance.getEntriesByType('mark').some((m) => m.name === 'ultrack:venue-ready'), null, { timeout: 300000 });
   };
   let opened = mode;
-  if (mode === 'game') {
-    await ctx.addInitScript(([track, look, weather]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look, weather } })); } catch { /* none */ } }, [track, look, weather]);
+  if (mode !== 'dev') await ctx.addInitScript(([track, look, weather]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ settings: { track, look, weather } })); } catch { /* none */ } }, [track, look, weather]);
+  if (mode === 'title') {   // the game build up to its title screen and showroom (perf-stills --title)
+    await page.goto(base + (query ? '/?' + query : ''));
+    await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
+  } else if (mode === 'game') {
     try {
       await page.goto(base + (query ? '/?' + query : ''));
       await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
       await page.keyboard.press('Enter');
       await page.waitForSelector('.bento-tile[data-id=free]', { state: 'visible' });
+      // the menu has not loaded the first venue yet: load it, or the run is a first visit that follows another track
+      if (revisit) console.log('revisit:', await page.evaluate(async (ids) => { await window.viewer.ensureVenue(); const seen = [window.viewer.trackId()]; for (const id of ids) { await window.game.selectTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
       await page.click('.bento-tile[data-id=free]');
       await page.waitForSelector('.panel.setup button.cta', { state: 'visible' });
       await page.click('.panel.setup button.cta');
@@ -67,6 +75,7 @@ export async function openViewer({ track, look, weather = 'dry', mode = 'game', 
       opened = 'dev'; await dev();
     }
   } else await dev();
+  if (revisit && opened === 'dev') console.log('revisit:', await page.evaluate(async (ids) => { const seen = [window.viewer.trackId()]; for (const id of ids) { await window.viewer.setTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
   await page.waitForTimeout(3000);
   ready = true;
   return { browser, page, errors, mode: opened };

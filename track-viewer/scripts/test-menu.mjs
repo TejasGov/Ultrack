@@ -218,6 +218,10 @@ try{
  await assert.rejects(lazy.ensure([KEYS[2]]));await lazy.ensure([KEYS[2]]);
  assert.equal(lazy.all.length,3,'Failed car loads must be retryable without duplicate entries.');lazy.cubeRT.dispose();
  assert(lazy.all.slice(1).every(c=>c.root.parent===null&&!c.root.visible),'New cache-only cars never enter the world');
+ let farLoads=0,openGate;const gated=new Field(new THREE.Scene(),{loadCar:async(loader,key)=>({key,root:new THREE.Group(),beams:[],wheels:[],lod:{userData:{loadFar:async()=>{farLoads++;}}}})});
+ gated.farGate=new Promise(r=>openGate=r);await gated.load({},[KEYS[0]]);
+ await new Promise(r=>setTimeout(r,1900));assert.equal(farLoads,0,'Distant car bodies wait for the venue (farGate) past their 1.8 s timer');
+ openGate();await new Promise(r=>setTimeout(r,50));assert.equal(farLoads,1,'Distant car bodies load once the venue is in');gated.cubeRT.dispose();
  const defaultLoads=[],defaultField=new Field(new THREE.Scene(),{loadCar:async(loader,key)=>{
   defaultLoads.push(key);return {key,root:new THREE.Group(),beams:[],lod:{userData:{loadFar:async()=>{}}}};
  }});

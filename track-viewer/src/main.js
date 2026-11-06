@@ -121,9 +121,11 @@ const params = {
 //   mirrorFirst     the road mirror draws before the frame, not nested inside it: a nested render has lights of its own, so three re-keyed every material it shares with the frame, twice a frame
 //   singlePass      transparent double-sided sheets (fences, glass) draw once: three otherwise draws them twice, back then front, re-keying the material on both draws
 //   stableCapture   the hero's reflection capture keeps the frame's light count and shadow flag, so three neither re-keys every lit material around it nor keeps a second program set: see Field.captureLights
+//   farAfterVenue   the distant (LOD1) car bodies download after the venue GLB, not against it: field.farGate, set in ensureVenue
+//   earlyBytes      the venue and collision GLBs start downloading when the title attaches, not after the preload's 800 ms + idle wait; only the parse waits: see prefetchVenue
 // ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
 const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
-const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst'), postMsaa: saving('postMsaa') };
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst'), postMsaa: saving('postMsaa'), farAfterVenue: saving('farAfterVenue'), earlyBytes: saving('earlyBytes') };
 const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
@@ -510,8 +512,11 @@ const SCENERY_TEST = new URLSearchParams(location.search).get('scenery') === '1'
 const gpuTimer = new GpuTimer(renderer);
 const dynres = new DynamicResolution();
 const hdriCache = new Map();
-let gltfLoader, venuePromise, venueRoot = null, venueGen = 0;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
+let gltfLoader, venuePromise, venueRoot = null, venueGen = 0, venueBytes = null, openFar = null;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
 const garageRoom = DEV ? null : new GarageRoom(renderer);
+// the room's PMREM (~0.5 s, garage-room.js ensureEnvironment) in the task after the first car GLB request goes out, so it runs during
+// that download (~0.7 s at 50 Mbit) instead of before any fetch; nothing else uses the default manager's onStart
+if (garageRoom) THREE.DefaultLoadingManager.onStart = () => { THREE.DefaultLoadingManager.onStart = undefined; setTimeout(() => garageRoom.ensureEnvironment()); };
 
 const mark = (n) => performance.mark('ultrack:' + n);   // read with performance.getEntriesByType('mark')
 async function load() {
@@ -520,6 +525,7 @@ async function load() {
   // The garage needs only the selected car and small track metadata. Venue geometry is deferred until Start.
   field = new Field(scene, { loadCar: async (...a) => { const c = await assemble(...a); applyRainGlass(c.materials.glass); return c; } });   // rain beads on the glass (finish.js)
   field.stableCapture = PERF.stableCapture;   // the warm-up compiles the capture's programs too
+  holdFar();
   field.fx = new CarFx(scene);                 // exhaust, pops, nitro, tyre smoke (carkit/fx.js)
   field.fx.attach(composer, camera);           // its smoke and spray: a soft-particle pass after the scene (fx-smoke.js SmokePass)
   const carsReady = field.load(gltfLoader, game ? [game.startupCar] : undefined);
@@ -541,9 +547,24 @@ async function load() {
 const fetchTrack = () => fetch(U('track')).then((r) => { if (!r.ok) throw Error('Track metadata failed'); return r.json(); });
 const NO_LIGHTS = { floodlights: [], standLamps: [], streetLamps: [] };   // a track without lights.json is lit by the sky alone
 
+// the dev venue profile (?venue=whole|sectors on Marina) loads its own GLB, so nothing is fetched early for it
+const venueUrl = () => import.meta.env.DEV&&TRACK.id==='marina'&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:U('visual');
+/** the venue GLB's bytes, fetched ahead of loadVenue (game.js preloadRace, earlyBytes): network only, the parse stays idle-gated */
+function prefetchVenue() {
+  const url = venueUrl();
+  if (venuePromise || venueBytes?.url === url || url !== U('visual')) return;   // loading or loaded already, or a profile GLB
+  const p = fetch(url).then((r) => { if (!r.ok) throw Error(r.status); return r.arrayBuffer(); });
+  p.catch(() => {});   // loadVenue falls back to its own download
+  venueBytes = { url, p };
+}
+// farAfterVenue: the distant car bodies are held from the start, so a car whose 1.8 s timer fires before the first ensureVenue (the hero
+// on boot, a car picked while the player lingers on the title) waits too; ensureVenue opens the gate with its own promise. Every race passes
+// through ensureVenue, and a gate still held at a track switch carries over, so no car is left without its LOD1.
+function holdFar() { if (PERF.farAfterVenue && !openFar) field.farGate = new Promise((r) => { openFar = r; }); }
 function ensureVenue() {
   // a load that failed part-way may have installed the GLB and glows already: unload it, or the retry stacks a second copy
   const p = venuePromise ??= loadVenue().catch((error) => { if (venuePromise === p) unloadVenue(); throw error; });
+  if (PERF.farAfterVenue) { field.farGate = p.catch(() => {}); openFar?.(field.farGate); openFar = null; }   // a venue that fails never holds the distant car bodies back
   return p;
 }
 
@@ -559,12 +580,13 @@ function disposeTree(root) {
 }
 /** drop the venue (geometry, textures, glows, crowd, culler, hoardings) so another circuit can load without leaking */
 function unloadVenue() {
-  venuePromise = null; venueLights = null; culler = null; captureBoost = []; venueGen++;
+  venuePromise = null; venueBytes = null; venueLights = null; culler = null; captureBoost = []; venueGen++;
   venueFx?.dispose(); venueFx = null;
   if (venueRoot) { scene.remove(venueRoot); disposeTree(venueRoot); venueRoot = null; }
   if (glows) { scene.remove(glows.points); disposeTree(glows.points); glows = null; }
   sceneryExperiment?.dispose(); sceneryExperiment = null;
   people.clear(); driverHoardings.clear(); life.reset();
+  for (const m of allMats) singles.delete(m);   // the singlePass registry would otherwise keep every visited venue's materials alive
   allMats.clear(); wetMats.length = 0;
   for (let i = glass.length - 1; i >= 0; i--) if (!glass[i].car) { twins.delete(glass[i].real); if (glass[i].on) glassOn--; glass.splice(i, 1); }   // the twin map would keep every visited venue's glass and textures alive
   for (const light of [...pool.flood, ...pool.stand, ...pool.street]) { light.userData.lamp = null; light.userData.want = 0; light.intensity = 0; }   // not parked at the old lamps
@@ -574,7 +596,7 @@ function unloadVenue() {
 async function setTrack(id) {
   const next = trackOf(id), prev = TRACK;
   if (next === prev) return;
-  unloadVenue(); warming = null;
+  unloadVenue(); warming = null; holdFar();
   TRACK = next; mergeLooks();
   try { track = await fetchTrack(); } catch (error) { TRACK = prev; mergeLooks(); track = await fetchTrack(); aimSun(LOOKS[params.look]); throw error; }
   buildPath(); field.setTrack(curve, curveLength); field.grid(track); newTrails(field.cars);
@@ -584,12 +606,14 @@ async function setTrack(id) {
 async function loadVenue() {
   const T = TRACK, has = T.has, gen = venueGen;
   T.venue?.().then((m) => m.prefetch?.({ renderer, ktx2: gltfLoader.ktx2Loader }), () => {});   // a venue module's own textures load alongside its GLB
+  const url = venueUrl(), early = venueBytes?.url === url ? venueBytes.p : null;
   const [gltf, lightsJson] = await Promise.all([
-    gltfLoader.loadAsync(import.meta.env.DEV&&T.id==='marina'&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:U('visual')),
+    early ? early.then((b) => gltfLoader.parseAsync(b, THREE.LoaderUtils.extractUrlBase(url)), () => gltfLoader.loadAsync(url)) : gltfLoader.loadAsync(url),
     optionalJson(U('lights'), NO_LIGHTS),
     setLook(params.look),
   ]);
   if (gen !== venueGen) { disposeTree(gltf.scene); return; }   // another circuit was picked while this one loaded
+  venueBytes = null;   // parsed: the 45 MB buffer is not held any longer
   venueLights = lightsJson;
   venueRoot = gltf.scene;
   scene.add(gltf.scene);
@@ -741,7 +765,7 @@ async function prepareRaceRenderer({isCancelled=()=>false}={}) {
   // Both program sets (the frame and the hero's cube capture) are submitted together so the driver builds them in
   // parallel; after a menu warm-up (warmRace) every one is already cached.
   let ready;
-  const {compileVisible}=await import('./warmup.js');
+  const {compileVisible,firstUse}=await import('./warmup.js');
   const compileStarted=performance.now();
   try{renderer.setRenderTarget(composer.readBuffer);ready=compileVisible(renderer,scene,camera,{frustum:true,isCancelled,depth:SHADOW_PASSES});}
   finally{renderer.setRenderTarget(target);}
@@ -751,12 +775,23 @@ async function prepareRaceRenderer({isCancelled=()=>false}={}) {
   const reflectStarted=performance.now();
   await field.prepareReflection(renderer,hiddenForCapture(),isCancelled);
   if(isCancelled())return;
+  await heroEnvPrograms(isCancelled);   // after a menu warm-up these are cached
+  if(isCancelled())return;
+  await firstUse(renderer,{isCancelled,ms:500});   // and their first use paid (Start waits at most half a second on one still linking)
+  if(isCancelled())return;
   timings.reflectionsMs=Math.round(performance.now()-reflectStarted);
   // First texture uploads, post shaders and shadow maps are paid before the starting lights.
   const renderStarted=performance.now();composer.render();
   timings.firstFrameMs=Math.round(performance.now()-renderStarted);
   timings.programs=renderer.info.programs.length;
   console.info('Graphics preparation:',timings);
+}
+/** prepareReflection hands the hero's paint, glass and lights the capture's envMap after the frame's programs were built: build those variants too. */
+async function heroEnvPrograms(isCancelled,inflight){
+  const {compileVisible}=await import('./warmup.js'),was=renderer.getRenderTarget();let ready;
+  try{renderer.setRenderTarget(composer.readBuffer);ready=compileVisible(renderer,scene,camera,{extra:[field.hero.root],around:raceState,isCancelled,depth:SHADOW_PASSES,inflight});}
+  finally{renderer.setRenderTarget(was);}
+  return ready;
 }
 // what the hero's cube capture leaves out (Field.update and prepareReflection do the same)
 const hiddenForCapture=()=>[rain,people.group,glows?.points,reflector,trails?.mesh,field.fx?.smoke,field.fx?.fire];
@@ -782,14 +817,26 @@ function compilePost(){
   const none={outputColorSpace:renderer.outputColorSpace,toneMapping:renderer.toneMapping,toneMappingExposure:renderer.toneMappingExposure,setRenderTarget(){},render(){},clear(){}};
   composer.passes.find(p=>'_toneMapping' in p)?.render(none,composer.writeBuffer,composer.readBuffer);
   const last=composer.passes.map(p=>p.enabled).lastIndexOf(true),seen=new Set(),jobs=[];
+  const compile=(screen,object,cam=camera,lit=empty)=>{
+    try{renderer.setRenderTarget(screen?null:composer.readBuffer);jobs.push(renderer.compileAsync(object,cam,lit));}   // the last pass draws to the screen (sRGB), the rest to linear targets
+    finally{renderer.setRenderTarget(was);}
+  };
   composer.passes.forEach((pass,i)=>{
     const group=new THREE.Group();
-    for(const v of Object.values(pass).flat())
-      if(v?.isShaderMaterial&&!seen.has(v)){seen.add(v);group.add(new THREE.Mesh(quad,v));}
-    if(!group.children.length)return;
-    try{renderer.setRenderTarget(i===last?null:composer.readBuffer);jobs.push(renderer.compileAsync(group,camera,empty));}   // the last pass draws to the screen (sRGB), the rest to linear targets
-    finally{renderer.setRenderTarget(was);}
+    for(const v of Object.values(pass).flat()){
+      const m=v?.isShaderMaterial?v:v?._mesh?.material;   // its own materials, or the one inside a FullScreenQuad of its own (the smoke composite)
+      if(m?.isShaderMaterial&&!seen.has(m)){seen.add(m);group.add(new THREE.Mesh(quad,m));}
+    }
+    if(i===0)for(const q of [avgCells,avgOne])group.add(new THREE.Mesh(quad,q.material));   // the RenderPass's world-glass average, drawn only while a twin is on
+    if(group.children.length)compile(i===last,group);
   });
+  // the smoke pass draws two scenes of its own: the sky probe (lit by the scene's environment alone) and the soft particles
+  const smoke=field?.fx?.pass,world=smoke?.world;
+  if(smoke){
+    const p=smoke.probe;
+    if(world.environment){p.environment=world.environment;p.environmentIntensity=world.environmentIntensity;p.environmentRotation.copy(world.environmentRotation);compile(false,p,smoke.probeCam,p);}   // what its render sets
+    compile(false,smoke.scene,smoke.camera,smoke.scene);   // both into its own linear targets
+  }
   return Promise.all(jobs);
 }
 const WARM_INFLIGHT=+(new URLSearchParams(location.search).get('inflight')||3),warmInflight=()=>game?.starting?Infinity:WARM_INFLIGHT;   // Start is waiting on it: no reason to hold back
@@ -800,20 +847,21 @@ function warmRace(keys,stop=()=>false){
   const id=keys.join();
   if(warming?.id===id)return warming.done;
   if(!field?.hero||!venueLights)return;
-  const roots=keys.map(k=>field.all.find(c=>c.key===k)?.root).filter(Boolean);
+  const roots=keys.map(k=>field.all.find(c=>c.key===k)?.root).filter(Boolean),boards=TRACK.has.hoardings?[driverHoardings.sample()]:[];   // Start puts up the drivers' boards
   const started=performance.now();
   const done=(async()=>{
-    const {compileVisible}=await import('./warmup.js');
+    const {compileVisible,firstUse}=await import('./warmup.js');
     const was=renderer.getRenderTarget();let frame;
-    try{renderer.setRenderTarget(composer.readBuffer);frame=compileVisible(renderer,scene,camera,{extra:roots,around:raceState,isCancelled:stop,depth:SHADOW_PASSES,inflight:warmInflight});}   // the race renders into the composer's target: no tone mapping in its programs
+    try{renderer.setRenderTarget(composer.readBuffer);frame=compileVisible(renderer,scene,camera,{extra:[...roots,...boards],around:raceState,isCancelled:stop,depth:SHADOW_PASSES,inflight:warmInflight});}   // the race renders into the composer's target: no tone mapping in its programs
     finally{renderer.setRenderTarget(was);}
     await Promise.all([
       frame,
-      field.compileCube(renderer,{extra:roots.filter(r=>r!==field.hero.root),around:fn=>raceState(()=>cubeHide(fn)),isCancelled:stop,inflight:warmInflight}),
+      field.compileCube(renderer,{extra:[...roots.filter(r=>r!==field.hero.root),...boards],around:fn=>raceState(()=>cubeHide(fn)),isCancelled:stop,inflight:warmInflight}),
       compilePost(),
     ]);
-    // the first capture also builds the hero's envMap variants (the capture's PMREM has its own size) and the PMREM filters
-    if(!stop()&&!game?.session)await field.prepareReflection(renderer,hiddenForCapture(),stop);   // mid-session it has run at Start, and it hides the hero across frames
+    // the first capture builds the PMREM filters and gives the hero its envMap (the capture's PMREM has its own size): then the hero's variants with it
+    if(!stop()&&!game?.session){await field.prepareReflection(renderer,hiddenForCapture(),stop);await heroEnvPrograms(stop,warmInflight);}   // mid-session it has run at Start, and it hides the hero across frames
+    await firstUse(renderer,{isCancelled:stop});
     console.info('Race shaders warmed:',Math.round(performance.now()-started),'ms,',renderer.info.programs.length,'programs');
   })().finally(()=>{if(stop()&&warming?.done===done)warming=null;});   // a cancelled warm-up may be retried
   warming={id,done};return done;
@@ -1297,7 +1345,7 @@ async function benchScenery(frames=16,{width=960,height=540}={}) {
 }
 renderer.info.autoReset = false;
 // console access for tuning; renderNow draws a frame immediately (the app's pane can stall rAF while it is scripted)
-window.viewer = { THREE, composer, params, perf: PERF, glassVeil, LOOKS, setTrack, unloadVenue, ensureVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
+window.viewer = { THREE, composer, params, perf: PERF, garageRoom, glassVeil, LOOKS, setTrack, unloadVenue, ensureVenue, prefetchVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
   scenery:()=>sceneryExperiment, benchScenery,
   field: () => field,
   cheer: (k = 1) => { life.cheer(k); people.cheer(); }, people: people.count, peopleList: people.list, device,
@@ -1313,6 +1361,39 @@ window.viewer = { THREE, composer, params, perf: PERF, glassVeil, LOOKS, setTrac
     const blob = await new Promise((r) => renderer.domElement.toBlob(r, 'image/png'));
     return fetch(`/__snap?name=${encodeURIComponent(name)}`, { method: 'POST', body: blob }).then((r) => r.text());
   },
+  // dev (scripts/perf-stills.mjs): a frame that is the same in every session: paused, the cars back on the grid with straight wheels, the
+  // crowd and every clock at time t, and `settle` frames so the hero's reflection cube and its PMREM are complete
+  still: ({ dist: d = 0, t = 10, settle = 48 } = {}) => {
+    params.paused = true; params.mode = 'flythrough'; params.grain = 0; params.speedBlur = 0; applyAll();
+    if (field) {
+      for (const c of field.cars) {
+        c.root.quaternion.identity(); c.speed = c.brake = c.steer = c.throttle = 0; c.chassis?.reset();
+        for (const w of c.wheels) { w.pivot.rotation.y = 0; w.spin.rotation.z = 0; if (w.baseY !== undefined) w.pivot.position.y = w.baseY; }
+        if (c.shadow) { c.shadow.rotation.set(0, 0, 0); c.shadow.position.y = 0.025; c.shadow.material.opacity = 0.85; }
+      }
+      field.grid(track); field.fx?.clear();
+    }
+    dist = ((d % curveLength) + curveLength) % curveLength;
+    for (const p of people.list) p.mixer.setTime(t);
+    const look = LOOKS[params.look], k = look.lights * params.venueLights, cell = 8;
+    for (let i = 0; i < settle; i++) {
+      placeOnPath(); camera.updateMatrixWorld();
+      const fwd = camera.getWorldDirection(new THREE.Vector3());   // the camera's headlight, as tick aims it
+      headlight.position.copy(camera.position).addScaledVector(fwd, 0.5).addScaledVector(up, -0.4); headlight.target.position.copy(camera.position).addScaledVector(fwd, 60).addScaledVector(up, -1.25);
+      headlight.intensity = params.headlight ? 90 * Math.max(look.hl ?? 0.2, look.lights) : 0;
+      sun.target.position.set(Math.round(camera.position.x / cell) * cell, Math.round(camera.position.y / cell) * cell, Math.round(camera.position.z / cell) * cell);
+      sun.position.copy(sun.target.position).addScaledVector(SUN_DIR, 200); if (i === 0) sun.shadow.needsUpdate = true;
+      if (venueLights) { placeNearest(pool.flood, venueLights.floodlights, camera.position, 1400 * k); placeNearest(pool.stand, venueLights.standLamps, camera.position, 700 * k); placeNearest(pool.street, venueLights.streetLamps, camera.position, 45 * k * (TRACK.lampPower ?? 1)); fadeLights(1); }
+      people.update(0, camera.position, camera);
+      life.update(t, 0, look.emissive * params.emissive);
+      updateFx(t, true);
+      rain.material.uniforms.uTime.value = wetUniforms.uWetTime.value = finalPass.uniforms.uTime.value = t; rain.material.uniforms.uCam.value.copy(camera.position);
+      FINISH_FLOW.value = 0; finalPass.uniforms.uBlur.value = finalPass.uniforms.uNitro.value = 0;
+      if (field) wetCars(field.cars, camera);
+      scene.updateMatrixWorld(); renderer.info.reset(); composer.render();
+    }
+    return renderer.domElement.toDataURL('image/png');
+  },
   renderNow: () => { if (params.mode === 'orbit') controls.update(); else if (params.mode === 'chase' && field?.hero) field.chase(camera, 1); else placeOnPath(); updateFx(clock.getElapsedTime(), true); scene.updateMatrixWorld(); renderer.info.reset(); composer.render(); } };
 /** a fresh set of tail-light trails for the cars on track (each session has its own field) */
 function newTrails(cars) {
@@ -1322,7 +1403,7 @@ function newTrails(cars) {
 
 if (!DEV) {
   gui.hide(); hud.style.display = 'none'; loading.style.display = 'none';
-  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, get physicsOpts() { return { voidWalls: !!TRACK.voidWalls }; }, track: () => track, setTrack, trackId: () => TRACK.id });
+  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prefetchVenue: PERF.earlyBytes ? prefetchVenue : null, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, get physicsOpts() { return { voidWalls: !!TRACK.voidWalls }; }, track: () => track, setTrack, trackId: () => TRACK.id });
   game.screens.title.progress(0.15);
   window.game = game;
   if (DEV_QUERY.get('bench') === '1') import('./game/bench-report.js').then((m) => m.startBenchReport(window.viewer, game));   // real numbers from a player's machine

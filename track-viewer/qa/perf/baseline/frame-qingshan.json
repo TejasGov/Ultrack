@@ -1,0 +1,238 @@
+{
+ "track": "qingshan",
+ "look": "day",
+ "frames": 720,
+ "rounds": 4,
+ "ab": null,
+ "abLoad": null,
+ "arms": {
+  "base": {
+   "rounds": [
+    {
+     "frames": 722,
+     "tick.avg": 9.25,
+     "tick.p95": 13.7,
+     "tick.p99": 16.8,
+     "tick.max": 24.8,
+     "composer.avg": 5.77,
+     "composer.p95": 8.6,
+     "field.update.avg": 0.55,
+     "field.update.p95": 2.8,
+     "field.drive.avg": 1.81,
+     "matrixWorld.avg": 0.5,
+     "over20": 4,
+     "mainDraws.avg": 416.57,
+     "draws.avg": 452.59,
+     "programs": 167,
+     "heroDraws": 65,
+     "band0.drawsPerCar": 34,
+     "band1.drawsPerCar": 40.8,
+     "band0.cars": 3,
+     "band1.cars": 4
+    },
+    {
+     "frames": 730,
+     "tick.avg": 7.71,
+     "tick.p95": 11.5,
+     "tick.p99": 14,
+     "tick.max": 15.6,
+     "composer.avg": 4.76,
+     "composer.p95": 7.3,
+     "field.update.avg": 0.48,
+     "field.update.p95": 2.3,
+     "field.drive.avg": 1.56,
+     "matrixWorld.avg": 0.45,
+     "over20": 0,
+     "mainDraws.avg": 424.94,
+     "draws.avg": 458.98,
+     "programs": 167,
+     "heroDraws": 65,
+     "band0.drawsPerCar": 35.5,
+     "band1.drawsPerCar": 39,
+     "band2.drawsPerCar": 40,
+     "band0.cars": 2,
+     "band1.cars": 4,
+     "band2.cars": 1
+    },
+    {
+     "frames": 726,
+     "tick.avg": 7.13,
+     "tick.p95": 10.3,
+     "tick.p99": 12.5,
+     "tick.max": 15.3,
+     "composer.avg": 4.3,
+     "composer.p95": 6.1,
+     "field.update.avg": 0.44,
+     "field.update.p95": 2.2,
+     "field.drive.avg": 1.49,
+     "matrixWorld.avg": 0.43,
+     "over20": 0,
+     "mainDraws.avg": 395.92,
+     "draws.avg": 426.24,
+     "programs": 167,
+     "heroDraws": 65,
+     "band0.drawsPerCar": 41,
+     "band1.drawsPerCar": 39.5,
+     "band2.drawsPerCar": 37.5,
+     "band0.cars": 1,
+     "band1.cars": 4,
+     "band2.cars": 2
+    },
+    {
+     "frames": 734,
+     "tick.avg": 9.61,
+     "tick.p95": 14.2,
+     "tick.p99": 17.1,
+     "tick.max": 19.8,
+     "composer.avg": 6.06,
+     "composer.p95": 8.9,
+     "field.update.avg": 0.6,
+     "field.update.p95": 3.1,
+     "field.drive.avg": 1.85,
+     "matrixWorld.avg": 0.54,
+     "over20": 5,
+     "mainDraws.avg": 426.1,
+     "draws.avg": 458.39,
+     "programs": 167,
+     "heroDraws": 65,
+     "band0.drawsPerCar": 36,
+     "band1.drawsPerCar": 39.8,
+     "band2.drawsPerCar": 40,
+     "band0.cars": 2,
+     "band1.cars": 4,
+     "band2.cars": 1
+    }
+   ],
+   "median": {
+    "frames": 728,
+    "tick.avg": 8.48,
+    "tick.p95": 12.6,
+    "tick.p99": 15.4,
+    "tick.max": 17.7,
+    "composer.avg": 5.26,
+    "composer.p95": 7.95,
+    "field.update.avg": 0.52,
+    "field.update.p95": 2.55,
+    "field.drive.avg": 1.69,
+    "matrixWorld.avg": 0.47,
+    "over20": 2,
+    "mainDraws.avg": 420.75,
+    "draws.avg": 455.49,
+    "programs": 167,
+    "heroDraws": 65,
+    "band0.drawsPerCar": 35.75,
+    "band1.drawsPerCar": 39.65,
+    "band0.cars": 2,
+    "band1.cars": 4,
+    "band2.drawsPerCar": 40,
+    "band2.cars": 1
+   },
+   "spread": {
+    "frames": 12,
+    "tick.avg": 2.48,
+    "tick.p95": 3.9,
+    "tick.p99": 4.6,
+    "tick.max": 9.5,
+    "composer.avg": 1.76,
+    "composer.p95": 2.8,
+    "field.update.avg": 0.16,
+    "field.update.p95": 0.9,
+    "field.drive.avg": 0.36,
+    "matrixWorld.avg": 0.11,
+    "over20": 5,
+    "mainDraws.avg": 30.18,
+    "draws.avg": 32.74,
+    "programs": 0,
+    "heroDraws": 0,
+    "band0.drawsPerCar": 7,
+    "band1.drawsPerCar": 1.8,
+    "band0.cars": 2,
+    "band1.cars": 0,
+    "band2.drawsPerCar": 2.5,
+    "band2.cars": 2
+   },
+   "n": {
+    "frames": 4,
+    "tick.avg": 4,
+    "tick.p95": 4,
+    "tick.p99": 4,
+    "tick.max": 4,
+    "composer.avg": 4,
+    "composer.p95": 4,
+    "field.update.avg": 4,
+    "field.update.p95": 4,
+    "field.drive.avg": 4,
+    "matrixWorld.avg": 4,
+    "over20": 4,
+    "mainDraws.avg": 4,
+    "draws.avg": 4,
+    "programs": 4,
+    "heroDraws": 4,
+    "band0.drawsPerCar": 4,
+    "band1.drawsPerCar": 4,
+    "band0.cars": 4,
+    "band1.cars": 4,
+    "band2.drawsPerCar": 3,
+    "band2.cars": 4
+   }
+  }
+ },
+ "provoked": {
+  "nitro": true,
+  "wall": 25.6
+ },
+ "programs": {
+  "atWarm": 155,
+  "created": [
+   {
+    "name": "",
+    "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,306,512,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fal"
+   },
+   {
+    "name": "headkeep|car_windows.etc.png",
+    "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,306,2048,uv,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false"
+   },
+   {
+    "name": "keep|Glass_Lights",
+    "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,306,2048,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fa"
+   },
+   {
+    "name": "",
+    "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,306,512,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fal"
+   },
+   {
+    "name": "",
+    "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,306,512,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fal"
+   },
+   {
+    "name": "",
+    "key": "physical,STANDARD,,highp,srgb-linear,306,512,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,f"
+   },
+   {
+    "name": "keep|Red_LG",
+    "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,306,2048,uv,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false"
+   },
+   {
+    "name": "",
+    "key": "48,49,highp,srgb-linear,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fal"
+   },
+   {
+    "name": "",
+    "key": "48,50,highp,srgb-linear,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fal"
+   },
+   {
+    "name": "",
+    "key": "physical,STANDARD,,highp,srgb-linear,306,2048,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,"
+   },
+   {
+    "name": "",
+    "key": "51,52,SOFT,,highp,srgb-linear,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fal"
+   },
+   {
+    "name": "",
+    "key": "53,54,highp,srgb-linear,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,fal"
+   }
+  ]
+ },
+ "errors": []
+}

@@ -16,7 +16,7 @@
     "test:v2": "node --test scripts/test-v2.mjs && node scripts/test-menu.mjs",
     "pack:cars": "node scripts/pack-car-textures.mjs",
     "test:car-textures": "node scripts/test-car-textures.mjs",
-    "test:loading": "node --test scripts/test-loading.mjs && node scripts/test-menu.mjs",
+    "test:loading": "node --test scripts/test-loading.mjs scripts/test-first-use.mjs && node scripts/test-menu.mjs",
     "test:sponsors": "node scripts/test-sponsor-assets.mjs",
     "test:team-logos": "node scripts/test-team-logos.mjs",
     "test:driver-intro": "node scripts/test-driver-intro.mjs",
@@ -34,7 +34,8 @@
     "test:turning": "node scripts/physics-turning.mjs --only arcade,steady,turnin,ice,lift,trail,rwd,handbrake,slalom,abuse,hairpin,assert",
     "test:braking": "node scripts/physics-braking.mjs",
     "test:dynres": "node scripts/test-dynres.mjs",
-    "test:hud": "node src/game/hud-smoke.mjs"
+    "test:hud": "node src/game/hud-smoke.mjs",
+    "test:collision-hash": "node scripts/test-collision-hash.mjs"
   },
   "dependencies": {
     "three": "0.186.1"
