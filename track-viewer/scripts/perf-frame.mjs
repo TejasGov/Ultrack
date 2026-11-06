@@ -14,7 +14,7 @@
 //                     A drops the memoised void walls first (the build before WP5), B keeps them: A B A B ...
 import { chromium } from 'playwright-core';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { args as parseArgs, setupLook, root } from './perf-open.mjs';
 
@@ -213,7 +213,7 @@ if (result.arms.A && result.arms.B) {
   for (const [k, v] of Object.entries(result.verdict)) log(`B - A ${k.padEnd(22)} ${String(v.d).padStart(8)}  spread ${String(v.spread).padStart(7)}  ${v.few ? 'TOO FEW ROUNDS' : v.beyond ? 'BEYOND SPREAD' : 'within noise'}`);
 }
 result.errors = [...new Set(errors)].slice(0, 20);
-mkdirSync(dirname(join(root, out)), { recursive: true });
-writeFileSync(join(root, out), JSON.stringify(result, null, 1));
+mkdirSync(dirname(resolve(root, out)), { recursive: true });
+writeFileSync(resolve(root, out), JSON.stringify(result, null, 1));
 log('written', out, '| errors:', result.errors.length ? result.errors.slice(0, 4) : 'none');
 process.exit(newPrograms.length || result.programs?.firstUsedAfterWarm ? 1 : 0);
