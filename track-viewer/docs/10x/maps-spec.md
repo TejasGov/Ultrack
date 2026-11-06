@@ -220,7 +220,7 @@ Before the whole yard (design 2, after the user's Venice feedback):
 
 Measure with:
 ```
-node qa/10x-scratch/glb-stats.mjs ../tracks/<id>/out/web/<id>_visual_ktx2.glb ../tracks/<id>/out/web/<id>_collision.glb
+node scripts/glb-stats.mjs ../tracks/<id>/out/web/<id>_visual_ktx2.glb ../tracks/<id>/out/web/<id>_collision.glb
 ```
 run from `track-viewer` (reader 2's tool), plus the Blender log line `triangles`.
 
@@ -339,9 +339,9 @@ return { round: i + 1, track, kind, event: kind, look, weather, laps: lapsFor(tr
    node D:/RaceUltimate/track-viewer/scripts/qa-lock.mjs -- node scripts/measure-par-laps.mjs pilbara,terminal,drylake bmw1,huracan,destrier http://127.0.0.1:5303
    ```
    Write the result into `calendar.json` `parLap`.
-5. **Views, day and dusk.** Write `qa/10x-scratch/<id>-views.json` with entries `{ "name": { "cam": [station, up, side], "tgt": [station, up, side] } }` (`qa-drylake-views.mjs:36-38`), then run:
+5. **Views, day and dusk.** Write `tracks/<id>/views.json` with entries `{ "name": { "cam": [station, up, side], "tgt": [station, up, side] } }` (`qa-drylake-views.mjs:36-38`), then run:
    ```
-   TRACK=pilbara VIEWS=qa/10x-scratch/pilbara-views.json node D:/RaceUltimate/track-viewer/scripts/qa-lock.mjs -- node scripts/qa-drylake-views.mjs http://127.0.0.1:5303 day,dusk
+   TRACK=pilbara VIEWS=../tracks/pilbara/views.json node D:/RaceUltimate/track-viewer/scripts/qa-lock.mjs -- node scripts/qa-drylake-views.mjs http://127.0.0.1:5303 day,dusk
    ```
    Stations are about 2.5 m apart.
    - Pilbara: start `[690,3.5,2]→[20,3,0]`; switchback `[200,4,3]→[217,2,0]`; bench loop `[280,12,-10]→[300,4,0]`; conveyor `[440,3,2]→[470,8,0]`; crest `[620,3,2]→[660,4,0]`.
