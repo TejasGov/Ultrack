@@ -1313,6 +1313,39 @@ window.viewer = { THREE, composer, params, perf: PERF, glassVeil, LOOKS, setTrac
     const blob = await new Promise((r) => renderer.domElement.toBlob(r, 'image/png'));
     return fetch(`/__snap?name=${encodeURIComponent(name)}`, { method: 'POST', body: blob }).then((r) => r.text());
   },
+  // dev (scripts/perf-stills.mjs): a frame that is the same in every session: paused, the cars back on the grid with straight wheels, the
+  // crowd and every clock at time t, and `settle` frames so the hero's reflection cube and its PMREM are complete
+  still: ({ dist: d = 0, t = 10, settle = 48 } = {}) => {
+    params.paused = true; params.mode = 'flythrough'; params.grain = 0; params.speedBlur = 0; applyAll();
+    if (field) {
+      for (const c of field.cars) {
+        c.root.quaternion.identity(); c.speed = c.brake = c.steer = c.throttle = 0; c.chassis?.reset();
+        for (const w of c.wheels) { w.pivot.rotation.y = 0; w.spin.rotation.z = 0; if (w.baseY !== undefined) w.pivot.position.y = w.baseY; }
+        if (c.shadow) { c.shadow.rotation.set(0, 0, 0); c.shadow.position.y = 0.025; c.shadow.material.opacity = 0.85; }
+      }
+      field.grid(track); field.fx?.clear();
+    }
+    dist = ((d % curveLength) + curveLength) % curveLength;
+    for (const p of people.list) p.mixer.setTime(t);
+    const look = LOOKS[params.look], k = look.lights * params.venueLights, cell = 8;
+    for (let i = 0; i < settle; i++) {
+      placeOnPath(); camera.updateMatrixWorld();
+      const fwd = camera.getWorldDirection(new THREE.Vector3());   // the camera's headlight, as tick aims it
+      headlight.position.copy(camera.position).addScaledVector(fwd, 0.5).addScaledVector(up, -0.4); headlight.target.position.copy(camera.position).addScaledVector(fwd, 60).addScaledVector(up, -1.25);
+      headlight.intensity = params.headlight ? 90 * Math.max(look.hl ?? 0.2, look.lights) : 0;
+      sun.target.position.set(Math.round(camera.position.x / cell) * cell, Math.round(camera.position.y / cell) * cell, Math.round(camera.position.z / cell) * cell);
+      sun.position.copy(sun.target.position).addScaledVector(SUN_DIR, 200); if (i === 0) sun.shadow.needsUpdate = true;
+      if (venueLights) { placeNearest(pool.flood, venueLights.floodlights, camera.position, 1400 * k); placeNearest(pool.stand, venueLights.standLamps, camera.position, 700 * k); placeNearest(pool.street, venueLights.streetLamps, camera.position, 45 * k * (TRACK.lampPower ?? 1)); fadeLights(1); }
+      people.update(0, camera.position, camera);
+      life.update(t, 0, look.emissive * params.emissive);
+      updateFx(t, true);
+      rain.material.uniforms.uTime.value = wetUniforms.uWetTime.value = finalPass.uniforms.uTime.value = t; rain.material.uniforms.uCam.value.copy(camera.position);
+      FINISH_FLOW.value = 0; finalPass.uniforms.uBlur.value = finalPass.uniforms.uNitro.value = 0;
+      if (field) wetCars(field.cars, camera);
+      scene.updateMatrixWorld(); renderer.info.reset(); composer.render();
+    }
+    return renderer.domElement.toDataURL('image/png');
+  },
   renderNow: () => { if (params.mode === 'orbit') controls.update(); else if (params.mode === 'chase' && field?.hero) field.chase(camera, 1); else placeOnPath(); updateFx(clock.getElapsedTime(), true); scene.updateMatrixWorld(); renderer.info.reset(); composer.render(); } };
 /** a fresh set of tail-light trails for the cars on track (each session has its own field) */
 function newTrails(cars) {
