@@ -11,7 +11,7 @@ const viewer = join(root, 'track-viewer');
 process.env.TRACK = 'terminal';
 process.env.npm_config_offline ??= 'true';       // npx inherits it: the pack never reaches the registry, even when the caller forgets the variable
 process.env.TEX_MAX ??= '2048';
-process.env.TEX_CAPS ??= join(root, 'tracks', 'terminal', 'texture_caps.json');      // 1k for everything but the road set (maps-spec.md section 6)
+process.env.TEX_CAPS ??= join(root, 'tracks', 'terminal', 'texture_caps.json');      // 1k for everything but the road set (maps-spec.md section 6); 512 for dirty concrete (far ring, bollards, bases), the room for tiered stacks
 
 
 process.env.SKIP_SHELL ??= '1';         // no hidden-face pass (needs Blender)

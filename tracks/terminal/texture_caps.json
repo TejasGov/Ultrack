@@ -1,3 +1,4 @@
 {
+  "^NT \\| (concrete|far yard)$": 512,
   "^NT \\| (?!asphalt$)": 1024
 }

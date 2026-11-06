@@ -238,8 +238,9 @@ if not STRETCH:
         x0, x1, y0, y1 = xw - 11 - 1.6 - 8 - 30, xw - 11 - 1.6 - 8, yc - 30, yc + 30
         for x_, y_ in ((x0, y0), (x1, y0), (x1, y1), (x0, y1)): assert side_clear(x_, y_)[0] > 6, ('a shed too close to the road', x_, y_)
         cbox(BX, (x0, y0, -0.14), (x1, y1, 12), ('-z', '+z'), (0.6, 0.64, 0.63, 1), vbx)
-        rf = [BR.verts.new(p) for p in ((x0 - 0.5, y0 - 0.5, 11.8), (x0 - 0.5, y1 + 0.5, 11.8), ((x0 + x1) / 2, y1 + 0.5, 14), ((x0 + x1) / 2, y0 - 0.5, 14),
-                                        (x1 + 0.5, y0 - 0.5, 11.8), (x1 + 0.5, y1 + 0.5, 11.8))]
+        ev = 12 - 2 / 15 * 0.5     # the roof plane runs through the wall tops: at 11.8 the walls and gables poked 13 cm through it
+        rf = [BR.verts.new(p) for p in ((x0 - 0.5, y0 - 0.5, ev), (x0 - 0.5, y1 + 0.5, ev), ((x0 + x1) / 2, y1 + 0.5, 14), ((x0 + x1) / 2, y0 - 0.5, 14),
+                                        (x1 + 0.5, y0 - 0.5, ev), (x1 + 0.5, y1 + 0.5, ev))]
         BR.faces.new([rf[0], rf[3], rf[2], rf[1]]); BR.faces.new([rf[3], rf[4], rf[5], rf[2]])
         for yg, o in ((y0, -1), (y1, 1)):
             f = BX.faces.new([BX.verts.new(p) for p in ((x0, yg, 12), ((x0 + x1) / 2, yg, 14), (x1, yg, 12))][::o])
@@ -267,7 +268,7 @@ if not STRETCH:
 # ------------------------------------------------------------------------------------------------ the container yard
 TINT = [((.55, .18, .12), 20), ((.12, .2, .35), 18), ((.45, .47, .48), 16), ((.18, .35, .22), 12), ((.75, .7, .6), 10), ((.65, .45, .15), 10), ((.85, .85, .83), 14)]
 def tint(reefer):
-    if reefer and RNG.random() < 0.82: c = (.85, .85, .83)
+    if reefer and RNG.random() < 0.7: c = (.85, .85, .83)
     else: c = RNG.choices([t for t, _ in TINT], [w for _, w in TINT])[0]
     j = RNG.uniform(0.94, 1.06); g = sum(c) / 3; c = [0.92 * (g + 0.72 * (a - g)) for a in c]       # muted: painted steel that has seen weather
     return tuple(min(1, a * j * RNG.uniform(0.98, 1.02)) for a in c) + (1,)
@@ -275,9 +276,11 @@ LB, WB_, HB = 12.19, 2.44, 2.59
 def container(x, y, z, door, covered, detailed, col):
     xa, xb, ya, yb, za, zb = x - LB / 2, x + LB / 2, y - WB_ / 2, y + WB_ / 2, z, z + HB
     C = lambda lo, hi, sk: cbox(BX, lo, hi, sk, col, vbx)
-    if not detailed: return C((xa, ya, za), (xb, yb, zb), ('-z',) + (('+z',) if covered else ()))
+    def foot(fs):       # the foot of each side darker: a line at every tier that still reads where rails are under a pixel, so no stack reads as one slab
+        for l in (l for f in fs for l in f.loops if l.vert.co.z < za + 0.01): l[vbx] = tuple(0.45 * a for a in col[:3]) + (1,)
+    if not detailed: return foot(C((xa, ya, za), (xb, yb, zb), ('-z',) + (('+z',) if covered else ())))
     i, p, d = 0.03, 0.17, 0.12
-    C((xa + i, ya + i, za), (xb - i, yb - i, zb - 0.02), ('-z',) + (('+z',) if covered else ()))      # body, the roof panel 2 cm under the rails
+    foot(C((xa + i, ya + i, za), (xb - i, yb - i, zb - 0.02), ('-z',) + (('+z',) if covered else ())))      # body, the roof panel 2 cm under the rails
     for px_, sx in ((xa, '+x'), (xb - p, '-x')):
         for py_, sy in ((ya, '+y'), (yb - p, '-y')): C((px_, py_, za), (px_ + p, py_ + p, zb), ('-z', '+z', sx, sy))       # corner posts
     for y0_, y1_, sy in ((ya, ya + d, '+y'), (yb - d, yb, '-y')):         # side rails, top and bottom
@@ -304,17 +307,19 @@ for bx in range(int((X1 - X0) / (BWX + GXA))):
                 ic = side_clear(x, y)[1]
                 if cl < 3 or cl > 42 or not IN_STRETCH(ic) or any(a - LB / 2 <= x <= c_ + LB / 2 and b_ - WB_ / 2 <= y <= d + WB_ / 2 for a, b_, c_, d in KEEP_OUT): continue
                 slots[(bx, by, r, c)] = (x, y, cl, reefer, ic)
-nbox = ndet = 0; GANT = set()
+nbox = ndet = 0; GANT = set(); HT = {k: RNG.choices((1, 2, 3, 4, 5), (5, 12, 33, 38, 12))[0] for k in sorted(slots)}
 for (bx, by, r, c), (x, y, cl, reefer, ic) in sorted(slots.items()):
-    h = RNG.choices((1, 2, 3, 4, 5), (5, 12, 33, 38, 12))[0]
-    exposed = any((bx, by, r + dr, c + dc) not in slots for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+    h = HT[(bx, by, r, c)]; nb = [HT.get((bx, by, r + dr, c + dc)) for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+    exposed = None in nb
     v = CL[ic] - Vector((x, y, 0)); toward = (bx, by, r, c + (1 if v.x > 0 else -1)) if abs(v.x) > abs(v.y) else (bx, by, r - (1 if v.y > 0 else -1), c)
     det = toward not in slots and cl < 13       # the face toward the road is open: the line a driver sees gets posts, rails and door bars
     door = RNG.choice((1, -1)); bars = det and toward[3] - c == door       # door bars only where the door end looks at the road
-    if not exposed or cl > 27:     # hidden inside its block, or deep behind the first line: one box for the stack
-        cbox(BX, (x - LB / 2, y - WB_ / 2, -0.14), (x + LB / 2, y + WB_ / 2, -0.14 + h * HB - 0.02), ('-z',), tint(reefer), vbx); nbox += h; continue
-    for k in range(h):
-        container(x, y, -0.14 + k * HB, door if bars else 0, k < h - 1, det, tint(reefer)); nbox += 1; ndet += det
+    k0 = 0 if exposed else min(h, *nb)      # tiers below every neighbour's top show only down the 0.4 m slits: one box for them
+    assert not (k0 and det), 'a hidden stack is never detailed'
+    if k0: cbox(BX, (x - LB / 2, y - WB_ / 2, -0.14), (x + LB / 2, y + WB_ / 2, -0.14 + k0 * HB), ('-z',) + (('+z',) if k0 < h else ()), tint(reefer), vbx)
+    for k in range(k0, h):      # every tier that can be seen is its own box with its own tint, out to the last row
+        container(x, y, -0.14 + k * HB, door if bars else 0, k < h - 1, det, tint(reefer)); ndet += det
+    nbox += h
     if reefer and c in (1, 3): GANT.add((bx, by, c))
 log('containers', nbox, 'in', len(slots), 'slots;', ndet, 'detailed')
 for bx, by, c in sorted(GANT):        # plug-rack gantries in the bay gap after bay c: walkways at each tier, posts on concrete bases
