@@ -87,6 +87,20 @@ function census() {
 
 const avg = (a) => a.reduce((s, x) => s + x, 0) / Math.max(1, a.length), pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(s.length * p))] ?? 0; };
 const r2 = (x) => +x.toFixed(2);
+const med = (a) => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+// a LOD band with no cars in a round is absent from it: that round has 0 cars there but no draws-per-car value, so it is skipped, not read as 0
+function stats(rounds) {
+  const keys = [...new Set(rounds.flatMap(Object.keys))], vals = (k) => rounds.map((r) => r[k] ?? (k.endsWith('.cars') ? 0 : undefined)).filter((x) => x !== undefined);
+  return { median: Object.fromEntries(keys.map((k) => [k, r2(med(vals(k)))])), spread: Object.fromEntries(keys.map((k) => [k, r2(Math.max(...vals(k)) - Math.min(...vals(k)))])), n: Object.fromEntries(keys.map((k) => [k, vals(k).length])) };
+}
+// a key seen in fewer than 2 rounds of either arm has no spread to judge against
+const verdict = (A, B) => Object.fromEntries([...new Set([...Object.keys(A.median), ...Object.keys(B.median)])].map((k) => { const few = Math.min(A.n[k] ?? 0, B.n[k] ?? 0) < 2, d = k in A.median && k in B.median ? r2(B.median[k] - A.median[k]) : null, sp = Math.max(A.spread[k] ?? 0, B.spread[k] ?? 0); return [k, { d, spread: sp, beyond: !few && Math.abs(d) > sp, few }]; }));
+{ // self-check: the reviewer's case, band2 missing from one round
+  const s = stats([{ 'band2.drawsPerCar': 39, 'band2.cars': 2 }, { x: 1 }]), s3 = stats([{ a: 35.5 }, { a: 41 }, {}, { a: 30.5 }]);
+  const v = verdict({ median: { a: 1, b: 1 }, spread: { a: 0, b: 0 }, n: { a: 1, b: 3 } }, { median: { a: 5, b: 5 }, spread: { a: 0, b: 0 }, n: { a: 3, b: 3 } });
+  if (s.median['band2.drawsPerCar'] !== 39 || s.spread['band2.drawsPerCar'] !== 0 || s.n['band2.drawsPerCar'] !== 1 || s.median['band2.cars'] !== 1 || s.spread['band2.cars'] !== 2
+    || s3.median.a !== 35.5 || s3.spread.a !== 10.5 || v.a.beyond || !v.a.few || !v.b.beyond || verdict({ median: { a: 1 }, spread: { a: 0 }, n: { a: 2 } }, { median: {}, spread: {}, n: {} }).a.d !== null) throw Error('perf-frame stats self-check failed');
+}
 async function block(page) {
   await page.evaluate(() => { window.__R.frames = []; window.__R.on = true; });
   await page.waitForFunction((n) => window.__R.frames.length >= n, FRAMES, { timeout: FRAMES / 20 * 1000 + 60000, polling: 250 });
@@ -158,17 +172,11 @@ if (abLoad) {
   await ctx.done();
 }
 
-const med = (a) => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
-for (const a of Object.values(result.arms)) {
-  const keys = [...new Set(a.rounds.flatMap(Object.keys))];
-  a.median = Object.fromEntries(keys.map((k) => [k, r2(med(a.rounds.map((r) => r[k] ?? 0)))]));
-  a.spread = Object.fromEntries(keys.map((k) => [k, r2(Math.max(...a.rounds.map((r) => r[k] ?? 0)) - Math.min(...a.rounds.map((r) => r[k] ?? 0)))]));
-}
-for (const [arm, a] of Object.entries(result.arms)) log(`${arm} median`, JSON.stringify(a.median), '\n', `${arm} spread`, JSON.stringify(a.spread));
+for (const a of Object.values(result.arms)) Object.assign(a, stats(a.rounds));
+for (const [arm, a] of Object.entries(result.arms)) log(`${arm} median`, JSON.stringify(a.median), '\n', `${arm} spread`, JSON.stringify(a.spread), '\n', `${arm} rounds per key`, JSON.stringify(a.n));
 if (result.arms.A && result.arms.B) {
-  const A = result.arms.A, B = result.arms.B;
-  result.verdict = Object.fromEntries(Object.keys(A.median).map((k) => { const d = r2(B.median[k] - A.median[k]), sp = Math.max(A.spread[k], B.spread[k]); return [k, { d, spread: sp, beyond: Math.abs(d) > sp }]; }));
-  for (const [k, v] of Object.entries(result.verdict)) log(`B - A ${k.padEnd(22)} ${String(v.d).padStart(8)}  spread ${String(v.spread).padStart(7)}  ${v.beyond ? 'BEYOND SPREAD' : 'within noise'}`);
+  result.verdict = verdict(result.arms.A, result.arms.B);
+  for (const [k, v] of Object.entries(result.verdict)) log(`B - A ${k.padEnd(22)} ${String(v.d).padStart(8)}  spread ${String(v.spread).padStart(7)}  ${v.few ? 'TOO FEW ROUNDS' : v.beyond ? 'BEYOND SPREAD' : 'within noise'}`);
 }
 result.errors = [...new Set(errors)].slice(0, 20);
 mkdirSync(dirname(join(root, out)), { recursive: true });

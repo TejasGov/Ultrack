@@ -124,7 +124,7 @@
     "band1.drawsPerCar": 39.65,
     "band0.cars": 2,
     "band1.cars": 4,
-    "band2.drawsPerCar": 38.75,
+    "band2.drawsPerCar": 40,
     "band2.cars": 1
    },
    "spread": {
@@ -148,8 +148,32 @@
     "band1.drawsPerCar": 1.8,
     "band0.cars": 2,
     "band1.cars": 0,
-    "band2.drawsPerCar": 40,
+    "band2.drawsPerCar": 2.5,
     "band2.cars": 2
+   },
+   "n": {
+    "frames": 4,
+    "tick.avg": 4,
+    "tick.p95": 4,
+    "tick.p99": 4,
+    "tick.max": 4,
+    "composer.avg": 4,
+    "composer.p95": 4,
+    "field.update.avg": 4,
+    "field.update.p95": 4,
+    "field.drive.avg": 4,
+    "matrixWorld.avg": 4,
+    "over20": 4,
+    "mainDraws.avg": 4,
+    "draws.avg": 4,
+    "programs": 4,
+    "heroDraws": 4,
+    "band0.drawsPerCar": 4,
+    "band1.drawsPerCar": 4,
+    "band0.cars": 4,
+    "band1.cars": 4,
+    "band2.drawsPerCar": 3,
+    "band2.cars": 4
    }
   }
  },

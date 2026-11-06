@@ -16,7 +16,8 @@ export function args(argv) {
 
 export function views(track, pick) {
   // the build output, else the served copy (a worktree has no tracks/<id>/out; Marina's sits at the assets root)
-  const src = [join(root, '..', 'tracks', track, 'out', 'track.json'), join(root, 'public', 'assets', track, 'track.json'), join(root, 'public', 'assets', 'track.json')].find(existsSync);
+  const src = [join(root, '..', 'tracks', track, 'out', 'track.json'), join(root, 'public', 'assets', track, 'track.json'), ...(track === 'marina' ? [join(root, 'public', 'assets', 'track.json')] : [])].find(existsSync);
+  if (!src) throw Error(`no track.json for ${track}`);
   const C = JSON.parse(readFileSync(src, 'utf8')).centerline, N = C.length;
   const V = track === 'tokyo'
     ? { 'start': -4, 'neon street': 207, 'bridge': 642, 'tunnel': 1003, 'garden': 'garden' }
