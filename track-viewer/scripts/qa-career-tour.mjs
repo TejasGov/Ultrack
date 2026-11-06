@@ -1,5 +1,5 @@
 // The Tour's Open in the real game: a career is moved to the Japan Open week in the page (no driving), then the Open is played through the hub's own buttons with the AI driving
-// the player's car: the qualifying lap at Dry Lake, the Last Chance Qualifier there, and the Final at Tokyo. A second career, seeded into the top 4, goes straight to the Final.
+// the player's car: the qualifying lap at the round's venue, the Last Chance Qualifier there, and the Final at Tokyo. A second career, seeded into the top 4, goes straight to the Final.
 // Screens are shot at 1280x720 and 1600x900.
 //   node scripts/qa-lock.mjs -- node scripts/qa-career-tour.mjs [url=http://127.0.0.1:5180]
 // Out: qa/career-tour/*.png, report.json

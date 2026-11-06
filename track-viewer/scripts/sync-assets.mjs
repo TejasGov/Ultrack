@@ -28,7 +28,7 @@ for (const [original, rel] of ONLY ? [] : files) {
 }
 // the other circuits (src/tracks.js) go to public/assets/<id>/ under the same names. Built from tracks/<id>/out/web/ (else out/), and only
 // once the track is usable (track.json, collision and a venue): an unbuilt track is skipped, which keeps it out of the menu.
-for (const id of ['tokyo', 'india', 'drylake', 'shajawa', 'infinia', 'llano', 'venice', 'qingshan'].filter((id) => !ONLY || ONLY.includes(id))) {
+for (const id of ['tokyo', 'india', 'drylake', 'shajawa', 'infinia', 'llano', 'venice', 'qingshan', 'pilbara', 'terminal'].filter((id) => !ONLY || ONLY.includes(id))) {
   const out = join(root, 'tracks', id, 'out'), find = (name) => [join(out, 'web', name), join(out, name)].find(existsSync);
   const names = ['track.json', `${id}_collision.glb`, `${id}_visual.glb`, `${id}_visual_ktx2.glb`, 'lights.json', 'vip.json'];
   const found = Object.fromEntries(names.map((n) => {

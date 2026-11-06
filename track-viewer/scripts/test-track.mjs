@@ -75,7 +75,8 @@ let groundBad = 0, heightBad = 0;
 for (let i = 0; i < n; i++) {
   const [lx, lz] = leftOf(i);
   for (const lat of [0.001, hw[i] - 0.4, -(hw[i] - 0.4)]) {     // 1 mm off the centreline: on an unrounded mesh a ray can land exactly on a vertex and miss
-    const o = { x: c[i][0] + lx * lat, y: c[i][1] + 3, z: c[i][2] + lz * lat };
+    // and 1 mm along: every sample lies on the edge between two road quads, and at the start line (x = 0 exactly) Rapier misses both
+    const o = { x: c[i][0] + lx * lat - lz * 0.001, y: c[i][1] + 3, z: c[i][2] + lz * lat + lx * 0.001 };
     const h = cast(o, { x: 0, y: -1, z: 0 }, 10);
     if (!h || !ROAD.has(h.surface)) { groundBad++; if (groundBad <= 5) fail(`ground: sample ${i} lat ${lat.toFixed(1)}: ${h ? h.surface : 'no hit'}`); continue; }
     if (lat === 0 && Math.abs(3 - h.toi) > 0.25) { heightBad++; if (heightBad <= 5) fail(`height: sample ${i}: ${(3 - h.toi).toFixed(2)} m off`); }
@@ -95,7 +96,7 @@ for (let i = 0; i < n; i++) {
   }
 }
 // run-off: halfway between the track edge and the wall (or 10 m out where there is none) is drivable ground
-const DRIVABLE = new Set(['col_grass', 'col_sand', 'col_runoff_tarmac', 'col_paved', 'col_curb', 'col_pit', 'col_asphalt']);
+const DRIVABLE = new Set(['col_grass', 'col_sand', 'col_runoff_tarmac', 'col_paved', 'col_yard','col_curb', 'col_pit', 'col_asphalt']);
 let runoffBad = 0;
 const runoffW = [];
 for (let i = 0; i < n; i++) {

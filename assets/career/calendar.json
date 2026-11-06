@@ -3,6 +3,8 @@
   "note": "Per-track career data and the worlds (track-viewer/docs/career-mode.md 4.1, docs/career-worlds.md). parLap is an AI flying lap at pace 1.00 with the car factor taken out, measured 2026-11-01 with scripts/measure-par-laps.mjs (three cars, flying laps only, dry, no upgrades); re-measure after changing a track or the handling.",
   "tracks": {
     "drylake": { "event": "sprint",    "parLap": 45.3,  "measured": "measured", "names": ["Boneyard Sprint", "Dry Lake Return"], "dryOnly": true },
+    "pilbara": { "event": "sprint",    "parLap": 43.6,  "measured": "measured", "names": ["Pit Sprint", "Pit Return"], "dryOnly": true },
+    "terminal":{ "event": "sprint",    "parLap": 45.6,  "measured": "measured", "names": ["Quay Sprint", "Terminal Return"], "dryOnly": true },
     "shajawa": { "event": "sprint",    "parLap": 62.3,  "measured": "measured", "names": ["Stadium Sprint", "Bowl Showdown"] },
     "india":   { "event": "grandprix", "parLap": 74.0,  "measured": "measured", "names": ["Ghat Climb", "Ghat Return"] },
     "qingshan":{ "event": "grandprix", "parLap": 117.5, "measured": "measured", "names": ["Forest Classic", "Forest Return"] },
@@ -25,5 +27,6 @@
   "opens": { "tokyo": { "name": "Japan Open", "nation": "JPN" }, "infinia": { "name": "India Open", "nation": "IND" }, "venice": { "name": "Venice Open", "nation": "ITA" } },
   "masters": { "track": "marina", "look": "night", "name": "Ultrack Masters" },
   "qualifying": "drylake",
+  "qualifyingPool": ["drylake", "pilbara", "terminal"],
   "shootout": { "track": "drylake", "look": "day", "weather": "dry", "car": "huracan" }
 }

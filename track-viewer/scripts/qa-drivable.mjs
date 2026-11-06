@@ -20,8 +20,9 @@ const res = await page.evaluate(async ({ track, C, STEP_LIMIT }) => {
   const left = (i) => { const a = C[(i + n - 1) % n], b = C[(i + 1) % n], tx = b[0] - a[0], tz = b[2] - a[2], l = Math.hypot(tx, tz) || 1; return [tz / l, -tx / l]; };
   const isWall = (w, c) => w.surfaceOf.get(c.handle)?.name === 'wall';
   // the real walls (col_wall only): how far from the centreline each side
-  const reach = (i, sd) => { const [lx, lz] = left(i), p = C[i], h = plain.world.castRay(new RAPIER.Ray({ x: p[0], y: p[1] + 0.5, z: p[2] }, { x: lx * sd, y: 0, z: lz * sd }), 60, true, undefined, undefined, undefined, undefined, (c) => isWall(plain, c)); return h ? h.timeOfImpact : 40; };
-  const groundAt = (x, z, y) => { const h = plain.world.castRay(new RAPIER.Ray({ x, y: y + 6, z }, { x: 0, y: -1, z: 0 }), 20, true, undefined, undefined, undefined, undefined, (c) => !isWall(plain, c)); return h ? y + 6 - h.timeOfImpact : null; };
+  // every ray 1 mm off in x, as in test-track.mjs: at the start line (x = 0 exactly) a ray runs along the edge where two barrier or ground quads meet, and Rapier misses both
+  const reach = (i, sd) => { const [lx, lz] = left(i), p = C[i], h = plain.world.castRay(new RAPIER.Ray({ x: p[0] + 1e-3, y: p[1] + 0.5, z: p[2] }, { x: lx * sd, y: 0, z: lz * sd }), 60, true, undefined, undefined, undefined, undefined, (c) => isWall(plain, c)); return h ? h.timeOfImpact : 40; };
+  const groundAt = (x, z, y) => { const h = plain.world.castRay(new RAPIER.Ray({ x: x + 1e-3, y: y + 6, z }, { x: 0, y: -1, z: 0 }), 20, true, undefined, undefined, undefined, undefined, (c) => !isWall(plain, c)); return h ? y + 6 - h.timeOfImpact : null; };
   const R = { 1: C.map((_, i) => reach(i, 1)), [-1]: C.map((_, i) => reach(i, -1)) };
   const inside = [], V = full.voidWalls.v ?? [];
   for (let q = 0; q + 12 <= V.length; q += 12) {

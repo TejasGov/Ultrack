@@ -40,6 +40,8 @@ const VIEWS = {
   infinia: { look: 'dusk', cam: [-40, 3.5, 3], tgt: [70, 24, 0] },      // from the start: the sea link rising ahead, its tower and cables, the skyline beside it
   venice: { look: 'dusk', cam: [1190, 3.2, 0], tgt: [1250, 7, 0] },      // the pillared boulevard, colonnades both sides, the dome at its end
   qingshan: { look: 'day', cam: [1470, 3.2, -1], tgt: [1590, 9, -4] },      // down the top straight: forest left, lake and wind farm right, the red roof ahead
+  pilbara: { look: 'dusk', cam: [205, 5, 4], tgt: [222, 2, 0] },       // into the switchback, the benches beyond
+  terminal: { look: 'dusk', cam: [650, 3.5, 2], tgt: [40, 12, 2] },    // down the quay under the cranes, from far enough back that the grid sits small in the distance
 };
 // the menu's other tiles: a view of a circuit, its own picture, not the Race tile's; 800 px, they show small and faded
 const TILES = {

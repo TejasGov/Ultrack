@@ -1,0 +1,4 @@
+{
+  "^NT \\| (concrete|far yard|quay|roof|roller door)$": 512,
+  "^NT \\| (?!asphalt$)": 1024
+}

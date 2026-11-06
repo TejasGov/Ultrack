@@ -19,6 +19,7 @@ export const SURFACES = {
   col_sausage: { mu: 0.75, drag: 0.08, name: 'sausage kerb', rumble: true, wet: 0.85 },
   col_runoff_tarmac: { mu: 0.95, drag: 0.01, name: 'run-off' },
   col_paved: { mu: 0.9, drag: 0.01, name: 'paved', wet: 0.88 },
+  col_yard: { mu: 0.9, drag: 0.01, name: 'yard', wet: 0.88 },      // paved like col_paved, but off the track for track limits (session.js ON_TRACK)
   col_grass: { mu: 0.5, drag: 0.12, name: 'grass', dust: true, wet: 0.9 },
   col_sand: { mu: 0.38, drag: 0.45, name: 'gravel trap', dust: true },
   col_wall: { mu: 0.6, drag: 0.0, name: 'wall' },
@@ -78,7 +79,7 @@ function wallFaces(v, idx, world) {
 
 // Where a road ribbon turns tighter than it is wide, its strips cross (India's hairpins, stations 924 and 955-958), and the crossing makes small faces standing nearly upright on the road. A body
 // low on its springs hits them head on and is thrown backwards, with nothing drawn there. Over 45 degrees is not ground for the wheels (GROUND_COS), so it is not road for the body either
-const ROAD_SURFACES = new Set(['col_asphalt', 'col_curb', 'col_paved']);
+const ROAD_SURFACES = new Set(['col_asphalt', 'col_curb', 'col_paved', 'col_yard']);   // col_yard is col_paved under another name for track limits
 function withoutSteepFaces(v, idx) {
   const kept = [];
   for (let t = 0; t + 3 <= idx.length; t += 3) {

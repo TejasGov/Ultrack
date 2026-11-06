@@ -69,9 +69,12 @@ export const isSpecial = (R) => R?.kind === 'open' || R?.kind === 'masters';
  * A season's rounds (docs/career-mode.md, "The Tour, the Opens, the ranking"): CAL.format in order. Tour rounds draw the five Tour circuits once each and one
  * of them again, never twice in a row; each Open is raced on its own circuit and nowhere else; the Masters closes the season. `world` is unused: one Tour for every tier.
  * `available` maps track id -> its `times` (null: every look) for the tracks the game has; an Open or Tour circuit the game lacks drops out.
+ * `qualiTrack` is where the round qualifies (and runs an Open's Last Chance): CAL.qualifyingPool in turn from a seeded start, never twice in a row when two or more are shipped.
  */
 export function buildCalendar(seed, season, world, available, length = 'sprint') {
   const has = (id) => id in available && CAL.tracks[id], r = rng(seed, 'cal', season), M = CAL.masters;
+  // the qualifying venue: round-robin from a seeded start on its own stream, so `r`'s look and weather draws (and every older seed's calendar) stay as they were
+  const QP = (CAL.qualifyingPool ?? [CAL.qualifying]).filter(has), q0 = Math.floor(rng(seed, 'quali', season)() * QP.length);
   const fmt = CAL.format.filter((f) => (f === 'tour' ? true : f === 'masters' ? has(M.track) : has(f)));
   const tour = CAL.tour.filter(has), n = fmt.filter((f) => f === 'tour').length, end = fmt.includes('masters') ? M.track : null;
   const base = tour.length ? tour : Object.keys(available).filter(has), pool = [];
@@ -90,7 +93,8 @@ export function buildCalendar(seed, season, world, available, length = 'sprint')
     if (weather !== 'dry') wet.n++;
     const c = (seen[track] = (seen[track] ?? -1) + 1);
     const name = kind === 'open' ? CAL.opens[f].name : kind === 'masters' ? M.name : C.names[Math.min(c, C.names.length - 1)];
-    return { round: i + 1, track, kind, event: kind, look, weather, laps: lapsFor(track, length), ...(kind === 'open' ? { lcqLaps: lapsFor(CAL.qualifying, length) } : {}), name, finale };
+    const qualiTrack = QP.length ? QP[(q0 + i) % QP.length] : CAL.qualifying;
+    return { round: i + 1, track, kind, event: kind, look, weather, laps: lapsFor(track, length), qualiTrack, ...(kind === 'open' ? { lcqLaps: lapsFor(qualiTrack, length) } : {}), name, finale };
   });
 }
 

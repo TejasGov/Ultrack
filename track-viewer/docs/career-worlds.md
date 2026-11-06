@@ -21,7 +21,7 @@ A world is a chapter of the career: a region with its own look, venues and spons
 | Colour | Ochre, rust, sodium orange | Green, grey sky, sea blue | Neon, lake blue, villa gold |
 | Season finale | Infinia at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
 
-**Calendar rule:** tracks are events (`assets/career/calendar.json`): **sprints** (Shajawa), **grands prix** (India, Qingshan, Llano), **showpieces** (Infinia, Marina, Venice, Tokyo). A season draws a finale, then runs the world's other tracks once each, sprints first and showpieces last. **Qualifying is always at Mojave Dry Lake**, as is the Open Shootout, so a race map stays fresh for race day; Dry Lake hosts no career race.
+**Calendar rule:** tracks are events (`assets/career/calendar.json`): **sprints** (Shajawa), **grands prix** (India, Qingshan, Llano), **showpieces** (Infinia, Marina, Venice, Tokyo). A season draws a finale, then runs the world's other tracks once each, sprints first and showpieces last. **Qualifying rotates between Mojave Dry Lake, Pilbara Pit and North Sea Terminal**, fixed per round, never twice in a row (`calendar.json` `qualifyingPool`; a round's `qualiTrack`), so a race map stays fresh for race day; the Open Shootout stays at Dry Lake. The qualifying venues host no career race.
 
 | World | Rounds | Tracks | Finale (drawn each season) |
 |---|---|---|---|
@@ -147,3 +147,27 @@ Every team has a home round (India stays the Open Shootout venue): a hook for th
 3. Morro Noturno is World 3 with Tokyo: should it be the career finale instead of Tokyo?
 4. Poly Haven CC0 texture sets the new surfaces need (lake bed, brick, setts, rusty metal, terracotta, rock): OK to download them when each build starts?
 5. Are the names right (Mojave Dry Lake, Infinia Track, Shajawa Stadium, Morro Noturno; The Proving Grounds, The Grand Tour, The Crown)?
+
+## 10. Pilbara Pit (qualifying venue)
+
+![Pilbara Pit plan](career-worlds/pilbara.svg)
+
+Built in `tracks/pilbara/build_pilbara.py`; the full spec is `docs/10x/maps-spec.md`.
+
+**Layout.** A haul road down an open-cut iron-ore mine in Western Australia: 1.75 km, 7 corners, 18 m of drop and climb. The start is on the rim, the lap descends through one r21 switchback and the bench esses to the pit floor, passes under the conveyor gallery, and climbs back over a blind crest onto the rim. Smoothed grade at most 6.1 %. Measured par 43.6 s. Day and dusk only, dry only.
+
+**Materials.** All local CC0 Poly Haven sets: red laterite on the terraced benches (slope-projected UVs), gravel on the run-off strip and windrows behind the jersey barriers, rusty corrugated iron and box-profile cladding on the crusher and shed, concrete on the barriers, asphalt on the road. Bench faces are banded iron (maroon, purple-grey, ochre) by vertex colour, flat-shaded and broken into facets; windrows are chains of tipped loads; the gallery is an open steel truss; three dark ore stockpiles stand past its head tower. The pit lake is plain water with a wet shore band; the horizon is a skyline of banded mesas on the far ring (no backdrop).
+
+**Budget (measured after the polish).** KTX2 visual 12.26 MB (cap 12.5), 245,664 triangles (cap 250k), 14 draws, 13 materials; collision 0.41 MB, 13,754 triangles, unchanged by the polish (the visual bench faces are steeper; collision keeps the 4.5 m faces). perf-mac: 8.66 ms average, 10.4 ms p95 at dusk, against Dry Lake's 8.61 ms in the same sitting.
+
+## 11. North Sea Terminal (qualifying venue)
+
+![North Sea Terminal plan](career-worlds/terminal.svg)
+
+Built in `tracks/terminal/build_terminal.py`; the full spec is `docs/10x/maps-spec.md`.
+
+**Layout.** A flat, walled container terminal on a North Sea quay, unbranded: 1.75 km, 7 corners. A 320 m quay straight runs between the legs of three ship-to-shore cranes with booms up, into the crane hairpin, square canyon corners between container stacks 1-5 high, the decreasing-radius reefer corner and a flick. Measured par 45.6 s. Day and dusk only, dry only.
+
+**Materials.** All local CC0 Poly Haven sets or textures derived from them: grey interlocking pavers for the yard (a grey derivative of the brown photo), box-profile steel for the containers in 7 muted tints (a grey derivative of the red-oxide photo) and the crane steel, seaworn stone on the quay edge, dirty concrete for the far ring and bases, asphalt on the road. The fenders use Llano's generated rubber strip. The cranes are painted plate (off-white, blue girders and boom, red and white aviation bands); containers come in a muted line and lessor palette with weathering bands, 20 ft and high-cube boxes among them; the yard carries painted slot and lane markings. Past the yard: a breakwater, the next terminal's cranes, a still wind farm, tanks and halls inland. The sea is a static plane 2.5 m below the quay. No text, logos, ships or vehicles. The run-off and yard are collision `col_yard`: paved grip, but off the track for track limits.
+
+**Budget (measured after the polish).** KTX2 visual 12.39 MB (cap 12.5), 220,360 triangles, 16 draws, 15 materials; collision 0.34 MB, 10,380 triangles (the same geometry; the yard surface renamed). perf-mac: 8.63 ms average, 10.4 ms p95 at dusk, against Dry Lake's 8.61 ms in the same sitting.

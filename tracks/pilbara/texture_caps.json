@@ -1,0 +1,4 @@
+{
+  "^PP \\| (concrete|roller door)$": 512,
+  "^PP \\| (?!asphalt$)": 1024
+}
