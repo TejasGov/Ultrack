@@ -117,4 +117,10 @@ const json = (x) => JSON.stringify(x);
   assert.equal(run([m2, h2], (c) => (c.hero ? null : prof('mate')), 120 * 5, { F0: { orders: 'toYou', mateKey: 'mate', finalLap: false }, script: (c) => c.hero && ((c.s = m2.s - 20), (c.sp = 50), true) }).F.aiEvents.length, 0, 'not before the final lap');
   assert.ok(out.length > 0);
 }
+// 6. clear air: with the player out of reach (over 55 m), every role drives exactly as no profile, so a rival's pace alone never changes
+{
+  const field = () => [car('a', 100, 0.6, 40), car('b', 112, -0.6, 41), car('c', 95, 1.5, 42), car('hero', 900, 0, 0, true)], P = prof('nemesis', { composure: 0.2 }); P.k.mistake.base = 1;
+  const plain = run(field(), undefined, 1200, { script: (c) => c.hero }), roles = ['nemesis', 'rival', 'mate'];
+  for (const role of roles) assert.equal(json(run(field(), (c) => ({ ...structuredClone(P), role }), 1200, { script: (c) => c.hero, F0: { orders: 'toYou', mateKey: 'a', finalLap: true } }).out), json(plain.out), `a ${role} with no player near drives as before`);
+}
 console.log('ai rivalry: all checks passed');
