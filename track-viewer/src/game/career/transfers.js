@@ -69,7 +69,7 @@ export function windowDay(save) {
     story(save, 'rumor', fill(pick(r, MEDIA.window.leak.title), ctx), fill(pick(r, MEDIA.window.leak.body), ctx), { principal: t });
     news(save, `The press has heard about your talks with ${teamName(t)}.`);
   }
-  news(save, w.day === w.days - 1 ? `Deadline day. Anything not agreed today lapses when the window closes.` : `Day ${w.day + 1} of ${w.days}.`);
+  if (w.day === w.days - 1) news(save, `Deadline day. Anything not agreed today lapses when the window closes.`);   // a plain "Day 2 of 3" line is filler: the header already says it
   keepARoute(save);
   return { ok: true, closed: false };
 }

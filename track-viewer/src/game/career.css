@@ -667,6 +667,9 @@
   .cx-b > .cx-bh:first-child > span:first-child { flex: none; }
   .cx-bh { flex-wrap: wrap; row-gap: var(--sp-1); }   /* a long right-hand label ("Their offer beside your ask") takes its own line rather than an ellipsis */
   .cx-acts { flex-wrap: wrap; }
+  .cx-termhead { display: none; }
+  .row.cx-term { grid-template-columns: minmax(0, 1fr) auto; row-gap: var(--sp-2); }
+  .row.cx-term > .seg { grid-column: 1 / -1; }   /* four salary steps do not fit beside the label at phone width */
   .cr-cols, .cr-lcq .cr-cols { --cols: calc(36 * var(--u)) 4px minmax(0, 1fr) calc(100 * var(--u)) calc(52 * var(--u)); }
   .cr-cols .r-carname, .cr-cols > span:nth-child(4) { display: none; }
   .cx .cx-offer { grid-template-columns: calc(72 * var(--u)) minmax(0, 1fr); }

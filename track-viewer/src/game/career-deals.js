@@ -97,7 +97,7 @@ export function CareerDealScreen(game) {
   /** when they want an answer: the deadline in the window, and the rival they are also talking to */
   function clock(save, o) {
     const by = answerBy(save, o), rv = rivalLine(save, o); if (!by && !rv) return null;
-    return h('div.cx-clock', {}, by ? h('span.cx-chip' + (by === 'Answer today' ? '.hot' : ''), {}, icon('calendar'), by) : null, rv ? h('p.cx-if', {}, rv) : null);
+    return h('div.cx-clock', {}, by ? h('span.cx-chip' + (by === 'Answer today' ? '.hot' : ''), {}, icon('calendar'), by) : null, rv ? h('p.cx-note.warn', {}, icon('people'), rv) : null);
   }
   /** the four tactics (6.10), once each per offer: the risk on the button, the reason when it cannot be used */
   function tactics(save, o) {
