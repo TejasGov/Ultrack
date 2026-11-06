@@ -12,7 +12,7 @@
 //   --ab-load <flag>: A = /?perf=<flag> (the saving off), B = /, alternating A B A B ...
 import { chromium } from 'playwright-core';
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { args as parseArgs, root } from './perf-open.mjs';
 
 const { flag, pos } = parseArgs(process.argv.slice(2));
@@ -93,8 +93,8 @@ if (result.arms.A && result.arms.B) {
   result.verdict = Object.fromEntries(Object.keys(A.median).map((k) => { const d = B.median[k] - A.median[k], sp = Math.max(A.spread[k], B.spread[k]); return [k, { d, spread: sp, beyond: Math.abs(d) > sp }]; }));
   for (const [k, v] of Object.entries(result.verdict)) console.log(`B - A ${k.padEnd(20)} ${String(v.d).padStart(7)} ms  spread ${String(v.spread).padStart(6)}  ${v.beyond ? 'BEYOND SPREAD' : 'within noise'}`);
 }
-mkdirSync(dirname(join(root, out)), { recursive: true });
-writeFileSync(join(root, out), JSON.stringify(result, null, 1));
+mkdirSync(dirname(resolve(root, out)), { recursive: true });
+writeFileSync(resolve(root, out), JSON.stringify(result, null, 1));
 console.log('written', out);
 const twice = Object.values(result.arms).flatMap((a) => a.rounds).filter((r) => r.venueGets !== 1 || r.collisionGets !== 1);
 if (twice.length) { console.log(`FAIL: ${twice.length} round(s) without exactly one venue and one collision GLB download`); process.exit(1); }
