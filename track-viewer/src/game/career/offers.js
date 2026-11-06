@@ -3,12 +3,12 @@
 import MEDIA from '../../../../assets/career/media.json';
 import { rng, shuffle } from './rng.js';
 import {
-  TUNING as T, TIERS, SPONSORS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating,
+  TUNING as T, TIERS, SPONSORS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating, styleOf,
 } from './rules.js';
-import { YOU, driverAt, personOf, marketScore, shortlistOf } from './world.js';
+import { YOU, driverAt, personOf, marketScore, shortlistOf, poachable } from './world.js';
 import { note, remembers } from './ledger.js';
 import { post } from './inbox.js';
-import { callbackOf } from './media.js';
+import { callbackOf, story } from './media.js';
 import { leanOf } from './choices.js';
 import { payMult, offerScale, leverageBonus, mood } from './life.js';
 
@@ -42,7 +42,7 @@ const say = (o, who, text) => { (o.log ??= []).push({ who, text }); };
 export function leverageOf(save, o) {
   if (o.sponsor) return 1 + Math.max(0, formOf(save.career.rr)) * 0.5 + (save.sponsors.offers.length - 1);
   const others = new Set((save.pending?.offers ?? []).filter((x) => x.team !== o.team).map((x) => x.team)).size;
-  return 1 + 4 * (o.interest ?? T.offers.firstJobInterest) + others + leverageBonus(save);
+  return 1 + 4 * (o.interest ?? T.offers.firstJobInterest) + others + leverageBonus(save) + (o.lev ?? 0);   // lev: what this offer's tactics won or gave away (transfers.js)
 }
 export const canNegotiate = (o) => !o.keep && !o.reserve && !o.signed && !o.agreed;
 /** the levers an offer allows, for the screen: salary and signing steps, lengths, statuses; or a sponsor's retainer and bonus */
@@ -58,7 +58,9 @@ export function pushOf(save, o, ask) {
   const demand = o.sponsor ? demandOfSponsor(ask) : demandOf(o, ask), limit = leverageOf(save, o), F = T.offers.tooFar;
   return { demand, limit, share: clamp(demand / Math.max(0.5, limit * F), 0, 1), label: demand <= 0 ? 'As offered' : demand <= limit * 0.6 ? 'Comfortable' : demand <= limit * 1.15 ? 'Pushing it' : demand <= limit * F ? 'Too much' : 'Unrealistic' };
 }
-export const patienceOf = (o) => Math.max(0, (o.sponsor ? T.sponsors.refusals : T.offers.refusals) - (o.refusals ?? 0));
+/** how many refusals a party takes before walking: a sponsor's, else the principal's style (window.styles patience) */
+export const patienceMax = (o) => (o.sponsor ? T.sponsors.refusals : styleOf(o.team)?.patience ?? T.offers.refusals);
+export const patienceOf = (o) => Math.max(0, patienceMax(o) - (o.refusals ?? 0));
 const COUNTER = [(t, w) => `${t} will not go that far. "This is what we can sign. We want ${w}, and we will pay for it."`, (t) => `${t} come back with a number of their own. "Show us a season like the last one and we talk again."`, (t) => `${t} are polite about it. "Not on those terms. Here is what the budget allows."`];
 const AGREE = [(t) => `${t} agree. "Done. Sign when you are ready."`, (t) => `${t} shake on it. "That works for us. Sign when you are ready."`];
 /** Ask for better terms. Inside the leverage it is agreed; past it the team names the nearest terms it would sign and loses patience (twice over for an unrealistic ask); out of patience, it walks */
@@ -67,8 +69,9 @@ export function negotiate(save, id, ask) {
   if (!o || !canNegotiate(o)) return { result: 'fixed' };
   if (o.sponsor) return talkSponsor(save, o, ask);
   if (o.team !== save.contract?.team) talked(save, o.team);
-  const L = leversOf(o), name = teamName(o.team), own = o.team === save.contract?.team, pick = (k, d) => (L[k].includes(ask[k]) ? ask[k] : d);
+  const L = leversOf(o), name = teamName(o.team), pick = (k, d) => (L[k].includes(ask[k]) ? ask[k] : d);
   const terms = { salary: pick('salary', 0), signing: pick('signing', 0), seasons: pick('seasons', o.seasons), status: pick('status', o.status) };
+  if (o.final && JSON.stringify(terms) !== JSON.stringify({ ...terms, ...o.counter })) return { result: 'final', terms: o.counter };   // after Set a deadline only their final terms can be agreed
   const demand = demandOf(o, terms), leverage = leverageOf(save, o), salary = round5(o.salary * (1 + terms.salary)), signing = round50((o.signing ?? 0) * (1 + terms.signing));
   say(o, 'you', `${coins(salary)} a round, ${coins(signing)} to sign, ${terms.seasons} ${terms.seasons === 1 ? 'season' : 'seasons'}, ${STATUS_LABEL[terms.status]}.`);
   if (demand <= leverage) {
@@ -76,20 +79,27 @@ export function negotiate(save, id, ask) {
     say(o, 'them', AGREE[(o.log.length >> 1) % AGREE.length](name));
     return { result: 'accepted', terms, demand, leverage };
   }
-  o.refusals = (o.refusals ?? 0) + (demand > leverage * T.offers.tooFar ? 2 : 1);
-  if (own && save.contract) save.contract.trust = clamp(save.contract.trust - T.offers.ownTrust, 0, 100);   // haggling with your own team costs trust
-  if (o.refusals >= T.offers.refusals) {
-    const repWas = save.career.rep; remove(save, o); save.career.rep = clamp(repWas + T.rep.withdrawn, 0, 1000);
-    note(save, 'spurned', { team: o.team, w: T.offers.spurned });   // talks you pushed past their limit: a refusal they remember
-    if (save.season?.asked) save.season.asked[o.team] = 1;
-    post(save, 'warn', `${name} walked away`, `Your demands were more than they would pay.${repWas > 0 ? ` Reputation ${T.rep.withdrawn}.` : ''} They will not offer again this window.`);
-    keepARoute(save);
-    return { result: 'withdrawn', terms, demand, leverage, repLost: repWas > save.career.rep };
-  }
+  const gone = refuse(save, o, demand > leverage * T.offers.tooFar ? 2 : 1); rivalCloser(save, o);
+  if (gone) return { result: 'withdrawn', terms, demand, leverage, repLost: gone.repLost };
   const t = (o.counter = nearestTerms(o, terms, leverage));
   say(o, 'them', `${COUNTER[o.refusals % COUNTER.length](name, TIERS.teams[o.team].wants)} ${coins(round5(o.salary * (1 + t.salary)))} a round, ${coins(round50((o.signing ?? 0) * (1 + t.signing)))} to sign, ${t.seasons} ${t.seasons === 1 ? 'season' : 'seasons'}, ${STATUS_LABEL[t.status]}.`);
   return { result: 'countered', terms: o.counter, demand, leverage };
 }
+/** a refusal (`n` of them) costs the team's patience and, at your own team, trust; out of patience they walk: returns { repLost } when they did, else null */
+export function refuse(save, o, n) {
+  o.refusals = (o.refusals ?? 0) + n;
+  if (o.team === save.contract?.team) save.contract.trust = clamp(save.contract.trust - T.offers.ownTrust, 0, 100);   // haggling with your own team costs trust
+  if (o.refusals < patienceMax(o)) return null;
+  const repWas = save.career.rep; remove(save, o); save.career.rep = clamp(repWas + T.rep.withdrawn, 0, 1000);
+  note(save, 'spurned', { team: o.team, w: T.offers.spurned });   // talks you pushed past their limit: a refusal they remember
+  if (save.season?.asked) save.season.asked[o.team] = 1;
+  post(save, 'warn', `${teamName(o.team)} walked away`, `Your demands were more than they would pay.${repWas > 0 ? ` Reputation ${T.rep.withdrawn}.` : ''} They will not offer again this window.`);
+  keepARoute(save);
+  return { repLost: repWas > save.career.rep };
+}
+/** pushing a team with a rival on its list brings the day it signs them one closer, never earlier than tomorrow (the window's day steps only) */
+export const rivalCloser = (save, o) => { const w = save.pending?.window; if (o.rival && w && o.rivalDay !== undefined) o.rivalDay = Math.max(w.day + 1, o.rivalDay - 1); };
+
 /** walk out of talks: free, but the team remembers it and cools for a while (ledger.js), and your own team notices */
 export function walkAway(save, id) {
   const o = findOffer(save, id); if (!o || o.keep) return false;
@@ -103,7 +113,7 @@ export function walkAway(save, id) {
   return true;
 }
 /** the end-of-season list is never empty (3.1, 6.7): the last offer gone, a reserve seat appears */
-function keepARoute(save) { if (save.pending?.offers && !save.pending.offers.length) save.pending.offers.push(reserveOffer(save)); }
+export function keepARoute(save) { if (save.pending?.offers && !save.pending.offers.length) save.pending.offers.push(reserveOffer(save)); }
 
 /**
  * A Legend incumbent within market.holdGap of the tier's seated average rating keeps the seat through a bad year: no drop, and a renewal without the
@@ -121,7 +131,7 @@ export function fallbackOffer(save) {
   // an open seat if there is one, else any seat whose driver is not a star (offers.star): a fallback always exists
   const pick = teams.flatMap(([t]) => ['A', 'B'].map((x) => [t, x])), open = pick.find(([t, x]) => seatFor(save, t, x)) ?? pick.find(([t, x]) => (W.ratings[W.seats[seatCar(t, x)]] ?? 0) < T.offers.star) ?? pick[0];
   const [team, seat] = open, salary = round50(tierOf(team).salary[seat] * 0.9);
-  return offer(save, team, seat, { salary, signing: 0, seasons: 1, interest: T.offers.firstJobInterest, tag: '-fallback',
+  return offer(save, team, seat, { salary, signing: 0, seasons: 1, interest: T.offers.firstJobInterest, tag: '-fallback', fallback: true,
     why: `${teamName(team)} will take a driver who has raced a tier up: one season to earn your way back.` });
 }
 /** a Rookie reserve seat for a driver nobody else will sign (6.7): 60 % salary, no points in rounds 1-2, targets one place easier */
@@ -153,7 +163,7 @@ export const interestFor = (save, team, x) => interestOf(team, statsOf(save), ex
  * bought out by a team keen enough (interest at offers.buyout). A star (offers.star) with seasons left on their contract is never dropped for the player.
  */
 export function seatFor(save, team, seat, interest = 0) {
-  const W = save.world, code = W.seats[seatCar(team, seat)], O = T.offers; if (!code) return true; if (code === YOU) return false;
+  const W = save.world, code = W.seats[seatCar(team, seat)], O = T.offers; if (save.season?.signed?.[seatCar(team, seat)]) return false; if (!code) return true; if (code === YOU) return false;
   if ((W.contracts?.[code] ?? 0) <= 1) return true;
   return W.ratings[code] < O.star && (W.ratings[code] < playerRating(save) || interest >= O.buyout);
 }
@@ -189,6 +199,34 @@ export function outsideOffer(save, team, interest, extra = {}) {
   return offer(save, team, seat, { salary, signing: round50(salary * (1.5 + 1.5 * interest)), seasons: 1 + Math.round(2 * interest), interest: Math.round(interest * 100) / 100,
     why: whyOf(save, team, terms, extra.tag) + choiceLine(save), rating: playerRating(save), ...(cool ? { cool: coolLine(save, team) } : {}), ...extra });
 }
+/** a line in the window's news feed (pending.window.news, shown newest first); nothing outside the season-end window */
+export const news = (save, text) => { const w = save.pending?.window; if (w) w.news.push({ day: w.day, text }); };
+/**
+ * The talks around an outside offer (6.10). On a seeded chance a rival for the seat: the best market score on its shortlist (world.js, seated drivers
+ * allowed), never its own driver or the player. In the season-end window a deadline (a hardball team gives a day, a keen one the whole window) and
+ * rivalDay, the day the team signs the rival unless terms are agreed first: a day sooner when the rival outscores the player. In mid-season the
+ * market week is the window: the rival signs if the offer lapses.
+ */
+export function talksFor(save, o) {
+  const w = save.pending?.window, X = T.window, st = styleOf(o.team), r = rng(save.seed, 'talks', save.clock.season, o.id);
+  if (w) o.deadline = Math.min(w.days - 1, w.day + (st.days ? st.days - 1 : o.interest >= X.keen ? w.days - 1 : 1 + Math.floor(r() * (w.days - 1))));
+  const best = shortlistOf(save, o.car, true, 2).filter((c) => c !== save.world.seats[o.car] && c !== YOU).map((c) => [c, marketScore(save, c)]).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0];
+  if (!best || r() >= X.rivalChance) return o;
+  o.rival = best[0];
+  if (w) o.rivalDay = Math.max(w.day + 1, w.day + 1 + Math.floor(r() * (w.days - 1)) - (best[1] > playerRating(save) ? 1 : 0));
+  return o;
+}
+/** the team signs its rival instead (rivalDay came, a bluff called, a mid-season offer lapsed): the offer goes, the rival takes that seat next season (world.js marketMoves) */
+export function rivalSigns(save, o) {
+  const who = personOf(save, o.rival)?.name ?? o.rival, name = teamName(o.team);
+  remove(save, o); (save.pending?.window?.signed ?? (save.season.signed ??= {}))[o.car] = o.rival;
+  if (save.season?.asked) save.season.asked[o.team] = 1;
+  for (const x of lists(save).flat()) if (x.rival === o.rival) { delete x.rival; delete x.rivalDay; }   // signed once: nobody else can sign them
+  news(save, `${who} signs for ${name}. Their offer to you is gone.`);
+  post(save, 'deal', `${who} signs for ${name}`, `${name} were also talking to ${who}, and did not wait for your answer. Their offer to you is gone.`);
+  story(save, 'move', `${who} signs for ${name}`, `${loreOf(o.team).principal} has the driver ${name} wanted for next season. ${name} were also in talks with ${save.player.name}, and did not wait.`, { driver: o.rival, mood: 'portrait' });
+  keepARoute(save);
+}
 /** the market after the middle round (6.5): under the seat review a warning; from season 2 one poaching offer from the tier above, open until the market week ends */
 export function midSeason(save) {
   const me = save.contract, season = save.clock.season, out = { warning: false, w1: null };
@@ -202,7 +240,7 @@ export function midSeason(save) {
   const best = cands.sort((a, b) => b[1] - a[1])[0], o = best && outsideOffer(save, best[0], best[1], { w1: true, tag: '-w1' });
   if (o) {
     o.why += ' They would pay your release clause, and you join them next season.';
-    save.season.mid.push(o); out.w1 = o.team;
+    save.season.mid.push(talksFor(save, o)); out.w1 = o.team;
     post(save, 'deal', `${teamName(o.team)} want to talk`, `${o.why} The offer lapses when the market week ends.`, { deal: o.id });
   }
   return out;
@@ -225,7 +263,7 @@ export function teamOutlook(save, team) {
   const gates = [[st.rep, g.rep, `Reputation ${Math.round(st.rep)} of ${g.rep}`], [rr, g.rr, `Rating ${rr.toFixed(1)} of ${g.rr}`], [st.cl, g.cl, `Level ${st.cl} of ${g.cl}`]];
   const short = gates.filter(([v, min]) => v < min), signed = team !== save.contract?.team && signedTo(save, team, interestFor(save, team) ?? 0), progress = Math.min(...gates.map(([v, min]) => (min ? clamp(v / min, 0, 1) : 1)));
   const me = save.contract, mine = team === me?.team, asked = !!save.season?.asked?.[team], rank = me ? rankOf(me.team) : 1, tooHigh = !mine && me && rankOf(team) > rank + 1, same = rankOf(team) === rank && me?.seat === 'A', down = rankOf(team) < rank && !me?.dropped;
-  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : signed ? 'Both seats signed' : null;
+  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : save.pending?.window?.closed ? 'Window closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : signed ? 'Both seats signed' : null;
   return { team, tier: TIERS.teams[team].tier, progress, why: short[0]?.[2] ?? (signed || 'Clears their bar'), short: short.length > 0, blocked, canAsk: !blocked };
 }
 /**
@@ -246,7 +284,8 @@ export function approach(save, team) {
   if (!offerRoll(save.seed, season, 'AP', team, interest, (sameTier ? T.offers.w1Roll : 1) * offerScale(save))) return no('They like you, but they have no plans for you this window.');
   const o = outsideOffer(save, team, interest, { tag: '-ap', ...(mid ? { w1: true } : {}) });
   if (!o) return no(signedWhy(save, team, interest) ? `${signedWhy(save, team, interest)}.` : 'The only seat they have is a step down in car, so they did not offer it.');
-  if (mid) { o.why += ' You would join them next season.'; save.season.mid.push(o); } else save.pending.offers.push(o);
+  if (mid) o.why += ' You would join them next season.';
+  (mid ? save.season.mid : save.pending.offers).push(talksFor(save, o));
   post(save, 'deal', `${teamName(team)} will talk`, o.why, { deal: o.id });
   return { result: 'offer', why: o.why, offer: o };
 }
@@ -261,7 +300,7 @@ export function rumours(save) {
   return Object.keys(W.seats).filter((k) => { const c = W.seats[k]; return c && c !== YOU && W.contracts[c] === 1 && CAR[k].team !== me.team; })
     .sort((a, b) => W.teams[CAR[a].team].expPos - W.teams[CAR[b].team].expPos || (CAR[a].seat === 'A' ? -1 : 1)).slice(0, 3).map((car) => {
       const team = CAR[car].team, you = !me.next && rankOf(team) >= rank && rankOf(team) <= rank + 1 && interestFor(save, team) !== null;
-      const list = [...shortlistOf(save, car, true, 2).filter((c) => c !== W.seats[car]), ...(you ? [YOU] : [])].map((c) => [c, marketScore(save, c)]).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, 3).map(([c]) => c);
+      const list = [...new Set([...shortlistOf(save, car, true, 2), ...poachable(save, car)])].filter((c) => c !== W.seats[car]).concat(you ? [YOU] : []).map((c) => [c, marketScore(save, c)]).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, 3).map(([c]) => c);
       return { car, code: W.seats[car], list };
     });
 }
@@ -419,7 +458,7 @@ export function demandTransfer(save) {
     delete o.cool;                                            // this interest leaves any refusal out (cool: false), so the offer does not quote one
     if (interestFor(save, team, { cool: false }) === null) o.why = `${teamName(team)} were not looking at you (${teamOutlook(save, team).why}), but they have a seat.${choiceLine(save)}`;   // below their bar: their reasons would be untrue
     o.why += ' You asked to move, and they would take you next season.'; o.expires = save.clock.week;
-    save.season.mid.push(o); made.push(o);
+    save.season.mid.push(talksFor(save, o)); made.push(o);
   }
   quoteOnce(save, made);
   if (!made.length) { const o = reserveOffer(save); o.expires = save.clock.week; save.season.mid.push(o); made.push(o); }

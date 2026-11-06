@@ -19,7 +19,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
   const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
   const sh = C.shootout(); C.finishShootout(save, R.parLap(sh.track, sh.car) / skill * (1 + noise(0.01)));
-  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, hits: 0, gross: 0, firstStaff: null, repairs: 0, capped: 0, staffSpent: 0, staffHires: 0, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0, opens: 0, finals: 0, openWins: 0, lcqs: 0, masters: 0, rank: [], absent: 0, mood: [], life: {}, scenes: [], lifeSpent: 0, adPay: 0, scandals: 0, sold: 0, upkeep: 0, free: {} };
+  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, hits: 0, gross: 0, firstStaff: null, repairs: 0, capped: 0, staffSpent: 0, staffHires: 0, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0, opens: 0, finals: 0, openWins: 0, lcqs: 0, masters: 0, rank: [], absent: 0, mood: [], life: {}, scenes: [], lifeSpent: 0, adPay: 0, scandals: 0, sold: 0, upkeep: 0, free: {}, lost: 0 };
   // ask for a bit more, sometimes too much: a refusal or a withdrawal must never strand the career
   const haggle = (o) => { if (!C.canNegotiate(o)) return; const a = C.negotiate(save, o.id, { salary: rand() < 0.3 ? 0.3 : 0.1, seasons: o.seasons, status: o.status });
     if (a.result === 'accepted') log.deals++; if (a.result === 'withdrawn') log.withdrawn++; if (a.result === 'countered') C.negotiate(save, o.id, a.terms); };
@@ -106,8 +106,11 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (offers.some((o) => o.tier === 'legend') && log.legendOffer === null) log.legendOffer = season;
       if (offers.some((o) => o.team === save.contract.team && o.seat === 'A' && save.contract.seat === 'B') && log.promotion === null) log.promotion = season;
       if (season === seasons) break;
+      // the window: haggle over the best on day 1, let a day pass (rivals sign, deadlines lapse, teams come back with more), sign by day 2: the best agreed, else the best left
       const pick = best(offers, R); haggle(pick);
-      const still = save.pending.offers.find((o) => o.id === pick.id) ?? best(save.pending.offers, R);
+      const ids = save.pending.offers.map((o) => o.id), day = C.windowDay(save), left = save.pending.offers, agreed = left.filter((o) => o.agreed);
+      if (day.ok) log.lost += ids.filter((id) => !left.some((o) => o.id === id)).length;   // lapsed or gone to a rival on day 2
+      const still = left.find((o) => o.id === pick.id) ?? best(agreed.length ? agreed : left, R);
       const owned0 = Object.values(save.life.owned).reduce((a, b) => a + b, 0), cash0 = save.wallet.coins;
       C.acceptOffer(save, still.id, AVAILABLE); log.tier.push(save.season.tier);
       log.sold += owned0 - Object.values(save.life.owned).reduce((a, b) => a + b, 0); log.upkeep = Math.max(log.upkeep, C.upkeepOf(save));
