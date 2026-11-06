@@ -157,18 +157,20 @@ export function seatFor(save, team, seat, interest = 0) {
   return W.ratings[code] < O.star && (W.ratings[code] < playerRating(save) || interest >= O.buyout);
 }
 const surname = (save, code) => (personOf(save, code)?.name ?? code).split(' ').at(-1);
-/** why a team has no seat for the player, or null: 'Both seats are signed: Ferrand to S4, Okafor to S5' */
-export function signedWhy(save, team, interest = 0) {
+/** who holds a team's seats and to when, when neither is open to the player, or null: 'Ferrand to S4, Okafor to S5' */
+function signedTo(save, team, interest = 0) {
   if (['A', 'B'].some((seat) => seatFor(save, team, seat, interest))) return null;
   const W = save.world, to = (seat) => { const c = W.seats[seatCar(team, seat)]; return `${surname(save, c)} to S${save.clock.season + W.contracts[c] - 1}`; };
-  return `Both seats are signed: ${to('A')}, ${to('B')}`;
+  return `${to('A')}, ${to('B')}`;
 }
+/** why a team has no seat for the player, or null: 'Both seats are signed: Ferrand to S4, Okafor to S5' */
+export const signedWhy = (save, team, interest = 0) => { const to = signedTo(save, team, interest); return to && `Both seats are signed: ${to}`; };
 /** an offer's reason (6.5): the two largest terms of the team's interest in its own words (media.json reasons), a seeded pick of each */
 export function whyOf(save, team, terms, tag = '') {
   const r = rng(save.seed, 'why', save.clock.season, team, tag), g = TIERS.teams[team].gate, w = wantOf(save, team), st = statsOf(save);
   const ctx = { team: teamName(team), rep: Math.round(st.rep), gate: g.rep, rr: mean(st.rrs.slice(-6)).toFixed(1), bar: g.rr.toFixed(1), wants: TIERS.teams[team].wants, stat: MEDIA.wantText[w.key].replace(/\{n\}/g, w.n).replace(/\{s\}/g, plural(w.n)) };
   const top = ['rep', 'rating', 'form', 'want'].filter((k) => terms?.[k] > 0).sort((a, b) => terms[b] - terms[a]).slice(0, 2);
-  const line = (k) => { const l = MEDIA.reasons[k]; return l[Math.floor(r() * l.length)].replace(/\{(\w+)\}/g, (_, x) => ctx[x] ?? ''); };
+  const line = (k) => { const l = MEDIA.reasons[k].filter((x) => (g.rr || !x.includes('{bar}')) && (g.rep || !x.includes('{gate}'))); return l[Math.floor(r() * l.length)].replace(/\{(\w+)\}/g, (_, x) => ctx[x] ?? ''); };   // a team with no bar is never quoted as asking for 0
   return top.length ? top.map(line).join(' ') : `${ctx.team} have a seat for you, and your numbers clear their bar.`;
 }
 /** the line on an offer from a team that remembers a refusal: the refusal, quoted from the ledger with its season (media.json callbacks) */
@@ -218,7 +220,7 @@ const inMarket = (save) => save.clock.phase === 'review' || (save.season?.weeks?
 export function teamOutlook(save, team) {
   const g = TIERS.teams[team].gate, st = statsOf(save), rr = mean(st.rrs.slice(-6));
   const gates = [[st.rep, g.rep, `Reputation ${Math.round(st.rep)} of ${g.rep}`], [rr, g.rr, `Rating ${rr.toFixed(1)} of ${g.rr}`], [st.cl, g.cl, `Level ${st.cl} of ${g.cl}`]];
-  const short = gates.filter(([v, min]) => v < min), signed = team !== save.contract?.team && signedWhy(save, team, interestFor(save, team) ?? 0), progress = Math.min(...gates.map(([v, min]) => (min ? clamp(v / min, 0, 1) : 1)));
+  const short = gates.filter(([v, min]) => v < min), signed = team !== save.contract?.team && signedTo(save, team, interestFor(save, team) ?? 0), progress = Math.min(...gates.map(([v, min]) => (min ? clamp(v / min, 0, 1) : 1)));
   const me = save.contract, mine = team === me?.team, asked = !!save.season?.asked?.[team], rank = me ? rankOf(me.team) : 1, tooHigh = !mine && me && rankOf(team) > rank + 1, same = rankOf(team) === rank && me?.seat === 'A', down = rankOf(team) < rank && !me?.dropped;
   const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : signed ? 'Both seats signed' : null;
   return { team, tier: TIERS.teams[team].tier, progress, why: short[0]?.[2] ?? (signed || 'Clears their bar'), short: short.length > 0, blocked, canAsk: !blocked };

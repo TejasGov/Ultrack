@@ -428,10 +428,10 @@ export function finishSide(save, value) {
   const met = spec.kind === 'sponsor' ? challengeMet(spec, value) : null, medal = sideMedal(spec.kind, met ?? value, spec.par), tier = TIERS.tiers[save.season.tier], d = spec.deal;
   const xp = medal ? T.side.xp[medal - 1] : 0, pay = met && medal ? round5(T.side.pay[medal - 1] * tier.sponsor * (1 + T.side.formPay * formOf(save.career.rr)) * payMult(save)) : 0;
   const credit = d && medal === 3 && !d.dayCredit && !d.met, bonus = credit ? ((d.dayCredit = true), sponsorCredit(save, d)) : 0, pkg = spec.kind === 'test' && medal === 3 ? 1 : 0, coins = pay + bonus;
-  if (d) d.mood = clamp(d.mood + (medal === 3 ? 1 : medal ? 0 : -1), 1, SPONSORS.startMood + 3);
+  const was = d?.mood; if (d) d.mood = clamp(d.mood + (medal === 3 ? 1 : medal ? 0 : -1), 1, SPONSORS.startMood + 3);
   gainXp(save, xp); save.wallet.coins += coins; save.garage.package += pkg;
   const r = (currentWeek(save).event.result = { kind: spec.kind, value: Number.isFinite(value) ? value : null, ...(met ? { met, name: spec.name, objectives: spec.objectives } : {}), medal, xp, coins, package: pkg });
-  const lines = [xp ? `+${xp} XP` : null, coins ? `+${coins.toLocaleString('en')} U` : null, pkg ? 'a free upgrade level, in the Garage' : null, credit ? `a step toward ${d.name}'s target` : null, d ? `${d.name} goodwill ${d.mood}` : null];
+  const lines = [xp ? `+${xp} XP` : null, coins ? `+${coins.toLocaleString('en')} U` : null, pkg ? 'a free upgrade level, in the Garage' : null, credit ? `a step toward ${d.name}'s target` : null, d ? `${d.name} goodwill ${d.mood > was ? 'up to' : d.mood < was ? 'down to' : 'stays at'} ${d.mood}` : null];
   post(save, 'event', `${spec.name}: ${met ? `${medal}/${met.length}, ` : ''}${['no medal', 'bronze', 'silver', 'gold'][medal]}`, lines.filter(Boolean).join(', ') || 'Nothing earned this time.', pkg ? { tab: 'garage' } : null);
   return r;
 }

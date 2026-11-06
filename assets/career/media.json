@@ -260,7 +260,7 @@
     "rating": [
       "Your rounds rate {rr} on average, over the {bar} {team} ask for.",
       "{team} like the numbers: an average round rating of {rr}.",
-      "A {rr} average round rating clears the {bar} {team} look for."
+      "An average round rating of {rr} clears the {bar} {team} look for."
     ],
     "form": [
       "{team} have watched your last three rounds, and liked them.",
