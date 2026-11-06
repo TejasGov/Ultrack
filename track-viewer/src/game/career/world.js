@@ -59,10 +59,13 @@ function setHeat(save, code, h, cause) {
 
 /** a driver's standing in the market (6.8, phase 5): rating, twice the season's form, and a seeded jitter of +-1; the player is measured by their market rating */
 export const marketScore = (save, code) => (code === YOU ? playerRating(save) : save.world.ratings[code]) + 2 * seasonForm(save, code) + rng(save.seed, 'market', 'score', save.clock.season, code)() * 2 - 1;
-/** who could take this seat: the free agents, and AI drivers in their last season at a team below it (seated: false stops the cascade) */
-export function shortlistOf(save, key, seated = true) {
+/**
+ * who could take this seat: the free agents, and AI drivers in their last season at a team below it (seated: false stops the cascade). left: the
+ * contract count that is a last season when the list is drawn, 1 in the market (contracts have ticked), 2 for a rumour before the tick (offers.js)
+ */
+export function shortlistOf(save, key, seated = true, left = 1) {
   const W = save.world, pos = W.teams[CAR[key].team].expPos;
-  return [...W.free, ...(seated ? Object.entries(W.seats).filter(([k, c]) => c && c !== YOU && W.contracts[c] === 1 && W.teams[CAR[k].team].expPos > pos).map(([, c]) => c) : [])];
+  return [...W.free, ...(seated ? Object.entries(W.seats).filter(([k, c]) => c && c !== YOU && W.contracts[c] === left && W.teams[CAR[k].team].expPos > pos).map(([, c]) => c) : [])];
 }
 
 /**
@@ -107,8 +110,8 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
     W.seats[key] = best ?? callUp(save);
     sign(W.seats[key]);
   }
-  // a driver on the rumoured shortlist with the player takes the seat: a rivalry over a seat (6.6)
-  for (const x of save.season?.rumours ?? []) { const now = W.seats[x.car]; if (x.list.includes(YOU) && now !== YOU && now !== x.code && x.list.includes(now)) heatUp(save, now, T.rivals.seatLost, 'seat'); }
+  // a driver on the rumoured shortlist with the player takes the seat of a team that made the player an offer or that they approached: a rivalry over a seat (6.6)
+  for (const x of save.season?.rumours ?? []) { const now = W.seats[x.car]; if (x.list.includes(YOU) && save.season.talked?.[CAR[x.car].team] && now !== YOU && now !== x.code && x.list.includes(now)) heatUp(save, now, T.rivals.seatLost, 'seat'); }
 }
 function callUp(save) {
   const W = save.world, M = T.market, N = DRIVERS.academyNames, used = new Set([...Object.keys(W.ratings), save.player.code]);

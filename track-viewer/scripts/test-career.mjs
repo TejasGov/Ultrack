@@ -778,8 +778,15 @@ try {
       assert.ok(r, 'a market week with rumours'); const rs = r.season.rumours.map((x) => ({ ...x }));
       assert.ok(r.inbox.some((m) => /up for renewal/.test(m.title) && /Shortlist/.test(m.body)), 'in the inbox'); assert.ok(r.media.some((m) => m.kind === 'rumor' && /up for renewal/.test(m.title)), 'and the press');
       assert.ok(rs.every((x) => r.world.contracts[x.code] === 1 && x.list.length <= 3 && !x.list.includes(x.code)));
+      assert.ok(rs.every((x) => x.list.every((c) => c === W.YOU || r.world.free.includes(c) || r.world.contracts[c] === 2)), 'the shortlist is the one the market draws: free agents, and drivers whose last season the market will see (two left now)');
       toReview(r, 2, 1); const k = r.pending.offers.find((o) => o.keep) ?? r.pending.offers[0]; C.acceptOffer(r, k.id, avail);
       for (const x of rs) assert.ok(r.world.seats[x.car] !== x.code || r.world.contracts[x.code] >= 2, `${x.car}: the seat opened or ${x.code} re-signed`); }
+    { const lost = (talked) => { const s = signed(2050), Wd = s.world, k = R.TEAM_IDS.map((t) => R.seatCar(t, 'A')).sort((a, b) => Wd.teams[R.CAR[a].team].expPos - Wd.teams[R.CAR[b].team].expPos)[0], was = Wd.seats[k];   // a seat lost to a rival
+        Wd.contracts[was] = 1; Wd.ratings[was] = 60; Wd.ratings.ZZX = 99; Wd.ages.ZZX = 25; Wd.free.push('ZZX'); s.career.heat = {}; s.career.rivalry = {};
+        s.season.rumours = [{ car: k, code: was, list: [W.YOU, 'ZZX'] }]; if (talked) s.season.talked = { [R.CAR[k].team]: 1 };
+        W.marketMoves(s); assert.equal(Wd.seats[k], 'ZZX'); return s.career; };
+      assert.equal(lost(false).heat.ZZX, undefined, 'a shortlisted driver takes a seat the player never talked about: no rivalry');
+      const K = lost(true); assert.equal(K.heat.ZZX, R.TUNING.rivals.seatLost); assert.equal(K.rivalry.ZZX.cause, 'seat', 'the team made an offer or was approached: a rivalry over the seat'); }
     { let m = null; for (let i = 2200; i < 2400 && !m; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 1); const out = s.pending.offers.filter((o) => o.team !== s.contract.team && !o.reserve); if (out.length >= 2 && out.some((o) => /have matched/.test(o.why))) m = out; }   // two bids: the lesser one matches
       assert.ok(m, 'two outside offers, one matching the other, on some seeds'); const lo = m.find((o) => /have matched/.test(o.why)); assert.equal(lo, m.at(-1), 'the lesser one'); assert.ok(lo.salary <= Math.max(...m.map((o) => o.salary))); }
     { const s = signed(2010); s.schema = 8; delete s.world.contracts; delete s.career.ledger; C.migrate(s); assert.equal(s.schema, C.SCHEMA);   // a schema-8 save gets contracts and an empty ledger
