@@ -1,0 +1,99 @@
+{
+ "track": "qingshan",
+ "look": "day",
+ "frames": 720,
+ "rounds": 3,
+ "ab": null,
+ "abLoad": null,
+ "arms": {
+  "A": {
+   "rounds": [
+    {
+     "quit.longTask": 176,
+     "quit.tasks": 1,
+     "quit.world": 177
+    },
+    {
+     "quit.longTask": 190,
+     "quit.tasks": 1,
+     "quit.world": 190
+    },
+    {
+     "quit.longTask": 169,
+     "quit.tasks": 1,
+     "quit.world": 170
+    }
+   ],
+   "median": {
+    "quit.longTask": 176,
+    "quit.tasks": 1,
+    "quit.world": 177
+   },
+   "spread": {
+    "quit.longTask": 21,
+    "quit.tasks": 0,
+    "quit.world": 20
+   },
+   "n": {
+    "quit.longTask": 3,
+    "quit.tasks": 3,
+    "quit.world": 3
+   }
+  },
+  "B": {
+   "rounds": [
+    {
+     "quit.longTask": 243,
+     "quit.tasks": 1,
+     "quit.world": 244
+    },
+    {
+     "quit.longTask": 172,
+     "quit.tasks": 1,
+     "quit.world": 172
+    },
+    {
+     "quit.longTask": 178,
+     "quit.tasks": 1,
+     "quit.world": 178
+    }
+   ],
+   "median": {
+    "quit.longTask": 178,
+    "quit.tasks": 1,
+    "quit.world": 178
+   },
+   "spread": {
+    "quit.longTask": 71,
+    "quit.tasks": 0,
+    "quit.world": 72
+   },
+   "n": {
+    "quit.longTask": 3,
+    "quit.tasks": 3,
+    "quit.world": 3
+   }
+  }
+ },
+ "verdict": {
+  "quit.longTask": {
+   "d": 2,
+   "spread": 71,
+   "beyond": false,
+   "few": false
+  },
+  "quit.tasks": {
+   "d": 0,
+   "spread": 0,
+   "beyond": false,
+   "few": false
+  },
+  "quit.world": {
+   "d": 1,
+   "spread": 72,
+   "beyond": false,
+   "few": false
+  }
+ },
+ "errors": []
+}

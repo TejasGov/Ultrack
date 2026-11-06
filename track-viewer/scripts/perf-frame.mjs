@@ -9,6 +9,9 @@
 //   --programs        the shader programs that exist when the menu warm-up (game.preloadP) is done, and again after the blocks and 10 s more
 //                     racing with a nitro and a wall hit: lists the programs created after the warm-up, counts the program info-log reads
 //                     after it (a program's first use), and exits 1 if there are any of either
+//   --quit            instead of the frame blocks, WP5's quit+3 s phase per round: pause -> Quit to menu -> Quit, then the longest task in
+//                     the next 3 s and how long the menu's collision-world rebuild (game.js endSession, 1.5 s in) took, then back to a race.
+//                     A drops the memoised void walls first (the build before WP5), B keeps them: A B A B ...
 import { chromium } from 'playwright-core';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -18,7 +21,7 @@ import { args as parseArgs, setupLook, root } from './perf-open.mjs';
 const { flag, pos, has } = parseArgs(process.argv.slice(2));
 const track = pos[0] ?? 'qingshan', look = flag('look', 'day'), FRAMES = +flag('frames', 720), ROUNDS = +flag('rounds', 4);
 const ab = flag('ab', null), abLoad = flag('ab-load', null), base = flag('url', 'http://127.0.0.1:5301'), W = 1600, H = 900;
-const out = flag('out', `qa/perf/frame-${track}${ab ? '-ab-' + ab : abLoad ? '-abload-' + abLoad : ''}.json`);
+const out = flag('out', `qa/perf/frame-${track}${ab ? '-ab-' + ab : abLoad ? '-abload-' + abLoad : has('quit') ? '-quit' : ''}.json`);
 const CHROME = { executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu'] };
 const log = (...a) => console.log(`[${track}]`, ...a), errors = [];
 const profile = join(tmpdir(), 'ultrack-perf-frame-profile');
@@ -147,6 +150,32 @@ async function provoke(page) {
   return { nitro, wall };
 }
 
+/** quit+3 s: `fresh` empties PhysicsWorld.walls first, so A rebuilds the void walls as every rebuild did before the memo */
+async function quitPhase(page, fresh) {
+  await page.evaluate((fresh) => {
+    const g = window.game;
+    if (fresh) g.pw.constructor.walls?.clear();   // the game's own class: a dynamic import here can be a second instance of the module
+    window.__Q?.obs.disconnect();
+    const Q = window.__Q = { long: [], world: null, obs: new PerformanceObserver((l) => { for (const e of l.getEntries()) Q.long.push([e.startTime, e.duration]); }) };
+    Q.obs.observe({ type: 'longtask' });
+    const prep = g.prepareWorld;   // the one rebuild after this quit: timed from the call to the world being ready (one task, its microtasks included)
+    g.prepareWorld = function () { g.prepareWorld = prep; const had = this.worldP, t0 = performance.now(); prep.call(this); if (!had && this.worldP) this.worldP.then(() => { Q.world = performance.now() - t0; }, () => {}); };
+  }, fresh);
+  await page.keyboard.press('Escape');
+  await page.click('.p-opts button:has-text("Quit to menu")');
+  await page.click('.m-layer .btn-primary');
+  const t0 = await page.evaluate(() => performance.now());
+  await page.waitForTimeout(3000);
+  const r = await page.evaluate((t0) => { const Q = window.__Q, L = Q.long.filter(([s]) => s >= t0 && s < t0 + 3000).map((e) => e[1]); return { 'quit.longTask': Math.round(Math.max(0, ...L)), 'quit.tasks': L.length, 'quit.world': Q.world === null ? -1 : Math.round(Q.world), menu: !window.game.session }; }, t0);
+  if (!r.menu || r['quit.world'] < 0) throw Error('the quit did not reach the menu or rebuild the collision world: ' + JSON.stringify(r));
+  delete r.menu;
+  await page.click('.bento-tile[data-id=race]');
+  await page.click('.panel.setup button.cta');
+  await page.waitForFunction(() => window.game?.session && !window.game.raceLoading.active, null, { timeout: 240000 });
+  await page.waitForTimeout(5000);
+  return r;
+}
+
 const result = { track, look, frames: FRAMES, rounds: ROUNDS, ab, abLoad, arms: {} };
 const add = (arm, r) => { (result.arms[arm] ??= { rounds: [] }).rounds.push(r); log(arm, JSON.stringify(r)); };
 let newPrograms = [];
@@ -157,6 +186,7 @@ if (abLoad) {
 } else {
   const { ctx, page, warm } = await open();
   for (let r = 0; r < ROUNDS; r++) {
+    if (has('quit')) { for (const [arm, fresh] of [['A', true], ['B', false]]) add(arm, await quitPhase(page, fresh)); continue; }
     if (!ab) { add('base', await block(page)); continue; }
     for (const [arm, on] of [['A', false], ['B', true]]) {
       await page.evaluate(([k, on]) => { window.viewer.perf[k] = on; window.viewer.applyAll(); }, [ab, on]);
