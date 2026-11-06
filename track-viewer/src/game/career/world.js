@@ -1,15 +1,20 @@
 // The world around the player (docs/career-mode.md 6.6, 6.8): who drives which car, the free agents, the academy, rival heat, and
 // the cheap AI market between seasons. Pure, like the rest of career/: a save goes in and comes out changed.
 // world.seats maps each car key to a driver code; the player's car holds 'YOU', a seat the market has to fill holds null.
-import { TUNING as T, TIERS, DRIVERS, CAR, clamp, loreOf, tierOf, seatCar, otherSeat } from './rules.js';
+import { TUNING as T, TIERS, DRIVERS, CAR, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating } from './rules.js';
 import { rng } from './rng.js';
 
 export const YOU = 'YOU';
 /** the 16 teams.json drivers by code; academy drivers live in the save (world.academy), once called up */
 const BASE = Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, { code: c.driver.code, name: c.driver.name, nation: c.driver.nation }]));
 
-export function newWorld() {
+/** a contract's length in seasons, seeded per driver: the starting grid's 1-3 (market.contract), a signing's 2-3 (market.signing) */
+const span = (r, [lo, hi]) => lo + Math.floor(r() * (hi - lo + 1));
+export const contractFor = (seed, code) => span(rng(seed, 'contract', code), T.market.contract);
+/** world.contracts[code]: the seasons left on an AI driver's contract, this one included (a free agent has none) */
+export function newWorld(seed = 0) {
   return {
+    contracts: Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, contractFor(seed, c.driver.code)])),
     teams: Object.fromEntries(Object.keys(TIERS.teams).map((id) => [id, { expPos: TIERS.teams[id].expPos, dev: [...tierOf(id).dev], declined: 0 }])),
     ratings: { ...DRIVERS.ratings }, ages: Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, c.driver.age])),
     seats: Object.fromEntries(Object.entries(CAR).map(([key, c]) => [key, c.driver.code])), free: [], retired: [], academy: {},
@@ -38,7 +43,7 @@ export function takeSeat(save, car, oldCar) {
   if (car === oldCar) return;
   W.seats[car] = YOU;
   if (oldCar) W.seats[oldCar] = same ? out : null;
-  if (!same && out && out !== YOU) { W.free.push(out); }
+  if (!same && out && out !== YOU) { W.free.push(out); delete W.contracts?.[out]; }
   if (same) return;
   for (const c of Object.keys(H)) H[c] = Math.max(0, H[c] - T.rivals.teamChange);
   const mate = W.seats[seatCar(CAR[car].team, otherSeat(CAR[car].seat))];
@@ -52,28 +57,71 @@ function setHeat(save, code, h, cause) {
   (K.rivalry ??= {})[code] ??= { cause, since: [season, 0], w: 0, l: 0 };
 }
 
-/** between seasons (6.8): everyone a year older, ratings drift by age, the old retire, open seats fill from free agents, then the academy */
-export function marketMoves(save) {
-  const W = save.world, M = T.market, season = save.clock.season;
+/** a driver's standing in the market (6.8, phase 5): rating, twice the season's form, and a seeded jitter of +-1; the player is measured by their market rating */
+export const marketScore = (save, code) => (code === YOU ? playerRating(save) : save.world.ratings[code]) + 2 * seasonForm(save, code) + rng(save.seed, 'market', 'score', save.clock.season, code)() * 2 - 1;
+/** who could take this seat: the free agents, and AI drivers in their last season at a team below it (seated: false stops the cascade) */
+export function shortlistOf(save, key, seated = true) {
+  const W = save.world, pos = W.teams[CAR[key].team].expPos;
+  return [...W.free, ...(seated ? Object.entries(W.seats).filter(([k, c]) => c && c !== YOU && W.contracts[c] === 1 && W.teams[CAR[k].team].expPos > pos).map(([, c]) => c) : [])];
+}
+
+/**
+ * Between seasons (6.8), in seeded phases: everyone a year older and ratings drift by age; the old retire; contracts run down, and a driver out
+ * of contract re-signs (rated near the tier, and the team's roll) or goes free; a team drops a driver well below the tier who scored fewer points
+ * than his teammate; then the open seats fill, the best team first, with the best market score among the free agents and the drivers in their last
+ * season at a lesser team. A seated driver who moves opens his own seat (a cascade of maxMoves at most); the driver the player displaced
+ * (`displaced`, from `vacated`) does not take the player's old seat while another is open; the academy fills what is left.
+ */
+export function marketMoves(save, { displaced = null, vacated = null } = {}) {
+  const W = save.world, M = T.market, season = save.clock.season, K = (W.contracts ??= {}), sign = (code) => { K[code] = span(rng(save.seed, 'market', 'length', season, code), M.signing); };
   for (const code of Object.keys(W.ratings)) {
     const age = (W.ages[code] = (W.ages[code] ?? 30) + 1), step = DRIVERS.drift.find(([max]) => age < max)?.[1] ?? 0;
     W.ratings[code] = clamp(W.ratings[code] + step, 60, 99);
   }
   const retire = (code) => W.ages[code] >= M.retireAge && rng(save.seed, 'market', 'retire', season, code)() < M.retireChance;
-  for (const [key, code] of Object.entries(W.seats)) if (code && code !== YOU && retire(code)) { W.seats[key] = null; W.retired.push(code); }
+  for (const [key, code] of Object.entries(W.seats)) if (code && code !== YOU && retire(code)) { W.seats[key] = null; W.retired.push(code); delete K[code]; }
   W.free = W.free.filter((code) => !(retire(code) && W.retired.push(code)));
-  // the best teams pick first, the best free agent first; then the academy
-  const open = Object.keys(W.seats).filter((k) => W.seats[k] === null).sort((a, b) => W.teams[CAR[a].team].expPos - W.teams[CAR[b].team].expPos || (CAR[a].seat === 'A' ? -1 : 1));
-  for (const key of open) {
-    W.free.sort((a, b) => W.ratings[b] - W.ratings[a]);
-    W.seats[key] = W.free.shift() ?? callUp(save);
+  const seated = () => Object.entries(W.seats).filter(([, c]) => c && c !== YOU), free = (key) => { W.free.push(W.seats[key]); delete K[W.seats[key]]; W.seats[key] = null; };
+  const tierAvg = {}; for (const [k, c] of seated()) (tierAvg[TIERS.teams[CAR[k].team].tier] ??= []).push(W.ratings[c]);
+  for (const t in tierAvg) tierAvg[t] = tierAvg[t].reduce((a, b) => a + b, 0) / tierAvg[t].length;
+  const avgAt = (key) => tierAvg[TIERS.teams[CAR[key].team].tier];
+  for (const [key, code] of seated()) {
+    if ((K[code] = (K[code] ?? 1) - 1) > 0) continue;
+    if (W.ratings[code] >= avgAt(key) - M.renewGap && rng(save.seed, 'market', 'renew', season, code)() < M.renew) sign(code); else free(key);
   }
+  // this season's points by driver and the team each scored them for: an under-performer is one his teammate outscored
+  const pts = {}, team = {};
+  for (const r of save.season?.results ?? []) for (const e of r.entries) { const c = e.you ? YOU : e.code; pts[c] = (pts[c] ?? 0) + e.pts; team[c] = e.team; }
+  for (const [key, code] of seated()) {
+    const t = CAR[key].team, beaten = Object.keys(team).some((c) => c !== code && team[c] === t && pts[c] > (pts[code] ?? 0));
+    if (team[code] === t && W.ratings[code] <= avgAt(key) - M.dropGap && beaten) free(key);
+  }
+  const order = (keys) => keys.sort((a, b) => W.teams[CAR[a].team].expPos - W.teams[CAR[b].team].expPos || (CAR[a].seat === 'A' ? -1 : 1));
+  const open = order(Object.keys(W.seats).filter((k) => W.seats[k] === null)), score = Object.fromEntries([...W.free, ...seated().map(([, c]) => c)].map((c) => [c, marketScore(save, c)]));
+  let moves = 0;
+  while (open.length) {
+    const key = open.shift(), skip = key === vacated && open.length ? displaced : null;
+    const best = shortlistOf(save, key, moves < M.maxMoves).filter((c) => c !== skip).sort((a, b) => score[b] - score[a] || (a < b ? -1 : 1))[0];
+    const from = best && Object.keys(W.seats).find((k) => W.seats[k] === best);
+    if (from) { W.seats[from] = null; open.push(from); order(open); moves++; } else if (best) W.free.splice(W.free.indexOf(best), 1);
+    W.seats[key] = best ?? callUp(save);
+    sign(W.seats[key]);
+  }
+  // a driver on the rumoured shortlist with the player takes the seat: a rivalry over a seat (6.6)
+  for (const x of save.season?.rumours ?? []) { const now = W.seats[x.car]; if (x.list.includes(YOU) && now !== YOU && now !== x.code && x.list.includes(now)) heatUp(save, now, T.rivals.seatLost, 'seat'); }
 }
 function callUp(save) {
-  const W = save.world, M = T.market, taken = new Set([...Object.keys(W.ratings), save.player.code]);
-  const next = DRIVERS.academy.find((a) => !taken.has(a.code)), r = rng(save.seed, 'market', 'academy', next?.code ?? W.retired.length);
-  const code = next?.code ?? 'A' + String(Object.keys(W.academy).length).padStart(2, '0');    // past the list: numbered rookies
-  W.academy[code] = { name: next?.name ?? `Academy Driver ${code.slice(1)}`, nation: next?.nation ?? 'IND' };
+  const W = save.world, M = T.market, N = DRIVERS.academyNames, taken = new Set([...Object.keys(W.ratings), ...DRIVERS.academy.map((a) => a.code), save.player.code]);
+  const next = DRIVERS.academy.find((a) => !taken.has(a.code)), n = Object.keys(W.academy).length, r = rng(save.seed, 'market', 'academy', next?.code ?? n);
+  let { code, name, nation } = next ?? {};
+  if (!next) {                                                   // past the list: a seeded name nobody in the paddock has, its code from the surname
+    const names = new Set([...Object.values(BASE), ...Object.values(W.academy), ...DRIVERS.academy].map((d) => d.name).concat(save.player.name)), pick = (l) => l[Math.floor(r() * l.length)];
+    for (let i = 0; i < 99 && (!name || names.has(name)); i++) name = `${pick(N.first)} ${pick(N.last)}`;
+    const [first, last] = name.toUpperCase().split(' ');
+    code = [last.slice(0, 3), first[0] + last.slice(0, 2), last.slice(0, 2) + first[0], 'A' + String(n).padStart(2, '0')].find((c) => !taken.has(c));
+    nation = pick(N.nations);
+  }
+  W.academy[code] = { name, nation };
   W.ratings[code] = M.academyRating[0] + Math.floor(r() * (M.academyRating[1] - M.academyRating[0] + 1));
   W.ages[code] = M.academyAge[0] + Math.floor(r() * (M.academyAge[1] - M.academyAge[0] + 1));
   return code;

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Career ratings of the 16 drivers (track-viewer/docs/career-mode.md 2.4), invented to fit the lore and the tier bands. Ages come from teams.json. The academy fills seats the market opens (6.8): invented names, rating rolled 70-78, age 19-22 when called up.",
+  "note": "Career ratings of the 16 drivers (track-viewer/docs/career-mode.md 2.4), invented to fit the lore and the tier bands. Ages come from teams.json. The academy fills seats the market opens (6.8): invented names (academyNames: seeded first and last names and a nation, once the list runs out), rating rolled 70-78, age 19-22 when called up.",
   "ratings": {
     "VAL": 94,
     "CAL": 90,
@@ -102,5 +102,10 @@
       "name": "Jonas Weber",
       "nation": "GER"
     }
-  ]
+  ],
+  "academyNames": {
+    "first": ["Amara", "Bastien", "Chiara", "Dmitri", "Elif", "Felipe", "Greta", "Hana", "Ivo", "Jana", "Kofi", "Lena", "Marco", "Nadia", "Oskar", "Priya", "Rafael", "Sana", "Tomas", "Una", "Viktor", "Wen", "Yara", "Zoltan", "Ines", "Luca", "Mei", "Noah", "Selin", "Arjun"],
+    "last": ["Abara", "Bertrand", "Castillo", "Dragan", "Eriksen", "Ferreira", "Galli", "Hoffmann", "Ito", "Jovanovic", "Kowalski", "Larsen", "Moreau", "Nakamura", "Okoro", "Petrov", "Quaresma", "Rinaldi", "Sato", "Torres", "Ulloa", "Vasquez", "Wolff", "Yilmaz", "Zielinski", "Brennan", "Delacroix", "Haddad", "Mensah", "Varga"],
+    "nations": ["BRA", "ESP", "FRA", "GER", "GBR", "IND", "ITA", "JPN", "MEX", "NED", "SWE", "USA"]
+  }
 }

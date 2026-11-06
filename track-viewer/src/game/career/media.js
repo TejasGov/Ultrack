@@ -112,12 +112,18 @@ export function coverMoves(save, before, retired) {
   const track = null;
   for (const code of retired) { const d = personOf(save, code); story(save, 'move', `${d?.name ?? code} retires`, `The paddock loses one of its own. ${pick(r, ['The tributes began before the announcement ended.', 'A seat is open, and everyone knows it.'])}`, { driver: code, mood: 'portrait', track }); }
   for (const [key, code] of Object.entries(now)) {
-    if (!code || code === YOU || was[code] === key) continue;
+    if (!code || code === YOU || was[code] === key || (was[code] && CAR[was[code]].team === CAR[key].team)) continue;   // a swap inside one team (the player's promotion) is no move
     const d = personOf(save, code), team = loreOf(CAR[key].team).name;
     if (was[code]) story(save, 'move', `${d.name} moves to ${team}`, `Out of ${loreOf(CAR[was[code]].team).name}, and into a ${team} seat for next season. Contract talks were not friendly.`, { driver: code, mood: 'portrait', track });
     else if (d.name && !LORE[code]) story(save, 'move', `${team} promotes ${d.name}`, `An academy rookie, called up for next season. ${team} says the data made the decision.`, { track });
     else story(save, 'move', `${d.name} returns with ${team}`, `A year without a seat is over.`, { driver: code, mood: 'portrait', track });
   }
+}
+/** the market week's rumour (career.js marketRumours): a seat up for renewal and its shortlist, named in `list` */
+export function coverRumour(save, x, list) {
+  const r = rng(save.seed, 'media', save.clock.season, 'rumour'), d = personOf(save, x.code), ctx = { driver: d?.name ?? x.code, team: loreOf(CAR[x.car].team).name, list };
+  const fill = (t) => t.replace(/\{(\w+)\}/g, (_, k) => ctx[k] ?? '');
+  story(save, 'rumor', fill(pick(r, MEDIA.rumour.title)), fill(pick(r, MEDIA.rumour.body)), { driver: x.code, mood: 'portrait' });
 }
 /** the player took the seat of a driver who now has no drive (acceptOffer) */
 export function coverDisplaced(save, code, team) {

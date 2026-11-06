@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Career tiers, seats and team data (track-viewer/docs/career-mode.md sections 2, 3, 5.5, 6.5). side: the team's favourite side event (4.2: sponsor = the Sponsor Challenge, a short race; test = Time Trial). Starting values, not measurements.",
+  "note": "Career tiers, seats and team data (track-viewer/docs/career-mode.md sections 2, 3, 5.5, 6.5). want: the season stat its wants text is judged by in interestOf (offers.js wantOf; norms in tuning.json offers.wantNorm). side: the team's favourite side event (4.2: sponsor = the Sponsor Challenge, a short race; test = Time Trial). Starting values, not measurements.",
   "tiers": {
     "rookie": { "rank": 1, "name": "Rookies", "cup": "Rookie Cup", "world": 1, "cap": 1, "dev": [0, 0, 0], "xp": 1.0, "rep": 1.0, "prize": 0.4,
                 "salary": { "B": 300, "A": 400 }, "sponsor": 1.0, "objective": [60, 30], "bonus": { "podium": 75, "win": 150, "cup": 600 } },
@@ -10,14 +10,14 @@
                 "salary": { "B": 800, "A": 1200, "N": 1800 }, "sponsor": 4.5, "objective": [240, 120], "bonus": { "podium": 300, "win": 600, "cup": 2400 } }
   },
   "teams": {
-    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 650, "rr": 7.5, "cl": 15 }, "wants": "titles", "side": "sponsor" },
-    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 600, "rr": 7.3, "cl": 14 }, "wants": "wins and poles", "side": "test" },
-    "toro":    { "tier": "maestro", "expPos": 3, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.6, "cl": 7 }, "wants": "overtakes and giant-killing", "side": "sponsor" },
-    "sarab":   { "tier": "maestro", "expPos": 4, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "loyalty", "side": "test" },
-    "corvid":  { "tier": "maestro", "expPos": 5, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "clean races", "side": "test" },
-    "hayate":  { "tier": "rookie",  "expPos": 6, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "side": "sponsor" },
-    "mojave":  { "tier": "rookie",  "expPos": 7, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "side": "test" },
-    "liberty": { "tier": "rookie",  "expPos": 8, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "side": "sponsor" }
+    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 650, "rr": 7.5, "cl": 15 }, "wants": "titles", "want": "cups", "side": "sponsor" },
+    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 600, "rr": 7.3, "cl": 14 }, "wants": "wins and poles", "want": "poles", "side": "test" },
+    "toro":    { "tier": "maestro", "expPos": 3, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.6, "cl": 7 }, "wants": "overtakes and giant-killing", "want": "gained", "side": "sponsor" },
+    "sarab":   { "tier": "maestro", "expPos": 4, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "loyalty", "want": "seasonsHere", "side": "test" },
+    "corvid":  { "tier": "maestro", "expPos": 5, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "clean races", "want": "clean", "side": "test" },
+    "hayate":  { "tier": "rookie",  "expPos": 6, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "want": "duel", "side": "sponsor" },
+    "mojave":  { "tier": "rookie",  "expPos": 7, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "want": "rrTrend", "side": "test" },
+    "liberty": { "tier": "rookie",  "expPos": 8, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "want": "fromBehind", "side": "sponsor" }
   },
   "carZ": {
     "destrier": 0.69, "buggati": 0.66, "laferrari": 0.50, "furari-488": 0.24, "av12": 0.19, "huracan": 0.09, "porsche1": 0.37, "mp1x": 0.18,

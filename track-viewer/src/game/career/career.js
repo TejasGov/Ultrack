@@ -10,16 +10,16 @@ import {
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
-import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
+import { YOU, newWorld, contractFor, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
 import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
 import { post, unread, markRead } from './inbox.js';
-import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, unreadStories, readStory, storyImage, latestBytes } from './media.js';
+import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
-  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer,
+  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours,
 } from './offers.js';
 
-export const SCHEMA = 8;
+export const SCHEMA = 9;
 export { rankingOf, playerRank };
 export { hire as hireStaff, hireInfo as staffInfo, discount as staffDiscount, tierNow as staffTier, STAFF, STAFF_LIST, ROLES as STAFF_ROLES };
 export { unreadStories, readStory, storyImage, latestBytes };
@@ -41,12 +41,12 @@ function codeOf(name) {
 
 /** a new career: the driver, a seed, the world as data; the next step is the Open Shootout (3.1) */
 export function newCareer({ name = 'A. Driver', nation = 'IND', number = 99, seed = (Math.random() * 2 ** 31) >>> 0, difficulty = 'normal', raceLength = 'sprint', now = new Date().toISOString() } = {}) {
-  const world = newWorld();
+  const world = newWorld(seed);
   return {
     schema: SCHEMA, id: 'c_' + seed.toString(36), createdAt: now, seed, rules: { difficulty, raceLength },
     player: { name: name.trim() || 'A. Driver', code: codeOf(name), nation, number },
     clock: { season: 1, round: 0, week: 0, phase: 'shootout' },
-    career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {}, rivalry: {} },
+    career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {}, rivalry: {}, ledger: [] },
     contract: null, wallet: { coins: T.money.startWallet },
     garage: { upgrades: {}, paid: {}, package: 0 }, staff: { crew: null, engineer: null }, life: newLife(),
     world, ranking: newRanking(world.ratings), hall: [], season: null, pending: null, history: [], inbox: [], inboxN: 0, sponsors: { deals: [], offers: [] },
@@ -102,6 +102,11 @@ export function migrate(save) {
     if (mate && mate !== YOU) { K.heat[mate] = Math.max(K.heat[mate] ?? 0, T.rivals.mate); RV[mate] ??= { cause: 'teammate', since: [save.clock.season, 0], w: 0, l: 0 }; }
     save.schema = 8;
   }
+  if (save.schema === 8) {                                    // before AI contracts: every seated driver gets the 1-3 seasons a new career would roll, and the career remembers nothing yet
+    const W = save.world; W.contracts = Object.fromEntries(Object.values(W.seats).filter((c) => c && c !== YOU).map((c) => [c, contractFor(save.seed, c)]));
+    save.career.ledger = [];
+    save.schema = 9;
+  }
   for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
   return save;
 }
@@ -137,7 +142,6 @@ export function acceptOffer(save, id, available) {
   if (old && o.team !== old.team && !o.signed && !o.reserve && !old.dropped && old.seasonsLeft > 1) {   // bought out of a running contract: you get the cut (3.3)
     save.transfer = releaseCut(old); save.wallet.coins += save.transfer;
   }
-  for (const x of save.pending.offers) if (x.team !== o.team && x.team !== old?.team) save.world.teams[x.team].declined++;   // declined three times, a team cools (6.5)
   const keep = old && old.team === o.team && !old.dropped;
   save.contract = { team: o.team, seat: o.seat, car: o.car, status: o.status, seasons: o.seasons, seasonsLeft: o.seasons, salary: o.salary, signing: o.signing ?? 0,
     underdog: !!o.underdog || !!(keep && old.underdog && old.car === o.car), easier: !!(o.easier || o.reserve || (o.keep && old.easier)), reserve: !!o.reserve,
@@ -145,9 +149,9 @@ export function acceptOffer(save, id, available) {
   if (o.keep) Object.assign(save.contract, { seasons: old.seasons, seasonsLeft: old.seasonsLeft - 1, signing: 0 });
   save.wallet.coins += save.contract.signing;
   save.garage.upgrades[o.car] ??= stock(); save.garage.paid[o.car] ??= 0;
-  const displaced = save.world.seats[o.car];
+  const displaced = save.world.seats[o.car], before = { ...save.world.seats }, moved = old && old.team !== o.team;
   takeSeat(save, o.car, old?.car);
-  if (!first) nextSeasonWorld(save);
+  if (!first) nextSeasonWorld(save, before, { displaced: moved && displaced !== YOU ? displaced : null, vacated: moved ? old.car : null });
   startSeason(save, available, old?.team !== o.team && displaced !== YOU ? displaced : null);
   if (old?.team !== o.team) coverSigning(save, o.team);
   return save;
@@ -275,7 +279,7 @@ export function advanceWeek(save) {
   const w = currentWeek(save), i = save.clock.week, S = save.sponsors; if (!w || w.kind === 'race' || w.kind === 'end' || save.clock.phase !== 'paddock') return { ok: false };
   if (w.event && !w.event.result && !w.event.skipped) { w.event.skipped = true; if (w.event.kind === 'sponsor' && S.deals.length) sponsorSkipped(save); }   // already skipped: a holiday or an ad took the week
   for (const o of save.season.mid.filter((x) => x.expires === i || x.expires === undefined)) {
-    save.season.mid.splice(save.season.mid.indexOf(o), 1); save.world.teams[o.team].declined++;
+    save.season.mid.splice(save.season.mid.indexOf(o), 1);   // a lapse is no refusal: the team remembers nothing (6.5)
     post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the market closed.');
   }
   for (const o of S.offers.filter((x) => x.expires === i)) { S.offers.splice(S.offers.indexOf(o), 1); post(save, 'sponsor', `${o.name}'s offer lapsed`, 'You did not answer in time.'); }
@@ -292,7 +296,16 @@ function enterWeek(save) {
   } else if (w.kind === 'market') {
     post(save, 'deal', 'The market is open', save.clock.season === 1 ? 'Sponsors can still talk. Teams will not: your first season is probation, and they come to you at the season end.' : 'For this one week teams can talk to you, and you can knock on their doors. Anything you sign starts next season.', { tab: 'deals' });
     sponsorOffers(save, save.clock.week + 2);   // the open week after the next round: late enough to answer, early enough to hit a target
+    marketRumours(save);
   }
+}
+/** the market week's rumours (offers.js rumours): one inbox line for the seats up for renewal and one story for the first; kept for the season end (world.js marketMoves) */
+function marketRumours(save) {
+  const rs = (save.season.rumours = rumours(save)), name = (c) => (c === YOU ? 'you' : personOf(save, c)?.name ?? c);
+  if (!rs.length) return;
+  const and = (l) => (l.length > 1 ? `${l.slice(0, -1).join(', ')} and ${l.at(-1)}` : l[0] ?? 'nobody yet');
+  post(save, 'deal', `Rumours: ${rs.length} ${rs.length === 1 ? 'seat' : 'seats'} up for renewal`, rs.map((x) => `${name(x.code)} at ${teamName(CAR[x.car].team)} is up for renewal. Shortlist: ${and(x.list.map(name))}.`).join(' '), { tab: 'deals' });
+  coverRumour(save, rs[0], and(rs[0].list.map(name)));
 }
 /** what a race week's message adds: how the player gets to the grid */
 export function weekNote(save, R) {
@@ -584,7 +597,7 @@ function endSeason(save) {
   save.history.push({ season: save.clock.season, team: me.team, seat: me.seat, car: me.car, tier: save.season.tier, drivers: drvPos, teams: teamPos, cup: cupPos,
     points: st.drivers[drvPos - 1]?.pts ?? 0, rank: playerRank(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: st.teams.map((t) => t.team), dropped });
   for (const d of S.deals) if (!d.met) post(save, 'sponsor', `${d.name}: target missed`, `You did not ${targetText(d.target)}. No bonus this year.`);
-  for (const o of save.season.mid.splice(0)) { save.world.teams[o.team].declined++; post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
+  for (const o of save.season.mid.splice(0)) { post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
   save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save) }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
   save.clock.phase = 'review';
@@ -592,12 +605,11 @@ function endSeason(save) {
   post(save, dropped ? 'warn' : 'race', `Season ${save.clock.season} is over: P${drvPos} in the Drivers'`, dropped ? `${teamName(me.team)} has let you go.` : 'The review and the market are waiting.');
 }
 
-/** between seasons (6.8, 2.3): AI development, the driver market, expected finishes from the Teams' table */
-function nextSeasonWorld(save) {
+/** between seasons (6.8, 2.3): AI development, the driver market, expected finishes from the Teams' table. before: the seats before the player signed; moved: the driver they displaced and the seat they left */
+function nextSeasonWorld(save, before, moved) {
   const W = save.world, h = save.history.at(-1), cat = (save.clock.season - 1) % 3, order = [1, 0, 2][cat], gone = W.retired.length;   // tyres, engine, brakes in turn
   for (const id of TEAM_IDS) { const t = W.teams[id], cap = tierOf(id).cap; t.dev[order] = Math.min(cap, t.dev[order] + 1); }
-  const before = { ...W.seats };
-  marketMoves(save);
+  marketMoves(save, moved);
   coverMoves(save, before, W.retired.slice(gone));
   if (h?.teamOrder) {
     const v = Object.fromEntries(TEAM_IDS.map((id) => [id, 0.5 * W.teams[id].expPos + 0.5 * (h.teamOrder.indexOf(id) + 1)]));
