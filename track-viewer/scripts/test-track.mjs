@@ -96,7 +96,7 @@ for (let i = 0; i < n; i++) {
   }
 }
 // run-off: halfway between the track edge and the wall (or 10 m out where there is none) is drivable ground
-const DRIVABLE = new Set(['col_grass', 'col_sand', 'col_runoff_tarmac', 'col_paved', 'col_curb', 'col_pit', 'col_asphalt']);
+const DRIVABLE = new Set(['col_grass', 'col_sand', 'col_runoff_tarmac', 'col_paved', 'col_yard','col_curb', 'col_pit', 'col_asphalt']);
 let runoffBad = 0;
 const runoffW = [];
 for (let i = 0; i < n; i++) {
