@@ -15,7 +15,7 @@
           "pole": 30, "qualiPerPlace": 5, "duel": 25, "fastest": 20, "clean": 20, "mandatory": 60, "optional": 25, "proAssist": 1.15 },
   "rating": { "base": 6.0, "pos": 0.7, "quali": 0.3, "win": 0.5, "fastest": 0.4, "clean": 0.3, "duel": 0.4, "duelBig": 0.6,
               "underdog": 0.3, "dnf": -1.5, "dnq": -1.0, "min": 2.0, "max": 10.0, "softAt": 8.5, "softRate": 0.5, "posClamp": 5, "qualiClamp": 4 },
-  "rep": { "perRR": 9, "dropped": -40, "withdrawn": -5, "win": 8, "podium": 4, "pole": 2, "fastest": 1, "giantKill": 3, "giantKillMax": 6, "dnf": -6, "cup": 40, "teams": 60, "drivers": 100 },
+  "rep": { "perRR": 16, "dropped": -40, "withdrawn": -5, "win": 8, "podium": 4, "pole": 2, "fastest": 1, "giantKill": 3, "giantKillMax": 6, "dnf": -11, "cup": 40, "teams": 60, "drivers": 100 },
   "trust": { "start": 55, "startBy": { "second": 60, "number1": 65 }, "warn": 35, "drop": 25, "dropAny": 15, "recover": 2, "numberOne": 70, "perRR": 2, "mandatory": 3, "optional": 1, "duel": 2, "package": 50, "promote": 60, "renew": 50, "signedAway": 8 },
   "form": [[8.5, 3], [8.0, 2], [7.2, 1], [5.8, 0], [5.0, -1], [4.2, -2], [0, -3]],
   "money": { "startWallet": 1000, "buyback": 0.6 },
@@ -25,7 +25,7 @@
               "firstJobInterest": 0.15, "promoteInterest": 0.5, "declineAfter": 3, "declinePenalty": 0.2, "refusals": 3, "tooFar": 1.5, "ownTrust": 3, "leak": 0.3, "leakTrust": 5,
               "demand": { "salaryStep": 0.1, "salaryMax": 0.3, "perSalaryStep": 1, "signingStep": 0.25, "signingMax": 0.5, "perSigningStep": 1, "perStatus": 2, "perSeasonCut": 0.5 } },
   "sponsors": { "retainerStep": 0.15, "retainerMax": 0.3, "bonusStep": 0.25, "bonusMax": 0.5, "refusals": 2, "withdrawnRep": -2, "droppedRep": -3 },
-  "rivals": { "near": 3, "close": 10, "beat": 5, "decay": 5, "teamChange": 10, "displaced": 40, "rival": 40, "feud": 80, "rep": 4, "higherTier": 1.5, "feudRep": 1.5, "feudXp": 25 },
+  "rivals": { "near": 1, "close": 6, "beat": 3, "decay": 5, "sitOut": 1, "contact": 8, "contactHard": 14, "pass": 3, "mate": 20, "duel": 8, "seatLost": 30, "nemesis": 70, "teamChange": 10, "displaced": 30, "rival": 40, "feud": 80, "rep": 4, "higherTier": 1.5, "feudRep": 1.5, "feudXp": 25 },
   "market": { "retireAge": 38, "retireChance": 0.5, "academyRating": [70, 78], "academyAge": [19, 22] },
   "side": { "test": [1.03, 1.015, 1.005], "sponsor": [15000, 25000, 40000], "xp": [25, 50, 75], "pay": [100, 175, 275], "formPay": 0.05 }
 }

@@ -144,7 +144,8 @@ try {
 
   // ---- the seat map: the player's seat holds YOU, the driver he displaced is a free agent with a grudge
   const m = signed(101);
-  assert.equal(m.world.seats.bmw1, 'YOU'); assert.deepEqual(m.world.free, ['QUI']); assert.equal(m.career.heat.QUI, 40);
+  assert.equal(m.world.seats.bmw1, 'YOU'); assert.deepEqual(m.world.free, ['QUI']); assert.equal(m.career.heat.QUI, R.TUNING.rivals.displaced); assert.equal(m.career.rivalry.QUI.cause, 'displaced');
+  { const mc = m.world.seats[C.teammateCar(m)]; assert.equal(m.career.heat[mc], 20, 'the new teammate starts at 20'); assert.deepEqual(m.career.rivalry[mc], { cause: 'teammate', since: [1, 0], w: 0, l: 0 }); }
   assert.equal(C.driverAt(m, 'bmw1').you, true); assert.equal(C.driverAt(m, 'jaguarxkjss').code, 'LIN');
   assert.equal(C.raceSetup((C.finishQuali(m, 30), m)).drivers.bmw1.name, m.player.name, 'the race shows the player in his car');
   // ---- rivals: finishing near a driver heats it, 40 is a rival, beating him pays; everyone else cools
@@ -155,6 +156,43 @@ try {
   const r0 = C.finishRace(h0, { order: order0, best: {}, crashes: 0, spins: 0 });
   assert.ok(r0.repLines.some(([l]) => /Feud beaten/.test(l)), 'beating a feud rival pays REP'); assert.ok(r0.xpLines.some(([l]) => l === 'Feud won'));
   assert.ok(h0.career.heat.MAD < 85, 'a driver far away in the order cools'); assert.ok(C.rivalsOf(h0).some((x) => x.code === 'MAD'));
+  assert.deepEqual(r0.nemesis, { code: 'MAD', name: C.personOf(h0, 'MAD').name, beat: true }, 'the report names the nemesis');
+  // ---- earned rivalries (6.6): only the cars that raced heat up; contacts and passes count; one nemesis a weekend; a head-to-head record
+  { const RT = R.TUNING.rivals, W = await server.ssrLoadModule('/src/game/career/world.js');
+    const at = (seed) => { const s = signed(seed); C.finishQuali(s, 1); s.career.heat = {}; s.career.rivalry = {}; const g = s.season.current.quali.grid, me = s.contract.car; return { s, me, raced: [me, ...g.filter((k) => k !== me)], out: s.season.current.quali.order.filter((k) => !g.includes(k)) }; };
+    const code = (s, k) => s.world.seats[k];
+    { const { s, me, raced, out } = at(170); W.heatAfter(s, raced, me, false);
+      assert.ok(out.every((k) => !(code(s, k) in s.career.heat)), 'a driver who did not race gains no heat'); assert.equal(s.career.heat[code(s, raced[1])], RT.close + RT.beat, 'next to you and beaten: +9');
+      assert.ok(!(code(s, raced[3]) in s.career.heat), 'two places away: nothing');
+      const mc = code(s, out[0]); W.heatAfter(s, raced, me, false, { contacts: {}, passes: {}, duel: mc }); assert.equal(s.career.heat[mc], RT.duel, 'the qualifying duel heats the teammate, raced or not'); assert.equal(s.career.rivalry[mc].cause, 'teammate');
+      const sat = s.career.heat[mc]; W.heatAfter(s, raced.slice(1), me, false); assert.equal(s.career.heat[mc], sat - RT.sitOut, 'a round the player sat out cools slowly'); }
+    { const { s, me, raced } = at(171), [a, b, c] = [raced[3], raced[4], raced[5]];
+      W.heatAfter(s, raced, me, false, { contacts: { [a]: 1, [b]: [45], [c]: [12, 50] }, passes: { [a]: 5 } }); s.career.heat[code(s, a)] = 90; W.heatAfter(s, raced, me, false, { contacts: { [a]: 9, [b]: 9 } }); assert.equal(Object.values(s.career.heat).filter((h) => h >= RT.feud).length, 1, 'after a race too, one feud at most');
+      s.career.heat = {}; W.heatAfter(s, raced, me, false, { contacts: { [a]: 1, [b]: [45], [c]: [12, 50] }, passes: { [a]: 5 } });
+      assert.equal(s.career.heat[code(s, a)], RT.contact + 2 * RT.pass, 'a contact +8, and passes count twice at most'); assert.equal(s.career.heat[code(s, b)], RT.contactHard, 'over 30 km/h: +14'); assert.equal(s.career.heat[code(s, c)], RT.contact + RT.contactHard); }
+    { const { s, me, raced } = at(172), x = code(s, raced[2]), y = code(s, raced[5]);
+      s.career.heat = { [x]: 75, [y]: 75 }; const n1 = W.nemesisOf(s, raced), s2 = at(172).s; s2.career.heat = { [x]: 75, [y]: 75 };
+      assert.deepEqual(n1, W.nemesisOf(s2, raced), 'the pick between equals is seeded'); assert.ok([x, y].includes(n1.code)); assert.equal(n1.key, raced.find((k) => code(s, k) === n1.code));
+      s.career.heat = { [x]: 95, [y]: 92, ZZZ: 99 }; assert.equal(W.nemesisOf(s, raced).code, x, 'the hottest on the grid'); assert.equal(s.career.heat[y], 79, 'everyone else is held below a feud'); assert.equal(s.career.heat.ZZZ, 79);
+      assert.equal(Object.values(s.career.heat).filter((h) => h >= RT.feud).length, 1, 'one feud at most'); assert.equal(C.rivalsOf(s).filter((r) => r.nemesis).length, 1);
+      s.career.heat = { [x]: 69 }; assert.equal(W.nemesisOf(s, raced), null, 'nobody at 70: no nemesis'); }
+    { const { s, me, raced } = at(173), x = code(s, raced[2]), y = code(s, raced[1]); s.career.heat = { [x]: 50, [y]: 35 }; s.career.rivalry = { [x]: { cause: 'contact', since: [1, 1], w: 2, l: 1 } };
+      W.heatAfter(s, raced, me, false); assert.deepEqual([s.career.rivalry[x].w, s.career.rivalry[x].l], [3, 1], 'a rival beaten: one more to you');
+      assert.equal(s.career.rivalry[y].cause, 'grid', 'a rivalry at 40 from racing close'); assert.deepEqual(s.career.rivalry[y].since, [1, 1]); assert.equal(s.career.rivalry[y].w, 1);
+      W.heatAfter(s, [...raced.slice(1), me], me, true); assert.equal(s.career.rivalry[x].w + s.career.rivalry[x].l, 4, 'a retirement counts in nobody\'s record');
+      W.heatAfter(s, [...raced.slice(1), me], me, false); assert.equal(s.career.rivalry[x].l, 2, 'finished behind them: one to them');
+      s.career.heat[x] = 50; const r = C.rivalsOf(s).find((v) => v.code === x); assert.deepEqual([r.cause, r.w, r.l, r.nemesis], ['contact', 3, 2, false]);
+      s.career.heat[x] = 3; W.heatAfter(s, raced.filter((k) => code(s, k) !== x), me, false); assert.ok(!(x in s.career.heat) && !(x in s.career.rivalry), 'at 0 the rivalry is gone'); }
+    { const one = at(174), two = at(174); one.s.career.heat = { [code(one.s, one.raced[4])]: 50 }; two.s.career.heat = { [code(two.s, two.raced[4])]: 50 };
+      assert.deepEqual(W.heatAfter(one.s, one.raced, one.me, false), W.heatAfter(two.s, two.raced, two.me, false, { contacts: {}, passes: {} })); assert.deepEqual(one.s.career, two.s.career, 'an empty ev: the same heat for the same seed'); }
+    // a schema-7 save: heat capped at 60, a rival keeps 'grid' as their cause, the teammate is seeded
+    { const s = signed(175), mc = code(s, C.teammateCar(s)); s.schema = 7; delete s.career.rivalry; s.career.heat = { AAA: 90, BBB: 45, CCC: 10, [mc]: 5 };
+      C.migrate(s); assert.equal(s.schema, 8); assert.deepEqual(s.career.heat, { AAA: 60, BBB: 45, CCC: 10, [mc]: 20 }); assert.deepEqual(Object.keys(s.career.rivalry).sort(), ['AAA', 'BBB', mc].sort());
+      assert.deepEqual(s.career.rivalry.AAA, { cause: 'grid', since: [1, 0], w: 0, l: 0 }); assert.equal(s.career.rivalry[mc].cause, 'teammate'); }
+    // the result plumbing: a race's contacts and passes reach the heat
+    { const s = signed(176); C.finishQuali(s, 1); s.career.heat = {}; const g = s.season.current.quali.grid, me = s.contract.car, far = g.filter((k) => k !== me).at(-1), order = [me, ...g.filter((k) => k !== me)];
+      C.finishRace(s, { order, best: {}, contacts: { [far]: [40] }, passes: { [far]: 1 } }); assert.equal(s.career.heat[code(s, far)], RT.contactHard + RT.pass, 'far apart in the order, but they touched: no cooling'); }
+  }
 
   // ---- team package: the first level of the season is free, and it goes through the cap
   const p0 = signed(103), coins0 = p0.wallet.coins; assert.equal(p0.garage.package, 1);
@@ -297,7 +335,7 @@ try {
 
   // ---- migration: a P1 save gets the seat map, and an unknown schema is not guessed at
   const old = signed(113); delete old.world.seats; delete old.world.free; delete old.world.retired; delete old.world.academy; delete old.career.heat; delete old.garage.package; old.schema = 1;
-  const mig = C.migrate(old); assert.equal(mig.schema, C.SCHEMA); assert.equal(mig.world.seats.bmw1, 'YOU'); assert.deepEqual(mig.world.free, ['QUI']); assert.deepEqual(mig.career.heat, {});
+  const mig = C.migrate(old); assert.equal(mig.schema, C.SCHEMA); assert.equal(mig.world.seats.bmw1, 'YOU'); assert.deepEqual(mig.world.free, ['QUI']); assert.deepEqual(mig.career.heat, { [mig.world.seats[C.teammateCar(mig)]]: 20 }, 'no heat but the teammate seeded at schema 8');
   assert.equal(C.migrate({ schema: 99 }), null); assert.equal(C.migrate(null), null);
   const v3 = signed(130); round(v3, 3); round(v3, 3); v3.schema = 3; delete v3.inbox; delete v3.inboxN; delete v3.sponsors; delete v3.clock.week; const wo3 = { id: 'o', team: 'toro', seat: 'B', car: 'huracan', tier: 'maestro', status: 'junior', salary: 500, signing: 1000, seasons: 2, why: 'x' };
   delete v3.season.weeks; delete v3.season.mid; delete v3.season.asked; v3.season.w1 = { offer: wo3, state: 'open' }; v3.season.current.side = { kind: 'test', result: null }; v3.season.calendar[4].track = 'infinia'; v3.season.calendar[4].look = 'night'; v3.player.code = 'VAL';
@@ -382,7 +420,7 @@ try {
   // ---- an old save: schema 4 gets the ranking and the records, and a season under way finishes on the rounds it rolled (no Opens, no Last Chance)
   { const s = signed(350), cal = s.season.calendar; cal.forEach((r) => { delete r.kind; delete r.lcqLaps; r.event = 'sprint'; }); round(s, 3, 1); delete s.season.current.open;
     s.schema = 4; delete s.ranking; delete s.hall; for (const k of ['openWins', 'masters', 'triple', 'slams']) delete s.stats[k];
-    C.migrate(s); assert.equal(s.schema, 7); assert.equal(s.ranking.n, 0); assert.deepEqual(s.hall, []); assert.deepEqual(s.stats.openWins, { tokyo: 0, infinia: 0, venice: 0 }); assert.equal(C.rankingOf(s).length, 16);
+    C.migrate(s); assert.equal(s.schema, C.SCHEMA); assert.equal(s.ranking.n, 0); assert.deepEqual(s.hall, []); assert.deepEqual(s.stats.openWins, { tokyo: 0, infinia: 0, venice: 0 }); assert.equal(C.rankingOf(s).length, 16);
     for (let i = 0; i < 4; i++) { const rep = round(s, 3, 1); assert.equal(rep.kind, 'tour', 'an old round plays as a Tour round'); assert.ok(!s.season.current.open); }
     assert.equal(s.ranking.n, 4, 'and still scores the ranking'); toReview(s, 3, 1); assert.equal(s.season.results.length, 10); assert.equal(s.clock.phase, 'review');
     assert.equal(R.pointsMult({ finale: true }), 1.5); assert.equal(R.pointsMult({ kind: 'tour' }), 1); assert.equal(R.pointsMult({ kind: 'open' }), 1.5); }
@@ -430,7 +468,7 @@ try {
     C.acceptOffer(e, offer.id, avail); if (offer.car !== old) assert.equal(e.buyback, Math.round(paid * 0.6), 'parts sell back at 60 % of what was paid, discount included'); assert.equal(e.clock.season, 2); assert.equal(C.staffTier(e, 'engineer').id, 'basic', 'the contract ran out with the season'); assert.equal(e.staff.engineer.tier, 'elite', 'the record stays with the driver');
     e.wallet.coins = 20000; e.career.cl = 8; assert.ok(C.hireStaff(e, 'engineer-elite').ok, 'and can be hired again, on any team'); assert.equal(C.staffTier(e, 'engineer').id, 'elite');
     // an old save: staff appear, upgrade entries gain the new categories as 0, a season under way is untouched
-    const o = signed(932); o.schema = 5; delete o.staff; o.garage.upgrades = { bmw1: { engine: 1, tyres: 0, brakes: 0 } }; C.migrate(o); assert.equal(o.schema, 7); assert.deepEqual(o.staff, { crew: null, engineer: null }); assert.deepEqual(o.garage.upgrades.bmw1, { engine: 1, tyres: 0, brakes: 0, aero: 0, nitro: 0 }); assert.equal(C.staffDiscount(o, 'crew'), 0);
+    const o = signed(932); o.schema = 5; delete o.staff; o.garage.upgrades = { bmw1: { engine: 1, tyres: 0, brakes: 0 } }; C.migrate(o); assert.equal(o.schema, C.SCHEMA); assert.deepEqual(o.staff, { crew: null, engineer: null }); assert.deepEqual(o.garage.upgrades.bmw1, { engine: 1, tyres: 0, brakes: 0, aero: 0, nitro: 0 }); assert.equal(C.staffDiscount(o, 'crew'), 0);
     const o2 = signed(933); o2.garage.upgrades = { 'bmw1': { engine: 1 } }; assert.equal(C.upgradeInfo(o2, 'aero', 503).level, 0, 'a missing category reads 0 even before migration'); assert.equal(C.raceSetup(o2).levels('bmw1').aero, 0);
     // rivals wear Aero with their development; they have no Nitro bought
     const w = signed(934); C.finishQuali(w, 1); const lv = C.raceSetup(w).levels, rival = w.season.current.quali.grid.find((k) => k !== w.contract.car), dev = w.world.teams[R.CAR[rival].team].dev; assert.equal(lv(rival).aero, R.aeroOf(dev)); assert.equal(lv(rival).nitro, 0, 'rivals have no Nitro bought'); assert.deepEqual(Object.keys(lv(rival)).sort(), ['aero', 'brakes', 'engine', 'nitro', 'tyres'], 'every category is named, so a level left over from free play cannot leak to a rival'); }
@@ -515,7 +553,7 @@ try {
       assert.ok(v.inbox.some((m) => /yacht was sold/.test(m.title)) && v.media.some((m) => /sells the yacht/.test(m.title)), 'and it says so'); assert.equal(v.life.ads['ad-shoot'] ?? 0, 0, 'ad caps start again with the season');
       const w = signed(1124); w.life.owned.apartment = 1; w.wallet.coins = 90000; toReview(w, 2, 1); C.acceptOffer(w, w.pending.offers[0].id, avail); assert.ok(w.inbox.some((m) => /Upkeep paid/.test(m.title)) && C.ownedN(w, 'apartment') === 1, 'an owner who can pay keeps it'); }
     // old saves: schema 6 gets a mood at 50 and nothing owned; a season under way has no activity booked and plays on
-    { const s = signed(1130); round(s, 4, 60); delete s.life; s.schema = 6; const keep = JSON.stringify(s.season.weeks); C.migrate(s); assert.equal(s.schema, 7); assert.equal(s.life.happy, 50); assert.deepEqual(s.life.owned, {}); assert.equal(JSON.stringify(s.season.weeks), keep, 'the weeks are untouched'); round(s, 4, 60); assert.ok(s.life.happy > 0);
+    { const s = signed(1130); round(s, 4, 60); delete s.life; s.schema = 6; const keep = JSON.stringify(s.season.weeks); C.migrate(s); assert.equal(s.schema, C.SCHEMA); assert.equal(s.life.happy, 50); assert.deepEqual(s.life.owned, {}); assert.equal(JSON.stringify(s.season.weeks), keep, 'the weeks are untouched'); round(s, 4, 60); assert.ok(s.life.happy > 0);
       const r = JSON.parse(JSON.stringify(signed(1131))); assert.deepEqual(C.migrate(r).life, signed(1131).life, 'a current save is unchanged by migrate'); }
     // whole careers with a shopper: solvent, in range, small, and they replay
     { const a = play(M, 31, 1.0, 5, 'sprint', { life: true }), b = play(M, 31, 1.0, 5, 'sprint', { life: true }); assert.equal(JSON.stringify(a.save), JSON.stringify(b.save), 'a shopping career replays');

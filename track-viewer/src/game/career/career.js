@@ -10,7 +10,7 @@ import {
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
-import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, rivalsOf } from './world.js';
+import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisOf, rivalsOf } from './world.js';
 import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
 import { post, unread, markRead } from './inbox.js';
 import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, unreadStories, readStory, storyImage, latestBytes } from './media.js';
@@ -19,7 +19,7 @@ import {
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer,
 } from './offers.js';
 
-export const SCHEMA = 7;
+export const SCHEMA = 8;
 export { rankingOf, playerRank };
 export { hire as hireStaff, hireInfo as staffInfo, discount as staffDiscount, tierNow as staffTier, STAFF, STAFF_LIST, ROLES as STAFF_ROLES };
 export { unreadStories, readStory, storyImage, latestBytes };
@@ -46,7 +46,7 @@ export function newCareer({ name = 'A. Driver', nation = 'IND', number = 99, see
     schema: SCHEMA, id: 'c_' + seed.toString(36), createdAt: now, seed, rules: { difficulty, raceLength },
     player: { name: name.trim() || 'A. Driver', code: codeOf(name), nation, number },
     clock: { season: 1, round: 0, week: 0, phase: 'shootout' },
-    career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {} },
+    career: { xp: 0, cl: 1, rep: 0, rr: [], heat: {}, rivalry: {} },
     contract: null, wallet: { coins: T.money.startWallet },
     garage: { upgrades: {}, paid: {}, package: 0 }, staff: { crew: null, engineer: null }, life: newLife(),
     world, ranking: newRanking(world.ratings), hall: [], season: null, pending: null, history: [], inbox: [], inboxN: 0, sponsors: { deals: [], offers: [] },
@@ -95,6 +95,12 @@ export function migrate(save) {
   if (save.schema === 6) {                                    // before the Shop: a driver at ease (50), fans from his name, nothing owned; a season under way keeps its weeks and simply has no activities booked
     save.life = newLife(save.career.rep);
     save.schema = 7;
+  }
+  if (save.schema === 7) {                                    // before earned rivalries: heat that came from finishing near someone is capped short of a nemesis, and a rival keeps that as their cause
+    const K = save.career, RV = (K.rivalry = {}), mate = save.contract && save.world.seats[teammateCar(save)];
+    for (const [c, h] of Object.entries(K.heat)) { K.heat[c] = Math.min(h, 60); if (h >= T.rivals.rival) RV[c] = { cause: 'grid', since: [save.clock.season, 0], w: 0, l: 0 }; }
+    if (mate && mate !== YOU) { K.heat[mate] = Math.max(K.heat[mate] ?? 0, T.rivals.mate); RV[mate] ??= { cause: 'teammate', since: [save.clock.season, 0], w: 0, l: 0 }; }
+    save.schema = 8;
   }
   for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
   return save;
@@ -353,7 +359,7 @@ export function raceSetup(save) {
   const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at Dry Lake
   const racers = cur.quali?.grid ?? [hero], pace = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => [key, aiPace(save, key, lcq ? ['lcq'] : [])]));
   const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
-  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
+  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis: nemesisOf(save, racers), laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
     label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null,
     drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
 }
@@ -380,7 +386,7 @@ export function finishSide(save, value) {
 
 // ---------------------------------------------------------------------------------------------- the race
 /**
- * The feature race is done. result: { order: [car keys, finishing order], best: { key: seconds | null }, dnf, crashes, spins, pro }.
+ * The feature race is done. result: { order: [car keys, finishing order], best: { key: seconds | null }, dnf, crashes, spins, pro, contacts: { key: n | [km/h] }, passes: { key: n } } (the last two heat rivals, 6.6).
  * Scores the round (points, Round Rating, XP, REP, trust, objectives, money, rivals), stores it, opens the mid-season market after the
  * middle round, and moves on to the next week or the season review. Returns the round report the results screen shows.
  * The classification is everyone: the race, then those who missed the cut in qualifying order, the player among them if he did.
@@ -405,7 +411,7 @@ export function finishRace(save, result) {
   const rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog });
   const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry from a higher tier that was expected ahead
   const giantKills = dnf || dnq ? 0 : order.slice(finish).filter((k) => tierOf(CAR[k].team).rank > myRank && expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat) < myExp).length;
-  const rivals = heatAfter(save, order, hero, dnf);
+  const rivals = heatAfter(save, raced, hero, dnf, { contacts: result.contacts ?? {}, passes: result.passes ?? {}, duel: duel.skipped ? null : cur.quali.mate.code });   // the qualifying duel heats the teammate
   const xp = xpFor({ ...x, ...judged, pole, mandatory, optional, tier, pro: result.pro, underdog: me.underdog });
   if (rivals.xp) { xp.lines.push(['Feud won', rivals.xp]); xp.xp += rivals.xp; }
   const happyXp = Math.round(xp.xp * (xpMult(save) - 1)); if (happyXp > 0) { xp.lines.push([mood(save).name, happyXp]); xp.xp += happyXp; }   // life.js: a driver on top of the world learns a little faster
@@ -442,6 +448,7 @@ export function finishRace(save, result) {
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
     entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines,
+    nemesis: rivals.nemesis && { code: rivals.nemesis.code, name: personOf(save, rivals.nemesis.code)?.name ?? rivals.nemesis.code, beat: rivals.nemesis.beat },
     rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null } } : {}) };
   if (cur.open) recordOpen(save, R, entries[0], report);
   save.season.results.push(report);

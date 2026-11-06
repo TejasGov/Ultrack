@@ -525,10 +525,14 @@ The team accepts if total demand <= leverage `L = 1 + 4 x interest + 1 x (other 
 
 ### 6.6 Rivalries
 
-- **Rival heat** (0-100) per driver. Each round +10 if the player finished within 3 places of that driver, +5 more if he beat him; -5 per round otherwise; -10 when either changes team.
-- The pairs start from `teams.json` `rivals`: Varrone-Ashcombe, Calderini-Ortega, Mizuno-Lindqvist, Maddox-Hollis, Kareem-Qasimi, Valois-Kareem / Quintero / Beaulieu, plus the player's teammate (always a rival) and the driver he replaced (a free agent who may sign for a team he races against).
-- **40 or more**: a *callout* event (7.4 E04). **80 or more**: a *feud*: appears in the briefing, REP x1.5 for beating him, XP +25.
-- Beating a rival from a higher tier is the best REP in the game; losing to one from a lower tier is the worst. No effect on physics.
+Rivalries are earned on track, from the cars the player actually raced (`world.js` `heatAfter`, `tuning.json` `rivals`):
+
+- **Rival heat** (0-100) per driver, per race the player is in: +6 for finishing next to a driver, +3 more for beating them; +8 for each contact (+14 over 30 km/h, from the session's `contact` event: a hard hit with a car within 6 m); +3 for each pass between the two (two at most a race, from the `position` event's `by`); +8 to the teammate for each qualifying duel. A driver who did none of these that round cools by 5 (by 1 in a round the player sat out: they never met). -10 to everyone when the player changes team. At 0 the rivalry is gone.
+- **Causes and the record.** `save.career.rivalry[code] = { cause, since: [season, round], w, l }`. The first contact or pass starts it (cause `contact` or `pass`), and so do a duel (`teammate`) and a signing: the new teammate starts at heat 20 (`teammate`), the driver the player displaced at 30 (`displaced`). Heat that reaches 40 from racing close alone is `grid`, as are rivalries migrated from schema 7. `w`/`l` count the races both finished. The Driver tab's Rivals block shows the cause and the record ("Contact on track · 4-2 to you").
+- **40 or more** is a rival: beating one pays REP +4 (x1.5 from a higher tier).
+- **The nemesis** (`nemesisOf`): each weekend, the hottest driver on the grid at 70 or more (a seeded pick between equals), at most one. Everyone else is held at 79, so a *feud* (80+) is only ever the nemesis. Beating the nemesis pays REP x1.5 and XP +25; the race report names them and the Rivals block marks them.
+- No effect on physics or pace. Lore pairs from `teams.json` `rivals` feed the press, not the player's heat.
+- The REP that used to come from rivals near the player in the 16-car classification (about 16 a race) now comes from the Round Rating: 16 REP per point above 6.0 (was 9), and a retirement costs 11 (was 6), so the Maestro and Legend offers arrive when they did (`scripts/career-metrics.mjs`, `scripts/career-sim.mjs`).
 
 ### 6.7 Getting dropped, and the way back
 

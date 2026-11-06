@@ -30,7 +30,10 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   const hireStaff = () => { for (const role of C.STAFF_ROLES) for (const s of C.STAFF_LIST.filter((x) => x.role === role).reverse()) { if (save.wallet.coins >= s.cost * 4 && C.hireStaff(save, s.id).ok) { log.staffSpent += s.cost; log.staffHires++; log.firstStaff ??= log.rr.length; break; } } };
   // the lifestyle policy (Part 3), with dice of its own so the career's stream is the same with or without it. A sensible player: time off when the grind shows, a party when low, the fans
   // when few, an ad when the money is short; after a race the dearest luxury that leaves a reserve of three seasons' upkeep
-  const lr = (() => { let q = (seed ^ 0x5bd1e995) >>> 0; return () => ((q = (Math.imul(q ^ (q >>> 15), 2246822507) + 0x9e3779b9) >>> 0) / 4294967296); })();
+  const dice = (salt) => { let q = (seed ^ salt) >>> 0; return () => ((q = (Math.imul(q ^ (q >>> 15), 2246822507) + 0x9e3779b9) >>> 0) / 4294967296); }, lr = dice(0x5bd1e995);
+  // the race's contacts and passes (6.6) on dice of their own, so every other number is the same with or without them: 0.3 contacts a race with a car within one place, one pass with one
+  const cr = dice(0x27d4eb2f), touches = (order, me) => { const nb = [order[me - 1], order[me + 1]].filter(Boolean), pick = () => nb[Math.floor(cr() * nb.length)], contacts = {}, passes = {};
+    if (me < 0 || !nb.length) return { contacts, passes }; if (cr() < 0.3) contacts[pick()] = 1; passes[pick()] = 1; return { contacts, passes }; };
   const tryBuy = (id) => { const q = C.lifeInfo(save, id); if (!q.ok) return false; const r = C.buyLife(save, id); if (!r.ok) return false; log.life[id] = (log.life[id] ?? 0) + 1; if (q.pay) log.adPay += q.pay; else log.lifeSpent += q.price; if (r.scandal) log.scandals++; return true; };
   const weekly = () => {
     const L = save.life, coins = save.wallet.coins, keep = 1500 + 2 * C.upkeepOf(save), afford = (id, k = 3) => coins > C.itemOf(id).price * k + keep;
@@ -69,7 +72,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       const order = Object.keys(t).sort((a, b) => t[a] - t[b]), lap = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, v * 0.99]));
       const missed = !q.grid.includes(save.contract.car);
       if (lcq && !missed) log.lcqs++;
-      const rep = missed ? C.finishDnq(save) : lcq ? C.finishLcq(save, { order, best: lap, dnf: rand() < 0.03, hits: rand() < 0.15 ? [Math.round(50 + rand() * 130)] : [] }) : C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: 0, spins: rand() < 0.2 ? 1 : 0, hits: rand() < 0.3 ? [Math.round(50 + rand() * 130)] : [] });
+      const rep = missed ? C.finishDnq(save) : lcq ? C.finishLcq(save, { order, best: lap, dnf: rand() < 0.03, hits: rand() < 0.15 ? [Math.round(50 + rand() * 130)] : [] }) : C.finishRace(save, { order, best: lap, dnf: rand() < 0.03, crashes: 0, spins: rand() < 0.2 ? 1 : 0, hits: rand() < 0.3 ? [Math.round(50 + rand() * 130)] : [], ...touches(order, order.indexOf(car)) });
       log.gross += (rep.coinLines ?? []).reduce((a, l) => a + Math.max(0, l[1]), 0);
       if (rep.repairs?.hits) { log.hits += rep.repairs.hits; log.repairs += rep.repairs.bill; log.capped += rep.repairs.capped ? 1 : 0; }
       if (rep.lcq === true) continue;                            // through to the Final: the loop comes back for it
