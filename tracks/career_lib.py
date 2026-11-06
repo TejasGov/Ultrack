@@ -10,7 +10,7 @@ from pathlib import Path
 from mathutils import Vector, Matrix, noise
 from mathutils.kdtree import KDTree
 
-ROOT = Path(r'D:/RaceUltimate'); OUT = H / 'out'; OUT.mkdir(exist_ok=True); PH = ROOT / 'assets' / 'polyhaven'
+ROOT = H.resolve().parents[1]; OUT = H / 'out'; OUT.mkdir(exist_ok=True); PH = ROOT / 'assets' / 'polyhaven'
 SRC = json.loads((ROOT / 'track-viewer' / 'docs' / 'career-worlds' / f"{globals().get('SRC_ID', ID)}.json").read_text(encoding='utf8'))     # SRC_ID: a concept variant
 ARGS = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 EXPORT = '--no-export' not in ARGS
