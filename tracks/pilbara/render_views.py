@@ -6,7 +6,8 @@ import bpy, json, math, sys
 from pathlib import Path
 from mathutils import Vector
 H = Path(globals().get('__file__') or sys.argv[sys.argv.index('-P') + 1]).resolve().parent; OUT = H / 'out' / 'review'; OUT.mkdir(parents=True, exist_ok=True); PH = H.parents[1] / 'assets' / 'polyhaven'
-HERO = 'hero' in (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+ARGV = ','.join(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []).split(','); HERO = 'hero' in ARGV
+ONLY = [a[5:].split('+') for a in ARGV if a.startswith('only=')]     # only=quay-day+canyon-day: a few stills, no review blend
 T = json.loads((H / 'out' / 'track.json').read_text()); C = [Vector((p[0], -p[2], p[1])) for p in T['centerline']]; n = len(C)
 def at(i, up=0.0, lat=0.0):
     i %= n; t = (C[(i + 1) % n] - C[i - 1]).normalized(); nl = Vector((-t.y, t.x, 0)).normalized()
@@ -42,6 +43,7 @@ VIEWS = {'start': S((690, 3.5, 2), (20, 3, 0)), 'switchback': S((200, 4, 3), (21
 OVER = (mid + Vector((-180, 260, 250)), mid + Vector((0, 0, -10)))
 if HERO: SHOTS = [('switchback', 'day'), ('descent', 'dusk')]
 else: SHOTS = [(v, lk) for lk in ('day', 'dusk') for v in ('start', 'switchback', 'bench-loop', 'conveyor', 'crest')] + [('overview', 'dusk')]
+if ONLY: SHOTS = [(v, lk) for v, lk in SHOTS if f'{v}-{lk}' in ONLY[0]]; HERO = True
 for name, lk in SHOTS:
     look(lk); p, q = OVER if name == 'overview' else VIEWS[name]
     cam.location = p; cam.rotation_euler = (q - p).to_track_quat('-Z', 'Y').to_euler()

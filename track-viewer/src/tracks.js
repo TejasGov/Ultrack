@@ -70,7 +70,6 @@ export const TRACKS = {
   },
   pilbara: {     // a qualifying venue (docs/10x/maps-spec.md, tracks/pilbara/build_pilbara.py): a haul road down an open-cut iron mine, 18 m of drop
     id: 'pilbara', name: 'Pilbara Pit', stem: 'pilbara', dir: '/assets/pilbara/', look: 'day', times: ['day', 'dusk'], fog: 0.6, sun: [-0.55, -0.77], tag: null,
-    dayNight: { day: /^Backdrop \| goegap day$/, dayEnd: 0.35 },     // Mojave's photographed range, reused: the day copy over the dusk one
     wet: { wet: ['PP | asphalt', 'PP | line white', 'PP | kerb red', 'PP | kerb white'], puddles: ['PP | asphalt'] },
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
