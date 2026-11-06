@@ -7,7 +7,8 @@
 //   --ab <flag>       runtime saving: one page, blocks with viewer.perf[flag] = false (A) then true (B), A B A B ...
 //   --ab-load <flag>  load-time saving: a fresh browser per block on one shared profile, A = /?perf=<flag> (saving off), B = /, A B A B ...
 //   --programs        the shader programs that exist when the menu warm-up (game.preloadP) is done, and again after the blocks and 10 s more
-//                     racing with a nitro and a wall hit: lists the programs created after the warm-up and exits 1 if there are any
+//                     racing with a nitro and a wall hit: lists the programs created after the warm-up, counts the program info-log reads
+//                     after it (a program's first use), and exits 1 if there are any of either
 import { chromium } from 'playwright-core';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -40,6 +41,8 @@ async function open(query = '') {
   await page.waitForFunction(() => window.game.preloadP, null, { timeout: 60000 });
   await page.evaluate(() => window.game.preloadP);
   const warm = await page.evaluate(() => window.viewer.renderer.info.programs.map((p) => [p.cacheKey, p.name]));
+  // a program's first draw reads its info log (three's onFirstUse): one read after the warm-up is a program the menu built but never readied
+  await page.evaluate(() => { const gl = window.viewer.renderer.getContext(), read = gl.getProgramInfoLog; window.__infoLogs = 0; gl.getProgramInfoLog = function (...a) { window.__infoLogs++; return read.apply(this, a); }; });
   await page.click('.bento-tile[data-id=race]');
   await page.click('.panel.setup button.cta');
   await page.waitForFunction(() => window.game?.session && !window.game.raceLoading.active, null, { timeout: 240000 });
@@ -165,8 +168,9 @@ if (abLoad) {
     result.provoked = await provoke(page);
     const known = new Set(warm.map((p) => p[0]));
     newPrograms = (await page.evaluate(() => window.viewer.renderer.info.programs.map((p) => [p.cacheKey, p.name]))).filter((p) => !known.has(p[0]));
-    result.programs = { atWarm: warm.length, created: newPrograms.map(([key, name]) => ({ name, key: key.slice(0, 160) })) };
-    log(`programs: ${warm.length} at the end of the menu warm-up, ${newPrograms.length} created after it (nitro ${result.provoked.nitro ? 'fired' : 'NOT fired'}, wall ${result.provoked.wall ?? 'NOT found'})`);
+    const firstUsed = await page.evaluate(() => window.__infoLogs);
+    result.programs = { atWarm: warm.length, created: newPrograms.map(([key, name]) => ({ name, key: key.slice(0, 160) })), firstUsedAfterWarm: firstUsed };
+    log(`programs: ${warm.length} at the end of the menu warm-up, ${newPrograms.length} created after it, ${firstUsed} info-log reads after it (nitro ${result.provoked.nitro ? 'fired' : 'NOT fired'}, wall ${result.provoked.wall ?? 'NOT found'})`);
     newPrograms.forEach(([key, name]) => log('  new program:', name, key.slice(0, 120)));
   }
   await ctx.done();
@@ -182,4 +186,4 @@ result.errors = [...new Set(errors)].slice(0, 20);
 mkdirSync(dirname(join(root, out)), { recursive: true });
 writeFileSync(join(root, out), JSON.stringify(result, null, 1));
 log('written', out, '| errors:', result.errors.length ? result.errors.slice(0, 4) : 'none');
-process.exit(newPrograms.length ? 1 : 0);
+process.exit(newPrograms.length || result.programs?.firstUsedAfterWarm ? 1 : 0);
