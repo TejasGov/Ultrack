@@ -79,7 +79,7 @@ function wallFaces(v, idx, world) {
 
 // Where a road ribbon turns tighter than it is wide, its strips cross (India's hairpins, stations 924 and 955-958), and the crossing makes small faces standing nearly upright on the road. A body
 // low on its springs hits them head on and is thrown backwards, with nothing drawn there. Over 45 degrees is not ground for the wheels (GROUND_COS), so it is not road for the body either
-const ROAD_SURFACES = new Set(['col_asphalt', 'col_curb', 'col_paved']);
+const ROAD_SURFACES = new Set(['col_asphalt', 'col_curb', 'col_paved', 'col_yard']);   // col_yard is col_paved under another name for track limits
 function withoutSteepFaces(v, idx) {
   const kept = [];
   for (let t = 0; t + 3 <= idx.length; t += 3) {
