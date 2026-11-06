@@ -332,7 +332,7 @@ export class Game {
     this.cameraFor('chase');
     F.rig = null;                                // a fresh chase rig, snapped behind the car
     this.state = 'session'; this.quietT = 0; this.startPos = this.session.heroPos; this.racePb = false;
-    this.hud.reset(); this.hud.show(true);
+    this.hud.reset(); this.hud.goals(career?.kind === 'sponsor' ? career : null); this.hud.show(true);
     // reply 0 in a race: lights out comes ~14 s in and would cut Alastair's answer mid-sentence
     if (mode === 'race') this.sayLater('intro_session', { priority: 3, force: true, reply: 0 }, 400);
     else this.say('intro_session', { priority: 3, force: true });
