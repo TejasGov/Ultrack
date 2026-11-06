@@ -21,7 +21,7 @@ const TABS = [['home', 'Home', 'home'], ['calendar', 'Calendar', 'calendar'], ['
 const RACE_LENGTHS = Object.entries(TUNING.series.lengths).map(([id, min]) => [id, `${id[0].toUpperCase()}${id.slice(1)} · ${min} min`]);
 const lengthName = (id) => `${id[0].toUpperCase()}${id.slice(1)}`;
 /** a rivalry's cause (world.js career.rivalry) and the head-to-head record, as the Rivals block reads them */
-const CAUSE = { contact: 'Contact on track', pass: 'Swapped places on track', teammate: 'Your teammate', displaced: 'Lost the seat to you', grid: 'Raced you close', orders: 'You ignored team orders' };
+const CAUSE = { contact: 'Contact on track', pass: 'Swapped places on track', teammate: 'Your teammate', displaced: 'Lost the seat to you', grid: 'Raced you close', orders: 'You ignored team orders', seat: 'Took a seat you were up for' };
 const record = ({ w, l }) => (!w && !l ? 'no finish together yet' : w > l ? `${w}-${l} to you` : w < l ? `${l}-${w} to them` : `${w}-${l}`);
 /** what a sponsor day is, wherever one is described */
 const CHALLENGE = 'Two laps from the back of a six-car field, judged on what your sponsor wants to see: bronze for one objective, silver for two, gold for all three. Gold lifts their goodwill and counts toward their target once a season; no medal costs goodwill.';
