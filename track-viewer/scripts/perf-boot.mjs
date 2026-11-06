@@ -1,7 +1,8 @@
 // Cold boot to the race on an emulated link (docs/10x/perf-spec.md, WP0 c): a fresh browser per run, CDP throttling (default 50 Mbit/s down,
 // 40 ms RTT), the cache off for the first navigation. Title -> Enter -> menu preload (game.preloadP) -> Race -> Start -> grid -> GO + 5 s.
 // Reports when the first /assets/ request started, the car-ready and venue-ready marks, when the LOD1 car bodies start and finish and when GO is, game.loaded (when the harness sees it), the title's Ready, Enter -> preload done, and the longest
-// task (longtask) and animation frame (long-animation-frame) in each phase, and boot.task (the longest task that starts before the first fetch). Runs against a production build:
+// task (longtask) and animation frame (long-animation-frame) in each phase, boot.task (the longest task that starts before the first fetch), and how many
+// times the venue and collision GLBs were downloaded (exits 1 unless each was downloaded exactly once in every round). Runs against a production build:
 //   npx vite build --outDir qa/10x-scratch/dist && npx vite preview --host 127.0.0.1 --port 5391 --strictPort --outDir qa/10x-scratch/dist
 //   node scripts/qa-lock.mjs -- node scripts/perf-boot.mjs <track> [--throttle 50,40] [--rounds 3] [--ab-load <flag>] [--url http://127.0.0.1:5391]
 //        [--out qa/perf/boot-<track>.json]
@@ -52,6 +53,8 @@ async function run(query) {
     // the first data fetch (car, track, venue, transcoder), not the bundle's own hashed scripts, fonts and images that also live under /assets/
     first: performance.getEntriesByType('resource').filter((e) => new URL(e.name).pathname.startsWith('/assets/') && ['fetch', 'xmlhttprequest'].includes(e.initiatorType)).map((e) => [e.startTime, e.name.replace(location.origin, '')]).sort((a, b) => a[0] - b[0])[0] ?? [-1, ''],
     long: window.__long, ready: window.__ready ?? -1,
+    // full downloads of the venue and collision GLBs (WP8 earlyBytes must not fetch either twice); tracks.js's 2-byte availability probes are not downloads
+    gets: [/_visual(_ktx2)?\.glb$/, /_collision\.glb$/].map((re) => performance.getEntriesByType('resource').filter((e) => re.test(new URL(e.name).pathname) && e.decodedBodySize > 1024).length),
     // the distant (LOD1) car bodies: when the first one starts and the last one is in (WP7: they wait for the venue; GO is their deadline)
     far: ((e) => e.length ? [Math.min(...e.map((x) => x.startTime)), Math.max(...e.map((x) => x.responseEnd))] : [-1, -1])(performance.getEntriesByType('resource').filter((e) => /\/cars\/[^/]+\/[^/]*_lod1[^/]*\.glb$/.test(new URL(e.name).pathname))),
   }));
@@ -63,7 +66,7 @@ async function run(query) {
   longest['boot.task'] = Math.round(Math.max(0, ...r.long.filter(([t, s]) => t === 'longtask' && s <= r.first[0]).map((e) => e[2])));
   const ms = (x) => Math.round(x);
   return { firstAsset: ms(r.first[0]), firstUrl: r.first[1].slice(0, 60), carReady: ms(r.marks['car-ready'] ?? -1), loaded: ms(at.loaded), titleReady: ms(r.ready), preloadDone: ms(at.preloaded - at.enter), venueReady: ms(r.marks['venue-ready'] ?? -1),
-    farStart: ms(r.far[0]), farEnd: ms(r.far[1]), goAt: ms(at.go),
+    venueGets: r.gets[0], collisionGets: r.gets[1], farStart: ms(r.far[0]), farEnd: ms(r.far[1]), goAt: ms(at.go),
     startToGrid: ms(at.grid - at.start), ...longest, errors: errors.length };
 }
 
@@ -88,3 +91,5 @@ if (result.arms.A && result.arms.B) {
 mkdirSync(dirname(join(root, out)), { recursive: true });
 writeFileSync(join(root, out), JSON.stringify(result, null, 1));
 console.log('written', out);
+const twice = Object.values(result.arms).flatMap((a) => a.rounds).filter((r) => r.venueGets !== 1 || r.collisionGets !== 1);
+if (twice.length) { console.log(`FAIL: ${twice.length} round(s) without exactly one venue and one collision GLB download`); process.exit(1); }
