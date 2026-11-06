@@ -92,14 +92,15 @@ function withoutSteepFaces(v, idx) {
 export class PhysicsWorld {
   static cache = {};
   static walls = new Map();                          // url -> voidWalls result: it depends only on the collision mesh, so a rebuild reuses it
+  /** the collision mesh loads once (the promise is cached, so concurrent creates share one load); every session (src/game) builds a fresh world from it */
+  static preload(url) { return PhysicsWorld.cache[url] ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url).catch((e) => { delete PhysicsWorld.cache[url]; throw e; }); }
   static async create(url, { voidWalls: walls = false } = {}) {
     await initPhysics();
     const w = new PhysicsWorld();
     w.world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
     w.world.timestep = STEP;
     w.surfaceOf = new Map();                         // collider handle -> SURFACES entry
-    // the collision mesh loads once (the promise is cached, so concurrent creates share one load); every session (src/game) builds a fresh world from it
-    const gltf = await (PhysicsWorld.cache[url] ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url).catch((e) => { delete PhysicsWorld.cache[url]; throw e; }));
+    const gltf = await PhysicsWorld.preload(url);
     gltf.scene.updateMatrixWorld(true);
     const ground = [], wallMeshes = [];
     gltf.scene.traverse((o) => {

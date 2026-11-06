@@ -122,9 +122,10 @@ const params = {
 //   singlePass      transparent double-sided sheets (fences, glass) draw once: three otherwise draws them twice, back then front, re-keying the material on both draws
 //   stableCapture   the hero's reflection capture keeps the frame's light count and shadow flag, so three neither re-keys every lit material around it nor keeps a second program set: see Field.captureLights
 //   farAfterVenue   the distant (LOD1) car bodies download after the venue GLB, not against it: field.farGate, set in ensureVenue
+//   earlyBytes      the venue and collision GLBs start downloading when the title attaches, not after the preload's 800 ms + idle wait; only the parse waits: see prefetchVenue
 // ?perf=off (or ?perf=mirrorOnce,mirrorSkip) starts the page with those savings off, to compare whole sessions with the old pipeline.
 const PERF_OFF = (DEV_QUERY.get('perf') ?? '').split(','), saving = (name) => !PERF_OFF.includes('off') && !PERF_OFF.includes(name);
-const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst'), postMsaa: saving('postMsaa'), farAfterVenue: saving('farAfterVenue') };
+const PERF = { noTransmission: saving('noTransmission'), mirrorOnce: saving('mirrorOnce'), mirrorSkip: saving('mirrorSkip'), idleLights: saving('idleLights'), stableCapture: saving('stableCapture'), singlePass: saving('singlePass'), mirrorFirst: saving('mirrorFirst'), postMsaa: saving('postMsaa'), farAfterVenue: saving('farAfterVenue'), earlyBytes: saving('earlyBytes') };
 const MIRROR_DRY = 0.2;
 // ?tex=webp loads the WebP build; the default is KTX2 (GPU-compressed textures, a fraction of the VRAM)
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
@@ -511,7 +512,7 @@ const SCENERY_TEST = new URLSearchParams(location.search).get('scenery') === '1'
 const gpuTimer = new GpuTimer(renderer);
 const dynres = new DynamicResolution();
 const hdriCache = new Map();
-let gltfLoader, venuePromise, venueRoot = null, venueGen = 0;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
+let gltfLoader, venuePromise, venueRoot = null, venueGen = 0, venueBytes = null;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
 const garageRoom = DEV ? null : new GarageRoom(renderer);
 // the room's PMREM (~0.5 s, garage-room.js ensureEnvironment) in the task after the first car GLB request goes out, so it runs during
 // that download (~0.7 s at 50 Mbit) instead of before any fetch; nothing else uses the default manager's onStart
@@ -545,6 +546,16 @@ async function load() {
 const fetchTrack = () => fetch(U('track')).then((r) => { if (!r.ok) throw Error('Track metadata failed'); return r.json(); });
 const NO_LIGHTS = { floodlights: [], standLamps: [], streetLamps: [] };   // a track without lights.json is lit by the sky alone
 
+// the dev venue profile (?venue=whole|sectors on Marina) loads its own GLB, so nothing is fetched early for it
+const venueUrl = () => import.meta.env.DEV&&TRACK.id==='marina'&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:U('visual');
+/** the venue GLB's bytes, fetched ahead of loadVenue (game.js preloadRace, earlyBytes): network only, the parse stays idle-gated */
+function prefetchVenue() {
+  const url = venueUrl();
+  if (venuePromise || venueBytes?.url === url || url !== U('visual')) return;   // loading or loaded already, or a profile GLB
+  const p = fetch(url).then((r) => { if (!r.ok) throw Error(r.status); return r.arrayBuffer(); });
+  p.catch(() => {});   // loadVenue falls back to its own download
+  venueBytes = { url, p };
+}
 function ensureVenue() {
   // a load that failed part-way may have installed the GLB and glows already: unload it, or the retry stacks a second copy
   const p = venuePromise ??= loadVenue().catch((error) => { if (venuePromise === p) unloadVenue(); throw error; });
@@ -564,7 +575,7 @@ function disposeTree(root) {
 }
 /** drop the venue (geometry, textures, glows, crowd, culler, hoardings) so another circuit can load without leaking */
 function unloadVenue() {
-  venuePromise = null; venueLights = null; culler = null; captureBoost = []; venueGen++;
+  venuePromise = null; venueBytes = null; venueLights = null; culler = null; captureBoost = []; venueGen++;
   venueFx?.dispose(); venueFx = null;
   if (venueRoot) { scene.remove(venueRoot); disposeTree(venueRoot); venueRoot = null; }
   if (glows) { scene.remove(glows.points); disposeTree(glows.points); glows = null; }
@@ -590,12 +601,14 @@ async function setTrack(id) {
 async function loadVenue() {
   const T = TRACK, has = T.has, gen = venueGen;
   T.venue?.().then((m) => m.prefetch?.({ renderer, ktx2: gltfLoader.ktx2Loader }), () => {});   // a venue module's own textures load alongside its GLB
+  const url = venueUrl(), early = venueBytes?.url === url ? venueBytes.p : null;
   const [gltf, lightsJson] = await Promise.all([
-    gltfLoader.loadAsync(import.meta.env.DEV&&T.id==='marina'&&['whole','sectors'].includes(new URLSearchParams(location.search).get('venue'))?'/__venue-profile?variant='+new URLSearchParams(location.search).get('venue')+'&texture='+TEX:U('visual')),
+    early ? early.then((b) => gltfLoader.parseAsync(b, THREE.LoaderUtils.extractUrlBase(url)), () => gltfLoader.loadAsync(url)) : gltfLoader.loadAsync(url),
     optionalJson(U('lights'), NO_LIGHTS),
     setLook(params.look),
   ]);
   if (gen !== venueGen) { disposeTree(gltf.scene); return; }   // another circuit was picked while this one loaded
+  venueBytes = null;   // parsed: the 45 MB buffer is not held any longer
   venueLights = lightsJson;
   venueRoot = gltf.scene;
   scene.add(gltf.scene);
@@ -1327,7 +1340,7 @@ async function benchScenery(frames=16,{width=960,height=540}={}) {
 }
 renderer.info.autoReset = false;
 // console access for tuning; renderNow draws a frame immediately (the app's pane can stall rAF while it is scripted)
-window.viewer = { THREE, composer, params, perf: PERF, garageRoom, glassVeil, LOOKS, setTrack, unloadVenue, ensureVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
+window.viewer = { THREE, composer, params, perf: PERF, garageRoom, glassVeil, LOOKS, setTrack, unloadVenue, ensureVenue, prefetchVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
   scenery:()=>sceneryExperiment, benchScenery,
   field: () => field,
   cheer: (k = 1) => { life.cheer(k); people.cheer(); }, people: people.count, peopleList: people.list, device,
@@ -1385,7 +1398,7 @@ function newTrails(cars) {
 
 if (!DEV) {
   gui.hide(); hud.style.display = 'none'; loading.style.display = 'none';
-  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, get physicsOpts() { return { voidWalls: !!TRACK.voidWalls }; }, track: () => track, setTrack, trackId: () => TRACK.id });
+  game = new Game({ params, camera, controls, device, applyAll, applyQuality, setLook, resize, newTrails, ensureVenue, prefetchVenue: PERF.earlyBytes ? prefetchVenue : null, prepareRaceRenderer, warmRace, setDriverHoardings:keys=>TRACK.has.hoardings?driverHoardings.set(keys,track):driverHoardings.clear(), clearDriverHoardings:()=>driverHoardings.clear(), get collisionUrl() { return U('collision'); }, get physicsOpts() { return { voidWalls: !!TRACK.voidWalls }; }, track: () => track, setTrack, trackId: () => TRACK.id });
   game.screens.title.progress(0.15);
   window.game = game;
   if (DEV_QUERY.get('bench') === '1') import('./game/bench-report.js').then((m) => m.startBenchReport(window.viewer, game));   // real numbers from a player's machine
