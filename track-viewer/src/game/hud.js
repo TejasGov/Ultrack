@@ -196,7 +196,7 @@ export class Hud {
         this.progs.forEach((e, k) => e.style.transform = `scaleX(${Math.min(1, Math.max(0, (p - this.sec[k]) / (this.sec[k + 1] - this.sec[k]))).toFixed(3)})`);
       }
     }
-    // career qualifying: the teammate, his gap on the road until he has set a lap, then the lap to beat. A career race: the nemesis (else the teammate), the gap on the road
+    // career qualifying: the teammate, their gap on the road until they have set a lap, then the lap to beat. A career race: the nemesis (else the teammate), the gap on the road
     const R = s.rival; this.flag(this.el, 'duel', !!R);
     if (R) {
       const d = s.driver(R), lap = s.mode === 'quali' ? s.trk.get(R).best : null, gap = s.rivalGap();

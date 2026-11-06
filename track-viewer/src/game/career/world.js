@@ -71,8 +71,8 @@ export function shortlistOf(save, key, seated = true, left = 1) {
 /**
  * Between seasons (6.8), in seeded phases: everyone a year older and ratings drift by age; the old retire; contracts run down, and a driver out
  * of contract re-signs (rated near the tier, and the team's roll) or goes free; a team drops a driver well below the tier who scored fewer points
- * than his teammate; then the open seats fill, the best team first, with the best market score among the free agents and the drivers in their last
- * season at a lesser team. A seated driver who moves opens his own seat (a cascade of maxMoves at most); the driver the player displaced
+ * than their teammate; then the open seats fill, the best team first, with the best market score among the free agents and the drivers in their last
+ * season at a lesser team. A seated driver who moves opens their own seat (a cascade of maxMoves at most); the driver the player displaced
  * (`displaced`, from `vacated`) does not take the player's old seat while another is open; the academy fills what is left.
  */
 export function marketMoves(save, { displaced = null, vacated = null } = {}) {
@@ -92,7 +92,7 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
     if ((K[code] = (K[code] ?? 1) - 1) > 0) continue;
     if (W.ratings[code] >= avgAt(key) - M.renewGap && rng(save.seed, 'market', 'renew', season, code)() < M.renew) sign(code); else free(key);
   }
-  // this season's points by driver and the team each scored them for: an under-performer is one his teammate outscored
+  // this season's points by driver and the team each scored them for: an under-performer is one their teammate outscored
   const pts = {}, team = {};
   for (const r of save.season?.results ?? []) for (const e of r.entries) { const c = e.you ? YOU : e.code; pts[c] = (pts[c] ?? 0) + e.pts; team[c] = e.team; }
   for (const [key, code] of seated()) {
@@ -110,8 +110,8 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
     W.seats[key] = best ?? callUp(save);
     sign(W.seats[key]);
   }
-  // a driver on the rumoured shortlist with the player takes the seat of a team that made the player an offer or that they approached: a rivalry over a seat (6.6)
-  for (const x of save.season?.rumours ?? []) { const now = W.seats[x.car]; if (x.list.includes(YOU) && save.season.talked?.[CAR[x.car].team] && now !== YOU && now !== x.code && x.list.includes(now)) heatUp(save, now, T.rivals.seatLost, 'seat'); }
+  // a rival (heat 40+) on the rumoured shortlist with the player takes the seat the player wanted: approached, or haggled over and not walked away from (6.6)
+  for (const x of save.season?.rumours ?? []) { const now = W.seats[x.car]; if (x.list.includes(YOU) && save.season.talked?.[CAR[x.car].team] && now !== YOU && now !== x.code && x.list.includes(now) && (save.career.heat[now] ?? 0) >= T.rivals.rival) { heatUp(save, now, T.rivals.seatLost, 'seat'); save.career.rivalry[now].cause = 'seat'; } }
 }
 function callUp(save) {
   const W = save.world, M = T.market, N = DRIVERS.academyNames, used = new Set([...Object.keys(W.ratings), save.player.code]);

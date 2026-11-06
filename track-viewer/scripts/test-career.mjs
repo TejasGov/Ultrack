@@ -404,6 +404,7 @@ try {
   const old = signed(113); delete old.world.seats; delete old.world.free; delete old.world.retired; delete old.world.academy; delete old.career.heat; delete old.garage.package; old.schema = 1;
   const mig = C.migrate(old); assert.equal(mig.schema, C.SCHEMA); assert.equal(mig.world.seats.bmw1, 'YOU'); assert.deepEqual(mig.world.free, ['QUI']); assert.deepEqual(mig.career.heat, { [mig.world.seats[C.teammateCar(mig)]]: 20 }, 'no heat but the teammate seeded at schema 8');
   assert.equal(C.migrate({ schema: 99 }), null); assert.equal(C.migrate(null), null);
+  { const g = signed(131); g.sponsors.deals = [{ name: 'X', mood: 9 }, { name: 'Y', mood: 2 }]; C.migrate(g); assert.deepEqual(g.sponsors.deals.map((d) => d.mood), [5, 2], 'goodwill from uncapped drift days comes down to the cap, so a gold never reads as goodwill down'); }
   const v3 = signed(130); round(v3, 3); round(v3, 3); v3.schema = 3; delete v3.inbox; delete v3.inboxN; delete v3.sponsors; delete v3.clock.week; const wo3 = { id: 'o', team: 'toro', seat: 'B', car: 'huracan', tier: 'maestro', status: 'junior', salary: 500, signing: 1000, seasons: 2, why: 'x' };
   delete v3.season.weeks; delete v3.season.mid; delete v3.season.asked; v3.season.w1 = { offer: wo3, state: 'open' }; v3.season.current.side = { kind: 'test', result: null }; v3.season.calendar[4].track = 'infinia'; v3.season.calendar[4].look = 'night'; v3.player.code = 'VAL';
   C.migrate(v3); assert.equal(v3.schema, C.SCHEMA); assert.equal(C.currentWeek(v3).kind, 'race'); assert.equal(C.currentWeek(v3).round, v3.clock.round, 'a season under way lands on its round'); assert.equal(v3.season.weeks[1].result.finish, 3, 'the rounds raced are on the calendar');
@@ -749,7 +750,7 @@ try {
     const still = (seed, left = 3) => { const s = toReview(signed(seed), 4); const Wd = s.world; for (const c of Object.keys(Wd.ages)) Wd.ages[c] = 25; Wd.free = []; for (const c of Object.values(Wd.seats)) if (c !== W.YOU) Wd.contracts[c] = left; return s; };
     const teamOf = (seats) => Object.fromEntries(Object.entries(seats).filter(([, c]) => c && c !== W.YOU).map(([k, c]) => [c, R.CAR[k].team]));
     MK.dropGap = 99;
-    for (const max of [1, 3]) {                              // three top seats open, every lower driver in his last season: the cascade stops at maxMoves, the academy fills the rest
+    for (const max of [1, 3]) {                              // three top seats open, every lower driver in their last season: the cascade stops at maxMoves, the academy fills the rest
       MK.maxMoves = max; const s = still(2001, 2), Wd = s.world; for (const k of ['destrier', 'buggati', 'laferrari']) Wd.seats[k] = null;
       const was = teamOf(Wd.seats); W.marketMoves(s); const now = teamOf(Wd.seats), moved = Object.keys(was).filter((c) => now[c] && now[c] !== was[c]);
       assert.equal(moved.length, max, `the cascade moves ${max}`); assert.ok(Object.values(Wd.seats).every(Boolean), 'and every seat is filled');
@@ -758,7 +759,7 @@ try {
       Wd.academy[D] = { name: 'Zed Displaced', nation: 'GBR' }; Wd.ratings[D] = 95; Wd.ages[D] = 25; Wd.free = [D]; Wd.seats[X] = null; Wd.seats[Y] = null;
       W.marketMoves(s, { displaced: D, vacated: X }); assert.equal(Wd.seats[Y], D); assert.notEqual(Wd.seats[X], D);
       const t = still(2003), Wt = t.world; Wt.academy[D] = { name: 'Zed Displaced', nation: 'GBR' }; Wt.ratings[D] = 95; Wt.ages[D] = 25; Wt.free = [D]; Wt.seats[X] = null;
-      W.marketMoves(t, { displaced: D, vacated: X }); assert.equal(Wt.seats[X], D, 'the only seat open: he may take it'); }
+      W.marketMoves(t, { displaced: D, vacated: X }); assert.equal(Wt.seats[X], D, 'the only seat open: they may take it'); }
     Object.assign(MK, keep);
     { const s = still(2004), Wd = s.world, names = () => [...Object.values(Wd.academy).map((a) => a.name), ...Object.values(R.CAR).map((c) => c.driver.name)];   // the academy past its list: seeded names, all different
       for (let i = 0; i < 3; i++) { for (const k of Object.keys(Wd.seats)) if (Wd.seats[k] !== W.YOU) Wd.seats[k] = null; Wd.free = []; W.marketMoves(s); }
@@ -766,7 +767,7 @@ try {
       const gen = Object.values(Wd.academy).filter((a) => !R.DRIVERS.academy.some((x) => x.name === a.name)); assert.ok(gen.length > 20 && gen.every((a) => { const [f, l] = a.name.split(' '); return R.DRIVERS.academyNames.first.includes(f) && R.DRIVERS.academyNames.last.includes(l) && R.DRIVERS.academyNames.nations.includes(a.nation); })); }
     { const s = signed(2005), Wd = s.world, star = 'VAL', car = Object.keys(Wd.seats).find((k) => Wd.seats[k] === star), team = R.CAR[car].team, seat = R.CAR[car].seat;   // a star with seasons left is never dropped for the player
       Wd.contracts[star] = 2; s.season.results.push({ entries: [], duel: { mine: 50, mate: 60, mateCode: Wd.seats[C.teammateCar(s)] } }); assert.equal(R.playerRating(s), 99, 'a huge qualifying margin rates 99');
-      assert.equal(O.seatFor(s, team, seat, 1), false, 'not even for a 99 the team wants badly'); Wd.contracts[star] = 1; assert.equal(O.seatFor(s, team, seat, 0), true, 'his last season: the seat opens');
+      assert.equal(O.seatFor(s, team, seat, 1), false, 'not even for a 99 the team wants badly'); Wd.contracts[star] = 1; assert.equal(O.seatFor(s, team, seat, 0), true, 'their last season: the seat opens');
       const other = Wd.seats[R.TIERS.teams[team][R.otherSeat(seat)]]; Wd.contracts[star] = 2; Wd.contracts[other] = 2; Wd.ratings[other] = 85; assert.equal(O.seatFor(s, team, R.otherSeat(seat), 0), true, 'a non-star the player outrates');
       s.season.results.length = 0; Wd.ratings[other] = 89; assert.ok(R.playerRating(s) < 89); assert.equal(O.seatFor(s, team, R.otherSeat(seat), 0.84), false); assert.equal(O.seatFor(s, team, R.otherSeat(seat), 0.85), true, 'or one bought out');
       assert.match(O.signedWhy(s, team, 0), /^Both seats are signed: \w+ to S2, \w+ to S2$/); s.career.rep = 999; s.career.rr = [9, 9, 9, 9, 9, 9]; s.career.cl = 25; assert.equal(O.outsideOffer(s, team, 0.5), null, 'no seat, no offer'); }
@@ -789,12 +790,14 @@ try {
       assert.ok(rs.every((x) => x.list.every((c) => c === W.YOU || r.world.free.includes(c) || r.world.contracts[c] === 2)), 'the shortlist is the one the market draws: free agents, and drivers whose last season the market will see (two left now)');
       toReview(r, 2, 1); const k = r.pending.offers.find((o) => o.keep) ?? r.pending.offers[0]; C.acceptOffer(r, k.id, avail);
       for (const x of rs) assert.ok(r.world.seats[x.car] !== x.code || r.world.contracts[x.code] >= 2, `${x.car}: the seat opened or ${x.code} re-signed`); }
-    { const lost = (talked) => { const s = signed(2050), Wd = s.world, k = R.TEAM_IDS.map((t) => R.seatCar(t, 'A')).sort((a, b) => Wd.teams[R.CAR[a].team].expPos - Wd.teams[R.CAR[b].team].expPos)[0], was = Wd.seats[k];   // a seat lost to a rival
-        Wd.contracts[was] = 1; Wd.ratings[was] = 60; Wd.ratings.ZZX = 99; Wd.ages.ZZX = 25; Wd.free.push('ZZX'); s.career.heat = {}; s.career.rivalry = {};
-        s.season.rumours = [{ car: k, code: was, list: [W.YOU, 'ZZX'] }]; if (talked) s.season.talked = { [R.CAR[k].team]: 1 };
+    { const lost = (talked, heat = 45) => { const s = signed(2050), Wd = s.world, k = R.TEAM_IDS.map((t) => R.seatCar(t, 'A')).sort((a, b) => Wd.teams[R.CAR[a].team].expPos - Wd.teams[R.CAR[b].team].expPos)[0], was = Wd.seats[k];   // a seat lost to a rival
+        Wd.contracts[was] = 1; Wd.ratings[was] = 60; Wd.ratings.ZZX = 99; Wd.ages.ZZX = 25; Wd.free.push('ZZX'); s.career.heat = heat ? { ZZX: heat } : {}; s.career.rivalry = heat ? { ZZX: { cause: 'pass', since: [1, 1], w: 0, l: 0 } } : {};
+        s.season.rumours = [{ car: k, code: was, list: [W.YOU, 'ZZX'] }]; s.season.talked = { [R.CAR[k].team]: talked };
         W.marketMoves(s); assert.equal(Wd.seats[k], 'ZZX'); return s.career; };
-      assert.equal(lost(false).heat.ZZX, undefined, 'a shortlisted driver takes a seat the player never talked about: no rivalry');
-      const K = lost(true); assert.equal(K.heat.ZZX, R.TUNING.rivals.seatLost); assert.equal(K.rivalry.ZZX.cause, 'seat', 'the team made an offer or was approached: a rivalry over the seat'); }
+      assert.equal(lost(0).heat.ZZX, 45, 'a rival takes a seat the player did not want (never approached, or walked away): no new heat');
+      assert.equal(lost(1, 0).heat.ZZX, undefined, 'a shortlisted driver who was not a rival: no rivalry from the seat alone');
+      assert.equal(lost(1, 30).heat.ZZX, 30, 'heat under 40 is not a rival yet: no seat heat');
+      const K = lost(1); assert.equal(K.heat.ZZX, 45 + R.TUNING.rivals.seatLost); assert.equal(K.rivalry.ZZX.cause, 'seat', 'a rival took the seat the player wanted: the rivalry is now over the seat'); }
     { let m = null; for (let i = 2200; i < 2400 && !m; i++) { const s = signed(i); s.career.rep = 400; s.career.cl = 10; toReview(s, 1, 1); const out = s.pending.offers.filter((o) => o.team !== s.contract.team && !o.reserve); if (out.length >= 2 && out.some((o) => /have (matched|raised their offer)/.test(o.why))) m = out; }   // two bids: the lesser one matches
       assert.ok(m, 'two outside offers, one answering the other, on some seeds'); const lo = m.find((o) => /have (matched|raised their offer)/.test(o.why)); assert.equal(lo, m.at(-1), 'the lesser one');
       assert.equal(/have matched/.test(lo.why), lo.salary >= Math.max(...m.slice(0, -1).map((o) => o.salary)), 'it says matched only when it pays as much'); assert.ok(lo.salary <= Math.max(...m.map((o) => o.salary))); }
@@ -885,7 +888,7 @@ try {
       L.note(s, 'bold_press', { who: code }); const cb = Md.callbackOf(s, 'offer', { kinds: ['bold_press'] });
       assert.ok(s.career.ledger.includes(cb.entry) && cb.text.includes(name) && cb.text.includes('Season 1'), cb.text);
       s.career.rep = 700; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 20; let o = null; for (const t of R.TEAM_IDS) o ??= O.outsideOffer(s, t, 0.5);
-      assert.ok(o && o.why.endsWith(cb.text), 'an offer quotes it'); L.note(s, 'spurned', { team: o.team, w: 2 }); assert.equal(O.outsideOffer(s, o.team, 0.5).cool, Md.callbackOf(s, 'offer', { team: o.team, kinds: ['spurned'] }).text, 'a cool team quotes the refusal');
+      assert.ok(o && o.why.endsWith(cb.text), 'an offer quotes it'); { const more = R.TEAM_IDS.map((t) => O.outsideOffer(s, t, 0.5)).filter(Boolean); O.quoteOnce(s, more); assert.ok(more.length >= 2 && more.filter((x) => x.why.includes(cb.text)).length === 1, 'several cards: one quotes it'); } L.note(s, 'spurned', { team: o.team, w: 2 }); assert.equal(O.outsideOffer(s, o.team, 0.5).cool, Md.callbackOf(s, 'offer', { team: o.team, kinds: ['spurned'] }).text, 'a cool team quotes the refusal');
       assert.match(O.outsideOffer(s, o.team, 0.5).cool, /Season 1/); s.clock.season += 2; assert.equal(Md.callbackOf(s, 'offer', { kinds: ['bold_press'] }), null, 'two seasons on, it is forgotten'); s.clock.season -= 2;
       const p = signed(3013); C.finishQuali(p, 1); const mt = C.teammateCar(p), mc = p.world.seats[mt], gp = p.season.current.quali.grid; p.season.current.quali.grid = [mt, p.contract.car, ...gp.filter((k) => k !== mt && k !== p.contract.car)].slice(0, gp.length);
       C.finishRace(p, { order: p.season.current.quali.grid, best: {}, crashes: 0, spins: 0, orders: { kind: 'toMate', obeyed: false } }); assert.equal(L.latest(p, { kinds: ['orders_ignored'] }).who, mc);

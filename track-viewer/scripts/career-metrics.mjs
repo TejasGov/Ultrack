@@ -9,6 +9,8 @@ const N = +(process.argv[2] ?? 100), S = +(process.argv[3] ?? 6), MIN_RACED = 10
 const server = await createServer({ root: new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom', logLevel: 'error' });
 let failed = 0;
 const check = (label, v, lo, hi, fmt = (x) => x.toFixed(2)) => { const ok = v >= lo && v <= hi; if (!ok) failed++; console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${label}: ${fmt(v)} (target ${fmt(lo)}-${fmt(hi)})`); };
+// a spec target this build does not meet and that waits on the user's call (docs/career-mode.md 6.6): said out loud, kept apart from FAIL so the rest still gates
+const open = []; const openCheck = (label, v, lo, hi, fmt = (x) => x.toFixed(2)) => { const ok = Number.isFinite(v) && v >= lo && v <= hi; if (!ok) open.push(label); console.log(`  ${ok ? 'PASS' : 'OPEN'}  ${label}: ${Number.isFinite(v) ? fmt(v) : 'not measurable'} (spec target ${fmt(lo)}-${fmt(hi)})${ok ? '' : ", not met: needs the user's decision"}`); };
 const pct = (x) => `${Math.round(x * 100)} %`, median = (l) => { const v = l.filter((x) => x !== null).sort((a, b) => a - b); return v.length ? v[v.length >> 1] : Infinity; };
 const TEAMS0 = (C, R) => Object.fromEntries(R.TEAM_IDS.map((t) => [t, [R.TIERS.teams[t].A, R.TIERS.teams[t].B].map((k) => R.CAR[k].driver.code).sort().join()]));
 try {
@@ -59,15 +61,15 @@ try {
     }
     const rivals = Object.values(A.causes).reduce((a, b) => a + b, 0), med = (l) => { const v = l.filter((x) => x !== null).sort((a, b) => a - b); return v.length ? v[v.length >> 1] : '-'; };
     console.log(`${label} skill ${skill}, ${N} careers x ${S} seasons, ${A.rounds} rounds (${A.raced} raced, a nemesis in ${pct(A.nemRounds / A.rounds)} of all rounds): rivals at the end ${(A.rivalsEnd / N).toFixed(2)} (feuds ${(A.feudsEnd / N).toFixed(2)}), causes ${Object.entries(A.causes).map(([k, v]) => `${k} ${pct(v / rivals)}`).join(', ') || 'none'}, head-to-head races per rival ${(A.h2h / Math.max(1, A.rivalsEnd)).toFixed(1)}, first rival in round ${med(A.firstRival)} (careers with one: ${A.firstRival.filter((x) => x !== null).length})`);
-    // rivalries are earned on track: a driver with fewer than MIN_RACED raced rounds has no floor, only the ceiling
-    const few = A.raced < MIN_RACED, floor = few ? 0 : 1.0, why = few ? `, no floor: only ${A.raced} raced rounds` : '';
-    check(`rivals at career end (avg${why})`, A.rivalsEnd / N, floor, 3.0);
+    // rivalries are earned on track: a driver who rarely races (the weak stub misses the cut in nearly every round) cannot reach the spec's floor; that is an open target, not a pass
+    const few = A.raced < MIN_RACED, why = few ? `, only ${A.raced} raced rounds` : '', gate = few ? openCheck : check;
+    check(`rivals at career end, at most (avg${why})`, A.rivalsEnd / N, 0, 3.0);
+    gate(`rivals at career end (avg${why})`, A.rivalsEnd / N, 1.0, 3.0);
     // the realistic-pass probe: the same careers with a pass against every car within two places each race (the stub's one pass a race is a floor)
     const probe = Array.from({ length: N }, (_, i) => C.rivalsOf(play(M, 1000 + i, skill, S, 'sprint', { passAll: true }).save).length).reduce((a, b) => a + b, 0) / N;
-    check(`rivals at career end, a pass with every car within two places (avg${why})`, probe, floor, 3.0);
-    // the nemesis races the player, so this counts the rounds they raced; under MIN_RACED there is nothing to judge (a weak driver misses the cut in nearly every round)
-    if (A.raced < MIN_RACED) console.log(`  SKIP  raced rounds with a nemesis on the grid: only ${A.raced} raced rounds (judged from ${MIN_RACED}); this driver misses the cut in ${pct(1 - A.raced / A.rounds)} of rounds`);
-    else check(`raced rounds with a nemesis on the grid (${A.raced} raced)`, A.nemRaced / A.raced, 0.2, 0.7, pct);
+    gate(`rivals at career end, a pass with every car within two places (avg${why})`, probe, 1.0, 3.0);
+    // the nemesis races the player, so this counts the rounds they raced
+    gate(`raced rounds with a nemesis on the grid (${A.raced} raced${few ? `; misses the cut in ${pct(1 - A.raced / A.rounds)} of rounds` : ''})`, A.raced ? A.nemRaced / A.raced : NaN, 0.2, 0.7, pct);
     // the qualifying duel must not make the teammate everyone's nemesis (it once was in 62-88 % of these rounds at average skill)
     if (label === 'average') check('the nemesis is the teammate, of raced rounds with one', A.nemMate / Math.max(1, A.nemRaced), 0, 0.45, pct);
     else console.log(`  info  the nemesis is the teammate in ${pct(A.nemMate / Math.max(1, A.nemRaced))} of raced rounds with one`);
@@ -99,5 +101,5 @@ try {
     if (label === 'strong') { check('Legend offer, any', any((l) => l.legendOffer !== null), 0.95, 1, pct); check('Legend offer, median season', median(L.map((l) => l.legendOffer)), 0, 3, (x) => String(x)); }
   }
 } finally { await server.close(); }
-console.log(failed ? `career-metrics: ${failed} FAIL` : 'career-metrics: all PASS');
+console.log(failed ? `career-metrics: ${failed} FAIL` : open.length ? `career-metrics: no FAIL, ${open.length} spec targets OPEN for the user's decision: ${open.join('; ')}` : 'career-metrics: all PASS');
 process.exit(failed ? 1 : 0);
