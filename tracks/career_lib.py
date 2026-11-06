@@ -10,7 +10,7 @@ from pathlib import Path
 from mathutils import Vector, Matrix, noise
 from mathutils.kdtree import KDTree
 
-ROOT = Path(r'D:/RaceUltimate'); OUT = H / 'out'; OUT.mkdir(exist_ok=True); PH = ROOT / 'assets' / 'polyhaven'
+ROOT = H.resolve().parents[1]; OUT = H / 'out'; OUT.mkdir(exist_ok=True); PH = ROOT / 'assets' / 'polyhaven'
 SRC = json.loads((ROOT / 'track-viewer' / 'docs' / 'career-worlds' / f"{globals().get('SRC_ID', ID)}.json").read_text(encoding='utf8'))     # SRC_ID: a concept variant
 ARGS = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 EXPORT = '--no-export' not in ARGS
@@ -114,6 +114,12 @@ def mesh_obj(name, bm, mats, coll=VIS, smooth=False, planar=True):
     for k in mats: me.materials.append(MAT[k])
     ob = bpy.data.objects.new(name, me); coll.objects.link(ob); return ob
 def vcol_layer(bm): return bm.loops.layers.float_color.get('Col') or bm.loops.layers.float_color.new('Col')
+def paint(name, col):
+    """vertex colours on a built mesh: col(world co) -> rgba"""
+    me = bpy.data.objects[name].data; b = bmesh.new(); b.from_mesh(me); vc = vcol_layer(b)
+    for f in b.faces:
+        for l in f.loops: l[vc] = col(l.vert.co)
+    b.to_mesh(me); b.free()
 def strip(bm, rows, mi, closed=True, rev=False):
     """quads between consecutive rows of verts (rows: lists of Vector of equal length)"""
     V = [[bm.verts.new(p) for p in r] for r in rows]; n = len(V); out = []

@@ -46,3 +46,12 @@ Moved to _archive/2026-10-21/assets/polyhaven/ on 2026-10-21 (unused by the trac
 - **Ceramic Roof 01** (`ceramic_roof_01`) by Rob Tuytel: https://polyhaven.com/a/ceramic_roof_01
 - **Box Profile Metal Sheet** (`box_profile_metal_sheet`) by Amal Kumar: https://polyhaven.com/a/box_profile_metal_sheet
 - **Gravel Ground 01** (`gravel_ground_01`) by Rob Tuytel: https://polyhaven.com/a/gravel_ground_01
+
+## Sets for the mini qualifying maps (Pilbara Pit, North Sea Terminal), 2026-11-06
+
+No new download. The seven folders below are copied as they are (2k diff/nor_gl/arm JPG) from the main checkout's `assets/polyhaven/`, where they were downloaded on 2026-11-01 for Infinia (`tracks/infinia/CREDITS.md`). `box_profile_metal_sheet` and `gravel_ground_01` are credited above. The other five have no author recorded on this machine, and they are not guessed here: each page below names its authors.
+- **Red Laterite Soil Stones** (`red_laterite_soil_stones`): https://polyhaven.com/a/red_laterite_soil_stones
+- **Rusty Corrugated Iron** (`rusty_corrugated_iron`): https://polyhaven.com/a/rusty_corrugated_iron
+- **Dirty Concrete** (`dirty_concrete`): https://polyhaven.com/a/dirty_concrete
+- **Interlocking Concrete Pavers** (`interlocking_concrete_pavers`): https://polyhaven.com/a/interlocking_concrete_pavers
+- **Seaworn Stone Tiles** (`seaworn_stone_tiles`): https://polyhaven.com/a/seaworn_stone_tiles

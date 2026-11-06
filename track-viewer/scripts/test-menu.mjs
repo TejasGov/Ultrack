@@ -35,7 +35,7 @@ try{
  // ---- career screens: every step and tab renders real elements (a nested list once printed "[object HTMLDivElement]"), each with its one job
  {const CU=await server.ssrLoadModule('/src/game/career-ui.js'),C=await server.ssrLoadModule('/src/game/career/career.js'),S=await server.ssrLoadModule('/src/game/career/save.js'),mem={};
   globalThis.localStorage={getItem:k=>mem[k]??null,setItem:(k,v)=>{mem[k]=v;}};
-  const avail={india:null,drylake:['day','dusk'],infinia:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null},shows=[],busy=[];
+  const avail={india:null,drylake:['day','dusk'],infinia:['day','dusk'],marina:null,shajawa:['day','dusk'],tokyo:null,pilbara:['day','dusk'],terminal:['day','dusk']},shows=[],busy=[];
   const g={...game,career:null,screens:{},setBusy:(m)=>busy.push(m),leaveCareer(){},careerSession(...a){g.sessions.push(a);},sessions:[],show:(...a)=>shows.push(a)},start=CU.CareerStartScreen(g),hub=CU.CareerHubScreen(g),rep=CU.CareerReportScreen(g),deal=CU.CareerDealScreen(g);
   const ok=(scr,what)=>{const t=scr.el.textContent;assert.ok(!t.includes('[object')&&!t.includes('undefined')&&!t.includes('NaN')&&!t.includes('null'),what+': '+t.slice(0,1500));return t;};
   const click=(scr,re)=>{const walk=(e)=>[e,...e.children.flatMap(walk)],b=walk(scr.el).filter(e=>Object.hasOwn(e.attrs,'data-nav')&&re.test(e.textContent)).pop();assert.ok(b,'no button '+re);b.click();};

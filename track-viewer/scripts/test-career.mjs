@@ -61,6 +61,28 @@ try {
   const raced = len.season.calendar[0].laps; C.setRaceLength(len, 'full');
   assert.equal(len.season.calendar[0].laps, raced, 'a round already raced keeps its laps'); assert.ok(len.season.calendar.slice(1).every((r) => r.laps === R.lapsFor(r.track, 'full')), 'the rounds to come follow it');
   C.setRaceLength(len, 'silly'); assert.equal(len.rules.raceLength, 'full', 'an unknown length changes nothing');
+  // ---- the qualifying rotation: CAL.qualifyingPool round-robin from a seeded start, on its own rng stream; old rounds, an unshipped venue and the Shootout stay at Dry Lake
+  { const POOL = ['drylake', 'pilbara', 'terminal'], pool0 = R.CAL.qualifyingPool, avail2 = { ...avail, pilbara: ['day', 'dusk'], terminal: ['day', 'dusk'] }, S = R.TUNING.series;
+    const core = (cal) => cal.map((r) => [r.track, r.look, r.weather, r.laps].join(' ')).join(', ');
+    delete R.CAL.qualifyingPool; const poolless = R.buildCalendar(5, 1, 1, avail); R.CAL.qualifyingPool = POOL;
+    try {
+      assert.ok(poolless.every((r) => r.qualiTrack === 'drylake'), 'no pool: Dry Lake');
+      assert.equal(core(R.buildCalendar(5, 1, 1, avail2)), core(poolless), 'the pool leaves track, look, weather and laps as they were');
+      assert.equal(core(poolless), 'shajawa dusk dry 2, qingshan day dry 2, tokyo night dry 2, llano day dry 2, marina night dry 2, infinia day damp 2, qingshan night damp 2, india dusk dry 2, venice night dry 2, marina night dry 2', 'seed 5 as before the rotation');
+      assert.ok(R.buildCalendar(5, 1, 1, avail).every((r) => r.qualiTrack === 'drylake'), 'a venue the game does not ship drops out of the pool');
+      for (let s = 1; s <= 20; s++) for (let season = 1; season <= 3; season++) for (const L of ['sprint', 'full']) {
+        const q = R.buildCalendar(s, season, 1, avail2, L);
+        assert.ok(q.every((r, i) => POOL.includes(r.qualiTrack) && (i === 0 || r.qualiTrack !== q[i - 1].qualiTrack)), `seed ${s} season ${season}: ${q.map((r) => r.qualiTrack)}`);
+        assert.deepEqual([...new Set(q.map((r) => r.qualiTrack))].sort(), POOL, 'all three venues each season');
+        assert.ok(q.every((r) => r.kind !== 'open' || r.lcqLaps === R.lapsFor(r.qualiTrack, L)), 'the Last Chance runs the venue\'s laps');
+      }
+      for (const v of POOL) for (const L of ['sprint', 'standard', 'full']) assert.ok(R.lapsFor(v, L) >= S.lapsMin && R.lapsFor(v, L) <= S.lapsMax, `${v} ${L}`);
+      assert.equal(C.shootout().track, 'drylake', 'the Shootout stays at Dry Lake');
+      const rot = C.newCareer({ seed: 79, now: 'x' }); C.finishShootout(rot, null); C.acceptOffer(rot, rot.pending.offers[0].id, avail2);
+      const R0 = C.currentRound(rot); assert.ok(POOL.includes(R0.qualiTrack)); assert.equal(C.qualiVenue(rot).track, R0.qualiTrack, 'qualifying runs at the round\'s venue');
+      C.setRaceLength(rot, 'full'); assert.ok(rot.season.calendar.every((r) => !r.lcqLaps || r.lcqLaps === R.lapsFor(r.qualiTrack, 'full')), 'a new length re-counts the Last Chance at its venue');
+      delete R0.qualiTrack; assert.equal(C.qualiVenue(rot).track, 'drylake', 'a round from before the rotation qualifies at Dry Lake');
+    } finally { if (pool0) R.CAL.qualifyingPool = pool0; else delete R.CAL.qualifyingPool; } }
   // ---- points and XP do not depend on the length: the same round, the same result
   const same = (l) => { const x = C.newCareer({ seed: 78, raceLength: l, now: 'x' }); C.finishShootout(x, null); C.acceptOffer(x, x.pending.offers[0].id, avail); C.finishQuali(x, 60); const r = C.finishRace(x, { order: x.season.current.quali.grid, best: {} }); return [r.xp, r.rr, r.rep, r.entries.map((e) => e.pts)]; };
   assert.deepEqual(same('sprint'), same('full'), 'race length never changes XP, rating, reputation or points');
