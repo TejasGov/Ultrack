@@ -25,7 +25,7 @@ const CAUSE = { contact: 'Contact on track', pass: 'Swapped places on track', te
 const record = ({ w, l }) => (!w && !l ? 'no finish together yet' : w > l ? `${w}-${l} to you` : w < l ? `${l}-${w} to them` : `${w}-${l}`);
 /** what a sponsor day is, wherever one is described */
 const CHALLENGE = 'Two laps from the back of a six-car field, judged on what your sponsor wants to see: bronze for one objective, silver for two, gold for all three. Gold lifts their goodwill and counts toward their target once a season; no medal costs goodwill.';
-const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'coin', news: 'mail' };
+const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'coin', news: 'mail', choice: 'info' };
 const conds = (R) => [icon(LOOK[R.look][1], { label: LOOK[R.look][0] }), icon(WX_ICON[R.weather], { label: WEATHER[R.weather].label })];
 const scroller = (cls, ...kids) => h(`div.lscroll.${cls}`, { onscroll: (e) => fadeMore(e.currentTarget) }, ...kids);
 
@@ -219,8 +219,15 @@ export function CareerHubScreen(game) {
   function mailDetail(save, m) {
     if (!m) return h('p.cx-note', {}, 'Nothing here yet.');
     const a = m.action, gone = a?.deal && !C.findOffer(save, a.deal);
+    if (a?.choice) return [h('span.kick', {}, `Season ${m.season} · Week ${m.week}`), h('h2', {}, m.title), h('p', {}, rich(m.body)), choiceActs(save, C.choiceOf(save, a.choice))];
     return [h('span.kick', {}, `Season ${m.season} · Week ${m.week}`), h('h2', {}, m.title), h('p', {}, rich(m.body)),
       a && !gone ? h('div.cx-acts.end', {}, h('button.btn.btn-primary', { 'data-nav': '', onclick: () => (a.deal ? open(a.deal) : go(a.tab)) }, icon(a.deal ? 'contract' : 'chevron-right'), a.deal ? 'Open talks' : `Go to ${TABS.find(([id]) => id === a.tab)?.[1] ?? 'it'}`)) : gone ? h('p.cx-if', {}, 'This offer has closed.') : null];
+  }
+  /** a choice scene's answers (choices.js): one button per option with what it does; once answered, what was chosen */
+  function choiceActs(save, ch) {
+    if (!ch) return h('p.cx-if', {}, 'This has passed.');
+    if (!ch.open) { const o = ch.options[ch.answer]; return h('p.cx-if', {}, `${ch.auto ? 'No answer, so it was' : 'You chose'} "${o.label}": ${o.effectText}.`); }
+    return h('div.cx-acts.col.cx-choice', {}, ch.options.map((o, i) => h('button.btn.btn-secondary', { 'data-nav': '', onclick: () => { C.answerChoice(save, ch.id, i); persist(game); build(true); } }, h('b', {}, o.label), h('small', {}, o.effectText))));
   }
   function inbox(save) {
     mailId ??= save.inbox[0]?.id ?? null;
