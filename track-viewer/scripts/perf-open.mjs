@@ -60,7 +60,8 @@ export async function openViewer({ track, look, weather = 'dry', mode = 'game', 
       await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
       await page.keyboard.press('Enter');
       await page.waitForSelector('.bento-tile[data-id=free]', { state: 'visible' });
-      if (revisit) console.log('revisit:', await page.evaluate(async (ids) => { const seen = []; for (const id of ids) { await window.game.selectTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
+      // the menu has not loaded the first venue yet: load it, or the run is a first visit that follows another track
+      if (revisit) console.log('revisit:', await page.evaluate(async (ids) => { await window.viewer.ensureVenue(); const seen = [window.viewer.trackId()]; for (const id of ids) { await window.game.selectTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
       await page.click('.bento-tile[data-id=free]');
       await page.waitForSelector('.panel.setup button.cta', { state: 'visible' });
       await page.click('.panel.setup button.cta');
@@ -71,7 +72,7 @@ export async function openViewer({ track, look, weather = 'dry', mode = 'game', 
       opened = 'dev'; await dev();
     }
   } else await dev();
-  if (revisit && opened === 'dev') console.log('revisit:', await page.evaluate(async (ids) => { const seen = []; for (const id of ids) { await window.viewer.setTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
+  if (revisit && opened === 'dev') console.log('revisit:', await page.evaluate(async (ids) => { const seen = [window.viewer.trackId()]; for (const id of ids) { await window.viewer.setTrack(id); await window.viewer.ensureVenue(); seen.push(window.viewer.trackId()); } return seen.join(' -> '); }, [revisit, track]));
   await page.waitForTimeout(3000);
   ready = true;
   return { browser, page, errors, mode: opened };
