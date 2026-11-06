@@ -27,5 +27,6 @@
   "opens": { "tokyo": { "name": "Japan Open", "nation": "JPN" }, "infinia": { "name": "India Open", "nation": "IND" }, "venice": { "name": "Venice Open", "nation": "ITA" } },
   "masters": { "track": "marina", "look": "night", "name": "Ultrack Masters" },
   "qualifying": "drylake",
+  "qualifyingPool": ["drylake", "pilbara", "terminal"],
   "shootout": { "track": "drylake", "look": "day", "weather": "dry", "car": "huracan" }
 }

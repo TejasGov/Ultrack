@@ -21,7 +21,7 @@ A world is a chapter of the career: a region with its own look, venues and spons
 | Colour | Ochre, rust, sodium orange | Green, grey sky, sea blue | Neon, lake blue, villa gold |
 | Season finale | Infinia at dusk | Marina at night | Tokyo at night (x1.5 points, as career-mode.md 4.1) |
 
-**Calendar rule:** tracks are events (`assets/career/calendar.json`): **sprints** (Shajawa), **grands prix** (India, Qingshan, Llano), **showpieces** (Infinia, Marina, Venice, Tokyo). A season draws a finale, then runs the world's other tracks once each, sprints first and showpieces last. **Qualifying is always at Mojave Dry Lake**, as is the Open Shootout, so a race map stays fresh for race day; Dry Lake hosts no career race.
+**Calendar rule:** tracks are events (`assets/career/calendar.json`): **sprints** (Shajawa), **grands prix** (India, Qingshan, Llano), **showpieces** (Infinia, Marina, Venice, Tokyo). A season draws a finale, then runs the world's other tracks once each, sprints first and showpieces last. **Qualifying rotates between Mojave Dry Lake, Pilbara Pit and North Sea Terminal**, fixed per round, never twice in a row (`calendar.json` `qualifyingPool`; a round's `qualiTrack`), so a race map stays fresh for race day; the Open Shootout stays at Dry Lake. The qualifying venues host no career race.
 
 | World | Rounds | Tracks | Finale (drawn each season) |
 |---|---|---|---|
