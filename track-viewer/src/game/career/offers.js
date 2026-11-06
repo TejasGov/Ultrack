@@ -102,6 +102,25 @@ export function walkAway(save, id) {
 /** the end-of-season list is never empty (3.1, 6.7): the last offer gone, a reserve seat appears */
 function keepARoute(save) { if (save.pending?.offers && !save.pending.offers.length) save.pending.offers.push(reserveOffer(save)); }
 
+/**
+ * A Legend incumbent within market.holdGap of the tier's seated average rating keeps the seat through a bad year: no drop, and a renewal without the
+ * raise. The bar is looser than an AI driver's renewal (renewGap), so the market moves AI drivers before it lets such a player go.
+ */
+export function holdsSeat(save) {
+  if (save.season?.tier !== 'legend' || !save.contract) return false;
+  const W = save.world, r = Object.entries(W.seats).filter(([k, c]) => c && c !== YOU && TIERS.teams[CAR[k].team].tier === 'legend').map(([, c]) => W.ratings[c]);
+  return playerRating(save) >= mean(r) - T.market.holdGap;
+}
+/** a seat one tier down for a driver who lost a seat above Maestro (6.7): losing a top seat never costs two tiers. The keenest team with an open seat, A first; null in the Rookies and Maestros */
+export function fallbackOffer(save) {
+  const rank = rankOf(save.contract.team) - 1; if (rank < 2) return null;
+  const W = save.world, teams = TEAM_IDS.filter((t) => rankOf(t) === rank).map((t) => [t, interestFor(save, t) ?? 0]).sort((a, b) => b[1] - a[1] || W.teams[a[0]].expPos - W.teams[b[0]].expPos);
+  // an open seat if there is one, else any seat whose driver is not a star (offers.star): a fallback always exists
+  const pick = teams.flatMap(([t]) => ['A', 'B'].map((x) => [t, x])), open = pick.find(([t, x]) => seatFor(save, t, x)) ?? pick.find(([t, x]) => (W.ratings[W.seats[seatCar(t, x)]] ?? 0) < T.offers.star) ?? pick[0];
+  const [team, seat] = open, salary = round50(tierOf(team).salary[seat] * 0.9);
+  return offer(save, team, seat, { salary, signing: 0, seasons: 1, interest: T.offers.firstJobInterest, tag: '-fallback',
+    why: `${teamName(team)} will take a driver who has raced a tier up: one season to earn your way back.` });
+}
 /** a Rookie reserve seat for a driver nobody else will sign (6.7): 60 % salary, no points in rounds 1-2, targets one place easier */
 export function reserveOffer(save) {
   const rookies = TEAM_IDS.filter((t) => TIERS.teams[t].tier === 'rookie' && t !== save.contract?.team);
@@ -270,7 +289,10 @@ export function seasonOffers(save, { cup, title, dropped }) {
   if (!dropped && outside.length && me.trust >= T.trust.renew && !list.some((o) => o.team === me.team) && rng(save.seed, 'counter', season)() < T.offers.counter)
     list.push(offer(save, me.team, 'A', { status: me.status === 'number1' ? 'number1' : 'lead', salary: round5(Math.max(me.salary, tier.salary.A) * (1 + T.offers.counterRaise)), signing: 0, seasons: 2, interest: T.offers.promoteInterest, tag: '-counter',
       why: `Your team has heard about the other offers: ${me.seat === 'B' ? 'the A seat' : 'a raise'} and ${Math.round(T.offers.counterRaise * 100)} % more to stay.` }));
-  if (dropped || (me.seasonsLeft <= 1 && me.trust < T.trust.renew)) list.push(reserveOffer(save));
+  const hold = !dropped && holdsSeat(save);
+  if (dropped || (me.seasonsLeft <= 1 && me.trust < T.trust.renew && !hold)) list.push(...[fallbackOffer(save), reserveOffer(save)].filter(Boolean));
+  else if (me.seasonsLeft <= 1 && me.trust < T.trust.renew) list.push(offer(save, me.team, me.seat, { status: me.status, salary: me.salary, signing: 0, seasons: 1, interest: T.offers.promoteInterest, tag: '-renew',
+    why: `The team is not happy with the year, but a driver rated ${playerRating(save)} keeps a Legend seat: one more season at the same pay.` }));
   else if (me.seasonsLeft > 1) list.push({ ...offer(save, me.team, me.seat, { status: me.status, salary: me.salary, signing: 0, seasons: me.seasons, tag: '-keep' }), keep: true, why: `Your contract runs ${me.seasonsLeft - 1} more ${me.seasonsLeft - 1 === 1 ? 'season' : 'seasons'}.` });
   else list.push(offer(save, me.team, me.seat, { status: me.status, salary: round5(Math.max(me.salary * 1.1, me.reserve ? tier.salary[me.seat] : 0)), signing: round50(me.salary * 2), seasons: 2, interest: T.offers.promoteInterest, tag: '-renew', why: 'The team wants to renew.' }));
   return list;

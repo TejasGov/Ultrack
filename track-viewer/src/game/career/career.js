@@ -18,7 +18,7 @@ import { poseWeek, settleChoices, settleCallout, answerChoice, choiceOf, openCho
 import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
-  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours,
+  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours, holdsSeat, fallbackOffer,
 } from './offers.js';
 
 export const SCHEMA = 10;
@@ -603,8 +603,8 @@ function endSeason(save) {
   if (cupPos === 1) { rep += T.rep.cup; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }
   if (teamPos === 1) rep += T.rep.teams;
   if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; }
-  // the seat review at the finale (6.7): under 15, or under 25 with a warning not recovered, the team lets you go
-  const dropped = !me.next && (me.trust < T.trust.dropAny || (me.trust < T.trust.drop && !!me.warning));
+  // the seat review at the finale (6.7): under 15, or under 25 with a warning not recovered, the team lets you go; a Legend driver rated like one the team would re-sign stays (holdsSeat)
+  const dropped = !me.next && (me.trust < T.trust.dropAny || (me.trust < T.trust.drop && !!me.warning)) && !holdsSeat(save);
   if (dropped) { rep += T.rep.dropped; me.dropped = true; }
   save.career.rep = clamp(save.career.rep + rep, 0, 1000); save.wallet.coins += coins;
   const avgRR = mean(rs.map((r) => r.rr));

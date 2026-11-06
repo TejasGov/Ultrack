@@ -33,7 +33,7 @@
       "mistake": { "on": true, "base": 0.05, "rival": 1.6, "nemesis": 1.3, "window": 0.6, "after": 3, "lift": 0.95, "liftS": 0.5, "wide": 0.8 },
       "nitro": { "on": true, "from": 10, "to": 50 },
       "orders": { "lift": 0.97, "s": 3, "aside": 2, "gap": 1.0, "mateGap": 2.0 } } },
-  "market": { "retireAge": 38, "retireChance": 0.5, "academyRating": [70, 78], "academyAge": [19, 22], "renew": 0.9, "renewGap": 6, "dropGap": 6, "maxMoves": 1, "contract": [1, 3], "signing": [2, 3] },
+  "market": { "retireAge": 38, "retireChance": 0.5, "academyRating": [70, 78], "academyAge": [19, 22], "renew": 0.9, "renewGap": 6, "holdGap": 8, "dropGap": 6, "maxMoves": 1, "contract": [1, 3], "signing": [2, 3] },
   "side": { "test": [1.03, 1.015, 1.005], "xp": [25, 50, 75], "pay": [100, 175, 275], "formPay": 0.05,
     "challenge": { "laps": 2, "field": 5, "pace": 0.97,
       "name": { "top": "Overtake", "podium": "Podium", "win": "Victory", "clean": "Clean Air", "quali": "Hot Lap", "duel": "Duel" },

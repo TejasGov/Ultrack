@@ -884,6 +884,16 @@ try {
     assert.ok(['bold_press', 'callout_won', 'callout_lost'].some((k) => kinds.has(k)), `choices reach the ledger: ${[...kinds]}`);
   }
 
+  // ---- a Legend seat lost (6.7, 6.8): never a fall of two tiers, and a Legend driver rated near the tier keeps the seat through a bad year
+  { const O = await server.ssrLoadModule('/src/game/career/offers.js'), s = signed(3200), lt = R.TEAM_IDS.find((t) => R.TIERS.teams[t].tier === 'legend'), car = R.seatCar(lt, 'A'), W = s.world;
+    W.seats[s.contract.car] = W.seats[car]; W.seats[car] = 'YOU'; Object.assign(s.contract, { team: lt, seat: 'A', car, seasonsLeft: 1, trust: 10 }); s.season.tier = 'legend'; s.season.results.length = 0;
+    const mate = W.seats[R.seatCar(lt, 'B')]; W.ratings[mate] = 92; assert.ok(O.holdsSeat(s), 'rated as the teammate: held');
+    const held = O.seasonOffers(s, { cup: false, title: false, dropped: false }); assert.ok(held.some((o) => o.team === lt && o.id.endsWith('-renew') && o.salary === s.contract.salary), 'a renewal at the same pay, not the reserve seat'); assert.ok(!held.some((o) => o.reserve));
+    W.ratings[mate] = 70; assert.equal(O.holdsSeat(s), false, 'rated far below the tier: not held');
+    const lost = O.seasonOffers(s, { cup: false, title: false, dropped: true }), fb = lost.find((o) => o.id.endsWith('-fallback'));
+    assert.ok(fb && fb.tier === 'maestro', 'dropped from a Legend seat: a Maestro seat is offered'); assert.ok(lost.some((o) => o.reserve), 'the reserve seat stays a choice');
+    assert.equal(O.fallbackOffer(signed(3201)), null, 'from the Rookies there is no tier below'); }
+
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays
   assert.equal(JSON.stringify(play(M, 11, 1.0, 9).save), JSON.stringify(play(M, 11, 1.0, 9).save), 'nine seasons replay identically');
   let legends = 0;
