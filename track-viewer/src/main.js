@@ -512,6 +512,9 @@ const dynres = new DynamicResolution();
 const hdriCache = new Map();
 let gltfLoader, venuePromise, venueRoot = null, venueGen = 0;   // venueGen: bumped by unloadVenue, so a load from before it never installs (TRACK identity comes back on a switch away and back)
 const garageRoom = DEV ? null : new GarageRoom(renderer);
+// the room's PMREM (~0.5 s, garage-room.js ensureEnvironment) in the task after the first car GLB request goes out, so it runs during
+// that download (~0.7 s at 50 Mbit) instead of before any fetch; nothing else uses the default manager's onStart
+if (garageRoom) THREE.DefaultLoadingManager.onStart = () => { THREE.DefaultLoadingManager.onStart = undefined; setTimeout(() => garageRoom.ensureEnvironment()); };
 
 const mark = (n) => performance.mark('ultrack:' + n);   // read with performance.getEntriesByType('mark')
 async function load() {
@@ -1322,7 +1325,7 @@ async function benchScenery(frames=16,{width=960,height=540}={}) {
 }
 renderer.info.autoReset = false;
 // console access for tuning; renderNow draws a frame immediately (the app's pane can stall rAF while it is scripted)
-window.viewer = { THREE, composer, params, perf: PERF, glassVeil, LOOKS, setTrack, unloadVenue, ensureVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
+window.viewer = { THREE, composer, params, perf: PERF, garageRoom, glassVeil, LOOKS, setTrack, unloadVenue, ensureVenue, trackId: () => TRACK.id, applyAll, applyQuality, setLook, resize, makeReflector, renderer, jumpTo, scene, camera, controls, bench, benchModels,
   scenery:()=>sceneryExperiment, benchScenery,
   field: () => field,
   cheer: (k = 1) => { life.cheer(k); people.cheer(); }, people: people.count, peopleList: people.list, device,
