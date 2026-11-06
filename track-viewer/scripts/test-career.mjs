@@ -671,6 +671,42 @@ try {
     assert.ok(play(M, 11, 1.0, 2).save.media.some((x) => x.kind === 'drama' || x.kind === 'move' || x.kind === 'duel'), 'a two-season career has more than results in the papers');
   }
 
+  // ---- rivals on track (6.6, driver.js): composure, team orders, the race profiles, and what obeying or ignoring an order does
+  { const O = R.TUNING.trust.orders;
+    assert.equal(R.composureOf(70, 25), 0.35); assert.equal(R.composureOf(90, 25).toFixed(2), '0.75'); assert.equal(R.composureOf(90, 33).toFixed(2), '0.85', 'over 30: calmer');
+    assert.equal(R.composureOf(40, 20), 0.2); assert.equal(R.composureOf(99, 35), 0.95, 'clamped to 0.2-0.95');
+    const ord = (seat, trust, won, lost, mateFirst) => { const s = signed(180); C.finishQuali(s, 1); const g = s.season.current.quali.grid, me = s.contract.car, mate = C.teammateCar(s);
+      s.season.current.quali.grid = [...(mateFirst ? [mate, me] : [me, mate]), ...g.filter((k) => k !== me && k !== mate)]; Object.assign(s.contract, { seat, trust, duel: { won, lost, level: 0 } }); return R.ordersFor(s); };
+    assert.equal(ord('A', 50, 0, 3, true), 'toYou', 'the A seat: the teammate lets you by');
+    assert.equal(ord('B', O.toYou, 3, 2, true), 'toYou', 'trust 70 and the duel won: the team backs you');
+    assert.equal(ord('B', O.toYou, 2, 2, true), null, 'a level duel is not enough'); assert.equal(ord('B', O.toYou - 1, 3, 2, true), null);
+    assert.equal(ord('B', O.toMate - 1, 0, 0, true), 'toMate', 'the B seat, trust under 40, the teammate ahead on the grid: you are asked to let them by');
+    assert.equal(ord('B', O.toMate - 1, 0, 0, false), null, 'not with the teammate behind you on the grid'); assert.equal(ord('B', O.toMate, 0, 0, true), null);
+    // the race profiles: AI cars only, roles nemesis > rival > teammate, seeded, the knobs a copy of tuning's
+    const both = (t) => { C.finishQuali(t, 1); const q = t.season.current.quali, m = t.contract.car, mt = C.teammateCar(t); q.grid = [m, mt, ...q.grid.filter((k) => k !== m && k !== mt)].slice(0, q.grid.length); return q.grid; };   // both team cars on the grid
+    const s = signed(181), g = both(s), me = s.contract.car, mate = C.teammateCar(s), others = g.filter((k) => k !== me && k !== mate);
+    s.career.heat = { [s.world.seats[others[0]]]: 75, [s.world.seats[others[1]]]: 45 }; const X = C.raceSetup(s), X2 = C.raceSetup(s);
+    assert.ok(!(me in X.ai) && Object.keys(X.ai).length === g.length - 1, 'every AI car has a profile, the player none');
+    assert.deepEqual([X.ai[others[0]].role, X.ai[others[1]].role, X.ai[mate].role, X.ai[others[2]].role], ['nemesis', 'rival', 'mate', null]);
+    assert.equal(X.nemesis.key, others[0]); assert.equal(X.mateKey, mate); assert.equal(X.orders, R.ordersFor(s));
+    assert.equal(JSON.stringify(X.ai), JSON.stringify(X2.ai), 'the same round, the same profiles'); assert.ok(new Set(Object.values(X.ai).map((p) => p.seed)).size === g.length - 1, 'a seed per car');
+    assert.ok(Object.values(X.ai).every((p) => Number.isInteger(p.seed) && p.composure >= 0.2 && p.composure <= 0.95));
+    X.ai[mate].k.defend.on = false; assert.equal(R.TUNING.rivals.track.defend.on, true, 'the knobs are a copy');
+    s.career.heat[s.world.seats[mate]] = 90; assert.equal(C.raceSetup(s).ai[mate].role, 'nemesis', 'a teammate who is the nemesis races as one');
+    // obeying 'let them by' earns trust; ignoring it costs trust, heats the teammate and makes the papers. 'toYou' and no order change nothing
+    const race = (orders) => { const t = signed(182), gr = both(t); t.career.heat = {}; t.career.rivalry = {}; const m = t.contract.car, mt = C.teammateCar(t);
+      const order = [mt, m, ...gr.filter((k) => k !== m && k !== mt)], before = t.contract.trust, press = t.media?.length ?? 0, rep = C.finishRace(t, { order, best: {}, crashes: 0, spins: 0, orders });
+      return { t, rep, dt: t.contract.trust - before, heat: t.career.heat[t.world.seats[mt]] ?? 0, cause: t.career.rivalry[t.world.seats[mt]]?.cause, stories: (t.media ?? []).slice(0, t.media.length - press) }; };
+    const none = race(null), yes = race({ kind: 'toMate', obeyed: true }), no = race({ kind: 'toMate', obeyed: false }), you = race({ kind: 'toYou', obeyed: true });
+    assert.equal(yes.dt - none.dt, O.obeyed, 'obeyed: trust +4'); assert.deepEqual(yes.rep.orders, { obeyed: true, trust: O.obeyed });
+    assert.equal(no.dt - none.dt, -O.ignored, 'ignored: trust -6'); assert.equal(no.heat - none.heat, R.TUNING.rivals.ordersIgnored, 'and the teammate +15 heat'); assert.equal(no.cause, none.cause, 'the qualifying duel came first, so it stays the cause');
+    { const W = await server.ssrLoadModule('/src/game/career/world.js'), t = signed(183), c = Object.values(t.world.seats).find((x) => x !== W.YOU); t.career.heat = { ZZZ: 79 }; t.career.rivalry = {};
+      W.heatUp(t, c, 85, 'orders'); assert.equal(t.career.rivalry[c].cause, 'orders', 'a new rivalry from ignored orders says so'); assert.equal(t.career.heat.ZZZ, 79); assert.equal(Object.values(t.career.heat).filter((h) => h >= R.TUNING.rivals.feud).length, 1, 'still one feud at most'); }
+    assert.ok(no.stories.some((x) => /ignores team orders/.test(x.title)), 'a story'); assert.ok(!yes.stories.some((x) => /team orders/.test(x.title)));
+    assert.equal(you.dt, none.dt); assert.equal(you.heat, none.heat); assert.equal(you.rep.orders, null);
+    assert.equal(race({ kind: 'toMate' }).dt, none.dt, 'an order with no outcome (a retirement) settles nothing');
+  }
+
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays
   assert.equal(JSON.stringify(play(M, 11, 1.0, 9).save), JSON.stringify(play(M, 11, 1.0, 9).save), 'nine seasons replay identically');
   let legends = 0;

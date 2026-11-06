@@ -134,6 +134,11 @@ export function coverHotSeat(save, team) {
   const t = loreOf(team), me = save.player.name;
   story(save, 'fired', `${t.principal} is losing patience with ${me}`, `The results are not good enough, and ${t.name} has told ${me} so. The review at the finale will decide the seat.`, { principal: team });
 }
+/** the player ignored the team's order to let the teammate by (finishRace) */
+export function coverOrders(save, code, team) {
+  const t = loreOf(team), me = save.player.name, d = personOf(save, code);
+  story(save, 'duel', `${me} ignores team orders`, `${t.name} told ${me} to let ${d?.name ?? 'their teammate'} through on the last lap. ${me} kept the place, and ${t.principal} was not smiling in the garage.`, { driver: code, mood: 'down', principal: team });
+}
 /** the player is let go at the season end for bad results (endSeason) */
 export function coverFired(save, team) {
   const t = loreOf(team), me = save.player.name;

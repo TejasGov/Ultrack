@@ -118,6 +118,12 @@ export function nemesisOf(save, keys) {
   for (const c of Object.keys(H)) if (c !== n?.code) H[c] = Math.min(H[c], T.rivals.nemesis + 9);
   return n;
 }
+/** heat added after the race (team orders ignored, career.js finishRace): a new rivalry takes this cause, and only the hottest stays a feud */
+export function heatUp(save, code, dh, cause) {
+  const K = save.career; K.heat[code] = clamp((K.heat[code] ?? 0) + dh, 0, 100);
+  (K.rivalry ??= {})[code] ??= { cause, since: [save.clock.season, save.clock.round + 1], w: 0, l: 0 };
+  nemesisOf(save, Object.keys(save.world.seats));
+}
 /** nemesisOf without holding anyone: for a look before the race (raceSetup), which must not change the save */
 export const nemesisAmong = (save, keys) => { const code = pickNemesis(save, keys); return code ? { code, key: keys.find((k) => save.world.seats[k] === code) } : null; };
 function pickNemesis(save, keys) {

@@ -261,3 +261,14 @@ export function sideMedal(kind, value, par) {
   if (kind === 'test') return Number.isFinite(value) ? S.test.filter((x) => value <= par * x).length : 0;
   return S.sponsor.filter((x) => value >= x).length;
 }
+
+// ---------------------------------------------------------------------------------------------- rivals on track (6.6, driver.js)
+/** how well a driver holds their nerve with the player on their gearbox, 0.2-0.95: the rating, and a little more past 30 */
+export const composureOf = (rating, age) => clamp(0.35 + (rating - 70) * 0.02 + (age > 30 ? 0.1 : 0), 0.2, 0.95);
+/** this race's team orders: 'toYou' (the teammate lets the player by on the last lap), 'toMate' (the player is asked to let them by) or null */
+export function ordersFor(save) {
+  const me = save.contract, O = T.trust.orders; if (!me) return null;
+  if (me.seat === 'A' || (me.trust >= O.toYou && me.duel.won > me.duel.lost)) return 'toYou';
+  const grid = save.season?.current?.quali?.grid ?? [], mate = grid.indexOf(seatCar(me.team, otherSeat(me.seat))), mine = grid.indexOf(me.car);
+  return me.seat === 'B' && me.trust < O.toMate && mate >= 0 && mine > mate ? 'toMate' : null;
+}

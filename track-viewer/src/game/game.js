@@ -303,7 +303,7 @@ export class Game {
     this.hideScreens();
     applyUpgrades(career?.levels ?? ((k)=>store.levels(k)),career?undefined:store.data.car);   // a career sets every car: AI teams carry their development levels
     this.earned=null;
-    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;F.runUp=career?.runUp??0;F.hardPace=hardPaceFor(store.settings.hardMode);   // read by grid() in configure and by enablePhysics
+    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;F.aiFor=career?.ai?(k)=>career.ai[k]:null;F.orders=career?.orders??null;F.nemesisKey=career?.nemesis?.key??null;F.mateKey=career?.mateKey??null;F.runUp=career?.runUp??0;F.hardPace=hardPaceFor(store.settings.hardMode);   // read by grid() in configure and by enablePhysics
     F.configure({ hero: store.data.car, racers });
     this.cameraFor('chase');
     // Prepare shader variants/textures behind the intro, before the race clock and controls start.
@@ -349,7 +349,7 @@ export class Game {
     this.ctx.clearDriverHoardings?.();
     if (this.pw) { this.field.physics = false; for (const c of this.field.all) delete c.vehicle; this.pw.dispose(); this.pw = null; }
     applyUpgrades((k)=>store.levels(k));          // back to the garage view: every car as saved
-    if (this.field) { this.field.gridOrder = this.field.paceFor = null; this.field.runUp = 0; }
+    if (this.field) { this.field.gridOrder = this.field.paceFor = this.field.aiFor = this.field.orders = this.field.nemesisKey = this.field.mateKey = null; this.field.runUp = 0; }
     this.session = null; this.audio.engineOff(); this.audio.nitro(false); this.audio.commentary?.stop();
     this.hud?.show(false); this.ctx.params.paused = false; this.resultsShown = false;
     setTimeout(()=>{if(!this.starting&&!this.session)this.prepareWorld();},1500);   // the next race's collision world, built while the menu is up
@@ -439,7 +439,16 @@ export class Game {
         if (s.mode === 'race' && s.laps >= 3 && e.n === Math.floor(s.laps / 2)) this.sayLater('halfway', { priority: 1 }, 3000);
         break;
       }
-      case 'finalLap': H.message('Final lap', '', 'gold', 2.6); A.play('race/final-lap-bell.ogg'); this.say('final_lap', { priority: 3 }); break;
+      case 'finalLap': {
+        // team orders, the player's call (career races): told to let a teammate who is behind by
+        const mate = this.field.orders === 'toMate' && this.field.cars.find((c) => c.key === this.field.mateKey), told = mate && s.order.indexOf(mate) > s.order.indexOf(hero);
+        if (told && this.careerRun) this.careerRun.orders = { kind: 'toMate' };
+        H.message('Final lap', told ? `Team: let ${s.driver(mate).name} by` : '', 'gold', told ? 4 : 2.6); A.play('race/final-lap-bell.ogg'); this.say('final_lap', { priority: 3 }); break;
+      }
+      case 'ordersDone': { const c = this.field.cars.find((x) => x.key === e.key); if (this.careerRun) this.careerRun.orders = { kind: 'toYou', obeyed: true }; if (c) H.message(`Team: ${s.driver(c).name} lets you through`, '', 'gold', 3); break; }
+      case 'mistake': { const c = this.field.cars.find((x) => x.key === e.key); if (c) H.message(`${s.driver(c).name} ${e.kind === 'lift' ? 'lifts' : 'runs wide'}`, '', '', 2.2); break; }
+      case 'defend': this.say('defending', { cooldown: 30 }); break;
+      case 'sideBySide': this.say('side_by_side', { cooldown: 25 }); break;
       case 'position':
         if (this.careerRun && e.by) this.careerRun.passes[e.by] = (this.careerRun.passes[e.by] ?? 0) + 1;
         A.play(e.to < e.from ? 'race/position-up.ogg' : 'race/position-down.ogg', { gain: 0.6 });
@@ -509,7 +518,8 @@ export class Game {
     const run = this.careerRun, s = this.session; if (!run || !s) return;
     const T = s.trk.get(this.field.hero), rows = s.mode === 'race' ? s.results() : null;
     const data = { kind: run.kind, best: T.best, mateLap: s.rivalLap(), score: s.drift?.score ?? null, dnf: retired, crashes: run.crashes, hits: run.hits, spins: run.spins, pro: store.settings.assists === 'pro',
-      order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])), contacts: run.contacts, passes: run.passes, offTrack: run.offTrack, totals: rows?.map((r) => [r.key, r.total]) };
+      order: rows?.map((r) => r.key), bests: rows && Object.fromEntries(rows.map((r) => [r.key, r.best ?? null])), contacts: run.contacts, passes: run.passes, offTrack: run.offTrack, totals: rows?.map((r) => [r.key, r.total]),
+      orders: run.orders?.kind === 'toMate' ? (retired ? null : { kind: 'toMate', obeyed: rows.findIndex((r) => r.key === run.mateKey) < rows.findIndex((r) => r.hero) }) : run.orders ?? null };   // obeyed: the teammate finished ahead; a retirement settles nothing
     this.careerRun = null; this.hideScreens(); this.endSession(); this.lineup(); this.state = 'menu'; this.cameraFor('menu');
     run.done(data);
   }

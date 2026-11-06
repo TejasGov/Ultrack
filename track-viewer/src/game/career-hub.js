@@ -21,7 +21,7 @@ const TABS = [['home', 'Home', 'home'], ['calendar', 'Calendar', 'calendar'], ['
 const RACE_LENGTHS = Object.entries(TUNING.series.lengths).map(([id, min]) => [id, `${id[0].toUpperCase()}${id.slice(1)} · ${min} min`]);
 const lengthName = (id) => `${id[0].toUpperCase()}${id.slice(1)}`;
 /** a rivalry's cause (world.js career.rivalry) and the head-to-head record, as the Rivals block reads them */
-const CAUSE = { contact: 'Contact on track', pass: 'Swapped places on track', teammate: 'Your teammate', displaced: 'Lost the seat to you', grid: 'Raced you close' };
+const CAUSE = { contact: 'Contact on track', pass: 'Swapped places on track', teammate: 'Your teammate', displaced: 'Lost the seat to you', grid: 'Raced you close', orders: 'You ignored team orders' };
 const record = ({ w, l }) => (!w && !l ? 'no finish together yet' : w > l ? `${w}-${l} to you` : w < l ? `${l}-${w} to them` : `${w}-${l}`);
 const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'drift', news: 'mail' };
 const conds = (R) => [icon(LOOK[R.look][1], { label: LOOK[R.look][0] }), icon(WX_ICON[R.weather], { label: WEATHER[R.weather].label })];
@@ -60,8 +60,8 @@ export function CareerHubScreen(game) {
   function startRace(save) {
     const X = C.raceSetup(save), lcq = save.season.current.open?.stage === 'lcq';
     game.careerSession('race', { track: X.track, look: X.look, weather: X.weather, laps: X.laps, car: X.hero, home: 'careerHub',
-      session: { racers: X.racers, gridOrder: X.gridOrder, pace: X.pace, levels: X.levels, drivers: X.drivers, label: X.label, field: X.field } }, (d) => {
-      const result = { order: d.order, best: d.bests, dnf: d.dnf, crashes: d.crashes, hits: d.hits, spins: d.spins, pro: d.pro, contacts: d.contacts, passes: d.passes };
+      session: { racers: X.racers, gridOrder: X.gridOrder, pace: X.pace, levels: X.levels, drivers: X.drivers, label: X.label, field: X.field, ai: X.ai, orders: X.orders, nemesis: X.nemesis, mateKey: X.mateKey } }, (d) => {
+      const result = { order: d.order, best: d.bests, dnf: d.dnf, crashes: d.crashes, hits: d.hits, spins: d.spins, pro: d.pro, contacts: d.contacts, passes: d.passes, orders: d.orders };
       const report = lcq ? C.finishLcq(save, result) : C.finishRace(save, result);      // the Last Chance Qualifier is its own short report; the Final is the round's
       persist(game); game.show('careerReport', report);
     });

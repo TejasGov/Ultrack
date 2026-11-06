@@ -190,10 +190,10 @@ export class Hud {
         this.progs.forEach((e, k) => e.style.transform = `scaleX(${Math.min(1, Math.max(0, (p - this.sec[k]) / (this.sec[k + 1] - this.sec[k]))).toFixed(3)})`);
       }
     }
-    // career qualifying: the teammate, his gap on the road until he has set a lap, then the lap to beat
+    // career qualifying: the teammate, his gap on the road until he has set a lap, then the lap to beat. A career race: the nemesis (else the teammate), the gap on the road
     const R = s.rival; this.flag(this.el, 'duel', !!R);
     if (R) {
-      const d = s.driver(R), lap = s.trk.get(R).best, gap = s.rivalGap();
+      const d = s.driver(R), lap = s.mode === 'quali' ? s.trk.get(R).best : null, gap = s.rivalGap();
       this.set(this.rivalCode, 'rc', d.code); if (this.cache.rm !== d.code) { this.cache.rm = d.code; this.rivalMark.style.background = teamMark(d.team); }
       this.set(this.rivalVal, 'rv', lap !== null ? fmtTime(lap) : `${gap > 0 ? 'AHEAD' : 'BEHIND'} ${Math.abs(gap).toFixed(1)}`);
     }

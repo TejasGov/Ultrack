@@ -6,14 +6,14 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult, SPONSORS,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
-import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, rivalsOf } from './world.js';
+import { YOU, newWorld, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
 import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
 import { post, unread, markRead } from './inbox.js';
-import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, unreadStories, readStory, storyImage, latestBytes } from './media.js';
+import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer,
@@ -354,12 +354,20 @@ export function finishQuali(save, best, mateRun = null) {
   return save;
 }
 
-/** what game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels and who drives each car */
+/**
+ * What game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels, who drives each car, and
+ * how the rivals drive near the player (6.6, driver.js): ai[key] = { role, composure, seed, k } for every AI car, this race's team orders and
+ * the teammate's car. Roles: the nemesis, then a rival (heat 40+), then the teammate; team orders go to the teammate's car whatever its role.
+ */
 export function raceSetup(save) {
   const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at Dry Lake
   const racers = cur.quali?.grid ?? [hero], pace = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => [key, aiPace(save, key, lcq ? ['lcq'] : [])]));
   const lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
-  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis: nemesisAmong(save, racers), laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
+  const nemesis = nemesisAmong(save, racers), mateKey = teammateCar(save), W = save.world, H = save.career.heat ?? {};
+  const ai = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => { const code = W.seats[key];
+    return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: composureOf(W.ratings[code], W.ages[code]),
+      seed: Math.floor(rng(save.seed, 'ai-profile', save.clock.season, save.clock.round, key)() * 2 ** 32), k: structuredClone(T.rivals.track) }]; }));
+  return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis, ai, orders: ordersFor(save), mateKey, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
     label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null,
     drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
 }
@@ -386,7 +394,8 @@ export function finishSide(save, value) {
 
 // ---------------------------------------------------------------------------------------------- the race
 /**
- * The feature race is done. result: { order: [car keys, finishing order], best: { key: seconds | null }, dnf, crashes, spins, pro, contacts: { key: n | [km/h] }, passes: { key: n } } (the last two heat rivals, 6.6).
+ * The feature race is done. result: { order: [car keys, finishing order], best: { key: seconds | null }, dnf, crashes, spins, pro, contacts: { key: n | [km/h] }, passes: { key: n } (the two heat rivals, 6.6),
+ *   orders: { kind: 'toMate', obeyed } | null (the player was told to let the teammate by: obeying earns trust, ignoring costs trust and heats the teammate) }.
  * Scores the round (points, Round Rating, XP, REP, trust, objectives, money, rivals), stores it, opens the mid-season market after the
  * middle round, and moves on to the next week or the season review. Returns the round report the results screen shows.
  * The classification is everyone: the race, then those who missed the cut in qualifying order, the player among them if he did.
@@ -419,7 +428,8 @@ export function finishRace(save, result) {
   if (E.rep !== 1) { rep.lines = rep.lines.map(([l, v]) => [l, v > 0 ? Math.round(v * E.rep) : v]); rep.rep = rep.lines.reduce((a, l) => a + l[1], 0); }   // an Open or the Masters pays reputation, never costs more of it
   rep.lines.push(...rivals.lines); rep.rep += rivals.rep;
   const happyRep = Math.round(rep.rep * (repMult(save) - 1)); if (happyRep > 0) { rep.lines.push([mood(save).name, happyRep]); rep.rep += happyRep; }   // a happy driver is talked about more; a bad round costs the same in any mood
-  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
+  const ord = result.orders?.kind === 'toMate' && typeof result.orders.obeyed === 'boolean' && !dnq ? result.orders : null, ordTrust = ord ? (ord.obeyed ? T.trust.orders.obeyed : -T.trust.orders.ignored) : 0;
+  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = (rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust) + ordTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
   // money (5.5): salary, the race prize x the tier's multiplier, objective and contract bonuses, sponsors
   const Tr = TIERS.tiers[tier], coins = [['Salary', me.salary]];
   for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: raced.length, laps: R.laps, finished: !dnf && !dnq, retired: dnf || dnq, fastest }).lines) coins.push([label, round5(v * Tr.prize * E.prize)]);
@@ -436,6 +446,8 @@ export function finishRace(save, result) {
   gainXp(save, xp.xp); save.career.rep = clamp(save.career.rep + rep.rep, 0, 1000);
   save.career.rr = [...save.career.rr, rating.rr].slice(-6); me.trust = clamp(me.trust + trust, 0, 100);
   if (!duel.skipped) me.duel[duel.result]++; save.wallet.coins += earned;
+  const mateCode = seats[teammateCar(save)];
+  if (ord && !ord.obeyed && mateCode) { heatUp(save, mateCode, T.rivals.ordersIgnored, 'orders'); coverOrders(save, mateCode, me.team); }
   if (me.warning) {                                          // the seat review's recovery objective: the round objective, twice running (6.7)
     me.warning.left--; if (mandatory) me.warning.met++;
     if (me.warning.met >= T.trust.recover) me.warning = null;
@@ -447,7 +459,7 @@ export function finishRace(save, result) {
   const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, expPos: cur.expPos, dnf, dnq, pole, fastest, clean,
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
-    entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines,
+    entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines, orders: ord && { obeyed: ord.obeyed, trust: ordTrust },
     nemesis: rivals.nemesis && { code: rivals.nemesis.code, name: personOf(save, rivals.nemesis.code)?.name ?? rivals.nemesis.code, beat: rivals.nemesis.beat },
     rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null } } : {}) };
   if (cur.open) recordOpen(save, R, entries[0], report);
