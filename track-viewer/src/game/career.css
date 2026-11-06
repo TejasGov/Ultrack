@@ -628,6 +628,8 @@
   .cx-foot { height: auto; min-height: calc(60 * var(--u)); padding: var(--sp-2) 16px; }
   .cx-stages { flex-wrap: wrap; margin: var(--sp-2) 16px 0; }
   .cx-b > .cx-bh:first-child > span:first-child { flex: none; }
+  .cx-bh { flex-wrap: wrap; row-gap: var(--sp-1); }   /* a long right-hand label ("Their offer beside your ask") takes its own line rather than an ellipsis */
+  .cx-acts { flex-wrap: wrap; }
   .cr-cols, .cr-lcq .cr-cols { --cols: calc(36 * var(--u)) 4px minmax(0, 1fr) calc(100 * var(--u)) calc(52 * var(--u)); }
   .cr-cols .r-carname, .cr-cols > span:nth-child(4) { display: none; }
   .cx .cx-offer { grid-template-columns: calc(72 * var(--u)) minmax(0, 1fr); }
