@@ -524,12 +524,11 @@ export function PauseScreen(game) {
         career && mode !== 'race' ? (([label, q, text]) => opt('lap', label, () => ask(q, text, 'lap', 'End', () => game.careerDone())))({
           test: ['End test day', 'End the test day?', 'Your best valid lap so far is measured against the targets.'],
           shootout: ['End the Shootout', 'End the Shootout?', 'Your best valid lap so far sets your grade. With none, you are graded Raw.'],
-          sponsor: ['End sponsor day', 'End the sponsor day?', 'Your score so far decides the medal.'],
           practice: ['End practice', 'End practice?', 'Back to the career. Nothing is at stake.'],
           quali: ['End qualifying', 'End qualifying?', 'Your best valid lap so far counts, and this uses up a try. With none, you miss the cut.'],
         }[game.careerRun.kind]) : null,
         opt('settings', 'Settings', () => game.show('settings', 'pause')),
-        career ? (mode === 'race' ? opt('quit', 'Retire', () => ask('Retire from the race?', 'You are classified last and the round counts as a retirement.', 'quit', 'Retire', () => game.careerDone(true))) : null)
+        career ? (mode === 'race' ? opt('quit', 'Retire', () => ask(...(game.careerRun.kind === 'sponsor' ? ['Retire from the challenge?', 'You meet no objective and get no medal.'] : ['Retire from the race?', 'You are classified last and the round counts as a retirement.']), 'quit', 'Retire', () => game.careerDone(true))) : null)
           : opt('quit', 'Quit to menu', () => ask('Quit to menu?', 'This session ends and you go back to the main menu.', 'quit', 'Quit', () => game.quit())));
       nav.reset(0);
     },

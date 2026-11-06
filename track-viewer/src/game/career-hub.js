@@ -23,6 +23,8 @@ const lengthName = (id) => `${id[0].toUpperCase()}${id.slice(1)}`;
 /** a rivalry's cause (world.js career.rivalry) and the head-to-head record, as the Rivals block reads them */
 const CAUSE = { contact: 'Contact on track', pass: 'Swapped places on track', teammate: 'Your teammate', displaced: 'Lost the seat to you', grid: 'Raced you close', orders: 'You ignored team orders' };
 const record = ({ w, l }) => (!w && !l ? 'no finish together yet' : w > l ? `${w}-${l} to you` : w < l ? `${l}-${w} to them` : `${w}-${l}`);
+/** what a sponsor day is, wherever one is described */
+const CHALLENGE = 'Two laps from the back of a six-car field, judged on what your sponsor wants to see: bronze for one objective, silver for two, gold for all three. Gold lifts their goodwill and counts toward their target once a season; no medal costs goodwill.';
 const MAIL_ICON = { race: 'race', deal: 'contract', team: 'people', warn: 'warning', event: 'time-trial', sponsor: 'drift', news: 'mail' };
 const conds = (R) => [icon(LOOK[R.look][1], { label: LOOK[R.look][0] }), icon(WX_ICON[R.weather], { label: WEATHER[R.weather].label })];
 const scroller = (cls, ...kids) => h(`div.lscroll.${cls}`, { onscroll: (e) => fadeMore(e.currentTarget) }, ...kids);
@@ -50,11 +52,14 @@ export function CareerHubScreen(game) {
       game.show('careerHub', 'home'); toast(!Number.isFinite(lap) ? `No valid lap: the top ${q.grid.length} race without you. ${next}` : q.grid.includes(car) ? `Qualified P${p}: ${fmtTime(lap)}. ${q.mate.code} ${fmtTime(q.mate.lap)}: duel ${q.duel.result}.` : `P${p}: ${(lap - cut).toFixed(3)} s off the top ${q.grid.length}. ${next}`, !q.grid.includes(car));
     });
   }
+  /** a test day (one flying lap) or a sponsor day (the Sponsor Challenge: a short race with the rival profiles of a career race) */
   function startEvent(save, spec) {
-    game.careerSession(spec.kind, { track: spec.track, look: spec.look, weather: spec.weather, laps: C.currentRound(save).laps, car: spec.car, home: 'careerHub',
-      session: { levels: C.raceSetup(save).levels, runUp: spec.kind === 'test' ? TUNING.series.qualiRunUp : 0, drivers: { [spec.car]: playerDriver(save, save.contract.team) } } }, (d) => {
-      const r = C.finishSide(save, spec.kind === 'test' ? d.best : d.score); persist(game);
-      game.show('careerHub', 'home'); toast(`${spec.name}: ${MEDAL[r.medal]}${r.xp ? `, +${r.xp} XP` : ''}${r.coins ? `, +${money(r.coins)}` : ''}${r.package ? ', a free upgrade level' : ''}.`);
+    const test = spec.kind === 'test';
+    game.careerSession(spec.kind, { track: spec.track, look: spec.look, weather: spec.weather, laps: test ? C.currentRound(save).laps : spec.laps, car: spec.car, home: 'careerHub',
+      session: test ? { levels: C.raceSetup(save).levels, runUp: TUNING.series.qualiRunUp, drivers: { [spec.car]: playerDriver(save, save.contract.team) } }
+        : { racers: spec.racers, gridOrder: spec.gridOrder, pace: spec.pace, levels: spec.levels, drivers: spec.drivers, ai: spec.ai, nemesis: spec.nemesis, mateKey: spec.mateKey, label: spec.name, field: spec.objectives.join(' · ') } }, (d) => {
+      const r = C.finishSide(save, test ? d.best : { order: d.order, bests: d.bests, contacts: d.contacts, offTrack: d.offTrack, totals: d.totals, dnf: d.dnf }); persist(game);
+      game.show('careerHub', 'home'); toast(`${spec.name}: ${r.met ? `${r.medal}/${r.met.length}: ${MEDAL[r.medal].toLowerCase()}` : MEDAL[r.medal]}${r.xp ? `, +${r.xp} XP` : ''}${r.coins ? `, +${money(r.coins)}` : ''}${r.package ? ', a free upgrade level' : ''}.`);
     });
   }
   function startRace(save) {
@@ -107,8 +112,10 @@ export function CareerHubScreen(game) {
       h('p.cx-note', {}, save.clock.season === 1 ? 'Sponsors can still talk this week. Teams will not: your first season is probation, and they come to you when the season ends.' : 'Teams can talk to you and you can knock on their doors, for this one week. Anything you sign starts next season. Then the window shuts until the season ends.'),
       h('div.r-stats', {}, stat('On the table', String(save.season.mid.length + save.sponsors.offers.length)), cs('rep', 'Reputation', String(Math.round(save.career.rep))), stat('Next', R.name)), notices(save));
     if (spec) return hero(spec.kind, `This week · ${EVENT[spec.kind][0]} · Optional`, spec.name,
-      h('p.cx-note', {}, spec.kind === 'test' ? 'One flying lap against the team\'s targets. Gold earns a free upgrade level.' : `Ninety seconds of Drift Attack. It pays by medal${save.sponsors.deals.length ? ', and your sponsor counts the ones you turn up to' : ''}.`),
-      h('div.r-stats', {}, stat('Circuit', trackOf(spec.track).name), look, spec.targets.map((v, i) => stat(['Bronze', 'Silver', 'Gold'][i], spec.kind === 'test' ? fmtTime(v) : Math.round(v).toLocaleString('en')))), notices(save));
+      h('p.cx-note', {}, spec.kind === 'test' ? 'One flying lap against the team\'s targets. Gold earns a free upgrade level.' : CHALLENGE),
+      spec.kind === 'test' ? h('div.r-stats', {}, stat('Circuit', trackOf(spec.track).name), look, spec.targets.map((v, i) => stat(['Bronze', 'Silver', 'Gold'][i], fmtTime(v))))
+        : [h('div.r-stats', {}, stat('Circuit', trackOf(spec.track).name), look, stat('Race', `${spec.laps} laps`), stat('Start', `P${spec.racers.length} of ${spec.racers.length}`), stat('Par', fmtTime(spec.par))),
+          h('div.cx-objs', {}, spec.objectives.map((t) => h('span', {}, icon('plus'), t)))], notices(save));
     if (w.activity) { const a = C.itemOf(w.activity.id); return hero('practice', `This week · ${C.TYPES.find((t) => t.id === a.type).name}`, a.name, h('p.cx-note', {}, a.type === 'off' ? 'Time off. The optional event this week is skipped.' : a.type === 'ad' ? `The shoot for ${SPONSORS.brands[w.activity.brand]?.name ?? 'your sponsor'} takes the week.` : a.line), notices(save)); }
     const e = w.event;
     return hero(e ? e.kind : 'practice', `This week · ${e ? EVENT[e.kind][0] : 'Pre-season'}`, e?.result ? `${C.eventName(save, w)}: ${MEDAL[e.result.medal]}` : 'Nothing on this week',
@@ -169,7 +176,7 @@ export function CareerHubScreen(game) {
       h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Round', `${R.round} of ${save.season.calendar.length}${pointsMult(R) > 1 ? ` · ×${pointsMult(R)}` : ''}`), stat('Conditions', [icon(LOOK[R.look][1]), LOOK[R.look][0], ' · ', WEATHER[R.weather].label]), stat('Race', `${R.laps} laps`), res ? stat('Result', res.dnf ? 'Retired' : 'P' + res.finish) : null, res ? stat('Rating', res.rr.toFixed(1)) : null)]
       : w.kind === 'market' ? [h('p.cx-note', {}, save.clock.season === 1 ? 'One week for sponsors. Teams wait for the season end: your first season is probation.' : 'One week when teams can talk to you and you can approach them. Anything you sign starts next season.')]
         : w.kind === 'end' ? [h('p.cx-note', {}, 'The season review, your team\'s verdict, and the market: every offer for next season.')]
-          : [h('p.cx-note', {}, e.kind === 'test' ? 'Optional. One flying lap against the team\'s targets; gold earns a free upgrade level.' : 'Optional. Ninety seconds of Drift Attack; it pays by medal, and a signed sponsor counts the ones you turn up to.'),
+          : [h('p.cx-note', {}, e.kind === 'test' ? 'Optional. One flying lap against the team\'s targets; gold earns a free upgrade level.' : `Optional. ${CHALLENGE}`),
             h('div.cx-kv.two', {}, stat('Circuit', t.name), stat('Result', e.result ? MEDAL[e.result.medal] : e.skipped ? 'Skipped' : empty()), w.activity ? stat('Activity', C.itemOf(w.activity.id).name) : null)];
     return [blockHead('calendar', `Week ${i + 1}`, i === save.clock.week ? 'This week' : i < save.clock.week ? 'Done' : `In ${i - save.clock.week} ${i - save.clock.week === 1 ? 'week' : 'weeks'}`), h('strong.cx-title', {}, weekTitle(save, w)), body];
   }
@@ -202,7 +209,7 @@ export function CareerHubScreen(game) {
     const col = (kind, ic, title, right, note, rows) => h(`div.cx-b.k-${kind}`, {}, blockHead(ic, title, right), h('p.cx-note', {}, note), scroller('cx-list', rows.length ? rows : h('p.cx-note', {}, 'None this season.')));
     return [col('race', 'race', 'Race weekends', `Required · ${save.season.calendar.length} rounds`, 'Practice, qualifying, one try at the race. Points, money and your rating.', races),
       col('test', 'time-trial', 'Test days', 'Optional', 'One flying lap against your team\'s targets. Gold earns a free upgrade level.', side('test')),
-      col('sponsor', 'drift', 'Sponsor events', 'Optional', `Ninety seconds of Drift Attack. It pays by medal${save.sponsors.deals.length ? ', and your sponsor counts the ones you attend' : ''}.`, side('sponsor'))];
+      col('sponsor', 'drift', 'Sponsor events', 'Optional', CHALLENGE, side('sponsor'))];
   }
 
   // ---------------------------------------------------------------------------------------------- Inbox

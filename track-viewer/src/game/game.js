@@ -504,7 +504,7 @@ export class Game {
   }
 
   // ---------------------------------------------------------------------------------------------- career (docs/career-mode.md)
-  /** a career session (career-hub.js): kind 'shootout' | 'quali' | 'test' | 'sponsor' | 'practice' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
+  /** a career session (career-hub.js): kind 'shootout' | 'quali' | 'test' | 'sponsor' (a short race, the Sponsor Challenge) | 'practice' | 'race' on spec's circuit, hour, weather, laps and car. The free-play
    *  car and conditions are saved aside, and leaveCareer (or store.js, if the game closes first) puts them back (R12); done(data) gets the outcome */
   async careerSession(kind, spec, done) {
     if (!store.data.freePlay) { store.data.freePlay = { car: store.data.car, track: store.settings.track, look: store.settings.look, weather: store.settings.weather, laps: store.settings.laps }; store.save(); }
@@ -512,7 +512,7 @@ export class Game {
     if (this.ctx.trackId() !== spec.track) return;                       // the circuit would not load: selectTrack has said so
     store.data.car = spec.car; Object.assign(store.settings, { look: spec.look, weather: spec.weather, laps: spec.laps ?? store.settings.laps }); store.save();
     this.applySettings();
-    await this.startSession(kind === 'race' ? 'race' : kind === 'sponsor' ? 'drift' : kind === 'practice' ? 'free' : 'quali', { ...spec.session, kind, done, home: spec.home });
+    await this.startSession(kind === 'race' || kind === 'sponsor' ? 'race' : kind === 'practice' ? 'free' : 'quali', { ...spec.session, kind, done, home: spec.home });
   }
   /** a career session ends (the flag, the last qualifying lap, End qualifying, Retire): its numbers go back to the career screens */
   careerDone(retired = false) {

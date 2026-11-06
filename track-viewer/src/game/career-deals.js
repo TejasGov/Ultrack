@@ -47,7 +47,7 @@ export function CareerDealScreen(game) {
   /** who you are talking to */
   function party(save, o) {
     if (o.sponsor) return h('div.cx-b.cx-party', {}, blockHead(null, 'Personal sponsor', 'One season'), h('div.cx-partylogo', {}, brandMark(o.brand)), h('strong.cx-title', {}, o.name),
-      h('div.cx-kv.two', {}, stat('Their target', targetText(o.target)), stat('Sponsor days', 'Turn up')), h('p.cx-note', {}, o.why));
+      h('div.cx-kv.two', {}, stat('Their target', targetText(o.target)), stat('Sponsor days', C.challengeOf(o).name)), h('p.cx-if', {}, C.challengeOf(o).objectives.join(' · ')), h('p.cx-note', {}, o.why));
     const mate = C.mateOf(save, o), exp = expOf(save.world.teams[o.team].expPos, o.seat), lore = loreOf(o.team), old = save.contract, cut = old && o.team !== old.team && !o.signed && !o.reserve && !old.dropped && old.seasonsLeft > 1;
     return css(h('div.cx-b.cx-party', {}, blockHead(null, `${TIERS.tiers[o.tier].name} · ${o.seat} seat`, '#' + CAR[o.car].number), h('img.car', { src: still('cars', o.car), alt: '', decoding: 'async' }), teamLogo(lore), h('strong.cx-title', {}, carName(o.car)),
       h('div.cx-kv.two', {}, stat('Teammate', `${mate.name} · ${mate.rating}`), stat('Expected', 'P' + exp), stat('Upgrade cap', 'Level ' + TIERS.tiers[o.tier].cap), stat('They want', TIERS.teams[o.team].wants)),
