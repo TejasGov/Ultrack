@@ -10,8 +10,8 @@ export async function loadCareer(server) {
 }
 const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], llano: ['day', 'dusk'], tokyo: null, qingshan: null, venice: null, pilbara: ['day', 'dusk'], terminal: ['day', 'dusk'] };
 
-/** the sim's pick at a review: the highest tier, the A seat, then the highest pay; a reserve seat only when nothing else is left */
-const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
+/** the sim's pick at a review: the highest tier, next season's Elite over the Challenger, the A seat, then the highest pay; a reserve seat only when nothing else is left */
+const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.div === 'elite') - (a.div === 'elite') || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
 
 /** one career for `seasons` seasons; skill is the player's pace (1.00 = an AI of rating ~88) */
 export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', { life = false, passAll = false } = {}) {
@@ -19,7 +19,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
   const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
   const sh = C.shootout(); C.finishShootout(save, R.parLap(sh.track, sh.car) / skill * (1 + noise(0.01)));
-  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, hits: 0, gross: 0, firstStaff: null, repairs: 0, capped: 0, staffSpent: 0, staffHires: 0, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0, opens: 0, finals: 0, openWins: 0, lcqs: 0, masters: 0, rank: [], absent: 0, mood: [], life: {}, scenes: [], lifeSpent: 0, adPay: 0, scandals: 0, sold: 0, upkeep: 0, free: {}, lost: 0 };
+  const log = { sponsors: 0, money: {}, seasonEnd: [], maestroOffer: null, legendOffer: null, promotion: null, minWallet: save.wallet.coins, hits: 0, gross: 0, firstStaff: null, repairs: 0, capped: 0, staffSpent: 0, staffHires: 0, offers: [], rr: [], finish: [], drops: 0, warnings: 0, w1: 0, tier: [], medals: 0, numberOne: null, titles: 0, withdrawn: 0, deals: 0, opens: 0, finals: 0, openWins: 0, lcqs: 0, masters: 0, rank: [], absent: 0, mood: [], life: {}, scenes: [], lifeSpent: 0, adPay: 0, scandals: 0, sold: 0, upkeep: 0, free: {}, lost: 0, rounds: [], seasons: [] };
   // ask for a bit more, sometimes too much: a refusal or a withdrawal must never strand the career
   const haggle = (o) => { if (!C.canNegotiate(o)) return; const a = C.negotiate(save, o.id, { salary: rand() < 0.3 ? 0.3 : 0.1, seasons: o.seasons, status: o.status });
     if (a.result === 'accepted') log.deals++; if (a.result === 'withdrawn') log.withdrawn++; if (a.result === 'countered') C.negotiate(save, o.id, a.terms); };
@@ -91,6 +91,9 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (rep.lcq === true) continue;                            // through to the Final: the loop comes back for it
       if (o?.kind === 'open') { log.opens++; if (!rep.dnq) log.finals++; if (!rep.dnq && !rep.dnf && rep.finish === 1) log.openWins++; }
       if (o?.kind === 'masters') { if (!rep.dnq) log.masters++; else log.absent++; }
+      // the two series: every round with its series, and at a cup how many Challenger drivers raced its Final
+      log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, tier: save.season.tier, seat: save.contract.seat,
+        ch: rep.kind === 'open' || rep.kind === 'masters' ? rep.entries.filter((e) => !e.dnq && e.div === 'challenger').length : null });
       log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);
       if (rep.midSeason?.warning) log.warnings++;
       for (const [cat] of CATS) C.buyUpgrade(save, cat, 500);
@@ -100,7 +103,11 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
     } else if (save.clock.phase === 'review') {
       const ch = Object.values(save.season.choices ?? {}); log.scenes.push(ch.length); log.callouts = (log.callouts ?? 0) + ch.filter((c) => c.scene === 'callout' && c.answer === 0).length;
       log.seasonEnd.push({ tier: save.history.at(-1).tier, coins: save.wallet.coins, trust: save.contract.trust, rep: Math.round(save.career.rep), cl: save.career.cl });
-      const offers = save.pending.offers, season = save.clock.season; log.offers.push(offers.length);
+      const offers = save.pending.offers, season = save.clock.season, h = save.history.at(-1), D = save.season.divs, W = save.world; log.offers.push(offers.length);
+      const seated = (d) => Object.entries(W.seats).filter(([k, c]) => c && c !== 'YOU' && D?.[R.CAR[k].team] === d).map(([, c]) => W.ratings[c]);
+      log.seasons.push({ s: season, div: save.season.div ?? 'all', swap: h.swap ?? null, yourTeam: save.pending.review.yourTeam ?? null,
+        sizes: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, R.TEAM_IDS.filter((t) => W.teams[t].div === d).length])),
+        rating: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, seated(d).reduce((a, b) => a + b, 0) / Math.max(1, seated(d).length)])) });
       if (save.pending.review.dropped) log.drops++;
       if (offers.some((o) => o.tier === 'maestro') && log.maestroOffer === null) log.maestroOffer = season;
       if (offers.some((o) => o.tier === 'legend') && log.legendOffer === null) log.legendOffer = season;
@@ -140,6 +147,11 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
       const wal = (t) => { const v = runs.map((r) => r.money[t]).filter((x) => x !== undefined); return v.length ? Math.round(v.reduce((x, y) => x + y, 0) / v.length) : '—'; };
       console.log(`         running costs per career: ${avg((r) => r.hits)} hard hits, repairs ${avg((r) => r.repairs)} U (capped ${avg((r) => r.capped)} times), staff ${avg((r) => r.staffHires)} hires for ${avg((r) => r.staffSpent)} U (first hire after round ${med2((r) => r.firstStaff)} of the career), repairs are ${(100 * runs.reduce((a, r) => a + r.repairs, 0) / runs.reduce((a, r) => a + r.gross, 0)).toFixed(1)} % of the pay
          wallet at the end of the tier (avg): rookie ${wal('rookie')}, maestro ${wal('maestro')}, legend ${wal('legend')}`);
+      const s1 = (r) => r.rounds.filter((x) => x.s === 1 && x.kind === 'tour'), sh = (f) => share(f), tour = (f) => runs.flatMap((r) => r.rounds.filter((x) => x.kind === 'tour' && f(x)));
+      const dnqBy = (d) => { const l = tour((x) => x.div === d); return l.length ? `${Math.round((100 * l.filter((x) => x.dnq).length) / l.length)} % of ${l.length}` : '-'; }, fin = runs.flatMap((r) => r.rounds.filter((x) => x.kind === 'open' && x.ch !== null));
+      console.log(`         TWO SERIES: season-1 Tour finish ${avg((r) => s1(r).reduce((a, x) => a + x.finish, 0) / Math.max(1, s1(r).length))}, season-1 podium ${sh((r) => s1(r).some((x) => !x.dnq && x.finish <= 3))}, win ${sh((r) => s1(r).some((x) => !x.dnq && x.finish === 1))}, season-1 Tour rounds missed ${Math.round((100 * runs.reduce((a, r) => a + s1(r).filter((x) => x.dnq).length, 0)) / runs.reduce((a, r) => a + s1(r).length, 0))} %; missed cuts Elite ${dnqBy('elite')}, Challenger ${dnqBy('challenger')}
+         your team promoted ${avg((r) => r.seasons.filter((x) => x.yourTeam === 'up').length)} and relegated ${avg((r) => r.seasons.filter((x) => x.yourTeam === 'down').length)} times a career (promoted within 3 seasons ${sh((r) => r.seasons.some((x) => x.s <= 3 && x.yourTeam === 'up'))}); Challenger drivers per Open Final ${(fin.reduce((a, x) => a + x.ch, 0) / Math.max(1, fin.length)).toFixed(2)}; final series ${['elite', 'challenger'].map((d) => `${d} ${sh((r) => r.seasons.at(-1)?.div === d)}`).join(' ')}
+         seated AI rating by series, season 1 -> last: Elite ${avg((r) => r.seasons[0]?.rating?.elite ?? 0)} -> ${avg((r) => r.seasons.at(-1)?.rating?.elite ?? 0)}, Challenger ${avg((r) => r.seasons[0]?.rating?.challenger ?? 0)} -> ${avg((r) => r.seasons.at(-1)?.rating?.challenger ?? 0)}`);
       console.log(`         Opens per career ${avg((r) => r.opens)}: reached the Final ${avg((r) => r.finals)}, Last Chance races ${avg((r) => r.lcqs)}, Open wins ${avg((r) => r.openWins)}, in the Masters ${avg((r) => r.masters)}, ranking at season end ${avg((r) => r.rank.reduce((a, b) => a + b, 0) / r.rank.length)}`);
       // Part 3: the same careers with a lifestyle buying policy (the dice are separate, so only the mood's own effects differ)
       const on = Array.from({ length: N }, (_, i) => play(M, 1000 + i, skill, S, 'sprint', { life: true }).log), avgOn = (f) => (on.reduce((s, r) => s + f(r), 0) / N).toFixed(2);
