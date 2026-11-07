@@ -85,3 +85,14 @@ cold-load times and an in-game visual approval were not collected in this pass.
   Known: in its side still the kept rear plate shows edge-on past the bumper; fixing it means moving the plate in `prepare-cars.py` `cc850()` and re-deriving the LODs.
 - Career: schema 12 adds the team to an old save (`career.js` `addTeams`); the balance, the retune and the decisions left to the user are in track-viewer/docs/career-mode.md.
   QA shots at 1600x900: `track-viewer/qa/team-norrsken/shots.mjs`.
+
+## Steelhead, the Detroit team (2026-11-07)
+- **Steelhead** is the tenth team and the fourth Maestro team (`steelhead`, STH, Detroit; brushed steel, steelhead rose and near-black; Anton): Corvette ZR1 (#6, Grace Tolliver)
+  and Corvette Stingray (#53, Etienne Lavoie), sponsor LG (a brand already shipped for Cheongsan Park, copied into `public/assets/sponsors/logos`; `sponsors.js` lets a venue
+  brand be a team's title sponsor). Twenty cars. It starts in the Challenger Series, which now has ten cars.
+- A quick race leaves the two teams furthest from the player's in the expected order out (`game.js` `racersFor`); the developer viewer still races the first eight.
+- No pit box, no venue dress, no driver posters or press photos yet: `tracks/` was not changed, the hoardings put up no board for Tolliver and Lavoie, and the press falls back
+  to the circuit. Livery places: `livery.js` `FIT.zr1` (the bonnet lockup on the nose, clear of the carbon hood vent) and `FIT.stingray` (the flank sponsor forward of the side intake).
+- Logos: `track-viewer/scripts/build-team-logo-steelhead.py` (see assets/teams/logos/README.md). Car stills: `make-ui-stills.mjs` cars, side and thumbs with `ONLY=zr1,stingray`.
+- Career: schema 14 adds the team to an old save, and the first season's grace keeps a new driver racing in the Challenger of ten; both and the balance are in
+  track-viewer/docs/career-mode.md. QA shots at 1600x900 and 390x844: `track-viewer/qa/team-steelhead/shots.mjs`.

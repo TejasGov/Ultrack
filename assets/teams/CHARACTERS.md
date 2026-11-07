@@ -32,16 +32,18 @@ Varrone's poster still shows the red Saetta suit from before he went home to Tor
 | **Rina Kuroda** (KUR) | Hayate 37 | Japanese, 31 | Light skin, straight black chin-length bob with a blunt fringe, thin black-framed glasses off track, level unreadable gaze | Small, exact, carries a paper logbook | Same violet, white and vermilion as Mizuno |
 | **Elin Hagberg** (HAG) | Norrsken 10 | Swedish, 28 | Fair skin, light freckles, ash-blonde hair cut short at the nape and longer on top, grey-blue eyes, a level, measuring look | Tall, lean, economical in every movement; a tablet of telemetry under one arm | Graphite with aurora-green ribbons rising from the hips and ice-white piping |
 | **Jari Koskinen** (KOS) | Norrsken 85 | Finnish, 34 | Pale skin, close-cropped fair hair, a short reddish-blond beard, pale eyes, an expression that gives nothing away | Broad, heavy-shouldered, stands with his hands in his pockets | Same graphite, green and ice as Hagberg |
+| **Grace Tolliver** (TOL) | Steelhead 6 | American, 31 | Light brown skin, dark curly hair cut short at the sides and longer on top, brown eyes, a wide open laugh | Compact, restless, a hand always counting on the steering wheel or the table | Brushed steel with a steelhead-rose band at the waist edged in black, black speckles over the hips |
+| **Etienne Lavoie** (LAV) | Steelhead 53 | Canadian, 25 | Pale skin with winter-red cheeks, straight light-brown hair swept to one side, blue-grey eyes, a polite closed smile | Tall, loose-limbed, a small notebook in the chest pocket | Same steel, rose and black as Tolliver |
 
 ## Team colours, as sent in prompts
 
-Saetta: deep red `#c8102e`, gold `#f2b705`, cream. Toro: giallo yellow `#ffd60a`, black, bone white. Corvid: British racing green `#0e3b2e`, cream, brass. Mojave: desert orange `#e2581b`, navy, white. Aurum: midnight blue `#121a3a`, champagne gold. Liberty: royal blue `#1f46b8`, red, white. Sarab: pearl white, teal `#0f8f8a`, sand gold. Hayate: violet `#3a1f78`, white, vermilion. Norrsken: graphite `#1f2428`, aurora green `#3ee0a1`, ice white.
+Saetta: deep red `#c8102e`, gold `#f2b705`, cream. Toro: giallo yellow `#ffd60a`, black, bone white. Corvid: British racing green `#0e3b2e`, cream, brass. Mojave: desert orange `#e2581b`, navy, white. Aurum: midnight blue `#121a3a`, champagne gold. Liberty: royal blue `#1f46b8`, red, white. Sarab: pearl white, teal `#0f8f8a`, sand gold. Hayate: violet `#3a1f78`, white, vermilion. Norrsken: graphite `#1f2428`, aurora green `#3ee0a1`, ice white. Steelhead: brushed steel `#9aa4ae`, steelhead rose `#e0466e`, near-black `#14181d`.
 
 ## Drama, kept to racing
 
 Team orders, on-track feuds, contract rows, steward penalties. Nothing sexual, hateful or defamatory, and nothing about anyone real.
 
-Feuds the lore already has: Varrone against Ashcombe, Calderini and Barreto; Valois against Kareem, Quintero, Beaulieu, Kuroda and Hagberg; Koskinen against Lindqvist; Hagberg against Calderini; Maddox against Lindqvist and Hollis; Mizuno against Lindqvist and Kuroda; Calderini against Ortega; Kareem and Qasimi (friendly).
+Feuds the lore already has: Varrone against Ashcombe, Calderini and Barreto; Valois against Kareem, Quintero, Beaulieu, Kuroda and Hagberg; Koskinen against Lindqvist; Hagberg against Calderini; Tolliver against Maddox and Ashcombe; Lavoie against Quintero; Maddox against Lindqvist and Hollis; Mizuno against Lindqvist and Kuroda; Calderini against Ortega; Kareem and Qasimi (friendly).
 
 ## You, the player
 
@@ -49,7 +51,7 @@ The player can be anyone, so the art never shows their face: full-face helmet wi
 
 ## Team principals
 
-Fictional, like the drivers. None had a picture before, so this sheet is the first definition of all nine looks.
+Fictional, like the drivers. None had a picture before, so this sheet is the first definition of all ten looks.
 
 | Principal | Team | Look |
 |---|---|---|
@@ -61,6 +63,7 @@ Fictional, like the drivers. None had a picture before, so this sheet is the fir
 | **Harlan Whitfield** | Liberty | American, 61. Tall, silver crew cut, big white smile, royal-blue blazer, red tie, plain star pin |
 | **Rashid Al-Mansouri** | Sarab | Emirati, 49. Neat greying beard, pearl-white suit, teal pocket square, calm and proud |
 | **Tatsuo Hamamoto** | Hayate | Japanese, 68. Slim, grey brush cut, wire glasses, violet windbreaker, pencil behind one ear, patient |
+| **Dolores Kowalczyk** | Steelhead | American, 57. From Hamtramck, a third-generation engine builder. Grey hair in a short practical cut, reading glasses on a cord, a rose-and-black team bomber over a work shirt, oil under the fingernails, sizes people up fast |
 | **Henrik Wallgren** | Norrsken | Swedish, 54. Founder of the car maker. Lean, close-cut grey beard, rimless glasses, black roll-neck under a graphite jacket, a small green north-star pin, quietly certain |
 
 ## Gossip, kept to what a tabloid would print

@@ -233,7 +233,8 @@ Two Sketchfab models by Ddiaz Design (the Koenigseggs' author), both CC BY 4.0, 
 - **Handling:** no balance needed. AI solo laps on Marina (`physics-harness.mjs --tests lap --assist ai --weather dry`) at bop 1: ZR1 116.3 s against the Maestro A cars' 116.1-116.4 s (av12, porsche1, aston-martin-valk at their own balance), Stingray 117.7 s against the Maestro B cars' 116.4-119.5 s (huracan, mp1x, bentley-gt). Both pass `physics-turning.mjs`.
 - **Engine sound:** both play the Mustang GT V8 recording (the Blackbird's, the existing American cross-plane V8; `sharedWith: blackbird`, the `cross-v8` pack), redlines 6,500 rpm (LT5) and 6,600 rpm (LT2).
 - **Display names** are "Corvette ZR1" and "Corvette Stingray" (`source.json` `name`): "Chevrolet Corvette ..." was cut off in the garage title.
-- **Before the team exists:** as with the Koenigseggs, the QA, garage and quick races (the player in each car, then the AI in each) ran against an uncommitted stand-in team; the stills and `startup-budget.json` (which counts team cars) come with the team step.
+- **Before the team exists:** as with the Koenigseggs, the QA, garage and quick races (the player in each car, then the AI in each) ran against an uncommitted stand-in team; the stills and `startup-budget.json` (which counts team cars) came with the team step.
+- **In Steelhead's paint** (the team step): the car, side and thumb stills, then `qa/team-steelhead/shots.mjs` (garage, a quick race in each car with the AI driving it, both cars on a career grid). Two livery places moved, `livery.js` `FIT`: the ZR1's carbon hood vent hid the bonnet lockup (now on the nose) and the Stingray's side intake cut the flank sponsor (now 0.6 m forward, as on the CC850). The Stingray's door and rear quarter show the source mesh's creases in the stills.
 
 ## The AV-12 Meshy shell, the first worked example (`tuning/av12.json` → `log`)
 

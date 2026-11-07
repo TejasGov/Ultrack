@@ -1,5 +1,7 @@
 # Two series, one Tour: final build spec
 
+> Since 2026-11-07 a tenth team (Steelhead) races the Challenger, so the series are 5 / 5 with ten cars each, and a player's first season in the Challenger has a grace from the cut: docs/career-mode.md, the Steelhead block.
+
 Status: final spec, 2026-11-07, for the user's request to split the career into two leagues that move teams like football. Nothing here is built, tested or measured yet.
 
 Base: origin/main f33630d, plus two branches that land first:

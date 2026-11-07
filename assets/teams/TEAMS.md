@@ -1,6 +1,6 @@
 # Ultrack teams and drivers
 
-Nine fictional race teams own the grid, each with two cars and two drivers, like F1 constructors (eighteen cars). A quick race runs one car per team, as many as the eight grid slots hold: with nine teams, the one furthest from the player's in the expected order sits out (`game.js` `racersFor`). A career round qualifies all eighteen and races the fastest eight. `teams.json` holds the data the game reads:
+Ten fictional race teams own the grid, each with two cars and two drivers (twenty cars). A quick race runs one car per team, as many as the eight grid slots hold: with ten teams, the two furthest from the player's in the expected order sit out (`game.js` `racersFor`). In the career each series (five teams, ten cars) qualifies its own field and races the fastest eight. `teams.json` holds the data the game reads:
 - per team: id, name, three-letter code, colours (plus an optional text colour, `ink`, for a team whose accent is too pale to read on its primary), an optional light colour (`light`), display font, paint finish, livery brief and pit boxes;
 - per car: its key and race number;
 - per driver: name, broadcast code, nationality, age, role, a one-line bio, background, personality and rivals (driver codes).
@@ -9,7 +9,7 @@ Team and driver names are fictional. Real sponsor artwork is used in this local 
 
 ## Teams
 
-All nine teams have original emblems and outlined wordmarks, exported as SVG
+All ten teams have original emblems and outlined wordmarks, exported as SVG
 masters plus transparent PNG/WebP textures. Team, dark-background and
 light-background variants are available as horizontal lockups and standalone
 emblems. See [logo documentation](logos/README.md) and the live gallery at
@@ -27,8 +27,9 @@ cards reuse these assets. Sponsor artwork is separate from the team identities.
 | **Sarab** | SRB | Arabic: a mirage (the home team) | Corniche Marina | Rashid Al-Mansouri | V8 / flat-six |
 | **Hayate** | HYT | Japanese: 疾風, a sudden gale | Oyama, Shizuoka | Tatsuo Hamamoto | twin-turbo V6 (Nissan Z GT4) / turbo four (Supra Super GT) |
 | **Norrsken** | NRS | Swedish: the northern lights | Ängelholm, Sweden | Henrik Wallgren | twin-turbo V8 (Koenigsegg Jesko and CC850; the recorded McLaren 720S V8 for now) |
+| **Steelhead** | STH | English: the Great Lakes trout that runs upriver; and Detroit steel | Detroit, Michigan | Dolores Kowalczyk | supercharged V8 / V8 (Corvette ZR1 and Stingray; the recorded Mustang GT V8 for now) |
 
-Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Nine teams, one title sponsor each (Hayate's is Sony, whose boards also line the Marina; Norrsken's is Samsung, already on the Cheongsan Park boards; see ../sponsors/README.md).
+Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Ten teams, one title sponsor each (Hayate's is Sony, whose boards also line the Marina; Norrsken's is Samsung, already on the Cheongsan Park boards; Steelhead's is LG, also a Cheongsan Park board; see ../sponsors/README.md).
 
 ## Saetta and Toro: the two Italian houses
 
@@ -58,6 +59,14 @@ The look: graphite (#1f2428), aurora green (#3ee0a1) and ice (#e8f1f2), in **Mic
 
 Wallgren negotiates warmly: patient, and gives most on the contract length. The team wants clean, exact racing (it counts clean races, as Corvid does) and favours test days. Rivalries: Hagberg rates only Calderini's preparation and wants Valois's crown; Koskinen and Lindqvist carry the old Finland-Sweden rivalry. No recorded commentary names Norrsken; the generic lines play.
 
+## Steelhead: the Detroit team
+
+**Steelhead** (the Great Lakes trout that runs up the rivers from Lake Michigan, and Detroit steel; principal Dolores Kowalczyk) is the tenth team, added 2026-11-07, and the fourth Maestro team: a Detroit engine-builder's racing team, back after twenty years away with two American V8 sports cars, the Corvette ZR1 (#6, Grace Tolliver) and the Corvette Stingray (#53, Etienne Lavoie). Its line is *Cast in Detroit. Built to run upstream.* Strong in a straight line, still learning the corners: it is expected seventh, behind Corvid and ahead of the three Rookie teams, and starts in the Challenger Series.
+
+The look: brushed steel (#9aa4ae), steelhead rose (#e0466e) and near-black (#14181d), in **Anton** (SIL OFL, `track-viewer/public/assets/fonts/Anton-OFL.txt`, the fontsource file the livery already loads). The emblem is a steelhead trout inside a hex nut, its lateral band in rose; the wordmark is STEELHEAD, tall and spaced. On the car: a rose band runs nose to tail along each flank at the door line, edged in black, like the trout's red stripe; black speckles cover the rear quarter above it; one rose stripe edged in black crosses the roof; the number is black on a rose roundel with a black ring. Its `light` colour is a brighter rose (#ff5c86).
+
+Kowalczyk is a bidder: three rounds of patience, gives most on salary. The team wants fast laps and front rows (it counts poles, as Saetta does) and favours sponsor days. Rivalries: Tolliver calls Cole Maddox the second-best American on the grid and says Theo Ashcombe brakes too early; Lavoie races Rosa Quintero as if every lap were overtime. No recorded commentary names Steelhead; the generic lines play.
+
 ## Drivers
 
 | # | Driver | Code | Nation | Team | Car | In one line |
@@ -65,6 +74,7 @@ Wallgren negotiates warmly: patient, and gives most on the contract length. The 
 | 1 | Remy Valois | VAL | MON | Aurum | Bugatti Divo | reigning champion |
 | 3 | Zayn Kareem | KAR | UAE | Sarab | McLaren 720S | home hero |
 | 4 | Theo Ashcombe | ASH | GBR | Corvid | Valkyrie | third-generation racer |
+| 6 | Grace Tolliver | TOL | USA | Steelhead | Corvette ZR1 | the drag-strip kid |
 | 7 | Matteo Varrone | VAR | ITA | Toro | AV–12 | Toro's prodigal son |
 | 8 | Freya Lindqvist | LIN | SWE | Mojave | Mercedes-AMG One | rally convert |
 | 9 | Rosa Quintero | QUI | MEX | Mojave | Mercedes-AMG GT4 | rookie |
@@ -76,12 +86,13 @@ Wallgren negotiates warmly: patient, and gives most on the contract length. The 
 | 37 | Rina Kuroda | KUR | JPN | Hayate | Toyota GR Supra Super GT | the quiet ace |
 | 33 | Layla Qasimi | QAS | OMN | Sarab | 911–T | the overtaker |
 | 44 | Kai Whitlow | WHI | NZL | Corvid | Continental GT | the grid's veteran |
+| 53 | Etienne Lavoie | LAV | CAN | Steelhead | Corvette Stingray | the ice racer |
 | 63 | Paloma Ortega | ORT | ESP | Toro | HU–10 | the matador |
 | 66 | Cole Maddox | MAD | USA | Liberty | Ford GT Mk II | the brawler |
 | 76 | Wade Hollis | HOL | USA | Liberty | Hennessey Blackbird | the Colonel |
 | 85 | Jari Koskinen | KOS | FIN | Norrsken | Koenigsegg CC850 | the night driver |
 
-The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Eighteen drivers, fifteen nations (two Americans at Liberty, two Japanese at Hayate, two Swedes: Lindqvist and Hagberg).
+The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Twenty drivers, sixteen nations (three Americans: Maddox and Hollis at Liberty, Tolliver at Steelhead; two Japanese at Hayate; two Swedes: Lindqvist and Hagberg).
 
 ## Driver profiles
 
@@ -139,3 +150,5 @@ Several car display names in the car-lab profiles echo real models (Valkyrie, Co
 - **Rina Kuroda** (KUR, JPN, 31, Hayate #37), the quiet ace. From Toyota City, Aichi, a supplier engineer's daughter; first kart at six, Super GT GT300 champion at 24, an engineering degree on the side; Hamamoto hired her to build the car around her. Speaks on the radio only in lap numbers and tenths; keeps a handwritten logbook of every lap; would very much like to beat Valois; says Mizuno's sliding is murder on the tyres, then watches every replay. Rivals: Remy Valois, Kaito Mizuno.
 - **Elin Hagberg** (HAG, SWE, 28, Norrsken #10), the engineer in the cockpit. From Gothenburg, a ship designer's daughter; European single-seater champion at twenty-one, then three years as a works development driver before Henrik Wallgren made her the first driver Norrsken ever signed. Quiet, exact and impossible to rattle; reads telemetry in the car on the cool-down lap; thinks Calderini is the only driver on the grid who prepares as hard as she does, and Valois the only one worth beating. Rivals: Remy Valois, Sofia Calderini.
 - **Jari Koskinen** (KOS, FIN, 34, Norrsken #85), the night driver. From Jyväskylä, Finland; a farm mechanic's son on the gravel stages from fifteen, two rallycross titles, then endurance night stints for anyone who would pay; Norrsken signed him for the races that end after sunset. Says almost nothing on the radio and less to the press; a sauna after every race, wherever it is; the old Finland-Sweden rivalry with Lindqvist is the one thing that makes him talk. Rivals: Freya Lindqvist.
+- **Grace Tolliver** (TOL, USA, 31, Steelhead #6), the drag-strip kid. From Flint, Michigan; her father built drag engines in the garage under the house, she won her first bracket race at fourteen, then spent ten years in American sports-car endurance racing before Dolores Kowalczyk brought her home to Detroit. Loud, warm and fearless on a restart; counts the lights out on the radio; calls Cole Maddox the second-best American on the grid to his face, and says Theo Ashcombe brakes too early. Rivals: Cole Maddox, Theo Ashcombe.
+- **Etienne Lavoie** (LAV, CAN, 25, Steelhead #53), the ice racer. From Windsor, Ontario, across the river from Detroit; ice racing on Lake St. Clair from twelve, a Canadian touring-car title at twenty-two, and the shortest commute on the team. Calm, polite and quietly stubborn; keeps a hockey stick in the motorhome and a notebook of every lap he has lost; races Rosa Quintero as if every lap were overtime. Rivals: Rosa Quintero.
