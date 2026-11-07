@@ -706,3 +706,24 @@ The sim and metrics columns of §17 are step 9 and not built, so these are today
 - strong: rival REP lines 1.01 a race (≤ 1.00), Number One 52 % (55-65 %).
 
 The average stub is stronger in the Challenger than §17 wants (P3.0 against P3.5-5.5, wins 53 % against 20-40 %, promotion 45 % against 15-35 %), and it climbs to Legend faster. `challenger.reward` moves money and place XP, not reputation or ratings, so it cannot pull these back; they need the step 9 calibration or the user's call. The average Round Rating is 6.61 (base 6.52), inside the ±0.3 watch. The weak stub is dropped more often (1.91 a career, base 0.76): it now races, finishes below its expected place in the Challenger and misses its round objective, where before it sat out with the Rookie missed-cut allowance.
+
+## 22. Build notes: steps 6-10 (2026-11-07, branch career/divisions)
+
+Built: the press and the inbox (6), the screens (7), the copy and determinism tests (16.22, 16.23), the sim and metrics columns (9) and the doc (10, `docs/career-mode.md`'s top block, with D1-D5 for the user).
+
+### Where the code differs from the spec, and why
+
+1. **Home shows the road card only when a cup is the next round.** Before the split it showed whenever a cup was still to come, which with an Open in round 3 and the Masters last would have hidden the series table all season. "When no Open or Masters is next" is read as the next round.
+2. **The Standings switch sits under the Drivers' head**, not in it: beside "Challenger Drivers'" it had no room. The blocks are titled with the series ("Elite ranking"), and "Last 12 days" and "Both cars score" moved into the notes for the same reason.
+3. **The review's head is "Challenger Series: Drivers'"** with "Champion" or "P2" under it; a season from before the split reads "Drivers' table". The old head said "championship", a word the copy rules forbid.
+4. **The other series' leader is written "Top of the Elite: Remy Valois"** in the inbox and the report, not "{leader} lead the Elite": with a name the plural verb reads wrong, and the singular would break the house rule.
+5. **One giant-kill story a cup**: the player's if they are on the podium, else the best placed Challenger driver. No "staying up" story; the season-start inbox line carries "stay up".
+6. **The race-week inbox line** no longer says "points x1.5" for a cup that scores no series points (it read `pointsMult` without the season's flag).
+7. **career-sim's `best()`** takes next season's Elite within a tier, as asked; it is also what moved the Legend offer (40 % -> 20 %) and the final tier Legend (36 % -> 17 %) back inside their targets.
+8. **`challenger.reward` stays 1.** Section 17 lowers it when the Rookie wallet is over 1.1x or the Maestro offer median drops by more than 0.5. The wallet is under the baseline (88 %), and at 0.9 / 0.8 / 0.7 the Maestro median stays season 1 (base: 2) while the Rookie wallet falls to 86 / 86 / 83 % and the Legend wallet to 86 / 83 / 79 %.
+9. **Thirteen targets are OPEN, not FAIL** (`career-metrics` exits 0): the knob cannot reach them, and section 17 allows no other. They are listed, with their numbers, in `docs/career-mode.md` under "Balance". Among them two the spec made gating: the weak driver's raced rounds with a nemesis (13 %), and the Elite cut for a promoted Rookie B driver (100 % of only 18 rounds, which is D4).
+10. **The phone layout:** the five mode tiles become two columns and the report's numbers wrap at 600 px and under; both ran off a 390 px screen before the split too.
+
+### Measured (`career-metrics.mjs 100 6`, `career-sim.mjs 100 6`)
+
+Structure, every season end and cup of 300 careers: one up and one down, 5 and 4, the Masters 8 with 3 Challenger, every Open 4 seeds and a Last Chance of 8 with at least 2 Challenger cars. A Legend team was relegated at 1 % of season ends. Season 1: no Challenger round missed by any driver; the weak driver raced every Tour round. The Challenger AI's average rating went from 80.6 to 78.6 over 12 seasons (at least 77.6 asked).
