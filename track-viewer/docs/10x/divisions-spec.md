@@ -427,7 +427,7 @@ All pieces reuse `cx-b`, `lrow` and `stat`. One new element is a **series chip**
 | Deals (career-deals.js:18, 39–45, 66–68) | Every offer row and team row carries next season's chip. `teamRows` are grouped Elite first, then by tier rank. "Expected P7 of 10 in the Elite Series" (`expIn` with `nextDivOf`). The step-up label (§10). |
 | Driver tab (403) | The stat label "Challenger titles / Cups". |
 
-### Render and check at 1600×900 and 390×844
+### Render and check at 1600×900 (Ultrack is a desktop game: no phone-size shots, the user's call 2026-11-07)
 
 Use `qa-career-screens.mjs` through `qa-lock`, with one season-1 Challenger save, one Elite save and one migrated legacy mid-season save. Shots:
 1. Header and Home (with and without an upcoming Open).
@@ -439,7 +439,7 @@ Use `qa-career-screens.mjs` through `qa-lock`, with one season-1 Challenger save
 7. Reviews: promoted, relegated, a neutral year, and a legacy season.
 8. Deals, with chips and the step-up label.
 
-Check at 390 px:
+Check:
 - The switch and chips fit in the block heads with no horizontal scroll.
 - No "16" appears anywhere in a divided season.
 
@@ -650,7 +650,7 @@ These go in `career-sim.mjs` and `career-metrics.mjs`: 100 careers × 6 seasons 
 4. Ranking split, Open and Masters entry (tests 13–15).
 5. Offers, market, rivals, life, choices and the Sponsor Challenge (tests 16–20).
 6. Media and inbox.
-7. UI, with screenshots at 1600×900 and 390×844.
+7. UI, with screenshots at 1600×900.
 8. Migration (test 21), the copy test (22) and the determinism test (23).
 9. Sim and metrics columns, then calibrate `challenger.reward` only if §17 says so.
 10. The doc.
