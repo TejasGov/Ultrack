@@ -8,6 +8,7 @@
    A state is never colour alone: locked has a lock, a dashed edge and hatching; done a check; the current week a ring and "Now". */
 .cx {
   --d-home: #ff5a52; --d-calendar: #2dd4bf; --d-events: #a78bfa; --d-inbox: #5b9dff; --d-media: #ffc94a; --d-deals: #ff9447; --d-standings: #ff6fae; --d-garage: #3fd18a; --d-life: #e879f9; --d-driver: #4cc9ff;
+  --d-elite: #f2c14e; --d-challenger: #4cc9ff;
   --d-open: #f2c14e; --d-race: #ff5a52; --d-test: #a6e04a; --d-sponsor: #ff9447; --d-market: #a78bfa; --d-review: #ff6fae; --d-practice: #9db2c9;
   --s-coin: #ffd24a; --s-xp: var(--d-driver); --s-rep: var(--d-standings); --s-trust: var(--d-deals); --s-mood: var(--d-life);
   --pos: #3fca7f; --neg: #ff6b66;
@@ -411,7 +412,15 @@
 .cx-standings .cx-st .c-name { display: grid; gap: 0; align-content: center; line-height: 1.15; }
 .cx-standings .lrow.cx-st { min-height: calc(48 * var(--u)); }
 .cx-st.rk { --cols: calc(28 * var(--u)) 4px minmax(0, 1fr) calc(52 * var(--u)); }
-.lrow.cx-st.rk.cut { box-shadow: inset 0 -2px 0 var(--d-open); }
+.lrow.cx-st.cut { box-shadow: inset 0 -2px 0 var(--d-open); }
+/* the two series: a chip with the series' name on its colour; the promotion and relegation marks; the Standings switch */
+.cx-div { flex: none; display: inline-flex; align-items: center; padding: 0 var(--sp-1); border-radius: var(--r-1); font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.7; white-space: nowrap; color: #0b0d12; }
+.cx-div.d-elite { background: var(--d-elite); }
+.cx-div.d-challenger { background: var(--d-challenger); }
+.cx-move { margin-left: var(--sp-2); font-size: var(--fs-micro); font-weight: 700; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--d-open); white-space: nowrap; }
+.cx-switch { flex: none; margin-bottom: var(--sp-2); border-radius: var(--r-2); }
+.cx-switch .seg > button { height: calc(28 * var(--u)); }
+.cx-swapnote { display: flex; align-items: center; gap: var(--sp-2); }
 .cx-standings .k-open > .cx-note { flex: none; }
 .cx-st { --cols: calc(28 * var(--u)) 4px minmax(0, 1fr) calc(44 * var(--u)) calc(52 * var(--u)); }
 .lrow.cx-st { min-height: calc(40 * var(--u)); font-size: var(--fs-body); }
@@ -682,4 +691,8 @@
   .cx-strip { grid-template-columns: repeat(var(--weeks), calc(64 * var(--u))); overflow-x: auto; scrollbar-width: none; }
   .cx-calrow { --cols: calc(48 * var(--u)) minmax(0, 1fr) auto; }
   .cx-calrow > :nth-child(2), .cx-calrow > :nth-child(4) { display: none; }   /* the kind tag and the conditions: the colour edge and the name say it */
+  .cx-modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* five tiles in a row do not fit a phone */
+  .cr-hero { flex-wrap: wrap; gap: var(--sp-3); }
+  .cr-pos { flex: 1 1 100%; }
+  .cr-deltas { flex-wrap: wrap; gap: var(--sp-3); margin-left: 0; }
 }

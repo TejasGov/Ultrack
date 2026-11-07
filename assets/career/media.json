@@ -389,7 +389,7 @@
     "champion": { "title": "{who} wins the {series}", "body": "{pts} points for {team}, with {wins}." },
     "giantKill": { "title": "{who} beats the Elite at the {gp}", "you": "{who} puts the {challenger} on the podium", "body": "P{place} at the {gp} from the {challenger}, ahead of {beat} Elite drivers." },
     "start": { "challenger": "Top the {challenger} Teams' table and {team} go up.", "elite": "Finish above the last team in the {elite} Teams' table and {team} stay up." },
-    "meanwhile": { "title": "Meanwhile in the {other}", "body": "{winner} won at the {gp}. {leader} lead the {other}." },
+    "meanwhile": { "title": "Meanwhile in the {other}", "body": "{winner} won at the {gp}. Top of the {other}: {leader}." },
     "decided": { "title": "The tables are settled", "body": "{up} go up from the {challenger}, and {down} go down from the {elite}. {left} The cups score no series points." },
     "review": { "title": "{up} are promoted", "body": "{up} race in the {elite} next season. {down} go down to the {challenger}." }
   }
