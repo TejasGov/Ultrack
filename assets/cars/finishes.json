@@ -135,6 +135,24 @@
       "rim": "#2a2c30",
       "caliper": "#d12a1e",
       "why": "GR Supra GT500: gloss metallic over the model's own red and black Gazoo Racing livery, number plate and carbon aero; the model has no separate calipers (the rims are baked), so the caliper colour waits for a model that has them"
+    },
+    "jesko": {
+      "paint": "metallic",
+      "flake": 0.3,
+      "flakeMm": 0.5,
+      "carbonBelow": 0,
+      "rim": "#23262b",
+      "caliper": "#c8a44a",
+      "why": "Jesko Attack: fine-flake gloss over the model's own carbon aero, grey centre stripe and lime accents, black wheels (the carbon spokes take the finish's rim colour), gold calipers"
+    },
+    "cc850": {
+      "paint": "metallic",
+      "flake": 0.3,
+      "flakeMm": 0.5,
+      "carbonBelow": 0,
+      "rim": "#2a2c30",
+      "caliper": "#c41e1e",
+      "why": "CC850: a deep metallic road car over the model's own carbon lower body and mirrors, its own dark five-spoke wheels, red calipers"
     }
   }
 }

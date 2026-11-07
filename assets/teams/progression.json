@@ -13,8 +13,8 @@
     "bmw1": "D",
     "bentley-gt": "C", "nissan-z": "C",
     "porsche1": "B", "ford-gt": "B", "furari-488": "A", "mp1x": "A", "av12": "A", "blackbird": "A", "huracan": "A",
-    "jaguarxkjss": "S", "supra": "S", "buggati": "S", "laferrari": "S",
-    "aston-martin-valk": "S+", "destrier": "S+"
+    "jaguarxkjss": "S", "supra": "S", "buggati": "S", "laferrari": "S", "cc850": "S",
+    "aston-martin-valk": "S+", "destrier": "S+", "jesko": "S+"
   },
   "teams": {
     "saetta": {"status": "Serial winners", "story": "A trophy-laden factory dynasty from Modena. Winning is the expectation, every season without a title is a reckoning, and Toro is always watching from up the road."},
