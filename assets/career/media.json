@@ -314,5 +314,63 @@
       "{team} have not re-signed {driver} yet, and the names in the paddock are {list}.",
       "With {driver} up for renewal, {team} are said to be looking at {list}."
     ]
+  },
+  "window": {
+    "note": "The season-end transfer window and the principals' styles (offers.js talksFor, transfers.js; docs/career-mode.md 6.10). {principal}, {team}, {other} (the other team), {rival} (a driver), {me} (the player) are filled in. Nothing here mentions how attached a driver is to a team: that stays hidden.",
+    "read": {
+      "hardball": "Plays hardball: little patience, short deadlines.",
+      "warm": "Warm: patient, and open to a real conversation.",
+      "bidder": "A bidder: pays to win a driver, and hates to lose one.",
+      "frugal": "Frugal: watches every coin, and patient enough to haggle."
+    },
+    "prize": {
+      "hardball": "They give nothing away: every term costs the same.",
+      "warm": "They give most on the contract length: a shorter deal costs you half as much.",
+      "bidder": "They give most on salary: a raise costs you half as much.",
+      "frugal": "They give most on the signing bonus and status: those cost you half as much."
+    },
+    "quotes": {
+      "hardball": {
+        "up": ["{other} can pay what they like. Our number stands.", "I do not bid against anyone. Take it or go."],
+        "down": ["{other} pay less than we do. Do not waste my time.", "You think I cannot read a contract? We are done playing."],
+        "meet": ["I don't do coffee. Say what you want."],
+        "deadline": ["Fine. This is final. Sign it today or forget us."],
+        "rival": ["You wanted an answer today. You have it: we signed {rival}."],
+        "want": ["Good. Then stop haggling."]
+      },
+      "warm": {
+        "up": ["{other} rate you that highly? Then so do we. Let us close the gap.", "We will not lose you over money. Here is more."],
+        "down": ["{other} offer less than we do, and we both know it. Let us be honest with each other."],
+        "meet": ["Come by the motorhome. I want to know what makes you tick, and you should know what matters to us."],
+        "deadline": ["You want it settled today? Then these are the best terms I can give. Final."],
+        "rival": ["I am sorry. We could not wait, and {rival} signed this morning."],
+        "want": ["That means a lot here. Take your time, we are not going anywhere."]
+      },
+      "bidder": {
+        "up": ["{other}? We pay more. Here.", "Nobody outbids us for a driver we want."],
+        "down": ["{other} offer less than we do. Nice try."],
+        "meet": ["Lunch is on us. We are here to win, and we pay for winners."],
+        "deadline": ["Today, then. Our best terms, final. We do not lose drivers to deadlines."],
+        "rival": ["We needed an answer. {rival} gave us one."],
+        "want": ["Then sign. We will make it worth it."]
+      },
+      "frugal": {
+        "up": ["{other} are generous. We can move a little, not all the way.", "Half the gap. That is as far as the budget goes."],
+        "down": ["{other} pay less than we do. We checked."],
+        "meet": ["Coffee, yes. Lunch is a budget line. Let me tell you where we can bend."],
+        "deadline": ["If it must be today: this is everything the budget allows. Final."],
+        "rival": ["{rival} was cheaper and said yes. We have signed them."],
+        "want": ["Good. Wanting to be here is worth more than a bonus to us."]
+      }
+    },
+    "stay": ["{principal}: \"We heard about {other}. You are not going anywhere if we can help it.\"", "{principal}: \"Talk to whoever you like. Then look at this.\""],
+    "go": ["{principal}: \"Go, if they want you.\"", "{principal}: \"If {other} want you that much, they can have you.\""],
+    "raise": ["{team} come back with more: {coins} a round.", "{team} raise their offer to {coins} a round."],
+    "leak": {
+      "title": ["{me} seen with {team}", "Talks: {me} and {team}", "{team} want {me}, says the paddock"],
+      "body": ["{me} was spotted at the {team} motorhome, and nobody is denying talks.", "The paddock says {team} have made {me} an offer. Neither side will comment."]
+    },
+    "sack": ["{principal}: \"The results were not good enough. We need more from that car.\"", "{principal}: \"It is a hard call, and the right one. We move on.\""],
+    "bitter": ["{principal}: \"After everything we gave {rival}? Some drivers forget who made them.\"", "{principal}: \"They paid the fee. Let them find out what they bought.\""]
   }
 }

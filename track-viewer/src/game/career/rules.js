@@ -250,11 +250,13 @@ export const STATUS = ['junior', 'second', 'lead', 'number1'];
 export const STATUS_LABEL = { junior: 'Junior', second: 'Second driver', lead: 'Lead driver', number1: 'Number One' };
 /** what the status lever can reach from an offer: it never changes the car (the A seat is earned on track, 6.3) */
 export const statusChoices = (o) => (o.seat === 'A' ? (o.tier === 'legend' ? ['lead', 'number1'] : ['lead']) : ['junior', 'second']).filter((s) => STATUS.indexOf(s) >= STATUS.indexOf(o.status));
-/** demand points of a counter-proposal (6.5): salary +10 % = 1, signing +25 % = 1, status up = 2 a step, a shorter contract = 0.5 a season */
+/** a principal's negotiating style (tiers.json style, tuning.json window.styles, 6.10); null for a sponsor */
+export const styleOf = (team) => T.window.styles[TIERS.teams[team]?.style] ?? null;
+/** demand points of a counter-proposal (6.5): salary +10 % = 1, signing +25 % = 1, status up = 2 a step, a shorter contract = 0.5 a season; the lever the team gives most on (its style's prize) counts at half */
 export function demandOf(o, ask) {
-  const D = T.offers.demand;
-  return Math.round(ask.salary / D.salaryStep) * D.perSalaryStep + Math.round((ask.signing ?? 0) / D.signingStep) * D.perSigningStep + Math.max(0, STATUS.indexOf(ask.status) - STATUS.indexOf(o.status)) * D.perStatus
-    + Math.max(0, o.seasons - ask.seasons) * D.perSeasonCut;
+  const D = T.offers.demand, prize = styleOf(o.team)?.prize ?? [], w = (k) => (prize.includes(k) ? 0.5 : 1);
+  return Math.round(ask.salary / D.salaryStep) * D.perSalaryStep * w('salary') + Math.round((ask.signing ?? 0) / D.signingStep) * D.perSigningStep * w('signing') + Math.max(0, STATUS.indexOf(ask.status) - STATUS.indexOf(o.status)) * D.perStatus * w('status')
+    + Math.max(0, o.seasons - ask.seasons) * D.perSeasonCut * w('seasons');
 }
 /** the nearest terms the team accepts: give up the signing bonus first, then salary, then status, then length (6.5) */
 export function nearestTerms(o, ask, leverage) {

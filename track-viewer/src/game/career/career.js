@@ -11,7 +11,7 @@ import {
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
-import { YOU, newWorld, contractFor, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
+import { YOU, newWorld, contractFor, loyaltyFor, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
 import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
 import { post, unread, markRead } from './inbox.js';
 import { note } from './ledger.js';
@@ -19,16 +19,18 @@ import { poseWeek, settleChoices, settleCallout, answerChoice, choiceOf, openCho
 import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
-  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours, holdsSeat, fallbackOffer,
+  sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours, holdsSeat, fallbackOffer, patienceMax, rivalSigns,
 } from './offers.js';
+import { openWindow, windowInfo, windowWarnings, windowDay, TACTICS, tacticInfo, useTactic } from './transfers.js';
 
-export const SCHEMA = 10;
+export const SCHEMA = 11;
 export { rankingOf, playerRank };
 export { hire as hireStaff, hireInfo as staffInfo, discount as staffDiscount, tierNow as staffTier, STAFF, STAFF_LIST, ROLES as STAFF_ROLES };
 export { unreadStories, readStory, storyImage, latestBytes };
 export { answerChoice, choiceOf, openChoices };
 export { LIFE, ITEMS, TYPES, itemOf, mood as moodOf, bandOf, fansName, payMult, canDemand, ownedN, boostOf, glowOf, upkeepOf };
 export { thumbOf } from './media.js';
+export { windowInfo, windowWarnings, windowDay, TACTICS, tacticInfo, useTactic, patienceMax };
 export { releaseCut as releaseCutOf, driverAt, personOf, rivalsOf, unread, markRead, findOffer, mateOf, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, signMid, teamOutlook, approach, sponsorSlots, signSponsor };
 const stock = () => Object.fromEntries(CATS.map(([c]) => [c, 0]));    // a car with no upgrade bought: an old save's entry may hold fewer categories, and a missing one reads as 0
 const round50 = (v) => Math.round(v / 50) * 50, round5 = (v) => Math.round(v / 5) * 5;
@@ -114,6 +116,11 @@ export function migrate(save) {
   if (save.schema === 9) {                                    // before choice scenes: a season under way has posed none
     if (save.season) save.season.choices ??= {};
     save.schema = 10;
+  }
+  if (save.schema === 10) {                                   // before the transfer window: every AI driver gets the loyalty a new career would roll, and a save at the review opens its window on day 0
+    const W = save.world; W.loyalty = Object.fromEntries(Object.keys(W.ratings).map((c) => [c, W.academy[c] ? T.market.loyaltyAcademy : loyaltyFor(save.seed, c)]));
+    if (save.clock.phase === 'review' && save.pending?.offers && !save.contract?.next) openWindow(save);
+    save.schema = 11;
   }
   for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
   for (const d of save.sponsors?.deals ?? []) d.mood = Math.min(d.mood, SPONSORS.startMood + 3);   // drift days raised goodwill with no cap: over it, the next gold would read as goodwill down
@@ -289,6 +296,7 @@ export function advanceWeek(save) {
   settleChoices(save);                                       // a scene left unanswered takes its default as the week ends
   if (w.event && !w.event.result && !w.event.skipped) { w.event.skipped = true; if (w.event.kind === 'sponsor' && S.deals.length) sponsorSkipped(save); }   // already skipped: a holiday or an ad took the week
   for (const o of save.season.mid.filter((x) => x.expires === i || x.expires === undefined)) {
+    if (o.rival) { rivalSigns(save, o); continue; }          // the market week was their window: the team signs its rival for next season
     save.season.mid.splice(save.season.mid.indexOf(o), 1);   // a lapse is no refusal: the team remembers nothing (6.5)
     post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the market closed.');
   }
@@ -619,6 +627,7 @@ function endSeason(save) {
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
   save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save) }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
   save.clock.phase = 'review';
+  if (!me.next) openWindow(save);
   if (dropped) coverFired(save, me.team); else coverPrincipal(save, me.team);
   post(save, dropped ? 'warn' : 'race', `Season ${save.clock.season} is over: P${drvPos} in the Drivers'`, dropped ? `${teamName(me.team)} has let you go.` : 'The review and the market are waiting.');
 }
@@ -627,8 +636,9 @@ function endSeason(save) {
 function nextSeasonWorld(save, before, moved) {
   const W = save.world, h = save.history.at(-1), cat = (save.clock.season - 1) % 3, order = [1, 0, 2][cat], gone = W.retired.length;   // tyres, engine, brakes in turn
   for (const id of TEAM_IDS) { const t = W.teams[id], cap = tierOf(id).cap; t.dev[order] = Math.min(cap, t.dev[order] + 1); }
-  marketMoves(save, moved);
-  coverMoves(save, before, W.retired.slice(gone));
+  const ev = marketMoves(save, moved);
+  coverMoves(save, before, W.retired.slice(gone), ev);
+  if (h) h.market = { sacked: ev.sacked.length, poached: ev.poached.length };
   if (h?.teamOrder) {
     const v = Object.fromEntries(TEAM_IDS.map((id) => [id, 0.5 * W.teams[id].expPos + 0.5 * (h.teamOrder.indexOf(id) + 1)]));
     [...TEAM_IDS].sort((a, b) => v[a] - v[b] || W.teams[a].expPos - W.teams[b].expPos).forEach((id, i) => { W.teams[id].expPos = i + 1; });

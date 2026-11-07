@@ -16,7 +16,7 @@ const TEAMS0 = (C, R) => Object.fromEntries(R.TEAM_IDS.map((t) => [t, [R.TIERS.t
 try {
   const M = await loadCareer(server), { C, R } = M;
   for (const [label, skill] of [['weak', 0.975], ['average', 0.995], ['strong', 1.015]]) {
-    const A = { days: 0, medals: [0, 0, 0, 0], moodMax: 0, money: { rookie: [], maestro: [], legend: [] }, rounds: 0, raced: 0, nemRounds: 0, nemRaced: 0, nemMate: 0, repLines: 0, rivalsEnd: 0, feudsEnd: 0, causes: {}, h2h: 0, firstRival: [], windows: 0, moves: 0, displaced: 0, inOldSeat: 0, unchanged: 0, starOffers: 0, whys: {}, offersSeen: 0, rating: 0, seated: 0, logs: [], paid: 0 };
+    const A = { days: 0, medals: [0, 0, 0, 0], moodMax: 0, money: { rookie: [], maestro: [], legend: [] }, rounds: 0, raced: 0, nemRounds: 0, nemRaced: 0, nemMate: 0, repLines: 0, rivalsEnd: 0, feudsEnd: 0, causes: {}, h2h: 0, firstRival: [], windows: 0, moves: 0, displaced: 0, inOldSeat: 0, unchanged: 0, starOffers: 0, whys: {}, offersSeen: 0, rating: 0, seated: 0, logs: [], paid: 0, markets: 0, sacked: 0, poached: 0 };
     for (let i = 0; i < N; i++) {
       let n = 0, first = null;
       /** every round's report, however the round was run (raced, missed the cut, out of an Open's Last Chance) */
@@ -57,6 +57,7 @@ try {
       for (const r of rv) A.causes[r.cause] = (A.causes[r.cause] ?? 0) + 1;
       const t0 = TEAMS0(C, R); for (const t of R.TEAM_IDS) if ([R.TIERS.teams[t].A, R.TIERS.teams[t].B].map((k) => save.world.seats[k]).sort().join() === t0[t]) A.unchanged++;
       for (const c of Object.values(save.world.seats)) if (c !== 'YOU') { A.rating += save.world.ratings[c]; A.seated++; }
+      for (const h of save.history) if (h.market) { A.markets++; A.sacked += h.market.sacked; A.poached += h.market.poached; }
       A.logs.push(log);
     }
     const rivals = Object.values(A.causes).reduce((a, b) => a + b, 0), med = (l) => { const v = l.filter((x) => x !== null).sort((a, b) => a - b); return v.length ? v[v.length >> 1] : '-'; };
@@ -84,7 +85,11 @@ try {
     // WP4: the contract market
     const top = Object.entries(A.whys).sort((a, b) => b[1] - a[1])[0] ?? ['', 0], L = A.logs, any = (f) => L.filter(f).length / N;
     console.log(`  info  ${A.offersSeen} outside offers, ${Object.keys(A.whys).length} distinct reasons; the commonest: "${top[0]}"`);
-    check('AI-to-AI moves per season', A.moves / Math.max(1, A.windows), 1, 3);
+    // the hidden market (docs/10x/transfers-spec.md Part C): lower teams sack, and hire from slightly better teams; every move, these included, at most 5 a season
+    check('AI-to-AI moves per season, sackings and poaches included', A.moves / Math.max(1, A.windows), 1, 5);
+    check('sackings per season', A.sacked / Math.max(1, A.markets), 0.3, 1.5);
+    check('poaches per season', A.poached / Math.max(1, A.markets), 0.3, 1.5);
+    const L0 = A.logs; console.log(`  info  the window: ${(L0.reduce((a, l) => a + l.lost, 0) / Math.max(1, A.windows)).toFixed(2)} offers a window lost on day 2 (lapsed or gone to a rival)`);
     check(`the displaced driver takes the player's old seat (${A.displaced} times displaced)`, A.inOldSeat / Math.max(1, A.displaced), 0, 0.2, pct);
     check('teams with an unchanged line-up after the career (of 8)', A.unchanged / N, 0, 1.5);
     check('offers against a 90+ incumbent with seasons left', A.starOffers, 0, 0, (x) => String(x));

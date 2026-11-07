@@ -108,13 +108,16 @@ function coverSocial(save, report, r) {
   if (flop) { const rival = raced.find((e) => e.team !== flop.team); ctx.who = name(flop); ctx.team = teamOf(flop.team); ctx.rival = rival ? teamOf(rival.team) : 'a rival'; return write('social', pick(r, MEDIA.social.leak), { driver: flop.code }); }
 }
 
-/** the market between seasons: compare the seats before and after (nextSeasonWorld) and write up who moved */
-export function coverMoves(save, before, retired) {
+/** the market between seasons: compare the seats before and after (nextSeasonWorld) and write up who moved; ev (world.js marketMoves) names the sackings and the poaches */
+export function coverMoves(save, before, retired, ev = { sacked: [], poached: [] }) {
   const now = save.world.seats, r = rng(save.seed, 'media', save.clock.season, 'market'), was = Object.fromEntries(Object.entries(before).map(([k, c]) => [c, k]));
-  const track = null;
+  const track = null, W = MEDIA.window, fill = (t, ctx) => t.replace(/\{(\w+)\}/g, (_, k) => ctx[k] ?? ''), name = (c) => personOf(save, c)?.name ?? c;
+  for (const x of ev.sacked) { const t = loreOf(x.team); story(save, 'fired', `${t.name} sack ${name(x.code)}`, `A season below what ${t.name} expected, and ${name(x.code)} pays for it. ${fill(pick(r, W.sack), { principal: t.principal })}`, { driver: x.code, mood: 'down', principal: x.team }); }
+  for (const x of ev.poached) { const a = loreOf(x.from), b = loreOf(x.to); story(save, 'move', `${name(x.code)} walks out on ${a.name} for ${b.name}`, `${b.name} paid the release fee, and ${name(x.code)} drives for them next season. ${fill(pick(r, W.bitter), { principal: a.principal, rival: name(x.code) })}`, { driver: x.code, mood: 'portrait', principal: x.from }); }
+  const told = new Set(ev.poached.map((x) => x.code));
   for (const code of retired) { const d = personOf(save, code); story(save, 'move', `${d?.name ?? code} retires`, `The paddock loses one of its own. ${pick(r, ['The tributes began before the announcement ended.', 'A seat is open, and everyone knows it.'])}`, { driver: code, mood: 'portrait', track }); }
   for (const [key, code] of Object.entries(now)) {
-    if (!code || code === YOU || was[code] === key || (was[code] && CAR[was[code]].team === CAR[key].team)) continue;   // a swap inside one team (the player's promotion) is no move
+    if (!code || code === YOU || told.has(code) || was[code] === key || (was[code] && CAR[was[code]].team === CAR[key].team)) continue;   // a swap inside one team (the player's promotion) is no move
     const d = personOf(save, code), team = loreOf(CAR[key].team).name;
     if (was[code]) story(save, 'move', `${d.name} moves to ${team}`, `Out of ${loreOf(CAR[was[code]].team).name}, and into a ${team} seat for next season. Contract talks were not friendly.`, { driver: code, mood: 'portrait', track });
     else if (d.name && !LORE[code]) story(save, 'move', `${team} promotes ${d.name}`, `An academy rookie, called up for next season. ${team} says the data made the decision.`, { track });

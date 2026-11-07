@@ -396,6 +396,15 @@
 .cx-say span { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-1); }
 .cx-say.you { border-left-color: var(--sec); background: color-mix(in srgb, var(--sec) 12%, transparent); }
 .cx-say.you small { color: var(--sec); }
+/* the principal, the clock and the four tactics (6.10) */
+.cx-principal b { color: var(--c-ink-1); }
+.cx-clock { flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-1); }
+.cx-tactics { flex: none; display: flex; flex-wrap: wrap; gap: var(--sp-2); padding-top: var(--sp-2); border-top: 1px solid var(--c-line); }
+.cx .cx-tactic { flex: 1 1 calc(170 * var(--u)); display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; padding: var(--sp-2); border: 1px solid var(--c-line-2); border-radius: var(--r-2); background: var(--c-fill-1); color: var(--c-ink-1); font: inherit; text-align: left; cursor: pointer; }
+.cx-tactic b { font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; line-height: 1.2; }
+.cx-tactic small { font-size: var(--fs-micro); line-height: 1.3; color: var(--c-ink-2); }
+.cx .cx-tactic:is(:hover, .sel):not(:disabled) { background: var(--c-fill-2); border-color: var(--sec); }
+.cx .cx-tactic:disabled { opacity: 0.5; cursor: default; }
 
 /* Standings */
 .cx-standings { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -536,6 +545,34 @@
 .cs-offerhead .cx-stages { margin: 0; }
 .cs-review { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr); }
 .cs-verdict { grid-row: 1 / 3; }
+/* the season-end transfer window: the offers in the middle, the news and the teams beside them */
+.cs-review.win { grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.1fr) minmax(0, 0.86fr); grid-template-rows: minmax(0, 0.9fr) minmax(0, 1fr); }
+.cs-review.win .cs-next { grid-row: 1 / 3; }
+.cs-review.win .cs-hero .cx-kv { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cs-review.win .cx-bh { flex-wrap: wrap; row-gap: var(--sp-1); }
+.cs-review.win .cx-teamrow { --cols: 4px minmax(0, 1fr) auto; padding-block: var(--sp-1); }   /* a third of the width: the name and the reason, as on a phone */
+.cs-review.win .cx-teamrow .cx-gauge { display: none; }
+.cs-review.win .cx-teamrow .why { order: 1; grid-column: 2 / -1; }
+.cs-window { flex: none; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: var(--sp-3); row-gap: 2px; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); background: var(--c-fill-1); }
+.cs-window .cs-days { grid-row: 1 / 3; display: inline-flex; align-items: center; gap: var(--sp-1); }
+.cs-days i { width: calc(12 * var(--u)); height: calc(12 * var(--u)); border-radius: 50%; background: var(--c-fill-3); }
+.cs-days i.past { background: var(--c-ink-3); }
+.cs-days i.now { background: var(--sec); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sec) 30%, transparent); }
+.cs-days i.dl { border-radius: 2px; }
+.cs-days i.dl.now { background: var(--c-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 30%, transparent); }
+.cs-window b { font-style: italic; font-weight: 900; font-size: var(--fs-value); letter-spacing: var(--track-title); text-transform: uppercase; line-height: 1.1; }
+.cs-window small { font-size: var(--fs-micro); letter-spacing: 0.04em; color: var(--c-ink-2); }
+.cs-feed { gap: var(--sp-2); }
+.cs-line { flex: none; display: flex; flex-direction: column; gap: 2px; padding: var(--sp-2) var(--sp-3); border-left: 3px solid var(--c-line-2); border-radius: 0 var(--r-2) var(--r-2) 0; background: var(--c-fill-1); }
+.cs-line.new { border-left-color: var(--c-accent); }
+.cs-line small { font-size: var(--fs-micro); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-2); }
+.cs-line span { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-1); }
+.cx-chips { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-top: var(--sp-1); }
+.cx-chip { display: inline-flex; align-items: center; gap: var(--sp-1); padding: 1px var(--sp-2); border-radius: var(--r-round); background: var(--c-fill-2); font-size: var(--fs-micro); letter-spacing: 0.04em; color: var(--c-ink-1); white-space: nowrap; }
+.cx-chip .icon { font-size: var(--icon-s); color: var(--c-ink-2); }
+.cx-chip.hot { background: color-mix(in srgb, var(--c-accent) 24%, transparent); }
+.cx-chip.hot .icon { color: var(--c-ink-1); }
+.cx-chip.rival { background: color-mix(in srgb, var(--neg) 20%, transparent); }
 .cs-hero { display: flex; flex-direction: column; gap: var(--sp-3); }
 .cs-hero h2 { flex: none; margin: 0; font-style: italic; font-weight: 900; font-size: var(--fs-display); line-height: 1; letter-spacing: var(--track-title); text-transform: uppercase; }
 .cs-hero .cx-kv { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -630,6 +667,9 @@
   .cx-b > .cx-bh:first-child > span:first-child { flex: none; }
   .cx-bh { flex-wrap: wrap; row-gap: var(--sp-1); }   /* a long right-hand label ("Their offer beside your ask") takes its own line rather than an ellipsis */
   .cx-acts { flex-wrap: wrap; }
+  .cx-termhead { display: none; }
+  .row.cx-term { grid-template-columns: minmax(0, 1fr) auto; row-gap: var(--sp-2); }
+  .row.cx-term > .seg { grid-column: 1 / -1; }   /* four salary steps do not fit beside the label at phone width */
   .cr-cols, .cr-lcq .cr-cols { --cols: calc(36 * var(--u)) 4px minmax(0, 1fr) calc(100 * var(--u)) calc(52 * var(--u)); }
   .cr-cols .r-carname, .cr-cols > span:nth-child(4) { display: none; }
   .cx .cx-offer { grid-template-columns: calc(72 * var(--u)) minmax(0, 1fr); }
