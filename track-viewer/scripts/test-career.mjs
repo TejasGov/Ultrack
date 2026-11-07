@@ -37,7 +37,7 @@ try {
     const FAKE = { morro: { event: 'grandprix', parLap: 100, measured: 'test', names: ['Morro Night', 'Morro Return'], wetOnly: true }, fakeday: { event: 'grandprix', parLap: 90, measured: 'test', names: ['Fake Run', 'Fake Return'] } };
     Object.assign(R.CAL.tracks, FAKE);
     try {
-      const sets = [[today, TOUR], [{ ...today, morro: ['night'], fakeday: ['day', 'dusk'] }, [...TOUR, 'morro', 'fakeday']], [{ ...today, morro: ['night'] }, [...TOUR, 'morro']]];
+      const sets = [[today, TOUR], [{ ...today, morro: ['night'], fakeday: ['day', 'dusk'] }, [...TOUR, 'morro', 'fakeday']], [{ ...today, morro: ['night'] }, [...TOUR, 'morro']], [(({ llano, ...o }) => ({ ...o, morro: ['night'] }))(today), ['shajawa', 'india', 'qingshan', 'morro']]];
       for (const [av, P] of sets) for (let s = 1; s <= 300; s++) for (let season = 1; season <= 4; season++) for (const L of ['sprint', 'standard', 'full']) {
         const cal = R.buildCalendar(s, season, 1, av, L), tour = cal.filter((r) => r.kind === 'tour'), ids = tour.map((r) => r.track), at = `seed ${s} season ${season} ${L}: ${ids}`;
         assert.deepEqual(cal, R.buildCalendar(s, season, 1, av, L), 'a calendar is seeded');
@@ -50,7 +50,8 @@ try {
         if (P.length >= 6) assert.equal(new Set(ids).size, 6, `no circuit twice in a season: ${at}`);
         else { assert.equal(new Set(ids).size, P.length, `every Tour circuit raced: ${at}`); assert.ok(P.every((t) => count(t) <= most), `the fewest returns: ${at}`);
           ids.forEach((t, i) => { const j = ids.indexOf(t, i + 1); if (j > 0) assert.equal(j - i, P.length, `a return a whole cycle later: ${at}`); });
-          for (const t of P) if (count(t) === 2) comeBack.add(t); }
+          for (const t of P) if (count(t) === 2) comeBack.add(t);
+          if (P.some((t) => R.CAL.tracks[t].wetOnly && count(t) === 2)) assert.ok(P.every((t) => R.CAL.tracks[t].wetOnly || count(t) === 2), `a wet-only circuit returns only after every dry one: ${at}`); }
         tour.forEach((r, i) => assert.equal(r.name, R.CAL.tracks[r.track].names[Math.min(ids.slice(0, i).filter((x) => x === r.track).length, 1)], 'a return takes the second name'));
         const q0 = Math.floor(G.rng(s, 'quali', season)() * 3); assert.deepEqual(cal.map((r) => r.qualiTrack), cal.map((_, i) => QPOOL[(q0 + i) % 3]), 'the qualifying rotation as before');
         for (const r of cal) { if (av[r.track]) assert.ok(av[r.track].includes(r.look), `${r.track} at ${r.look}`); if (R.CAL.tracks[r.track].dryOnly) assert.equal(r.weather, 'dry'); if (R.CAL.tracks[r.track].wetOnly) assert.notEqual(r.weather, 'dry', `a wet-only round is wet: ${at}`);
@@ -58,13 +59,16 @@ try {
         if (P.includes('morro')) assert.equal(cal.find((r) => r.track === 'morro').look, 'night', 'a night-only circuit runs at night');
         assert.ok(cal.filter((r) => r.weather !== 'dry' && !R.CAL.tracks[r.track].wetOnly).length <= W.maxWet, 'wet-only rounds leave the cap to the others');
       }
-      assert.deepEqual([...comeBack].sort(), [...TOUR].sort(), 'any circuit can be one that returns, but a wet-only one: it never opens the cycle, so it is never the circuit raced again');
+      assert.deepEqual([...comeBack].sort(), [...TOUR].sort(), 'any dry circuit can be one that returns; a wet-only one comes last in the cycle, so with a dry circuit left to return it never does');
       const both = new Set(); for (let s = 1; s <= 300; s++) both.add(R.buildCalendar(s, 1, 1, sets[1][0]).find((r) => r.track === 'morro').weather); assert.deepEqual([...both].sort(), ['damp', 'rain'], 'a wet-only round can be rain or damp');
     } finally { for (const id in FAKE) delete R.CAL.tracks[id]; } }
   assert.notDeepEqual(R.buildCalendar(5, 1, 1, avail), R.buildCalendar(5, 2, 1, avail), 'a calendar changes by season');
   { const few = R.buildCalendar(5, 1, 1, { india: null, drylake: null, marina: null, shajawa: null, tokyo: null });   // a game missing circuits: its Opens drop out and the Tour still fills its rounds
     assert.deepEqual(few.map((r) => r.kind), ['tour', 'tour', 'open', 'tour', 'tour', 'tour', 'tour', 'masters']); const t = few.filter((r) => r.kind === 'tour').map((r) => r.track);
     assert.ok(t.every((x, i) => ['india', 'shajawa'].includes(x) && x !== t[i - 1]), `two circuits alternate: ${t}`); }
+  { const t = R.buildCalendar(5, 1, 1, { marina: null, tokyo: null, drylake: null }).filter((r) => r.kind === 'tour').map((r) => r.track);   // no Tour circuit at all: never an Open's or the Masters' circuit
+    assert.deepEqual([...new Set(t)], ['drylake'], `the fallback skips Open and Masters circuits: ${t}`); }
+  assert.ok(R.buildCalendar(5, 1, 1, { ...avail, india: [] }).every((r) => r.look), 'an empty `times` list offers every look');
 
   // ---- race lengths: chosen in minutes, laps per circuit, the default is the short one, nobody is forced into 8 laps
   assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('drylake', l)), [3, 5, 8]); assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('marina', l)), [2, 2, 3]);
