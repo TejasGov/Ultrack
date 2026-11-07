@@ -178,7 +178,8 @@ try {
   assert.equal(C.qualiPlace(q0, 'bmw1'), 8); assert.deepEqual(q0.grid, q0.order.slice(0, 8));
   const V0 = C.qualiVenue(fast); for (const k of R.carsIn(fast, 'elite')) assert.equal(q0.laps[k], R.aiLap({ seed: fast.seed, season: 1, round: 0, track: V0.track, weather: V0.weather, difficulty: 'normal', key: k, rating: fast.world.ratings[fast.world.seats[k]], dev: fast.world.teams[R.CAR[k].team].dev }), 'the Elite laps are the ones a combined qualifying drew');
   { const nl = signed0(81); C.finishQuali(nl, null); const q = nl.season.current.quali; assert.equal(q.grid.at(-1), nl.contract.car, 'no lap: P8, and racing'); assert.equal(C.qualiPlace(q, nl.contract.car), 8); assert.equal(C.raceSetup(nl).racers.length, 8); }
-  { const nq = signed0(82), r = C.finishRace(nq, { order: [], best: {} }); assert.equal(r.dnq, true, 'never qualified (a reload): a sit-out, even where all eight race'); assert.equal(r.entries.find((e) => e.you).pts, 0); assert.equal(r.entries.filter((e) => !e.dnq).length, 7); assert.ok(r.entries.at(-1).you); }
+  { const nq = signed0(82), r = C.finishRace(nq, { order: [], best: {} }); assert.equal(r.dnq, true, 'never qualified (a reload): a sit-out, even where all eight race');
+    assert.ok(!nq.media.some((m) => /only the top/.test(m.body)) && nq.media.some((m) => /sits out/.test(m.title)), 'and the press says no lap, not a cut'); assert.equal(r.entries.find((e) => e.you).pts, 0); assert.equal(r.entries.filter((e) => !e.dnq).length, 7); assert.ok(r.entries.at(-1).you); }
   const setup0 = (C.finishQuali(fast, q0.laps[q0.grid[6]] + 0.001), C.raceSetup(fast));
   assert.equal(setup0.gridOrder.at(-1), 'bmw1', 'just slower than the seventh starts last'); assert.equal(setup0.levels('bmw1').engine, 1); assert.equal(setup0.racers.length, 8);
   assert.ok(Object.values(setup0.pace).every((p) => p > 0.9 && p < 1.05));
@@ -268,7 +269,10 @@ try {
     const told = (s, re) => (s.media ?? []).filter((m) => re.test(m.title)), mail = (s, re) => s.inbox.filter((m) => re.test(m.title));
     assert.equal(told(up, /^You took Mojave up$/).length, 1); assert.equal(told(up, /wins the (Elite|Challenger) Series$/).length, 2, 'one story per champion');
     assert.equal(told(up, /^A\. Driver wins the Challenger Series$/).length, 1, 'the player is the Challenger champion'); assert.equal(mail(up, /are promoted$/).length, 1);
-    assert.equal(told(dn, /^Mojave go down\. Your contract stands\.$/).length, 1); }
+    assert.equal(told(dn, /^Mojave go down\. Your contract stands\.$/).length, 1);
+    { const Md = await server.ssrLoadModule('/src/game/career/media.js'), x = JSON.parse(JSON.stringify(dn)), sw = { up: 'hayate', down: x.contract.team }; x.media = []; x.contract.dropped = true; Md.coverSwap(x, sw);
+      assert.equal(told(x, /contract stands/).length, 0, 'relegated and let go: no "your contract stands"'); assert.equal(x.media.length, 1); x.media = []; x.contract.dropped = false; x.contract.next = { team: 'liberty' }; Md.coverSwap(x, { ...sw, up: x.contract.team, down: 'sarab' });
+      assert.equal(told(x, /^You took/).length, 0, 'signed elsewhere: not "you took them up"'); } }
   // ---- the inbox through a season of two series, the copy (16.22) and the giant-kill story
   { const s = signed(4340), notes = [], bad = /(of|\/) 16\b|\b16 (drivers|cars)|of 12\b|\/ 8\b|sixteen|of the Ultrack Ranking/;
     assert.ok(/Challenger Series, \d+ rounds.*Top the Challenger Series Teams' table and Mojave go up/.test(s.inbox.find((m) => /^Season 1 with/.test(m.title)).body), 'the season start names the target');
@@ -633,21 +637,64 @@ try {
     const lr = lost.season.results.at(-1); assert.equal(lr.trust, Math.round((lr.rr - R.TUNING.rating.base) * R.TUNING.trust.perRR), 'missing an Open costs trust only through the rating: the ranking decides its objective');
   }
   // ---- the market, rivals, life and the Sponsor Challenge with two series (16.16-16.20)
-  { const Of = await server.ssrLoadModule('/src/game/career/offers.js'), W = await server.ssrLoadModule('/src/game/career/world.js'), Li = await server.ssrLoadModule('/src/game/career/life.js');
+  { const Of = await server.ssrLoadModule('/src/game/career/offers.js'), W = await server.ssrLoadModule('/src/game/career/world.js'), Li = await server.ssrLoadModule('/src/game/career/life.js'), CAR0 = R.CAR, Wm = W;
     // a team of the player's tier going up is a step up: no strong-year rule, no cap, a full roll
-    const offered = (promote) => { let n = 0; for (let seed = 4501; seed < 4541; seed++) { const s = signed(seed); s.career.rr = [6, 6, 6]; if (promote) { s.world.teams.liberty.div = 'elite'; s.world.teams.sarab.div = 'challenger'; s.world.teams.liberty.expPos = 3.5; }
+    const offered = (promote) => { let n = 0; for (let seed = 4501; seed < 4541; seed++) { const s = signed(seed); s.career.rr = [6, 6, 6]; if (promote) { s.world.teams.liberty.div = 'elite'; s.world.teams.sarab.div = 'challenger'; s.world.teams.liberty.expPos = 3.5; s.world.ratings[s.world.seats[C.teammateCar(s)]] = 99; }   // a driver rated 99 (no duel yet: the teammate's) makes its grid
       const l = Of.seasonOffers(s, { cup: false, title: false, dropped: false }).filter((o) => o.team === 'liberty'); if (l.length) { n++; assert.equal(l[0].div, promote ? 'elite' : 'challenger', 'the offer carries next season\'s series'); } } return n; };
     assert.equal(offered(false), 0, 'a same-tier Challenger team wants a strong year for a B-seat driver'); assert.ok(offered(true) > 0, 'a promoted one of the same tier does not');
     { const s = signed(4502); s.clock.phase = 'review'; s.contract.seat = 'A'; s.world.teams.liberty.div = 'elite'; s.world.teams.sarab.div = 'challenger';
       assert.equal(Of.stepUp(s, 'liberty'), false, 'last of the Elite (its A seat expected P9 of 10): no step up'); assert.equal(Of.teamOutlook(s, 'liberty').blocked, 'No step up');
       s.world.teams.liberty.expPos = 3.5; assert.equal(R.expIn(s, 'liberty', 'A', R.nextDivOf), 7);
+      // and for this driver in it (offGrid): their market rating in the seat's car against next season's Elite cars and drivers
+      const rate = (v) => { for (const k of R.carsIn(s, 'elite', R.nextDivOf)) if (CAR0[k].team !== 'liberty') s.world.ratings[s.world.seats[k]] = v; };
+      rate(99); assert.equal(Of.offGrid(s, 'liberty', 'A'), true, 'against an Elite rated 99 a Rookie car qualifies outside the grid'); assert.equal(Of.stepUp(s, 'liberty'), false, 'so it is no step up');
+      assert.equal(Of.offGrid(s, 'hayate', 'A'), false, 'a Challenger seat is never off the Elite grid'); assert.equal(Of.outsideOffer(s, 'liberty', 0.9), null, 'no seat of it is offered');
+      rate(60); assert.equal(Of.offGrid(s, 'liberty', 'A'), false);
       assert.equal(Of.stepUp(s, 'liberty'), true); assert.equal(Of.stepUp(s, 'hayate'), false); assert.equal(Of.teamOutlook(s, 'liberty').step, 'A step up: Elite Series'); assert.notEqual(Of.teamOutlook(s, 'liberty').blocked, 'No step up');
       assert.equal(Of.teamOutlook(s, 'hayate').blocked, 'No step up', 'a same-tier Challenger team from an A seat'); assert.equal(Of.teamOutlook(s, 'hayate').step, null); }
     // approach() follows the same rule: a step up skips the A seat's rating bar; a same-tier Challenger team does not
     { const s = toReview(signed(4509), 4), W0 = s.world.teams; s.contract.seat = 'A'; s.contract.next = null; s.career.rep = 500; s.career.cl = 12; s.career.rr = [6, 6, 6, 6, 6, 6];
       W0.mojave.div = 'challenger'; W0.hayate.div = 'challenger'; W0.liberty.div = 'elite'; W0.liberty.expPos = 3.5; assert.ok(6 < R.TUNING.offers.sameTierRR);
+      for (const k of Object.keys(s.world.seats)) if (s.world.seats[k] !== 'YOU') s.world.ratings[s.world.seats[k]] = R.carsIn(s, 'elite', R.nextDivOf).includes(k) && R.CAR[k].team !== 'liberty' ? 60 : 99;
+      for (const r of s.season.results) r.duel = null;   // a slow Elite and a fast driver (no duel left: rated as the field): the seat makes its grid (offGrid)
       const up = C.approach(s, 'liberty'); assert.ok(['offer', 'no'].includes(up.result), up.why); assert.ok(!/takes an average rating/.test(up.why), 'no A-seat rating bar for a step up: ' + up.why);
       const same = C.approach(s, 'hayate'); assert.equal(same.result, 'closed'); assert.equal(same.why, 'No step up'); }
+    // the review's second round: what a Challenger round keeps (rep, coins), a cup pays whole, the duel's heat by field, a Rookie's trust floor, and an Elite driver beaten from the Challenger
+    { const ch = R.TUNING.divisions.challenger, P = R.TUNING.rep, E = R.TUNING.events, r5 = (v) => Math.round(v / 5) * 5, line = (l, k) => l.find((x) => x[0] === k)?.[1];
+      const a = signed(4611), w = round(a, 1), Tr = R.TIERS.tiers[a.season.tier]; assert.equal(a.season.div, 'challenger');
+      assert.equal(line(w.repLines, 'Win'), Math.round(P.win * ch.rep), 'a Challenger win pays its share of reputation');
+      assert.equal(line(w.coinLines, 'Win bonus'), r5(Tr.bonus.win * ch.reward), 'and its share of the win bonus, to 5 U'); assert.ok(w.coinLines.every((l) => Number.isInteger(l[1])), 'no half coins: ' + JSON.stringify(w.coinLines));
+      const pd = round(a, 2); assert.equal(line(pd.coinLines, 'Podium bonus'), r5(Tr.bonus.podium * ch.reward)); assert.ok(Number.isInteger(pd.coins));
+      const el = signed(4612, 'mojave', 'elite'), we = round(el, 1); assert.equal(el.season.div, 'elite'); assert.equal(line(we.repLines, 'Win'), P.win, 'an Elite win pays in full'); assert.equal(line(we.coinLines, 'Win bonus'), R.TIERS.tiers[el.season.tier].bonus.win);
+      while (C.currentRound(a).kind !== 'open') round(a, 4); while (C.currentWeek(a).kind !== 'race') C.advanceWeek(a);
+      // at an Open: the sponsor target reads the series place as in a Tour week; a callout on an Elite nemesis states the higher stake; beating an Elite rival pays the higher tier's
+      { const S = a.sponsors; S.deals = []; S.offers = []; Of.sponsorOffers(a, a.clock.week + 1); assert.ok(S.offers.length); for (const o of S.offers) assert.deepEqual(o.target, R.targetFor(R.SPONSORS.brands[o.brand].target, R.expIn(a, a.contract.team, a.contract.seat), a.season.calendar.length)); S.offers = []; }
+      const X = await server.ssrLoadModule('/src/game/career/choices.js'), elite = R.carsIn(a, 'elite').map((k) => a.world.seats[k]), heat0 = a.career.heat;
+      const r0 = a.world.ratings[elite[0]]; a.world.ratings[elite[0]] = 65;   // a shaky driver: easily rattled
+      const calls = elite.map((c) => { a.career.heat = { [c]: R.TUNING.rivals.nemesis + 5 }; return X.TRIGGERS.callout(a); }).filter(Boolean); a.career.heat = heat0; a.world.ratings[elite[0]] = r0;
+      assert.ok(calls.length, 'some Elite driver is rattled enough'); for (const c of calls) assert.equal(c.stake, Math.round(X.CHOICES.callout.win.rep * X.CHOICES.callout.higherTier), 'an Elite nemesis is a higher stake for a Challenger driver');
+      const foe = elite[0]; a.career.heat = { [foe]: R.TUNING.rivals.rival }; const op = round(a, 1), name = C.personOf(a, foe).name;
+      assert.equal(line(op.repLines, `Rival beaten: ${name}`), Math.round(R.TUNING.rivals.rep * R.TUNING.rivals.higherTier), 'an Elite rival beaten from the Challenger pays as a higher tier');
+      assert.ok(line(op.repLines, 'Giant-killing') > 0, 'beating Elite drivers expected ahead is giant-killing'); assert.equal(line(op.repLines, 'Win'), Math.round(P.win * E.open.rep), 'a cup pays a Challenger driver whole');
+      assert.equal(line(op.coinLines, 'Win bonus'), Tr.bonus.win * E.open.prize, 'and its whole win bonus');
+      // the duel's heat in a series of 8: at most rivals.duel x 8/16 a round, and it stops at duelMax x 8/16
+      const d = signed(4613); while (C.currentWeek(d).kind !== 'race') C.advanceWeek(d); const me = d.contract.car, mt = C.teammateCar(d), code = d.world.seats[mt], f = d.season.current.field / R.TUNING.divisions.legacyField;
+      const far = [me, ...R.carsIn(d, 'challenger').filter((k) => k !== me && k !== mt), mt]; d.career.heat = {};
+      Wm.heatAfter(d, far, me, false, { contacts: {}, passes: {}, duel: code }); assert.equal(d.career.heat[code], R.TUNING.rivals.duel * f);
+      d.career.heat[code] = R.TUNING.rivals.duelMax * f - 1; Wm.heatAfter(d, far, me, false, { contacts: {}, passes: {}, duel: code }); assert.equal(d.career.heat[code], R.TUNING.rivals.duelMax * f, 'the duel stops at its cap');
+      Wm.heatAfter(d, far, me, false, { contacts: {}, passes: {}, duel: code }); assert.equal(d.career.heat[code], R.TUNING.rivals.duelMax * f - R.TUNING.rivals.decay, 'at the cap it adds nothing, and the heat cools as any round');
+      // a Rookie in the Challenger loses no more trust a round than a missed cut did: last, from the back
+      const t = signed(4614), floor = R.trustFor({ rr: R.TUNING.rating.base + R.TUNING.rating.dnq, optional: 0, neutral: true }), lt = round(t, 8);
+      assert.ok(lt.rr < R.TUNING.rating.base + R.TUNING.rating.dnq, 'a bad round: ' + lt.rr); assert.equal(lt.trust, floor);
+      assert.ok(w.trust > floor, 'a good round keeps what it earns'); }
+    // an Open's Last Chance keeps 2 places for the Challenger: an Elite lap in the top 8 can be pushed out, and the lap to beat is the slowest Elite one on the grid
+    { const s = signed(4621, 'mojave', 'elite'); while (C.currentRound(s).kind !== 'open') round(s, 4); while (C.currentWeek(s).kind !== 'race') C.advanceWeek(s);
+      const me = s.contract.car, ch = (k) => R.divOf(s, R.CAR[k].team) === 'challenger', seeds = s.season.current.open.seeds, rest = Object.keys(s.world.seats).filter((k) => !seeds.includes(k) && k !== me);
+      const order = [...rest.filter((k) => !ch(k)).slice(0, 6), me, ...rest.filter((k) => !ch(k)).slice(6), ...rest.filter(ch)], grid = R.lcqGrid(order, ch, 2), laps = Object.fromEntries(order.map((k, i) => [k, 40 + i]));
+      const q = { order, grid, laps }; assert.ok(!grid.includes(me) && C.qualiPlace(q, me) === 7);
+      const t = C.lapToRace(s, q), elite = grid.filter((k) => !ch(k)); assert.equal(t.squeezed, true); assert.equal(t.lap, laps[elite.at(-1)]); assert.ok(t.lap < laps[me], 'their lap must beat the slowest Elite lap on the grid');
+      assert.equal(C.gridSlot(q, grid.at(-1)), 8, 'a Challenger car added by the quota starts from its slot'); assert.ok(C.qualiPlace(q, grid.at(-1)) > 8);
+      const q2 = { order: [...order].sort((a, b) => (a === me ? -1 : b === me ? 1 : 0)), laps }; q2.grid = R.lcqGrid(q2.order, ch, 2); assert.equal(C.lapToRace(s, q2).squeezed, false); }
     // a deal signed in mid-season shows next season's series at the review, after its team moves
     { const s = signed(4510), o = Of.offer(s, 'corvid', 'B', { salary: 100, signing: 0, seasons: 2, why: 'x' }); s.season.mid.push(o); C.signMid(s, o.id); assert.equal(s.contract.next.div, 'challenger');
       s.world.teams.corvid.div = 'elite'; const [card] = Of.seasonOffers(s, { cup: false, title: false, dropped: false }); assert.equal(card.team, 'corvid'); assert.equal(card.div, 'elite', 'the card reads the series the team races next'); }
@@ -847,7 +894,7 @@ try {
         for (const mt of R.TEAM_IDS.filter((t) => R.TIERS.teams[t].tier === 'maestro')) {   // a Maestro driver with no reputation: below every Maestro bar, and the other Maestro teams answer anyway
           if (os.some((o) => O.interestFor(g, o.team, { cool: false }) === null)) break;
           g = signed(1353); g.life.happy = 8; round(g, 8, 999); g.life.happy = 8; for (const t of R.TEAM_IDS) L.note(g, 'spurned', { team: t, w: 2 });
-          const car = R.seatCar(mt, 'B'), Wg = g.world; Wg.seats[g.contract.car] = Wg.seats[car]; Wg.seats[car] = 'YOU'; Object.assign(g.contract, { team: mt, seat: 'B', car }); g.season.tier = 'maestro'; g.career.rep = 0;
+          const car = R.seatCar(mt, 'B'), Wg = g.world; Wg.seats[g.contract.car] = Wg.seats[car]; Wg.seats[car] = 'YOU'; Object.assign(g.contract, { team: mt, seat: 'B', car }); g.season.tier = 'maestro'; g.season.div = Wg.teams[mt].div; g.career.rep = 0;   // the seat's own series: a Challenger driver is not offered an Elite seat they cannot qualify (offGrid)
           const ids = O.demandTransfer(g).offers; os = g.season.mid.filter((o) => ids.includes(o.id) && !o.reserve); }
         for (const o of os) { assert.equal(o.cool, undefined, 'the demand ignores refusals, so no cool line'); if (O.interestFor(g, o.team, { cool: false }) === null) assert.ok(!/clear their bar/.test(o.why) && /were not looking at you/.test(o.why), `below the bar, a true reason: ${o.why}`); }
         assert.ok(os.some((o) => O.interestFor(g, o.team, { cool: false }) === null), 'a team below whose bar the player is answers too'); }
@@ -1258,7 +1305,11 @@ try {
       assert.deepEqual(R.TEAM_IDS.filter((t) => s.world.teams[t].div === 'elite'), R.TEAM_IDS.filter((t) => s.world.teams[t].expPos <= 5), 'next season: the five best expected in the Elite');
       assert.equal(s.stats.promotions, 0); assert.equal(s.stats.relegations, 0); assert.ok(s.inbox.some((m) => m.title === 'Two series from next season' && /start in the Challenger Series/.test(m.body)));
       const r = round(s, 4); assert.equal(r.entries.length, R.FIELD, 'still all eighteen classified'); assert.equal(r.other, undefined); assert.equal(C.standings(s).cup.length, 3);
-      let opened = false; while (s.clock.phase !== 'review') { if (s.season.current.open?.kind === 'open' && !opened) { opened = true; assert.equal(s.season.current.open.seeds.length, 4, 'an Open of the old format: four seeds'); } round(s, 4); }
+      let opened = false, mastered = false, cups0 = s.stats.cups; while (s.clock.phase !== 'review') { if (s.season.current.open?.kind === 'open' && !opened) { opened = true; assert.equal(s.season.current.open.seeds.length, 4, 'an Open of the old format: four seeds'); }
+        if (s.season.current.open?.kind === 'masters' && !mastered) { mastered = true; assert.deepEqual(s.season.current.open.seeds, C.rankingOf(s, 'all').slice(0, R.TUNING.series.gridSize).map((x) => x.key), 'the Masters of the old format: the top 8 of everyone'); }
+        round(s, 4); }
+      assert.ok(mastered); const rv = s.pending.review; assert.equal(rv.swap, undefined);
+      if (rv.cup === 1) { assert.equal(s.stats.cups, cups0 + 1, 'the tier Cup is still awarded'); assert.ok(rv.rep >= R.TUNING.rep.cup); } else assert.equal(s.stats.cups, cups0);
       const divs0 = JSON.stringify(R.TEAM_IDS.map((t) => s.world.teams[t].div)); assert.equal(s.history.at(-1).swap, undefined, 'no swap that year'); assert.equal(JSON.stringify(R.TEAM_IDS.map((t) => s.world.teams[t].div)), divs0);
       C.acceptOffer(s, s.pending.offers[0].id, avail); assert.equal(s.season.div, s.world.teams[s.contract.team].div, 'the next season races two series'); assert.equal(round(s, 4).entries.length, R.carsIn(s, s.season.div).length); }
     { const s = twelve(toReview(signed(4202, 'mojave', 'legacy'), 4)), ids = s.pending.offers.map((o) => o.id), day = C.windowInfo(s).day;

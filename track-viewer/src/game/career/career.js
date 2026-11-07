@@ -435,6 +435,17 @@ export const qualiVenue = (save) => { const R = currentRound(save), look = R.loo
 /** the qualifying venue's name for messages (a round from before the rotation qualifies at CAL.qualifying) */
 const qualiName = (R) => trackOf(R?.qualiTrack ?? CAL.qualifying).name;
 export const qualiPlace = (q, key) => (q.order ?? q.grid).indexOf(key) + 1;
+/** where a car starts: its slot on the grid, else its qualifying place (an Open's Last Chance keeps places for the Challenger, so the two can differ) */
+export const gridSlot = (q, key) => (q.grid.includes(key) ? q.grid.indexOf(key) + 1 : qualiPlace(q, key));
+/**
+ * The lap that races: the grid's last, but an Elite driver at an Open must beat the slowest Elite lap on it, since the Challenger's places there are not theirs to take.
+ * squeezed: the player set a lap inside the top 8 and the Challenger's places pushed them out
+ */
+export function lapToRace(save, q) {
+  const car = save.contract.car, mine = divOf(save, CAR[car].team), own = q.grid.filter((k) => divOf(save, CAR[k].team) === mine), G = T.series.gridSize;
+  const key = save.season.current?.open && mine === 'elite' && own.length ? own.at(-1) : q.grid.at(-1);
+  return { lap: q.laps[key], squeezed: !q.grid.includes(car) && qualiPlace(q, car) <= G && q.grid.length === G };
+}
 /** the round's objectives as they stand: once the grid is set, none asks for places that are not there to gain */
 export const roundObjectives = (save) => { const cur = save.season.current; return cur.quali ? cur.objectives.map((o) => objectiveFrom(o, qualiPlace(cur.quali, save.contract.car))) : cur.objectives; };
 /** retries left this round (the screens enforce it): none for a driver who skips qualifying */
@@ -571,13 +582,15 @@ export function finishRace(save, result) {
   if (call) { rep.lines.push([`Callout ${call.won ? 'won' : 'lost'}: ${call.name}`, call.rep]); rep.rep += call.rep; }
   const happyRep = Math.round(rep.rep * (repMult(save) - 1)); if (happyRep > 0) { rep.lines.push([mood(save).name, happyRep]); rep.rep += happyRep; }   // a happy driver is talked about more; a bad round costs the same in any mood
   const ord = result.orders?.kind === 'toMate' && typeof result.orders.obeyed === 'boolean' && !dnq ? result.orders : null, ordTrust = ord ? (ord.obeyed ? T.trust.orders.obeyed : -T.trust.orders.ignored) : 0;
-  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = (rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust) + ordTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
+  // a Rookie in the Challenger loses no more trust a round than a missed cut cost before the split: in a series of 8 a slow driver in a Rookie car finishes below its place every round
+  const floor = chTour && TIERS.tiers[tier].rank === 1 ? trustFor({ rr: T.rating.base + T.rating.dnq, optional: 0, neutral: true }) : -Infinity;
+  const rawTrust = Math.max(floor, trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open })), trust = (rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust) + ordTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
   // money (5.5): salary, the race prize x the tier's multiplier, objective and contract bonuses, sponsors
   const Tr = TIERS.tiers[tier], coins = [['Salary', me.salary]];
   for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: raced.length, laps: R.laps, finished: !dnf && !dnq, retired: dnf || dnq, fastest }).lines) coins.push([label, round5(v * Tr.prize * E.prize * rw)]);
   if (mandatory) coins.push(['Round objective', Tr.objective[0]]);
   if (optional) coins.push(['Bonus objectives', optional * Tr.objective[1]]);
-  if (!dnf && finish === 1) coins.push(['Win bonus', Tr.bonus.win * E.prize * rw]); else if (!dnf && finish <= 3) coins.push(['Podium bonus', Tr.bonus.podium * E.prize * rw]);
+  if (!dnf && finish === 1) coins.push(['Win bonus', round5(Tr.bonus.win * E.prize * rw)]); else if (!dnf && finish <= 3) coins.push(['Podium bonus', round5(Tr.bonus.podium * E.prize * rw)]);   // to 5 U as the prize lines: the Challenger's share left half coins
   coins.push(...sponsorRound(save, x, targetMet));
   // repairs (Part 2): every hard hit of the weekend's qualifying, Last Chance and race, less the crew's share, never more than 40 % of what the round paid and never below an empty wallet
   const gross = coins.reduce((s, l) => s + Math.max(0, l[1]), 0), fix = repairBill([...(cur.hits ?? []), ...(result.hits ?? [])], hero, discount(save, 'crew'), gross);   // the bill is under 40 % of the pay, so the wallet cannot go below what it held

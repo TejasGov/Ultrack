@@ -40,6 +40,7 @@ export function coverRound(save, report) {
 
   // the player, unless the lead already was
   if (report.dnq && report.open) story(save, 'down', `${me.name} misses the ${report.kind === 'masters' ? gp : `${gp} Final`}`, report.kind === 'masters' ? (DIV[save.season?.div] ? `Ranked ${report.open.rank} in the ${DIV[save.season.div].short}, outside its top ${DIV[save.season.div].masters}, ${me.name} watched the Masters from the grandstand.` : `Outside the top ${T.series.gridSize} of the Ultrack Ranking, ${me.name} watched the Masters from the grandstand.`) : `The Final went ahead without ${me.name}, who finished the weekend P${report.grid} of ${report.field ?? FIELD}. The ranking will remember it.`, { track, you: 'dnq' });
+  else if (report.dnq && (report.field ?? FIELD) <= T.series.gridSize) story(save, 'down', `${me.name} sits out the ${gp}`, `No qualifying lap, so no race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });   // everyone races a field of 8: only a round with no lap leaves the player out
   else if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} of ${report.field ?? FIELD} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });
   else if (report.dnf) story(save, 'down', `Retirement for ${me.name}`, `Out of the ${gp} after starting P${report.grid}. No points, and a long walk back to the garage.`, { track, you: 'down' });
   else if (!winner.you && report.finish <= 3) story(save, 'podium', `Podium for ${me.name}`, `P${report.finish} from P${report.grid} at the ${gp}, in a car expected ${report.expPos > report.finish ? `no higher than P${report.expPos}` : `to be up here`}.`, { track, you: 'podium' });
@@ -87,7 +88,7 @@ export function coverOpen(save, report) {
 const D = MEDIA.divisions, fillD = (t, ctx) => t.replace(/\{(\w+)\}/g, (_, k) => ({ elite: DIV.elite.name, challenger: DIV.challenger.name, ...ctx })[k] ?? '');
 /** the season's swap (endSeason): the public story, or the player's own when it is their team that moves */
 export function coverSwap(save, swap) {
-  const t = (id) => loreOf(id).name, mine = save.contract?.team, ctx = { up: t(swap.up), down: t(swap.down), team: t(mine) };
+  const stays = save.contract && !save.contract.dropped && !save.contract.next, mine = stays ? save.contract.team : null, t = (id) => loreOf(id).name, ctx = { up: t(swap.up), down: t(swap.down), team: mine && t(mine) };   // let go or signed elsewhere: the public story, not "your contract stands"
   if (mine === swap.up) story(save, 'league', fillD(D.youUp.title, ctx), fillD(D.youUp.body, ctx), { you: 'win', principal: mine });
   else if (mine === swap.down) story(save, 'league', fillD(D.youDown.title, ctx), fillD(D.youDown.body, ctx), { principal: mine });
   else story(save, 'league', fillD(D.up.title, ctx), fillD(D.up.body, ctx), { principal: swap.up });
