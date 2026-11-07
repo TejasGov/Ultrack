@@ -153,7 +153,8 @@ function addTeams(save) {
   const cur = save.season?.current, me = save.contract, R = save.season?.calendar?.[save.clock.round];
   if (cur && me && R && cur.round === R.round) {               // prepareRound ran in the old world: every team below the new one is a place lower now
     cur.expPos = expOf(W.teams[me.team].expPos, me.seat);
-    if (!cur.quali) cur.objectives = objectivesFor(rng(save.seed, 'obj', save.clock.season, save.clock.round), cur.expPos, me.easier, !!cur.exempt || !!cur.open, cur.open && !cur.open.seeded ? cur.open.to : null);
+    const fresh = objectivesFor(rng(save.seed, 'obj', save.clock.season, save.clock.round), cur.expPos, me.easier, !!cur.exempt || !!cur.open, cur.open && !cur.open.seeded ? cur.open.to : null);
+    cur.objectives = cur.quali ? [fresh[0], ...cur.objectives.slice(1)] : fresh;   // after qualifying the player has seen the others: only the mandatory one follows the new place
   }
 }
 /** a driver code renamed everywhere in a save, as a map key or a value: codes are the only three-capital strings a save holds besides nations, which are skipped */

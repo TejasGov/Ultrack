@@ -1078,6 +1078,11 @@ try {
       const L0 = { ...s.world.loyalty }; toReview(s, 4); C.acceptOffer(s, s.pending.offers[0].id, avail); sound(s, 'the season after');
       assert.ok(s.world.teams.norrsken.expPos <= 3, 'a part season does not drop the team: ' + s.world.teams.norrsken.expPos); assert.ok(Object.values(s.world.teams).every((t) => !('joined' in t)), 'the mark goes after one season');
       for (const [k, c] of NEW.map((k, i) => [k, CODES[i]])) if (s.world.seats[k] === c) assert.ok(s.world.loyalty[c] >= Math.min(100, L0[c] + R.TUNING.market.loyaltyGrow) - R.TUNING.market.loyaltyBeaten, `${c} loses no loyalty for a part season`); }
+    { const s = signed(4106); while (C.currentWeek(s).kind !== 'race' || s.season.current?.open) { if (C.currentWeek(s).kind === 'race') round(s, 4); else C.advanceWeek(s); }
+      C.finishQuali(s, 999); eight(s); const me = s.contract, cur = s.season.current, main = (p) => R.objectivesFor(() => 0.5, p, me.easier, !!cur.exempt)[0];
+      cur.expPos = R.expOf(s.world.teams[me.team].expPos, me.seat); cur.objectives[0] = main(cur.expPos); const stale = cur.objectives[0], rest = JSON.stringify(cur.objectives.slice(1));   // as the old world rolled them
+      C.migrate(s); assert.deepEqual(cur.objectives[0], main(cur.expPos), 'migrated after qualifying: the mandatory objective follows the new expected place'); assert.notDeepEqual(cur.objectives[0], stale);
+      assert.equal(JSON.stringify(cur.objectives.slice(1)), rest, 'the others stay as shown'); }
     { const s = eight(signed(4105)); C.migrate(s); assert.ok(!('joined' in s.world.teams.norrsken), 'joined before a round is raced: a full season to judge'); }
     { const s = eight(signed(4103, 'liberty')), Wd = s.world;   // an old save already used the codes: an academy driver HAG, the player KOS
       Wd.academy.HAG = { name: 'Greta Haddad', nation: 'SWE' }; Wd.ratings.HAG = 74; Wd.ages.HAG = 21; Wd.loyalty.HAG = 60; Wd.contracts.HAG = 2; Wd.free.push('HAG'); s.career.heat.HAG = 45; s.career.rivalry = { HAG: { cause: 'pass', since: [1, 1], w: 1, l: 0 } };
