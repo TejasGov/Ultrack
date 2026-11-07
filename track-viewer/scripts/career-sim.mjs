@@ -96,7 +96,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (o?.kind === 'open') { log.opens++; if (!rep.dnq) log.finals++; if (!rep.dnq && !rep.dnf && rep.finish === 1) log.openWins++; }
       if (o?.kind === 'masters') { if (!rep.dnq) log.masters++; else log.absent++; }
       // the two series: every round with its series, and at a cup how many Challenger drivers raced its Final
-      log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, tier: save.season.tier, seat: save.contract.seat,
+      log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, lcq: !!rep.lcq, tier: save.season.tier, seat: save.contract.seat,
         ch: rep.kind === 'open' || rep.kind === 'masters' ? rep.entries.filter((e) => !e.dnq && e.div === 'challenger').length : null });
       log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);
       if (rep.midSeason?.warning) log.warnings++;
@@ -109,7 +109,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       log.seasonEnd.push({ tier: save.history.at(-1).tier, coins: save.wallet.coins, trust: save.contract.trust, rep: Math.round(save.career.rep), cl: save.career.cl });
       const offers = save.pending.offers, season = save.clock.season, h = save.history.at(-1), D = save.season.divs, W = save.world; log.offers.push(offers.length);
       const seated = (d) => Object.entries(W.seats).filter(([k, c]) => c && c !== 'YOU' && D?.[R.CAR[k].team] === d).map(([, c]) => W.ratings[c]);
-      log.seasons.push({ s: season, div: save.season.div ?? 'all', swap: h.swap ?? null, yourTeam: save.pending.review.yourTeam ?? null,
+      log.seasons.push({ s: season, div: save.season.div ?? 'all', tier: save.season.tier, dropped: !!save.pending.review.dropped, swap: h.swap ?? null, yourTeam: save.pending.review.yourTeam ?? null,
         sizes: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, R.TEAM_IDS.filter((t) => W.teams[t].div === d).length])),
         rating: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, seated(d).reduce((a, b) => a + b, 0) / Math.max(1, seated(d).length)])) });
       if (save.pending.review.dropped) log.drops++;

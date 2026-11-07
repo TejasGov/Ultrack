@@ -1,11 +1,11 @@
 // Measures seeded stub careers (career-sim.mjs play()) against the career's design targets and prints PASS or FAIL for each; exits 1 on any FAIL.
-// `node scripts/career-metrics.mjs [careers=100] [seasons=6]`. The targets are in docs/10x/career-spec.md (WP1: rivalries that are earned; WP3: the Sponsor Challenge; WP4: the contract market; WP5: choices with consequences).
+// `node scripts/career-metrics.mjs [careers=100] [seasons=6] [first seed=1000]` (a second seed set, e.g. 3000, tells a margin from noise). The targets are in docs/10x/career-spec.md (WP1: rivalries that are earned; WP3: the Sponsor Challenge; WP4: the contract market; WP5: choices with consequences).
 // It watches through wrapped copies of the career functions, so the careers play exactly as they do in career-sim.
 import { createServer } from 'vite';
 import assert from 'node:assert/strict';
 import { loadCareer, play, PICKS } from './career-sim.mjs';
 
-const N = +(process.argv[2] ?? 100), S = +(process.argv[3] ?? 6), MIN_RACED = 100, WALLET = { rookie: 17905, maestro: 49302, legend: 101082 };   // the average driver's wallet at the end of each tier, measured on the base commit (the spec's baseline)
+const N = +(process.argv[2] ?? 100), S = +(process.argv[3] ?? 6), S0 = +(process.argv[4] ?? 1000), MIN_RACED = 100, WALLET = { rookie: 17905, maestro: 49302, legend: 101082 };   // the average driver's wallet at the end of each tier, measured on the base commit (the spec's baseline)
 const server = await createServer({ root: new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom', logLevel: 'error' });
 let failed = 0;
 const check = (label, v, lo, hi, fmt = (x) => x.toFixed(2)) => { const ok = v >= lo && v <= hi; if (!ok) failed++; console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${label}: ${fmt(v)} (target ${fmt(lo)}-${fmt(hi)})`); };
@@ -56,7 +56,7 @@ try {
         const ch = (k) => s.season.divs[R.CAR[k].team] === 'challenger', lcq = o.kind === 'open' ? (o.stage === 'lcq' ? cur.quali.grid : o.lcq?.order ?? []) : null;
         ALL.cups.push({ key, kind: o.kind, seeds: o.seeds.length, chSeeds: o.seeds.filter(ch).length, lcq: lcq?.length ?? null, chLcq: lcq?.filter(ch).length ?? null, chSeated: Object.keys(s.world.seats).filter((k) => s.world.seats[k] && ch(k)).length }); };
       const W = { ...C, acceptOffer: accept, finishSide: (s, v) => side(s, C.finishSide(s, v)), finishRace: (s, r) => (cup(s), done(s, C.finishRace(s, r))), finishDnq: (s) => (cup(s), done(s, C.finishDnq(s))), finishLcq: (s, r) => (cup(s), done(s, C.finishLcq(s, r))) };
-      const { save, log } = play({ C: W, R }, 1000 + i, skill, S), rv = C.rivalsOf(save);
+      const { save, log } = play({ C: W, R }, S0 + i, skill, S), rv = C.rivalsOf(save);
       for (const t in A.money) if (log.money[t] !== undefined) A.money[t].push(log.money[t]);
       A.rivalsEnd += rv.length; A.feudsEnd += rv.filter((r) => r.feud).length; A.h2h += rv.reduce((a, r) => a + r.w + r.l, 0); A.firstRival.push(first);
       for (const r of rv) A.causes[r.cause] = (A.causes[r.cause] ?? 0) + 1;
@@ -72,14 +72,14 @@ try {
     check(`rivals at career end, at most (avg${why})`, A.rivalsEnd / N, 0, 3.0);
     gate(`rivals at career end (avg${why})`, A.rivalsEnd / N, 1.0, 3.0);
     // the realistic-pass probe: the same careers with a pass against every car within two places each race (the stub's one pass a race is a floor)
-    const probe = Array.from({ length: N }, (_, i) => C.rivalsOf(play(M, 1000 + i, skill, S, 'sprint', { passAll: true }).save).length).reduce((a, b) => a + b, 0) / N;
+    const probe = Array.from({ length: N }, (_, i) => C.rivalsOf(play(M, S0 + i, skill, S, 'sprint', { passAll: true }).save).length).reduce((a, b) => a + b, 0) / N;
     gate(`rivals at career end, a pass with every car within two places (avg${why})`, probe, 1.0, 3.0);
     // the nemesis races the player, so this counts the rounds they raced
     // open at average skill since Norrsken (2026-11-07): six Legend cars take six of the eight grid slots, so the average driver below them races fewer rounds and rarely
     // meets one driver often enough for a feud (24 % -> 6 %); halving the heat's decay brings it back to 19 % but gives the strong driver 3.4 rivals and 1.4 rival REP lines a race
-    // the weak driver races now (the cut problem is gone), but 17 % (base: no raced rounds) meets the trade-off above: what lifts it (less decay, more duel heat) gives the strong
-    // driver too many rival REP lines or makes the teammate the average driver's nemesis again (48 % with the duel's full cap). With the average driver's, it waits on the user
-    (label === 'average' || label === 'weak' ? openCheck : gate)(`raced rounds with a nemesis on the grid (${A.raced} raced${few ? `; misses the cut in ${pct(1 - A.raced / A.rounds)} of rounds` : ''})`, A.raced ? A.nemRaced / A.raced : NaN, 0.2, 0.7, pct);
+    // the weak driver races now (the cut problem is gone), but sits on the floor (19-20 %): what lifts it (the duel's heat at sqrt(field / 16) or field / 12) makes the teammate the
+    // average driver's nemesis again (46-47 %, at most 45 %), the trade-off D7 puts to the user. The average driver's waits on the user as since Norrsken
+    (label === 'average' || label === 'weak' ? openCheck : gate)(`raced rounds with a nemesis on the grid (${A.raced} raced${few ? `; misses the cut in ${pct(1 - A.raced / A.rounds)} of rounds` : ''}${label === 'weak' ? '; D7' : ''})`, A.raced ? A.nemRaced / A.raced : NaN, 0.2, 0.7, pct);
     // the qualifying duel must not make the teammate everyone's nemesis (it once was in 62-88 % of these rounds at average skill)
     if (label === 'average') check('the nemesis is the teammate, of raced rounds with one', A.nemMate / Math.max(1, A.nemRaced), 0, 0.45, pct);
     else console.log(`  info  the nemesis is the teammate in ${pct(A.nemMate / Math.max(1, A.nemRaced))} of raced rounds with one`);
@@ -125,13 +125,14 @@ try {
       // the top of the career, anchored to base f33630d (titles 2.12, Number One 60 %, Open wins 7.28 of 18): a third Legend team must not hand the strong driver the Legend tier
       check('titles a career', mean(L.map((l) => l.titles)), 1.7, 2.5);
       // a Legend title opens Number One; with the cups out of the series tables (D1) the strong driver takes fewer (base 2.27 a career), and Number One sits on the floor: it waits on D1
-      openCheck('Number One (D1: the cups score no series points)', any((l) => l.numberOne !== null), 0.55, 0.65, pct); openCheck('Open wins a career (the Elite top 2 start every Open Final on the front row: D1)', mean(L.map((l) => l.openWins)), 5.5, 8.5); }
+      openCheck('Number One (D1: the cups score no series points)', any((l) => l.numberOne !== null), 0.55, 0.65, pct); check('Open wins a career', mean(L.map((l) => l.openWins)), 5.5, 8.5); }
     if (label === 'average') check('final tier Legend', any((l) => l.tier.at(-1) === 'legend'), 0.14, 0.22, pct);   // 14 % on base f33630d; a third Legend team adds a third more Legend seats
     // no pick within a tier may be the quicker way up (a review finding: staying in the Challenger once reached Legend three times as often as taking the Elite): the same careers
-    // with the base commit's pick (tier, A seat, pay) and with one that stays in the Challenger, held to the targets' upper ends. The second waits on the user (docs/career-mode.md, D6)
+    // with the base commit's pick (tier, A seat, pay) and with one that stays in the Challenger, held to the targets' upper ends. The second waits on the user (docs/career-mode.md, D6: no
+    // tune measured holds it, see divisions-spec 24)
     if (label !== 'weak') for (const pk of ['base', 'challenger']) {
-      const P = Array.from({ length: N }, (_, i) => play(M, 1000 + i, skill, S, 'sprint', { pick: PICKS[pk] }).log), anyP = (f) => P.filter(f).length / N, gate = pk === 'challenger' ? openCheck : check, by = pk === 'base' ? "the base commit's pick" : 'a pick that stays in the Challenger';
-      if (label === 'average') { gate(`Legend offer, any, ${by}`, anyP((l) => l.legendOffer !== null), 0, 0.32, pct); gate(`final tier Legend, ${by}`, anyP((l) => l.tier.at(-1) === 'legend'), 0, 0.22, pct); }
+      const P = Array.from({ length: N }, (_, i) => play(M, S0 + i, skill, S, 'sprint', { pick: PICKS[pk] }).log), anyP = (f) => P.filter(f).length / N, gate = pk === 'challenger' ? openCheck : check, by = pk === 'base' ? "the base commit's pick" : 'a pick that stays in the Challenger';
+      if (label === 'average') { gate(`Legend offer, any, ${by}${pk === 'challenger' ? ' (D6)' : ''}`, anyP((l) => l.legendOffer !== null), 0, 0.32, pct); gate(`final tier Legend, ${by}${pk === 'challenger' ? ' (D6)' : ''}`, anyP((l) => l.tier.at(-1) === 'legend'), 0, 0.22, pct); }
       else gate(`Number One, ${by}`, anyP((l) => l.numberOne !== null), 0, 0.65, pct);
     }
     // the two series (docs/10x/divisions-spec.md 17): a new driver starts in the Challenger and races every round of their first season
@@ -141,16 +142,28 @@ try {
     check('season-1 Challenger rounds the player missed the cut', s1all.filter((x) => x.div === 'challenger' && x.dnq).length, 0, 0, (x) => String(x));
     if (label === 'weak') check('season-1 Tour rounds raced of rounds started', s1all.filter((x) => !x.dnq).length / Math.max(1, s1all.length), 0.95, 1, pct);
     if (label === 'average') {
-      openCheck('season-1 average Tour finish (of 8)', mean(L.map((l) => mean(s1(l).map((x) => x.finish)))), 3.5, 5.5);
+      openCheck('season-1 average Tour finish (of 8; D9: the Challenger is easier than the spec asked)', mean(L.map((l) => mean(s1(l).map((x) => x.finish)))), 3.5, 5.5);
       check('at least one league podium in season 1', any((l) => s1(l).some((x) => !x.dnq && x.finish <= 3)), 0.6, 1, pct);
-      openCheck('at least one league win in season 1', any((l) => s1(l).some((x) => !x.dnq && x.finish === 1)), 0.2, 0.4, pct);
+      openCheck('at least one league win in season 1 (D9)', any((l) => s1(l).some((x) => !x.dnq && x.finish === 1)), 0.2, 0.4, pct);
       check('Challenger drivers per Open Final', mean(L.flatMap((l) => l.rounds.filter((x) => x.kind === 'open').map((x) => x.ch))), 2, 3);
       const chs = L.flatMap((l) => l.seasons.filter((x) => x.div === 'challenger').map((x) => l.rounds.some((r) => r.s === x.s && r.kind === 'open' && !r.dnq)));
-      openCheck('Challenger seasons with at least one Open Final', chs.filter(Boolean).length / Math.max(1, chs.length), 0.5, 1, pct);
+      openCheck('Challenger seasons with at least one Open Final (D8)', chs.filter(Boolean).length / Math.max(1, chs.length), 0.5, 1, pct);
     }
     const upIn3 = any((l) => l.seasons.some((x) => x.s <= 3 && x.yourTeam === 'up'));
     if (label === 'average') check('your team promoted within the first 3 seasons', upIn3, 0.15, 0.35, pct);
-    if (label === 'strong') openCheck('your team promoted within the first 3 seasons', upIn3, 0.3, 0.5, pct);
+    if (label === 'strong') openCheck('your team promoted within the first 3 seasons (D9)', upIn3, 0.3, 0.5, pct);
+    // the player's own seat (a review finding): a beginner who races every round must not be let go more often than one who sat out (base 1479590: weak 0.76 a career, 25 % in season 1),
+    // and a good Challenger year must not sign them into an Elite seat they cannot qualify (outsideOffer, offGrid)
+    if (label === 'weak') { const ss = L.flatMap((l) => l.seasons), tour = L.flatMap((l) => l.rounds.filter((x) => x.kind === 'tour')), el = tour.filter((x) => x.div === 'elite');
+      check('drops a career (base 0.76, at most 0.25 more)', mean(L.map((l) => l.seasons.filter((x) => x.dropped).length)), 0, 1.01);
+      check('let go after season 1 (base 25 %)', ss.filter((x) => x.s === 1 && x.dropped).length / N, 0, 0.25, pct);
+      check(`Tour rounds raced in the Elite (${el.length}; they miss ${pct(el.filter((x) => x.dnq).length / Math.max(1, el.length))} of its cuts)`, el.length / Math.max(1, tour.length), 0, 0.065, pct); }   // 7.8 % before offGrid (9f9598c); 5 % / 6 % on seeds 1000 / 3000 now
+    // the Elite's midfield at the cups (a review finding): an average driver in a Maestro Elite seat, against a Maestro season on the base (missed 33 % of all rounds, 42 % of the
+    // Masters, sat out 21 %: a missed Tour cut, no Last Chance at an Open, outside the Masters). The cups' places for the Challenger come out of this seat's share: D8
+    if (label === 'average') { const me = L.flatMap((l) => l.rounds.filter((x) => x.tier === 'maestro' && x.div === 'elite')), by = (k) => me.filter((x) => x.kind === k);
+      console.log(`  info  a Maestro Elite season (${me.length} rounds): sat out ${pct(me.filter((x) => x.dnq && !x.lcq).length / Math.max(1, me.length))} (base 21 %), Tour cut missed ${pct(by('tour').filter((x) => x.dnq).length / Math.max(1, by('tour').length))}, Open Final missed ${pct(by('open').filter((x) => x.dnq).length / Math.max(1, by('open').length))} (base 40 %)`);
+      openCheck('a Maestro Elite seat, the Masters missed (D8; base 42 %)', by('masters').filter((x) => x.dnq).length / Math.max(1, by('masters').length), 0, 0.55, pct);
+      openCheck('a Maestro Elite seat, all rounds missed (D8; base 33 %)', me.filter((x) => x.dnq).length / Math.max(1, me.length), 0, 0.33, pct); }
     console.log(`  info  final series ${['elite', 'challenger'].map((d) => `${d} ${pct(any((l) => l.seasons.at(-1)?.div === d))}`).join(', ')}; your team promoted ${mean(L.map((l) => l.seasons.filter((x) => x.yourTeam === 'up').length)).toFixed(2)} and relegated ${mean(L.map((l) => l.seasons.filter((x) => x.yourTeam === 'down').length)).toFixed(2)} times a career, promoted within 3 seasons ${pct(upIn3)}`);
   }
   // ---- the two series' world: every skill's careers pooled, and 12-season careers for the long view
