@@ -709,9 +709,11 @@ try {
     { const s = signed(4510), o = Of.offer(s, 'corvid', 'B', { salary: 100, signing: 0, seasons: 2, why: 'x' }); s.season.mid.push(o); C.signMid(s, o.id); assert.equal(s.contract.next.div, 'challenger');
       s.world.teams.corvid.div = 'elite'; const [card] = Of.seasonOffers(s, { cup: false, title: false, dropped: false }); assert.equal(card.team, 'corvid'); assert.equal(card.div, 'elite', 'the card reads the series the team races next'); }
     // and if that team goes up to a seat this driver would not qualify (an Elite rated 99), its release clause lets them out; a team that stays down keeps the deal
-    { const seen = {}; for (let seed = 4560; seed < 4580 && !(seen.up && seen.stay); seed++) { const s = signed(seed), t = seed % 2 ? 'hayate' : 'corvid', o = Of.offer(s, t, 'B', { salary: 100, signing: 0, seasons: 2, why: 'x' }); s.season.mid.push(o); C.signMid(s, o.id);
+    { const seen = {}; for (let seed = 4560; seed < 4580 && !(seen.up && seen.stay); seed++) { const s = signed(seed), t = seed % 2 ? 'hayate' : 'corvid', o = Of.offer(s, t, 'B', { salary: 100, signing: 0, seasons: 2, why: 'x' }); s.season.mid.push(o);
+        s.contract.seasonsLeft = Math.max(s.contract.seasonsLeft, 3); const c0 = s.wallet.coins, t0 = s.contract.trust; C.signMid(s, o.id); const n = s.contract.next;
+        assert.ok(n.paid > 0 && s.wallet.coins - c0 === n.paid && t0 - s.contract.trust === n.trustCost, 'the deal records the cut and the trust it cost');
         for (const k of R.carsIn(s, 'elite')) s.world.ratings[s.world.seats[k]] = 99; toReview(s, 4); const up = s.history.at(-1).swap.up === t;
-        if (up) { seen.up = 1; assert.equal(s.contract.next, undefined); assert.ok(s.inbox.some((m) => m.title === `${R.loreOf(t).name} let you out of your deal`)); assert.ok(!s.pending.offers.some((x) => x.signed), 'the market is open again'); }
+        if (up) { seen.up = 1; assert.equal(s.contract.next, undefined); assert.ok(s.inbox.some((m) => m.title === `${R.loreOf(t).name} let you out of your deal` && m.body.includes('release clause goes back')), 'the release gives the cut back'); assert.ok(!s.pending.offers.some((x) => x.signed), 'the market is open again'); }
         else { seen.stay = 1; assert.equal(s.contract.next.team, t); } }
       assert.ok(seen.up && seen.stay, JSON.stringify(seen)); }
     // the market: the other series' points count, and a seated Elite driver never moves down to a Challenger team

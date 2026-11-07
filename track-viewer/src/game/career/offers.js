@@ -265,7 +265,8 @@ export function midSeason(save) {
 export function signMid(save, id) {
   const o = save.season?.mid?.find((x) => x.id === id), me = save.contract; if (!o || me.next) return null;
   const cut = me.seasonsLeft > 1 ? releaseCut(me) : 0;
-  me.next = { ...o, signed: true }; save.wallet.coins += cut; me.trust = clamp(me.trust - T.trust.signedAway, 0, 100);
+  const t0 = me.trust; me.trust = clamp(me.trust - T.trust.signedAway, 0, 100);
+  me.next = { ...o, signed: true, paid: cut, trustCost: t0 - me.trust }; save.wallet.coins += cut;   // paid, trustCost: what a release at the swap gives back (career.js endSeason)
   save.season.mid.splice(0);                                  // the others lapse: not answering is no refusal
   post(save, 'deal', `Signed with ${teamName(o.team)} for next season`, `${cut ? `Your cut of the release clause: ${coins(cut)}. ` : ''}Your team knows, and it has cost you some trust (-${T.trust.signedAway}).`);
   return { cut };

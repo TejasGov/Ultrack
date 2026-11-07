@@ -744,9 +744,9 @@ function endSeason(save) {
     const SE = standings(save, 'elite'), SC = standings(save, 'challenger'), E = SE.teams, Ch = SC.teams;
     champs = [['elite', SE], ['challenger', SC]].filter(([, x]) => x.drivers[0]).map(([d, x]) => ({ div: d, row: x.drivers[0] }));
     swap = { up: Ch[0].team, down: E.at(-1).team }; W[swap.up].div = 'elite'; W[swap.down].div = 'challenger';
-    if (me.next && offGrid(save, me.next.team, me.next.seat)) {   // a mid-season deal with a team that has just gone up, to a seat this driver would not qualify: its release clause lets them out
-      const t = teamName(me.next.team); delete me.next; me.trust = clamp(me.trust + T.trust.signedAway, 0, 100);
-      post(save, 'deal', `${t} let you out of your deal`, `${t} go up to the ${DIV.elite.name}, where their seat would miss the top ${T.series.gridSize} too often for a driver rated ${playerRating(save)}. ${me.seasonsLeft > 1 ? `Your contract with ${teamName(me.team)} stands.` : 'The market is open to you.'}`);
+    if (me.next && me.next.team === swap.up && offGrid(save, me.next.team, me.next.seat)) {   // a mid-season deal with a team that has just gone up, to a seat this driver would not qualify: its release clause lets them out
+      const t = teamName(me.next.team), back = Math.min(me.next.paid ?? 0, Math.max(0, save.wallet.coins)); me.trust = clamp(me.trust + (me.next.trustCost ?? T.trust.signedAway), 0, 100); save.wallet.coins -= back; delete me.next;
+      post(save, 'deal', `${t} let you out of your deal`, `${t} go up to the ${DIV.elite.name}, where their seat would miss the top ${T.series.gridSize} too often for a driver rated ${playerRating(save)}. ${back ? `Your cut of the release clause goes back: ${Math.round(back).toLocaleString('en')} U. ` : ''}${me.seasonsLeft > 1 ? `Your contract with ${teamName(me.team)} stands.` : 'The market is open to you.'}`);
     }
     yourTeam = me.team === swap.up ? 'up' : me.team === swap.down ? 'down' : null;
     if (div === 'elite') { if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; } if (teamPos === 1) rep += T.rep.teams; }
