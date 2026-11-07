@@ -7,7 +7,7 @@ import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
@@ -155,6 +155,10 @@ function addTeams(save) {
     cur.expPos = expOf(W.teams[me.team].expPos, me.seat);
     const fresh = objectivesFor(rng(save.seed, 'obj', save.clock.season, save.clock.round), cur.expPos, me.easier, !!cur.exempt || !!cur.open, cur.open && !cur.open.seeded ? cur.open.to : null);
     cur.objectives = cur.quali ? [fresh[0], ...cur.objectives.slice(1)] : fresh;   // after qualifying the player has seen the others: only the mandatory one follows the new place
+  }
+  if (me && save.season && save.clock.phase !== 'review') {    // a sponsor's place target set in the old world is a place too harsh below the new team
+    const ep = expOf(W.teams[me.team].expPos, me.seat), S = save.sponsors;
+    for (const d of [...(S?.deals ?? []).filter((x) => !x.met), ...(S?.offers ?? [])]) if (d.target.kind === 'top' || d.target.kind === 'quali') d.target = targetFor(d.target.kind, ep, save.season.calendar.length);
   }
 }
 /** a driver code renamed everywhere in a save, as a map key or a value: codes are the only three-capital strings a save holds besides nations, which are skipped */
@@ -665,7 +669,7 @@ function endSeason(save) {
   for (const d of S.deals) if (!d.met) post(save, 'sponsor', `${d.name}: target missed`, `You did not ${targetText(d.target)}. No bonus this year.`);
   for (const o of save.season.mid.splice(0)) { post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
-  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save) }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
+  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save), rankOf: rankingOf(save).length }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
   save.clock.phase = 'review';
   if (!me.next) openWindow(save);
   if (dropped) coverFired(save, me.team); else coverPrincipal(save, me.team);

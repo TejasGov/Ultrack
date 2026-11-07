@@ -1084,6 +1084,13 @@ try {
       C.migrate(s); assert.deepEqual(cur.objectives[0], main(cur.expPos), 'migrated after qualifying: the mandatory objective follows the new expected place'); assert.notDeepEqual(cur.objectives[0], stale);
       assert.equal(JSON.stringify(cur.objectives.slice(1)), rest, 'the others stay as shown'); }
     { const s = eight(signed(4105)); C.migrate(s); assert.ok(!('joined' in s.world.teams.norrsken), 'joined before a round is raced: a full season to judge'); }
+    { const s = eight(signed(4107)), n = s.season.calendar.length; s.contract.team = 'toro'; s.contract.seat = 'A';   // a seat below Norrsken: its sponsor's place targets were set one team place too high
+      const old = R.expOf(s.world.teams.toro.expPos, 'A'), deal = (kind, met = false) => ({ brand: kind, name: kind, retainer: 100, bonus: 1000, target: R.targetFor(kind, old, n), progress: 0, met, mood: 3 });
+      s.sponsors.deals = [deal('top'), deal('quali', true), deal('win')]; s.sponsors.offers = [{ id: 'o', sponsor: true, target: R.targetFor('quali', old, n) }];
+      C.migrate(s); const now = R.expOf(s.world.teams.toro.expPos, 'A'); assert.ok(now > old);
+      assert.deepEqual(s.sponsors.deals.map((d) => d.target), [R.targetFor('top', now, n), R.targetFor('quali', old, n), R.targetFor('win', old, n)], 'an open place target follows the new place; a met one and a win target stay');
+      assert.deepEqual(s.sponsors.offers[0].target, R.targetFor('quali', now, n)); assert.notDeepEqual(R.targetFor('top', now, n), R.targetFor('top', old, n)); }
+    { const s = signed(4108); toReview(s, 4); assert.equal(s.pending.review.rankOf, R.FIELD, 'the review records the field its ranking place is out of'); }
     { const s = eight(signed(4103, 'liberty')), Wd = s.world;   // an old save already used the codes: an academy driver HAG, the player KOS
       Wd.academy.HAG = { name: 'Greta Haddad', nation: 'SWE' }; Wd.ratings.HAG = 74; Wd.ages.HAG = 21; Wd.loyalty.HAG = 60; Wd.contracts.HAG = 2; Wd.free.push('HAG'); s.career.heat.HAG = 45; s.career.rivalry = { HAG: { cause: 'pass', since: [1, 1], w: 1, l: 0 } };
       s.player.code = 'KOS';
