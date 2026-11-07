@@ -113,6 +113,7 @@ mesh_obj('HW water', bm, ['water'])
 log('ground', len(GX_), 'x', len(GY_), 'collision quads', len(ground_col))
 
 exec(compile((H / 'wold_village.py').read_text(encoding='utf8'), str(H / 'wold_village.py'), 'exec'))
+exec(compile((H / 'wold_decor.py').read_text(encoding='utf8'), str(H / 'wold_decor.py'), 'exec'))
 
 collision(ground_col)
 write_track('Hartwell Wold', ['Textures: Poly Haven (CC0); see tracks/wold/CREDITS.md'], ['day', 'dusk'], 'day', [{'name': 'Church tower', 'pos': to_game(TOWER_TOP)}])
