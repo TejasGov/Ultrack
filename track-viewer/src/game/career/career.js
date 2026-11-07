@@ -146,7 +146,7 @@ export function migrate(save) {
  * Teams in teams.json that a save's world lacks (Norrsken, schema 12; Steelhead, schema 14) join it as a new career would roll them: the drivers' ratings, ages, contracts,
  * loyalty, ranking seed and seats. The team takes its expected place (every team from there down drops one) and the best development of its tier, so a
  * late joiner is not a lap down. A code the old save already gave someone (the player, an academy driver) is renamed first. Each new driver takes the race-day
- * points of the driver ranked where they are expected, so a mature ranking (its seed faded out) does not put them last. Joined mid-season, the team is marked
+ * points of the driver ranked where they are expected, so a mature ranking (its seed faded out) does not put them last. Joined mid-season (or into a divided season at all), the team is marked
  * `joined`: its part-season table place neither sets next season's expectation nor sours its drivers' loyalty. The round in progress gets the new expected place, unless the
  * season is divided: that one races on without the new team (racing). Returns the ids added.
  */
@@ -155,7 +155,7 @@ function addTeams(save) {
   for (const id of added) {
     const pos = Math.min(TIERS.teams[id].expPos, Object.keys(W.teams).length + 1), peers = Object.keys(W.teams).filter((t) => TIERS.teams[t].tier === TIERS.teams[id].tier);
     for (const t of Object.values(W.teams)) if (t.expPos >= pos) t.expPos++;
-    W.teams[id] = { ...fresh.teams[id], expPos: pos, dev: fresh.teams[id].dev.map((d, i) => Math.max(d, ...peers.map((t) => W.teams[t].dev[i] ?? 0))), ...(save.season?.results?.length ? { joined: save.clock.season } : {}) };
+    W.teams[id] = { ...fresh.teams[id], expPos: pos, dev: fresh.teams[id].dev.map((d, i) => Math.max(d, ...peers.map((t) => W.teams[t].dev[i] ?? 0))), ...(save.season?.results?.length || save.season?.divs ? { joined: save.clock.season } : {}) };   // a divided season races on without it, from its first round too
     for (const key of ['A', 'B'].map((x) => seatCar(id, x))) {
       const code = CAR[key].driver.code;
       if (save.player.code === code) { save.player.code = codeOf(save.player.name); for (const r of save.season?.results ?? []) for (const e of r.entries) if (e.you) e.code = save.player.code; }
@@ -587,8 +587,8 @@ export function finishRace(save, result) {
   // a Challenger driver's round keeps `rate` of what it earns above the base, a cup's too (its seeds start a Final far above their expected place): a good round from the weaker
   // series rates below the same from the Elite, so the climb to the tiers above runs at the Elite's pace
   const field = divided ? cur.field : DIV.legacyField, rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog, rookie: TIERS.tiers[tier].rank === 1, field, ...(S0.div === 'challenger' ? { share: DIV.challenger.rate, shareLine: `${DIV.challenger.short} field` } : {}) });
-  const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry expected ahead from a higher tier, or (at an Open or the Masters) from the Elite while racing in the Challenger
-  const giantKills = dnf || dnq ? 0 : entries.slice(finish).filter((e) => (tierOf(e.team).rank > myRank || (e.div === 'elite' && S0.div === 'challenger')) && e.exp < myExp).length;
+  const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry expected ahead from a higher tier, or (at an Open or the Masters) from the Elite while racing in the Challenger; under the grace a car that sat out after qualifying ahead was not beaten
+  const giantKills = dnf || dnq ? 0 : entries.slice(finish).filter((e) => !(grace && e.dnq && cur.quali.order.indexOf(e.key) < grace.from - 1) && (tierOf(e.team).rank > myRank || (e.div === 'elite' && S0.div === 'challenger')) && e.exp < myExp).length;
   const rivals = heatAfter(save, raced, hero, dnf, { contacts: result.contacts ?? {}, passes: result.passes ?? {}, duel: duel.skipped || dnq ? null : cur.quali.mate.code });   // the qualifying duel heats the teammate, only in a round the player raced
   const xp = xpFor({ ...x, ...judged, pole, mandatory, optional, tier, pro: result.pro, underdog: me.underdog, field, reward: rw });
   if (rivals.xp) { xp.lines.push(['Nemesis beaten', rivals.xp]); xp.xp += rivals.xp; }

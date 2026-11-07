@@ -54,6 +54,9 @@ try {
   // no valid lap under the grace: the hub asks for a lap, not for the cut (a copy of the career, put back after)
   await run(`g.qaKeep = structuredClone(g.career); g.qaSession = g.careerSession; g.careerSession = (kind, spec, done) => done({ best: null, mateLap: null, hits: [] });`);
   await page.click('.screen.on .cx-mode.k-race[data-ic=time-trial]'); await page.waitForTimeout(400); await shot('career-nolap-toast'); await page.waitForTimeout(4500); await both('career-home-nolap');
+  report.career.nolapFirst = await run(`return [...document.querySelectorAll('.screen.on .cx-mode.k-race')].map((e) => e.textContent);`);
+  // the retry spent with no lap either (finishQuali as the session calls it): no race this round, and every tile says so
+  await run(`C.finishQuali(g.career, null); g.show('careerHub', 'home');`); await page.waitForTimeout(800); await both('career-home-nolap-used');
   report.career.nolap = await run(`const q = g.career.season.current.quali, r = { waits: C.graceWaits(g.career, q), tiles: [...document.querySelectorAll('.screen.on .cx-mode.k-race')].map((e) => e.textContent), next: document.querySelector('.screen.on .cx-next')?.textContent };
     g.careerSession = g.qaSession; delete g.qaSession; g.career = g.qaKeep; delete g.qaKeep; S.saveCareer(g.career, 0); g.show('careerHub', 'home'); return r;`);
   await page.waitForTimeout(800);

@@ -192,6 +192,9 @@ try {
     { const Of = await server.ssrLoadModule('/src/game/career/offers.js'), x = JSON.parse(JSON.stringify(g)); assert.deepEqual([Of.wantOf(g, 'toro').key, Of.wantOf(g, 'toro').n], ['gained', 0], 'P8 from P8: no places gained, whatever they qualified');
       x.season.results.at(-1).finish = 5; assert.equal(Of.wantOf(x, 'toro').n, 3); assert.equal(Of.wantOf(x, 'liberty').n, 1, 'came through from behind: from the start slot'); }
     assert.equal(r.entries.find((e) => e.key === out).dnq, true, 'the car that sat out is a DNQ'); assert.equal(r.entries.filter((e) => e.dnq).length, 2); assert.equal(r.entries.find((e) => e.key === out).pts, 0);
+    { let bites = 0; for (let sd = 300; sd < 330; sd++) { const k = signed0(sd); C.finishQuali(k, 999); const kq = k.season.current.quali, kr = C.finishRace(k, { order: kq.grid, best: {} });   // the cars that sat out qualified ahead: none was beaten
+      bites += kr.entries.some((e) => e.dnq && R.TIERS.tiers[R.TIERS.teams[e.team].tier].rank > 1 && e.exp < kr.expPos); assert.ok(!kr.repLines.some(([l]) => /Giant/.test(l)), `seed ${sd}: no giant-killing from P8 under the grace`); }
+      assert.ok(bites > 0, 'some of those rounds had a higher-tier car expected ahead sit out'); }
     assert.ok(r.rrLines.some(([l]) => l === 'Qualified 2 below expected'), 'the rating reads the qualifying place'); assert.ok(!r.rrLines.some(([l]) => /Did not qualify/.test(l)));
     assert.ok(g.inbox.some((m) => /P8 from P8 \(qualified P10\)/.test(m.title))); assert.ok(!g.media.some((m) => /misses the cut|sits out/.test(m.title)));
     assert.equal(R.objectiveMet({ kind: 'quali', n: 9 }, { grid: 10, start: 8 }), false, 'qualify P9: missed at P10, grace or not'); assert.equal(R.objectiveMet({ kind: 'gain', n: 2 }, { grid: 10, start: 8, finish: 7 }), false, 'places gained count from the grid slot');
@@ -1449,6 +1452,7 @@ try {
     { const s = thirteen(toReview(signed(4123), 4)), ids = s.pending.offers.map((o) => o.id), day = C.windowInfo(s).day;
       C.migrate(s); sound(s, 'at the review'); assert.deepEqual(s.pending.offers.map((o) => o.id), ids, 'the offers stand'); assert.equal(C.windowInfo(s).day, day); assert.equal(s.world.teams.steelhead.div, 'challenger');
       C.acceptOffer(s, s.pending.offers[0].id, avail); sound(s, 'the season after'); assert.equal(s.season.divs.steelhead, 'challenger'); assert.equal(R.carsIn(s, 'challenger').length + R.carsIn(s, 'elite').length, R.FIELD); round(s, 4); }
+    { const s = thirteen(signed(4125)); C.migrate(s); assert.equal(s.world.teams.steelhead.joined, 1, 'before the first round too: a season it does not race is not judged'); assert.equal(R.racing(s, 'steelhead'), false); playOn(s, 'before the first round'); }
     { const s = signed(4124); round(s, 4); const before = JSON.stringify(s); C.migrate(s); assert.equal(JSON.stringify(s), before, 'a schema-14 save is unchanged by migrate'); } }
 
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays

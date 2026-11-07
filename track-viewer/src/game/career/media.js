@@ -56,7 +56,7 @@ export function coverRound(save, report) {
   // a feud with the player that is still alive
   const feud = rivalsOf(save).find((x) => x.feud && x.key && E.some((e) => e.key === x.key));
   if (feud) {
-    const theirs = E.findIndex((e) => e.key === feud.key), beat = theirs > at && !report.dnf && !report.dnq;
+    const theirs = E.findIndex((e) => e.key === feud.key), beat = theirs > at && !report.dnf && !report.dnq && !(report.grace && E[theirs].dnq);   // under the grace the cars that sat out qualified ahead (all but a P10 one): they did not finish behind
     const why = callbackOf(save, 'rival', { who: feud.code })?.text;   // what started it, from the ledger
     story(save, 'feud', beat ? `${me.name} wins the latest round with ${surname(feud.code)}` : `${surname(feud.code)} has the last word over ${me.name}`, `${beat ? `${nameOf(feud.code)} finished behind at the ${gp}, and did not stop for a handshake.` : `The feud goes on after the ${gp}. Neither camp is pretending otherwise.`}${why ? ` ${why}` : ''}`, { driver: feud.code, mood: beat ? 'down' : 'win', track });
   }
