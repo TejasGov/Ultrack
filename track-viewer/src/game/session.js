@@ -8,7 +8,7 @@ const DRIVER = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [
 const ON_TRACK = new Set(['asphalt', 'pit', 'kerb', 'sausage kerb', 'run-off', 'paved']);
 
 export const MODES = {
-  race: { label: 'Race', desc: 'Eight teams, one car each. Lights out and away we go.', laps: true, rivals: true, start: 'lights', tags: ['race'] },
+  race: { label: 'Race', desc: 'Eight cars, one per team. Lights out and away we go.', laps: true, rivals: true, start: 'lights', tags: ['race'] },
   trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Leave the track and the lap does not count.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true },
   quali: { label: 'Qualifying', desc: 'One valid flying lap sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true, validLaps: 1 },   // the career's (game.js careerWeekend)
   drift: { label: 'Drift Attack', desc: 'Ninety seconds. Chain drifts for the multiplier; touch the grass and the chain is gone.', laps: false, rivals: false, start: 'count', tags: ['free'], seconds: 90 },

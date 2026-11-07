@@ -1,0 +1,110 @@
+{
+  "car": "jesko",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "suspension": {
+    "pitch": 0.4,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.08
+  },
+  "aero": [],
+  "log": [
+    "2026-11-07: new complete model (Sketchfab, see assets/cars/jesko/source.json); first QA run",
+    "run 1: tyres 2.7 cm into the front arch tops, 3.6 cm under the lips, 5.7 cm with the nose down -> ride 0.06, pitch 0.4; white patches of the atlas shading on the haunches and tail -> prepare step paints every unsaturated light texel",
+    "run 2: front top gap 0.2 cm, 2.3 cm into the arch with the nose down -> ride 0.075, pitch 0.35",
+    "run 3: dive 0.75 deg, 0.6 cm into the arch nose-down -> ride 0.08, pitch 0.4",
+    "run 4: the 11 gaps of 20 cm2 or more traced to the open space under the swan-neck wing and the rear grille seen side-on -> waived"
+  ],
+  "qa": {
+    "waive": [
+      {
+        "view": "left",
+        "at": [
+          0.86,
+          0.47
+        ],
+        "why": "daylight through the open rear grille behind the rear wheel, seen exactly side-on: open on the real car (traced: trace-left-0.png)"
+      },
+      {
+        "view": "right",
+        "at": [
+          0.14,
+          0.47
+        ],
+        "why": "daylight through the open rear grille behind the rear wheel, seen exactly side-on: open on the real car (traced: trace-right-1.png)"
+      },
+      {
+        "view": "front",
+        "at": [
+          0.4,
+          0.58
+        ],
+        "why": "daylight under the rear wing, between its swan-neck struts (traced: trace-front-2.png)"
+      },
+      {
+        "view": "front",
+        "at": [
+          0.6,
+          0.58
+        ],
+        "why": "daylight under the rear wing, between its swan-neck struts (traced: trace-front-3.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.4,
+          0.58
+        ],
+        "why": "daylight under the rear wing, between its swan-neck struts (traced: trace-rear-6.png)"
+      },
+      {
+        "view": "rear",
+        "at": [
+          0.6,
+          0.58
+        ],
+        "why": "daylight under the rear wing, between its swan-neck struts (traced: trace-rear-7.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.77,
+          0.63
+        ],
+        "why": "daylight under the rear wing (traced: trace-front-left-10.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.71,
+          0.65
+        ],
+        "why": "daylight under the rear wing (traced: trace-front-left-11.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.22,
+          0.63
+        ],
+        "why": "daylight under the rear wing (traced: trace-front-right-12.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.29,
+          0.65
+        ],
+        "why": "daylight under the rear wing (traced: trace-front-right-13.png)"
+      },
+      {
+        "view": "low-left",
+        "at": [
+          0.8,
+          0.56
+        ],
+        "why": "daylight under the rear wing (traced: trace-low-left-14.png)"
+      }
+    ]
+  }
+}

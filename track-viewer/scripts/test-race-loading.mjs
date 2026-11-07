@@ -37,7 +37,7 @@ try{
   let bytes=0;for(const s of LOADING_SLIDES)bytes+=statSync(new URL(`../public${s.image}`,import.meta.url)).size;
   assert(bytes<1.5*1024*1024,'Entire art set stays below 1.5 MB');   // raised from 1 MB at nine circuits; only the race's own still loads here
   const teams=JSON.parse(readFileSync(new URL('../../assets/teams/teams.json',import.meta.url),'utf8')).teams.length;
-  assert.equal(fieldLine('race'),`${['No','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten'][teams]} teams. One grid.`);
+  assert.equal(fieldLine('race'),`${['No','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten'][Math.min(teams,8)]} teams. One grid.`,'the teams that fit the 8 grid slots');
   const css=readFileSync(new URL('../src/game/race-loading.css',import.meta.url),'utf8');
   assert(css.includes('prefers-reduced-motion'));assert(!/Arial|#e8be74|pulse/i.test(css),'no Arial, no gold, no pulse');
   console.log(`PASS: ${LOADING_SLIDES.length} circuit stills under 1.5 MB (${Math.round(bytes/1024)} KB), per-circuit copy, the true field, real stage completion with a percentage, Escape, cleanup, repeated opens and reduced motion.`);

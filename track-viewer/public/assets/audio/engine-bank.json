@@ -1680,6 +1680,274 @@
    "quality": "measured",
    "preview": "engines/v3/nissan-z-source.ogg",
    "sharedWith": "nissan-z"
+  },
+  "jesko": {
+   "name": "Koenigsegg Jesko twin-turbo V8 (the McLaren 720S V8 recording)",
+   "redline": 8500,
+   "cars": [
+    "jesko"
+   ],
+   "idle": {
+    "file": "engines/v3/mp1x-idle.ogg",
+    "rpm": 1187,
+    "loopStart": 0.123354,
+    "loopEnd": 3.110708
+   },
+   "on": [
+    {
+     "file": "engines/v3/mp1x-on-1.ogg",
+     "rpm": 1600,
+     "loopStart": 0.123896,
+     "loopEnd": 2.052104
+    },
+    {
+     "file": "engines/v3/mp1x-on-2.ogg",
+     "rpm": 1880,
+     "loopStart": 0.122667,
+     "loopEnd": 2.085479
+    },
+    {
+     "file": "engines/v3/mp1x-on-3.ogg",
+     "rpm": 2210,
+     "loopStart": 0.122833,
+     "loopEnd": 2.090708
+    },
+    {
+     "file": "engines/v3/mp1x-on-4.ogg",
+     "rpm": 2600,
+     "loopStart": 0.118854,
+     "loopEnd": 2.073313
+    },
+    {
+     "file": "engines/v3/mp1x-on-5.ogg",
+     "rpm": 3050,
+     "loopStart": 0.121313,
+     "loopEnd": 2.092021
+    },
+    {
+     "file": "engines/v3/mp1x-on-6.ogg",
+     "rpm": 3580,
+     "loopStart": 0.118688,
+     "loopEnd": 2.109021
+    },
+    {
+     "file": "engines/v3/mp1x-on-7.ogg",
+     "rpm": 4200,
+     "loopStart": 0.118958,
+     "loopEnd": 2.101354
+    },
+    {
+     "file": "engines/v3/mp1x-on-8.ogg",
+     "rpm": 4930,
+     "loopStart": 0.123146,
+     "loopEnd": 2.11275
+    },
+    {
+     "file": "engines/v3/mp1x-on-9.ogg",
+     "rpm": 5790,
+     "loopStart": 0.120667,
+     "loopEnd": 2.105917
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/mp1x-off-1.ogg",
+     "rpm": 1630,
+     "loopStart": 0.122125,
+     "loopEnd": 1.588521
+    },
+    {
+     "file": "engines/v3/mp1x-off-2.ogg",
+     "rpm": 1950,
+     "loopStart": 0.12225,
+     "loopEnd": 1.560854
+    },
+    {
+     "file": "engines/v3/mp1x-off-3.ogg",
+     "rpm": 2330,
+     "loopStart": 0.116458,
+     "loopEnd": 1.586292
+    },
+    {
+     "file": "engines/v3/mp1x-off-4.ogg",
+     "rpm": 2790,
+     "loopStart": 0.117813,
+     "loopEnd": 1.580271
+    },
+    {
+     "file": "engines/v3/mp1x-off-5.ogg",
+     "rpm": 3340,
+     "loopStart": 0.119313,
+     "loopEnd": 1.616854
+    }
+   ],
+   "shifts": [
+    "engines/v3/mp1x-shift-0.ogg",
+    "engines/v3/mp1x-shift-1.ogg"
+   ],
+   "pops": [
+    "engines/v3/mp1x-pop-0.ogg",
+    "engines/v3/mp1x-pop-1.ogg",
+    "engines/v3/mp1x-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+     "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+     "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "closest real recording: a twin-turbo flat-plane V8 (no Koenigsegg 5.0 L recording yet); the Koenigsegg V8 revs to 8,500 rpm",
+   "quality": "measured",
+   "preview": "engines/v3/mp1x-source.ogg",
+   "sharedWith": "mp1x"
+  },
+  "cc850": {
+   "name": "Koenigsegg CC850 twin-turbo V8 (the McLaren 720S V8 recording)",
+   "redline": 8500,
+   "cars": [
+    "cc850"
+   ],
+   "idle": {
+    "file": "engines/v3/mp1x-idle.ogg",
+    "rpm": 1187,
+    "loopStart": 0.123354,
+    "loopEnd": 3.110708
+   },
+   "on": [
+    {
+     "file": "engines/v3/mp1x-on-1.ogg",
+     "rpm": 1600,
+     "loopStart": 0.123896,
+     "loopEnd": 2.052104
+    },
+    {
+     "file": "engines/v3/mp1x-on-2.ogg",
+     "rpm": 1880,
+     "loopStart": 0.122667,
+     "loopEnd": 2.085479
+    },
+    {
+     "file": "engines/v3/mp1x-on-3.ogg",
+     "rpm": 2210,
+     "loopStart": 0.122833,
+     "loopEnd": 2.090708
+    },
+    {
+     "file": "engines/v3/mp1x-on-4.ogg",
+     "rpm": 2600,
+     "loopStart": 0.118854,
+     "loopEnd": 2.073313
+    },
+    {
+     "file": "engines/v3/mp1x-on-5.ogg",
+     "rpm": 3050,
+     "loopStart": 0.121313,
+     "loopEnd": 2.092021
+    },
+    {
+     "file": "engines/v3/mp1x-on-6.ogg",
+     "rpm": 3580,
+     "loopStart": 0.118688,
+     "loopEnd": 2.109021
+    },
+    {
+     "file": "engines/v3/mp1x-on-7.ogg",
+     "rpm": 4200,
+     "loopStart": 0.118958,
+     "loopEnd": 2.101354
+    },
+    {
+     "file": "engines/v3/mp1x-on-8.ogg",
+     "rpm": 4930,
+     "loopStart": 0.123146,
+     "loopEnd": 2.11275
+    },
+    {
+     "file": "engines/v3/mp1x-on-9.ogg",
+     "rpm": 5790,
+     "loopStart": 0.120667,
+     "loopEnd": 2.105917
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/mp1x-off-1.ogg",
+     "rpm": 1630,
+     "loopStart": 0.122125,
+     "loopEnd": 1.588521
+    },
+    {
+     "file": "engines/v3/mp1x-off-2.ogg",
+     "rpm": 1950,
+     "loopStart": 0.12225,
+     "loopEnd": 1.560854
+    },
+    {
+     "file": "engines/v3/mp1x-off-3.ogg",
+     "rpm": 2330,
+     "loopStart": 0.116458,
+     "loopEnd": 1.586292
+    },
+    {
+     "file": "engines/v3/mp1x-off-4.ogg",
+     "rpm": 2790,
+     "loopStart": 0.117813,
+     "loopEnd": 1.580271
+    },
+    {
+     "file": "engines/v3/mp1x-off-5.ogg",
+     "rpm": 3340,
+     "loopStart": 0.119313,
+     "loopEnd": 1.616854
+    }
+   ],
+   "shifts": [
+    "engines/v3/mp1x-shift-0.ogg",
+    "engines/v3/mp1x-shift-1.ogg"
+   ],
+   "pops": [
+    "engines/v3/mp1x-pop-0.ogg",
+    "engines/v3/mp1x-pop-1.ogg",
+    "engines/v3/mp1x-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "FiExhaust",
+     "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+     "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "FiExhaust",
+     "title": "BMW G82 M4 Idle Revving X Interior Sound: w/ Valvetronic Fi EXHAUST X Made Motorsports",
+     "url": "https://www.youtube.com/watch?v=nxC6jPnQ1Vk",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "1dfce787a3c4e88054ddaa2e11b43db2de62d9df5b8e995d86038726b511d4a2",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "closest real recording: a twin-turbo flat-plane V8 (no Koenigsegg 5.0 L recording yet); the Koenigsegg V8 revs to 8,500 rpm",
+   "quality": "measured",
+   "preview": "engines/v3/mp1x-source.ogg",
+   "sharedWith": "mp1x"
   }
  },
  "tyres": {

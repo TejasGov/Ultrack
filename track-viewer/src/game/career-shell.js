@@ -10,7 +10,7 @@ import { icon } from './icons.js';
 import { TRACKS } from '../tracks.js';
 import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
-import { loreOf, TIERS, CAL, SPONSORS, xpForLevel } from './career/rules.js';
+import { loreOf, TIERS, CAL, SPONSORS, DIV, xpForLevel } from './career/rules.js';
 
 export const ROUND_EVENT = { tour: 'Tour', open: 'Open', masters: 'Masters', sprint: 'Sprint', grandprix: 'Grand Prix', showpiece: 'Showpiece', finale: 'Season Finale' };   // a round's `event`; the last four are seasons from before the Tour
 export const LOOK = { day: ['Day', 'sun'], dusk: ['Dusk', 'sunset'], bluehour: ['Evening', 'moon-horizon'], night: ['Night', 'moon'] };
@@ -70,7 +70,7 @@ export const prompts = (...list) => list.map(([k, p, l]) => prompt(k, p, l));
 export const SELECT = [['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'], CHOOSE = ['Enter', 'a', 'Choose'];
 
 const SHORT = { india: 'Ghat', drylake: 'Lake', qingshan: 'Forest', infinia: 'Infinia', marina: 'Marina', shajawa: 'Bowl', tokyo: 'Tokyo', llano: 'Llano', venice: 'Venice', pilbara: 'Pit', terminal: 'Port', morro: 'Morro' }, OPEN_SHORT = { open: 'Open', masters: 'Masters' };
-const WEEK_LABEL = (save, w) => (w.kind === 'race' ? `R${w.round + 1} ${OPEN_SHORT[w.ev] ?? (save.season.calendar[w.round].finale ? 'Finale' : SHORT[save.season.calendar[w.round].track] ?? '')}` : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
+const WEEK_LABEL = (save, w) => (w.kind === 'race' ? `R${w.round + 1} ${OPEN_SHORT[w.ev] ?? (save.season.calendar[w.round].finale ? 'Finale' : SHORT[save.season.calendar[w.round].track] ?? TRACKS[save.season.calendar[w.round].track]?.name.split(' ')[0] ?? '')}` : w.kind === 'market' ? 'Market' : w.kind === 'end' ? 'Review' : w.event.kind === 'test' ? 'Test' : 'Sponsor');
 const WEEK_ICON = (w) => (w.kind === 'race' ? (w.ev ? (w.ev === 'tour' ? 'race' : 'trophy') : 'race') : w.kind === 'market' ? 'contract' : w.kind === 'end' ? 'trophy' : EVENT[w.event.kind][1]);
 export const kindIcon = WEEK_ICON;
 /** a week as words, for the Calendar and the footer */
@@ -84,6 +84,10 @@ export function strip(save) {
 export const blockHead = (ic, title, right) => h('div.cx-bh', { 'data-ic': ic }, h('span', {}, ic ? h('i.cx-ico', {}, icon(ic)) : null, title), right ? h('span', {}, right) : null);
 export const worldName = (save) => (save.season?.calendar.some((r) => r.kind) ? 'The Ultrack Tour' : CAL.worlds[save.season?.world]?.name);   // a season rolled before the Tour keeps its world
 export const tierCup = (save) => TIERS.tiers[save.season.tier].cup;
+/** the header's second line: the player's series with two of them, else the tier Cup of a season from before the split */
+export const seriesLine = (save) => `${save.season?.div ? DIV[save.season.div].name : tierCup(save)} · ${worldName(save)}`;
+/** a series as a chip: its name on its colour, so it never rests on colour alone; nothing for a season from before the split */
+export const divChip = (d) => (DIV[d] && d !== 'order' ? h(`span.cx-div.d-${d}`, {}, DIV[d].short) : null);
 /** a sponsor's logo on its own colour; the brand's name if the file is not there */
 export function brandMark(id) {
   const B = SPONSORS.brands[id], box = css(h('span.cx-brand'), { '--bg': B.bg });
@@ -92,7 +96,7 @@ export function brandMark(id) {
 }
 
 // ---------------------------------------------------------------------------------------------- the press
-export const STORY_KICK = { win: 'Race report', podium: 'Race report', down: 'A bad day', duel: 'Teammates', feud: 'The feud', drama: 'The paddock', move: 'The market', social: 'Fan talk', rumor: 'Rumour', fired: 'The seat', life: 'Off the track', scandal: 'Scandal' };
+export const STORY_KICK = { league: 'The tables', win: 'Race report', podium: 'Race report', down: 'A bad day', duel: 'Teammates', feud: 'The feud', drama: 'The paddock', move: 'The market', social: 'Fan talk', rumor: 'Rumour', fired: 'The seat', life: 'Off the track', scandal: 'Scandal' };
 export const storySource = (s) => ({ drama: 'Paddock Whispers', feud: 'Paddock Whispers', rumor: 'Paddock Whispers', scandal: 'Paddock Whispers', move: 'The Transfer Desk', fired: 'The Transfer Desk', social: 'The Feed' }[s.kind] ?? 'Ultrack Wire');
 /** a story's picture, never cropped: the whole image over a blurred copy of itself, in a frame that shape. If the file is not there (art not uploaded yet) the circuit's still takes over, then a plain frame */
 export function storyPic(save, s, cls = '') {

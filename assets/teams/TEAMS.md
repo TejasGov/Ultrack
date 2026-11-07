@@ -1,6 +1,6 @@
 # Ultrack teams and drivers
 
-Eight fictional race teams own the grid, each with two cars and two drivers, like F1 constructors (sixteen cars; a race runs one car per team, so eight). `teams.json` holds the data the game reads:
+Nine fictional race teams own the grid, each with two cars and two drivers, like F1 constructors (eighteen cars). A quick race runs one car per team, as many as the eight grid slots hold: with nine teams, the one furthest from the player's in the expected order sits out (`game.js` `racersFor`). A career round qualifies all eighteen and races the fastest eight. `teams.json` holds the data the game reads:
 - per team: id, name, three-letter code, colours (plus an optional text colour, `ink`, for a team whose accent is too pale to read on its primary), an optional light colour (`light`), display font, paint finish, livery brief and pit boxes;
 - per car: its key and race number;
 - per driver: name, broadcast code, nationality, age, role, a one-line bio, background, personality and rivals (driver codes).
@@ -9,7 +9,7 @@ Team and driver names are fictional. Real sponsor artwork is used in this local 
 
 ## Teams
 
-All eight teams have original emblems and outlined wordmarks, exported as SVG
+All nine teams have original emblems and outlined wordmarks, exported as SVG
 masters plus transparent PNG/WebP textures. Team, dark-background and
 light-background variants are available as horizontal lockups and standalone
 emblems. See [logo documentation](logos/README.md) and the live gallery at
@@ -26,8 +26,9 @@ cards reuse these assets. Sponsor artwork is separate from the team identities.
 | **Liberty** | LIB | English: freedom; the cracked bell of Philadelphia | Philadelphia, PA | Harlan Whitfield | V6 / V8 (Ford GT Mk II and Blackbird) |
 | **Sarab** | SRB | Arabic: a mirage (the home team) | Corniche Marina | Rashid Al-Mansouri | V8 / flat-six |
 | **Hayate** | HYT | Japanese: 疾風, a sudden gale | Oyama, Shizuoka | Tatsuo Hamamoto | twin-turbo V6 (Nissan Z GT4) / turbo four (Supra Super GT) |
+| **Norrsken** | NRS | Swedish: the northern lights | Ängelholm, Sweden | Henrik Wallgren | twin-turbo V8 (Koenigsegg Jesko and CC850; the recorded McLaren 720S V8 for now) |
 
-Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Eight teams, one title sponsor each (Hayate's is Sony, whose boards also line the Marina; see ../sponsors/README.md).
+Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Nine teams, one title sponsor each (Hayate's is Sony, whose boards also line the Marina; Norrsken's is Samsung, already on the Cheongsan Park boards; see ../sponsors/README.md).
 
 ## Saetta and Toro: the two Italian houses
 
@@ -49,6 +50,14 @@ The look: murasaki (Edo violet), shironeri white and shu vermilion, three colour
 
 Rivalries: Mizuno and Lindqvist argue about who is the better sideways; Kuroda wants Valois's crown; the two teammates disagree about whether sliding is fast. No recorded commentary names Hayate yet; the generic lines play.
 
+## Norrsken: the Swedish hypercar team
+
+**Norrsken** ("the northern lights"; Ängelholm, Sweden; principal Henrik Wallgren, who founded the car company and still runs it) is the ninth team, added 2026-11-07, and the third Legend team: a hypercar maker that went racing with its own two cars, the Koenigsegg Jesko (#10, Elin Hagberg) and the Koenigsegg CC850 (#85, Jari Koskinen; the number echoes the car). Its line is *Light from the long night.* The speed is proven, the racecraft is not yet: the pair are the quickest cars on the grid on paper (career `carZ` 0.77 and 0.62), and the team is expected third, behind Aurum and Saetta.
+
+The look: graphite (#1f2428), aurora green (#3ee0a1) and ice (#e8f1f2), in **Michroma** (SIL OFL, `track-viewer/public/assets/fonts/michroma-OFL.txt`, from the installed `@fontsource/michroma`). The emblem is a four-point north star above two aurora ribbons; the wordmark is NORRSKEN, wide and spaced. On the car: a curtain of green light ribbons rises from the sill behind the door and fades out toward the roofline, a green light line runs along the sill, twin green pinstripes cross the roof, and the number is ice white in a graphite roundel with a green ring. Its `light` colour is aurora green (#38e8a8). Its title sponsor is Samsung. Norrsken has no pit box: the Marina's twelve are all taken, and adding boxes is a track rebuild.
+
+Wallgren negotiates warmly: patient, and gives most on the contract length. The team wants clean, exact racing (it counts clean races, as Corvid does) and favours test days. Rivalries: Hagberg rates only Calderini's preparation and wants Valois's crown; Koskinen and Lindqvist carry the old Finland-Sweden rivalry. No recorded commentary names Norrsken; the generic lines play.
+
 ## Drivers
 
 | # | Driver | Code | Nation | Team | Car | In one line |
@@ -59,6 +68,7 @@ Rivalries: Mizuno and Lindqvist argue about who is the better sideways; Kuroda w
 | 7 | Matteo Varrone | VAR | ITA | Toro | AV–12 | Toro's prodigal son |
 | 8 | Freya Lindqvist | LIN | SWE | Mojave | Mercedes-AMG One | rally convert |
 | 9 | Rosa Quintero | QUI | MEX | Mojave | Mercedes-AMG GT4 | rookie |
+| 10 | Elin Hagberg | HAG | SWE | Norrsken | Koenigsegg Jesko | the engineer in the cockpit |
 | 16 | Armand Beaulieu | BEA | FRA | Aurum | Bugatti Destrier | the gentleman racer |
 | 23 | Kaito Mizuno | MIZ | JPN | Hayate | Nissan Z GT4 | the drift king |
 | 17 | Sofia Calderini | CAL | SUI | Saetta | Furari 488-R | the calm one at Saetta |
@@ -69,8 +79,9 @@ Rivalries: Mizuno and Lindqvist argue about who is the better sideways; Kuroda w
 | 63 | Paloma Ortega | ORT | ESP | Toro | HU–10 | the matador |
 | 66 | Cole Maddox | MAD | USA | Liberty | Ford GT Mk II | the brawler |
 | 76 | Wade Hollis | HOL | USA | Liberty | Hennessey Blackbird | the Colonel |
+| 85 | Jari Koskinen | KOS | FIN | Norrsken | Koenigsegg CC850 | the night driver |
 
-The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Sixteen drivers, fourteen nations (two Americans at Liberty, two Japanese at Hayate).
+The three-letter codes are for the timing tower and on-screen graphics. The numbers go on the cars (Toro's #63 is the year its founder started the works). Eighteen drivers, fifteen nations (two Americans at Liberty, two Japanese at Hayate, two Swedes: Lindqvist and Hagberg).
 
 ## Driver profiles
 
@@ -126,3 +137,5 @@ The booth script is assets/audio/announcers/SCRIPT.md. Enzo's lines (v2) and Kav
 Several car display names in the car-lab profiles echo real models (Valkyrie, Continental GT, Chiron-X, 911-T, XKSS). Next to fictional teams and drivers, they should get fictional model names too.
 - **Kaito Mizuno** (MIZ, JPN, 29, Hayate #23), the drift king. Born in Numazu, Shizuoka, a fishmonger's son who learned to slide a car on the Izu Skyline at night before going legal in D1 and Super GT; Hamamoto signed him after watching him drift a full wet lap of Fuji. Calm in the car, chatty out of it; bows to every marshal; treats the apex as a suggestion. Rivals: Freya Lindqvist, Rina Kuroda.
 - **Rina Kuroda** (KUR, JPN, 31, Hayate #37), the quiet ace. From Toyota City, Aichi, a supplier engineer's daughter; first kart at six, Super GT GT300 champion at 24, an engineering degree on the side; Hamamoto hired her to build the car around her. Speaks on the radio only in lap numbers and tenths; keeps a handwritten logbook of every lap; would very much like to beat Valois; says Mizuno's sliding is murder on the tyres, then watches every replay. Rivals: Remy Valois, Kaito Mizuno.
+- **Elin Hagberg** (HAG, SWE, 28, Norrsken #10), the engineer in the cockpit. From Gothenburg, a ship designer's daughter; European single-seater champion at twenty-one, then three years as a works development driver before Henrik Wallgren made her the first driver Norrsken ever signed. Quiet, exact and impossible to rattle; reads telemetry in the car on the cool-down lap; thinks Calderini is the only driver on the grid who prepares as hard as she does, and Valois the only one worth beating. Rivals: Remy Valois, Sofia Calderini.
+- **Jari Koskinen** (KOS, FIN, 34, Norrsken #85), the night driver. From Jyväskylä, Finland; a farm mechanic's son on the gravel stages from fifteen, two rallycross titles, then endurance night stints for anyone who would pay; Norrsken signed him for the races that end after sunset. Says almost nothing on the radio and less to the press; a sauna after every race, wherever it is; the old Finland-Sweden rivalry with Lindqvist is the one thing that makes him talk. Rivals: Freya Lindqvist.

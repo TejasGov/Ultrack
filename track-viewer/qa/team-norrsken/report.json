@@ -1,0 +1,75 @@
+{
+ "quickRace": {
+  "cars": [
+   "jesko",
+   "furari-488",
+   "av12",
+   "aston-martin-valk",
+   "jaguarxkjss",
+   "buggati",
+   "mp1x",
+   "nissan-z"
+  ],
+  "hero": "jesko",
+  "kmh": 125,
+  "pos": 6,
+  "kmhLater": 224
+ },
+ "career": {
+  "round": "Corniche Grand Prix",
+  "exp": 16,
+  "grid": [
+   "bmw1",
+   "furari-488",
+   "cc850",
+   "buggati",
+   "destrier",
+   "jesko",
+   "aston-martin-valk",
+   "laferrari"
+  ],
+  "race": {
+   "cars": [
+    "bmw1",
+    "furari-488",
+    "cc850",
+    "buggati",
+    "destrier",
+    "jesko",
+    "aston-martin-valk",
+    "laferrari"
+   ],
+   "grid": [
+    "bmw1",
+    "furari-488",
+    "cc850",
+    "buggati",
+    "destrier",
+    "jesko",
+    "aston-martin-valk",
+    "laferrari"
+   ],
+   "laps": 2
+  },
+  "result": {
+   "finish": 7,
+   "entries": 18,
+   "top": [
+    "furari-488",
+    "buggati",
+    "destrier",
+    "cc850",
+    "laferrari",
+    "aston-martin-valk",
+    "bmw1",
+    "jesko"
+   ]
+  }
+ },
+ "norrsken": {
+  "car": "cc850",
+  "exp": 6,
+  "mate": "Elin Hagberg"
+ },
+ "errors": []
+}
