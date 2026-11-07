@@ -1,7 +1,7 @@
 // The world around the player (docs/career-mode.md 6.6, 6.8): who drives which car, the free agents, the academy, rival heat, and
 // the cheap AI market between seasons. Pure, like the rest of career/: a save goes in and comes out changed.
 // world.seats maps each car key to a driver code; the player's car holds 'YOU', a seat the market has to fill holds null.
-import { TUNING as T, TIERS, DRIVERS, CAR, TEAM_IDS, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating, eliteSize, divsOn, divOf, upDiv } from './rules.js';
+import { TUNING as T, TIERS, DRIVERS, CAR, TEAM_IDS, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating, eliteSize, divsOn, divOf, upDiv, DIV } from './rules.js';
 import { rng } from './rng.js';
 
 export const YOU = 'YOU';
@@ -198,6 +198,8 @@ export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {
   // with two series: beating an Elite driver from the Challenger pays as a higher tier does, and at a Tour round a rival in the other series, whom the player cannot meet, cools as if sat out
   const S = save.season, at = Object.fromEntries(Object.entries(save.world.seats).map(([k, c]) => [c, k])), tour = !!S?.div && (S.calendar[save.clock.round]?.kind ?? 'tour') === 'tour';
   const above = (key) => tierOf(CAR[key].team).rank > myRank || (S?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite'), apart = (code) => tour && !!at[code] && divOf(save, CAR[at[code]].team) !== S.div;
+  // the duel's heat by the field: in a series of 8 or 10 the teammate is the car nearest the player in most rounds already, so the duel adds, and stops at, what it did in a field of 16 per car
+  const duelF = tour && S.current?.field ? S.current.field / DIV.legacyField : 1;
   const nemesis = nemesisOf(save, raced), since = [save.clock.season, save.clock.round + 1], h2h = me >= 0 && !dnf;
   let rep = 0, xp = 0;
   raced.forEach((key, i) => { if (key !== hero) onGrid[save.world.seats[key]] = { i, key }; });
@@ -210,7 +212,7 @@ export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {
     }
     const hits = (g && ev.contacts?.[g.key]) || 0, contact = (Array.isArray(hits) ? hits : Array(Math.max(0, hits | 0)).fill(0)).reduce((a, kmh) => a + (kmh > 30 ? R.contactHard : R.contact), 0);
     // the duel alone stops at duelMax, short of a rival: a teammate becomes one only by racing you close, touching or passing you
-    const pass = g ? Math.min(ev.passes?.[g.key] ?? 0, 2) * R.pass : 0, duel = code === ev.duel ? clamp(R.duelMax - was, 0, R.duel) : 0, near = g && me >= 0 && Math.abs(g.i - me) <= R.near;
+    const pass = g ? Math.min(ev.passes?.[g.key] ?? 0, 2) * R.pass : 0, duel = code === ev.duel ? clamp(R.duelMax * duelF - was, 0, R.duel * duelF) : 0, near = g && me >= 0 && Math.abs(g.i - me) <= R.near;
     H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : duel ? 0 : -(me < 0 || apart(code) ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // contacts and passes add to the cooling, as the spec has it; a duel that adds heat skips it; a round you sat out cools slowly (you never met)
     if (!H[code]) { delete H[code]; delete RV[code]; continue; }   // the save keeps only live rivalries
     if (!RV[code] && (contact || pass || duel || H[code] >= R.rival)) RV[code] = { cause: contact ? 'contact' : pass ? 'pass' : duel ? 'teammate' : 'grid', since, w: 0, l: 0 };   // a contact, a pass or a duel starts the record; racing close only once it is a rivalry

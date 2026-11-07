@@ -3,7 +3,7 @@
 import MEDIA from '../../../../assets/career/media.json';
 import { rng, shuffle } from './rng.js';
 import {
-  TUNING as T, TIERS, SPONSORS, TEAM_IDS, CAR, DIV, nextDivOf, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating, styleOf,
+  TUNING as T, TIERS, SPONSORS, TEAM_IDS, CAR, DIV, nextDivOf, expIn, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating, styleOf,
 } from './rules.js';
 import { YOU, driverAt, personOf, marketScore, shortlistOf, poachable } from './world.js';
 import { note, remembers } from './ledger.js';
@@ -24,8 +24,11 @@ export const statsOf = (save) => ({ rep: save.career.rep, rrs: save.career.rr, c
 export function offer(save, team, seat, terms) {
   return { id: `${team}-${seat}-${save.clock.season}${terms.tag ?? ''}`, team, seat, car: seatCar(team, seat), tier: TIERS.teams[team].tier, div: nextDivOf(save, team), status: seat === 'A' ? 'lead' : 'junior', ...terms };
 }
-/** a team of the player's tier that races the Elite next season while the player's team races the Challenger: a step up, offered as the tier above would be (divisions-spec 10) */
-export const stepUp = (save, team) => !!save.contract && rankOf(team) === rankOf(save.contract.team) && nextDivOf(save, team) === 'elite' && nextDivOf(save, save.contract.team) === 'challenger';
+/**
+ * A team of the player's tier that races the Elite next season while the player's team races the Challenger: a step up, offered as the tier above would be (divisions-spec 10).
+ * Not when even its A seat is expected outside the Elite's grid: a seat that mostly misses the cut is no step up
+ */
+export const stepUp = (save, team) => !!save.contract && rankOf(team) === rankOf(save.contract.team) && nextDivOf(save, team) === 'elite' && nextDivOf(save, save.contract.team) === 'challenger' && expIn(save, team, 'A', nextDivOf) <= T.series.gridSize;
 /** every offer the player could be talking about */
 const lists = (save) => [save.pending?.offers, save.season?.mid, save.sponsors?.offers].filter(Boolean);
 export const findOffer = (save, id) => lists(save).flat().find((o) => o.id === id) ?? null;
@@ -315,7 +318,7 @@ export function rumours(save) {
  */
 export function seasonOffers(save, { cup, title, dropped }) {
   const me = save.contract, tier = TIERS.tiers[save.season.tier], season = save.clock.season, list = [];
-  if (me.next) return [{ ...me.next, why: 'Signed in mid-season. Your new team is waiting.' }];
+  if (me.next) return [{ ...me.next, div: nextDivOf(save, me.next.team), why: 'Signed in mid-season. Your new team is waiting.' }];   // the series stamped when it was signed may have moved at the season end
   const d = me.duel;
   if (!dropped && me.seat === 'B' && d.won > d.lost && me.trust >= T.trust.promote)
     list.push(offer(save, me.team, 'A', { salary: tier.salary.A, signing: 0, seasons: 2, interest: T.offers.promoteInterest, why: `You won the duel ${d.won}-${d.lost} and the team trusts you. The senior car is yours.` }));
@@ -356,7 +359,7 @@ export function sponsorOffers(save, expires) {
   const pool = shuffle(r, Object.keys(SPONSORS.brands).filter((b) => SPONSORS.brands[b].tier === tier && !taken.has(b))).slice(0, SPONSORS.offersPerWindow);
   for (const brand of pool) {
     const B = SPONSORS.brands[brand], retainer = round5(SPONSORS.retainer[tier] * (0.85 + 0.3 * r()));
-    const o = { id: `sp-${brand}-${season}-${week}`, sponsor: true, brand, name: B.name, retainer, bonus: round50(retainer * SPONSORS.bonusRounds), target: targetFor(B.target, save.season.current.expPos, save.season.calendar.length), expires, why: B.pitch };
+    const o = { id: `sp-${brand}-${season}-${week}`, sponsor: true, brand, name: B.name, retainer, bonus: round50(retainer * SPONSORS.bonusRounds), target: targetFor(B.target, save.season.div ? expIn(save, save.contract.team, save.contract.seat) : save.season.current.expPos, save.season.calendar.length), expires, why: B.pitch };
     S.offers.push(o);
     post(save, 'sponsor', `${B.name} wants a word`, `${B.pitch} ${retainer} U a round, and ${o.bonus.toLocaleString('en')} U if you ${targetText(o.target)}. Open until week ${expires + 1}.`, { deal: o.id });
   }

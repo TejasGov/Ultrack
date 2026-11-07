@@ -11,10 +11,13 @@ export async function loadCareer(server) {
 const AVAILABLE = { india: null, drylake: ['day', 'dusk'], infinia: ['day', 'dusk'], marina: null, shajawa: ['day', 'dusk'], llano: ['day', 'dusk'], tokyo: null, qingshan: null, venice: null, pilbara: ['day', 'dusk'], terminal: ['day', 'dusk'] };
 
 /** the sim's pick at a review: the highest tier, next season's Elite over the Challenger, the A seat, then the highest pay; a reserve seat only when nothing else is left */
-const best = (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || (b.div === 'elite') - (a.div === 'elite') || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
+const pickBy = (div) => (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[b.tier].rank - R.TIERS.tiers[a.tier].rank || div(b) - div(a) || (b.seat === 'A') - (a.seat === 'A') || b.salary - a.salary)[0];
+/** the other picks career-metrics plays, so no series is the quicker way up: the base commit's (tier, A seat, pay) and one that stays in the Challenger within a tier */
+export const PICKS = { elite: pickBy((o) => o.div === 'elite'), base: pickBy(() => 0), challenger: pickBy((o) => o.div === 'challenger') };
+const best = PICKS.elite;
 
 /** one career for `seasons` seasons; skill is the player's pace (1.00 = an AI of rating ~88) */
-export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', { life = false, passAll = false } = {}) {
+export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', { life = false, passAll = false, pick = best, first = null, before = null } = {}) {
   let r = seed >>> 0; const rand = () => ((r = (Math.imul(r ^ (r >>> 15), 2246822507) + 0x9e3779b9) >>> 0) / 4294967296);
   const noise = (s) => (rand() + rand() + rand() - 1.5) * s;
   const save = C.newCareer({ name: 'Sim Driver', seed, raceLength, now: '2026-11-01T00:00:00Z' });
@@ -23,8 +26,9 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
   // ask for a bit more, sometimes too much: a refusal or a withdrawal must never strand the career
   const haggle = (o) => { if (!C.canNegotiate(o)) return; const a = C.negotiate(save, o.id, { salary: rand() < 0.3 ? 0.3 : 0.1, seasons: o.seasons, status: o.status });
     if (a.result === 'accepted') log.deals++; if (a.result === 'withdrawn') log.withdrawn++; if (a.result === 'countered') C.negotiate(save, o.id, a.terms); };
-  haggle(save.pending.offers[seed % save.pending.offers.length]);
-  C.acceptOffer(save, save.pending.offers[seed % save.pending.offers.length].id, AVAILABLE);
+  const job = () => (first ? save.pending.offers.find((o) => o.team === first) : save.pending.offers[seed % save.pending.offers.length]);   // first: a forced first team (career-metrics' probes), before: a forced world
+  haggle(job()); before?.(save);
+  C.acceptOffer(save, job().id, AVAILABLE);
   log.tier.push(save.season.tier);
   /** a sensible player: each role at the best tier that leaves four times its price in the wallet */
   const hireStaff = () => { for (const role of C.STAFF_ROLES) for (const s of C.STAFF_LIST.filter((x) => x.role === role).reverse()) { if (save.wallet.coins >= s.cost * 4 && C.hireStaff(save, s.id).ok) { log.staffSpent += s.cost; log.staffHires++; log.firstStaff ??= log.rr.length; break; } } };
@@ -114,10 +118,10 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (offers.some((o) => o.team === save.contract.team && o.seat === 'A' && save.contract.seat === 'B') && log.promotion === null) log.promotion = season;
       if (season === seasons) break;
       // the window: haggle over the best on day 1, let a day pass (rivals sign, deadlines lapse, teams come back with more), sign by day 2: the best agreed, else the best left
-      const pick = best(offers, R); haggle(pick);
+      const chosen = pick(offers, R); haggle(chosen);
       const ids = save.pending.offers.map((o) => o.id), day = C.windowDay(save), left = save.pending.offers, agreed = left.filter((o) => o.agreed);
       if (day.ok) log.lost += ids.filter((id) => !left.some((o) => o.id === id)).length;   // lapsed or gone to a rival on day 2
-      const still = left.find((o) => o.id === pick.id) ?? best(agreed.length ? agreed : left, R);
+      const still = left.find((o) => o.id === chosen.id) ?? pick(agreed.length ? agreed : left, R);
       const owned0 = Object.values(save.life.owned).reduce((a, b) => a + b, 0), cash0 = save.wallet.coins;
       C.acceptOffer(save, still.id, AVAILABLE); log.tier.push(save.season.tier);
       log.sold += owned0 - Object.values(save.life.owned).reduce((a, b) => a + b, 0); log.upkeep = Math.max(log.upkeep, C.upkeepOf(save));

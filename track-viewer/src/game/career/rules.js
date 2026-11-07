@@ -168,7 +168,7 @@ export function duelOf(mine, mate) {
 export const RR_LABELS = [[9, 'Masterclass'], [8, 'Outstanding'], [7, 'Strong'], [6, 'Solid'], [5, 'Poor'], [0, 'Bad']];
 export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
 /** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
-export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie, field = DIV.legacyField }) {
+export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie, field = DIV.legacyField, share = 1, shareLine = null }) {
   const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); }, k = field / T.series.gridSize;
   // places are of the race's field, and k of them weigh what one did when the table was 8 (16 cars: two): the rating constants are unchanged. No race, no finish to judge
   const dp = dnq ? 0 : dnf ? Math.min(0, expPos - finish) : expPos - finish, dq = expPos - grid, pos = clamp(dp / k, -R.posClamp, R.posClamp), q = exempt ? clamp(dq / k, 0, R.qualiClamp) : clamp(dq / k, -R.qualiClamp, R.qualiClamp);   // a slot earned by the last result never counts against
@@ -182,6 +182,7 @@ export function roundRating({ expPos, grid, finish, fastest, clean, duel, underd
   if (duel) add(duel.result === 'won' ? 'Beat your teammate' : duel.result === 'lost' ? 'Lost to your teammate' : null, (duel.result === 'won' ? 1 : duel.result === 'lost' ? -1 : 0) * (duel.big ? R.duelBig : R.duel));
   if (underdog && pos >= 0 && !dnf) add('Underdog seat', R.underdog);
   if (dnf) add('Retired', R.dnf);
+  if (share < 1) add(shareLine, -(1 - share) * lines.reduce((s, l) => s + Math.max(0, l[1]), 0));   // a series that keeps a share of the credit (the Challenger): the gains shrink, the losses stay
   const raw = R.base + lines.reduce((s, l) => s + l[1], 0), soft = raw > R.softAt ? R.softAt + (raw - R.softAt) * R.softRate : raw;   // the top of the scale is hard to reach: a P4 from the slowest car is not a perfect 10
   return { rr: Math.round(clamp(soft, R.min, R.max) * 10) / 10, lines };
 }
