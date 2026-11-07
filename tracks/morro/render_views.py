@@ -56,6 +56,18 @@ VIEWS = {
     't6-exit': (at(3090, 1.3), at(3180, 4.0)),
     'drone-down-the-hill': (at(3120, 35, 0), at(2300, 0.0)),
     'aerial': (at(2700, 140, -160), at(2750, 0.0)),
+    # the rest of the lap, from the driver's seat
+    'grid': (at(6200, 2.2, -3), at(6290, 5.0)),
+    'drag-strip': (at(150, 1.3), at(260, 3.0)),
+    't1': (at(500, 1.3), at(590, 2.0, -20)),
+    'orla': (at(1150, 1.3), at(1260, 3.0, 4)),
+    't3': (at(1990, 1.3), at(2080, 2.0, -20)),
+    'top-road': (at(3600, 1.3), at(3700, 0.0)),
+    't8': (at(4160, 1.3), at(4250, 0.0, -15)),
+    'down-the-flank': (at(4380, 1.3), at(4480, -3.0)),
+    'hill-foot': (at(5000, 1.3), at(5100, 3.0)),
+    't10': (at(5690, 1.3), at(5760, 2.0, 20)),
+    'aerial-lap': (Vector((-50, -1150, 620)), Vector((-50, 160, 0))),
 }
 for name, (p, q) in VIEWS.items():
     if ONLY and name not in ONLY: continue

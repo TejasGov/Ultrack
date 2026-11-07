@@ -1,7 +1,7 @@
 """The city below the morro and the hills round the bay, exec'd by build_morro.py after morro_kit.py (needs its Sheet, window, KR streams, GW and LG).
 Far detail only: what the hill's streets look down on at night. Blocks of four to fifteen floors on the flat (taller along the orla, as Rio's beach fronts), lit windows on the faces
 that look at the hill or stand near a road, water tanks on the roofs, street lamps as points of orange; the other morros' houses as lit windows scattered up their slopes.
-Nothing here is close to the road yet: the drag strip's and the orla's own frontages come with the rest of the lap."""
+The streets' own frontages are morro_kit.py's; a block never stands on one (OCC)."""
 CR = random.Random(57)
 CS = Sheet('MN city', ['wplaster', 'gplaster', 'conc', 'yplaster', 'bplaster', 'glass', 'fibre', 'tank'])
 def win_far(P, x, z, w, h):
@@ -40,6 +40,7 @@ for gx in np.arange(-1500, 1800, 56.0):
             if nd < 26 + max(w, d) / 2: continue
             g = ground_at(c.x, c.y)
             if g > 7.0 or g < -0.5: continue      # the hill is the morro's, the sand the beach's
+            if foot(c - Vector((0, d / 2 + 1, 0)), Vector((1, 0, 0)), w + 2, d + 2) & OCC: continue      # the street's own frontage stands there
             c.z = g; tall = 1 - ss(-240, -120, c.y)      # the beach front stands tall
             h = CR.uniform(10, 30) * (1 - tall) + CR.uniform(30, 52) * tall
             building(c, CR.uniform(-0.06, 0.06), w, d, h)

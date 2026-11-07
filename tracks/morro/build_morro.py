@@ -5,7 +5,7 @@ over the city, down the east flank and back along the hill's foot to the last ha
   track     14 m of worn asphalt, kerbs in the tight corners, concrete blocks with debris fencing 1.6 m off the edge (a street circuit), pavements behind them
   ground    one grid, 6 m round the lap growing to 5 km out: flat shelves along the streets, the hill between, the sand and the bay south of the orla
   houses    morro_kit.py: stacked hillside houses (brick, painted plaster, concrete frames, water tanks, grilles), power poles and wires, sodium lamps, shops with
-            their signs. STRETCH below limits it to the first finished stretch until the user has seen it.
+            their signs. MORRO_STRETCH=1 limits it to the first stretch (T4 and the two hairpins) for quick looks.
   city      morro_city.py: the flat city below and the beach towers, far detail only, lit windows"""
 import bpy, os
 from pathlib import Path
@@ -13,7 +13,7 @@ H = Path(r'D:/RaceUltimate-wt/morro/tracks/morro'); ID = 'morro'; PFX = 'MN'
 exec(compile((H.parent / 'career_lib.py').read_text(encoding='utf8'), str(H.parent / 'career_lib.py'), 'exec'))
 PH = Path(r'D:/RaceUltimate/assets/polyhaven')      # the main checkout's local library: several of these sets are not in git (Venice's precedent)
 import numpy as np
-STRETCH = None if os.environ.get('MORRO_FULL') else (2230.0, 3400.0)      # metres of lap that get houses: the first finished stretch (T4 and the two hairpins)
+STRETCH = (2230.0, 3400.0) if os.environ.get('MORRO_STRETCH') else None      # metres of lap that get houses: all of it, or the first stretch for quick looks
 
 WORN = PH / 'worn_asphalt' / 'worn_asphalt_diff_2k.jpg'
 MAT.update({
@@ -30,7 +30,7 @@ MAT.update({
 UVS.update({'asphalt': 4.0, 'ground': 6.0, 'walk': 3.0, 'sand': 8.0, 'water': 60.0})
 road(6.5, 60)      # 13 m: a hillside street, as narrow as the AI's sixteen cars allow
 BOFF = HW + 1.0
-barriers(BOFF, height=1.0)
+barriers(BOFF)      # the collision wall at the standard 1.2 m over the 0.81 m blocks: at 1.0 a car fired at 30 degrees down the east flank (10.8 %) went over it (qa-wall-shots)
 st = lambda s: int(round(s / STEP)) % N
 def in_stretch(i): return STRETCH is None or STRETCH[0] <= i * STEP <= STRETCH[1]
 log('corners', [(c['n'], c['at'], c['radius']) for c in SRC['corners']])
@@ -73,7 +73,7 @@ for r_ in range(len(GY_) - 1):
         if max(D[v][0] for v in q) < HW - 0.6: continue
         if min(D[v][0] for v in q) < REACH: ground_col.append([v.co.copy() for v in q])
         sandy = BEACH_Y - 70 < max(D[v][1] for v in q) < BEACH_Y + 4 and min(D[v][0] for v in q) > SHELF
-        f = bm.faces.new(q); hill = STRETCH is not None and any(in_stretch(near(v.co.x, v.co.y)[0]) for v in q) and min(D[v][0] for v in q) < 160
+        f = bm.faces.new(q); hill = any(in_stretch(near(v.co.x, v.co.y)[0]) for v in q) and min(D[v][0] for v in q) < 160 and max(v.co.z for v in q) > 3.5      # the morro's yards and stairs are concrete
         f.material_index = 2 if sandy else 1 if hill else 0
         for l in f.loops: l[vc] = tint(l.vert.co, D[l.vert][0])
 mesh_obj('MN ground', bm, ['ground', 'walk', 'sand'], smooth=True)

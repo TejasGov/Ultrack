@@ -57,4 +57,9 @@ for q, (txt, font, size, rgb, kind) in enumerate(SIGNS):
         cell = Image.fromarray(np.clip(g * 0.5 + 255 * 0.5, 0, 255).astype(np.uint8)); d = ImageDraw.Draw(cell)
         d.text((x, y), txt, font=f, fill=tuple(int(c * 0.22) for c in rgb)); d.rectangle((0, 0, SW - 1, SH - 1), outline=(30, 30, 30), width=6)
     S.paste(cell, ((q % 2) * SW, (q // 2) * SH))
-S.save(T / 'signs.png'); print('window_night.png, signs.png written')
+S.save(T / 'signs.png')
+# ---------------------------------------------------------------- tex/grille.png: iron bars as a cut-out (window grilles, balcony rails): 4 bars across 0.56 m, 16 mm round bar, tiles in u and v
+G = np.zeros((64, 256, 4), np.uint8); xg = np.arange(256); bar = (np.abs((xg % 64) - 32) < 4)
+shade = (24 + 18 * np.cos((xg % 64 - 32) / 4 * np.pi / 2).clip(0)).astype(np.uint8)      # a round bar: a lighter crown
+G[:, bar, 0] = G[:, bar, 1] = shade[bar]; G[:, bar, 2] = shade[bar] + 3; G[:, bar, 3] = 255
+Image.fromarray(G, 'RGBA').save(T / 'grille.png'); print('window_night.png, signs.png, grille.png written')
