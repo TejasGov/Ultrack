@@ -502,6 +502,7 @@
 .cx-driver { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); }
 .cx-stack.rev { grid-template-rows: minmax(0, 1fr) auto; }
 .cx-mini.cut { box-shadow: inset 0 -2px 0 var(--d-open); }
+.cr-lcq .lrow.cut { box-shadow: inset 0 -2px 0 var(--d-open); }   /* the last car into the Final */
 .cx-roadhead { flex: none; display: flex; gap: var(--sp-6); }
 .cr-lcq { grid-column: 1 / -1; }
 .cr-lcq .cr-cols { --cols: calc(44 * var(--u)) 4px minmax(0, 1.3fr) minmax(0, 0.9fr) calc(132 * var(--u)) calc(120 * var(--u)); }

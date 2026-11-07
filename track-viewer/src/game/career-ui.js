@@ -159,24 +159,26 @@ export function CareerStartScreen(game) {
 /** the round report (6.1): the finish against expectation, the Round Rating and why, objectives, the duel, what it earned, the table; all of it on one screen */
 export function CareerReportScreen(game) {
   const F = frame('career-report');
+  let lcqSeen = null;
   F.page.classList.add('cx-report');
   const lines = (list, unit = '') => h('div.cr-lines', {}, list.map(([label, v]) => h('span', {}, label, h('b.tnum', {}, unit === 'coin' ? coins(v, true) : typeof v === 'number' ? delta(v, unit === 'rr' ? 1 : 0) : v))));
   /** the Last Chance Qualifier's own report: the eight, who is through to the Final, and where the player finished */
-  function lcqReport(rep) {
+  function lcqReport(rep, then = () => api.back()) {
     const save = game.career, fastest = Math.min(...Object.values(rep.best ?? {}).filter(Number.isFinite));
     F.sec('report'); F.title(`Round ${rep.round}: ${rep.name}`, `${rep.openName} · ${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`); statusBar(F.me, save); F.backdrop('tracks', rep.track);
     fill(F.page, h('div.cx-b.cr-hero', {}, h('div.cr-pos', {}, h('h2', {}, rep.through ? 'Through' : 'Out'), h('p.cx-note', {}, rep.through ? `P${rep.finish} in the Last Chance: you start the ${rep.openName} Final.` : `P${rep.finish}. The top ${TUNING.open.lcqThrough} reach the Final.`), rep.repairs?.hits ? h('p.cx-note.warn', {}, icon('warning'), `Crash damage: ${rep.repairs.hits} ${rep.repairs.hits === 1 ? 'hit' : 'hits'}, about ${money(rep.repairs.raw)}. It is billed with the round's pay.`) : null)),
       h('div.cx-b.cr-table.cr-lcq', {}, h('div.lhead.cr-cols', {}, h('span', {}, 'Pos'), h('span'), h('span', {}, 'Driver'), h('span', {}, 'Car'), h('span.val', {}, 'Best lap'), h('span.val', {}, 'Final')),
-        rep.entries.map((e, k) => css(h('div.lrow.cr-cols' + (e.you ? '.me' : ''), {}, h('b.r-pos.tnum', {}, e.you && rep.dnf ? 'DNF' : k + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, e.you ? save.player.name : C.personOf(save, e.code)?.name ?? e.code), h('small', {}, teamName(e.team))),
+        rep.entries.map((e, k) => css(h('div.lrow.cr-cols' + (e.you ? '.me' : '') + (k === TUNING.open.lcqThrough - 1 ? '.cut' : ''), {}, h('b.r-pos.tnum', {}, e.you && rep.dnf ? 'DNF' : k + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, e.you ? save.player.name : C.personOf(save, e.code)?.name ?? e.code), h('small', {}, teamName(e.team))),
           h('span.r-carname', {}, carName(e.key)), h('span.val', {}, rep.best?.[e.key] === fastest ? icon('bolt', { cls: 'r-bolt', label: 'Fastest lap' }) : null, Number.isFinite(rep.best?.[e.key]) ? fmtTime(rep.best[e.key]) : empty()),
           h('span.val', {}, e.advanced ? h('span.cx-tag.ok', {}, icon('check'), 'Through') : empty())), { '--team': teamMark(loreOf(e.team)) }))));
-    const next = h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => api.back() }, icon('chevron-right'), 'Continue');
+    const next = h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => then() }, icon('chevron-right'), rep.through ? 'Continue' : `The ${rep.openName} Final`);
     fill(F.foot, prompts(CHOOSE), h('div.sp'), next); getNav().reset(getNav().items().indexOf(next));
   }
   const api = {
     el: F.el, nav: true, grid: true,
     onShow(rep) {
       if (rep.lcq === true) return lcqReport(rep);
+      if (rep.lcq && lcqSeen !== rep) return lcqReport(rep.lcq, () => { lcqSeen = rep; api.onShow(rep); });   // out in the Last Chance: the race the player drove first, then the Final they missed
       const save = game.career, fastest = Math.min(...Object.values(rep.best ?? {}).filter(Number.isFinite));
       F.sec('report'); F.title(`Round ${rep.round}: ${rep.name}`, `${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`); statusBar(F.me, save); F.backdrop('tracks', rep.track);
       const verdict = rep.dnq ? (rep.open ? (rep.kind === 'masters' ? 'Missed the Masters' : 'Missed the Final') : 'Did not qualify') : rep.dnf ? 'Retired' : rep.finish === 1 ? 'Victory' : `P${rep.finish}`;
