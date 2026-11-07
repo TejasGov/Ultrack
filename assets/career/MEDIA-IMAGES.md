@@ -124,3 +124,20 @@ The other nine (apartment, penthouse, mansion, watch, supercar, yacht, night-out
 | 2026-11-04 | engineer-pro | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Race engineer from behind with data traces on a laptop beside a GT car |
 | 2026-11-04 | engineer-elite | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Race engineer from behind on a pit wall stand at dusk, monitors of data graphs |
 | 2026-11-04 | engineer-factory | 1254x1254 | chatgpt.com/c/6aebee75-f6c0-83ea-a6b1-16b0963777df | Engineering control room, wall of graphs, GT car on a dyno through glass |
+
+## Norrsken and Steelhead (Meshy, 2026-11-07)
+
+The two newest teams' sixteen images came from Meshy's image API (`meshy_image_to_image`, model `nano-banana-pro`, 9 credits each, 144 in all), not ChatGPT, at the user's request. Every prompt opens with the style lock from `CHARACTERS.md` and names no real person, team, car maker or sponsor. Frames are 16:9 (1376x768); the Media page shows the whole picture, so nothing is cropped.
+
+- The four driver portraits used `sources/driver-media/remy-valois/portrait.png` and the two principals `principals/saetta.png` as a style reference only ("draw a completely different person"); looks are the `CHARACTERS.md` rows.
+- Each win and down shot, and each signing, used its own portrait's Meshy task as the reference ("same character, same face, same suit"), so the face holds. The signings carry the anatomy lines of the earlier signings (two arms each, two hands in the handshake, no helmet).
+- Checked by eye: faces hold across each driver's three images, hands and arms are right in both signings. Known: blurred background banners in Hagberg's win and the contract sheet in the Norrsken signing carry illegible pseudo-lettering.
+
+| Folder | Images | Meshy task (reference) |
+|---|---|---|
+| elin-hagberg | portrait, win, down | 01a1b7fc-8a53-7349-8fb3-fd7b98b957aa (portrait; win 01a1b7fd-c2e3, down 01a1b7fd-c458) |
+| jari-koskinen | portrait, win, down | 01a1b7fc-8e12-7660-b6e1-db0d5c046820 (win 01a1b7fd-c5af, down 01a1b7fd-c727) |
+| grace-tolliver | portrait, win, down | 01a1b7fc-9115-762b-899b-cb79de574259 (win 01a1b7fd-c880, down 01a1b7fd-c9f6) |
+| etienne-lavoie | portrait, win, down | 01a1b7fc-93dd-77ca-87cb-ba4952cf6477 (win 01a1b7fd-cb2f, down 01a1b7fd-cc93) |
+| principals | norrsken, steelhead | 01a1b7fc-96ca-7632-b1c5-44195874bd26, 01a1b7fc-99be-73ab-962a-22ad293f7fea |
+| you | sign-norrsken, sign-steelhead | 01a1b7fd-cde6-7576-8e0d-d069605ea04f, 01a1b7fd-cfb5-71c5-87cd-deb388560b94 |
