@@ -12,8 +12,8 @@
   "cars": {
     "bmw1": "D",
     "bentley-gt": "C", "nissan-z": "C",
-    "porsche1": "B", "ford-gt": "B", "furari-488": "A", "mp1x": "A", "av12": "A", "blackbird": "A", "huracan": "A",
-    "jaguarxkjss": "S", "supra": "S", "buggati": "S", "laferrari": "S", "cc850": "S",
+    "porsche1": "B", "ford-gt": "B", "stingray": "B", "furari-488": "A", "mp1x": "A", "av12": "A", "blackbird": "A", "huracan": "A",
+    "jaguarxkjss": "S", "supra": "S", "buggati": "S", "laferrari": "S", "cc850": "S", "zr1": "S",
     "aston-martin-valk": "S+", "destrier": "S+", "jesko": "S+"
   },
   "teams": {

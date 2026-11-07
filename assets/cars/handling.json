@@ -252,6 +252,34 @@
    "bop": 0.88,
    "bopGrip": 1,
    "brakeK": 1.131
+  },
+  "zr1": {
+   "hp": 755,
+   "zeroTo100": 3,
+   "topKmh": 341,
+   "drive": "RWD",
+   "massKg": 1615,
+   "grip": 1.24,
+   "downforce": 1.1,
+   "cogM": 0.44,
+   "weightFront": 0.5,
+   "bop": 1,
+   "bopGrip": 1,
+   "brakeK": 1.131
+  },
+  "stingray": {
+   "hp": 495,
+   "zeroTo100": 3.1,
+   "topKmh": 312,
+   "drive": "RWD",
+   "massKg": 1600,
+   "grip": 1.16,
+   "downforce": 0.6,
+   "cogM": 0.42,
+   "weightFront": 0.4,
+   "bop": 1,
+   "bopGrip": 1,
+   "brakeK": 1.131
   }
  }
 }
