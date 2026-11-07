@@ -16,14 +16,15 @@
     "toro":    { "tier": "maestro", "expPos": 4, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.6, "cl": 7 }, "wants": "overtakes and giant-killing", "want": "gained", "side": "sponsor", "style": "hardball" },
     "sarab":   { "tier": "maestro", "expPos": 5, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "loyalty", "want": "seasonsHere", "side": "test", "style": "warm" },
     "corvid":  { "tier": "maestro", "expPos": 6, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "clean races", "want": "clean", "side": "test", "style": "frugal" },
-    "hayate":  { "tier": "rookie",  "expPos": 7, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "want": "duel", "side": "sponsor", "style": "bidder" },
-    "mojave":  { "tier": "rookie",  "expPos": 8, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "want": "rrTrend", "side": "test", "style": "frugal" },
-    "liberty": { "tier": "rookie",  "expPos": 9, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "want": "fromBehind", "side": "sponsor", "style": "warm" }
+    "steelhead": { "tier": "maestro", "expPos": 7, "A": "zr1",               "B": "stingray",   "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "fast laps and front rows", "want": "poles", "side": "sponsor", "style": "bidder" },
+    "hayate":  { "tier": "rookie",  "expPos": 8, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "want": "duel", "side": "sponsor", "style": "bidder" },
+    "mojave":  { "tier": "rookie",  "expPos": 9, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "want": "rrTrend", "side": "test", "style": "frugal" },
+    "liberty": { "tier": "rookie",  "expPos": 10, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "want": "fromBehind", "side": "sponsor", "style": "warm" }
   },
   "carZ": {
     "destrier": 0.69, "buggati": 0.66, "laferrari": 0.50, "furari-488": 0.24, "av12": 0.19, "huracan": 0.09, "porsche1": 0.37, "mp1x": 0.18,
     "aston-martin-valk": 0.55, "bentley-gt": -0.95, "supra": 0.42, "nissan-z": -1.07, "jaguarxkjss": 0.22, "bmw1": -0.92, "blackbird": 0.40, "ford-gt": -0.03,
-    "jesko": 0.77, "cc850": 0.62
+    "jesko": 0.77, "cc850": 0.62, "zr1": 0.37, "stingray": -0.23
   },
   "firstJob": {
     "hayate":  { "salary": 300, "signing": 600,  "pitch": "Precision and qualifying. The best of the three cars.", "difficulty": "Medium" },

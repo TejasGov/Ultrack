@@ -35,15 +35,15 @@ export function coverRound(save, report) {
   const nameOf = (c) => (c === me.code ? me.name : personOf(save, c)?.name ?? c), surname = (c) => nameOf(c).split(' ').at(-1);
 
   // the lead: the winner
-  if (winner.you) story(save, 'win', `${me.name} wins the ${gp}`, `From P${report.grid} to the top step, with ${nameOf(E[1].code)} second.`, { track, you: 'win' });
+  if (winner.you) story(save, 'win', `${me.name} wins the ${gp}`, `From P${report.grace?.start ?? report.grid} to the top step, with ${nameOf(E[1].code)} second.`, { track, you: 'win' });
   else story(save, 'win', pick(r, [`${nameOf(winner.code)} takes the ${gp}`, `${surname(winner.code)} wins the ${gp}`]), `${loreOf(winner.team).name} on the top step, ${nameOf(E[1].code)} second. ${quote(winner.code, 'win', r)}`, { driver: winner.code, mood: 'win', track });
 
   // the player, unless the lead already was
   if (report.dnq && report.open) story(save, 'down', `${me.name} misses the ${report.kind === 'masters' ? gp : `${gp} Final`}`, report.kind === 'masters' ? (DIV[save.season?.div] ? `Ranked ${report.open.rank} in the ${DIV[save.season.div].short}, outside its top ${DIV[save.season.div].masters}, ${me.name} watched the Masters from the grandstand.` : `Outside the top ${T.series.gridSize} of the Ultrack Ranking, ${me.name} watched the Masters from the grandstand.`) : `The Final went ahead without ${me.name}, who finished the weekend P${report.grid} of ${report.field ?? FIELD}. The ranking will remember it.`, { track, you: 'dnq' });
-  else if (report.dnq && (report.field ?? FIELD) <= T.series.gridSize) story(save, 'down', `${me.name} sits out the ${gp}`, `No qualifying lap, so no race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });   // everyone races a field of 8: only a round with no lap leaves the player out
+  else if (report.dnq && ((report.field ?? FIELD) <= T.series.gridSize || !Number.isFinite(report.duel?.mine))) story(save, 'down', `${me.name} sits out the ${gp}`, `No qualifying lap, so no race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });   // no lap (or a field of 8, where everyone else races): no race, not a cut
   else if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} of ${report.field ?? FIELD} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });
-  else if (report.dnf) story(save, 'down', `Retirement for ${me.name}`, `Out of the ${gp} after starting P${report.grid}. No points, and a long walk back to the garage.`, { track, you: 'down' });
-  else if (!winner.you && report.finish <= 3) story(save, 'podium', `Podium for ${me.name}`, `P${report.finish} from P${report.grid} at the ${gp}, in a car expected ${report.expPos > report.finish ? `no higher than P${report.expPos}` : `to be up here`}.`, { track, you: 'podium' });
+  else if (report.dnf) story(save, 'down', `Retirement for ${me.name}`, `Out of the ${gp} after starting P${report.grace?.start ?? report.grid}. No points, and a long walk back to the garage.`, { track, you: 'down' });
+  else if (!winner.you && report.finish <= 3) story(save, 'podium', `Podium for ${me.name}`, `P${report.finish} from P${report.grace?.start ?? report.grid} at the ${gp}, in a car expected ${report.expPos > report.finish ? `no higher than P${report.expPos}` : `to be up here`}.`, { track, you: 'podium' });
   else if (!winner.you && report.expPos - report.finish >= 4) story(save, 'podium', `${me.name} punches above the car`, `P${report.finish} when the paddock expected P${report.expPos}. People are starting to ask who ${me.name} is.`, { track, you: 'podium' });
 
   // the teammate, by the finishing order (a missed cut counts as behind)

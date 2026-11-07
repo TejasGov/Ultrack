@@ -113,7 +113,7 @@ try {
     await page.waitForSelector('.cs-review'); await shot('review-relegated-dropped'); }
 
   // ---- a season from before the split, migrated mid-season: it finishes as one field
-  await run(`const s = career(500, 'hayate', 'legacy'); for (let i = 0; i < 3; i++) play(s, 4); const split = { aurum: 'elite', saetta: 'elite', norrsken: 'elite', toro: 'elite', sarab: 'elite', corvid: 'challenger', hayate: 'challenger', mojave: 'challenger', liberty: 'challenger' };
+  await run(`const s = career(500, 'hayate', 'legacy'); for (let i = 0; i < 3; i++) play(s, 4); const split = { aurum: 'elite', saetta: 'elite', norrsken: 'elite', toro: 'elite', sarab: 'elite', corvid: 'challenger', steelhead: 'challenger', hayate: 'challenger', mojave: 'challenger', liberty: 'challenger' };
     for (const t of R.TEAM_IDS) s.world.teams[t].div = split[t]; window.__l = use(s); while (C.currentWeek(s).kind !== 'race') C.advanceWeek(s); g.show('careerHub', 'home');`); await shot('home-legacy', false);
   await hub('standings'); await shot('standings-legacy', false);
   await run(`const s = window.__l; while (s.clock.phase !== 'review') play(s, 4); use(s); g.show('careerStart');`); await page.waitForSelector('.cs-review'); await shot('review-legacy', false);

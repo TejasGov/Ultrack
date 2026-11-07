@@ -19,8 +19,8 @@ export function addDay(save, pts) {
  * One points store for both series, ranked per table. Ties go to the higher-rated driver (the player counts as the fixed rating the seed used)
  */
 export function rankingOf(save, d = save.season?.div ?? 'all') {
-  const K = save.ranking, fade = Math.max(0, W - K.n) / W, rating = (c) => (c === YOU ? T.ranking.playerRating : save.world.ratings[c] ?? 0), keys = d === 'all' ? null : new Set(carsIn(save, d));
-  const list = Object.entries(save.world.seats).filter(([key, code]) => code && (!keys || keys.has(key))).map(([key, code]) => ({ code, key, you: code === YOU,
+  const K = save.ranking, fade = Math.max(0, W - K.n) / W, rating = (c) => (c === YOU ? T.ranking.playerRating : save.world.ratings[c] ?? 0), keys = new Set(carsIn(save, d));
+  const list = Object.entries(save.world.seats).filter(([key, code]) => code && keys.has(key)).map(([key, code]) => ({ code, key, you: code === YOU,
     pts: Math.round(((K.seed[code] ?? 0) * fade + K.days.reduce((s, d) => s + (d[code] ?? 0), 0)) * 10) / 10 }));
   list.sort((a, b) => b.pts - a.pts || rating(b.code) - rating(a.code) || (a.code < b.code ? -1 : 1));
   return list.map((x, i) => ({ ...x, rank: i + 1 }));

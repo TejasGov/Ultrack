@@ -1,6 +1,6 @@
 {
  "version": 2,
- "note": "Nine fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); one per team (Sony, Hayate's, is an extra team-sponsor brand with trackside boards). 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 18 cars, so Corvid, Hayate, Mojave and Liberty have one each and Norrsken none; a car without a box is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
+ "note": "Ten fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); one per team (Sony, Hayate's, is an extra team-sponsor brand with trackside boards). 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 20 cars, so Corvid, Hayate, Mojave and Liberty have one each and Norrsken and Steelhead none; a car without a box is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
  "teams": [
   {
    "id": "saetta",
@@ -587,6 +587,69 @@
    },
    "livery": "graphite body; a curtain of aurora-green light ribbons rises from the sill along each rear flank and fades out toward the roofline; twin green pinstripes over the roof; aurora-green LED strips (the team's lighting colour) edge the number roundel, banners and garage; numbers in ice white in a graphite roundel with a green ring",
    "light": "#38e8a8"
+  },
+  {
+   "id": "steelhead",
+   "name": "Steelhead",
+   "short": "STH",
+   "meaning": "English: the Great Lakes trout that runs upriver; and Detroit steel",
+   "home": "Detroit, Michigan",
+   "principal": "Dolores Kowalczyk",
+   "line": "Cast in Detroit. Built to run upstream.",
+   "cars": [
+    {
+     "key": "zr1",
+     "number": 6,
+     "driver": {
+      "name": "Grace Tolliver",
+      "code": "TOL",
+      "nation": "USA",
+      "age": 31,
+      "role": "the drag-strip kid",
+      "bio": "Raised on the quarter-mile; nobody on the grid is quicker off the line.",
+      "background": "From Flint, Michigan; her father built drag engines in the garage under the house, she won her first bracket race at fourteen, then spent ten years in American sports-car endurance racing before Dolores Kowalczyk brought her home to Detroit.",
+      "personality": "Loud, warm and fearless on a restart; counts the lights out on the radio; calls Cole Maddox the second-best American on the grid to his face, and says Theo Ashcombe brakes too early.",
+      "rivals": [
+       "MAD",
+       "ASH"
+      ]
+     }
+    },
+    {
+     "key": "stingray",
+     "number": 53,
+     "driver": {
+      "name": "Etienne Lavoie",
+      "code": "LAV",
+      "nation": "CAN",
+      "age": 25,
+      "role": "the ice racer",
+      "bio": "Learned car control on frozen lakes; the smoothest hands in the paddock.",
+      "background": "From Windsor, Ontario, across the river from Detroit; ice racing on Lake St. Clair from twelve, a Canadian touring-car title at twenty-two, and the shortest commute on the team.",
+      "personality": "Calm, polite and quietly stubborn; keeps a hockey stick in the motorhome and a notebook of every lap he has lost; races Rosa Quintero as if every lap were overtime.",
+      "rivals": [
+       "QUI"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [],
+   "engine": "supercharged-v8 / v8-crossplane",
+   "finish": "metallic",
+   "sponsor": "LG",
+   "font": {
+    "family": "Anton",
+    "file": "anton-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#9aa4ae",
+    "secondary": "#e0466e",
+    "accent": "#14181d",
+    "carbon": true
+   },
+   "livery": "brushed-steel body; a steelhead-rose band runs nose to tail along each flank at the door line, edged in black, as the trout's red stripe; dark speckles over the rear quarter; one rose stripe edged in black over the roof; numbers in black on a rose roundel with a black ring",
+   "light": "#ff5c86"
   }
  ]
 }

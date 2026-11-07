@@ -39,8 +39,12 @@ export const divsOn = (n = TEAM_IDS.length) => n >= 2 * DIV.minTeams;
 /** the series of a team this season ('all' in a season from before the split); outside a season, the world's */
 export const divOf = (save, team) => (save.season ? save.season.divs?.[team] ?? 'all' : save.world.teams[team].div ?? 'all');
 export const nextDivOf = (save, team) => save.world.teams[team].div ?? 'all';
-export const teamsIn = (save, d, dv = divOf) => TEAM_IDS.filter((t) => d === 'all' || dv(save, t) === d);
-export const carsIn = (save, d, dv = divOf) => Object.keys(save.world.seats).filter((k) => save.world.seats[k] && (d === 'all' || dv(save, CAR[k].team) === d));
+/** a team racing this season: all of them in a season from before the split; in a divided season, the teams in its snapshot (a team a migrated save gained mid-season races from the next) */
+export const racing = (save, team) => !!save.world.teams[team] && (!save.season?.div || team in save.season.divs);   // and in the world: an unmigrated save may lack a team
+export const teamsIn = (save, d, dv = divOf) => TEAM_IDS.filter((t) => (d === 'all' ? racing(save, t) : dv(save, t) === d));
+export const carsIn = (save, d, dv = divOf) => Object.keys(save.world.seats).filter((k) => save.world.seats[k] && (d === 'all' ? racing(save, CAR[k].team) : dv(save, CAR[k].team) === d));
+/** the drivers racing this season, every seat of the teams racing it (FIELD when they all race) */
+export const fieldSize = (save) => Object.keys(CAR).filter((k) => racing(save, CAR[k].team)).length;
 /** a team's place among its series' teams by global expPos: a count, so expPos need not be contiguous inside a series */
 export const posIn = (save, team, dv = divOf) => { const d = dv(save, team), e = save.world.teams; return 1 + teamsIn(save, d, dv).filter((t) => e[t].expPos < e[team].expPos).length; };
 export const expIn = (save, team, seat, dv = divOf) => expOf(posIn(save, team, dv), seat, 2 * teamsIn(save, dv(save, team), dv).length);
@@ -237,7 +241,7 @@ export const objectiveFrom = (o, grid) => (o.kind === 'gain' && grid - 1 < o.n ?
 export function objectivesFor(r, expPos, easier = false, exempt = false, reach = null, N = FIELD, G = T.series.gridSize, reachLcq = false) {
   const main = reachLcq ? { kind: 'reach', stage: 'lcq', to: 'the Last Chance Qualifier' } : reach ? { kind: 'reach', to: reach } : expPos > G && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, N) : Math.min(expPos, N - 1) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, G) : Math.min(expPos, G - 1) };   // expected outside the grid: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
   const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 2) }];
-  if (expPos <= Math.floor((N * 3) / 8)) pool.push({ kind: 'podium' });   // 6 of 16 or 18, 3 of 8 or 10
+  if (expPos <= Math.floor((N * 3) / 8)) pool.push({ kind: 'podium' });   // 6 of 16 or 18, 7 of 20, 3 of 8 or 10
   const picked = shuffle(r, exempt ? pool.filter((o) => o.kind !== 'duel' && o.kind !== 'quali') : pool).slice(0, 2);
   return [{ ...main, mandatory: true }, ...(reachLcq ? [{ kind: 'reach', to: reach }, picked[0]] : picked)];
 }
@@ -248,7 +252,7 @@ export function qualiExemption(rep, mate) {
   return m >= 0 && m < rep.finish - 1 ? null : { slot: rep.finish, why: rep.finish === 1 ? 'your win' : 'your podium' };
 }
 export function objectiveMet(o, x) {
-  return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n, hold: () => !x.dnf && x.finish <= x.grid,
+  return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && (x.start ?? x.grid) - x.finish >= o.n, hold: () => !x.dnf && x.finish <= (x.start ?? x.grid),
     fastest: () => !!x.fastest, podium: () => !x.dnf && x.finish <= 3, quali: () => x.grid <= o.n, reach: () => (o.stage === 'lcq' ? !!x.lcqIn : !x.dnq) })[o.kind]();
 }
 
