@@ -40,6 +40,18 @@ VIEWS = {
     'climb-out': (at(3330, 1.3), at(3430, 3.0)),
     'grandstand': (at(3300, 1.3, -3), at(3360, 4.0, 14)),
     'village-air': (at(2900, 120, -150), at(2950, 0.0)),
+    # the rest of the lap, from the driver's seat
+    'grid': (at(5700, 2.2, -3), at(5800, 5.0)),
+    'paddock': (at(5640, 6.0, -30), at(5690, 2.0, 30)),
+    't1-brow': (at(700, 1.3), at(800, 2.0, 10)),
+    'esses': (at(990, 1.3), at(1080, 2.0)),
+    'escarpment': (at(1450, 1.3), at(1550, -6.0)),
+    'hairpin': (at(1760, 1.3), at(1840, -2.0, 15)),
+    'meadows': (at(2250, 1.3), at(2350, 2.0)),
+    'park-lake': (at(3540, 1.6), at(3560, 2.0, -160)),
+    'park-esses': (at(3780, 1.3), at(3870, 2.0)),
+    'west-side': (at(4500, 1.3), at(4600, 3.0)),
+    'aerial-lap': (Vector((150, -2150, 950)), Vector((150, -560, 0))),
 }
 for name_, views in (('day', VIEWS), ('dusk', {k: VIEWS[k] for k in ('high-street', 'braking-for-the-bridge', 'bridge-from-the-bank', 'village-air')})):
     if ONLY and name_ == 'dusk': continue

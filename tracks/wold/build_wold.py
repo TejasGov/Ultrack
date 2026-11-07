@@ -5,14 +5,16 @@ the hairpin, the river meadows, the village's high street, hard left over the st
   track     14 m of grey tarmac, kerbs in the tight corners, a dressed honey-stone wall 2 m off the edge through the village and on the bridge (the place's own edge), a grass verge beyond
   ground    one grid, 6 m round the lap growing to 5 km out: rolling wold, the river's valley floor with its water, verges and fields
   village   wold_village.py: Cotswold cottages in coursed honey limestone under stone slates, a Georgian front or two, the inn, the market hall, the church and its tower, the bridge.
-            STRETCH limits the dressing to the first finished stretch until the user has seen it."""
+            Round the lap: the old airfield on the top (runway, hangars, the paddock), barns, the beech hanger down the escarpment, the park and its manor across the lake,
+            drystone walls and hedgerows between the fields. WOLD_STRETCH=1 limits the dressing to the first stretch for quick looks.
+  decor     wold_decor.py: the race's own furniture, start to finish."""
 import bpy, os
 from pathlib import Path
 H = Path(r'D:/RaceUltimate-wt/wold/tracks/wold'); ID = 'wold'; PFX = 'HW'
 exec(compile((H.parent / 'career_lib.py').read_text(encoding='utf8'), str(H.parent / 'career_lib.py'), 'exec'))
 PH = Path(r'D:/RaceUltimate/assets/polyhaven')      # the main checkout's local library: several of these sets are not in git (Venice's precedent)
 import numpy as np
-STRETCH = None if os.environ.get('WOLD_FULL') else (2560.0, 3480.0)      # metres of lap that get the village: the high street, the bridge and the climb out
+STRETCH = (2560.0, 3480.0) if os.environ.get('WOLD_STRETCH') else None      # metres of lap that get dressed: all of it, or the first stretch (the high street, the bridge, the climb out) for quick looks
 st = lambda s: int(round(s / STEP)) % N
 def in_stretch(i): return STRETCH is None or STRETCH[0] <= i * STEP <= STRETCH[1]
 def C2B(x, y): p = M @ Vector((x, y, 0)); return Vector((p.x, p.y, 0))      # concept (plan_layout.py) to build coordinates
@@ -59,7 +61,7 @@ C_ = np.array([[p.x, p.y, p.z] for p in CL[::4]])
 SHELF = 16.0
 def far_z(x, y):
     d2 = (C_[:, 0] - x) ** 2 + (C_[:, 1] - y) ** 2; w = 1 / (d2 + 900) ** 2; z = float((w * C_[:, 2]).sum() / w.sum())
-    z += 9.0 * fbm(x / 520, y / 520, 3) * ss(60, 400, math.sqrt(float(d2.min())))      # the wold rolls on beyond the lap
+    z += 15.0 * fbm(x / 600, y / 600, 3) * ss(45, 320, math.sqrt(float(d2.min())))      # the wold rolls on beyond the lap
     rd = river_d(x, y); v = 1 - ss(RIVER_W, 140, rd)      # the valley floor flattens to the river
     return z * (1 - v) + (WATER_Z + 2.4) * v
 def channel(x, y, z):
@@ -77,9 +79,21 @@ def axis(lo, hi, cell=6.0, edge=5000.0, grow=1.18):
     while x < hi + edge: step *= grow; x += step; a.append(x)
     return a
 GX_, GY_ = axis(min(xs) - 200, max(xs) + 200), axis(min(ys) - 200, max(ys) + 200)
-def tint(co, d):      # meadow greens, a little straw in it, darker in the valley's damp
+# the fields: each between two of wold_village.py's walls or hedges (offsets SHELF + 45 / 120 / 210 from the road, a cross line every 36 stations) takes its own crop
+CROPS = [((0.48, 0.80, 0.34), 30), ((0.40, 0.72, 0.30), 18), ((0.66, 0.79, 0.38), 16), ((0.95, 0.80, 0.46), 14), ((0.64, 0.50, 0.34), 10), ((0.98, 0.9, 0.3), 4)]      # pasture, lush pasture, hay, stubble, ploughed, rapeseed
+def crop(x, y):
+    i, d = near(x, y); side = 1 if (Vector((x, y, 0)) - CL[i]).to_2d().dot(NL[i].to_2d()) > 0 else -1
+    lb = 0 if d < SHELF + 45 else 1 if d < SHELF + 120 else 2 if d < SHELF + 210 else 3 + int((d - SHELF - 210) / 140)
+    r_ = random.Random((i // 36) * 7919 + lb * 104729 + side * 13).random() * sum(w for _, w in CROPS)
+    for c_, w in CROPS:
+        r_ -= w
+        if r_ <= 0: return c_, d
+    return CROPS[0][0], d
+def tint(co, d):      # meadow greens by the road, the fields' own crops beyond the first wall, a little straw in it, darker in the valley's damp
     a = fbm(co.x / 70, co.y / 70, 3); t = 0.85 + 0.12 * a; dry = ss(0.1, 0.6, fbm(co.x / 300 + 4, co.y / 300, 2))      # leafy_grass is a brown-green: pulled to an English meadow's green
-    return (t * (0.5 + 0.2 * dry), t * (0.78 - 0.04 * dry), t * (0.36 - 0.04 * dry), 1)
+    road_ = (0.5 + 0.2 * dry, 0.78 - 0.04 * dry, 0.36 - 0.04 * dry)
+    c_, dd = crop(co.x, co.y); f = ss(SHELF + 36, SHELF + 46, dd)
+    return tuple(t * (r0 * (1 - f) + r1 * f) for r0, r1 in zip(road_, c_)) + (1,)
 bm = bmesh.new(); vc = vcol_layer(bm); G, D, I = [], {}, {}
 for y in GY_:
     row = []
@@ -97,14 +111,16 @@ for r_ in range(len(GY_) - 1):
         for l in f.loops: l[vc] = tint(l.vert.co, D[l.vert]) if not bed else (0.75, 0.72, 0.62, 1)
 mesh_obj('HW ground', bm, ['grass', 'bed'], smooth=True)
 def ground_at(x, y): i, d = near(x, y); return height(x, y, i, d)
-# the pavement in the village, flush with the road's edge plus a kerb's height
+# the pavement in the village, flush with the road's edge plus a kerb's height; over its last 15 m at each end it comes down to the verge's level, or a car on the edge meets a 16 cm step
+V0_, V1_ = min(i for i in range(N) if VILLAGE[i]), max(i for i in range(N) if VILLAGE[i])
+def kerb_h(i): return -0.04 + 0.16 * ss(0.0, 15.0, min(i - V0_, V1_ - i) * STEP)
 bm = bmesh.new(); vc = vcol_layer(bm)
 for sd in (1, -1):
     for i in range(N):
         j = (i + 1) % N
         if not (VILLAGE[i] and VILLAGE[j]): continue
-        a0, a1 = BD[sd][i] + 0.56, BD[sd][j] + 0.56
-        row0, row1 = [off(i, sd * (HW + 0.01), -0.02), off(i, sd * a0, 0.12), off(i, sd * SHELF, 0.12)], [off(j, sd * (HW + 0.01), -0.02), off(j, sd * a1, 0.12), off(j, sd * SHELF, 0.12)]
+        a0, a1 = BD[sd][i] + 0.56, BD[sd][j] + 0.56; h0, h1 = kerb_h(i), kerb_h(j)
+        row0, row1 = [off(i, sd * (HW + 0.01), -0.02), off(i, sd * a0, h0), off(i, sd * SHELF, h0)], [off(j, sd * (HW + 0.01), -0.02), off(j, sd * a1, h1), off(j, sd * SHELF, h1)]
         for f in strip(bm, [row0, row1], 0, closed=False, rev=sd < 0):
             for l in f.loops: l[vc] = (0.9, 0.87, 0.8, 1)
         ground_col.append([row0[0].copy(), row1[0].copy(), row1[1].copy(), row0[1].copy()][::sd])

@@ -258,7 +258,9 @@ def export():
             for o in objs: o.select_set(True)
             vl.objects.active = objs[0]
             bpy.ops.export_scene.gltf(filepath=str(path), export_format='GLB', use_selection=True, export_yup=True, export_apply=True, **kw)
-        gl(OUT / f'{ID}_visual.glb', [o for o in VIS.objects if o.type == 'MESH'])
+        extra = globals()['GAME_INSTANCES']() if 'GAME_INSTANCES' in globals() else []      # a build's instanced sets (trees, hedges), made after the .blend is saved so the review keeps its own copies
+        gl(OUT / f'{ID}_visual.glb', [o for o in VIS.objects if o.type == 'MESH'] + extra, **({'export_gpu_instances': True} if extra else {}))
+        if extra: log('instanced sets', sum(1 for o in extra if o.type == 'EMPTY'), 'instances', sum(1 for o in extra if o.type == 'MESH'))
         gl(OUT / f'{ID}_collision.glb', list(COL.objects), export_materials='NONE', export_texcoords=False, export_normals=False)
     tri = {o.name: sum(len(p.vertices) - 2 for p in o.data.polygons) for o in VIS.objects if o.type == 'MESH'}
     log('triangles', sum(tri.values()), json.dumps(tri))

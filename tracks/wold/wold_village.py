@@ -200,6 +200,53 @@ for sd in (1, -1):
         OCC.update(foot(O, ex, w, d)); building(O, ex, w, d, 2, dormers=0 if barn else None)
         if VR.random() < 0.6: TREES.append((O + Vector((-ex.y, ex.x, 0)) * (d + VR.uniform(3, 10)) + ex * VR.uniform(-w / 2, w / 2), 'garden'))
 log('village buildings with the back lanes', N_B[0])
+# ------------------------------------------------------------------------------------------------ the country round the lap: the old airfield on the top, barns, the manor across the park's lake,
+# the beech hanger down the escarpment, the park's trees. Placed before the fields so the walls and hedges stop at them (OCC).
+MAT.update({'runway': material('HW | runway concrete', tex='dirty_concrete', vcol=True), 'corr': material('HW | corrugated iron', tex='rusty_corrugated_iron', vcol=True)})
+UVS.update({'runway': 4.0, 'corr': 1.6})
+AF = Sheet('HW airfield', ['runway', 'corr', 'door', 'dark'])
+HANG0, HANG1, PARK0, PARK1, AIR0, AIR1 = 1282.0, 1850.0, 3420.0, 4180.0, 5250.0, 760.0
+def zone(p):
+    """where no field wall or hedge runs: the beech hanger (the escarpment's outside), the park, the airfield north of the top straight"""
+    i, _ = near(p.x, p.y); s = i * STEP; side = 1 if (Vector((p.x, p.y, 0)) - CL[i]).to_2d().dot(NL[i].to_2d()) > 0 else -1
+    return (HANG0 - 40 <= s <= HANG1 and side > 0) or PARK0 <= s <= PARK1 or ((s >= AIR0 or s <= AIR1) and side > 0)
+def drape(p, dz=0.06): return Vector((p.x, p.y, ground_at(p.x, p.y) + dz))
+# the runway: a wartime strip of weathered concrete, parallel to the top straight
+RW0, RW1 = C2B(-560, 185), C2B(560, 225); ru = (RW1 - RW0).normalized(); rn = Vector((-ru.y, ru.x, 0)); RL = (RW1 - RW0).length
+for k in range(int(RL / 10)):
+    a, b = RW0 + ru * k * 10, RW0 + ru * min(RL, (k + 1) * 10)
+    for e0, e1 in ((-23, -11.5), (-11.5, 0), (0, 11.5), (11.5, 23)):
+        t = 0.78 + 0.16 * fbm(a.x / 40 + e0 / 30, a.y / 40, 2); AF.face([drape(a + rn * e0), drape(b + rn * e0), drape(b + rn * e1), drape(a + rn * e1)], 'runway', (t, t, t * 0.97), out=UPV)
+OCC.update(foot((RW0 + RW1) / 2 - rn * 26, ru, RL + 6, 52))
+def hangar(O, ex, L=36.0, span=24.0, rise=9.5, seg=12):
+    """a T2-style hangar: a corrugated barrel on a low plinth, its doors across one end"""
+    ey = Vector((-ex.y, ex.x, 0)); z0 = min(ground_at(*(O + ex * a + ey * b).to_2d()) for a in (-L / 2, L / 2) for b in (-span / 2, span / 2)) - 0.3
+    P = lambda x, y, z: Vector((O.x, O.y, z0)) + ex * x + ey * y + UPV * z
+    arc = [(-span / 2 * math.cos(math.pi * q / seg), rise * math.sin(math.pi * q / seg) + 0.6) for q in range(seg + 1)]
+    for (y0, z0_), (y1, z1_) in zip(arc, arc[1:]):
+        o_ = ey * (y0 + y1) / span + UPV * (z0_ + z1_ - 1.2) / rise; AF.face([P(-L / 2, y0, z0_), P(L / 2, y0, z0_), P(L / 2, y1, z1_), P(-L / 2, y1, z1_)], 'corr', tone(0.8), out=o_)
+    for sx in (-1, 1):
+        AF.face([P(sx * L / 2, y, z) for y, z in [(-span / 2, 0.0)] + arc + [(span / 2, 0.0)]], 'corr', mul(tone(0.8), (0.9, 0.9, 0.9)), out=ex * sx)
+        AF.box(lambda x, y, z, sx=sx: P(sx * L / 2, 0, 0) + ex * x + ey * y + UPV * z, -0.2 if sx < 0 else 0.0, 0.0 if sx < 0 else 0.2, -span * 0.32, span * 0.32, 0.0, rise * 0.62, 'door' if sx > 0 else 'dark', (0.55, 0.58, 0.52))
+    OCC.update(foot(P(0, -span / 2 - 2, 0), ex, L + 4, span + 4))
+for x_ in (-470, -400): hangar(C2B(x_, 300), ru)
+# barns: stone, two storeys, no dormers, at the field's edge
+for s_, sd, lat_ in ((2200, 1, 62), (4460, -1, 58), (1080, -1, 75), (4800, 1, 70)):
+    i = st(s_); ex = T[i].to_3d() * sd; ex.normalize(); O = off(i, sd * lat_); O.z = ground_at(O.x, O.y) + 0.05
+    if clear(O, ex, 15, 8.5, 40) and not foot(O, ex, 15, 8.5) & OCC: OCC.update(foot(O, ex, 15, 8.5)); building(O, ex, 15, 8.5, 2, dormers=0)
+# the manor: a Georgian house across the lake from the park's road
+MO = C2B(-905, -820); ey_ = MO - LAKE_C; ey_.z = 0; ey_.normalize(); ex_ = Vector((ey_.y, -ey_.x, 0)); MO.z = ground_at(MO.x, MO.y) + 0.1
+building(MO, ex_, 30.0, 13.0, 3, kind='georgian', dormers=0); OCC.update(foot(MO - ey_ * 4, ex_, 34, 21))
+log('airfield, hangars, barns, manor: buildings now', N_B[0])
+# the beech hanger: close woodland down the escarpment's outside; the park: single trees scattered over the grass
+for s_ in np.arange(HANG0 - 40, HANG1, 8.0):
+    i = st(s_)
+    for lat_ in np.arange(4.0, 132.0, 8.0):
+        p = off(i, BD[1][i] + lat_ + VR.uniform(-3, 3)) + T[i].to_3d() * VR.uniform(-3, 3)
+        if VR.random() < 0.9: TREES.append((p, 'hanger'))
+for q in range(220):
+    s_ = VR.uniform(PARK0, PARK1); i = st(s_); sd = VR.choice((-1, 1)); p = off(i, sd * (BD[sd][i] + VR.uniform(20, 230)))
+    if river_d(p.x, p.y) > RIVER_W + 8: TREES.append((p, 'park'))
 # the fields round the village: drystone walls and hedgerows, parallel to the road and across it, a hedgerow tree now and then
 FW = Sheet('HW field walls', ['barrier'])
 HEDGE_PTS = []
@@ -207,7 +254,7 @@ def field_line(pts):
     """a wall or a hedge along pts, broken where it would meet the road, a house or the river"""
     run = []; hedge = VR.random() < 0.45
     for p in pts + [None]:
-        ok = p is not None and near(p.x, p.y)[1] > SHELF + 12 and river_d(p.x, p.y) > RIVER_W + 4 and (int(math.floor(p.x * 2)), int(math.floor(p.y * 2))) not in OCC
+        ok = p is not None and near(p.x, p.y)[1] > SHELF + 12 and river_d(p.x, p.y) > RIVER_W + 4 and (int(math.floor(p.x * 2)), int(math.floor(p.y * 2))) not in OCC and not zone(p)
         if ok: p = Vector((p.x, p.y, ground_at(p.x, p.y))); run.append(p); continue
         if len(run) > 3:
             if hedge: HEDGE_PTS.extend(run[::1])
@@ -216,8 +263,8 @@ def field_line(pts):
                     t_ = (b - a); t_.z = 0; t_.normalize(); n_ = Vector((-t_.y, t_.x, 0)); hh = 1.25 + 0.1 * math.sin(a.x * 0.7)
                     for e in (-1, 1): FW.face([a + n_ * e * 0.35 - UPV * 0.3, b + n_ * e * 0.35 - UPV * 0.3, b + n_ * e * 0.2 + UPV * hh, a + n_ * e * 0.2 + UPV * hh], 'barrier', out=n_ * e)
                     FW.face([a + n_ * -0.2 + UPV * hh, b + n_ * -0.2 + UPV * hh, b + n_ * 0.2 + UPV * (hh + 0.12), a + n_ * 0.2 + UPV * (hh + 0.12)], 'barrier', out=UPV)
-            for q in range(0, len(run), 18):
-                if VR.random() < 0.5: TREES.append((run[q] + Vector((VR.uniform(-1, 1), VR.uniform(-1, 1), 0)), 'hedgerow'))
+            for q in range(0, len(run), 12):
+                if VR.random() < 0.6: TREES.append((run[q] + Vector((VR.uniform(-1, 1), VR.uniform(-1, 1), 0)), 'hedgerow'))
         run = []
 i0, i1 = st(STRETCH[0] - 200) if STRETCH else 0, st(STRETCH[1] + 200) if STRETCH else N
 for sd in (1, -1):
@@ -226,6 +273,16 @@ for sd in (1, -1):
     for i in range(i0, i1, 36):
         field_line([off(i, sd * lat) for lat in np.arange(SHELF + 12, 300, 2.5)])
 FW.done(); log('hedge points', len(HEDGE_PTS))
+# copses: tight clumps of trees on the rises between the fields, as the wold's shelter belts are
+n_c = 0
+for q in range(16):
+    s_ = VR.uniform(0, LAP); i = st(s_); sd = VR.choice((-1, 1)); c_ = off(i, sd * (BD[sd][i] + VR.uniform(140, 420)))
+    if zone(c_) or river_d(c_.x, c_.y) < RIVER_W + 30 or near(c_.x, c_.y)[1] < 120: continue
+    R_ = VR.uniform(22, 45); n_c += 1
+    for k in range(int(R_ * 0.9)):
+        a_, r_ = VR.uniform(0, 2 * math.pi), R_ * math.sqrt(VR.random()); p = c_ + Vector((math.cos(a_) * r_, math.sin(a_) * r_, 0))
+        if (int(math.floor(p.x * 2)), int(math.floor(p.y * 2))) not in OCC: TREES.append((p, 'copse'))
+log('copses', n_c)
 
 # the market hall: an open arcade of round arches below, a room above, a coped gable roof
 mi = (SQUARE[0] + SQUARE[1]) // 2; ex = T[mi].to_3d() * SQUARE[2]; ex.normalize(); ey = Vector((-ex.y, ex.x, 0)); O = off(mi, SQUARE[2] * (SHELF + 4)); O.z = CL[mi].z + 0.25
@@ -311,7 +368,7 @@ for sd in (1, -1):
         i0, i1 = SI(u), SI(u + 0.5); A, B = bp(i0, sd, CL[i0].z - 0.05), bp(i1, sd, CL[i1].z - 0.05); o = NL[i0].to_3d() * sd * 0.08
         VS.face([A + o - UPV * 0.25, B + o - UPV * 0.25, B + o, A + o], 'ashlar', (1.0, 0.9, 0.7), out=NL[i0].to_3d() * sd)
 log('bridge', round(L_b, 1), 'm,', spans, 'arches of', round(span, 1), 'm')
-for q in range(30): TREES.append((Vector(_rp[VR.randrange(len(_rp))]) + Vector((VR.uniform(-1, 1), VR.uniform(-1, 1), 0)).normalized() * (RIVER_W + VR.uniform(3, 9)), 'river'))
+for q in range(90): TREES.append((Vector(_rp[VR.randrange(len(_rp))]) + Vector((VR.uniform(-1, 1), VR.uniform(-1, 1), 0)).normalized() * (RIVER_W + VR.uniform(3, 9)), 'river'))
 
 # ------------------------------------------------------------------------------------------------ trees: Qingshan's scanned Poly Haven broadleaves, placed as instances (the pack keeps them instanced, NO_JOIN)
 MASTER = {}
@@ -321,14 +378,33 @@ for sp in ('tree_small_02', 'island_tree_01', 'island_tree_02'):
 with bpy.data.libraries.load(str(QT / 'understorey.blend'), link=False) as (a, b): b.objects = [n_ for n_ in a.objects if n_.startswith('SHRUB')]
 for o in b.objects: MASTER[o.name] = o.data
 TREEC = bpy.data.collections.new('trees'); VIS.children.link(TREEC); HT = {'tree_small_02': 4.56, 'island_tree_01': 5.03, 'island_tree_02': 3.41}; nt_ = 0
+PLACED = []      # (master, matrix, tier): the game's instanced sets; TREEC keeps one copy each for the review in Blender
 for p, why in TREES:
     j_, dr = near(p.x, p.y)
     if dr < BD[1][j_] + 3 or river_d(p.x, p.y) < RIVER_W + 1.5 or not in_stretch(j_) and why not in ('river', 'hedgerow'): continue
-    sp = 'tree_small_02' if VR.random() < 0.55 else VR.choice(['island_tree_01', 'island_tree_02']); h = VR.uniform(9, 17) / HT[sp]; lod = 'LOD0' if dr < 40 else 'LOD1' if dr < 140 else 'CARD'
+    if why in ('hanger', 'park', 'copse') and (int(math.floor(p.x * 2)), int(math.floor(p.y * 2))) in OCC: continue
+    sp = ('tree_small_02' if VR.random() < 0.7 else 'island_tree_01') if why == 'hanger' else 'tree_small_02' if VR.random() < 0.55 else VR.choice(['island_tree_01', 'island_tree_02'])
+    h = VR.uniform(16, 24) / HT[sp] if why in ('hanger', 'copse') else VR.uniform(11, 19) / HT[sp] if why == 'park' else VR.uniform(9, 17) / HT[sp]
+    lod = 'LOD0' if dr < 40 else 'LOD1' if dr < 140 else 'CARD'
     ob = bpy.data.objects.new(f'tree {sp}', MASTER[f'TREE {sp} {lod}']); TREEC.objects.link(ob); ob.location = (p.x, p.y, ground_at(p.x, p.y) - 0.15); ob.rotation_euler = (0, 0, VR.uniform(0, 6.283)); ob.scale = (h, h, h); nt_ += 1
+    PLACED.append((f'TREE {sp}', ob.matrix_basis.copy(), 0 if dr < 45 else 1 if dr < 140 else 2))
 nh = 0
 for q, p in enumerate(HEDGE_PTS):      # the hedgerows: Qingshan's scanned shrubs packed in a line, a little taller in places
-    if q % 1: continue
-    ob = bpy.data.objects.new('hedge', MASTER[f'SHRUB {VR.randint(4, 7)}']); TREEC.objects.link(ob); ob.location = (p.x, p.y, p.z - 0.1); ob.rotation_euler = (0, 0, VR.uniform(0, 6.283)); sc_ = VR.uniform(1.4, 2.1); ob.scale = (sc_, sc_, sc_ * VR.uniform(0.9, 1.25)); nh += 1
+    k_ = VR.randint(4, 7); ob = bpy.data.objects.new('hedge', MASTER[f'SHRUB {k_}']); TREEC.objects.link(ob); ob.location = (p.x, p.y, p.z - 0.1); ob.rotation_euler = (0, 0, VR.uniform(0, 6.283)); sc_ = VR.uniform(1.4, 2.1); ob.scale = (sc_, sc_, sc_ * VR.uniform(0.9, 1.25)); nh += 1
+    PLACED.append((f'SHRUB {k_}', ob.matrix_basis.copy(), 'shrub'))
 log('trees', nt_, 'hedge shrubs', nh)
-VS.done()
+def GAME_INSTANCES():
+    """career_lib.export() calls this after saving the .blend: every tree as GPU instances in distance tiers (perf.js `~lo-hi`, as Qingshan), hedges out to 400 m"""
+    G_ = {}
+    def add(mn, tag, m): G_.setdefault((mn, tag), []).append(m)
+    for base, m, tier in PLACED:
+        if tier == 'shrub': add(base, '~0-400', m)
+        elif tier == 0: add(f'{base} LOD0', '~0-40', m); add(f'{base} LOD1', '~40-90', m); add(f'{base} CARD', '~90-1500', m)
+        elif tier == 1: add(f'{base} LOD1', '~0-90', m); add(f'{base} CARD', '~90-1500', m)
+        else: add(f'{base} CARD', '~0-1500', m)
+    GC = bpy.data.collections.new('game instances'); bpy.context.scene.collection.children.link(GC); out = []
+    for (mn, tag), ms in G_.items():
+        quiet = 'CARD' in mn or mn.startswith('SHRUB'); e = bpy.data.objects.new(f"{'far_shore ' if quiet else ''}{mn} {tag}", None); GC.objects.link(e); out.append(e)      # main.js NO_CAST reads the prefix
+        for k, m in enumerate(ms): c_ = bpy.data.objects.new(f'{mn}.{k:05d}', MASTER[mn]); GC.objects.link(c_); c_.parent = e; c_.matrix_world = m; out.append(c_)
+    bpy.context.view_layer.update(); log('game instance sets', {f'{k[0]} {k[1]}': len(v) for k, v in G_.items()}); return out
+VS.done(); AF.done()

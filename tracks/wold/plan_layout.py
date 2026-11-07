@@ -92,6 +92,20 @@ stats = dict(lap_m=round(LAP), est_lap_s=round(float((STEP / V).sum()), 1), top_
 print(json.dumps(stats, indent=None))
 (H.parent.parent / 'track-viewer' / 'docs' / 'career-worlds' / 'wold.json').write_text(json.dumps(dict(id='wold', name='Hartwell Wold', world=2, lapLength=round(LAP), width=14,
     waypoints=[[round(float(a), 2) for a in p] for p in wp], corners=corners), indent=1), encoding='utf8')
+# the plan as the docs show it (docs/career-worlds/<id>.svg, as Llano's): the built centreline, the corners, the start
+def plan_svg(path, title, sub):
+    x, y = CL[:, 0], -CL[:, 1]; pad = 140; x0, x1, y0, y1 = x.min() - pad, x.max() + pad, y.min() - pad - 260, y.max() + pad; W, H_ = x1 - x0, y1 - y0
+    pts = ''.join(f"{'M' if k == 0 else 'L'}{a:.0f} {b:.0f}" for k, (a, b) in enumerate(zip(x[::4], y[::4]))) + 'Z'
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0:.0f} {y0:.0f} {W:.0f} {H_:.0f}" width="1500" height="{1500 * H_ / W:.0f}" font-family="Segoe UI, Arial, sans-serif">',
+           f'<rect x="{x0:.0f}" y="{y0:.0f}" width="{W:.0f}" height="{H_:.0f}" fill="#efe3d0"/>',
+           f'<text x="{x0 + 100:.0f}" y="{y0 + 140:.0f}" font-size="{W / 42:.0f}" font-weight="700" fill="#1d1d1f">{title}</text>',
+           f'<text x="{x0 + 100:.0f}" y="{y0 + 140 + W / 34:.0f}" font-size="{W / 75:.0f}" fill="#555">{sub}</text>',
+           f'<path d="{pts}" fill="none" stroke="#1d1d1f" stroke-width="{W / 160:.0f}" stroke-linejoin="round"/>',
+           f'<circle cx="{x[0]:.0f}" cy="{y[0]:.0f}" r="{W / 110:.0f}" fill="#d0342c"/>']
+    for cn in corners:
+        k = int(cn['at'] / STEP); out.append(f'<text x="{x[k] + W / 90:.0f}" y="{y[k] - W / 90:.0f}" font-size="{W / 55:.0f}" font-weight="700" fill="#d0342c">{cn["n"]}</text>')
+    path.write_text('\n'.join(out) + '\n</svg>\n', encoding='utf8')
+plan_svg(H.parent.parent / 'track-viewer' / 'docs' / 'career-worlds' / 'wold.svg', 'Hartwell Wold', '5.79 km · 11 corners · clockwise · 8 to 44 m · 14 m wide · day and dusk')
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(10, 9)); sc_ = ax.scatter(CL[:, 0], CL[:, 1], c=CL[:, 2], s=3, cmap='viridis'); plt.colorbar(sc_, label='road height m')
 for cn in corners: p = CL[int(cn['at'] / STEP)]; ax.annotate(f"T{cn['n']} r{cn['radius']} {cn['kmh']}", p[:2], fontsize=7)
