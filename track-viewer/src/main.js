@@ -953,7 +953,9 @@ function applyAll() {
   const look = LOOKS[params.look];
   worldGlass();
   const poolOn = !PERF.idleLights || look.lights * params.venueLights > 0;
-  for (const light of [...pool.flood, ...pool.stand, ...pool.street]) light.visible = poolOn;
+  // a slot whose venue has no lamps of that kind never lights anything (intensity 0), yet every lit material unrolls it: keep it out of the shaders
+  const lamps = { flood: venueLights?.floodlights, stand: venueLights?.standLamps, street: venueLights?.streetLamps };
+  for (const k in pool) for (const light of pool[k]) light.visible = poolOn && (!venueLights || lamps[k]?.length > 0);
   renderer.toneMapping = { AgX: THREE.AgXToneMapping, ACES: THREE.ACESFilmicToneMapping, Neutral: THREE.NeutralToneMapping }[params.toneMapping === 'auto' ? look.tm : params.toneMapping];
   renderer.toneMappingExposure = look.exposure * params.exposure;
   scene.fog = params.fog > 0 ? new THREE.FogExp2(look.fog, look.fogDensity * params.fog * TRACK.fog) : null;
