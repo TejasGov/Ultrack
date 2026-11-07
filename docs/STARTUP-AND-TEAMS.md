@@ -81,7 +81,7 @@ cold-load times and an in-game visual approval were not collected in this pass.
 - No pit box (the Marina's twelve are taken) and no venue dress: `tracks/` was not changed. No driver posters or press photos yet: the hoardings put up no board for them
   and the press falls back to the circuit, as for any new driver.
 - Logos: `track-viewer/scripts/build-team-logo-norrsken.py` (see assets/teams/logos/README.md). Car stills: `make-ui-stills.mjs` cars, side and thumbs with `ONLY=jesko,cc850`.
-- The CC850 has its own livery places (`livery.js` `FIT`: a smaller bonnet logo, no deck sponsor) and no Wheels paint row (its rims share a material with the tyres).
+- The CC850 has its own livery places (`livery.js` `FIT`: a smaller bonnet logo, no deck sponsor, a smaller flank sponsor on the door clear of the side intake) and no Wheels paint row (its rims share a material with the tyres; `model-rims.js` `paintsRims`: a model car keeps the row only if its rim material is listed, a car-lab car such as the Continental GT always does).
   Known: in its side still the kept rear plate shows edge-on past the bumper; fixing it means moving the plate in `prepare-cars.py` `cc850()` and re-deriving the LODs.
 - Career: schema 12 adds the team to an old save (`career.js` `addTeams`); the balance, the retune and the decisions left to the user are in track-viewer/docs/career-mode.md.
   QA shots at 1600x900: `track-viewer/qa/team-norrsken/shots.mjs`.

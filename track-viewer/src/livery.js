@@ -71,9 +71,10 @@ const NUMBER = {
   hayate: ['roundel', 's', 'a', 'p'],    // white plate, vermilion ring, violet digits
   norrsken: ['roundel', 'p', 's', 'a'],  // graphite plate, aurora-green ring, ice digits
 };
-/** a car whose bodywork takes the shared decal places badly: the bonnet logo's place (share of the length from the nose) and width (share of the car's), and
- * whether the title sponsor goes on the rear deck. The CC850's bonnet vent and creases cut the logo; its louvred engine cover split the deck sponsor into two fins */
-const FIT = { cc850: { bonnet: [0.12, 0.4], deck: false } };
+/** a car whose bodywork takes the shared decal places badly: the bonnet logo's place (share of the length from the nose) and width (share of the car's),
+ * whether the title sponsor goes on the rear deck, and the flanks' title sponsor moved forward (m) and scaled. The CC850's bonnet vent and creases cut the logo,
+ * its louvred engine cover split the deck sponsor into two fins, and its side intake cut the flank sponsor */
+const FIT = { cc850: { bonnet: [0.12, 0.4], deck: false, flank: [0.58, 0.62] } };
 const role = (c, r) => ({ p: c.primary, s: c.secondary, a: c.accent })[r];
 /** lettering on the team's own paint: colors.ink where the accent is too pale for it (Toro's yellow), else the accent */
 const ink = (c) => c.ink ?? c.accent;
@@ -281,7 +282,8 @@ export async function makeLivery({ team, car, profile, box, k = 256 }) {
     const d = car.driver, last = d.name.split(' ').slice(-1)[0].toUpperCase();
     text(s, `${d.name[0]}. ${last}`, ...P(dx, L.wy - 0.035), 0.05, { font: '800 italic', fill: ink(c), stroke: c.primary, lw: 0.12, maxW: 0.5 });
     text(s, d.nation, ...P(dx, L.wy - 0.075), 0.026, { font: '700', fill: ink(c), maxW: 0.2 });
-    sticker(s, team.sponsor, ...P(L.xf + (L.xr - L.xf) * 0.79, dy + 0.02), 0.46, 0.12);
+    const [fx, fs] = FIT[car.key]?.flank ?? [0, 1];
+    sticker(s, team.sponsor, ...P(L.xf + (L.xr - L.xf) * 0.79 - fx, dy + 0.02), 0.46 * fs, 0.12 * fs);
     sticker(s, 'KESTROVA', ...P(L.xf + L.rf + 0.38, 0.255), 0.34, 0.07);
     sticker(s, pick(0), ...P(L.xf + (L.xr - L.xf) * 0.66, 0.27), 0.2, 0.055);
     sticker(s, pick(1), ...P(L.xf + (L.xr - L.xf) * 0.66 + 0.22, 0.27), 0.2, 0.055);
