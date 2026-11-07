@@ -10,9 +10,9 @@
                 "salary": { "B": 800, "A": 1200, "N": 1800 }, "sponsor": 4.5, "objective": [240, 120], "bonus": { "podium": 300, "win": 600, "cup": 2400 } }
   },
   "teams": {
-    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 700, "rr": 7.65, "cl": 15 }, "wants": "titles", "want": "cups", "side": "sponsor", "style": "bidder" },
-    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 650, "rr": 7.45, "cl": 14 }, "wants": "wins and poles", "want": "poles", "side": "test", "style": "hardball" },
-    "norrsken": { "tier": "legend", "expPos": 3, "A": "jesko",             "B": "cc850",      "gate": { "rep": 750, "rr": 7.75, "cl": 16 }, "wants": "clean, exact racing", "want": "clean", "side": "test", "style": "warm" },
+    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 825, "rr": 7.9, "cl": 16 }, "wants": "titles", "want": "cups", "side": "sponsor", "style": "bidder" },
+    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 775, "rr": 7.8, "cl": 15 }, "wants": "wins and poles", "want": "poles", "side": "test", "style": "hardball" },
+    "norrsken": { "tier": "legend", "expPos": 3, "A": "jesko",             "B": "cc850",      "gate": { "rep": 725, "rr": 7.65, "cl": 14 }, "wants": "clean, exact racing", "want": "clean", "side": "test", "style": "warm" },
     "toro":    { "tier": "maestro", "expPos": 4, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.6, "cl": 7 }, "wants": "overtakes and giant-killing", "want": "gained", "side": "sponsor", "style": "hardball" },
     "sarab":   { "tier": "maestro", "expPos": 5, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "loyalty", "want": "seasonsHere", "side": "test", "style": "warm" },
     "corvid":  { "tier": "maestro", "expPos": 6, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "clean races", "want": "clean", "side": "test", "style": "frugal" },

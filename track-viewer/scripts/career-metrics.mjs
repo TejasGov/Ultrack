@@ -68,8 +68,7 @@ try {
     gate(`rivals at career end (avg${why})`, A.rivalsEnd / N, 1.0, 3.0);
     // the realistic-pass probe: the same careers with a pass against every car within two places each race (the stub's one pass a race is a floor)
     const probe = Array.from({ length: N }, (_, i) => C.rivalsOf(play(M, 1000 + i, skill, S, 'sprint', { passAll: true }).save).length).reduce((a, b) => a + b, 0) / N;
-    // 3.2, not 3, since Norrsken: a Legend grid is the same six Legend cars nearly every round, so a strong driver meets the same rivals more often (2.86 on base f33630d, 3.08 now)
-    gate(`rivals at career end, a pass with every car within two places (avg${why})`, probe, 1.0, 3.2);
+    gate(`rivals at career end, a pass with every car within two places (avg${why})`, probe, 1.0, 3.0);
     // the nemesis races the player, so this counts the rounds they raced
     // open at average skill since Norrsken (2026-11-07): six Legend cars take six of the eight grid slots, so the average driver below them races fewer rounds and rarely
     // meets one driver often enough for a feud (24 % -> 6 %); halving the heat's decay brings it back to 19 % but gives the strong driver 3.4 rivals and 1.4 rival REP lines a race
@@ -82,8 +81,8 @@ try {
     const atLeast = (m) => A.medals.slice(m).reduce((a, b) => a + b, 0) / Math.max(1, A.days), cap = R.SPONSORS.startMood + 3;
     console.log(`  info  ${A.days} Sponsor Challenges: no medal ${pct(A.medals[0] / Math.max(1, A.days))}, bronze ${pct(A.medals[1] / Math.max(1, A.days))}, silver ${pct(A.medals[2] / Math.max(1, A.days))}, gold ${pct(A.medals[3] / Math.max(1, A.days))}; wallet at the end of the tier ${Object.entries(A.money).map(([t, v]) => `${t} ${v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : '-'}`).join(', ')}`);
     if (label === 'average') { check('challenges at bronze or better', atLeast(1), 0.75, 0.95, pct); check('challenges at silver or better', atLeast(2), 0.4, 0.7, pct); check('challenges at gold', atLeast(3), 0.1, 0.35, pct);
-      // the end-of-tier wallet also measures how long the driver stays in the tier and how often they race in it: since Norrsken the average driver races less below six Legend cars and
-      // reaches Legend later, so the Rookie and Legend wallets fall short; Maestro stays a gate. Rookie and Legend wait on the user (docs/career-mode.md, Norrsken)
+      // the end-of-tier wallet: since Norrsken the average driver spends as long in Legend but earns less in each Legend and Maestro season (five Legend rivals, not three,
+      // so lower finishes and more missed cuts), and the Rookie and Legend wallets fall short; Maestro stays a gate. Rookie and Legend wait on the user (docs/career-mode.md, Norrsken)
       for (const [t, base] of Object.entries(WALLET)) (t === 'maestro' ? check : openCheck)(`wallet at the end of ${t} (baseline ${base})`, A.money[t].reduce((a, b) => a + b, 0) / Math.max(1, A.money[t].length) / base, 0.9, 1.1, pct);
       // missed cuts in Tour rounds by tier (base f33630d, two Legend teams: Rookie 70 %, Maestro 10 %, Legend 11 %): six Legend cars leave two grid slots for the twelve cars below them
       console.log(`  info  missed cuts: ${Object.entries(A.cuts).sort().map(([k, [a, d]]) => `${k} ${pct(d / a)} of ${a}`).join(', ')}`);
