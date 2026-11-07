@@ -1,0 +1,163 @@
+{
+ "quickRace": {
+  "zr1": {
+   "cars": [
+    "zr1",
+    "av12",
+    "aston-martin-valk",
+    "jaguarxkjss",
+    "ford-gt",
+    "mp1x",
+    "nissan-z",
+    "jesko"
+   ],
+   "hero": "zr1",
+   "kmh": 123,
+   "pos": 4,
+   "kmhLater": 155
+  },
+  "stingray": {
+   "cars": [
+    "stingray",
+    "av12",
+    "aston-martin-valk",
+    "jaguarxkjss",
+    "ford-gt",
+    "mp1x",
+    "nissan-z",
+    "jesko"
+   ],
+   "hero": "stingray",
+   "kmh": 120,
+   "pos": 4,
+   "kmhLater": 198
+  }
+ },
+ "career": {
+  "round": "Long Mile",
+  "exp": 8,
+  "field": 10,
+  "challenger": [
+   "aston-martin-valk",
+   "bentley-gt",
+   "jaguarxkjss",
+   "bmw1",
+   "ford-gt",
+   "blackbird",
+   "nissan-z",
+   "supra",
+   "zr1",
+   "stingray"
+  ],
+  "note": "Practice is open. All 10 Challenger drivers qualify, and the fastest 8 race. A first season's grace: set a lap and you race, from the back of the grid at worst.",
+  "nolapFirst": [
+   "Next upImprove your lapP10: no lap. One retry: set a lap and you race (a first season's grace)",
+   "LockedRaceNo lap: set one to race"
+  ],
+  "nolap": {
+   "waits": true,
+   "tiles": [
+    "DoneQualifyingP10: no lap. Retry used",
+    "LockedRaceNo lap: no race this round"
+   ],
+   "next": "No lapNo valid lap: a first season's grace needs one. Your retry is used."
+  },
+  "lap": 45.65273066863069,
+  "quali": {
+   "grace": {
+    "from": 10,
+    "out": "ford-gt"
+   },
+   "grid": [
+    "aston-martin-valk",
+    "zr1",
+    "blackbird",
+    "jaguarxkjss",
+    "stingray",
+    "supra",
+    "bentley-gt",
+    "bmw1"
+   ],
+   "place": 10,
+   "slot": 8,
+   "lapToRace": {
+    "lap": 45.01577624891803,
+    "squeezed": false
+   }
+  },
+  "race": {
+   "cars": [
+    "bmw1",
+    "aston-martin-valk",
+    "zr1",
+    "blackbird",
+    "jaguarxkjss",
+    "stingray",
+    "supra",
+    "bentley-gt"
+   ],
+   "grid": [
+    "aston-martin-valk",
+    "zr1",
+    "blackbird",
+    "jaguarxkjss",
+    "stingray",
+    "supra",
+    "bentley-gt",
+    "bmw1"
+   ],
+   "laps": 2
+  },
+  "result": {
+   "finish": 8,
+   "grid": 10,
+   "grace": {
+    "start": 8,
+    "out": "ford-gt",
+    "code": "MAD"
+   },
+   "entries": 10,
+   "dnq": [
+    "ford-gt",
+    "nissan-z"
+   ],
+   "mail": "Round 1: P8 from P8 (qualified P10), rating 5.2"
+  }
+ },
+ "rookie2": {
+  "season": 2,
+  "graceOn": true,
+  "note": "Practice is open. All 10 Challenger drivers qualify, and the fastest 8 race. A Rookie team's grace: set a lap and you race, from the back of the grid at worst.",
+  "quali": {
+   "grace": {
+    "from": 10,
+    "out": "blackbird"
+   },
+   "place": 10,
+   "slot": 8,
+   "tiles": [
+    "OpenImprove your lapP10, grid P8 (a Rookie team's grace), 0:44.711. One retry: keeps the better lap",
+    "Next upRaceNext: 2 laps from P8. One try"
+   ]
+  },
+  "report": {
+   "finish": 8,
+   "grid": 10,
+   "grace": {
+    "start": 8,
+    "out": "blackbird",
+    "code": "HOL"
+   },
+   "text": "Expected P8, qualified P10. A Rookie team's grace: you started from the back of the grid, P8, and Wade Hollis sat out.",
+   "press": []
+  }
+ },
+ "steelhead": {
+  "car": "zr1",
+  "div": "challenger",
+  "exp": 3,
+  "mate": "Etienne Lavoie"
+ },
+ "errors": [],
+ "failed": []
+}

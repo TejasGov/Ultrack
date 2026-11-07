@@ -70,11 +70,12 @@ const NUMBER = {
   toro: ['roundel', 's', 'a', 'p'],      // black plate, bone ring, yellow digits
   hayate: ['roundel', 's', 'a', 'p'],    // white plate, vermilion ring, violet digits
   norrsken: ['roundel', 'p', 's', 'a'],  // graphite plate, aurora-green ring, ice digits
+  steelhead: ['roundel', 's', 'a', 'a'], // rose plate, black ring, black digits
 };
 /** a car whose bodywork takes the shared decal places badly: the bonnet logo's place (share of the length from the nose) and width (share of the car's),
  * whether the title sponsor goes on the rear deck, and the flanks' title sponsor moved forward (m) and scaled. The CC850's bonnet vent and creases cut the logo,
  * its louvred engine cover split the deck sponsor into two fins, and its side intake cut the flank sponsor */
-const FIT = { cc850: { bonnet: [0.12, 0.4], deck: false, flank: [0.58, 0.62] } };
+const FIT = { cc850: { bonnet: [0.12, 0.4], deck: false, flank: [0.58, 0.62] }, zr1: { bonnet: [0.065, 0.3] }, stingray: { flank: [0.6, 0.62] } };   // the ZR1's carbon hood vent hides the shared bonnet place; the Stingray's side intake cut the flank sponsor
 const role = (c, r) => ({ p: c.primary, s: c.secondary, a: c.accent })[r];
 /** lettering on the team's own paint: colors.ink where the accent is too pale for it (Toro's yellow), else the accent */
 const ink = (c) => c.ink ?? c.accent;
@@ -201,6 +202,19 @@ const FLANK = {
     g.save(); g.strokeStyle = team.light; g.lineWidth = 0.009 * s.k; g.shadowColor = team.light; g.shadowBlur = 0.03 * s.k;
     g.beginPath(); g.moveTo(...P(x0 + 0.25, y0)); g.lineTo(...P(x1 - 0.2, y0)); g.stroke(); g.restore();
   },
+  // the trout's red band: a rose lens from nose to tail at the door line, edged in black, and black speckles over the rear quarter
+  steelhead(s, P, L, c) {
+    const { x0, x1, xr, wy } = L, g = s.g, yc = 0.24 + (wy - 0.24) * 0.36, a = x0 + 0.08, b = x1 - 0.04;
+    const edge = (sign) => { const pts = []; for (let i = 0; i <= 40; i++) { const t = i / 40, x = a + (b - a) * t, w = Math.sin(Math.PI * Math.min(1, t * 1.25)) ** 0.7; pts.push(P(x, yc + 0.02 * Math.sin(Math.PI * t) + sign * 0.05 * w)); } return pts; };
+    const top = edge(1), bottom = edge(-1).reverse();
+    g.beginPath(); [...top, ...bottom].forEach(([x, y], i) => (i ? g.lineTo : g.moveTo).call(g, x, y)); g.closePath();
+    g.fillStyle = c.secondary; g.fill(); g.lineJoin = 'round'; g.lineWidth = 0.009 * s.k; g.strokeStyle = c.accent; g.stroke();
+    g.fillStyle = c.accent;
+    for (let i = 0; i < 26; i++) {                 // a fixed scatter: the same spots on every car and both flanks
+      const u = (i * 0.618034) % 1, v = (i * 0.414214 + 0.31) % 1, x = xr - 0.55 + (x1 - 0.1 - (xr - 0.55)) * u, y = yc + 0.085 + (wy - 0.05 - yc - 0.085) * v;
+      g.beginPath(); g.arc(...P(x, y), (0.008 + 0.006 * ((i * 7) % 3) / 2) * s.k, 0, 7); g.fill();
+    }
+  },
   // teal dune contour lines from nose to tail, a gold line along the sill
   sarab(s, P, L, c) {
     const { x0, x1 } = L, g = s.g;
@@ -235,6 +249,7 @@ const TOPS = {
   liberty(s, P, L, c, team) { stripe(s, P, L, c.accent, [0], 0.17); stripe(s, P, L, c.secondary, [-0.125, 0.125], 0.05); stripe(s, P, L, team.light, [-0.165, 0.165], 0.008); },
   hayate(s, P, L, c) { stripe(s, P, L, c.accent, [-0.1, 0.1], 0.035); stripe(s, P, L, c.secondary, [-0.06, 0.06], 0.012); },
   norrsken(s, P, L, c) { stripe(s, P, L, c.secondary, [-0.09, 0.09], 0.014); },
+  steelhead(s, P, L, c) { stripe(s, P, L, c.accent, [0], 0.13); stripe(s, P, L, c.secondary, [0], 0.1); },
   toro(s, P, L, c) { stripe(s, P, L, c.secondary, [0], 0.2); stripe(s, P, L, c.accent, [-0.14, 0.14], 0.012); },
   sarab(s, P, L, c) {
     const { x0, x1, z0, z1 } = L, g = s.g;

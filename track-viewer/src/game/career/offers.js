@@ -162,10 +162,11 @@ export function reserveOffer(save) {
 const plural = (n) => (n === 1 ? '' : 's'), avgOf = (l) => mean(l.filter(Number.isFinite));
 /** what a team wants (tiers.json `want`), measured on this season's results: { key, n, term } with term its share of interest, up to offers.wantMax */
 export function wantOf(save, team) {
+  const from = (r) => r.grace?.start ?? r.grid;   // places gained count from the slot the player started: under the grace that is P8, not where they qualified
   const key = TIERS.teams[team].want, rs = save.season?.results ?? [], ran = rs.filter((r) => !r.dnq && !r.dnf), rr = save.career.rr;
-  const n = { cups: save.stats.cups + save.stats.titles, poles: rs.filter((r) => r.pole).length, gained: ran.reduce((a, r) => a + Math.max(0, r.grid - r.finish), 0), clean: ran.filter((r) => r.clean).length,
+  const n = { cups: save.stats.cups + save.stats.titles, poles: rs.filter((r) => r.pole).length, gained: ran.reduce((a, r) => a + Math.max(0, from(r) - r.finish), 0), clean: ran.filter((r) => r.clean).length,
     seasonsHere: save.contract ? save.clock.season - save.contract.since + 1 : 0, duel: rs.filter((r) => r.duel?.result === 'won' && !r.duel.skipped).length,
-    rrTrend: rr.length >= 4 ? Math.round((avgOf(rr.slice(-3)) - avgOf(rr.slice(0, -3).slice(-3))) * 10) / 10 : 0, fromBehind: ran.filter((r) => r.grid - r.finish >= 3).length }[key] ?? 0;
+    rrTrend: rr.length >= 4 ? Math.round((avgOf(rr.slice(-3)) - avgOf(rr.slice(0, -3).slice(-3))) * 10) / 10 : 0, fromBehind: ran.filter((r) => from(r) - r.finish >= 3).length }[key] ?? 0;
   return { key, n, term: T.offers.wantMax * clamp(n / T.offers.wantNorm[key], 0, 1) };
 }
 /** how cool a team is on the player after a refusal it remembers (6.5): cool a weight, up to coolMax, fading a step a season */

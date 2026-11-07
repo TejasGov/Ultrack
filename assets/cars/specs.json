@@ -517,6 +517,63 @@
       ],
       "notes": "1,385 PS and 1,385 N.m on E85 (1,185 PS on petrol), 1,385 kg: the 1:1 power-to-weight of the CC8S anniversary car; Koenigsegg published no top speed or 0-100, so those are estimates. The model is scaled to the 2.70 m wheelbase (length 4.38 m with its diffuser; the 265/35 R20 and 325/30 R21 tyres match)",
       "estimated": false
+    },
+    "zr1": {
+      "model": "Chevrolet Corvette ZR1 (C7, 2019)",
+      "lengthM": 4.64,
+      "widthM": 1.966,
+      "heightM": 1.234,
+      "wheelbaseM": 2.71,
+      "massKg": 1615,
+      "powertrain": "ICE",
+      "engine": "6.2 L LT5 V8, supercharged, cross-plane crank, front-mid-mounted, 7-speed manual",
+      "powerHp": 755,
+      "torqueNm": 969,
+      "drive": "RWD",
+      "topSpeedKmh": 341,
+      "zeroTo100S": 3,
+      "brake100To0M": 31,
+      "brakeBasis": "estimated: Brembo carbon-ceramic brakes on Michelin Pilot Sport Cup 2 tyres; no published 100-0 figure",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Chevrolet_Corvette_(C7)",
+        "https://media.chevrolet.com/media/us/en/chevrolet/vehicles/corvette-zr1/2019.html"
+      ],
+      "estimatedFields": [
+        "lengthM",
+        "heightM",
+        "zeroTo100S",
+        "brake100To0M"
+      ],
+      "notes": "755 hp (SAE) and 969 N.m (715 lb-ft) from Chevrolet; 3,560 lb curb (coupe, manual); 212 mph with the low wing. The model has the ZTK high wing (about 430 kg of downforce claimed). It is scaled to the C7 wheelbase (106.7 in, 2.71 m); its length then reads 4.64 m with the splitter and wing, and the 285/30 ZR19 and 335/25 ZR20 Cup 2 tyres match within 2 %. 0-100 from the 2.85 s 0-60 claim",
+      "estimated": false
+    },
+    "stingray": {
+      "model": "Chevrolet Corvette Stingray (C8, 2020)",
+      "lengthM": 4.63,
+      "widthM": 1.933,
+      "heightM": 1.234,
+      "wheelbaseM": 2.723,
+      "massKg": 1600,
+      "powertrain": "ICE",
+      "engine": "6.2 L LT2 V8, naturally aspirated, cross-plane crank, mid-mounted, 8-speed dual-clutch",
+      "powerHp": 495,
+      "torqueNm": 637,
+      "drive": "RWD",
+      "topSpeedKmh": 312,
+      "zeroTo100S": 3.1,
+      "brake100To0M": 33,
+      "brakeBasis": "estimated: Brembo iron brakes on Michelin Pilot Sport 4S road tyres (Z51); no published 100-0 figure",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Chevrolet_Corvette_(C8)",
+        "https://media.chevrolet.com/media/us/en/chevrolet/vehicles/corvette/2020.html"
+      ],
+      "estimatedFields": [
+        "massKg",
+        "zeroTo100S",
+        "brake100To0M"
+      ],
+      "notes": "the Z51 package: 495 hp and 637 N.m (470 lb-ft), 194 mph, 0-60 in 2.9 s (0-100 is an estimate from it); Chevrolet gives 3,366 lb dry, so the 1,600 kg curb mass is an estimate. The first mid-engine Corvette. The model is scaled to the 107.2 in (2.723 m) wheelbase and then matches the 4.63 m length; its wheels come from another model and carry one tyre size front and rear, at the real 19 and 20 in diameters",
+      "estimated": false
     }
   },
   "upgrades": {

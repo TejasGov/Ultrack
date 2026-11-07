@@ -1,6 +1,6 @@
 # Ultrack team identities
 
-Nine original emblems and wordmarks use the colors and typefaces in `../teams.json`.
+Ten original emblems and wordmarks use the colors and typefaces in `../teams.json`.
 Lettering is outlined into SVG paths at build time. Masters contain no external
 fonts, raster images or scripts. These original team identities are separate from
 third-party sponsor logos.
@@ -16,6 +16,7 @@ third-party sponsor logos.
 | Sarab | Falcon above a dune | Lalezar |
 | Hayate | Kazaguruma (wind pinwheel) mon crest | Dela Gothic One: 疾風 + HAYATE + ハヤテ |
 | Norrsken | North star over two aurora ribbons | Michroma |
+| Steelhead | Steelhead trout in a hex nut | Anton |
 
 Each identity has a horizontal lockup (1024×256) and emblem (256×256), with
 `onTeam`, `onDark` and `onLight` variants. SVG masters, transparent PNG and
@@ -58,3 +59,7 @@ before using a new glyph in a wordmark). No rising-sun motif is used anywhere.
 Norrsken (Swedish, sponsor Samsung) is built by `track-viewer/scripts/build-team-logo-norrsken.py` (the same layout as Hayate's script: three variants, lockup and
 icon), then `prepare-team-logos.mjs`. Its lettering is outlined from Michroma, copied from the installed `@fontsource/michroma` into
 `track-viewer/public/assets/fonts` with its OFL notice. On light grounds its ribbons take a deeper green (#12875c) than the team's aurora green.
+
+Steelhead (Detroit, sponsor LG) is built by `track-viewer/scripts/build-team-logo-steelhead.py` (Norrsken's layout), then `prepare-team-logos.mjs`. Its lettering
+is outlined from Anton, the fontsource file already in `track-viewer/public/assets/fonts` with its OFL notice (no new font was installed or fetched). The wordmark's
+scale comes from Anton's cap height and the tracking fills the lockup's width. On light grounds the band takes a deeper rose (#c22a55) than the team's.

@@ -1,0 +1,11 @@
+Model Information:
+* title:	2019 Chevrolet Corvette ZR1
+* source:	https://sketchfab.com/3d-models/2019-chevrolet-corvette-zr1-92b1b185b0d44847b0d099a787f8ed12
+* author:	Ddiaz Design (https://sketchfab.com/ddiaz-design)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2019 Chevrolet Corvette ZR1" (https://sketchfab.com/3d-models/2019-chevrolet-corvette-zr1-92b1b185b0d44847b0d099a787f8ed12) by Ddiaz Design (https://sketchfab.com/ddiaz-design) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

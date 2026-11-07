@@ -66,5 +66,13 @@
   "cc850": {
     "lod0": "car_lod0_ktx2.glb",
     "lod1": "car_lod1_ktx2.glb"
+  },
+  "zr1": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
+  },
+  "stingray": {
+    "lod0": "car_lod0_ktx2.glb",
+    "lod1": "car_lod1_ktx2.glb"
   }
 }

@@ -126,6 +126,14 @@
     "KOS": {
       "win": ["Good.", "Sauna now."],
       "down": ["Not good.", "Lindqvist will enjoy this. Let her."]
+    },
+    "TOL": {
+      "win": ["Lights out, foot down, see you at the flag. Flint, that one's yours.", "Tell Maddox the best American on the grid says hi."],
+      "down": ["Great launch. Shame about the next fifty corners.", "We'll put more motor in it. That's the Detroit answer to everything."]
+    },
+    "LAV": {
+      "win": ["Smooth hands, warm tyres. Nothing fancy.", "My mother watched from Windsor. She says I braked too late into turn one."],
+      "down": ["It is in the notebook now. It will not happen twice.", "Too much ice in my driving today, not enough grip in the track."]
     }
   },
   "socialChance": 0.7,

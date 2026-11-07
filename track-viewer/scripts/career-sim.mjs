@@ -1,5 +1,5 @@
 // Plays seeded careers with a stub player (docs/career-mode.md 10.6) and prints how they go: seasons to the first Maestro and Legend
-// offers, the A seat, drops, W1, negotiation, the wallet, offers per season. `node scripts/career-sim.mjs [careers] [seasons=9]`.
+// offers, the A seat, drops, W1, negotiation, the wallet, offers per season. `node scripts/career-sim.mjs [careers] [seasons=9] [first seed=1000]`.
 // The stub's lap is par / skill with noise; race order is each entry's lap with race noise (no physics: the live race is not simulated).
 import { createServer } from 'vite';
 import { CATS } from '../src/game/economy.js';
@@ -80,7 +80,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       const rd = C.currentRound(save), car = save.contract.car, u = { ...save.garage.upgrades[car] };
       const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, [u.engine, u.tyres, u.brakes, u.aero]) / skill * (1 + noise(0.008));
       if (rand() < 0.1) { const h = [Math.round(50 + rand() * 130)]; C.logHits(save, h); log.hits++; }   // a crash in qualifying
-      C.finishQuali(save, lapNow()); if (!save.season.current.quali.grid.includes(car)) C.finishQuali(save, lapNow());   // a missed cut uses the one retry
+      C.finishQuali(save, lapNow()); { const q = save.season.current.quali; if (!q.grid.includes(car) || q.grace) C.finishQuali(save, lapNow()); }   // a missed cut uses the one retry; so does a grace start, chasing a real top-8 slot
     } else if (save.clock.phase === 'race') {
       const q = save.season.current.quali, cur = save.season.current, o = cur.open, car = save.contract.car, lcq = o?.stage === 'lcq', V = o && !lcq ? C.currentRound(save) : C.qualiVenue(save);   // the laps in q.laps are the qualifying venue's, so the model stays on that scale unless it is a Final
       // a model, not a measurement: an AI car's pace is its par lap over its pace; a Tour round uses the qualifying laps, an Open's Final (whose seeds flew none) the model for every car
@@ -133,12 +133,12 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
 }
 
 if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
-  const N = +(process.argv[2] ?? 200), S = +(process.argv[3] ?? 9);
+  const N = +(process.argv[2] ?? 200), S = +(process.argv[3] ?? 9), S0 = +(process.argv[4] ?? 1000);   // a second seed set (e.g. 3000) tells a margin from noise
   const server = await createServer({ root: new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom', logLevel: 'error' });
   try {
     const M = await loadCareer(server);
     for (const [label, skill] of [['weak', 0.975], ['average', 0.995], ['strong', 1.015]]) {
-      const runs = Array.from({ length: N }, (_, i) => play(M, 1000 + i, skill, S).log);
+      const runs = Array.from({ length: N }, (_, i) => play(M, S0 + i, skill, S).log);
       const med = (l) => { const v = l.filter((x) => x !== null).sort((a, b) => a - b); return v.length ? v[v.length >> 1] : '—'; };
       const share = (f) => `${Math.round((100 * runs.filter(f).length) / N)} %`;
       const avg = (f) => (runs.reduce((s, r) => s + f(r), 0) / N).toFixed(2);
@@ -158,7 +158,7 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
          seated AI rating by series, season 1 -> last: Elite ${avg((r) => r.seasons[0]?.rating?.elite ?? 0)} -> ${avg((r) => r.seasons.at(-1)?.rating?.elite ?? 0)}, Challenger ${avg((r) => r.seasons[0]?.rating?.challenger ?? 0)} -> ${avg((r) => r.seasons.at(-1)?.rating?.challenger ?? 0)}`);
       console.log(`         Opens per career ${avg((r) => r.opens)}: reached the Final ${avg((r) => r.finals)}, Last Chance races ${avg((r) => r.lcqs)}, Open wins ${avg((r) => r.openWins)}, in the Masters ${avg((r) => r.masters)}, ranking at season end ${avg((r) => r.rank.reduce((a, b) => a + b, 0) / r.rank.length)}`);
       // Part 3: the same careers with a lifestyle buying policy (the dice are separate, so only the mood's own effects differ)
-      const on = Array.from({ length: N }, (_, i) => play(M, 1000 + i, skill, S, 'sprint', { life: true }).log), avgOn = (f) => (on.reduce((s, r) => s + f(r), 0) / N).toFixed(2);
+      const on = Array.from({ length: N }, (_, i) => play(M, S0 + i, skill, S, 'sprint', { life: true }).log), avgOn = (f) => (on.reduce((s, r) => s + f(r), 0) / N).toFixed(2);
       const walOn = (t) => { const v = on.map((r) => r.money[t]).filter((x) => x !== undefined); return v.length ? Math.round(v.reduce((x, y) => x + y, 0) / v.length) : '—'; };
       const moodOf = (runs) => { const all = runs.flatMap((r) => r.mood), byRound = (k) => { const v = all.filter((m) => m.i % 10 === k % 10); return v.length ? Math.round(v.reduce((a, m) => a + m.happy, 0) / v.length) : '—'; };
         return `${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(byRound).join(' ')}; rounds spent: ${['top', 'content', 'neutral', 'frustrated', 'unhappy'].map((b) => `${b} ${Math.round((100 * all.filter((m) => m.band === b).length) / all.length)} %`).join(', ')}; fans ${Math.round(all.reduce((a, m) => a + m.fans, 0) / all.length)}`; };
@@ -171,7 +171,7 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
     }
     // the race lengths, same driver: progress must not depend on how long you race (the race noise is modelled, see above)
     for (const length of ['sprint', 'standard', 'full']) {
-      const runs = Array.from({ length: N }, (_, i) => play(M, 1000 + i, 0.995, S, length).log), avg = (f) => (runs.reduce((a, r) => a + f(r), 0) / N).toFixed(2);
+      const runs = Array.from({ length: N }, (_, i) => play(M, S0 + i, 0.995, S, length).log), avg = (f) => (runs.reduce((a, r) => a + f(r), 0) / N).toFixed(2);
       console.log(`${length.padEnd(9)} avg RR ${avg((r) => r.rr.reduce((a, b) => a + b, 0) / r.rr.length)}, avg finish ${avg((r) => r.finish.reduce((a, b) => a + b, 0) / r.finish.length)}, Maestro offer ${Math.round((100 * runs.filter((r) => r.maestroOffer).length) / N)} %, min wallet ${Math.min(...runs.map((r) => r.minWallet))}`);
     }
   } finally { await server.close(); }

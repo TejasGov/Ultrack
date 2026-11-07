@@ -1948,6 +1948,254 @@
    "quality": "measured",
    "preview": "engines/v3/mp1x-source.ogg",
    "sharedWith": "mp1x"
+  },
+  "zr1": {
+   "name": "Chevrolet Corvette ZR1 supercharged V8 (the Mustang GT V8 recording)",
+   "redline": 6500,
+   "cars": [
+    "zr1"
+   ],
+   "idle": {
+    "file": "engines/v3/blackbird-idle.ogg",
+    "rpm": 893,
+    "loopStart": 0.118833,
+    "loopEnd": 3.052292
+   },
+   "on": [
+    {
+     "file": "engines/v3/blackbird-on-1.ogg",
+     "rpm": 1230,
+     "loopStart": 0.120563,
+     "loopEnd": 2.031625
+    },
+    {
+     "file": "engines/v3/blackbird-on-2.ogg",
+     "rpm": 1460,
+     "loopStart": 0.122188,
+     "loopEnd": 2.104167
+    },
+    {
+     "file": "engines/v3/blackbird-on-3.ogg",
+     "rpm": 1720,
+     "loopStart": 0.121354,
+     "loopEnd": 2.096292
+    },
+    {
+     "file": "engines/v3/blackbird-on-4.ogg",
+     "rpm": 2040,
+     "loopStart": 0.1175,
+     "loopEnd": 2.110042
+    },
+    {
+     "file": "engines/v3/blackbird-on-5.ogg",
+     "rpm": 2420,
+     "loopStart": 0.116,
+     "loopEnd": 2.078333
+    },
+    {
+     "file": "engines/v3/blackbird-on-6.ogg",
+     "rpm": 2860,
+     "loopStart": 0.118667,
+     "loopEnd": 2.115125
+    },
+    {
+     "file": "engines/v3/blackbird-on-7.ogg",
+     "rpm": 3390,
+     "loopStart": 0.119771,
+     "loopEnd": 2.109729
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/blackbird-off-0.ogg",
+     "rpm": 1030,
+     "loopStart": 0.120917,
+     "loopEnd": 1.512104
+    },
+    {
+     "file": "engines/v3/blackbird-off-1.ogg",
+     "rpm": 1220,
+     "loopStart": 0.121042,
+     "loopEnd": 1.557771
+    },
+    {
+     "file": "engines/v3/blackbird-off-2.ogg",
+     "rpm": 1450,
+     "loopStart": 0.120625,
+     "loopEnd": 1.545271
+    },
+    {
+     "file": "engines/v3/blackbird-off-3.ogg",
+     "rpm": 1720,
+     "loopStart": 0.122792,
+     "loopEnd": 1.585917
+    },
+    {
+     "file": "engines/v3/blackbird-off-4.ogg",
+     "rpm": 2040,
+     "loopStart": 0.116771,
+     "loopEnd": 1.575271
+    },
+    {
+     "file": "engines/v3/blackbird-off-5.ogg",
+     "rpm": 2420,
+     "loopStart": 0.119771,
+     "loopEnd": 1.611187
+    }
+   ],
+   "shifts": [],
+   "pops": [
+    "engines/v3/blackbird-pop-0.ogg",
+    "engines/v3/blackbird-pop-1.ogg",
+    "engines/v3/blackbird-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "Played N Faved - Sound Effects & Stock Footage",
+     "title": "Mustang Sound Effect | American Muscle Car Mustang Engine Sounds | Royalty Free",
+     "url": "https://www.youtube.com/watch?v=WZmkSobG290",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "072ad1172d33da3c92c69cd3447189f98287b0be0d375a046a2e92d53f58e08b",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Next-Gen Speed",
+     "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+     "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Ford Mustang V8: driving take for on-throttle, Next-Gen Speed revs for idle and overrun. The on-throttle take only reaches about 3,500 rpm",
+   "quality": "measured",
+   "preview": "engines/v3/blackbird-source.ogg"
+  },
+  "stingray": {
+   "name": "Chevrolet Corvette Stingray V8 (the Mustang GT V8 recording)",
+   "redline": 6600,
+   "cars": [
+    "stingray"
+   ],
+   "idle": {
+    "file": "engines/v3/blackbird-idle.ogg",
+    "rpm": 893,
+    "loopStart": 0.118833,
+    "loopEnd": 3.052292
+   },
+   "on": [
+    {
+     "file": "engines/v3/blackbird-on-1.ogg",
+     "rpm": 1230,
+     "loopStart": 0.120563,
+     "loopEnd": 2.031625
+    },
+    {
+     "file": "engines/v3/blackbird-on-2.ogg",
+     "rpm": 1460,
+     "loopStart": 0.122188,
+     "loopEnd": 2.104167
+    },
+    {
+     "file": "engines/v3/blackbird-on-3.ogg",
+     "rpm": 1720,
+     "loopStart": 0.121354,
+     "loopEnd": 2.096292
+    },
+    {
+     "file": "engines/v3/blackbird-on-4.ogg",
+     "rpm": 2040,
+     "loopStart": 0.1175,
+     "loopEnd": 2.110042
+    },
+    {
+     "file": "engines/v3/blackbird-on-5.ogg",
+     "rpm": 2420,
+     "loopStart": 0.116,
+     "loopEnd": 2.078333
+    },
+    {
+     "file": "engines/v3/blackbird-on-6.ogg",
+     "rpm": 2860,
+     "loopStart": 0.118667,
+     "loopEnd": 2.115125
+    },
+    {
+     "file": "engines/v3/blackbird-on-7.ogg",
+     "rpm": 3390,
+     "loopStart": 0.119771,
+     "loopEnd": 2.109729
+    }
+   ],
+   "off": [
+    {
+     "file": "engines/v3/blackbird-off-0.ogg",
+     "rpm": 1030,
+     "loopStart": 0.120917,
+     "loopEnd": 1.512104
+    },
+    {
+     "file": "engines/v3/blackbird-off-1.ogg",
+     "rpm": 1220,
+     "loopStart": 0.121042,
+     "loopEnd": 1.557771
+    },
+    {
+     "file": "engines/v3/blackbird-off-2.ogg",
+     "rpm": 1450,
+     "loopStart": 0.120625,
+     "loopEnd": 1.545271
+    },
+    {
+     "file": "engines/v3/blackbird-off-3.ogg",
+     "rpm": 1720,
+     "loopStart": 0.122792,
+     "loopEnd": 1.585917
+    },
+    {
+     "file": "engines/v3/blackbird-off-4.ogg",
+     "rpm": 2040,
+     "loopStart": 0.116771,
+     "loopEnd": 1.575271
+    },
+    {
+     "file": "engines/v3/blackbird-off-5.ogg",
+     "rpm": 2420,
+     "loopStart": 0.119771,
+     "loopEnd": 1.611187
+    }
+   ],
+   "shifts": [],
+   "pops": [
+    "engines/v3/blackbird-pop-0.ogg",
+    "engines/v3/blackbird-pop-1.ogg",
+    "engines/v3/blackbird-pop-2.ogg"
+   ],
+   "sources": [
+    {
+     "author": "Played N Faved - Sound Effects & Stock Footage",
+     "title": "Mustang Sound Effect | American Muscle Car Mustang Engine Sounds | Royalty Free",
+     "url": "https://www.youtube.com/watch?v=WZmkSobG290",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "072ad1172d33da3c92c69cd3447189f98287b0be0d375a046a2e92d53f58e08b",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    },
+    {
+     "author": "Next-Gen Speed",
+     "title": "2018 Mustang GT TRACK Mode REVS With Active Exhaust",
+     "url": "https://www.youtube.com/watch?v=eAfIb9VvPqY",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "sourceSha256": "b1ff48fbe5be66a6c44b04b23f50590779466315aaacc5433def1621be554883",
+     "changes": "Trimmed, pitch flattened, rewoven into loops, filtered, level matched and encoded to Opus. Runtime pitch and load follow driving."
+    }
+   ],
+   "match": "Ford Mustang V8: driving take for on-throttle, Next-Gen Speed revs for idle and overrun. The on-throttle take only reaches about 3,500 rpm",
+   "quality": "measured",
+   "preview": "engines/v3/blackbird-source.ogg"
   }
  },
  "tyres": {

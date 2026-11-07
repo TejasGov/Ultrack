@@ -42,8 +42,8 @@ export const TRIGGERS = {
    */
   press: (save) => {
     const r = save.season.results.at(-1), P = CH.press; if (!r || save.season.weeks[save.clock.week - 1]?.kind !== 'race') return null;
-    const news = r.dnf || r.dnq || r.finish <= 3 || Math.abs(r.finish - r.expPos) >= P.gap, who = rivalsOf(save)[0]?.code ?? save.world.seats[seatCar(save.contract.team, otherSeat(save.contract.seat))];
-    return news && who && who !== YOU ? { who, gp: r.name, exp: r.expPos, result: r.dnq ? P.dnq : r.dnf ? P.dnf : `P${r.finish}` } : null;
+    const news = r.dnf || r.dnq || r.grace || r.finish <= 3 || Math.abs(r.finish - r.expPos) >= P.gap, who = rivalsOf(save)[0]?.code ?? save.world.seats[seatCar(save.contract.team, otherSeat(save.contract.seat))];
+    return news && who && who !== YOU ? { who, gp: r.name, exp: r.expPos, result: r.dnq ? P.dnq : r.dnf ? P.dnf : r.grace && r.finish > 3 ? P.grace : `P${r.finish}` } : null;
   },
 };
 

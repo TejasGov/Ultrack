@@ -1,0 +1,44 @@
+{
+  "name": "Corvette Stingray",
+  "src": "../../../sources/sketchfab/Cstingray/prepared.glb",
+  "credit": {
+    "title": "2020 Chevrolet Corvette C8 Stingray",
+    "author": "Ddiaz Design (ddiaz-design)",
+    "authorUrl": "https://sketchfab.com/ddiaz-design",
+    "url": "https://sketchfab.com/3d-models/2020-chevrolet-corvette-c8-stingray-f59b9f961c9b48c9b0f8cb59c6a345aa",
+    "license": "CC BY 4.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "f59b9f961c9b48c9b0f8cb59c6a345aa",
+    "replacement": false,
+    "nonCommercialOnly": false,
+    "additionalCredits": "CSR2 rip (the page says \"Model from CSR2\"; its wheels are credited to another Sketchfab model, https://skfb.ly/ooPvp). Fine for this local fan project, replace before any public release."
+  },
+  "rotateZ": -90,
+  "length": 4.611,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Tyre_",
+      "Spin_"
+    ],
+    "tyre": [
+      "Tyre_"
+    ],
+    "caliper": [
+      "Caliper_"
+    ]
+  },
+  "roles": {},
+  "interior": [
+    "INT:"
+  ],
+  "exhaust": [],
+  "budget": {
+    "body0": 100000,
+    "body1": 25000,
+    "wheel": 8000,
+    "whole": [
+      "paint"
+    ]
+  }
+}

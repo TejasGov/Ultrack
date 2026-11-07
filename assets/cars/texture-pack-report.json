@@ -236,5 +236,33 @@
     "originalBytes": 2008452,
     "compressedBytes": 1473524,
     "textures": 24
+  },
+  {
+    "key": "zr1",
+    "lod": 0,
+    "originalBytes": 4669124,
+    "compressedBytes": 2350044,
+    "textures": 23
+  },
+  {
+    "key": "zr1",
+    "lod": 1,
+    "originalBytes": 1404508,
+    "compressedBytes": 1078656,
+    "textures": 18
+  },
+  {
+    "key": "stingray",
+    "lod": 0,
+    "originalBytes": 6799224,
+    "compressedBytes": 2765800,
+    "textures": 31
+  },
+  {
+    "key": "stingray",
+    "lod": 1,
+    "originalBytes": 2061848,
+    "compressedBytes": 1451224,
+    "textures": 27
   }
 ]

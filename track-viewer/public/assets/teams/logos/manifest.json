@@ -783,6 +783,89 @@
           }
         }
       }
+    },
+    "steelhead": {
+      "name": "Steelhead",
+      "emblem": "Steelhead trout in a hex nut",
+      "font": {
+        "family": "Anton",
+        "file": "anton-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#9aa4ae",
+        "secondary": "#e0466e",
+        "accent": "#14181d",
+        "carbon": true
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "steelhead-lockup-onTeam.svg",
+            "png": "steelhead-lockup-onTeam.png",
+            "webp": "steelhead-lockup-onTeam.webp",
+            "sourceSha256": "27827ac131b77cd5b0786bedddf0df7dc333fac36c251cd4627d2839df285a5e",
+            "pngSha256": "f68be41abec3d2618a92df191afcffa3195fdb37bdac029ab6cceb0d430caa4c",
+            "pngBytes": 25640,
+            "webpSha256": "a7b1de9ad856e11c8c2c7fd7908ed2ab324c84e4e822c8514c5540360b9e76f3",
+            "webpBytes": 10384
+          },
+          "icon": {
+            "svg": "steelhead-icon-onTeam.svg",
+            "png": "steelhead-icon-onTeam.png",
+            "webp": "steelhead-icon-onTeam.webp",
+            "sourceSha256": "c7d1a5fe91f3f546d06c3ca04b95fb45ee50596ff4cf6a4043e0ef819592fb1c",
+            "pngSha256": "98095e2d7b409928d003a1fa567bfa40d0b7d92dabf46d0f78a9432a66428dd1",
+            "pngBytes": 7930,
+            "webpSha256": "da65321cb81646428c41c7e0eb38f030f5fc6cd961da3d4ed6f11162c788136a",
+            "webpBytes": 4348
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "steelhead-lockup-onDark.svg",
+            "png": "steelhead-lockup-onDark.png",
+            "webp": "steelhead-lockup-onDark.webp",
+            "sourceSha256": "dbabb372f7f442fc1e850556c734522488f1d48fa355769bfe7b24c149944bfa",
+            "pngSha256": "e317ecb60563233225b72e74cf78ed8fc5641d01d5ee74c5af6875cef6ea09f7",
+            "pngBytes": 16156,
+            "webpSha256": "aa886fed00b2781e992c8278b072bfcba773d9a1ce57b69348c7bd624a35617b",
+            "webpBytes": 6204
+          },
+          "icon": {
+            "svg": "steelhead-icon-onDark.svg",
+            "png": "steelhead-icon-onDark.png",
+            "webp": "steelhead-icon-onDark.webp",
+            "sourceSha256": "361a839a0ccded3d0b32efbde2ba5a72de213c27d1d424f3ac69a22643bdedf5",
+            "pngSha256": "de1d595cbbbc6924ea2974b3c7d6b58570a502857493005c9d2cbdffb7f49db8",
+            "pngBytes": 5487,
+            "webpSha256": "95e95865a3c6718d53ad0da2412a59a754a10acbd150c065175dd9426c96df35",
+            "webpBytes": 2978
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "steelhead-lockup-onLight.svg",
+            "png": "steelhead-lockup-onLight.png",
+            "webp": "steelhead-lockup-onLight.webp",
+            "sourceSha256": "5f7b390f32aecb0749781c50702925ff538c57b8c8dfb12a37289468c45a24f2",
+            "pngSha256": "b3829963a192b281bb2ffe19fa5aa83da3cce4399d3dae6a98340ccf6af4713a",
+            "pngBytes": 16067,
+            "webpSha256": "189f9cb102fdf517bf5c24cac0dfd85ab71ca3d7457b017376bc3a96c651d092",
+            "webpBytes": 6212
+          },
+          "icon": {
+            "svg": "steelhead-icon-onLight.svg",
+            "png": "steelhead-icon-onLight.png",
+            "webp": "steelhead-icon-onLight.webp",
+            "sourceSha256": "f02856520af32c844c8ad960bc83a4cb2e90e550167b1dead9f37eb073f276ea",
+            "pngSha256": "186bd69ecf4b9e59409d9522a5634e19270b3f9cce1386996a0022329da2cb2b",
+            "pngBytes": 5485,
+            "webpSha256": "e51120fe21f43b2fa3aaa491aec9f10acdf36840f4e3ca89d88d2eea1fc4d090",
+            "webpBytes": 2872
+          }
+        }
+      }
     }
   }
 }

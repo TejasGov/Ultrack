@@ -153,6 +153,24 @@
       "rim": "#2a2c30",
       "caliper": "#c41e1e",
       "why": "CC850: a deep metallic road car over the model's own carbon lower body and mirrors, its own dark five-spoke wheels, red calipers"
+    },
+    "zr1": {
+      "paint": "metallic",
+      "flake": 0.3,
+      "flakeMm": 0.5,
+      "carbonBelow": 0,
+      "rim": "#1f2125",
+      "caliper": "#1f5fbf",
+      "why": "ZR1: deep metallic over the model's own carbon roof, hood surround, splitter and ZTK wing; black rims (the spokes take the finish's rim colour), blue Brembo calipers as on the real car"
+    },
+    "stingray": {
+      "paint": "metallic",
+      "flake": 0.3,
+      "flakeMm": 0.5,
+      "carbonBelow": 0,
+      "rim": "#2a2c30",
+      "caliper": "#c41e1e",
+      "why": "Stingray: a metallic road car over the model's own black roof panel, side intakes and spoiler, its own machined five-spoke wheels (they keep their look), red calipers"
     }
   }
 }

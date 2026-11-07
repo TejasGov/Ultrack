@@ -1,0 +1,59 @@
+{
+  "car": "zr1",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "suspension": {
+    "pitch": 0.5,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.03
+  },
+  "qa": {
+    "waive": [
+      {
+        "view": "left",
+        "at": [
+          0.86,
+          0.57
+        ],
+        "why": "daylight under the ZTK rear wing, between its struts and over the deck: open on the real car (traced: trace-left-0.png)"
+      },
+      {
+        "view": "right",
+        "at": [
+          0.14,
+          0.57
+        ],
+        "why": "daylight under the ZTK rear wing, between its struts and over the deck: open on the real car (traced: trace-right-1.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.76,
+          0.67
+        ],
+        "why": "daylight under the ZTK rear wing, between its struts and over the deck: open on the real car (traced: trace-front-left-2.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.24,
+          0.67
+        ],
+        "why": "daylight under the ZTK rear wing, between its struts and over the deck: open on the real car (traced: trace-front-right-3.png)"
+      },
+      {
+        "view": "low-right",
+        "at": [
+          0.13,
+          0.57
+        ],
+        "why": "daylight under the ZTK rear wing, between its struts and over the deck: open on the real car (traced: trace-low-right-4.png)"
+      }
+    ]
+  },
+  "aero": [],
+  "log": [
+    "2026-11-07: new complete model (Sketchfab, see assets/cars/zr1/source.json); first QA run",
+    "run 1: 8 pass, 2 warn, 1 fail. The 5 see-through gaps traced to the open space under the ZTK wing -> waived. Front poke 9 cm is the ray over the arch meeting the fender as it rolls in at 1.15 R (the tyres sit inside the body in every view), as on the Jesko; rear clearance 0.9 cm and top gap 1.8 cm pass at ride 0.03"
+  ]
+}
