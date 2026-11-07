@@ -18,7 +18,11 @@
     "KAR": ["down", "portrait", "win"],
     "QAS": ["down", "portrait", "win"],
     "MIZ": ["down", "portrait", "win"],
-    "KUR": ["down", "portrait", "win"]
+    "KUR": ["down", "portrait", "win"],
+    "HAG": ["down", "portrait", "win"],
+    "KOS": ["down", "portrait", "win"],
+    "TOL": ["down", "portrait", "win"],
+    "LAV": ["down", "portrait", "win"]
   },
   "pairs": [
     {
@@ -138,8 +142,8 @@
   },
   "socialChance": 0.7,
   "rumorChance": 0.18,
-  "you": ["dnq", "down", "fired", "podium", "portrait", "sign-aurum", "sign-corvid", "sign-hayate", "sign-liberty", "sign-mojave", "sign-saetta", "sign-sarab", "sign-toro", "win"],
-  "principals": ["aurum", "corvid", "hayate", "liberty", "mojave", "saetta", "sarab", "toro"],
+  "you": ["dnq", "down", "fired", "podium", "portrait", "sign-aurum", "sign-corvid", "sign-hayate", "sign-liberty", "sign-mojave", "sign-norrsken", "sign-saetta", "sign-sarab", "sign-steelhead", "sign-toro", "win"],
+  "principals": ["aurum", "corvid", "hayate", "liberty", "mojave", "norrsken", "saetta", "sarab", "steelhead", "toro"],
   "scenes": ["fan-hate", "fan-love", "fan-war-blues", "fan-war-reds", "fired", "leak", "rumor-anon", "rumor-calderini-varrone", "rumor-kareem-qasimi", "rumor-lindqvist-mizuno"],
   "social": {
     "love": [
