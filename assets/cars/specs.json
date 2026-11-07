@@ -461,6 +461,62 @@
       ],
       "notes": "new car (Sketchfab model). It is the GT500 version, not the GT300 (which has a 5.4 L 2UR-GSE V8): the wide Class 1 body, big rear wing and flat floor with rear diffuser, and the 2019-20 Gazoo Racing livery. Wikipedia gives the RI4A as 500 kW (670 hp); 650 hp and the 1,020 kg minimum mass are the series figures, the rest are estimates; the 2.53 m wheelbase is measured on the model",
       "estimated": false
+    },
+    "jesko": {
+      "model": "Koenigsegg Jesko Attack (2020)",
+      "lengthM": 4.626,
+      "widthM": 2.03,
+      "heightM": 1.21,
+      "wheelbaseM": 2.7,
+      "massKg": 1420,
+      "powertrain": "ICE",
+      "engine": "5.1 L twin-turbo V8, flat-plane crank, mid-mounted, 9-speed LST multi-clutch",
+      "powerHp": 1600,
+      "torqueNm": 1500,
+      "drive": "RWD",
+      "topSpeedKmh": 400,
+      "zeroTo100S": 2.5,
+      "brake100To0M": 29,
+      "brakeBasis": "estimated: carbon-ceramic brakes, Cup 2 tyres and 800-1,000 kg of downforce; no published figure",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Koenigsegg_Jesko",
+        "https://www.koenigsegg.com/model/jesko"
+      ],
+      "estimatedFields": [
+        "topSpeedKmh",
+        "zeroTo100S",
+        "brake100To0M"
+      ],
+      "notes": "power and torque on E85 (1,280 hp and 1,000 N.m on petrol); curb weight 1,420 kg; the Attack has the big wing (800 kg of downforce at 249 km/h); Koenigsegg published no top speed or 0-100 for the Attack, so those are estimates. The model matches the wheelbase (2.70 m) and the 265/35 R20 and 345/30 R21 tyres",
+      "estimated": false
+    },
+    "cc850": {
+      "model": "Koenigsegg CC850 (2023)",
+      "lengthM": 4.364,
+      "widthM": 2.024,
+      "heightM": 1.127,
+      "wheelbaseM": 2.7,
+      "massKg": 1385,
+      "powertrain": "ICE",
+      "engine": "5.1 L twin-turbo V8, flat-plane crank, mid-mounted, 9-speed LST with the Engage Shift System (a gated manual)",
+      "powerHp": 1366,
+      "torqueNm": 1385,
+      "drive": "RWD",
+      "topSpeedKmh": 400,
+      "zeroTo100S": 2.6,
+      "brake100To0M": 31,
+      "brakeBasis": "estimated: carbon-ceramic brakes on Pilot Sport 4S road tyres; no published figure",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Koenigsegg_CC850",
+        "https://www.koenigsegg.com/model/cc850"
+      ],
+      "estimatedFields": [
+        "topSpeedKmh",
+        "zeroTo100S",
+        "brake100To0M"
+      ],
+      "notes": "1,385 PS and 1,385 N.m on E85 (1,185 PS on petrol), 1,385 kg: the 1:1 power-to-weight of the CC8S anniversary car; Koenigsegg published no top speed or 0-100, so those are estimates. The model is scaled to the 2.70 m wheelbase (length 4.38 m with its diffuser; the 265/35 R20 and 325/30 R21 tyres match)",
+      "estimated": false
     }
   },
   "upgrades": {

@@ -208,5 +208,33 @@
     "originalBytes": 1292008,
     "compressedBytes": 731908,
     "textures": 6
+  },
+  {
+    "key": "jesko",
+    "lod": 0,
+    "originalBytes": 3141928,
+    "compressedBytes": 1260508,
+    "textures": 10
+  },
+  {
+    "key": "jesko",
+    "lod": 1,
+    "originalBytes": 1441456,
+    "compressedBytes": 742200,
+    "textures": 9
+  },
+  {
+    "key": "cc850",
+    "lod": 0,
+    "originalBytes": 7659480,
+    "compressedBytes": 2868612,
+    "textures": 27
+  },
+  {
+    "key": "cc850",
+    "lod": 1,
+    "originalBytes": 2008452,
+    "compressedBytes": 1473524,
+    "textures": 24
   }
 ]

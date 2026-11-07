@@ -111,7 +111,7 @@ try{
   const r=round(1);show(rep,r);assert.ok(ok(rep,'report').includes('Tobi Okafor'));
   // a dropped season: the review says so, and the reserve seat cannot be haggled
   delete save.contract.next;save.contract.warning={left:0,met:0};while(save.clock.phase!=='review'){save.contract.trust=5;save.contract.warning={left:0,met:0};if(C.currentWeek(save).kind==='race')round(8);else C.advanceWeek(save);}
-  show(start);t=ok(start,'dropped review');assert.ok(save.pending.review.dropped&&t.includes('let you go')&&t.includes('Next season')&&/1[0-9] drivers/.test(t));const ro=save.pending.offers.find(o=>o.reserve);assert.ok(ro);
+  show(start);t=ok(start,'dropped review');assert.ok(save.pending.review.dropped&&t.includes('let you go')&&t.includes('Next season')&&t.includes(`${save.pending.review.driverCount} drivers`));const ro=save.pending.offers.find(o=>o.reserve);assert.ok(ro);
   click(start,/reserve seat at reduced/);assert.equal(shows.at(-1)[1].id,ro.id);show(deal,{id:ro.id,home:'careerStart'});t=ok(deal,'reserve deal');assert.ok(!t.includes('Propose')&&t.includes('Sign with'),'a reserve seat has no levers');
   click(deal,/Sign with/);assert.equal(save.clock.season,2,'and signing starts the next season');show(hub,'home');ok(hub,'season 2');
   // a career from before weeks opens on the new hub, every tab, mid-season and with a market offer waiting

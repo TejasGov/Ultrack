@@ -1,0 +1,91 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Koenigsegg CC850",
+ "source": {
+  "title": "2023 Koenigsegg CC850",
+  "author": "Ddiaz Design (ddiaz-design)",
+  "authorUrl": "https://sketchfab.com/ddiaz-design",
+  "url": "https://sketchfab.com/3d-models/2023-koenigsegg-cc850-c4f872da033944bfa3c4e44d07728806",
+  "license": "CC BY 4.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "modelId": "c4f872da033944bfa3c4e44d07728806",
+  "replacement": false,
+  "nonCommercialOnly": false,
+  "additionalCredits": "CSR2 rip (the page says \"Based on a CSR2 3d model\"). Fine for this local fan project, replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.349,
+   "width": 0.2877,
+   "x": -1.2701,
+   "track": 1.6719
+  },
+  "rear": {
+   "radius": 0.3689,
+   "width": 0.3597,
+   "x": 1.4287,
+   "track": 1.6375
+  }
+ },
+ "size": {
+  "length": 4.381,
+  "width": 2.22,
+  "height": 1.024
+ },
+ "lights": {
+  "front": [
+   [
+    -1.845,
+    0.522,
+    0.687
+   ],
+   [
+    -1.845,
+    0.522,
+    -0.687
+   ]
+  ],
+  "rear": [
+   [
+    1.93,
+    0.723,
+    0.719
+   ],
+   [
+    1.93,
+    0.723,
+    -0.718
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.169,
+    0.737,
+    0.734
+   ],
+   [
+    -1.169,
+    0.998,
+    0.734
+   ],
+   [
+    0.432,
+    0.998,
+    0.734
+   ],
+   [
+    0.432,
+    0.737,
+    0.734
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 94108,
+  "body1": 26257,
+  "wheel": 11420
+ }
+}

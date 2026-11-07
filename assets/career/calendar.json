@@ -24,7 +24,6 @@
            "finale": [{ "track": "tokyo", "look": "night" }, { "track": "venice", "look": "night" }] }
   },
   "format": ["tour", "tour", "tokyo", "tour", "tour", "infinia", "tour", "tour", "venice", "masters"],
-  "tour": ["shajawa", "india", "qingshan", "llano", "marina"],
   "opens": { "tokyo": { "name": "Japan Open", "nation": "JPN" }, "infinia": { "name": "India Open", "nation": "IND" }, "venice": { "name": "Venice Open", "nation": "ITA" } },
   "masters": { "track": "marina", "look": "night", "name": "Ultrack Masters" },
   "qualifying": "drylake",

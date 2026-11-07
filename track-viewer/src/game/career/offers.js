@@ -3,7 +3,7 @@
 import MEDIA from '../../../../assets/career/media.json';
 import { rng, shuffle } from './rng.js';
 import {
-  TUNING as T, TIERS, SPONSORS, TEAM_IDS, CAR, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating, styleOf,
+  TUNING as T, TIERS, CAL, SPONSORS, TEAM_IDS, CAR, DIV, nextDivOf, expIn, carsIn, parLap, paceOf, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating, styleOf,
 } from './rules.js';
 import { YOU, driverAt, personOf, marketScore, shortlistOf, poachable } from './world.js';
 import { note, remembers } from './ledger.js';
@@ -22,7 +22,23 @@ const talked = (save, team, v = 1) => { if (save.season) (save.season.talked ??=
 export const statsOf = (save) => ({ rep: save.career.rep, rrs: save.career.rr, cl: save.career.cl, form: formOf(save.career.rr) });
 
 export function offer(save, team, seat, terms) {
-  return { id: `${team}-${seat}-${save.clock.season}${terms.tag ?? ''}`, team, seat, car: seatCar(team, seat), tier: TIERS.teams[team].tier, status: seat === 'A' ? 'lead' : 'junior', ...terms };
+  return { id: `${team}-${seat}-${save.clock.season}${terms.tag ?? ''}`, team, seat, car: seatCar(team, seat), tier: TIERS.teams[team].tier, div: nextDivOf(save, team), status: seat === 'A' ? 'lead' : 'junior', ...terms };
+}
+/**
+ * A team of the player's tier that races the Elite next season while the player's team races the Challenger: a step up, offered as the tier above would be (divisions-spec 10).
+ * Not when even its A seat is expected outside the Elite's grid, for the seat or for this driver in it: a seat that mostly misses the cut is no step up
+ */
+export const stepUp = (save, team) => !!save.contract && rankOf(team) === rankOf(save.contract.team) && nextDivOf(save, team) === 'elite' && nextDivOf(save, save.contract.team) === 'challenger' && expIn(save, team, 'A', nextDivOf) <= T.series.gridSize && !offGrid(save, team, 'A');
+/**
+ * An Elite seat of the player's tier or above, offered to a Challenger driver whose team stays down, that would qualify at the back of the grid or outside it for them: their market rating in its car against every car of
+ * next season's Elite and its driver (at the teams' dev levels: the market rating already holds the player's own upgrades; no noise). A good Challenger year is no reason to sign for a season of missed cuts.
+ * A deal signed in mid-season with a Challenger team that then goes up is judged again at the swap (career.js endSeason: its release clause)
+ */
+export function offGrid(save, team, seat) {
+  if (save.season?.div !== 'challenger' || rankOf(team) < rankOf(save.contract.team) || nextDivOf(save, team) !== 'elite' || nextDivOf(save, save.contract.team) === 'elite') return false;   // their own team going up takes them to the Elite anyway
+  const W = save.world, car = seatCar(team, seat), lap = (k, r) => parLap(CAL.shootout.track, k, 'dry', W.teams[CAR[k].team].dev) / paceOf(r, save.rules.difficulty), mine = lap(car, playerRating(save));
+  // two places of margin: the model has no qualifying noise, and a seat it puts 7th or 8th missed about 7 Tour cuts in 10 (review round 3)
+  return carsIn(save, 'elite', nextDivOf).filter((k) => k !== car && W.seats[k] !== YOU && lap(k, W.ratings[W.seats[k]]) < mine).length >= T.series.gridSize - 2;
 }
 /** every offer the player could be talking about */
 const lists = (save) => [save.pending?.offers, save.season?.mid, save.sponsors?.offers].filter(Boolean);
@@ -136,7 +152,7 @@ export function fallbackOffer(save) {
 }
 /** a Rookie reserve seat for a driver nobody else will sign (6.7): 60 % salary, no points in rounds 1-2, targets one place easier */
 export function reserveOffer(save) {
-  const rookies = TEAM_IDS.filter((t) => TIERS.teams[t].tier === 'rookie' && t !== save.contract?.team);
+  const all = TEAM_IDS.filter((t) => TIERS.teams[t].tier === 'rookie' && t !== save.contract?.team), down = all.filter((t) => nextDivOf(save, t) !== 'elite'), rookies = down.length ? down : all;   // the way back runs through the Challenger, not a Rookie car at the back of the Elite
   const team = rookies[Math.floor(rng(save.seed, 'market', 'reserve', save.clock.season)() * rookies.length)];
   return offer(save, team, 'B', { salary: round5(TIERS.tiers.rookie.salary.B * T.offers.reserveSalary), signing: 0, seasons: 1, reserve: true, tag: '-reserve',
     why: 'A reserve seat at reduced pay keeps you racing: no points for the first two rounds, and targets one place easier.' });
@@ -193,7 +209,7 @@ export const quoteOnce = (save, offers) => { const cl = choiceLine(save); if (cl
 /** an offer from another team at this interest: the seat by interest, or the other one when it is not open (seatFor) or a big step down in car (5.3); null when neither fits */
 export function outsideOffer(save, team, interest, extra = {}) {
   const myZ = TIERS.carZ[save.contract.car] ?? 0, same = rankOf(team) === rankOf(save.contract.team), fast = (x) => (TIERS.carZ[seatCar(team, x)] ?? 0) >= myZ - T.offers.maxCarDropZ;
-  const want = same || interest >= 0.6 ? 'A' : 'B', seat = [want, otherSeat(want)].find((x) => fast(x) && seatFor(save, team, x, interest));   // that seat too slow or not open: the other one
+  const want = same || interest >= 0.6 ? 'A' : 'B', seat = [want, otherSeat(want)].find((x) => fast(x) && seatFor(save, team, x, interest) && !offGrid(save, team, x));   // that seat too slow or not open: the other one
   if (!seat) return null;
   const tier = tierOf(team), salary = round50(tier.salary[seat] * (0.9 + 0.3 * interest)), terms = termsFor(save, team), cool = coolOf(save, team);
   return offer(save, team, seat, { salary, signing: round50(salary * (1.5 + 1.5 * interest)), seasons: 1 + Math.round(2 * interest), interest: Math.round(interest * 100) / 100,
@@ -249,7 +265,8 @@ export function midSeason(save) {
 export function signMid(save, id) {
   const o = save.season?.mid?.find((x) => x.id === id), me = save.contract; if (!o || me.next) return null;
   const cut = me.seasonsLeft > 1 ? releaseCut(me) : 0;
-  me.next = { ...o, signed: true }; save.wallet.coins += cut; me.trust = clamp(me.trust - T.trust.signedAway, 0, 100);
+  const t0 = me.trust; me.trust = clamp(me.trust - T.trust.signedAway, 0, 100);
+  me.next = { ...o, signed: true, paid: cut, trustCost: t0 - me.trust }; save.wallet.coins += cut;   // paid, trustCost: what a release at the swap gives back (career.js endSeason)
   save.season.mid.splice(0);                                  // the others lapse: not answering is no refusal
   post(save, 'deal', `Signed with ${teamName(o.team)} for next season`, `${cut ? `Your cut of the release clause: ${coins(cut)}. ` : ''}Your team knows, and it has cost you some trust (-${T.trust.signedAway}).`);
   return { cut };
@@ -262,9 +279,9 @@ export function teamOutlook(save, team) {
   const g = TIERS.teams[team].gate, st = statsOf(save), rr = mean(st.rrs.slice(-6));
   const gates = [[st.rep, g.rep, `Reputation ${Math.round(st.rep)} of ${g.rep}`], [rr, g.rr, `Rating ${rr.toFixed(1)} of ${g.rr}`], [st.cl, g.cl, `Level ${st.cl} of ${g.cl}`]];
   const short = gates.filter(([v, min]) => v < min), signed = team !== save.contract?.team && signedTo(save, team, interestFor(save, team) ?? 0), progress = Math.min(...gates.map(([v, min]) => (min ? clamp(v / min, 0, 1) : 1)));
-  const me = save.contract, mine = team === me?.team, asked = !!save.season?.asked?.[team], rank = me ? rankOf(me.team) : 1, tooHigh = !mine && me && rankOf(team) > rank + 1, same = rankOf(team) === rank && me?.seat === 'A', down = rankOf(team) < rank && !me?.dropped;
-  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : save.pending?.window?.closed ? 'Window closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : signed ? 'Both seats signed' : null;
-  return { team, tier: TIERS.teams[team].tier, progress, why: short[0]?.[2] ?? (signed || 'Clears their bar'), short: short.length > 0, blocked, canAsk: !blocked };
+  const me = save.contract, mine = team === me?.team, asked = !!save.season?.asked?.[team], rank = me ? rankOf(me.team) : 1, tooHigh = !mine && me && rankOf(team) > rank + 1, up = !mine && stepUp(save, team), same = rankOf(team) === rank && me?.seat === 'A' && !up, down = rankOf(team) < rank && !me?.dropped, grid = !mine && !!me && ['A', 'B'].every((x) => offGrid(save, team, x));
+  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : save.pending?.window?.closed ? 'Window closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : grid ? 'Elite grid too fast' : signed ? 'Both seats signed' : null;
+  return { team, tier: TIERS.teams[team].tier, progress, why: short[0]?.[2] ?? (signed || 'Clears their bar'), short: short.length > 0, blocked, canAsk: !blocked, step: up ? `A step up: ${DIV.elite.name}` : null };
 }
 /**
  * Knock on a team's door in a market week or at the season end. No bar cleared, no talks, and you hear why; otherwise a seeded roll on their interest.
@@ -277,13 +294,13 @@ export function approach(save, team) {
     me.trust = clamp(me.trust - T.offers.leakTrust, 0, 100);
     post(save, 'warn', 'Your team heard about the meeting', `Word got back that you spoke to ${teamName(team)}. Team trust -${T.offers.leakTrust}.`);
   }
-  const raw = interestFor(save, team), sameTier = rankOf(team) === rankOf(me.team), interest = sameTier && raw !== null ? Math.min(raw, T.offers.sameTierInterest) : raw;   // an A seat in your own tier takes a strong year, as at the season end
+  const raw = interestFor(save, team), sameTier = rankOf(team) === rankOf(me.team) && !stepUp(save, team), interest = sameTier && raw !== null ? Math.min(raw, T.offers.sameTierInterest) : raw;   // an A seat in your own tier takes a strong year, as at the season end
   const no = (why) => { post(save, 'deal', `${teamName(team)} said no`, why); return { result: 'no', why }; };
   if (interest === null) return no(`${v.why}. Come back when you clear their bar.`);
   if (sameTier && mean(save.career.rr) < T.offers.sameTierRR) return no(`Their A seat takes an average rating of ${T.offers.sameTierRR.toFixed(1)}. Yours is ${mean(save.career.rr).toFixed(1)}.`);
   if (!offerRoll(save.seed, season, 'AP', team, interest, (sameTier ? T.offers.w1Roll : 1) * offerScale(save))) return no('They like you, but they have no plans for you this window.');
   const o = outsideOffer(save, team, interest, { tag: '-ap', ...(mid ? { w1: true } : {}) });
-  if (!o) return no(signedWhy(save, team, interest) ? `${signedWhy(save, team, interest)}.` : 'The only seat they have is a step down in car, so they did not offer it.');
+  if (!o) return no(signedWhy(save, team, interest) ? `${signedWhy(save, team, interest)}.` : ['A', 'B'].some((x) => offGrid(save, team, x)) ? `For a driver rated ${playerRating(save)} their seat would miss the ${DIV.elite.short}'s top ${T.series.gridSize} too often, so they did not offer it.` : 'The only seat they have is a step down in car, so they did not offer it.');
   if (mid) o.why += ' You would join them next season.';
   (mid ? save.season.mid : save.pending.offers).push(talksFor(save, o));
   post(save, 'deal', `${teamName(team)} will talk`, o.why, { deal: o.id });
@@ -313,7 +330,7 @@ export function rumours(save) {
  */
 export function seasonOffers(save, { cup, title, dropped }) {
   const me = save.contract, tier = TIERS.tiers[save.season.tier], season = save.clock.season, list = [];
-  if (me.next) return [{ ...me.next, why: 'Signed in mid-season. Your new team is waiting.' }];
+  if (me.next) return [{ ...me.next, div: nextDivOf(save, me.next.team), why: 'Signed in mid-season. Your new team is waiting.' }];   // the series stamped when it was signed may have moved at the season end
   const d = me.duel;
   if (!dropped && me.seat === 'B' && d.won > d.lost && me.trust >= T.trust.promote)
     list.push(offer(save, me.team, 'A', { salary: tier.salary.A, signing: 0, seasons: 2, interest: T.offers.promoteInterest, why: `You won the duel ${d.won}-${d.lost} and the team trusts you. The senior car is yours.` }));
@@ -322,7 +339,7 @@ export function seasonOffers(save, { cup, title, dropped }) {
       why: 'A title and the team behind you: the car is built around you now. Two free upgrade levels a season.' }));
   const st = statsOf(save), outside = [], strong = mean(st.rrs) >= T.offers.sameTierRR;
   for (const team of TEAM_IDS) {
-    const rank = rankOf(team), same = rank === tier.rank;
+    const rank = rankOf(team), same = rank === tier.rank && !stepUp(save, team);
     if (team === me.team || rank < tier.rank || rank > tier.rank + 1 || (same && (me.seat === 'A' || !strong))) continue;   // the tier above, or an A seat in this one
     const raw = interestFor(save, team), interest = same && raw !== null ? Math.min(raw, T.offers.sameTierInterest) : raw;
     if (interest === null || !offerRoll(save.seed, season, 'W2', team, interest, (same ? T.offers.w1Roll : 1) * offerScale(save))) continue;
@@ -339,7 +356,7 @@ export function seasonOffers(save, { cup, title, dropped }) {
   if (dropped || (me.seasonsLeft <= 1 && me.trust < T.trust.renew && !hold)) list.push(...[fallbackOffer(save), reserveOffer(save)].filter(Boolean));
   else if (me.seasonsLeft <= 1 && me.trust < T.trust.renew) list.push(offer(save, me.team, me.seat, { status: me.status, salary: me.salary, signing: 0, seasons: 1, interest: T.offers.promoteInterest, tag: '-renew',
     why: `The team is not happy with the year, but a driver rated ${playerRating(save)} keeps a Legend seat: one more season at the same pay.` }));
-  else if (me.seasonsLeft > 1) list.push({ ...offer(save, me.team, me.seat, { status: me.status, salary: me.salary, signing: 0, seasons: me.seasons, tag: '-keep' }), keep: true, why: `Your contract runs ${me.seasonsLeft - 1} more ${me.seasonsLeft - 1 === 1 ? 'season' : 'seasons'}.` });
+  else if (me.seasonsLeft > 1) list.push({ ...offer(save, me.team, me.seat, { status: me.status, salary: me.salary, signing: 0, seasons: me.seasons, tag: '-keep' }), keep: true, why: `Your contract runs ${me.seasonsLeft - 1} more ${me.seasonsLeft - 1 === 1 ? 'season' : 'seasons'}${save.season.div && DIV[nextDivOf(save, me.team)] && nextDivOf(save, me.team) !== save.season.div ? `, in the ${DIV[nextDivOf(save, me.team)].name}` : ''}.` });
   else list.push(offer(save, me.team, me.seat, { status: me.status, salary: round5(Math.max(me.salary * 1.1, me.reserve ? tier.salary[me.seat] : 0)), signing: round50(me.salary * 2), seasons: 2, interest: T.offers.promoteInterest, tag: '-renew', why: 'The team wants to renew.' }));
   return list;
 }
@@ -354,7 +371,7 @@ export function sponsorOffers(save, expires) {
   const pool = shuffle(r, Object.keys(SPONSORS.brands).filter((b) => SPONSORS.brands[b].tier === tier && !taken.has(b))).slice(0, SPONSORS.offersPerWindow);
   for (const brand of pool) {
     const B = SPONSORS.brands[brand], retainer = round5(SPONSORS.retainer[tier] * (0.85 + 0.3 * r()));
-    const o = { id: `sp-${brand}-${season}-${week}`, sponsor: true, brand, name: B.name, retainer, bonus: round50(retainer * SPONSORS.bonusRounds), target: targetFor(B.target, save.season.current.expPos, save.season.calendar.length), expires, why: B.pitch };
+    const o = { id: `sp-${brand}-${season}-${week}`, sponsor: true, brand, name: B.name, retainer, bonus: round50(retainer * SPONSORS.bonusRounds), target: targetFor(B.target, save.season.div ? expIn(save, save.contract.team, save.contract.seat) : save.season.current.expPos, save.season.calendar.length), expires, why: B.pitch };
     S.offers.push(o);
     post(save, 'sponsor', `${B.name} wants a word`, `${B.pitch} ${retainer} U a round, and ${o.bonus.toLocaleString('en')} U if you ${targetText(o.target)}. Open until week ${expires + 1}.`, { deal: o.id });
   }

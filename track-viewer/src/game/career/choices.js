@@ -2,7 +2,7 @@
 // The scenes are data (assets/career/choices.json); their triggers are the predicates below. One a week at most, perSeason a season, rolled with
 // rng(seed, 'choice', season, week) and stored in season.choices[id] = { id, scene, week, ctx, answer (option index or null), auto (the default was taken) }.
 import CH from '../../../../assets/career/choices.json';
-import { CAR, SPONSORS, clamp, tierOf, levelOf, loreOf, composureOf, seatCar, otherSeat } from './rules.js';
+import { CAR, SPONSORS, clamp, tierOf, levelOf, loreOf, composureOf, seatCar, otherSeat, isSpecial, divOf, carsIn } from './rules.js';
 import { rng } from './rng.js';
 import { YOU, personOf, nemesisAmong, heatUp, rivalsOf } from './world.js';
 import { note } from './ledger.js';
@@ -14,6 +14,8 @@ export { CH as CHOICES };
 export const EFFECTS = { trust: 5, rep: 15, xp: 100, heat: 20, interest: 0.15, note: null, flag: null, mood: 1, story: null };
 const SCENES = Object.fromEntries(CH.scenes.map((s) => [s.id, s]));
 const kindOf = (e) => Object.keys(e).find((k) => k in EFFECTS);
+/** a driver in this car is a bigger name than the player: a higher tier, or the Elite to the player's Challenger */
+const above = (save, key) => tierOf(CAR[key].team).rank > tierOf(save.contract.team).rank || (save.season?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite');
 
 /** when a scene can arrive, from the save as it stands on entering a week: its context, or null */
 export const TRIGGERS = {
@@ -23,15 +25,15 @@ export const TRIGGERS = {
     return x ? { who: x.code, team: CAR[x.car].team } : null;
   },
   /**
-   * The hottest driver at 70+ is easily rattled (composure under callout.composure) and enters the next round, which the player can race: all sixteen enter a Tour round
-   * or an Open, a Masters only its seeds. One callout a round, since a second flag would replace the first and its stated stake would never be paid
+   * The hottest driver at 70+ is easily rattled (composure under callout.composure) and enters the next round, which the player can race: the player's series enters a Tour
+   * round, the whole field an Open, a Masters only its seeds. One callout a round, since a second flag would replace the first and its stated stake would never be paid
    */
   callout: (save) => {
     const W = save.world, S = save.season, cur = S.current, o = cur?.open, R = S.calendar[save.clock.round];
     if (!R || cur.flag || (o?.kind === 'masters' && !o.seeded) || Object.values(S.choices ?? {}).some((c) => c.scene === 'callout' && c.ctx.round === R.round)) return null;
-    const n = nemesisAmong(save, o?.kind === 'masters' ? o.seeds : Object.keys(W.seats));
+    const n = nemesisAmong(save, o?.kind === 'masters' ? o.seeds : isSpecial(R) ? Object.keys(W.seats) : carsIn(save, S.div ?? 'all'));
     if (!n || composureOf(W.ratings[n.code], W.ages[n.code]) >= CH.callout.composure) return null;
-    const higher = tierOf(CAR[n.key].team).rank > tierOf(save.contract.team).rank;
+    const higher = above(save, n.key);
     return { who: n.code, team: CAR[n.key].team, gp: R.name, round: R.round, stake: Math.round(CH.callout.win.rep * (higher ? CH.callout.higherTier : 1)) };
   },
   /**
@@ -107,7 +109,7 @@ export function settleCallout(save, order, hero, dnf) {
   const f = save.season.current.flag; if (f?.kind !== 'callout' || f.paid) return null;
   f.paid = true;
   const key = order.find((k) => save.world.seats[k] === f.who), me = order.indexOf(hero); if (!key || me < 0) return null;
-  const won = !dnf && order.indexOf(key) > me, P = CH.callout, higher = tierOf(CAR[key].team).rank > tierOf(save.contract.team).rank, R = save.season.calendar[save.clock.round];
+  const won = !dnf && order.indexOf(key) > me, P = CH.callout, higher = above(save, key), R = save.season.calendar[save.clock.round];
   note(save, won ? 'callout_won' : 'callout_lost', { who: f.who });
   DO.story(save, won ? 'won' : 'lost', null, { who: f.who, gp: R.name }, SCENES.callout);
   return { won, rep: won ? Math.round(P.win.rep * (higher ? P.higherTier : 1)) : P.lose.rep, xp: won ? P.win.xp : 0, name: personOf(save, f.who)?.name ?? f.who };
