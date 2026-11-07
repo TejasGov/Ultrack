@@ -66,8 +66,10 @@ const LOOKS = ['day', 'dusk', 'bluehour', 'night'];                       // a t
 /** an Open or the Masters: a round with its own entry rules (a ranking decides who races), not a plain Tour round. Rounds from before the format have no `kind` and play as Tour */
 export const isSpecial = (R) => R?.kind === 'open' || R?.kind === 'masters';
 /**
- * A season's rounds (docs/career-mode.md, "The Tour, the Opens, the ranking"): CAL.format in order. Tour rounds draw the five Tour circuits once each and one
- * of them again, never twice in a row; each Open is raced on its own circuit and nowhere else; the Masters closes the season. `world` is unused: one Tour for every tier.
+ * A season's rounds (docs/career-mode.md, "The Tour, the Opens, the ranking"): CAL.format in order. The Tour is every shipped circuit that is not an Open's, the Masters'
+ * or a qualifying or Shootout venue, each raced once; with fewer circuits than Tour rounds the pool cycles, so the fewest return and each comes back a whole cycle later
+ * (never twice in a row while two or more remain). Each Open is raced on its own circuit and nowhere else; the Masters closes the season. `world` is unused: one Tour for every tier.
+ * A `wetOnly` circuit always runs in rain or damp, outside weather.maxWet's cap, and never opens the Tour while another circuit can.
  * `available` maps track id -> its `times` (null: every look) for the tracks the game has; an Open or Tour circuit the game lacks drops out.
  * `qualiTrack` is where the round qualifies (and runs an Open's Last Chance): CAL.qualifyingPool in turn from a seeded start, never twice in a row when two or more are shipped.
  */
@@ -76,12 +78,10 @@ export function buildCalendar(seed, season, world, available, length = 'sprint')
   // the qualifying venue: round-robin from a seeded start on its own stream, so `r`'s look and weather draws (and every older seed's calendar) stay as they were
   const QP = (CAL.qualifyingPool ?? [CAL.qualifying]).filter(has), q0 = Math.floor(rng(seed, 'quali', season)() * QP.length);
   const fmt = CAL.format.filter((f) => (f === 'tour' ? true : f === 'masters' ? has(M.track) : has(f)));
-  const tour = CAL.tour.filter(has), n = fmt.filter((f) => f === 'tour').length, end = fmt.includes('masters') ? M.track : null;
-  const base = tour.length ? tour : Object.keys(available).filter(has), pool = [];
-  while (pool.length < n && base.length) pool.push(...shuffle(r, base));
-  pool.length = Math.min(n, pool.length);
-  let order = pool;
-  for (let k = 0; k < 200 && ![...order, end].every((t, i, l) => i === 0 || t !== l[i - 1]); k++) order = shuffle(r, pool);   // too few circuits may never manage
+  const not = new Set([...Object.keys(CAL.opens), M.track, CAL.qualifying, ...(CAL.qualifyingPool ?? []), CAL.shootout?.track]), n = fmt.filter((f) => f === 'tour').length;
+  const tour = Object.keys(CAL.tracks).filter((id) => has(id) && !not.has(id)), base = shuffle(r, tour.length ? tour : Object.keys(available).filter(has));
+  const dry = base.findIndex((id) => !CAL.tracks[id].wetOnly); if (dry > 0) [base[0], base[dry]] = [base[dry], base[0]];   // round 1 stays dry
+  const order = Array.from({ length: n }, (_, k) => base[k % base.length]);
   const seen = {}, wet = { n: 0 }; let t = 0;
   return fmt.map((f, i, all) => {
     const kind = f === 'tour' ? 'tour' : f === 'masters' ? 'masters' : 'open', track = f === 'tour' ? order[t++] : f === 'masters' ? M.track : f;
@@ -89,8 +89,9 @@ export function buildCalendar(seed, season, world, available, length = 'sprint')
     const pick = looks[Math.floor(r() * looks.length)];                 // an even chance of each hour this circuit offers in the menu
     const look = kind === 'masters' && looks.includes(M.look) ? M.look : pick;
     let weather = 'dry', x = r();
-    if (i > 0 && !C.dryOnly && wet.n < T.weather.maxWet) weather = x < T.weather.rain ? 'rain' : x < T.weather.rain + T.weather.damp ? 'damp' : 'dry';
-    if (weather !== 'dry') wet.n++;
+    if (C.wetOnly) weather = x * (T.weather.rain + T.weather.damp) < T.weather.rain ? 'rain' : 'damp';   // its own odds of rain to damp; the cap is for the other rounds
+    else if (i > 0 && !C.dryOnly && wet.n < T.weather.maxWet) weather = x < T.weather.rain ? 'rain' : x < T.weather.rain + T.weather.damp ? 'damp' : 'dry';
+    if (weather !== 'dry' && !C.wetOnly) wet.n++;
     const c = (seen[track] = (seen[track] ?? -1) + 1);
     const name = kind === 'open' ? CAL.opens[f].name : kind === 'masters' ? M.name : C.names[Math.min(c, C.names.length - 1)];
     const qualiTrack = QP.length ? QP[(q0 + i) % QP.length] : CAL.qualifying;
