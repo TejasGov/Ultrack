@@ -17,6 +17,7 @@ export const LOADING_SLIDES = [
   { track: 'llano', title: 'A long way\nfrom anywhere.', text: 'Red dirt to the horizon and two kilometres of flat-out road down the Long Mile. The race-day train still pulls in at Llano Central. Last Chance is at the far end, and it is well named.' },
   { track: 'pilbara', title: 'Down into\nthe red.', text: 'A haul road off the rim of an open-cut iron mine: down the bench wall, one switchback, across the pit floor under the conveyor, and a blind crest back onto the rim.' },
   { track: 'terminal', title: 'Steel walls\non every side.', text: 'A Sunday at the container terminal: a quay straight under the cranes, then a canyon of boxes stacked four high. You never see the next corner until you are in it.' },
+  { track: 'morro', title: 'The whole hill\nis watching.', text: 'A drag strip under the strings of lights, the beach avenue, then up the morro between the houses and two hairpins to the top road over the city. Always night, always wet: the neon is in every puddle.' },
 ].map((s) => ({ ...s, image: revUrl(`/assets/ui/stills/tracks/${s.track}.webp`) }));
 const TIP = 'Brake before the corner. Ease off the pedal as you turn, then build throttle on the exit.';
 export const LOAD_STAGES = ['Circuit', 'Grid', 'Track physics', 'Audio', 'Graphics'];
