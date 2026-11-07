@@ -124,6 +124,34 @@
    "mail": "Round 1: P8 from P8 (qualified P10), rating 5.2"
   }
  },
+ "rookie2": {
+  "season": 2,
+  "graceOn": true,
+  "note": "Practice is open. All 10 Challenger drivers qualify, and the fastest 8 race. A Rookie team's grace: set a lap and you race, from the back of the grid at worst.",
+  "quali": {
+   "grace": {
+    "from": 10,
+    "out": "blackbird"
+   },
+   "place": 10,
+   "slot": 8,
+   "tiles": [
+    "OpenImprove your lapP10, grid P8 (a Rookie team's grace), 0:44.711. One retry: keeps the better lap",
+    "Next upRaceNext: 2 laps from P8. One try"
+   ]
+  },
+  "report": {
+   "finish": 8,
+   "grid": 10,
+   "grace": {
+    "start": 8,
+    "out": "blackbird",
+    "code": "HOL"
+   },
+   "text": "Expected P8, qualified P10. A Rookie team's grace: you started from the back of the grid, P8, and Wade Hollis sat out.",
+   "press": []
+  }
+ },
  "steelhead": {
   "car": "zr1",
   "div": "challenger",

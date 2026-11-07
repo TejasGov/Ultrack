@@ -1,6 +1,6 @@
 // Steelhead QA shots at 1600x900 (the career screens also at 390x844): the logo card, the menu and garage with the Corvette ZR1 and Stingray, a quick race
 // in each with the AI driving it, and a first-season career race from Mojave's B seat with Steelhead on the Challenger grid, qualified outside the eight
-// (the first season's grace: the toast, the grid, the race and its report); then the hub from a Steelhead seat.
+// (the first season's grace: the toast, the grid, the race and its report); then a season-2 Rookie seat (graceRookie: the same grace in its own words); then the hub from a Steelhead seat.
 //   node scripts/qa-lock.mjs -- node qa/team-steelhead/shots.mjs [url=http://127.0.0.1:5180]
 // Out: qa/team-steelhead/*.png, report.json
 import { chromium } from 'playwright-core';
@@ -73,6 +73,19 @@ try {
   await page.waitForFunction(() => window.game.screenName === 'careerReport', null, { timeout: 600000, polling: 1000 }); await both('career-report');
   report.career.result = await run(`const r = g.career.season.results.at(-1); return { finish: r.finish, grid: r.grid, grace: r.grace, entries: r.entries.length, dnq: r.entries.filter((e) => e.dnq).map((e) => e.key), mail: g.career.inbox.find((m) => /^Round 1:/.test(m.title))?.title };`);
   await page.click('.screen.on .cx-go'); await page.waitForSelector('.screen.career-hub.on'); await page.click('.stabs button:has-text("Standings")'); await page.waitForTimeout(400); await both('career-standings-after');
+  // season 2 in a Rookie seat (graceRookie): the clock moved on, the grace stays in its own words; qualified P10 -> starts P8, the toast, the tile, the grid list and the report
+  report.rookie2 = await run(`
+    const s = C.newCareer({ name: 'Quincy Valois', seed: 5162, now: '2026-11-07T00:00:00Z' }), sh = C.shootout(); C.finishShootout(s, R.parLap(sh.track, sh.car) * 1.04);
+    C.acceptOffer(s, s.pending.offers.find((o) => o.team === 'mojave').id, SH.available()); while (C.currentWeek(s).kind !== 'race') C.advanceWeek(s);
+    s.clock.season = 2; g.career = s; S.saveCareer(s, 0); g.show('careerHub', 'home'); return { season: s.clock.season, graceOn: C.graceOn(s), note: C.weekNote(s, C.currentRound(s)) };`);
+  await page.waitForSelector('.screen.career-hub.on'); await both('rookie2-home');
+  await run(`const t = structuredClone(g.career); C.finishQuali(t, null); const q = t.season.current.quali, me = t.contract.car, ch = q.order.filter((k) => k !== me);
+    const lap = q.laps[ch.at(-1)] + 0.35; g.qaSession = g.careerSession; g.careerSession = (kind, spec, done) => done({ best: lap, mateLap: null, hits: [] });`);
+  await page.click('.screen.on .cx-mode.k-race[data-ic=time-trial]'); await page.waitForTimeout(400); await shot('rookie2-quali-toast');
+  await run(`g.careerSession = g.qaSession; delete g.qaSession;`); await page.waitForTimeout(4500); await both('rookie2-home-grace');
+  report.rookie2.quali = await run(`const q = g.career.season.current.quali; return { grace: q.grace, place: C.qualiPlace(q, g.career.contract.car), slot: C.gridSlot(q, g.career.contract.car), tiles: [...document.querySelectorAll('.screen.on .cx-mode.k-race')].map((e) => e.textContent) };`);
+  await run(`const q = g.career.season.current.quali, r = C.finishRace(g.career, { order: q.grid, best: {} }); S.saveCareer(g.career, 0); g.show('careerReport', r);`); await page.waitForTimeout(1200); await both('rookie2-report');
+  report.rookie2.report = await run(`const r = g.career.season.results.at(-1); return { finish: r.finish, grid: r.grid, grace: r.grace, text: document.querySelector('.screen.on .cr-hero .cx-note')?.textContent, press: g.career.inbox.filter((m) => /press|Press/.test(m.title)).map((m) => m.title).slice(0, 2) };`);
   // the hub from Steelhead's A seat
   report.steelhead = await run(`
     const s = C.newCareer({ name: 'Quincy Valois', seed: 5161, now: '2026-11-07T00:00:00Z' }), sh = C.shootout(); C.finishShootout(s, R.parLap(sh.track, sh.car) * 1.04);

@@ -94,5 +94,5 @@ cold-load times and an in-game visual approval were not collected in this pass.
 - No pit box, no venue dress, no driver posters or press photos yet: `tracks/` was not changed, the hoardings put up no board for Tolliver and Lavoie, and the press falls back
   to the circuit. Livery places: `livery.js` `FIT.zr1` (the bonnet lockup on the nose, clear of the carbon hood vent) and `FIT.stingray` (the flank sponsor forward of the side intake).
 - Logos: `track-viewer/scripts/build-team-logo-steelhead.py` (see assets/teams/logos/README.md). Car stills: `make-ui-stills.mjs` cars, side and thumbs with `ONLY=zr1,stingray`.
-- Career: schema 14 adds the team to an old save, and the first season's grace keeps a new driver racing in the Challenger of ten; both and the balance are in
+- Career: schema 14 adds the team to an old save, and the grace (the first season, and any season in a Rookie-tier seat) keeps a driver racing in the Challenger of ten; both and the balance are in
   track-viewer/docs/career-mode.md. QA shots at 1600x900 and 390x844: `track-viewer/qa/team-steelhead/shots.mjs`.

@@ -3,7 +3,7 @@
   "note": "The career's choice scenes (track-viewer/src/game/career/choices.js, docs/career-mode.md 6.9). A scene arrives in the inbox when its trigger holds (the predicate is in choices.js) and the week's seeded roll is under its chance: one a week at most, perSeason a season. Each option's effects come from a fixed list: trust, rep, xp, heat (on the scene's driver, with a cause), interest (the scene's team, this season), note (a ledger entry), flag (one race), mood (every sponsor's goodwill, within the Sponsor Challenge cap) and story. effectText is what the button says; {who}, {surname}, {team}, {stake} and {gp} are filled from the scene. An unanswered scene takes its default option when the week ends, and the inbox says so. Text is invented; no LLM writes it.",
   "perSeason": 5,
   "callout": { "composure": 0.6, "win": { "rep": 12, "xp": 60 }, "higherTier": 1.5, "lose": { "rep": -4 } },
-  "press": { "gap": 4, "dnq": "You missed the cut", "dnf": "You retired" },
+  "press": { "gap": 4, "dnq": "You missed the cut", "grace": "You qualified outside the eight and raced from the back", "dnf": "You retired" },
   "scenes": [
     { "id": "rumour", "trigger": "rumour", "chance": 1,
       "title": "The papers link you with {team}",
