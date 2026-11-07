@@ -55,6 +55,8 @@ const modelProfile = (base, M) => ({ ...base, name: M.name ?? base?.name, model:
   lights: { ...base?.lights, front: M.lights.front, rear: M.lights.rear }, glass: { side: M.glass.side } });
 /** Display name of a car: a model's own (model.json `name`), else its car-lab profile name, else the key. */
 export const carName = (key) => MODELS[key]?.name ?? PROFILE_NAMES[key] ?? key;
+/** whether the car is a complete model (its own wheels) rather than built by car-lab */
+export const hasModel = (key) => key in MODELS;
 /** "<role>|<name>" materials from model-car.py: the game's own material for a role, the model's for "keep" */
 const roleMaterial = completeCarMaterial;
 

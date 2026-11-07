@@ -294,6 +294,16 @@ const MODEL_CREDITS=Object.values(import.meta.glob('../../../assets/cars/*/model
 const FONT_CREDITS = [
   ['Barlow Condensed', 'The Barlow Project Authors', 'https://github.com/jpt/barlow'],
   ['Anton', 'The Anton Project Authors', 'https://github.com/googlefonts/AntonFont'],
+  // the teams' faces (logos, driver intros)
+  ['Bungee', 'The Bungee Project Authors', 'https://github.com/djrrb/Bungee'],
+  ['Cinzel', 'The Cinzel Project Authors', 'https://github.com/NDISCOVER/Cinzel'],
+  ['Dela Gothic One', 'The Dela Gothic Project Authors', 'https://github.com/syakuzen/DelaGothic'],
+  ['Graduate', 'Eduardo Tunni', 'https://fonts.google.com/specimen/Graduate'],
+  ['Lalezar', 'The Lalezar Project Authors', 'https://github.com/BornaIz/Lalezar'],
+  ['Limelight', 'Sorkin Type Co', 'https://fonts.google.com/specimen/Limelight'],
+  ['Michroma', 'The Michroma Project Authors', 'https://github.com/googlefonts/Michroma-font'],
+  ['Racing Sans One', 'Pablo Impallari, Rodrigo Fuenzalida', 'https://fonts.google.com/specimen/Racing+Sans+One'],
+  ['Unbounded', 'The Unbounded Project Authors', 'https://github.com/googlefonts/unbounded'],
 ];
 const CODE_CREDITS = [
   ['three.js', 'three.js authors', 'https://threejs.org', 'MIT', 'https://github.com/mrdoob/three.js/blob/dev/LICENSE'],
