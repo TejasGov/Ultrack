@@ -1,7 +1,7 @@
 // The world around the player (docs/career-mode.md 6.6, 6.8): who drives which car, the free agents, the academy, rival heat, and
 // the cheap AI market between seasons. Pure, like the rest of career/: a save goes in and comes out changed.
 // world.seats maps each car key to a driver code; the player's car holds 'YOU', a seat the market has to fill holds null.
-import { TUNING as T, TIERS, DRIVERS, CAR, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating } from './rules.js';
+import { TUNING as T, TIERS, DRIVERS, CAR, TEAM_IDS, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating, eliteSize, divsOn } from './rules.js';
 import { rng } from './rng.js';
 
 export const YOU = 'YOU';
@@ -13,12 +13,15 @@ const span = (r, [lo, hi]) => lo + Math.floor(r() * (hi - lo + 1));
 export const contractFor = (seed, code) => span(rng(seed, 'contract', code), T.market.contract);
 /** world.loyalty[code]: how attached an AI driver is to their team, 0-100, seeded at 40-80 (market.loyalty). Hidden: never shown, never quoted as a number */
 export const loyaltyFor = (seed, code) => span(rng(seed, 'loyalty', code), T.market.loyalty);
+/** a team's series in a new world (and a save from before the split, career.js migrate): the eliteSize best expected teams race the Elite, the rest the Challenger; too few teams race one field */
+export const splitOf = (expPos) => { const E = eliteSize(), ids = [...TEAM_IDS].sort((a, b) => expPos(a) - expPos(b) || (a < b ? -1 : 1)); return Object.fromEntries(ids.map((id, i) => [id, divsOn() ? (i < E ? 'elite' : 'challenger') : 'all'])); };
 /** world.contracts[code]: the seasons left on an AI driver's contract, this one included (a free agent has none) */
 export function newWorld(seed = 0) {
+  const div = splitOf((t) => TIERS.teams[t].expPos);
   return {
     contracts: Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, contractFor(seed, c.driver.code)])),
     loyalty: Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, loyaltyFor(seed, c.driver.code)])),
-    teams: Object.fromEntries(Object.keys(TIERS.teams).map((id) => [id, { expPos: TIERS.teams[id].expPos, dev: [...tierOf(id).dev], declined: 0 }])),
+    teams: Object.fromEntries(Object.keys(TIERS.teams).map((id) => [id, { expPos: TIERS.teams[id].expPos, dev: [...tierOf(id).dev], declined: 0, div: div[id] }])),
     ratings: { ...DRIVERS.ratings }, ages: Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, c.driver.age])),
     seats: Object.fromEntries(Object.entries(CAR).map(([key, c]) => [key, c.driver.code])), free: [], retired: [], academy: {},
   };

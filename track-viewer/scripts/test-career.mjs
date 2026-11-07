@@ -26,6 +26,40 @@ try {
     assert.equal(skipped.rr, 8.8, 'a win from a skip earned by the last result: not punished for it'); assert.ok(label(skipped).includes('Won the race') && label(skipped).includes('Skipped qualifying on merit') && label(skipped).includes('Started 3 above expected'));
     assert.ok(!label(R.roundRating({ ...won, exempt: true, grid: 7 })).some((l) => /Started|below/.test(l)), 'a worse earned slot costs nothing');
     assert.ok(label(R.roundRating({ expPos: 3, grid: 3, finish: 1 })).includes('Won the race')); assert.ok(!label(R.roundRating({ expPos: 3, grid: 3, finish: 2 })).includes('Won the race')); assert.ok(!label(R.roundRating({ expPos: 3, grid: 3, finish: 1, dnf: true })).includes('Won the race'), 'a retirement wins nothing'); }
+  // ---- two series (docs/10x/divisions-spec.md 16.1, 16.2, 16.6, 16.7): the split by expected place, places counted inside a series, objectives and the rating's divisor
+  { const w = C.newCareer({ seed: 5, now: 'x' }), ids = (d) => R.TEAM_IDS.filter((t) => w.world.teams[t].div === d);
+    assert.deepEqual(ids('elite'), ['aurum', 'saetta', 'norrsken', 'toro', 'sarab']); assert.deepEqual(ids('challenger'), ['corvid', 'hayate', 'mojave', 'liberty']);
+    assert.equal(R.eliteSize(), 5); assert.equal(R.eliteSize(8), 4); assert.equal(R.eliteSize(10), 5); assert.equal(R.divsOn(7), false); assert.equal(R.divsOn(8), true);
+    assert.ok(Object.keys(R.TIERS.firstJob).every((t) => w.world.teams[t].div === 'challenger'), 'every first job is in the Challenger');
+    assert.equal(R.divOf(w, 'aurum'), 'elite', 'outside a season: the world'); assert.deepEqual(R.teamsIn(w, 'all'), R.TEAM_IDS); assert.equal(R.carsIn(w, 'elite').length, 10); assert.equal(R.carsIn(w, 'challenger').length, 8);
+    assert.equal(R.expIn(w, 'liberty', 'B'), 8); assert.equal(R.expIn(w, 'hayate', 'B'), 4); assert.equal(R.expIn(w, 'sarab', 'B'), 10); assert.equal(R.expIn(w, 'aurum', 'A'), 1); assert.equal(R.expIn(w, 'corvid', 'A'), 1);
+    w.world.teams.liberty.div = 'elite'; w.world.teams.sarab.div = 'challenger';
+    assert.equal(R.posIn(w, 'liberty'), 5, 'promoted: last of five'); assert.equal(R.posIn(w, 'sarab'), 1, 'relegated: first of four'); assert.equal(R.expIn(w, 'liberty', 'B'), 10); assert.equal(R.expIn(w, 'sarab', 'A'), 1); assert.equal(R.posIn(w, 'corvid'), 2);
+    w.season = { divs: {} }; assert.equal(R.divOf(w, 'aurum'), 'all', 'a season with no series of its own is one field'); assert.equal(R.posIn(w, 'liberty'), 9); assert.equal(R.expIn(w, 'liberty', 'B'), R.expOf(9, 'B'));
+    assert.deepEqual(R.interleave([1, 2], ['a', 'b']), [1, 'a', 2, 'b']); assert.deepEqual(R.interleave([1, 2, 3, 4, 5], ['a', 'b', 'c'], 8), [1, 'a', 2, 'b', 3, 'c', 4, 5]); assert.deepEqual(R.interleave([1], ['a', 'b', 'c'], 3), [1, 'a', 'b']);
+    const ch = (k) => k.startsWith('c'), lcq = R.lcqGrid(['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8', 'e9', 'c1', 'c2', 'c3'], ch, 2);
+    assert.deepEqual(lcq, ['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'c1', 'c2'], 'the fastest Challenger laps take the slowest Elite places'); assert.deepEqual(R.lcqGrid(['c1', 'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'c2'], ch, 2), ['c1', 'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'c2'], 'in lap order');
+    assert.deepEqual(R.lcqGrid(['c1', 'c2', 'e1'], ch, 2, 2), ['c1', 'c2']); assert.deepEqual(R.lcqGrid(['e1', 'e2', 'e3', 'c1'], ch, 2, 2), ['e1', 'c1'], 'fewer Challenger cars than the quota: all of them');
+    assert.deepEqual(R.seedsOf('open', ['E1', 'E2', 'E3'], ['C1', 'C2', 'C3']), ['E1', 'C1', 'E2', 'C2']); assert.deepEqual(R.seedsOf('masters', ['E1', 'E2', 'E3', 'E4', 'E5', 'E6'], ['C1', 'C2', 'C3', 'C4']), ['E1', 'C1', 'E2', 'C2', 'E3', 'C3', 'E4', 'E5']);
+    assert.deepEqual(R.seedsOf('masters', ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7'], ['C1', 'C2']), ['E1', 'C1', 'E2', 'C2', 'E3', 'E4', 'E5', 'E6'], 'a Challenger table of 2 is filled from the Elite');
+    // objectivesFor at the whole field (N = 18, today's FIELD) is byte-identical to the function before the split, for every expected place, easier and exempt, with and without a reach
+    const old = (r, expPos, easier = false, exempt = false, reach = null) => { const G8 = 8, F = R.FIELD, main = reach ? { kind: 'reach', to: reach } : expPos > G8 && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, F) : Math.min(expPos, F - 1) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, G8) : Math.min(expPos, G8 - 1) };
+      const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 2) }]; if (expPos <= 6) pool.push({ kind: 'podium' });
+      return [{ ...main, mandatory: true }, ...G.shuffle(r, exempt ? pool.filter((o) => o.kind !== 'duel' && o.kind !== 'quali') : pool).slice(0, 2)]; };
+    for (let e = 1; e <= R.FIELD; e++) for (const easier of [false, true]) for (const exempt of [false, true]) for (const reach of [null, 'the Japan Open Final']) assert.equal(JSON.stringify(R.objectivesFor(G.rng(9, 'obj', e), e, easier, exempt, reach)), JSON.stringify(old(G.rng(9, 'obj', e), e, easier, exempt, reach)), `objectives at P${e}`);
+    const main = (e, N, easier = false) => R.objectiveText(R.objectivesFor(G.rng(1, 'x'), e, easier, false, null, N)[0]), pod = (e, N) => [...Array(40).keys()].some((s) => R.objectivesFor(G.rng(s, 'x'), e, false, false, null, N).some((o) => o.kind === 'podium'));
+    assert.equal(main(8, 8), 'Finish P7 or better'); assert.equal(main(8, 8, true), 'Finish P8 or better', 'easier: just making it'); assert.equal(main(4, 8), 'Finish P4 or better'); assert.equal(main(10, 10), 'Qualify P9 or better');
+    assert.ok(pod(3, 8) && !pod(4, 8) && pod(3, 10) && !pod(4, 10) && pod(6, 18) && !pod(7, 18), 'the podium joins the pool in the top 3 of 8 or 10, the top 6 of 18');
+    const lq = R.objectivesFor(G.rng(1, 'x'), 12, false, true, 'the Japan Open Final', 18, 8, true);
+    assert.deepEqual(lq.slice(0, 2).map((o) => [o.kind, o.stage ?? null, !!o.mandatory, R.objectiveText(o)]), [['reach', 'lcq', true, 'Reach the Last Chance Qualifier'], ['reach', null, false, 'Reach the Japan Open Final']]); assert.equal(lq.length, 3);
+    assert.equal(R.objectiveMet(lq[0], { lcqIn: true, dnq: true }), true, 'in the Last Chance: met, even out of the Final'); assert.equal(R.objectiveMet(lq[0], { lcqIn: false, dnq: true }), false); assert.equal(R.objectiveMet(lq[1], { dnq: false }), true);
+    // the rating's place divisor: two at the old 16-car field (the default), the field over the grid otherwise
+    const cases = [{ expPos: 8, grid: 6, finish: 4, clean: true, duel: { result: 'won', big: false } }, { expPos: 3, grid: 9, finish: 7 }, { expPos: 12, grid: 12, finish: 8, dnf: true }, { expPos: 5, grid: 2, finish: 1, exempt: true, fastest: true }, { expPos: 10, grid: 11, finish: 11, dnq: true, rookie: true }];
+    for (const x of cases) { assert.deepEqual(R.roundRating(x), R.roundRating({ ...x, field: 16 })); assert.deepEqual(R.xpFor({ ...x, tier: 'rookie', optional: 0 }), R.xpFor({ ...x, tier: 'rookie', optional: 0, field: 16 })); }
+    assert.equal(R.TUNING.divisions.legacyField, 16);
+    for (const [field, k] of [[8, 1], [10, 1.25], [16, 2], [18, 2.25]]) { const l = R.roundRating({ expPos: 6, grid: 6, finish: 4, field }).lines.find((x) => /above expected/.test(x[0]))[1]; assert.equal(l, Math.round(R.TUNING.rating.pos * (2 / k) * 100) / 100, `field ${field}: two places over ${k}`);
+      assert.equal(R.xpFor({ expPos: 6, grid: 2, finish: 6, tier: 'rookie', optional: 0, field }).lines.find((x) => x[0] === 'Qualified above expected')[1], Math.min(R.TUNING.rating.qualiClamp, 4 / k) * R.TUNING.xp.qualiPerPlace); }
+    assert.equal(R.xpFor({ expPos: 6, grid: 6, finish: 2, tier: 'rookie', optional: 0, reward: 0.5 }).lines[0][1], R.TUNING.xp.place[1] * 0.5, 'the Challenger reward scales the place XP'); }
   // ---- pace and levels
   assert.equal(R.paceOf(94).toFixed(3), '1.011'); assert.equal(R.paceOf(76).toFixed(3), '0.974');
   assert.equal(R.xpForLevel(2), 90); assert.equal(R.levelOf(89), 1); assert.equal(R.levelOf(90), 2); assert.equal(R.levelOf(1e9), 25);
