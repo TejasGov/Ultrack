@@ -33,7 +33,7 @@ const tours = (save) => save.season.calendar.filter((r) => (r.kind ?? 'tour') ==
 const seriesTag = (save, R) => { const d = save.season.div; if (!d) return null;
   return R.kind === 'open' ? `Both series: top ${DIV.elite.openSeeds} of each seeded` : R.kind === 'masters' ? `Top ${DIV.elite.masters} Elite, top ${DIV.challenger.masters} Challenger` : `${DIV[d].short} round ${tours(save).indexOf(R) + 1}`; };
 /** a Teams' table row's mark: the Challenger's first goes up, the Elite's last comes down */
-const moveMark = (d, i, n) => (d === 'challenger' && i === 0 ? h('small.cx-move', {}, '↑ Up') : d === 'elite' && i === n - 1 ? h('small.cx-move', {}, '↓ Down') : null);
+const moveMark = (d, i, n, on = true) => (!on ? null : d === 'challenger' && i === 0 ? h('small.cx-move', {}, '↑ Up') : d === 'elite' && i === n - 1 ? h('small.cx-move', {}, '↓ Down') : null);
 /** a round's kind before its circuit in a list: the series' round, else the old event name */
 const roundKind = (save, R) => seriesTag(save, R) ?? (ROUND_EVENT[R.event] && !isSpecial(R) ? ROUND_EVENT[R.event] : null);
 
@@ -57,7 +57,7 @@ export function CareerHubScreen(game) {
       C.logHits(save, d.hits); C.finishQuali(save, d.best, d.mateLap); persist(game);
       const q = save.season.current.quali, p = C.qualiPlace(q, car), lap = q.laps[car], cut = q.laps[q.grid.at(-1)];
       const next = C.retriesLeft(q) ? 'Use your retry, or sit this one out.' : 'You sit this one out.';
-      game.show('careerHub', 'home'); toast(!Number.isFinite(lap) ? `No valid lap: the top ${q.grid.length} race without you. ${next}` : q.grid.includes(car) ? `Qualified P${p}: ${fmtTime(lap)}. ${q.mate.code} ${fmtTime(q.mate.lap)}: duel ${q.duel.result}.` : `P${p}: ${(lap - cut).toFixed(3)} s off the top ${q.grid.length}. ${next}`, !q.grid.includes(car));
+      game.show('careerHub', 'home'); toast(!Number.isFinite(lap) && !q.grid.includes(car) ? `No valid lap: the top ${q.grid.length} race without you. ${next}` : !Number.isFinite(lap) ? `No valid lap: you start P${p}.${C.retriesLeft(q) ? ' Use your retry: a lap moves you up.' : ''}` : q.grid.includes(car) ? `Qualified P${p}: ${fmtTime(lap)}. ${q.mate.code} ${fmtTime(q.mate.lap)}: duel ${q.duel.result}.` : `P${p}: ${(lap - cut).toFixed(3)} s off the top ${q.grid.length}. ${next}`, !q.grid.includes(car));
     });
   }
   /** a test day (one flying lap) or a sponsor day (the Sponsor Challenge: a short race with the rival profiles of a career race) */
@@ -113,7 +113,7 @@ export function CareerHubScreen(game) {
     const look = stat('Time of day', [icon(LOOK[R.look][1]), LOOK[R.look][0]]);
     const div = save.season.div, mult = pointsMult(R, !!div), inSeries = div && !isSpecial(R) ? ` · ${DIV[div].short} round ${tours(save).indexOf(R) + 1} of ${tours(save).length}` : '';
     if (w.kind === 'race') return hero(isSpecial(R) ? 'open' : 'race', `This week · ${ROUND_EVENT[R.event] ?? 'Race weekend'} · Round ${R.round} of ${n}${inSeries}${mult > 1 ? ` · points ×${mult}` : ''}`, R.name,
-      h('div.r-stats', {}, stat('Circuit', t.name), look, stat('Weather', [icon(WX_ICON[R.weather]), WEATHER[R.weather].label]), stat('Race', `${R.laps} laps`), stat('Expected', 'P' + cur.expPos, `of ${cur.field ?? FIELD}`)),
+      h('div.r-stats', {}, stat('Circuit', t.name), look, stat('Weather', [icon(WX_ICON[R.weather]), WEATHER[R.weather].label]), stat('Race', `${R.laps} laps`), cur.open?.kind === 'masters' ? null : stat('Expected', 'P' + cur.expPos, `of ${cur.field ?? FIELD}`)),   // the Masters is a field of 8 seeded by the ranking: an expected place of the 18 reads wrong there
       cur.open || div ? h('p.cx-note', {}, icon(cur.open ? 'trophy' : 'info'), C.weekNote(save, R)) : null,
       h('div.cx-objs', {}, C.roundObjectives(save).map((o) => h('span', {}, icon(o.mandatory ? 'star' : 'plus'), objectiveText(o), h('small', {}, o.mandatory ? 'Required' : 'Bonus')))),
       notices(save));
@@ -151,11 +151,11 @@ export function CareerHubScreen(game) {
       h('div', {}, rows.map((x, k) => css(h(`div.lrow.cx-mini${x.you ? '.me' : ''}${k === cut - 1 ? '.cut' : ''}`, {}, h('b.tnum', {}, x.rank), h('i.tbar'), h('span', {}, x.you ? save.player.name : C.personOf(save, x.code)?.name ?? x.code), h('b.tnum', {}, String(Math.round(x.pts)))), { '--team': teamMark(loreOf(CAR[x.key].team)) }))),
       d ? h('p.cx-note', {}, icon('info'), C.cupRule(R.kind)) : null);
   }
-  /** the player's series' Teams' table in short: the top 3 and their team, the promotion or relegation place marked */
+  /** the player's series' Teams' table in short: the top 3, or the top 2 and their team, the promotion or relegation place marked once a round is run */
   function seriesTable(save, st) {
-    const T = st.teams, d = save.season.div, mine = T.findIndex((t) => t.you), at = [...new Set([0, 1, 2, mine])].filter((i) => i >= 0 && i < T.length).sort((a, b) => a - b);
+    const T = st.teams, d = save.season.div, mine = T.findIndex((t) => t.you), at = (mine > 2 ? [0, 1, mine] : [0, 1, 2]).filter((i) => i < T.length), on = save.season.results.length > 0;   // three rows: the block has no room for a fourth
     return [blockHead('trophy', `${DIV[d].short} Teams'`, save.season.results.length ? `After round ${save.season.results.length}` : 'No rounds yet'),
-      h('div', {}, at.map((i) => miniRow(i + 1, T[i].team, [teamName(T[i].team), moveMark(d, i, T.length)], T[i].pts, T[i].you)))];
+      h('div', {}, at.map((i) => miniRow(i + 1, T[i].team, [teamName(T[i].team), moveMark(d, i, T.length, on)], T[i].pts, T[i].you)))];
   }
   function homeSide(save) {
     const q = save.season.current.quali, st = C.standings(save), me = save.contract, d = me.duel, n = C.unread(save), box = save.inbox.slice(0, 4);
@@ -175,7 +175,7 @@ export function CareerHubScreen(game) {
         h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => startQuali(save) }, icon('time-trial'), 'Use your retry')];
     }
     if (w.kind === 'race') return [h('div.cx-next', {}, h('small', {}, 'Race week'), h('span', {}, q ? `One try at the race. Retire classifies you last.` : `Qualifying first, at ${trackOf(C.qualiVenue(save).track).name}: one valid flying lap`)),
-      h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => (q ? startRace(save) : startQuali(save)) }, icon(q ? 'race' : 'time-trial'), q ? (save.season.current.open?.stage === 'lcq' ? 'Start the Last Chance' : save.season.current.open ? 'Start the Final' : 'Start the race') : 'Start qualifying')];
+      h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => (q ? startRace(save) : startQuali(save)) }, icon(q ? 'race' : 'time-trial'), q ? (save.season.current.open?.stage === 'lcq' ? 'Start the Last Chance' : save.season.current.open?.kind === 'masters' ? 'Start the Masters' : save.season.current.open ? 'Start the Final' : 'Start the race') : 'Start qualifying')];
     const spec = C.sideSpec(save), note = armed && warn.length ? warn.join('. ') + '. Press again to go on.' : `Week ${next.week}: ${weekTitle(save, next)}`;
     return [h('div.cx-next', {}, h('small', {}, armed && warn.length ? 'Before you go' : 'Next'), h('span', {}, note)),
       h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => {
@@ -299,9 +299,9 @@ export function CareerHubScreen(game) {
   function standings(save) {
     const div = save.season.div, view = div ? (stDiv ?? div) : 'all', S = C.standings(save, view), me = save.contract.team, n = S.teams.length;
     // with two series: the Promotion line under the Challenger's first, the Relegation line over the Elite's last
-    const cutAt = (i) => (view === 'challenger' ? i === 0 : view === 'elite' && i === n - 2);
+    const on = save.season.results.length > 0, cutAt = (i) => on && (view === 'challenger' ? i === 0 : view === 'elite' && i === n - 2);   // no marks on a table of noughts
     const table = (title, right, rows, name, mine, teams = false, foot = null, top = null) => h('div.cx-b', {}, blockHead('trophy', title, right), top, h('div.lhead.cx-st', {}, h('span', {}, 'Pos'), h('span'), h('span', {}, name), h('span.val', {}, 'Wins'), h('span.val', {}, 'Pts')),
-      scroller('cx-list', rows.length ? rows.map((x, i) => css(h(`div.lrow.cx-st${mine(x) ? '.me' : ''}${teams && cutAt(i) ? '.cut' : ''}`, { 'data-nav': '', tabIndex: 0 }, h('b.tnum', {}, i + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, name === 'Driver' ? x.name : teamName(x.team)), name === 'Driver' ? h('small', {}, teamName(x.team)) : teams ? moveMark(view, i, n) : null),
+      scroller('cx-list', rows.length ? rows.map((x, i) => css(h(`div.lrow.cx-st${mine(x) ? '.me' : ''}${teams && cutAt(i) ? '.cut' : ''}`, { 'data-nav': '', tabIndex: 0 }, h('b.tnum', {}, i + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, name === 'Driver' ? x.name : teamName(x.team)), name === 'Driver' ? h('small', {}, teamName(x.team)) : teams ? moveMark(view, i, n, on) : null),
         h('span.val.tnum', {}, x.wins), h('span.val.tnum', {}, String(Math.round(x.pts * 10) / 10))), { '--team': teamMark(loreOf(x.team)) })) : h('p.cx-note', {}, 'No rounds raced yet.')), foot);
     const rs = save.season.results, avg = rs.length ? rs.reduce((a, r) => a + r.rr, 0) / rs.length : null, d = save.contract.duel, best = Math.min(...rs.filter((r) => !r.dnf && !r.dnq).map((r) => r.finish));   // a missed cut is classified below the grid, so it is no best finish
     const you = h('div.cx-b', {}, blockHead('helmet', 'Your season'), h('div.cx-kv', {}, stat('Rounds', `${rs.length} of ${save.season.calendar.length}`), stat('Avg rating', avg ? avg.toFixed(1) : empty()), stat('Duel', `${d.won}-${d.lost}`), stat('Best', Number.isFinite(best) ? 'P' + best : rs.some((r) => r.dnf && !r.dnq) ? 'DNF' : empty())));
@@ -428,7 +428,7 @@ export function CareerHubScreen(game) {
         h('div.cx-kv', {}, stat('Open wins', String(Object.values(S.openWins ?? {}).reduce((a, b) => a + b, 0))), stat('Triple Crown', `${Object.values(S.openWins ?? {}).filter(Boolean).length} of ${Object.keys(CAL.opens).length}`), stat('Grand Slams', String(S.slams ?? 0)), stat('Masters', String(S.masters ?? 0)), stat('Ranking', 'P' + (C.playerRank(save) ?? '–'))),
         h('div.cx-bh', {}, h('span', {}, 'Recent ratings')), h('div.cx-rr', {}, K.rr.length ? K.rr.map((x) => css(h(`span${x >= 7 ? '.hi' : x < 5 ? '.lo' : ''}`, {}, h('i'), h('b.tnum', {}, x.toFixed(1))), { '--p': (x - 2) / 8 })) : h('p.cx-note', {}, 'No rounds raced yet.'))),
       h('div.cx-stack', {}, h('div.cx-b', {}, blockHead('people', 'Rivals'), rivals.length ? rivals.map((r) => h(`div.lrow.cx-mail.cx-rival.${r.nemesis || r.feud ? 'm-warn' : 'm-team'}`, {}, icon(r.nemesis || r.feud ? 'warning' : 'people'), h('span.c-name', {}, h('b', {}, r.name), h('small', {}, `${CAUSE[r.cause] ?? CAUSE.grid} · ${record(r)}${r.key ? '' : ' · looking for a seat'}`)), h('span.wk', {}, `${r.nemesis ? 'Nemesis' : r.feud ? 'Feud' : 'Rival'} · ${r.heat}`))) : h('p.cx-note', {}, 'Nobody yet. Bang wheels or swap places with someone and it starts.')),
-        h('div.cx-b', {}, blockHead('trophy', 'Seasons'), scroller('cx-list', save.history.length ? save.history.map((x) => h('div.lrow.cx-mail.m-trophy', {}, icon('trophy'), h('span.c-name', {}, h('b', {}, `Season ${x.season}: ${teamName(x.team)}`), h('small', {}, `${carName(x.car)}${x.rank ? ` · Ranking P${x.rank}` : ''}${x.opens?.length ? ` · ${x.opens.length} ${x.opens.length === 1 ? 'Open' : 'Opens'}` : ''}`)), h('span.wk', {}, `P${x.drivers} · ${x.avgRR.toFixed(1)}`))) : h('p.cx-note', {}, 'Your first season is under way.')))),
+        h('div.cx-b', {}, blockHead('trophy', 'Seasons'), scroller('cx-list', save.history.length ? save.history.map((x) => h('div.lrow.cx-mail.m-trophy', {}, icon('trophy'), h('span.c-name', {}, h('b', {}, `Season ${x.season}: ${teamName(x.team)}`), h('small', {}, `${carName(x.car)}${x.rank ? ` · ${DIV[x.div] ? `${DIV[x.div].short} ranking` : 'Ranking'} P${x.rank}` : ''}${x.opens?.length ? ` · ${x.opens.length} ${x.opens.length === 1 ? 'Open' : 'Opens'}` : ''}`)), h('span.wk', {}, `P${x.drivers} · ${x.avgRR.toFixed(1)}`))) : h('p.cx-note', {}, 'Your first season is under way.')))),
       h('div.cx-stack.rev', {}, h('div.cx-b.k-open', {}, blockHead('trophy', 'Open winners', `Triple Crown ${Object.values(S.openWins ?? {}).filter(Boolean).length} of ${Object.keys(CAL.opens).length}`), scroller('cx-list', (save.hall ?? []).length ? [...save.hall].reverse().map((x) => h(`div.lrow.cx-mail.m-trophy${x.you ? '.me' : ''}`, {}, icon('trophy'), h('span.c-name', {}, h('b', {}, x.name), h('small', {}, `${x.who}${x.you ? ' (you)' : ''}${x.team ? ` · ${teamName(x.team)}` : ''}`)), h('span.wk', {}, `S${x.season}`))) : h('p.cx-note', {}, 'No Open has been won yet. Three are raced every season, and the Masters closes it.'))),
       h('div.cx-b', {}, blockHead('settings', 'This career'), h('div.cx-setrow', {}, row('Race length', seg(RACE_LENGTHS, save.rules.raceLength, (v) => { C.setRaceLength(save, v); persist(game); build(true); }), 'About how long each race takes. Points and XP are the same at every length.')),
         h('p.cx-note', {}, `Rivals: ${save.rules.difficulty === 'easy' ? 'gentle' : save.rules.difficulty === 'hard' ? 'fierce' : 'normal'}.`), h('div.cx-acts.col', {}, slots, reset)))];

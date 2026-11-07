@@ -619,6 +619,7 @@
 /* careerReport: everything on one screen */
 .cx-report { grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.85fr) minmax(0, 0.85fr); grid-template-rows: auto minmax(0, 1fr); }
 .cr-hero { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--sp-7); padding-block: var(--sp-3); }
+.cr-pos { flex: 1 1 0; min-width: 0; }   /* the verdict's notes wrap before the numbers on the right are squeezed */
 .cr-pos h2 { margin: 0; font-style: italic; font-weight: 900; font-size: var(--fs-display); line-height: 1; letter-spacing: var(--track-title); text-transform: uppercase; }
 .cr-rate { display: grid; grid-template-columns: auto auto; column-gap: var(--sp-3); align-items: end; padding-left: var(--sp-6); border-left: 1px solid var(--c-line-2); }
 .cr-rate small { grid-column: 1 / -1; font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--c-ink-2); }
@@ -626,6 +627,7 @@
 .cr-rate b.hi, .cr-rate b.hi + span { color: var(--pos); } .cr-rate b.lo, .cr-rate b.lo + span { color: var(--neg); }
 .cr-rate span { display: inline-flex; align-items: center; gap: var(--sp-1); padding-bottom: var(--sp-1); font-size: var(--fs-label); letter-spacing: var(--track-label); text-transform: uppercase; }
 .cr-deltas { display: flex; gap: var(--sp-5); margin-left: auto; }
+.cr-deltas .stat-r { flex: none; }   /* a long label ("Challenger ranking") must not squeeze a value out of its pill */
 .cr-deltas .stat-r > b { display: inline-flex; align-items: center; gap: var(--sp-1); }
 .cr-deltas .cx-d { padding: 0 var(--sp-2); border-radius: var(--r-1); background: color-mix(in srgb, currentColor 14%, transparent); }
 .cr-deltas .cx-coin { padding: 0 var(--sp-2); border-radius: var(--r-1); background: color-mix(in srgb, currentColor 14%, transparent); }
@@ -680,7 +682,7 @@
   .cx-termhead { display: none; }
   .row.cx-term { grid-template-columns: minmax(0, 1fr) auto; row-gap: var(--sp-2); }
   .row.cx-term > .seg { grid-column: 1 / -1; }   /* four salary steps do not fit beside the label at phone width */
-  .cr-cols, .cr-lcq .cr-cols { --cols: calc(36 * var(--u)) 4px minmax(0, 1fr) calc(100 * var(--u)) calc(52 * var(--u)); }
+  .cr-cols, .cr-lcq .cr-cols { --cols: calc(36 * var(--u)) 4px minmax(0, 1fr) calc(92 * var(--u)) calc(68 * var(--u)); }   /* room for a cup's "Ranking" head */
   .cr-cols .r-carname, .cr-cols > span:nth-child(4) { display: none; }
   .cx .cx-offer { grid-template-columns: calc(72 * var(--u)) minmax(0, 1fr); }
   .cx .cx-offer .act { grid-column: 1 / -1; }
@@ -695,4 +697,6 @@
   .cr-hero { flex-wrap: wrap; gap: var(--sp-3); }
   .cr-pos { flex: 1 1 100%; }
   .cr-deltas { flex-wrap: wrap; gap: var(--sp-3); margin-left: 0; }
+  .cx-teamrow .c-name, .lrow.cr-cols .c-name { flex-wrap: wrap; row-gap: 0; }   /* the series chip goes under the name: beside it, a name kept one letter */
+  .cx-teamrow .c-name > b, .lrow.cr-cols .c-name > b { flex: 1 1 100%; min-width: 0; }
 }

@@ -103,18 +103,22 @@ export function CareerStartScreen(game) {
     return [h('div.cs-offerhead', {}, steps(2), h('p.cx-note', {}, s.best ? `Shootout: ${s.grade}. Best lap ${fmtTime(s.best)}, ${signed(s.delta * 100, 1)} % to par.` : 'Shootout: Raw, no valid lap. The teams still want to talk.',
       ' Each team offers its junior seat for two seasons, and your results are judged against the car. Open one to talk terms and sign.')), h('div.of-row', {}, list.map((o) => card(save, o)))];
   }
+  /** the series titles a review's reputation came from: the Elite's Drivers' and Teams', the Challenger's Drivers' */
+  const titleName = (r) => { const l = r.div === 'elite' ? [r.drivers === 1 && "Drivers'", r.teams === 1 && "Teams'"].filter(Boolean) : ["Drivers'"]; return `${l.join(' and ')} ${l.length > 1 ? 'titles' : 'title'}`; };
   /** the season's verdict on the left, next season's seats on the right */
   function review(save) {
     const p = save.pending, r = p.review, last = save.history.at(-1), list = p.offers, st = C.standings(save), top = st.drivers.slice(0, 5), w = C.windowInfo(save);
     F.sec('review'); F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = `cx-page cs-review${w ? ' win' : ''}`; statusBar(F.me, save); F.backdrop('cars', last.car);
-    const headline = r.drivers === 1 ? 'Champion' : `P${r.drivers}`, D = DIV[r.div], stays = save.contract && !save.contract.next && save.contract.seasonsLeft > 1;
+    const headline = r.drivers === 1 ? 'Champion' : `P${r.drivers}`, D = DIV[r.div], stays = save.contract && !save.contract.next && !save.contract.dropped && !r.dropped && save.contract.seasonsLeft > 1;
     // with two series: the season's swap in one banner, the player's own team's in their words
     const swap = !r.swap ? null : r.yourTeam === 'up' ? `${teamName(last.team)} are promoted.${stays ? ` You race in the ${DIV.elite.name} next season.` : ` They race in the ${DIV.elite.name} next season.`}`
       : r.yourTeam === 'down' ? `${teamName(last.team)} are relegated.${stays ? ' Your contract stands.' : ` They race in the ${DIV.challenger.name} next season.`}` : `Up: ${teamName(r.swap.up)}. Down: ${teamName(r.swap.down)}.`;
     return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', D ? `${D.name}: Drivers'` : "Drivers' table", `${r.driverCount ?? st.drivers.length} drivers`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, `/ ${r.teamCount ?? last.teamOrder?.length ?? TEAM_IDS.length}`), D ? null : stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), cs('trust', 'Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)), r.rank ? stat('Ranking', 'P' + r.rank, `/ ${r.rankOf ?? 16}`) : null, last.opens?.length ? stat('Opens won', String(last.opens.length), '/ 3') : null)),   // a review without rankOf was written by schema-11 code, in a field of 16
         swap ? h('p.cx-note', {}, icon(r.yourTeam === 'down' ? 'chevron-down' : 'chevron-up'), swap) : null,
         r.dropped ? h('p.cx-note.warn', {}, icon('warning'), rich(`${teamName(last.team)} has let you go: trust fell too far. Reputation ${TUNING.rep.dropped}. A reserve seat is the way back.`)) : null,
-        r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins ? h('p.cx-note', {}, icon('trophy'), 'Titles this season: ', rich(`reputation ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))}${r.coins ? `, +${money(r.coins)}` : ''}`), '.') : null,
+        D && r.titleRep ? h('p.cx-note', {}, icon('trophy'), rich(`${D.short} ${titleName(r)}: reputation ${signed(r.titleRep)}${r.coins ? `, +${money(r.coins)}` : ''}.`)) : null,
+        D && r.promoRep ? h('p.cx-note', {}, icon('chevron-up'), rich(`Promotion: reputation ${signed(r.promoRep)}.`)) : null,
+        !D && (r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins) ? h('p.cx-note', {}, icon('trophy'), 'Titles this season: ', rich(`reputation ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))}${r.coins ? `, +${money(r.coins)}` : ''}`), '.') : null,   // a review from before the split stores only the sum
         h('div', {}, top.map((d, i) => css(h(`div.lrow.cx-mini${d.you ? '.me' : ''}`, {}, h('b.tnum', {}, i + 1), h('i.tbar'), h('span', {}, d.name), h('b.tnum', {}, String(Math.round(d.pts * 10) / 10))), { '--team': teamMark(loreOf(d.team)) })))),
       h('div.cx-b.cs-next', {}, blockHead('contract', 'Next season', list.length > 1 ? 'Open one to talk or sign' : 'One way forward'), windowBar(save), h('div.lscroll.cx-list', { onscroll: (e) => fadeMore(e.currentTarget) }, list.map((o) => offerRow(save, o, () => openDeal(o.id))))),
       w ? h('div.cx-b.cs-news', {}, blockHead('mail', 'Transfer news', w.closed ? 'Window closed' : `Day ${w.day + 1}`), h('div.lscroll.cx-list.cs-feed', { onscroll: (e) => fadeMore(e.currentTarget) }, w.news.map((n, i) => h(`div.cs-line${i === 0 ? '.new' : ''}`, {}, h('small', {}, `Day ${n.day + 1}`), h('span', {}, n.text))))) : null,
@@ -186,7 +190,7 @@ export function CareerReportScreen(game) {
       const save = game.career, fastest = Math.min(...Object.values(rep.best ?? {}).filter(Number.isFinite));
       // with two series (entries carry it): the player's series names the Tour round and the ranking; a cup shows each driver's series and the ranking points it paid
       const D = DIV[rep.entries.find((e) => e.you)?.div], cup = rep.entries.some((e) => e.rpts !== undefined), O = rep.other && DIV[rep.other.div];
-      F.sec('report'); F.title(`${D && !cup ? `${D.short} · ` : ''}Round ${rep.round}: ${rep.name}`, `${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`); statusBar(F.me, save); F.backdrop('tracks', rep.track);
+      F.sec('report'); F.title(`Round ${rep.round}: ${rep.name}`, `${D && !cup ? `${D.short} · ` : ''}${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`);   // the series in the subtitle: in the title it pushed the status bar statusBar(F.me, save); F.backdrop('tracks', rep.track);
       const verdict = rep.dnq ? (rep.open ? (rep.kind === 'masters' ? 'Missed the Masters' : 'Missed the Final') : 'Did not qualify') : rep.dnf ? 'Retired' : rep.finish === 1 ? 'Victory' : `P${rep.finish}`;
       const name = (e) => C.personOf(save, e.code)?.name ?? e.code, lead = O && C.standings(save, rep.other.div).drivers[0];
       const elsewhere = O ? `${O.short}, same day: ${name(rep.other.entries[0])} won. Top of the ${O.short}: ${lead.name}.` : null;
