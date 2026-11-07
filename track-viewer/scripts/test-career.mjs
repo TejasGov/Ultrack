@@ -185,6 +185,7 @@ try {
   { const g = signed0(84), me = g.contract.car; C.finishQuali(g, 999); const q = g.season.current.quali, out = q.order[7];
     assert.deepEqual(q.grace, { from: 10, out }); assert.equal(C.lapToRace(g, q).lap, q.laps[out], 'the lap to beat is the car that sat out'); assert.equal(C.lapToRace(g, q).squeezed, false);
     assert.ok(/A first season's grace: set a lap and you race, from the back of the grid at worst\./.test(C.weekNote(g, C.currentRound(g))));
+    const cal = g.season.calendar; assert.equal(C.graceOn(g, cal.find((x) => x.kind === 'tour')), true); assert.equal(C.graceOn(g, cal.find((x) => x.kind === 'open')), false, 'the calendar: no grace at an Open'); assert.equal(C.graceOn(g, cal.find((x) => x.kind === 'masters')), false);
     const fresh = JSON.parse(JSON.stringify(g)); C.finishQuali(fresh, 999); assert.deepEqual(fresh.season.current.quali.grid, q.grid, 'the same lap, the same grid'); C.finishQuali(fresh, 1); assert.ok(!fresh.season.current.quali.grace && fresh.season.current.quali.grid[0] === me, 'a retry into the eight: no grace');
     const r = C.finishRace(g, { order: q.grid, best: {} }); assert.equal(r.dnq, false); assert.equal(r.finish, 8); assert.equal(r.grid, 10); assert.deepEqual(r.grace, { start: 8, out, code: g.world.seats[out] });
     assert.equal(r.entries.find((e) => e.key === out).dnq, true, 'the car that sat out is a DNQ'); assert.equal(r.entries.filter((e) => e.dnq).length, 2); assert.equal(r.entries.find((e) => e.key === out).pts, 0);

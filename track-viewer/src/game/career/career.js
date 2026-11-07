@@ -492,7 +492,7 @@ export function finishQuali(save, best, mateRun = null) {
  * A first season's grace (the user's call, 2026-11-07, with the tenth team): in the player's first `grace` seasons, at a Challenger Tour round, a player who set a lap
  * but qualified outside the grid races from its last slot, and the slowest AI car on it sits out. Not at an Open, its Last Chance or the Masters (a ranking decides those)
  */
-export const graceOn = (save) => save.clock.season <= (DIV.challenger.grace ?? 0) && save.season.div === 'challenger' && !save.season.current.open;
+export const graceOn = (save, R = null) => save.clock.season <= (DIV.challenger.grace ?? 0) && save.season.div === 'challenger' && (R ? !isSpecial(R) : !save.season.current.open);   // R: a round other than the one under way (the calendar)
 /** the grid from a qualifying order: the fastest eight; at an Open of two series, with at least lcqMin Challenger cars in the Last Chance */
 const lcqOf = (save, order) => (save.season.div && save.season.current.open ? lcqGrid(order, (k) => divOf(save, CAR[k].team) === 'challenger', DIV.challenger.lcqMin) : order.slice(0, T.series.gridSize));
 
