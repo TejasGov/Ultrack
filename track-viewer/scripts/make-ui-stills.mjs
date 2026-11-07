@@ -43,6 +43,7 @@ const VIEWS = {
   pilbara: { look: 'dusk', cam: [205, 5, 4], tgt: [222, 2, 0] },       // into the switchback, the benches beyond
   terminal: { look: 'dusk', cam: [650, 3.5, 2], tgt: [40, 12, 2] },    // down the quay under the cranes, from far enough back that the grid sits small in the distance
   morro: { look: 'night', cam: [1104, 3.4, 2], tgt: [1140, 3, 6] },      // up to the first hairpin: houses stacked both sides, the crowd on the roofs, the neon signs
+  wold: { look: 'day', cam: [1048, 3.2, 1], tgt: [1100, 4, 0] },         // down the high street: honey-stone cottages both sides, bunting, the church tower ahead
 };
 // the menu's other tiles: a view of a circuit, its own picture, not the Race tile's; 800 px, they show small and faded
 const TILES = {

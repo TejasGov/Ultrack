@@ -128,6 +128,13 @@ export const TRACKS = {
     venue: () => import('./venue/morro.js'),
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  wold: {     // tracks/wold/build_wold.py: Hartwell Wold, a country road circuit in the English Cotswolds: the wold's top, the escarpment, a river village and its bridge, the park
+    id: 'wold', name: 'Hartwell Wold', stem: 'wold', dir: '/assets/wold/', look: 'day', times: ['day', 'dusk'], fog: 0.45, sun: [-0.55, -0.77], tag: null,
+    looks: { day: { env: 1.3 }, dusk: { exposure: 0.54, env: 1.05 } },     // more sky light, as Llano and Venice: the high street sits between two rows of houses and would go black
+    wet: { wet: ['HW | asphalt', 'HW | line white', 'HW | kerb red', 'HW | kerb white', 'HW | pavement'], puddles: ['HW | asphalt'] },
+    voidWalls: true,
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
 };
 // A deploy's file versions (deploy-build.mjs): a changed file gets a new URL. The bucket sends no Cache-Control, so a browser may reuse an old copy for hours after an upload.
 const REV = typeof __ASSET_REV__ === 'undefined' ? {} : __ASSET_REV__;

@@ -551,6 +551,7 @@ export class Field {
   /** Line the cars up on the grid slots (game coords from track.json), nose along the track. */
   grid(track) {
     this.track = track;
+    this.fallY = Math.min(-30, Math.min(...track.centerline.map((p) => p[1])) - 30);      // fallen off the world: 30 m under the lap's lowest road, never higher than the old -30 (Hartwell Wold's valley is 34 m under its start line)
     const slots = track.start.gridSlots;
     this.cars.forEach((c, k) => {
       const q = this.gridOrder?.indexOf(c.key) ?? -1;                      // a career race: the qualifying order (game.js startSession)
@@ -662,7 +663,7 @@ export class Field {
         if (ctl.reset) {this.respawn(c);ctl={throttle:0,brake:0,steer:0,handbrake:0,nitro:0,reset:false};}
         Object.assign(v.controls, { hold: false }, ctl);
         v.step(h, player ? this.assists : { counter: 0.6, stability: 1.4, tcs: 1 });
-        if (v.state.upsideDown > 1.5 || v.cur.pos.y < -30) this.respawn(c);
+        if (v.state.upsideDown > 1.5 || v.cur.pos.y < (this.fallY ?? -30)) this.respawn(c);
       }
     });
     for (const c of this.cars) {

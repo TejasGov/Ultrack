@@ -13,7 +13,8 @@
     "marina":  { "event": "showpiece", "parLap": 114.5, "measured": "measured", "names": ["Corniche Grand Prix", "Corniche Return"] },
     "venice":  { "event": "showpiece", "parLap": 101.0, "measured": "measured", "names": ["Lagoon Grand Prix", "Lagoon Return"] },
     "tokyo":   { "event": "showpiece", "parLap": 89.3,  "measured": "measured", "names": ["Neon Street", "Tokyo Return"] },
-    "morro":   { "event": "grandprix", "parLap": 128.0, "measured": "measured", "names": ["Hillside Night Race", "Morro Return"], "wetOnly": true }
+    "morro":   { "event": "grandprix", "parLap": 128.0, "measured": "measured", "names": ["Hillside Night Race", "Morro Return"], "wetOnly": true },
+    "wold":    { "event": "grandprix", "parLap": 113.1, "measured": "measured", "names": ["Village Classic", "Wold Return"] }
   },
   "worlds": {
     "1": { "name": "The Proving Grounds", "rounds": 6, "tracks": ["shajawa", "india", "qingshan", "llano", "infinia", "marina"],
