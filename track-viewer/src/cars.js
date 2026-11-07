@@ -143,8 +143,10 @@ const SHADOW_M = 50;      // cars cast into the sun's shadow map only within thi
 const TEAM_OF = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, t])));
 // every team car that can be assembled (a car-lab profile and a derived body, or a complete model); a car without one is skipped
 export const KEYS = TEAMS.teams.flatMap((t) => t.cars.map((c) => c.key)).filter((k) => profileFile(k) || MODELS[k]);
-// a race runs one car per team (about six on track); ?lineup=2 races each team's second car instead. The player drives
+// a race runs one car per team, at most GRID of them; ?lineup=2 races each team's second car instead. The player drives
 // Saetta's. Other cars remain cached outside the scene until selected.
+/** every circuit's track.json has 8 grid slots: with more teams than that, a race leaves some out (game.js racersFor) */
+export const GRID = 8;
 const LINEUP = (typeof location !== 'undefined' && new URLSearchParams(location.search).get('lineup')) === '2' ? 1 : 0;
 const DEFAULT_LINEUP = TEAMS.teams.map(t=>t.cars[LINEUP].key).filter(k=>KEYS.includes(k));
 
@@ -410,7 +412,7 @@ export class Field {
     this.hero=this.all.find(c=>c.key===keys[0])??this.all[0];
     // one car per team: the hero for its own team, else the team's first (or ?lineup=2 second) loaded car
     const racers=TEAMS.teams.map(t=>t.cars.some(c=>c.key===this.hero.key)?this.hero:[t.cars[LINEUP],t.cars[1-LINEUP]].map(c=>this.all.find(a=>a.key===c.key)).find(Boolean)).filter(Boolean);
-    this.cars=keys.length===1?[this.hero]:[this.hero,...racers.filter(c=>c!==this.hero)];this.syncActiveCars();
+    this.cars=keys.length===1?[this.hero]:[this.hero,...racers.filter(c=>c!==this.hero)].slice(0,GRID);this.syncActiveCars();
     this.hero.hero=true;this.hero.root.visible=true;this.initCapture();
     return this.all.length;
   }

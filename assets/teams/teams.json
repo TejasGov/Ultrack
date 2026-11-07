@@ -1,6 +1,6 @@
 {
  "version": 2,
- "note": "Eight fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); one per team (Sony, Hayate's, is an extra team-sponsor brand with trackside boards). 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 16 cars, so Corvid, Hayate, Mojave and Liberty have one each; their second car is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
+ "note": "Nine fictional race teams, two cars and two drivers each (a race runs one car per team). Colours are sRGB hex. 'cars' uses the keys of car-lab profiles / assets/cars . 'finish' is a car-lab paint finish. Team names are invented for Ultrack; sponsor logos are real-world marks for the local fan prototype; see TEAMS.md. 'sponsor' is the team's title sponsor, one of the trackside brands (tracks/marina/venue.py SPONSORS); one per team (Sony, Hayate's, is an extra team-sponsor brand with trackside boards). 'light' (optional) is the team's lighting colour for banner LEDs, garage and pit lighting; 'colors.ink' (optional) is the text colour on the team's primary where the accent is too pale to read on it (Toro's yellow). 'font' (optional 'bold': faux-bold stroke, in em, for light faces) is the team's display face (SIL OFL, in track-viewer/public/assets/fonts) for its name on cars, banners and garages. 'pitBoxes' are the team's pit boxes by car order (the marina track has only 12 boxes for 18 cars, so Corvid, Hayate, Mojave and Liberty have one each and Norrsken none; a car without a box is not parked in the pit lane) (track.json pitLane.boxes ids, 1 = first along the lane).",
  "teams": [
   {
    "id": "saetta",
@@ -524,6 +524,69 @@
    },
    "livery": "murasaki-violet body; a seigaiha wave band in white and vermilion rolls back over each rear quarter; kanji number roundels (二十三, 三十七) behind the door; the 疾風 wordmark on the bonnet and rear deck; a white SONY panel on the door and a katakana ソニー plate on the rear wing; vermilion stripes over the roof; vermilion LED strips (the team's lighting colour) edge the number roundel, banners and garage; numbers in a white roundel with a vermilion ring",
    "light": "#ff5a3c"
+  },
+  {
+   "id": "norrsken",
+   "name": "Norrsken",
+   "short": "NRS",
+   "meaning": "Swedish: the northern lights",
+   "home": "Ängelholm, Sweden",
+   "principal": "Henrik Wallgren",
+   "line": "Light from the long night.",
+   "cars": [
+    {
+     "key": "jesko",
+     "number": 10,
+     "driver": {
+      "name": "Elin Hagberg",
+      "code": "HAG",
+      "nation": "SWE",
+      "age": 28,
+      "role": "the engineer in the cockpit",
+      "bio": "Single-seater champion with an aerospace degree; sets up her own car and is rarely wrong.",
+      "background": "From Gothenburg, a ship designer's daughter; European single-seater champion at twenty-one, then three years as a works development driver before Henrik Wallgren made her the first driver Norrsken ever signed.",
+      "personality": "Quiet, exact and impossible to rattle; reads telemetry in the car on the cool-down lap; thinks Calderini is the only driver on the grid who prepares as hard as she does, and Valois the only one worth beating.",
+      "rivals": [
+       "VAL",
+       "CAL"
+      ]
+     }
+    },
+    {
+     "key": "cc850",
+     "number": 85,
+     "driver": {
+      "name": "Jari Koskinen",
+      "code": "KOS",
+      "nation": "FIN",
+      "age": 34,
+      "role": "the night driver",
+      "bio": "Finnish rallycross champion who drives best in the dark and the wet; says three words a weekend.",
+      "background": "From Jyväskylä, Finland; a farm mechanic's son on the gravel stages from fifteen, two rallycross titles, then endurance night stints for anyone who would pay; Norrsken signed him for the races that end after sunset.",
+      "personality": "Says almost nothing on the radio and less to the press; a sauna after every race, wherever it is; the old Finland-Sweden rivalry with Lindqvist is the one thing that makes him talk.",
+      "rivals": [
+       "LIN"
+      ]
+     }
+    }
+   ],
+   "pitBoxes": [],
+   "engine": "twin-turbo-v8",
+   "finish": "metallic",
+   "sponsor": "Samsung",
+   "font": {
+    "family": "Michroma",
+    "file": "michroma-latin-400-normal.woff2",
+    "weight": "400"
+   },
+   "colors": {
+    "primary": "#1f2428",
+    "secondary": "#3ee0a1",
+    "accent": "#e8f1f2",
+    "carbon": true
+   },
+   "livery": "graphite body; a curtain of aurora-green light ribbons rises from the sill along each rear flank and fades out toward the roofline; twin green pinstripes over the roof; aurora-green LED strips (the team's lighting colour) edge the number roundel, banners and garage; numbers in ice white in a graphite roundel with a green ring",
+   "light": "#38e8a8"
   }
  ]
 }

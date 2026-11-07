@@ -1,5 +1,8 @@
 import MANIFEST from '../../assets/sponsors/manifest.json';
-export const SPONSOR_BRANDS=MANIFEST.brands.filter((b,i)=>i<7||b.usage==='team-sponsor');
+import TEAMS from '../../assets/teams/teams.json';
+const TITLE=new Set(TEAMS.teams.map(t=>t.sponsor));
+/** the trackside brands, the team-sponsor ones and any venue brand a team carries as its title sponsor (Norrsken's Samsung) */
+export const SPONSOR_BRANDS=MANIFEST.brands.filter((b,i)=>i<7||b.usage==='team-sponsor'||TITLE.has(b.name));
 const lookup=new Map(SPONSOR_BRANDS.flatMap(b=>[b.name,...b.aliases].map(n=>[n.toUpperCase(),b]))),images=new Map();
 let ready;
 export const sponsorOf=name=>lookup.get(name?.toUpperCase());

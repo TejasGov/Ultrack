@@ -5,7 +5,7 @@ import { TUNING as T, TIERS, DRIVERS, CAR, clamp, loreOf, tierOf, seatCar, other
 import { rng } from './rng.js';
 
 export const YOU = 'YOU';
-/** the 16 teams.json drivers by code; academy drivers live in the save (world.academy), once called up */
+/** the teams.json drivers by code; academy drivers live in the save (world.academy), once called up */
 const BASE = Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, { code: c.driver.code, name: c.driver.name, nation: c.driver.nation }]));
 
 /** a contract's length in seasons, seeded per driver: the starting grid's 1-3 (market.contract), a signing's 2-3 (market.signing) */

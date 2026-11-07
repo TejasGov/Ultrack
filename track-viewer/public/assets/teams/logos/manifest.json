@@ -700,6 +700,89 @@
           }
         }
       }
+    },
+    "norrsken": {
+      "name": "Norrsken",
+      "emblem": "North star over aurora ribbons",
+      "font": {
+        "family": "Michroma",
+        "file": "michroma-latin-400-normal.woff2",
+        "weight": "400"
+      },
+      "colors": {
+        "primary": "#1f2428",
+        "secondary": "#3ee0a1",
+        "accent": "#e8f1f2",
+        "carbon": true
+      },
+      "variants": {
+        "onTeam": {
+          "lockup": {
+            "svg": "norrsken-lockup-onTeam.svg",
+            "png": "norrsken-lockup-onTeam.png",
+            "webp": "norrsken-lockup-onTeam.webp",
+            "sourceSha256": "7c8f539128fced00cbd47784ac63d8e171645c01e195a96297cb933a8dbfa78e",
+            "pngSha256": "b5ed8afee24bfc340df72379472629ed47790aa318b19fabadbfb56364907382",
+            "pngBytes": 27992,
+            "webpSha256": "da3dabde0a0a341f12a247dd76391f749c5dda4d4144ddfb7232e8989cca4648",
+            "webpBytes": 15552
+          },
+          "icon": {
+            "svg": "norrsken-icon-onTeam.svg",
+            "png": "norrsken-icon-onTeam.png",
+            "webp": "norrsken-icon-onTeam.webp",
+            "sourceSha256": "6f1a18992eb58331a722e66f12a079f0df19e8b2055c1f2d0cf5726ab5005cef",
+            "pngSha256": "c74009ec6bf41ac7309696661d48920343dee954f831ee288991b30a48522ace",
+            "pngBytes": 9561,
+            "webpSha256": "b486e5b213d266867f558d406d510589af1c548fe0a86da6e458bc183c29af7a",
+            "webpBytes": 6432
+          }
+        },
+        "onDark": {
+          "lockup": {
+            "svg": "norrsken-lockup-onDark.svg",
+            "png": "norrsken-lockup-onDark.png",
+            "webp": "norrsken-lockup-onDark.webp",
+            "sourceSha256": "de851347b632bcfb3b01b134538c20c2183ec1c49128476b083e7ecbad57e531",
+            "pngSha256": "3a219b7bbac5042e977e4a43783dd718ace67d6a029d5263b94216c3bfb90eb3",
+            "pngBytes": 16133,
+            "webpSha256": "a34801ef7064c481ed05f085eeb4d3ab0140b20bb07342572e406328c0939d7f",
+            "webpBytes": 8164
+          },
+          "icon": {
+            "svg": "norrsken-icon-onDark.svg",
+            "png": "norrsken-icon-onDark.png",
+            "webp": "norrsken-icon-onDark.webp",
+            "sourceSha256": "2f7fa807ccfcd56f1164d2755f9824b4e02ecb922a293da1590ed55225fa2ade",
+            "pngSha256": "6e456b50a5d5e07b2f6b96ec687be828c2f8ca7f2ab35a40644d1184f1b6e317",
+            "pngBytes": 5430,
+            "webpSha256": "e9a397b0c54ffa9f73dc10fe7d1d1124b3fcf9119a8d7ecb859c889c6368a30b",
+            "webpBytes": 3180
+          }
+        },
+        "onLight": {
+          "lockup": {
+            "svg": "norrsken-lockup-onLight.svg",
+            "png": "norrsken-lockup-onLight.png",
+            "webp": "norrsken-lockup-onLight.webp",
+            "sourceSha256": "8230fe594864f560613abb833e0e45eb6415ea0361ba96efb010a3ad9ae949ae",
+            "pngSha256": "04a17a5d074e2900956289491178a6be1c0e2a63881d754ed0490db6f5912892",
+            "pngBytes": 15985,
+            "webpSha256": "37b1da86e9d2cf71239a3477b161226b7e847a01700b8c07a8d75284c06a97f0",
+            "webpBytes": 7928
+          },
+          "icon": {
+            "svg": "norrsken-icon-onLight.svg",
+            "png": "norrsken-icon-onLight.png",
+            "webp": "norrsken-icon-onLight.webp",
+            "sourceSha256": "9b655e07c9d550846382c755b3ff0f8f6239a347ceaa2fea5fabdbbf9f3d2a9d",
+            "pngSha256": "1c55979cc367b3ad33eba5fbe2d8e859efe4aaf339ff9c26563219242e17f9e8",
+            "pngBytes": 5397,
+            "webpSha256": "5f4921929530305d92b29d62d5d528ffedc8514e0dde1a134622f7f2e6973c3e",
+            "webpBytes": 3124
+          }
+        }
+      }
     }
   }
 }

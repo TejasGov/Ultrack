@@ -7,7 +7,7 @@ import { icon } from './icons.js';
 import { trackOf } from '../tracks.js';
 import { SLOTS, listCareers, loadCareer, saveCareer, activeSlot } from './career/save.js';
 import * as C from './career/career.js';
-import { TUNING, TIERS, CAR, loreOf, rrLabel, objectiveText, parLap, STATUS_LABEL } from './career/rules.js';
+import { TUNING, TIERS, CAR, FIELD, TEAM_IDS, loreOf, rrLabel, objectiveText, parLap, STATUS_LABEL } from './career/rules.js';
 import { frame, statusBar, coins, money, signed, delta, cs, rich, teamName, persist, playerDriver, zero, prompts, SELECT, CHOOSE, blockHead, mediaBytes } from './career-shell.js';
 import { CareerHubScreen } from './career-hub.js';
 import { CareerDealScreen, offerRow, teamRows } from './career-deals.js';
@@ -108,7 +108,7 @@ export function CareerStartScreen(game) {
     const p = save.pending, r = p.review, last = save.history.at(-1), list = p.offers, st = C.standings(save), top = st.drivers.slice(0, 5), w = C.windowInfo(save);
     F.sec('review'); F.title(`Season ${last.season} review`, `${teamName(last.team)} · ${carName(last.car)}`); F.page.className = `cx-page cs-review${w ? ' win' : ''}`; statusBar(F.me, save); F.backdrop('cars', last.car);
     const headline = r.drivers === 1 ? 'Champion' : `P${r.drivers}`;
-    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, '/ 8'), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), cs('trust', 'Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)), r.rank ? stat('Ranking', 'P' + r.rank, '/ 16') : null, last.opens?.length ? stat('Opens won', String(last.opens.length), '/ 3') : null)),
+    return [h('div.cx-b.cs-verdict', {}, blockHead('trophy', "Drivers' championship", `${r.driverCount ?? st.drivers.length} drivers`), h('div.cs-hero', {}, h('h2', {}, headline), h('div.cx-kv.two', {}, stat("Teams'", 'P' + r.teams, `/ ${TEAM_IDS.length}`), stat(TIERS.tiers[last.tier].cup, 'P' + r.cup), stat('Avg rating', r.avgRR.toFixed(1)), stat('Duel', `${last.duel.won}-${last.duel.lost}`), cs('trust', 'Team trust', String(r.trust), '/ 100'), stat('Points', String(Math.round(last.points * 10) / 10)), r.rank ? stat('Ranking', 'P' + r.rank, `/ ${FIELD}`) : null, last.opens?.length ? stat('Opens won', String(last.opens.length), '/ 3') : null)),
         r.dropped ? h('p.cx-note.warn', {}, icon('warning'), rich(`${teamName(last.team)} has let you go: trust fell too far. Reputation ${TUNING.rep.dropped}. A reserve seat is the way back.`)) : null,
         r.rep > (r.dropped ? TUNING.rep.dropped : 0) || r.coins ? h('p.cx-note', {}, icon('trophy'), 'Titles this season: ', rich(`reputation ${signed(r.rep - (r.dropped ? TUNING.rep.dropped : 0))}${r.coins ? `, +${money(r.coins)}` : ''}`), '.') : null,
         h('div', {}, top.map((d, i) => css(h(`div.lrow.cx-mini${d.you ? '.me' : ''}`, {}, h('b.tnum', {}, i + 1), h('i.tbar'), h('span', {}, d.name), h('b.tnum', {}, String(Math.round(d.pts * 10) / 10))), { '--team': teamMark(loreOf(d.team)) })))),

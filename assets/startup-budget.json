@@ -20,8 +20,8 @@
     "porsche1": 465940,
     "nissan-z": 1387548,
     "supra": 836432,
-    "jesko": 1265512,
-    "cc850": 2859624
+    "jesko": 1260508,
+    "cc850": 2868612
   },
   "uiLogoBytes": 107624,
   "note": "Each selected car is loaded on demand; far LOD, rivals and spectators are deferred. Full browser/network/parse/GPU latency is not measured here."

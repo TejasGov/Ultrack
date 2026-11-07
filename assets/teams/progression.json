@@ -24,6 +24,7 @@
     "aurum": {"status": "Defending champions", "story": "The reigning title holders. A formidable hypercar stable and the pressure of being the team everyone wants to beat."},
     "liberty": {"status": "Rookie team", "story": "A first-season outfit with veteran drivers, a track-only Ford GT and an ambitious supercar programme. No history to protect."},
     "hayate": {"status": "Precision newcomers", "story": "A Shizuoka outfit built around two Super GT-bred Japanese cars and a drift champion. Quiet in the garage, loud on the first lap, and sponsored by Sony."},
+    "norrsken": {"status": "Hypercar newcomers", "story": "A Swedish hypercar maker that went racing in its first season with its own two cars, the fastest pair on the grid. Founder-run, quiet and exact: the speed is proven, the racecraft is not yet."},
     "sarab": {"status": "Rising contenders", "story": "The breakthrough team climbing toward its first crown. Balanced machinery, bold racecraft and growing belief."}
   }
 }

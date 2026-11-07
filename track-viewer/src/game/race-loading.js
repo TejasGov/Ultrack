@@ -1,5 +1,6 @@
 import './race-loading.css';
 import TEAMS from '../../../assets/teams/teams.json';
+import { GRID } from '../cars.js';
 import { TRACKS, trackOf, revUrl } from '../tracks.js';
 import { store, WEATHER } from './store.js';
 import { icon } from './icons.js';
@@ -24,8 +25,9 @@ const STAGE_LABEL = { Circuit: 'Loading the circuit', Grid: 'Preparing the grid'
 const LOOK_LABEL = { day: 'Day', dusk: 'Dusk', bluehour: 'Evening', night: 'Night' };   // as ui.js LOOK_LABEL (bluehour keeps its id)
 const MODE = { race: ['race', 'Race'], trial: ['time-trial', 'Time Trial'], drift: ['drift', 'Drift Attack'], free: ['free-drive', 'Free Drive'] };
 const WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
-/** the line under the title: a race names the true field (one car per team, game.js racersFor) */
-export const fieldLine = (mode) => ({ race: `${WORDS[TEAMS.teams.length] ?? TEAMS.teams.length} teams. One grid.`, trial: 'An empty circuit and the clock.', drift: 'Ninety seconds. Chain the drifts.', free: 'No clock, no rivals.' })[mode] ?? '';
+/** the line under the title: a race names the true field (one car per team, as many as the grid holds: game.js racersFor) */
+const RACING = Math.min(TEAMS.teams.length, GRID);
+export const fieldLine = (mode) => ({ race: `${WORDS[RACING] ?? RACING} teams. One grid.`, trial: 'An empty circuit and the clock.', drift: 'Ninety seconds. Chain the drifts.', free: 'No clock, no rivals.' })[mode] ?? '';
 const el = (tag, cls, ...kids) => { const e = document.createElement(tag); if (cls) e.className = cls; e.append(...kids.filter((k) => k !== null && k !== undefined)); return e; };
 
 /** The circuit's still under a directional scrim, its story, and the real stage progress: no 3D scene renders behind this screen.

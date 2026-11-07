@@ -25,8 +25,10 @@ export const loreOf = (id) => LORE[id];
 export const CAR = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, { team: t.id, driver: c.driver, number: c.number, seat: TIERS.teams[t.id].A === c.key ? 'A' : 'B' }])));
 export const seatCar = (team, seat) => TIERS.teams[team][seat];
 export const otherSeat = (seat) => (seat === 'A' ? 'B' : 'A');
-/** expected place of a driver among the 16: the teams in their expected order, A seat then B (6.1) */
-export const expOf = (expPos, seat) => clamp((expPos - 1) * 2 + (seat === 'B' ? 2 : 1), 1, 16);
+/** the drivers in the world: two seats a team; all of them qualify, the fastest T.series.gridSize race */
+export const FIELD = Object.keys(CAR).length;
+/** expected place of a driver among the FIELD: the teams in their expected order, A seat then B (6.1) */
+export const expOf = (expPos, seat) => clamp((expPos - 1) * 2 + (seat === 'B' ? 2 : 1), 1, FIELD);
 
 // ---------------------------------------------------------------------------------------------- levels
 export const xpForLevel = (L) => Math.round(T.xp.curve[0] * (L - 1) ** T.xp.curve[1]);
@@ -136,7 +138,7 @@ export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
 /** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
 export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt }) {
   const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); };
-  // places are of the 16, and two of them weigh what one did when the table was 8: the rating constants are unchanged. No race, no finish to judge
+  // places are of the whole field, and two of them weigh what one did when the table was 8: the rating constants are unchanged. No race, no finish to judge
   const dp = dnq ? 0 : dnf ? Math.min(0, expPos - finish) : expPos - finish, dq = expPos - grid, pos = clamp(dp / 2, -R.posClamp, R.posClamp), q = exempt ? clamp(dq / 2, 0, R.qualiClamp) : clamp(dq / 2, -R.qualiClamp, R.qualiClamp);   // a slot earned by the last result never counts against
   add(dp >= 0 ? `Finished ${dp} ${dp === 1 ? 'place' : 'places'} above expected` : `Finished ${-dp} ${dp === -1 ? 'place' : 'places'} below expected`, R.pos * pos);
   add(exempt ? `Started ${dq} above expected` : dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
@@ -197,7 +199,7 @@ export const objectiveText = (o) => OBJECTIVES[o.kind](o);
 export const objectiveFrom = (o, grid) => (o.kind === 'gain' && grid - 1 < o.n ? { ...o, kind: 'hold' } : o);
 /** the round's objectives (6.4): one mandatory from the expected finish, two optional from a seeded pool */
 export function objectivesFor(r, expPos, easier = false, exempt = false, reach = null) {
-  const main = reach ? { kind: 'reach', to: reach } : expPos > 8 && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, 16) : Math.min(expPos, 15) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, 8) : Math.min(expPos, 7) };   // expected outside the eight: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
+  const G = T.series.gridSize, main = reach ? { kind: 'reach', to: reach } : expPos > G && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, FIELD) : Math.min(expPos, FIELD - 1) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, G) : Math.min(expPos, G - 1) };   // expected outside the grid: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
   const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 2) }];
   if (expPos <= 6) pool.push({ kind: 'podium' });
   return [{ ...main, mandatory: true }, ...shuffle(r, exempt ? pool.filter((o) => o.kind !== 'duel' && o.kind !== 'quali') : pool).slice(0, 2)];

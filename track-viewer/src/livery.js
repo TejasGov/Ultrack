@@ -69,6 +69,7 @@ const NUMBER = {
   mojave: ['box', 'a', 's', 's'], aurum: ['roundel', 'p', 's', 's'], liberty: ['roundel', 'a', 's', 'p'], sarab: ['roundel', 'a', 's', 's'],
   toro: ['roundel', 's', 'a', 'p'],      // black plate, bone ring, yellow digits
   hayate: ['roundel', 's', 'a', 'p'],    // white plate, vermilion ring, violet digits
+  norrsken: ['roundel', 'p', 's', 'a'],  // graphite plate, aurora-green ring, ice digits
 };
 const role = (c, r) => ({ p: c.primary, s: c.secondary, a: c.accent })[r];
 /** lettering on the team's own paint: colors.ink where the accent is too pale for it (Toro's yellow), else the accent */
@@ -183,6 +184,19 @@ const FLANK = {
     drawTeamLogo(g, team, ...P(xr + 0.2, 0.4), 0.2 * k, 0.2 * k, { variant: 'kanji', kind: 'num' + car.number });
     drawTeamLogo(g, team, ...P(dx, dy - 0.085), 0.24 * k, 0.24 * k, { variant: 'kanji', kind: 'katakana' });
   },
+  // an aurora curtain: green ribbons rise from the sill behind the door and fade out toward the roofline; a green light line along the sill
+  norrsken(s, P, L, c, car, team) {
+    const { x0, x1, xf, xr, wy } = L, g = s.g, y0 = 0.25, top = wy - 0.03;
+    for (let i = 0; i < 9; i++) {
+      const x = xf + (xr - xf) * (0.5 + i * 0.08), yt = y0 + (top - y0) * (0.55 + 0.45 * Math.abs(Math.sin(i * 1.7))), w = 0.05 + 0.02 * (i % 3), lean = 0.12;
+      const gr = g.createLinearGradient(...P(x, y0), ...P(x + lean, yt)); gr.addColorStop(0, c.secondary); gr.addColorStop(1, c.secondary + '00');
+      g.fillStyle = gr; g.beginPath(); g.moveTo(...P(x - w / 2, y0));
+      g.quadraticCurveTo(...P(x + 0.02, (y0 + yt) / 2), ...P(x + lean - w / 4, yt)); g.lineTo(...P(x + lean + w / 4, yt));
+      g.quadraticCurveTo(...P(x + w + 0.02, (y0 + yt) / 2), ...P(x + w / 2, y0)); g.closePath(); g.fill();
+    }
+    g.save(); g.strokeStyle = team.light; g.lineWidth = 0.009 * s.k; g.shadowColor = team.light; g.shadowBlur = 0.03 * s.k;
+    g.beginPath(); g.moveTo(...P(x0 + 0.25, y0)); g.lineTo(...P(x1 - 0.2, y0)); g.stroke(); g.restore();
+  },
   // teal dune contour lines from nose to tail, a gold line along the sill
   sarab(s, P, L, c) {
     const { x0, x1 } = L, g = s.g;
@@ -216,6 +230,7 @@ const TOPS = {
   },
   liberty(s, P, L, c, team) { stripe(s, P, L, c.accent, [0], 0.17); stripe(s, P, L, c.secondary, [-0.125, 0.125], 0.05); stripe(s, P, L, team.light, [-0.165, 0.165], 0.008); },
   hayate(s, P, L, c) { stripe(s, P, L, c.accent, [-0.1, 0.1], 0.035); stripe(s, P, L, c.secondary, [-0.06, 0.06], 0.012); },
+  norrsken(s, P, L, c) { stripe(s, P, L, c.secondary, [-0.09, 0.09], 0.014); },
   toro(s, P, L, c) { stripe(s, P, L, c.secondary, [0], 0.2); stripe(s, P, L, c.accent, [-0.14, 0.14], 0.012); },
   sarab(s, P, L, c) {
     const { x0, x1, z0, z1 } = L, g = s.g;
@@ -250,7 +265,7 @@ export async function makeLivery({ team, car, profile, box, k = 256 }) {
     wy: Math.min(...profile.glass.side.map((p) => p[1])) - lift,     // window line, in body coordinates
   };
   const len = L.x1 - L.x0, hgt = L.y1 - L.y0, wid = L.z1 - L.z0;
-  const others = SPONSOR_BRANDS.map(b=>b.name).filter(n=>n!==team.sponsor&&n!=='Pirelli');
+  const others = SPONSOR_BRANDS.filter(b=>!b.usage?.startsWith('venue-')).map(b=>b.name).filter(n=>n!==team.sponsor&&n!=='Pirelli');   // a venue brand only sponsors its own team
   const pick = (i) => others[(car.number * 3 + i * 5) % others.length];
 
   // flanks: +Z is seen with the nose on the left, -Z with the nose on the right

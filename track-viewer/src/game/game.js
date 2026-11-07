@@ -15,14 +15,14 @@ import { Nav, setNav, h, CreditsScreen, RecordsScreen, TitleScreen, MenuScreen, 
 import { PhysicsWorld } from '../physics/world.js';
 import { handling } from '../physics/handling.js';
 import { setWeather } from '../physics/weather.js';
-import { KEYS, paintCar, defaultPaint } from '../cars.js';
+import { KEYS, GRID, paintCar, defaultPaint } from '../cars.js';
 import { nextView, VIEWS } from '../camera.js';
 import { rewardFor } from './economy.js';
 import { applyUpgrades } from './carinfo.js';
 import { canSelectCar, carProgression } from './progression.js';
 import { RaceLoading } from './race-loading.js';
 import { CareerStartScreen, CareerHubScreen, CareerDealScreen, CareerReportScreen } from './career-ui.js';
-import { hardPaceFor, setHardMode } from './career/rules.js';
+import { hardPaceFor, setHardMode, teamInfo } from './career/rules.js';
 import { trackOf } from '../tracks.js';
 import { TIERS } from '../perf.js';
 
@@ -239,11 +239,12 @@ export class Game {
   /** what the menus show: the player's car and the five rivals on the grid */
   lineup() { this.field?.configure({ hero: store.data.car, racers: [store.data.car] }); if(this.loaded)this.preloadRace(); }
 
-  /** the grid for a race: the player's car and each other team's lead car */
+  /** the grid for a race: the player's car and each other team's lead car, as many as the grid has slots; with more teams than that, the teams furthest from the player's in the expected order (tiers.json expPos) sit out */
   racersFor(hero, rivals) {
     if (!rivals) return [hero];
-    const mine = TEAMS.teams.find((t) => t.cars.some((c) => c.key === hero));
-    return [hero, ...TEAMS.teams.filter((t) => t !== mine).map((t) => t.cars[0].key)];
+    const mine = TEAMS.teams.find((t) => t.cars.some((c) => c.key === hero)), at = (t) => teamInfo(t.id).expPos, me = mine ? at(mine) : 0;
+    const near = TEAMS.teams.filter((t) => t !== mine).sort((a, b) => Math.abs(at(a) - me) - Math.abs(at(b) - me) || at(a) - at(b)).slice(0, GRID - 1);
+    return [hero, ...TEAMS.teams.filter((t) => near.includes(t)).map((t) => t.cars[0].key)];
   }
 
   // ---------------------------------------------------------------------------------------------- settings
