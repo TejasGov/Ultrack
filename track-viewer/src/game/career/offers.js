@@ -30,13 +30,15 @@ export function offer(save, team, seat, terms) {
  */
 export const stepUp = (save, team) => !!save.contract && rankOf(team) === rankOf(save.contract.team) && nextDivOf(save, team) === 'elite' && nextDivOf(save, save.contract.team) === 'challenger' && expIn(save, team, 'A', nextDivOf) <= T.series.gridSize && !offGrid(save, team, 'A');
 /**
- * An Elite seat of the player's tier or above, offered to a Challenger driver, that would qualify outside the grid for them: their market rating in its car against every car of
- * next season's Elite and its driver (at the teams' dev levels: the market rating already holds the player's own upgrades; no noise). A good Challenger year is no reason to sign for a season of missed cuts
+ * An Elite seat of the player's tier or above, offered to a Challenger driver whose team stays down, that would qualify at the back of the grid or outside it for them: their market rating in its car against every car of
+ * next season's Elite and its driver (at the teams' dev levels: the market rating already holds the player's own upgrades; no noise). A good Challenger year is no reason to sign for a season of missed cuts.
+ * A deal signed in mid-season with a Challenger team that then goes up is judged again at the swap (career.js endSeason: its release clause)
  */
 export function offGrid(save, team, seat) {
-  if (save.season?.div !== 'challenger' || rankOf(team) < rankOf(save.contract.team) || nextDivOf(save, team) !== 'elite') return false;
+  if (save.season?.div !== 'challenger' || rankOf(team) < rankOf(save.contract.team) || nextDivOf(save, team) !== 'elite' || nextDivOf(save, save.contract.team) === 'elite') return false;   // their own team going up takes them to the Elite anyway
   const W = save.world, car = seatCar(team, seat), lap = (k, r) => parLap(CAL.shootout.track, k, 'dry', W.teams[CAR[k].team].dev) / paceOf(r, save.rules.difficulty), mine = lap(car, playerRating(save));
-  return carsIn(save, 'elite', nextDivOf).filter((k) => k !== car && W.seats[k] !== YOU && lap(k, W.ratings[W.seats[k]]) < mine).length >= T.series.gridSize;
+  // two places of margin: the model has no qualifying noise, and a seat it puts 7th or 8th missed about 7 Tour cuts in 10 (review round 3)
+  return carsIn(save, 'elite', nextDivOf).filter((k) => k !== car && W.seats[k] !== YOU && lap(k, W.ratings[W.seats[k]]) < mine).length >= T.series.gridSize - 2;
 }
 /** every offer the player could be talking about */
 const lists = (save) => [save.pending?.offers, save.season?.mid, save.sponsors?.offers].filter(Boolean);
@@ -150,7 +152,7 @@ export function fallbackOffer(save) {
 }
 /** a Rookie reserve seat for a driver nobody else will sign (6.7): 60 % salary, no points in rounds 1-2, targets one place easier */
 export function reserveOffer(save) {
-  const rookies = TEAM_IDS.filter((t) => TIERS.teams[t].tier === 'rookie' && t !== save.contract?.team);
+  const all = TEAM_IDS.filter((t) => TIERS.teams[t].tier === 'rookie' && t !== save.contract?.team), down = all.filter((t) => nextDivOf(save, t) !== 'elite'), rookies = down.length ? down : all;   // the way back runs through the Challenger, not a Rookie car at the back of the Elite
   const team = rookies[Math.floor(rng(save.seed, 'market', 'reserve', save.clock.season)() * rookies.length)];
   return offer(save, team, 'B', { salary: round5(TIERS.tiers.rookie.salary.B * T.offers.reserveSalary), signing: 0, seasons: 1, reserve: true, tag: '-reserve',
     why: 'A reserve seat at reduced pay keeps you racing: no points for the first two rounds, and targets one place easier.' });
@@ -276,8 +278,8 @@ export function teamOutlook(save, team) {
   const g = TIERS.teams[team].gate, st = statsOf(save), rr = mean(st.rrs.slice(-6));
   const gates = [[st.rep, g.rep, `Reputation ${Math.round(st.rep)} of ${g.rep}`], [rr, g.rr, `Rating ${rr.toFixed(1)} of ${g.rr}`], [st.cl, g.cl, `Level ${st.cl} of ${g.cl}`]];
   const short = gates.filter(([v, min]) => v < min), signed = team !== save.contract?.team && signedTo(save, team, interestFor(save, team) ?? 0), progress = Math.min(...gates.map(([v, min]) => (min ? clamp(v / min, 0, 1) : 1)));
-  const me = save.contract, mine = team === me?.team, asked = !!save.season?.asked?.[team], rank = me ? rankOf(me.team) : 1, tooHigh = !mine && me && rankOf(team) > rank + 1, up = !mine && stepUp(save, team), same = rankOf(team) === rank && me?.seat === 'A' && !up, down = rankOf(team) < rank && !me?.dropped;
-  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : save.pending?.window?.closed ? 'Window closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : signed ? 'Both seats signed' : null;
+  const me = save.contract, mine = team === me?.team, asked = !!save.season?.asked?.[team], rank = me ? rankOf(me.team) : 1, tooHigh = !mine && me && rankOf(team) > rank + 1, up = !mine && stepUp(save, team), same = rankOf(team) === rank && me?.seat === 'A' && !up, down = rankOf(team) < rank && !me?.dropped, grid = !mine && !!me && ['A', 'B'].every((x) => offGrid(save, team, x));
+  const blocked = mine ? 'Your team' : !inMarket(save) ? 'Market closed' : save.pending?.window?.closed ? 'Window closed' : me?.next ? 'You have signed elsewhere' : asked ? 'You have spoken' : [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])].some((o) => o.team === team) ? 'Offer on the table' : tooHigh ? 'Out of your league' : same ? 'No step up' : down ? 'A step down' : save.clock.phase !== 'review' && save.clock.season === 1 ? 'Probation' : grid ? 'Elite grid too fast' : signed ? 'Both seats signed' : null;
   return { team, tier: TIERS.teams[team].tier, progress, why: short[0]?.[2] ?? (signed || 'Clears their bar'), short: short.length > 0, blocked, canAsk: !blocked, step: up ? `A step up: ${DIV.elite.name}` : null };
 }
 /**
@@ -297,7 +299,7 @@ export function approach(save, team) {
   if (sameTier && mean(save.career.rr) < T.offers.sameTierRR) return no(`Their A seat takes an average rating of ${T.offers.sameTierRR.toFixed(1)}. Yours is ${mean(save.career.rr).toFixed(1)}.`);
   if (!offerRoll(save.seed, season, 'AP', team, interest, (sameTier ? T.offers.w1Roll : 1) * offerScale(save))) return no('They like you, but they have no plans for you this window.');
   const o = outsideOffer(save, team, interest, { tag: '-ap', ...(mid ? { w1: true } : {}) });
-  if (!o) return no(signedWhy(save, team, interest) ? `${signedWhy(save, team, interest)}.` : ['A', 'B'].some((x) => offGrid(save, team, x)) ? `For a driver rated ${playerRating(save)} their seat would qualify outside the ${DIV.elite.short}'s top ${T.series.gridSize}, so they did not offer it.` : 'The only seat they have is a step down in car, so they did not offer it.');
+  if (!o) return no(signedWhy(save, team, interest) ? `${signedWhy(save, team, interest)}.` : ['A', 'B'].some((x) => offGrid(save, team, x)) ? `For a driver rated ${playerRating(save)} their seat would miss the ${DIV.elite.short}'s top ${T.series.gridSize} too often, so they did not offer it.` : 'The only seat they have is a step down in car, so they did not offer it.');
   if (mid) o.why += ' You would join them next season.';
   (mid ? save.season.mid : save.pending.offers).push(talksFor(save, o));
   post(save, 'deal', `${teamName(team)} will talk`, o.why, { deal: o.id });

@@ -7,7 +7,7 @@ import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, teamsIn, carsIn, expIn, lcqGrid, seedsOf, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor, playerRating,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
@@ -18,7 +18,7 @@ import { note } from './ledger.js';
 import { poseWeek, settleChoices, settleCallout, answerChoice, choiceOf, openChoices } from './choices.js';
 import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, coverSwap, coverChampions, coverGiantKill, divText, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
-  offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
+  offer, offGrid, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours, holdsSeat, fallbackOffer, patienceMax, rivalSigns,
 } from './offers.js';
 import { openWindow, windowInfo, windowWarnings, windowDay, TACTICS, tacticInfo, useTactic } from './transfers.js';
@@ -243,9 +243,10 @@ function startSeason(save, available, displaced = null) {
 /** the next round's expected place and objectives; the race week shows them */
 function prepareRound(save) {
   const { season, round } = save.clock, R = save.season.calendar[round], me = save.contract, S = save.season, tour = S.div && !isSpecial(R);
-  // expected among the cars the player races: their series at a Tour round, the whole field at an Open or the Masters and in a season from before the split
-  const expPos = tour ? expIn(save, me.team, me.seat) : expOf(save.world.teams[me.team].expPos, me.seat), field = tour ? carsIn(save, S.div).length : FIELD;
-  const open = isSpecial(R) ? openEntry(save, R) : null, exempt = open ? null : qualiExemption(S.results?.at(-1), teammateCar(save));   // a ranking decides who skips an Open, not the last podium
+  // expected among the cars the player races: their series at a Tour round, the eight seeds at a divided Masters, the whole field at an Open and in a season from before the split
+  const open = isSpecial(R) ? openEntry(save, R) : null, among = S.div && open?.kind === 'masters' ? open.seeds : null;
+  const expPos = tour ? expIn(save, me.team, me.seat) : expAt(save, me.car, among), field = tour ? carsIn(save, S.div).length : among ? among.length : FIELD;
+  const exempt = open ? null : qualiExemption(S.results?.at(-1), teammateCar(save));   // a ranking decides who skips an Open, not the last podium
   const reachLcq = !!open && open.kind === 'open' && !open.seeded && S.div === 'challenger';   // an unseeded Challenger driver aims for the Last Chance first
   S.current = { round: R.round, expPos, field, exempt, objectives: objectivesFor(rng(save.seed, 'obj', season, round), expPos, me.easier, !!exempt || !!open, open && !open.seeded ? open.to : null, field, T.series.gridSize, reachLcq), quali: null, ...(open ? { open } : {}) };
   save.clock.phase = 'paddock';
@@ -262,6 +263,8 @@ function openEntry(save, R) {
   const seeds = d ? seedsOf(R.kind, keys('elite'), keys('challenger')) : rk.slice(0, n).map((x) => x.key);
   return { kind: R.kind, name: R.name, rank: mine.rank, seeds, seeded: seeds.includes(save.contract.car), ...(d ? { div: d, cut: DIV[d][masters ? 'masters' : 'openSeeds'] } : {}), stage: masters ? 'final' : 'quali', to: masters ? `the ${R.name}` : `the ${R.name} Final` };
 }
+/** a car's expected place by the whole field's order, or among `keys` (a divided Masters' seeds) its place in that race */
+const expAt = (save, key, keys) => { const g = (k) => expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat); return keys ? 1 + keys.filter((k) => g(k) < g(key)).length : g(key); };
 /** a race of computed cars, in the order they finish: each one's seeded lap at pace, `tag` telling this race's noise from the qualifying's */
 function simRace(save, keys, tag, V) {
   const best = lapsAt(save, V, keys, save.clock.round + tag);
@@ -443,7 +446,8 @@ export const gridSlot = (q, key) => (q.grid.includes(key) ? q.grid.indexOf(key) 
  */
 export function lapToRace(save, q) {
   const car = save.contract.car, mine = divOf(save, CAR[car].team), own = q.grid.filter((k) => divOf(save, CAR[k].team) === mine), G = T.series.gridSize;
-  const key = save.season.current?.open && mine === 'elite' && own.length ? own.at(-1) : q.grid.at(-1);
+  const squeeze = q.grid.length - own.length <= DIV.challenger.lcqMin;   // the slowest Elite lap is the target only while the quota holds the Challenger's places; with more on pace, the grid's last car
+  const key = save.season.current?.open && mine === 'elite' && own.length && squeeze ? own.at(-1) : q.grid.at(-1);
   return { lap: q.laps[key], squeezed: !q.grid.includes(car) && qualiPlace(q, car) <= G && q.grid.length === G };
 }
 /** the round's objectives as they stand: once the grid is set, none asks for places that are not there to gain */
@@ -559,7 +563,7 @@ export function finishRace(save, result) {
   const P = T.series, mult = pointsMult(R, divided), bench = me.reserve && R.round <= 2, cupless = divided && isSpecial(R);
   const entries = order.map((key, i) => ({ key, team: CAR[key].team, code: key === hero ? save.player.code : seats[key], you: key === hero, dnq: i >= raced.length,
     pts: cupless || i >= raced.length ? 0 : key === hero && bench ? 0 : (key === hero && dnf ? 0 : (P.points[i] ?? 0) * mult + (fastestKey === key ? P.fastestLap : 0)) + (poleKey === key ? P.pole : 0),
-    div: divOf(save, CAR[key].team), exp: tourDiv ? expIn(save, CAR[key].team, CAR[key].seat) : expOf(save.world.teams[CAR[key].team].expPos, CAR[key].seat),
+    div: divOf(save, CAR[key].team), exp: tourDiv ? expIn(save, CAR[key].team, CAR[key].seat) : expAt(save, key, divided && kind === 'masters' ? cur.open.seeds : null),
     ...(cupless ? { rpts: i >= raced.length || (key === hero && dnf) ? 0 : rankPoints(i, kind) } : {}) }));
   const x = { expPos: cur.expPos, grid, finish, fastest, clean, duel, dnf, dnq, lcqIn: !!cur.open?.lcqIn };
   const objectives = cur.objectives.map((o) => objectiveFrom(o, grid)).map((o) => ({ ...o, met: objectiveMet(o, x) }));
@@ -740,6 +744,10 @@ function endSeason(save) {
     const SE = standings(save, 'elite'), SC = standings(save, 'challenger'), E = SE.teams, Ch = SC.teams;
     champs = [['elite', SE], ['challenger', SC]].filter(([, x]) => x.drivers[0]).map(([d, x]) => ({ div: d, row: x.drivers[0] }));
     swap = { up: Ch[0].team, down: E.at(-1).team }; W[swap.up].div = 'elite'; W[swap.down].div = 'challenger';
+    if (me.next && offGrid(save, me.next.team, me.next.seat)) {   // a mid-season deal with a team that has just gone up, to a seat this driver would not qualify: its release clause lets them out
+      const t = teamName(me.next.team); delete me.next; me.trust = clamp(me.trust + T.trust.signedAway, 0, 100);
+      post(save, 'deal', `${t} let you out of your deal`, `${t} go up to the ${DIV.elite.name}, where their seat would miss the top ${T.series.gridSize} too often for a driver rated ${playerRating(save)}. ${me.seasonsLeft > 1 ? `Your contract with ${teamName(me.team)} stands.` : 'The market is open to you.'}`);
+    }
     yourTeam = me.team === swap.up ? 'up' : me.team === swap.down ? 'down' : null;
     if (div === 'elite') { if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; } if (teamPos === 1) rep += T.rep.teams; }
     else if (drvPos === 1) { rep += T.rep.challenger; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }   // the Challenger title pays what the old tier Cup did

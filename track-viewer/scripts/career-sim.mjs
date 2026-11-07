@@ -96,7 +96,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (o?.kind === 'open') { log.opens++; if (!rep.dnq) log.finals++; if (!rep.dnq && !rep.dnf && rep.finish === 1) log.openWins++; }
       if (o?.kind === 'masters') { if (!rep.dnq) log.masters++; else log.absent++; }
       // the two series: every round with its series, and at a cup how many Challenger drivers raced its Final
-      log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, lcq: !!rep.lcq, tier: save.season.tier, seat: save.contract.seat,
+      log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, lcq: !!rep.lcq, tier: save.season.tier, seat: save.contract.seat, team: save.contract.team,
         ch: rep.kind === 'open' || rep.kind === 'masters' ? rep.entries.filter((e) => !e.dnq && e.div === 'challenger').length : null });
       log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);
       if (rep.midSeason?.warning) log.warnings++;

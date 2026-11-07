@@ -88,9 +88,9 @@ export function coverOpen(save, report) {
 const D = MEDIA.divisions, fillD = (t, ctx) => t.replace(/\{(\w+)\}/g, (_, k) => ({ elite: DIV.elite.name, challenger: DIV.challenger.name, ...ctx })[k] ?? '');
 /** the season's swap (endSeason): the public story, or the player's own when it is their team that moves */
 export function coverSwap(save, swap) {
-  const stays = save.contract && !save.contract.dropped && !save.contract.next, mine = stays ? save.contract.team : null, t = (id) => loreOf(id).name, ctx = { up: t(swap.up), down: t(swap.down), team: mine && t(mine) };   // let go or signed elsewhere: the public story, not "your contract stands"
+  const c = save.contract, stays = c && !c.dropped && !c.next, mine = stays ? c.team : null, t = (id) => loreOf(id).name, ctx = { up: t(swap.up), down: t(swap.down), team: mine && t(mine) };   // let go or signed elsewhere: the public story, not "your contract stands"
   if (mine === swap.up) story(save, 'league', fillD(D.youUp.title, ctx), fillD(D.youUp.body, ctx), { you: 'win', principal: mine });
-  else if (mine === swap.down) story(save, 'league', fillD(D.youDown.title, ctx), fillD(D.youDown.body, ctx), { principal: mine });
+  else if (mine === swap.down && c.seasonsLeft > 1) story(save, 'league', fillD(D.youDown.title, ctx), fillD(D.youDown.body, ctx), { principal: mine });
   else story(save, 'league', fillD(D.up.title, ctx), fillD(D.up.body, ctx), { principal: swap.up });
 }
 /** each series' Drivers' champion (endSeason): champs = [{ div, row }] with row a standings driver row */

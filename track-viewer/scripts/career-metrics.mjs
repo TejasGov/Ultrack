@@ -114,7 +114,7 @@ try {
     if (A.offersSeen >= 10) check('the commonest outside-offer reason', top[1] / A.offersSeen, 0, 0.3, pct); else console.log(`  info  the commonest outside-offer reason: too few offers (${A.offersSeen}) to judge`);   // the weak driver sees two or four in 100 careers
     check('seated AI average rating at the end (today 83.27)', A.rating / A.seated, 82.97, 83.57);   // 83.47 with 16 drivers; Koskinen (34) reaches the retirement age in most careers and a 70-78 academy driver takes the seat
     check('every market has an offer (fewest seen)', Math.min(...L.flatMap((l) => l.offers)), 1, Infinity, (x) => String(x));
-    if (label === 'average') { check('Maestro offer, any', any((l) => l.maestroOffer !== null), 0.92, 1, pct); check('Maestro offer, median season (base 1479590: 2, at most 0.5 sooner)', median(L.map((l) => l.maestroOffer)), 1.5, 3, (x) => String(x)); check('Legend offer, any', any((l) => l.legendOffer !== null), 0.19, 0.32, pct); }   // 14-24 % with two Legend teams; a third (Norrsken) adds a third of the Legend seats' share of the field: 1.33 times
+    if (label === 'average') { check('Maestro offer, any', any((l) => l.maestroOffer !== null), 0.92, 1, pct); check('Maestro offer, median season (base 1479590: 2, at most 0.5 sooner)', median(L.map((l) => l.maestroOffer)), 1.5, 3, (x) => String(x)); const lo = any((l) => l.legendOffer !== null); check('Legend offer, any, at most', lo, 0, 0.32, pct); openCheck('Legend offer, any (D6: since the Masters rates its eight as eight)', lo, 0.19, 0.32, pct); }   // 14-24 % with two Legend teams; a third (Norrsken) adds a third of the Legend seats' share of the field: 1.33 times
     // WP5: choice scenes
     const sc = L.flatMap((l) => l.scenes), called = L.reduce((a, l) => a + (l.callouts ?? 0), 0);
     console.log(`  info  ${sc.reduce((a, b) => a + b, 0)} scenes over ${sc.length} seasons; ${called} callouts accepted, ${A.paid} paid out`);
@@ -125,8 +125,8 @@ try {
       // the top of the career, anchored to base f33630d (titles 2.12, Number One 60 %, Open wins 7.28 of 18): a third Legend team must not hand the strong driver the Legend tier
       check('titles a career', mean(L.map((l) => l.titles)), 1.7, 2.5);
       // a Legend title opens Number One; with the cups out of the series tables (D1) the strong driver takes fewer (base 2.27 a career), and Number One sits on the floor: it waits on D1
-      openCheck('Number One (D1: the cups score no series points)', any((l) => l.numberOne !== null), 0.55, 0.65, pct); check('Open wins a career', mean(L.map((l) => l.openWins)), 5.5, 8.5); }
-    if (label === 'average') check('final tier Legend', any((l) => l.tier.at(-1) === 'legend'), 0.14, 0.22, pct);   // 14 % on base f33630d; a third Legend team adds a third more Legend seats
+      openCheck('Number One (D1: the cups score no series points)', any((l) => l.numberOne !== null), 0.55, 0.65, pct); const ow = mean(L.map((l) => l.openWins)); check('Open wins a career, at least', ow, 5.5, Infinity); openCheck('Open wins a career (D1, D8: the Elite top 2 seeded into every Final)', ow, 5.5, 8.5); }
+    if (label === 'average') { const fl = any((l) => l.tier.at(-1) === 'legend'); check('final tier Legend, at most', fl, 0, 0.22, pct); openCheck('final tier Legend (D6)', fl, 0.14, 0.22, pct); }   // 14 % on base f33630d; a third Legend team adds a third more Legend seats
     // no pick within a tier may be the quicker way up (a review finding: staying in the Challenger once reached Legend three times as often as taking the Elite): the same careers
     // with the base commit's pick (tier, A seat, pay) and with one that stays in the Challenger, held to the targets' upper ends. The second waits on the user (docs/career-mode.md, D6: no
     // tune measured holds it, see divisions-spec 24)
@@ -150,14 +150,18 @@ try {
       openCheck('Challenger seasons with at least one Open Final (D8)', chs.filter(Boolean).length / Math.max(1, chs.length), 0.5, 1, pct);
     }
     const upIn3 = any((l) => l.seasons.some((x) => x.s <= 3 && x.yourTeam === 'up'));
-    if (label === 'average') check('your team promoted within the first 3 seasons', upIn3, 0.15, 0.35, pct);
+    if (label === 'average') { check('your team promoted within the first 3 seasons, at least', upIn3, 0.15, 1, pct); openCheck('your team promoted within the first 3 seasons (D10: no Elite seat at the back for a Challenger driver)', upIn3, 0.15, 0.35, pct); }
     if (label === 'strong') openCheck('your team promoted within the first 3 seasons (D9)', upIn3, 0.3, 0.5, pct);
     // the player's own seat (a review finding): a beginner who races every round must not be let go more often than one who sat out (base 1479590: weak 0.76 a career, 25 % in season 1),
     // and a good Challenger year must not sign them into an Elite seat they cannot qualify (outsideOffer, offGrid)
     if (label === 'weak') { const ss = L.flatMap((l) => l.seasons), tour = L.flatMap((l) => l.rounds.filter((x) => x.kind === 'tour')), el = tour.filter((x) => x.div === 'elite');
       check('drops a career (base 0.76, at most 0.25 more)', mean(L.map((l) => l.seasons.filter((x) => x.dropped).length)), 0, 1.01);
       check('let go after season 1 (base 25 %)', ss.filter((x) => x.s === 1 && x.dropped).length / N, 0, 0.25, pct);
-      check(`Tour rounds raced in the Elite (${el.length}; they miss ${pct(el.filter((x) => x.dnq).length / Math.max(1, el.length))} of its cuts)`, el.length / Math.max(1, tour.length), 0, 0.065, pct); }   // 7.8 % before offGrid (9f9598c); 5 % / 6 % on seeds 1000 / 3000 now
+      // an Elite seat they signed for, against one with the team they drove for in the Challenger, which took them up (the user's rule: a promoted team keeps its cars, D4): only the first is the market's doing
+      const upWith = (l, x) => { for (let k = x.s - 1; k >= 1; k--) { const r = l.rounds.find((y) => y.s === k); if (r?.team !== x.team) return false; if (r.div === 'challenger') return true; } return false; }, mine = (f) => L.flatMap((l) => l.rounds.filter((x) => x.kind === 'tour' && x.div === 'elite' && f(upWith(l, x))));
+      const signedEl = mine((u) => !u), withTeam = mine((u) => u), miss = (l) => l.filter((x) => x.dnq).length / Math.max(1, l.length);
+      console.log(`  info  Elite Tour rounds: ${el.length} (${pct(el.length / Math.max(1, tour.length))} of their Tour rounds), ${withTeam.length} of them with a team that went up (cuts missed ${pct(miss(withTeam))}; D4)`);
+      check(`Elite Tour cuts missed in a seat they signed for (${signedEl.length} rounds)`, miss(signedEl), 0, 0.4, pct); }
     // the Elite's midfield at the cups (a review finding): an average driver in a Maestro Elite seat, against a Maestro season on the base (missed 33 % of all rounds, 42 % of the
     // Masters, sat out 21 %: a missed Tour cut, no Last Chance at an Open, outside the Masters). The cups' places for the Challenger come out of this seat's share: D8
     if (label === 'average') { const me = L.flatMap((l) => l.rounds.filter((x) => x.tier === 'maestro' && x.div === 'elite')), by = (k) => me.filter((x) => x.kind === k);
@@ -184,6 +188,9 @@ try {
   openCheck('12-season runs in which a Rookie-tier team races at least one Elite season (D4)', long.filter((l) => swaps(l).slice(0, -1).some((x) => R.TIERS.teams[x.up].tier === 'rookie')).length / N, 0.4, 1, pct);   // the last swap's Elite season is never raced
   const back = long.flatMap((l) => swaps(l).slice(0, -1).map((x, k) => swaps(l)[k + 1].down === x.up));
   openCheck('a promoted team relegated the next season (D4, informational)', back.filter(Boolean).length / Math.max(1, back.length), 0, 0.7, pct);
+  const rev = long.flatMap((l) => swaps(l).slice(1).map((x, k) => x.up === swaps(l)[k].down && x.down === swaps(l)[k].up)), stay = long.flatMap((l) => swaps(l).slice(0, -1).map((x, k) => { const j = swaps(l).findIndex((y, i) => i > k && y.down === x.up); return j < 0 ? null : j - k; }));
+  const fin = stay.filter((x) => x !== null), sh = (f) => pct(stay.filter(f).length / Math.max(1, stay.length));
+  console.log(`  info  D4: swaps that exactly undo the one before ${pct(rev.filter(Boolean).length / Math.max(1, rev.length))}; a promoted team's Elite stay, in seasons: 1 ${sh((x) => x === 1)}, 2 ${sh((x) => x === 2)}, 3 ${sh((x) => x === 3)}, 4+ ${sh((x) => x >= 4)}, still up at the end ${sh((x) => x === null)} (mean of the ended stays ${mean(fin).toFixed(2)})`);
   const r12 = (k) => mean(long.map((l) => l.seasons.at(k)?.rating?.challenger).filter(Number.isFinite));
   check(`seated AI rating in the Challenger, season 12 less season 1 (${r12(0).toFixed(2)} -> ${r12(-1).toFixed(2)})`, r12(-1) - r12(0), -3, Infinity);
   console.log(`  info  teams promoted in the 12-season runs: ${Object.entries(long.flatMap(swaps).reduce((a, x) => ((a[x.up] = (a[x.up] ?? 0) + 1), a), {})).sort((a, b) => b[1] - a[1]).map(([t, n]) => `${t} ${n}`).join(', ')}`);

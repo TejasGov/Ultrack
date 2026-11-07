@@ -102,7 +102,9 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
   // this season's points by driver and the team each scored them for, and the Teams' table: an under-performer is one their teammate outscored
   const pts = {}, team = {}, h = save.history?.at(-1), table = h?.season === season ? h.teamOrder ?? [] : [];
   for (const r of save.season?.results ?? []) for (const e of [...r.entries, ...(r.other?.entries ?? [])]) { const c = e.you ? YOU : e.code; pts[c] = (pts[c] ?? 0) + e.pts; team[c] = e.team; }   // the other series' races too
-  const below = (t) => (table.length && W.teams[t].joined !== season ? table.indexOf(t) + 1 - W.teams[t].expPos : 0),   // a team that joined mid-season (addTeams) is not judged on part of one
+  // with two series a team is judged inside its own: its place there against its expected place there, scaled to the whole table (a place in a series of 5 weighs as 9 / 5 of one)
+  const own = (t) => table.filter((x) => divOf(save, x) === divOf(save, t)), under = (t, l) => (l.indexOf(t) - l.filter((x) => W.teams[x].expPos < W.teams[t].expPos).length) * table.length / l.length;
+  const below = (t) => (!table.length || W.teams[t].joined === season ? 0 : h.swap ? under(t, own(t)) : table.indexOf(t) + 1 - W.teams[t].expPos),   // a team that joined mid-season (addTeams) is not judged on part of one
     beaten = (code, t) => Object.keys(team).some((c) => c !== code && team[c] === t && pts[c] > (pts[code] ?? 0));
   for (const [key, code] of Object.entries(W.seats)) {                // loyalty grows with each season at a team, and sours with a bad year or a teammate who outscored them
     if (!code || code === YOU) continue;
@@ -198,7 +200,7 @@ export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {
   // with two series: beating an Elite driver from the Challenger pays as a higher tier does, and at a Tour round a rival in the other series, whom the player cannot meet, cools as if sat out
   const S = save.season, at = Object.fromEntries(Object.entries(save.world.seats).map(([k, c]) => [c, k])), tour = !!S?.div && (S.calendar[save.clock.round]?.kind ?? 'tour') === 'tour';
   const above = (key) => tierOf(CAR[key].team).rank > myRank || (S?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite'), apart = (code) => tour && !!at[code] && divOf(save, CAR[at[code]].team) !== S.div;
-  // the duel's heat by the field: in a series of 8 or 10 the teammate is the car nearest the player in most rounds already, so the duel adds, and stops at, what it did in a field of 16 per car
+  // the duel's heat by the field: in a series of 8 or 10 the teammate is the car nearest the player in most rounds already, so the duel and racing near the teammate add, and the duel stops at, what they did in a field of 16 per car
   const duelF = tour && S.current?.field ? S.current.field / DIV.legacyField : 1;
   const nemesis = nemesisOf(save, raced), since = [save.clock.season, save.clock.round + 1], h2h = me >= 0 && !dnf;
   let rep = 0, xp = 0;
@@ -213,7 +215,7 @@ export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {
     const hits = (g && ev.contacts?.[g.key]) || 0, contact = (Array.isArray(hits) ? hits : Array(Math.max(0, hits | 0)).fill(0)).reduce((a, kmh) => a + (kmh > 30 ? R.contactHard : R.contact), 0);
     // the duel alone stops at duelMax, short of a rival: a teammate becomes one only by racing you close, touching or passing you
     const pass = g ? Math.min(ev.passes?.[g.key] ?? 0, 2) * R.pass : 0, duel = code === ev.duel ? clamp(R.duelMax * duelF - was, 0, R.duel * duelF) : 0, near = g && me >= 0 && Math.abs(g.i - me) <= R.near;
-    H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : duel ? 0 : -(me < 0 || apart(code) ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // contacts and passes add to the cooling, as the spec has it; a duel that adds heat skips it; a round you sat out cools slowly (you never met)
+    H[code] = clamp(was + (near ? (R.close + (beat ? R.beat : 0)) * (code === ev.duel ? duelF : 1) : duel ? 0 : -(me < 0 || apart(code) ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // contacts and passes add to the cooling, as the spec has it; a duel that adds heat skips it; a round you sat out cools slowly (you never met)
     if (!H[code]) { delete H[code]; delete RV[code]; continue; }   // the save keeps only live rivalries
     if (!RV[code] && (contact || pass || duel || H[code] >= R.rival)) RV[code] = { cause: contact ? 'contact' : pass ? 'pass' : duel ? 'teammate' : 'grid', since, w: 0, l: 0 };   // a contact, a pass or a duel starts the record; racing close only once it is a rivalry
     if (RV[code] && g && h2h) RV[code][g.i > me ? 'w' : 'l']++;
