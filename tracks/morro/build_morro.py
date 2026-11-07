@@ -91,6 +91,7 @@ mesh_obj('MN water', bm, ['water'])
 log('ground', len(GX_), 'x', len(GY_), 'collision quads', len(ground_col))
 
 exec(compile((H / 'morro_kit.py').read_text(encoding='utf8'), str(H / 'morro_kit.py'), 'exec'))
+exec(compile((H / 'morro_decor.py').read_text(encoding='utf8'), str(H / 'morro_decor.py'), 'exec'))
 exec(compile((H / 'morro_city.py').read_text(encoding='utf8'), str(H / 'morro_city.py'), 'exec'))
 
 collision(ground_col)

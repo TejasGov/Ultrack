@@ -216,7 +216,10 @@ def put(O, ex, w, d, dr, shop_cell=None, need=None):
     if cells & OCC or not clear_of_road(O, ex, w, d, need): return False
     OCC.update(cells); gz = ground_under(O, ex, w, d)
     if dr > SHELF: O.z = max(gz) + 0.05
-    house(O, ex, w, d, dr, shop_cell=shop_cell, gz=[g - O.z for g in gz]); return True
+    h_ = house(O, ex, w, d, dr, shop_cell=shop_cell, gz=[g - O.z for g in gz])
+    if dr < SHELF: ROOFS.append((O.copy(), ex.copy(), w, h_))      # the street's own roofs: morro_decor.py puts its watchers there
+    return True
+ROOFS = []
 DROP = set()      # (station, side) where the street's edge looks down over roofs
 def front_row(sd):
     """the street's own frontage, wall to wall on the pavement's edge, an alley or a stairway now and then"""

@@ -29,7 +29,8 @@ env.image = bpy.data.images.load(str(PH / 'qwantani_night_puresky/qwantani_night
 moon = bpy.data.objects.new('moon', bpy.data.lights.new('moon', 'SUN')); sc.collection.objects.link(moon); moon.data.energy = 0.05; moon.data.color = (0.6, 0.7, 1.0); moon.rotation_euler = (math.radians(35), 0, math.radians(200))
 for k, l in enumerate(L['streetLamps']):
     p = Vector((l['pos'][0], -l['pos'][2], l['pos'][1]))
-    if l.get('h'): ld = bpy.data.lights.new(f'bulb{k}', 'POINT'); ld.energy = 90; ld.color = (1.0, 0.75, 0.45); ld.shadow_soft_size = 0.05
+    if l.get('h', 0) >= 15: ld = bpy.data.lights.new(f'mast{k}', 'SPOT'); ld.energy = 16000; ld.spot_size = math.radians(120); ld.spot_blend = 0.5; ld.color = (1.0, 0.95, 0.88); ld.shadow_soft_size = 0.8
+    elif l.get('h'): ld = bpy.data.lights.new(f'bulb{k}', 'POINT'); ld.energy = 90; ld.color = (1.0, 0.75, 0.45); ld.shadow_soft_size = 0.05
     else: ld = bpy.data.lights.new(f'lamp{k}', 'SPOT'); ld.energy = 2600; ld.spot_size = math.radians(150); ld.spot_blend = 0.6; ld.color = (1.0, 0.58, 0.26); ld.shadow_soft_size = 0.25
     ob = bpy.data.objects.new(f'lamp{k}', ld); ob.location = p; sc.collection.objects.link(ob)      # a spot points down -Z: no rotation needed
 # the road wet as the game's rain shader makes it: darker, glossy, puddles in the low spots of a noise
