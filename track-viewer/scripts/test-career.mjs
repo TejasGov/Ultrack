@@ -218,6 +218,48 @@ try {
   };
   const toReview = (s, place, lap) => { while (s.clock.phase !== 'review') round(s, place, lap); return s; };
 
+  // ---- the tables of two series (16.8): each series its own, the other series' race counted, the cups worth no series points, ties by wins, expected place, id
+  { const s = signed(4301), sum = (l) => l.reduce((a, x) => a + x.pts, 0); round(s, 1); round(s, 2);
+    const ch = C.standings(s), el = C.standings(s, 'elite'); assert.equal(ch.div, 'challenger'); assert.equal(el.div, 'elite');
+    assert.deepEqual(ch.teams.map((t) => t.team).sort(), ['corvid', 'hayate', 'liberty', 'mojave']); assert.equal(el.teams.length, 5); assert.equal(ch.drivers.length, 8); assert.equal(el.drivers.length, 10, 'the Elite table comes from the computed races');
+    assert.equal(sum(el.drivers), sum(s.season.results.flatMap((r) => r.other.entries))); assert.equal(sum(ch.teams), sum(ch.drivers)); assert.equal(ch.drivers.find((d) => d.you).pts, 25 + 1 + 18, 'a win with the fastest lap, then P2');
+    assert.equal(sum(ch.drivers.map((d) => ({ pts: d.wins }))), 2, 'one win a race list'); assert.equal(sum(el.teams.map((t) => ({ pts: t.wins }))), 2);
+    while (C.currentRound(s).kind !== 'open') round(s, 4); const before = C.standings(s).drivers.find((d) => d.you).pts, op = round(s, 1);
+    assert.equal(op.kind, 'open'); assert.ok(op.entries.every((e) => e.pts === 0), 'an Open scores no series points (D1)'); assert.equal(op.entries[0].rpts, 62.5, 'only ranking points'); assert.equal(C.standings(s).drivers.find((d) => d.you).pts, before);
+    assert.equal(C.standings(s, 'all').teams.length, 9, 'one table of everyone, if asked');
+    const t = signed(4302), e = (team, pts) => ({ key: R.TIERS.teams[team].A, team, code: 'X' + team, you: false, pts, div: 'challenger' }); t.world.teams.liberty.expPos = t.world.teams.hayate.expPos;
+    t.season.results = [{ kind: 'tour', entries: [e('mojave', 10), e('hayate', 10), e('liberty', 10), e('corvid', 0)] }, { kind: 'tour', entries: [e('corvid', 4), e('hayate', 0), e('liberty', 0), e('mojave', 0)] }];
+    assert.deepEqual(C.standings(t).teams.map((x) => x.team), ['mojave', 'hayate', 'liberty', 'corvid'], 'level on points: the win, then the expected place, then the id'); }
+  // ---- the season end with two series (16.9-16.12): one up, one down; the titles; the player's team promoted or relegated keeps the contract
+  { const Of = await server.ssrLoadModule('/src/game/career/offers.js'), terms = (c) => ({ team: c.team, seat: c.seat, car: c.car, status: c.status, seasons: c.seasons, seasonsLeft: c.seasonsLeft, salary: c.salary });
+    // promoted: the player wins every round, takes the Challenger Drivers' title and the team goes up
+    const up = signed(4310); while (up.season.results.length < up.season.calendar.length - 1) round(up, 1, 1);
+    const c0 = terms(up.contract), cups0 = up.stats.cups, coins0 = up.wallet.coins; round(up, 1, 1);
+    const rv = up.pending.review, h = up.history.at(-1); assert.equal(up.clock.phase, 'review');
+    assert.deepEqual(h.swap, { up: 'mojave', down: rv.swap.down }); assert.deepEqual(rv.swap, h.swap); assert.equal(rv.yourTeam, 'up'); assert.equal(rv.nextDiv, 'elite'); assert.equal(h.div, 'challenger'); assert.equal(h.teamCount, 4); assert.equal(rv.teamCount, 4);
+    assert.equal(up.world.teams.mojave.div, 'elite'); assert.equal(up.world.teams[rv.swap.down].div, 'challenger'); assert.equal(up.season.divs.mojave, 'challenger', 'the season keeps the series it raced'); assert.equal(R.divOf(up, 'mojave'), 'challenger'); assert.equal(R.nextDivOf(up, 'mojave'), 'elite');
+    assert.equal(h.teamOrder.length, 9); assert.deepEqual(h.teamOrder.slice(0, 5).map((t) => up.season.divs[t]), Array(5).fill('elite'), 'the table is the Elite then the Challenger');
+    assert.equal(rv.drivers, 1); assert.equal(up.stats.cups, cups0 + 1, 'the Challenger title counts as a Cup'); assert.equal(up.stats.titles, 0); assert.equal(up.stats.promotions, 1); assert.equal(rv.rep, R.TUNING.rep.cup + R.TUNING.rep.challenger, 'promotion +40, the Challenger title +60'); assert.equal(rv.coins, R.TIERS.tiers.rookie.bonus.cup);
+    assert.deepEqual(terms(up.contract), c0, 'the contract is untouched'); assert.ok(up.wallet.coins > coins0);
+    const keep = up.pending.offers.find((o) => o.keep) ?? up.pending.offers.find((o) => o.team === 'mojave'); C.acceptOffer(up, keep.id, avail);
+    assert.equal(up.season.div, 'elite'); assert.equal(up.season.current.field, 10); assert.ok([9, 10].includes(up.season.current.expPos), 'last of the Elite by expectation: ' + up.season.current.expPos);
+    // relegated: last of the Elite, no penalty, and the contract stands until someone buys it out
+    let dn = null; for (let seed = 4320; !dn && seed < 4340; seed++) { const s = toReview(signed(seed, 'mojave', 'elite'), 8); if (s.pending.review.yourTeam === 'down') dn = s; }
+    const rd = dn.pending.review; assert.equal(dn.stats.relegations, 1); assert.equal(rd.rep, 0, 'no reputation lost for going down'); assert.equal(rd.trust, dn.contract.trust, 'nor trust'); assert.equal(rd.nextDiv, 'challenger'); assert.equal(dn.world.teams.mojave.div, 'challenger');
+    assert.equal(dn.contract.team, 'mojave'); assert.ok(dn.contract.seasonsLeft > 1 && !dn.contract.dropped);
+    const buy = Of.offer(dn, 'hayate', 'A', { salary: 400, signing: 0, seasons: 2, why: 'x' }); dn.pending.offers.push(buy); C.acceptOffer(dn, buy.id, avail); assert.ok(dn.transfer > 0, 'an outside offer buys the player out'); assert.equal(dn.season.div, 'challenger');
+    // the Elite title: +100 and a title; a Legend A seat with trust is offered Number One for either series' title
+    const el = signed(4311, 'mojave', 'elite'); while (el.season.results.length < el.season.calendar.length - 1) round(el, 1, 1);
+    Object.assign(el.contract, { seat: 'A', status: 'lead', trust: 90 }); el.season.tier = 'legend'; round(el, 1, 1);   // a Legend A seat as far as the market is concerned
+    assert.equal(el.pending.review.drivers, 1); assert.equal(el.stats.titles, 1); assert.equal(el.stats.cups, 0); assert.ok(el.pending.review.rep >= R.TUNING.rep.drivers); assert.ok(el.pending.offers.some((o) => o.status === 'number1'), 'Number One for the Elite title');
+    const ct = signed(4312); while (ct.season.results.length < ct.season.calendar.length - 1) round(ct, 1, 1); Object.assign(ct.contract, { seat: 'A', status: 'lead', trust: 90 }); ct.season.tier = 'legend'; round(ct, 1, 1);
+    assert.equal(ct.pending.review.drivers, 1); assert.ok(ct.pending.offers.some((o) => o.status === 'number1'), 'and for the Challenger title');
+    // whole careers: exactly one up and one down a season, the sizes stay 5 and 4
+    const { save } = play(M, 4330, 1.0, 6); assert.equal(save.history.length, 6);
+    for (const r of save.history) assert.ok(r.swap && r.swap.up !== r.swap.down, 'one up, one down');
+    assert.equal(R.TEAM_IDS.filter((t) => save.world.teams[t].div === 'elite').length, 5); assert.equal(R.TEAM_IDS.filter((t) => save.world.teams[t].div === 'challenger').length, 4);
+    for (let i = 1; i < save.history.length; i++) { const [a, b] = [save.history[i - 1], save.history[i]]; assert.ok(b.teamOrder.slice(0, 5).includes(a.swap.up) && b.teamOrder.slice(5).includes(a.swap.down), 'the promoted team raced the Elite the season after'); } }
+
   // ---- the top eight: teammates can both race, and a missed cut is a round of its own
   { const d = signed(150, 'mojave', 'legacy'), me = d.contract.car, mate = C.teammateCar(d); C.finishQuali(d, 1, 1.001); const q = d.season.current.quali; assert.deepEqual(q.grid.slice(0, 2), [me, mate], 'both cars of a team race'); assert.equal(C.raceSetup(d).drivers[mate].code, d.world.seats[mate]); assert.ok(C.raceSetup(d).pace[mate] > 0, 'the teammate races at his pace');
     const r = C.finishRace(d, { order: q.grid, best: {} }); assert.equal(r.entries.length, R.FIELD); assert.equal(r.entries.filter((e) => !e.dnq).length, 8); assert.ok(r.entries.slice(8).every((e) => e.pts === 0 && e.dnq)); assert.equal(C.standings(d).drivers.length, R.FIELD, 'the table has everyone'); assert.equal(C.standings(d).teams.length, 9); assert.ok(C.standings(d).teams.find((t) => t.team === d.contract.team).pts >= 25 + 18 + 2, 'both cars score for the team');

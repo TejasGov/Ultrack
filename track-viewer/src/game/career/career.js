@@ -6,7 +6,7 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
-  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, carsIn, expIn, lcqGrid, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
+  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, teamsIn, carsIn, expIn, lcqGrid, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
   buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
@@ -670,39 +670,58 @@ function recordOpen(save, R, win, report) {
 }
 
 // ---------------------------------------------------------------------------------------------- standings
-/** the Drivers', Teams' and tier Cup tables from the rounds raced (4.4), sorted, with the player's rows flagged */
-export function standings(save) {
-  const D = {}, Tm = {};
-  for (const r of save.season?.results ?? []) for (const e of r.entries) {
-    const d = (D[e.you ? YOU : e.code] ??= { code: e.code, you: e.you, team: e.team, name: e.you ? save.player.name : personOf(save, e.code)?.name ?? e.code, pts: 0, wins: 0 });
-    d.pts += e.pts; d.team = e.team; if (r.entries[0] === e) d.wins++;
-    const t = (Tm[e.team] ??= { team: e.team, pts: 0, wins: 0, you: save.contract?.team === e.team }); t.pts += e.pts; if (r.entries[0] === e) t.wins++;
+/**
+ * The Drivers', Teams' and tier Cup tables from the rounds raced (4.4), sorted, with the player's rows flagged. With two series, series `d`'s tables
+ * (the player's by default): its Tour rounds, the player's race or the computed other one (report.other), each counting its own wins; the Opens and the
+ * Masters score none (D1). Ties go to wins, then the expected place, then the id. A season from before the split ('all') has one table of everyone
+ */
+export function standings(save, d = save.season?.div ?? 'all') {
+  const D = {}, Tm = {}, divided = d !== 'all';
+  const lists = (r) => (!divided ? [r.entries] : (r.kind ?? 'tour') !== 'tour' ? [] : [r.entries, r.other?.entries ?? []].filter((l) => l[0]?.div === d));
+  for (const r of save.season?.results ?? []) for (const l of lists(r)) for (const e of l) {
+    const x = (D[e.you ? YOU : e.code] ??= { code: e.code, you: e.you, team: e.team, name: e.you ? save.player.name : personOf(save, e.code)?.name ?? e.code, pts: 0, wins: 0 });
+    x.pts += e.pts; x.team = e.team; if (l[0] === e) x.wins++;
+    const t = (Tm[e.team] ??= { team: e.team, pts: 0, wins: 0, you: save.contract?.team === e.team }); t.pts += e.pts; if (l[0] === e) t.wins++;
   }
-  for (const id of TEAM_IDS) Tm[id] ??= { team: id, pts: 0, wins: 0, you: save.contract?.team === id };
-  const sort = (l) => l.sort((a, b) => b.pts - a.pts || b.wins - a.wins || (save.world.teams[a.team].expPos - save.world.teams[b.team].expPos));
+  for (const id of teamsIn(save, d)) Tm[id] ??= { team: id, pts: 0, wins: 0, you: save.contract?.team === id };
+  const sort = (l) => l.sort((a, b) => b.pts - a.pts || b.wins - a.wins || (save.world.teams[a.team].expPos - save.world.teams[b.team].expPos) || (a.team < b.team ? -1 : a.team > b.team ? 1 : 0));
   const teams = sort(Object.values(Tm)), tier = save.season?.tier;
-  return { drivers: sort(Object.values(D)), teams, cup: teams.filter((t) => TIERS.teams[t.team].tier === tier) };
+  return { ...(divided ? { div: d } : {}), drivers: sort(Object.values(D)), teams, cup: teams.filter((t) => TIERS.teams[t.team].tier === tier) };   // cup: the tier's teams, the old Cup (a season from before the split awards it)
 }
 
 // ---------------------------------------------------------------------------------------------- the season end
 function endSeason(save) {
-  const st = standings(save), me = save.contract, rs = save.season.results, S = save.sponsors;
+  const st = standings(save), me = save.contract, rs = save.season.results, S = save.sponsors, div = save.season.div, W = save.world.teams;
   const teamPos = st.teams.findIndex((t) => t.team === me.team) + 1, cupPos = st.cup.findIndex((t) => t.team === me.team) + 1, drvPos = st.drivers.findIndex((d) => d.you) + 1;
-  let rep = 0, coins = 0;
-  if (cupPos === 1) { rep += T.rep.cup; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }
-  if (teamPos === 1) rep += T.rep.teams;
-  if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; }
+  let rep = 0, coins = 0, swap = null, yourTeam = null, order = null;
+  if (div) {                                                 // two series (divisions-spec 5, 6): the Challenger's Teams' champion goes up, the Elite's last team comes down; drivers move only by contract
+    const E = standings(save, 'elite').teams, Ch = standings(save, 'challenger').teams;
+    swap = { up: Ch[0].team, down: E.at(-1).team }; W[swap.up].div = 'elite'; W[swap.down].div = 'challenger';
+    yourTeam = me.team === swap.up ? 'up' : me.team === swap.down ? 'down' : null;
+    if (div === 'elite') { if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; } if (teamPos === 1) rep += T.rep.teams; }
+    else if (drvPos === 1) { rep += T.rep.challenger; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }   // the Challenger title pays what the old tier Cup did
+    if (yourTeam === 'up') { rep += T.rep.cup; save.stats.promotions = (save.stats.promotions ?? 0) + 1; }
+    if (yourTeam === 'down') save.stats.relegations = (save.stats.relegations ?? 0) + 1;   // no penalty: the Round Ratings already judged the year
+    order = [...E, ...Ch].map((t) => t.team);   // next season's expected places blend this table (nextSeasonWorld)
+  } else {
+    if (cupPos === 1) { rep += T.rep.cup; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }
+    if (teamPos === 1) rep += T.rep.teams;
+    if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; }
+  }
   // the seat review at the finale (6.7): under 15, or under 25 with a warning not recovered, the team lets you go; a Legend driver rated like one the team would re-sign stays (holdsSeat)
   const dropped = !me.next && (me.trust < T.trust.dropAny || (me.trust < T.trust.drop && !!me.warning)) && !holdsSeat(save);
   if (dropped) { rep += T.rep.dropped; me.dropped = true; }
   save.career.rep = clamp(save.career.rep + rep, 0, 1000); save.wallet.coins += coins;
   const avgRR = mean(rs.map((r) => r.rr));
   save.history.push({ season: save.clock.season, team: me.team, seat: me.seat, car: me.car, tier: save.season.tier, drivers: drvPos, teams: teamPos, cup: cupPos,
-    points: st.drivers[drvPos - 1]?.pts ?? 0, rank: playerRank(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: st.teams.map((t) => t.team), dropped });
+    points: st.drivers[drvPos - 1]?.pts ?? 0, rank: playerRank(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: order ?? st.teams.map((t) => t.team), dropped,
+    ...(swap ? { div, teamCount: st.teams.length, swap } : {}) });
   for (const d of S.deals) if (!d.met) post(save, 'sponsor', `${d.name}: target missed`, `You did not ${targetText(d.target)}. No bonus this year.`);
   for (const o of save.season.mid.splice(0)) { post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
-  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save), rankOf: rankingOf(save).length }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
+  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save), rankOf: rankingOf(save).length,
+    ...(swap ? { div, teamCount: st.teams.length, swap: { ...swap }, yourTeam, nextDiv: W[me.team].div } : {}) },
+  offers: seasonOffers(save, swap ? { cup: teamPos === 1, title: drvPos === 1, dropped } : { cup: cupPos === 1, title: drvPos === 1, dropped }) };   // with two series: the player's series' Teams' and Drivers' titles; the offers see next season's series
   save.clock.phase = 'review';
   if (!me.next) openWindow(save);
   if (dropped) coverFired(save, me.team); else coverPrincipal(save, me.team);
