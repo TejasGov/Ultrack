@@ -1,7 +1,7 @@
 // The paddock press (docs/career-mode.md 13): stories written from what really happened in a career, a save goes in and comes out changed, like the rest of career/.
 // A story is plain data in save.media; its picture is worked out when it is drawn (storyImage), so new art reaches old stories and a missing image only falls back.
 import MEDIA from '../../../../assets/career/media.json';
-import { TUNING as T, CAR, loreOf } from './rules.js';
+import { TUNING as T, CAR, FIELD, loreOf } from './rules.js';
 import { rng } from './rng.js';
 import { YOU, personOf, rivalsOf } from './world.js';
 import { latest } from './ledger.js';
@@ -39,7 +39,7 @@ export function coverRound(save, report) {
   else story(save, 'win', pick(r, [`${nameOf(winner.code)} takes the ${gp}`, `${surname(winner.code)} wins the ${gp}`]), `${loreOf(winner.team).name} on the top step, ${nameOf(E[1].code)} second. ${quote(winner.code, 'win', r)}`, { driver: winner.code, mood: 'win', track });
 
   // the player, unless the lead already was
-  if (report.dnq && report.open) story(save, 'down', `${me.name} misses the ${report.kind === 'masters' ? gp : `${gp} Final`}`, report.kind === 'masters' ? `Outside the top ${T.series.gridSize} of the Ultrack Ranking, ${me.name} watched the Masters from the grandstand.` : `The Final went ahead without ${me.name}, who finished the weekend P${report.grid} of 16. The ranking will remember it.`, { track, you: 'dnq' });
+  if (report.dnq && report.open) story(save, 'down', `${me.name} misses the ${report.kind === 'masters' ? gp : `${gp} Final`}`, report.kind === 'masters' ? `Outside the top ${T.series.gridSize} of the Ultrack Ranking, ${me.name} watched the Masters from the grandstand.` : `The Final went ahead without ${me.name}, who finished the weekend P${report.grid} of ${FIELD}. The ranking will remember it.`, { track, you: 'dnq' });
   else if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });
   else if (report.dnf) story(save, 'down', `Retirement for ${me.name}`, `Out of the ${gp} after starting P${report.grid}. No points, and a long walk back to the garage.`, { track, you: 'down' });
   else if (!winner.you && report.finish <= 3) story(save, 'podium', `Podium for ${me.name}`, `P${report.finish} from P${report.grid} at the ${gp}, in a car expected ${report.expPos > report.finish ? `no higher than P${report.expPos}` : `to be up here`}.`, { track, you: 'podium' });

@@ -5,7 +5,7 @@ import { TUNING as T, TIERS, DRIVERS, CAR, clamp, loreOf, tierOf, seatCar, other
 import { rng } from './rng.js';
 
 export const YOU = 'YOU';
-/** the 16 teams.json drivers by code; academy drivers live in the save (world.academy), once called up */
+/** the teams.json drivers by code; academy drivers live in the save (world.academy), once called up */
 const BASE = Object.fromEntries(Object.values(CAR).map((c) => [c.driver.code, { code: c.driver.code, name: c.driver.name, nation: c.driver.nation }]));
 
 /** a contract's length in seasons, seeded per driver: the starting grid's 1-3 (market.contract), a signing's 2-3 (market.signing) */
@@ -99,7 +99,8 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
   // this season's points by driver and the team each scored them for, and the Teams' table: an under-performer is one their teammate outscored
   const pts = {}, team = {}, h = save.history?.at(-1), table = h?.season === season ? h.teamOrder ?? [] : [];
   for (const r of save.season?.results ?? []) for (const e of r.entries) { const c = e.you ? YOU : e.code; pts[c] = (pts[c] ?? 0) + e.pts; team[c] = e.team; }
-  const below = (t) => (table.length ? table.indexOf(t) + 1 - W.teams[t].expPos : 0), beaten = (code, t) => Object.keys(team).some((c) => c !== code && team[c] === t && pts[c] > (pts[code] ?? 0));
+  const below = (t) => (table.length && W.teams[t].joined !== season ? table.indexOf(t) + 1 - W.teams[t].expPos : 0),   // a team that joined mid-season (addTeams) is not judged on part of one
+    beaten = (code, t) => Object.keys(team).some((c) => c !== code && team[c] === t && pts[c] > (pts[code] ?? 0));
   for (const [key, code] of Object.entries(W.seats)) {                // loyalty grows with each season at a team, and sours with a bad year or a teammate who outscored them
     if (!code || code === YOU) continue;
     const t = CAR[key].team; L[code] = clamp((L[code] ?? 60) + M.loyaltyGrow - (below(t) >= 2 ? M.loyaltyUnder : 0) - (team[code] === t && beaten(code, t) ? M.loyaltyBeaten : 0), 0, 100);

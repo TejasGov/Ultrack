@@ -13,6 +13,8 @@ import { CATS, MAX_LEVEL, costOf, classOf } from './economy.js';
 import { carName, factsOf, rangeOf, hasSpecs, upgradedFacts, handlingWith, applyUpgrades, physicsHasUpgrades, ROSTER } from './carinfo.js';
 import { h, css, fill, seg, slider, toggle, row, getNav, teamMark, teamLogo, TEAM_OF, ENTRY, still, empty, prompt, backButton, fadeMore } from './ui.js';
 import { icon } from './icons.js';
+import { paintsRims } from '../carkit/model-rims.js';
+import { hasModel } from '../cars.js';
 
 const PALETTE = ['#c00a12', '#f2c200', '#ff6a13', '#0e3b2e', '#a6d61b', '#1f5fd6', '#121a3a', '#7d8187', '#f1efe8', '#b9bec4', '#15171a', '#c9b48a', '#0f8f8a', '#5b2a86', '#a8552d'];
 const RIMS = ['#a9afb6', '#3b3f45', '#23262b', '#c9a35a', '#8b6944', '#e9e9e6', '#b3121a', '#0f8f8a'];
@@ -209,7 +211,7 @@ export function GarageScreen(game) {
       idRow('Finish', seg([['gloss', 'Gloss'], ['metallic', 'Metallic'], ['pearl', 'Pearl'], ['satin', 'Satin'], ['matte', 'Matte']], P.finish, (v) => apply({ finish: v }))),
       ['metallic', 'pearl'].includes(P.finish) ? idRow('Flake', slider(P.flake, { min: 0, max: 1, step: 0.02 }, (v) => game.setPaint(key, { ...game.paintOf(key), flake: v }))) : null,
       idRow('Team livery', toggle(P.livery, (v) => apply({ livery: v }))),
-      h('h3.kick', {}, 'Wheels'), grid('Wheels', RIMS.map((c) => swatch('rim', c, P.rim, (x) => apply({ rim: x })))),
+      ...(paintsRims(key, hasModel(key)) ? [h('h3.kick', {}, 'Wheels'), grid('Wheels', RIMS.map((c) => swatch('rim', c, P.rim, (x) => apply({ rim: x }))))] : []),
       h('h3.kick', {}, 'Calipers'), grid('Calipers', CALIPERS.map((c) => swatch('caliper', c, P.caliper, (x) => apply({ caliper: x })))),
       h('button.btn.btn-ghost.ga-reset', { 'data-nav': '', 'data-id': 'reset', onadjust: toList, onclick: () => { custom = false; game.setPaint(key, null); buildDetail(); } }, icon('restart'), 'Reset to team colours')];
   }

@@ -19,6 +19,6 @@
  "cars": {
   "av12":"supercar","mp1x":"supercar","furari-488":"supercar","blackbird":"supercar","porsche1":"supercar","huracan":"supercar","laferrari":"supercar",
   "aston-martin-valk":"track","jaguarxkjss":"track","buggati":"tourer","destrier":"track",
-  "ford-gt":"supercar","bentley-gt":"tourer","bmw1":"tourer","nissan-z":"tourer","supra":"track"
+  "ford-gt":"supercar","bentley-gt":"tourer","bmw1":"tourer","nissan-z":"tourer","supra":"track","jesko":"track","cc850":"supercar"
  }
 }

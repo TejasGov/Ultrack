@@ -1,11 +1,11 @@
 // Trace every see-through gap in a car's last QA report (CAR-QA.md): for each gap, a magenta-background close-up
 // (qa/<car>/trace-<view>-<n>.png) and the line's path through the car in body metres (nose -x, left +z, y up).
-//   npm run trace -- mp1x
+//   npm run trace -- mp1x [--url=http://127.0.0.1:5180]
 import { chromium } from 'playwright-core';
 import { existsSync, readFileSync } from 'node:fs';
 
-const [key] = process.argv.slice(2);
-const url = 'http://127.0.0.1:5180';
+const [key] = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+const url = process.argv.find((a) => a.startsWith('--url='))?.slice(6) ?? 'http://127.0.0.1:5180';
 if (!key) { console.log('usage: npm run trace -- <car>'); process.exit(2); }
 const report = JSON.parse(readFileSync(new URL(`../qa/${key}/report.json`, import.meta.url)));
 const gaps = report.checks.find((c) => c.id === 'see-through')?.detail ?? [];

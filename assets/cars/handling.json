@@ -224,6 +224,34 @@
    "bop": 0.945,
    "bopGrip": 1,
    "brakeK": 1.131
+  },
+  "jesko": {
+   "hp": 1600,
+   "zeroTo100": 2.5,
+   "topKmh": 400,
+   "drive": "RWD",
+   "massKg": 1420,
+   "grip": 1.27,
+   "downforce": 1.6,
+   "cogM": 0.38,
+   "weightFront": 0.42,
+   "bop": 0.88,
+   "bopGrip": 0.979,
+   "brakeK": 1.131
+  },
+  "cc850": {
+   "hp": 1366,
+   "zeroTo100": 2.6,
+   "topKmh": 400,
+   "drive": "RWD",
+   "massKg": 1385,
+   "grip": 1.22,
+   "downforce": 0.9,
+   "cogM": 0.4,
+   "weightFront": 0.43,
+   "bop": 0.88,
+   "bopGrip": 1,
+   "brakeK": 1.131
   }
  }
 }

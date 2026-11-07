@@ -1201,6 +1201,32 @@
    "match": "W16 and W12",
    "quality": "category-pack",
    "preview": "engines/v3/bentley-gt-source.ogg"
+  },
+  "jesko": {
+   "name": "Koenigsegg Jesko twin-turbo V8",
+   "redline": 8500,
+   "pitch": 1.0,
+   "pack": "flat-v8",
+   "turbo": true,
+   "cars": [
+    "jesko"
+   ],
+   "match": "Flat-plane V8 supercar",
+   "quality": "category-pack",
+   "preview": "engines/v3/mp1x-source.ogg"
+  },
+  "cc850": {
+   "name": "Koenigsegg CC850 twin-turbo V8",
+   "redline": 8500,
+   "pitch": 1.0,
+   "pack": "flat-v8",
+   "turbo": true,
+   "cars": [
+    "cc850"
+   ],
+   "match": "Flat-plane V8 supercar",
+   "quality": "category-pack",
+   "preview": "engines/v3/mp1x-source.ogg"
   }
  }
 }

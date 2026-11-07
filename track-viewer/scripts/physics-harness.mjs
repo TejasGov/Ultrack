@@ -1,5 +1,5 @@
 // Headless physics harness (no browser): loads src/physics through Vite's SSR loader and runs the measurements the
-// handling work is judged by. Needs the Vite dev server on :5180 only to serve the collision mesh for lap tests.
+// handling work is judged by. Lap tests read the collision mesh from public/assets (npm run sync), no dev server needed.
 //   node scripts/physics-harness.mjs --tests pad,brake,accel,top,lap --cars av12,porsche1 --weather dry,damp,rain --assist rookie,pro
 //   node scripts/physics-harness.mjs --tests table            sim vs real: 0-100, top speed, 100-0 for every car
 //   node scripts/physics-harness.mjs --tests upgrades         self-check of the upgrade API
@@ -106,7 +106,7 @@ async function field() {
   for (let pass = 0; pass < 2; pass++) for (let i = 2 * N - 1; i >= 0; i--) { const a = i % N, b = (i + 1) % N; vv[a] = Math.min(vv[a], Math.sqrt(vv[b] ** 2 + 2 * A_BRK * ds)); }
   const linePts = [], lineLeft = [];
   for (let i = 0; i < N; i++) { linePts.push(curve.getPointAt(i / N)); curve.getTangentAt(i / N, t); t.y = 0; t.normalize(); lineLeft.push(new THREE.Vector3().crossVectors(up, t)); }
-  const res = await fetch('http://127.0.0.1:5180/assets/marina_collision.glb').then((r) => r.arrayBuffer());
+  const res = readFileSync(join(root, 'public/assets/marina_collision.glb'));
   const pw = await PhysicsWorld.create('data:model/gltf-binary;base64,' + Buffer.from(res).toString('base64'));
   const SP = JSON.parse(readFileSync(join(repo, 'assets/cars/specs.json'), 'utf8')).cars;
   return FIELD = { pw, linePts, lineLeft, N, vt: vv, all: Object.keys(SP).map((key) => ({ key, profile: profileOf(key) })) };

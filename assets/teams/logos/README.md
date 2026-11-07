@@ -1,6 +1,6 @@
 # Ultrack team identities
 
-Eight original emblems and wordmarks use the colors and typefaces in `../teams.json`.
+Nine original emblems and wordmarks use the colors and typefaces in `../teams.json`.
 Lettering is outlined into SVG paths at build time. Masters contain no external
 fonts, raster images or scripts. These original team identities are separate from
 third-party sponsor logos.
@@ -15,6 +15,7 @@ third-party sponsor logos.
 | Toro | Bull head | Unbounded Black |
 | Sarab | Falcon above a dune | Lalezar |
 | Hayate | Kazaguruma (wind pinwheel) mon crest | Dela Gothic One: 疾風 + HAYATE + ハヤテ |
+| Norrsken | North star over two aurora ribbons | Michroma |
 
 Each identity has a horizontal lockup (1024×256) and emblem (256×256), with
 `onTeam`, `onDark` and `onLight` variants. SVG masters, transparent PNG and
@@ -32,7 +33,7 @@ pit-box markings, flags and team banners use the same artwork. Main-menu and
 setup cards, garage headings and the garage list use the dark-background version.
 Team names remain available as image alt text.
 
-`scripts/build-team-logos.py` needs the Toro emblem entry in its `EMBLEMS` table (the bull head in the table above); the PNG/WebP, review sheet and gallery come from `prepare-team-logos.mjs`, whose title strings ("Seven teams", "7 original emblems") are hard-coded.
+`scripts/build-team-logos.py` needs the Toro emblem entry in its `EMBLEMS` table (the bull head in the table above); the PNG/WebP, review sheet and gallery come from `prepare-team-logos.mjs`, whose review sheet and gallery size themselves to the teams in the manifest.
 
 Rebuild from the project root:
 
@@ -53,3 +54,7 @@ was left alone: do not rerun it expecting Hayate), then `prepare-team-logos.mjs`
 square 256 px decals that the livery draws (`num23`, `num37`: kanji number roundels; `katakana`: the ソニー plate), loaded through `loadTeamExtras()` in
 `src/team-logos.js`. Its font file is a subset of Dela Gothic One (Latin plus the glyphs used; re-subset the full font from Google Fonts
 before using a new glyph in a wordmark). No rising-sun motif is used anywhere.
+
+Norrsken (Swedish, sponsor Samsung) is built by `track-viewer/scripts/build-team-logo-norrsken.py` (the same layout as Hayate's script: three variants, lockup and
+icon), then `prepare-team-logos.mjs`. Its lettering is outlined from Michroma, copied from the installed `@fontsource/michroma` into
+`track-viewer/public/assets/fonts` with its OFL notice. On light grounds its ribbons take a deeper green (#12875c) than the team's aurora green.

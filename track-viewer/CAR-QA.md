@@ -202,6 +202,22 @@ The Mustang's slot on Liberty (#66, Maddox), as a new key `ford-gt`. The Meshy s
 - **Handling:** `grip` 1.25 and `downforce` 1.2 are the 488's, not the real car's 400% downforce claim: at 1.3 / 1.6 a 250 ms tap at 135 km/h turned 4.8 degrees against the 4.6 limit. `bop` 1 and `bopGrip` 1 (`--cars ford-gt`, target 118: 117.3 s).
 - **Engine sound:** `ford-gt` plays the AMG ONE turbo V6 recording (`sharedWith`) with a 7,000 rpm redline. The Mustang recording's profile, receipts and plan entry moved to `blackbird`, the only car that still plays it; its files keep the name `mustang-*.ogg`.
 
+### Koenigsegg Jesko and CC850 (2026-11-07)
+
+Two Sketchfab models by Ddiaz Design (the author of the GT4, the Nissan Z and the Ford GT), both CC BY 4.0, for a new Legend team (the team itself is a separate step: until it is in `teams.json` the game cannot assemble them, see below).
+
+| Key | Model | Triangles (source / body lod0 / lod1 / wheel) | Length used | Rip verdict |
+|---|---|---|---|---|
+| `jesko` | 2020 Koenigsegg Jesko (Attack, big wing), "Koenigsegg Jesko" | 78k / 59k / 21k / 2.5k | 4.61 m (wheelbase 2.70 m as the real car; 265/35 R20 and 345/30 R21 tyres match) | Certain: "Model from: Real Racing 3"; `jesko:LOD_A_<PART>_mm_<kind>` like the GT4 |
+| `cc850` | 2023 Koenigsegg CC850, "Koenigsegg CC850" | 280k / 94k / 26k / 11.4k | 4.38 m (scaled to the 2.70 m wheelbase; the published 4.364 m excludes the diffuser) | Certain: "Based on a CSR2 3d model"; one mesh per material, wheels as ~340 loose pieces a corner |
+
+- **Prepare** (`prepare-cars.py -- jesko|cc850`). Jesko: the `BONNETCAM_*` parts repeat the nose and hood (z-fight) and `LOD_B_CHASSIS` is a low copy of the tail, so both go; the cabin's black inner glass (`INT_GLASS_*`) would blind every window and the inner mirror glass doubles the outer one, so they go too. The white atlas takes the team paint on every unsaturated light texel (a median-distance test left the baked shading as white patches on the haunches); the lime accents, badges and carbon stay. CC850: the emissive lamp overlay repeats the lamp mesh (dropped); tail lamps are the lamp faces whose emissive texel is red, headlamps the front ones that are white; mirror glass is the rear-facing faces of the two carbon heads; tyres are the wheel faces beyond 0.74 R of each axle; a flat pane inside the sills (0.3 m up) leaves the glass role, because it dragged the side-glass outline and the door number down to the sills.
+- **Tuning:** Jesko ride 0.08 m, pitch 0.4 (the RR3 arches are tight: 2.7 cm into the front arch tops at ride 0.03); its 11 see-through gaps are the open space under the swan-neck wing and the rear grille seen side-on, traced and waived. CC850 passes everything at ride 0.03, pitch 0.5.
+- **Wheels:** the Jesko's carbon spokes take the finish's rim colour (`model-rims.js`); the CC850's rims share one atlas material with tyre and disc, so they keep their own look (as on the LaFerrari).
+- **Handling:** balanced like the Ford GT (`--tests balance --target 118 --powerMin 0.88 --cars jesko,cc850`): Jesko bop 0.88, bopGrip 0.979 (115.8 s), CC850 0.88 / 1 (116.3 s); the AI solo laps of the Legend cars at their own balance are 115.8-116.7 s. Both pass `physics-turning.mjs` (tap, hold, slalom, abuse, hairpin).
+- **Engine sound:** both play the McLaren 720S recording (a twin-turbo flat-plane V8, `sharedWith: mp1x`; the `flat-v8` pack in `engine-packs.json`), redline 8,500 rpm. `verify_recorded_engines.py` asserts the bank's keys equal the team cars, so it fails until the team step adds them to `teams.json`.
+- **Before the team exists:** `assemble` reads the team's colours (`TEAM_OF`) and the career rules need a tier entry, so the QA, garage and race checks ran against an uncommitted test team. The menu stills (`make-ui-stills.mjs cars|side|thumbs`, `ONLY=jesko,cc850`) are painted in the team colour, so they are made in the team step.
+
 ## The AV-12 Meshy shell, the first worked example (`tuning/av12.json` → `log`)
 
 | Run | Found | Fix |

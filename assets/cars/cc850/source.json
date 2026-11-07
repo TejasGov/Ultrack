@@ -1,0 +1,41 @@
+{
+  "name": "Koenigsegg CC850",
+  "src": "../../../sources/sketchfab/Kcc850/prepared.glb",
+  "credit": {
+    "title": "2023 Koenigsegg CC850",
+    "author": "Ddiaz Design (ddiaz-design)",
+    "authorUrl": "https://sketchfab.com/ddiaz-design",
+    "url": "https://sketchfab.com/3d-models/2023-koenigsegg-cc850-c4f872da033944bfa3c4e44d07728806",
+    "license": "CC BY 4.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "modelId": "c4f872da033944bfa3c4e44d07728806",
+    "replacement": false,
+    "nonCommercialOnly": false,
+    "additionalCredits": "CSR2 rip (the page says \"Based on a CSR2 3d model\"). Fine for this local fan project, replace before any public release."
+  },
+  "rotateZ": -90,
+  "length": 4.38,
+  "wheels": {
+    "mode": "loose",
+    "spin": [
+      "Tyre_",
+      "Spin_"
+    ],
+    "tyre": [
+      "Tyre_"
+    ],
+    "caliper": [
+      "Caliper_"
+    ]
+  },
+  "roles": {},
+  "interior": [
+    "INT:"
+  ],
+  "exhaust": [],
+  "budget": {
+    "body0": 100000,
+    "body1": 25000,
+    "wheel": 8000
+  }
+}

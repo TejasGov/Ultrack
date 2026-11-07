@@ -23,7 +23,7 @@ export const TRIGGERS = {
     return x ? { who: x.code, team: CAR[x.car].team } : null;
   },
   /**
-   * The hottest driver at 70+ is easily rattled (composure under callout.composure) and enters the next round, which the player can race: all sixteen enter a Tour round
+   * The hottest driver at 70+ is easily rattled (composure under callout.composure) and enters the next round, which the player can race: the whole field enters a Tour round
    * or an Open, a Masters only its seeds. One callout a round, since a second flag would replace the first and its stated stake would never be paid
    */
   callout: (save) => {

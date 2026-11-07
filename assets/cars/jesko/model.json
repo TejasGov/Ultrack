@@ -1,0 +1,100 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Koenigsegg Jesko",
+ "source": {
+  "title": "2020 Koenigsegg Jesko",
+  "author": "Ddiaz Design (ddiaz-design)",
+  "authorUrl": "https://sketchfab.com/ddiaz-design",
+  "url": "https://sketchfab.com/3d-models/2020-koenigsegg-jesko-c657f51fb0db43e38fea172dfa385287",
+  "license": "CC BY 4.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "modelId": "c657f51fb0db43e38fea172dfa385287",
+  "replacement": false,
+  "nonCommercialOnly": false,
+  "additionalCredits": "Real Racing 3 rip (the page says \"Model from: Real Racing 3\"). Fine for this local fan project, replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3504,
+   "width": 0.271,
+   "x": -1.2944,
+   "track": 1.6875
+  },
+  "rear": {
+   "radius": 0.3759,
+   "width": 0.2908,
+   "x": 1.409,
+   "track": 1.6678
+  }
+ },
+ "size": {
+  "length": 4.61,
+  "width": 2.208,
+  "height": 1.123
+ },
+ "lights": {
+  "front": [
+   [
+    -1.708,
+    0.655,
+    0.808
+   ],
+   [
+    -1.709,
+    0.654,
+    -0.808
+   ]
+  ],
+  "rear": [
+   [
+    1.899,
+    0.741,
+    0.775
+   ],
+   [
+    1.899,
+    0.741,
+    -0.775
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.222,
+    0.745,
+    0.565
+   ],
+   [
+    -1.222,
+    1.06,
+    0.565
+   ],
+   [
+    0.412,
+    1.06,
+    0.565
+   ],
+   [
+    0.412,
+    0.745,
+    0.565
+   ]
+  ]
+ },
+ "exhaust": [
+  [
+   0.567,
+   -0.115
+  ],
+  [
+   0.567,
+   0.102
+  ]
+ ],
+ "triangles": {
+  "body0": 59327,
+  "body1": 20700,
+  "wheel": 2495
+ }
+}
