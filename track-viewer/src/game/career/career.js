@@ -6,7 +6,7 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
-  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, teamsIn, carsIn, expIn, lcqGrid, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
+  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, teamsIn, carsIn, expIn, lcqGrid, seedsOf, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
   buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
@@ -256,9 +256,12 @@ function prepareRound(save) {
 // (the round's qualifying), the fastest 8 race the Last Chance Qualifier there, and its top 4 reach the Final on the Open's own circuit. The Final grid is the four seeds in
 // ranking order, then the four Last Chance finishers in the order they finished: a season of results buys the front rows. The Masters is the Final alone, for the top 8 of the ranking.
 // cur.open = { kind, name, rank, seeds: [cars], seeded, stage: 'quali' | 'lcq' | 'final', to, lcq? }. Races the player is not in are computed from seeded laps, as a Tour qualifying is.
+// With two series (divisions-spec 8) the seeds are each series' best by its own table, interleaved Elite first: an Open's top 2 of each, the Masters' top 5 Elite and top 3
+// Challenger (seedsOf); the Last Chance holds at least two Challenger cars (lcqOf). cur.open then carries the player's series, their table rank and its cut.
 function openEntry(save, R) {
-  const rk = rankingOf(save), mine = rk.find((x) => x.you), masters = R.kind === 'masters', n = masters ? T.series.gridSize : T.open.direct;
-  return { kind: R.kind, name: R.name, rank: mine.rank, seeds: rk.slice(0, n).map((x) => x.key), seeded: mine.rank <= n, stage: masters ? 'final' : 'quali', to: masters ? `the ${R.name}` : `the ${R.name} Final` };
+  const rk = rankingOf(save), mine = rk.find((x) => x.you), masters = R.kind === 'masters', n = masters ? T.series.gridSize : T.open.direct, d = save.season.div, keys = (x) => rankingOf(save, x).map((y) => y.key);
+  const seeds = d ? seedsOf(R.kind, keys('elite'), keys('challenger')) : rk.slice(0, n).map((x) => x.key);
+  return { kind: R.kind, name: R.name, rank: mine.rank, seeds, seeded: seeds.includes(save.contract.car), ...(d ? { div: d, cut: DIV[d][masters ? 'masters' : 'openSeeds'] } : {}), stage: masters ? 'final' : 'quali', to: masters ? `the ${R.name}` : `the ${R.name} Final` };
 }
 /** a race of computed cars, in the order they finish: each one's seeded lap at pace, `tag` telling this race's noise from the qualifying's */
 function simRace(save, keys, tag, V) {
@@ -286,7 +289,7 @@ function closeLcq(save, order, best) {
 /** the week of an Open for a player who flies no lap: the Masters' top 8 are set at once, and a seed's Last Chance is run without him */
 function openWeek(save) {
   const cur = save.season.current, o = cur.open;
-  if (o.kind === 'masters') return setFinal(save, o.seeds, rankingOf(save).map((x) => x.key).filter((k) => !o.seeds.includes(k)));
+  if (o.kind === 'masters') return setFinal(save, o.seeds, rankingOf(save, 'all').map((x) => x.key).filter((k) => !o.seeds.includes(k)));
   if (!o.seeded) return;
   const V = qualiVenue(save), field = Object.keys(save.world.seats).filter((k) => save.world.seats[k] && !o.seeds.includes(k)), laps = lapsAt(save, V, field);
   const order = field.sort((a, b) => laps[a] - laps[b]), grid = lcqOf(save, order), sim = simRace(save, grid, 'l', V);
@@ -580,8 +583,9 @@ export function finishRace(save, result) {
   }
   const S = save.stats; if (!dnq) S.starts++; if (!dnf && finish === 1) S.wins++; if (!dnf && finish <= 3) S.podiums++; if (pole) S.poles++; if (fastest) S.fastest++;
   const rankBefore = playerRank(save), day = {};              // the Ultrack Ranking: points by place for those who raced, a retirement scoring none
-  entries.forEach((e, i) => { if (!e.dnq && !(e.you && dnf)) day[seats[e.key]] = rankPoints(i, kind); });
-  other?.entries.forEach((e, i) => { if (!e.dnq) day[e.code] = rankPoints(i, kind); });   // the same day in the other series
+  const f = (d) => (tourDiv ? DIV[d].rank : 1);               // a Tour round of two series: each series' places at its share (an Elite win 25, a Challenger win 15); the cups pay everyone alike
+  entries.forEach((e, i) => { if (!e.dnq && !(e.you && dnf)) day[seats[e.key]] = rankPoints(i, kind, f(e.div)); });
+  other?.entries.forEach((e, i) => { if (!e.dnq) day[e.code] = rankPoints(i, kind, f(e.div)); });   // the same day in the other series
   addDay(save, day);
   const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, expPos: cur.expPos, ...(divided ? { field: cur.field } : {}), dnf, dnq, pole, fastest, clean,
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
