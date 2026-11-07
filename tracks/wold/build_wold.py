@@ -32,14 +32,18 @@ UVS.update({'asphalt': 3.5, 'grass': 5.0, 'walk': 2.2, 'bed': 4.0, 'water': 40.0
 road(7.0, 60)
 _wt = MAT['water'].node_tree; _np = _wt.nodes.new('ShaderNodeTexNoise'); _np.inputs['Scale'].default_value = 0.9; _np.inputs['Detail'].default_value = 5.0; _tc = _wt.nodes.new('ShaderNodeNewGeometry'); _wt.links.new(_tc.outputs['Position'], _np.inputs['Vector'])
 _bp = _wt.nodes.new('ShaderNodeBump'); _bp.inputs['Strength'].default_value = 0.12; _bp.inputs['Distance'].default_value = 0.3; _wt.links.new(_np.outputs[0], _bp.inputs['Height']); _wt.links.new(_bp.outputs[0], _wt.nodes['Principled BSDF'].inputs['Normal'])      # a slow river's ripple, as Venice's canal
-RIVER = [C2B(x, y) for x, y in ((-1900, -900), (-1300, -860), (-900, -905), (-650, -850), (-425, -842), (-200, -830), (100, -850), (400, -830), (700, -800), (1000, -790), (1500, -760), (2100, -800))]
+# the river comes in from the east, south of the meadows road, passes under the village bridge and ends in the park's lake: a line into the closed lap would have to cross it again
+RIVER = [C2B(x, y) for x, y in ((-690, -888), (-560, -862), (-425, -842), (-200, -830), (100, -850), (400, -830), (700, -800), (1000, -790), (1500, -760), (2100, -800))]
+LAKE_C, LAKE_R = C2B(-790, -905), 105.0
 _rp = [RIVER[0].lerp(RIVER[1], 0)]
 for a, b in zip(RIVER, RIVER[1:]):
     n_ = max(1, int((b - a).length / 6)); _rp += [a.lerp(b, q / n_) for q in range(1, n_ + 1)]
 RT = KDTree(len(_rp))
 for q, p in enumerate(_rp): RT.insert(p, q)
 RT.balance()
-def river_d(x, y): return RT.find((x, y, 0))[2]
+def river_d(x, y):      # metres to the river's line; the lake counts as a river LAKE_R wide, its shore a little wavy
+    dl = (Vector((x, y, 0)) - LAKE_C).length; a = math.atan2(y - LAKE_C.y, x - LAKE_C.x)
+    return min(RT.find((x, y, 0))[2], dl - (LAKE_R + 9 * math.sin(3 * a + 1) + 5 * math.sin(7 * a) - RIVER_W))
 GL = (M @ Vector((0, 0, 0))).z      # the concept's height datum in build coordinates: the start line on the wold's top is z = 0, the valley 34 m under it
 WATER_Z, RIVER_W = GL + 4.0, 11.0
 VILLAGE = [st(2600) <= i <= st(3170) for i in range(N)]      # the high street
@@ -76,17 +80,17 @@ GX_, GY_ = axis(min(xs) - 200, max(xs) + 200), axis(min(ys) - 200, max(ys) + 200
 def tint(co, d):      # meadow greens, a little straw in it, darker in the valley's damp
     a = fbm(co.x / 70, co.y / 70, 3); t = 0.85 + 0.12 * a; dry = ss(0.1, 0.6, fbm(co.x / 300 + 4, co.y / 300, 2))      # leafy_grass is a brown-green: pulled to an English meadow's green
     return (t * (0.5 + 0.2 * dry), t * (0.78 - 0.04 * dry), t * (0.36 - 0.04 * dry), 1)
-bm = bmesh.new(); vc = vcol_layer(bm); G, D = [], {}
+bm = bmesh.new(); vc = vcol_layer(bm); G, D, I = [], {}, {}
 for y in GY_:
     row = []
     for x in GX_:
-        i, d = near(x, y); v = bm.verts.new((x, y, height(x, y, i, d))); D[v] = d; row.append(v)
+        i, d = near(x, y); v = bm.verts.new((x, y, height(x, y, i, d))); D[v] = d; I[v] = i; row.append(v)
     G.append(row)
 ground_col = []; REACH = 26.0
 for r_ in range(len(GY_) - 1):
     for c in range(len(GX_) - 1):
         q = [G[r_][c], G[r_][c + 1], G[r_ + 1][c + 1], G[r_ + 1][c]]
-        if max(D[v] for v in q) < HW - 0.6: continue
+        if max(D[v] for v in q) < HW - 0.6 and not any(BRIDGE[I[v]] for v in q): continue      # under the road, except under the bridge: the river bed runs on, or the game's void walls (physics/world.js) close the hole up through the deck
         if min(D[v] for v in q) < REACH: ground_col.append([v.co.copy() for v in q])
         bed = all(river_d(v.co.x, v.co.y) < RIVER_W + 1 for v in q)
         f = bm.faces.new(q); f.material_index = 1 if bed else 0
@@ -103,12 +107,26 @@ for sd in (1, -1):
         row0, row1 = [off(i, sd * (HW + 0.01), -0.02), off(i, sd * a0, 0.12), off(i, sd * SHELF, 0.12)], [off(j, sd * (HW + 0.01), -0.02), off(j, sd * a1, 0.12), off(j, sd * SHELF, 0.12)]
         for f in strip(bm, [row0, row1], 0, closed=False, rev=sd < 0):
             for l in f.loops: l[vc] = (0.9, 0.87, 0.8, 1)
+        ground_col.append([row0[0].copy(), row1[0].copy(), row1[1].copy(), row0[1].copy()][::sd])
 mesh_obj('HW pavements', bm, ['walk'], smooth=True)
+# a flush grass verge from the road's edge to the wall's foot everywhere else, in both meshes: the ground grid sinks at the edge, and the car's box caught the 17 cm step there (qa-drivable)
+bm = bmesh.new(); vc = vcol_layer(bm)
+for sd in (1, -1):
+    for i in range(N):
+        j = (i + 1) % N
+        if VILLAGE[i] and VILLAGE[j]: continue      # the pavement carries it there
+        row0, row1 = [off(i, sd * (HW + 0.01), -0.02), off(i, sd * (BD[sd][i] + 0.6), -0.04)], [off(j, sd * (HW + 0.01), -0.02), off(j, sd * (BD[sd][j] + 0.6), -0.04)]
+        for f in strip(bm, [row0, row1], 0, closed=False, rev=sd < 0):
+            for l in f.loops: l[vc] = tint(l.vert.co, HW)
+        ground_col.append([row0[0].copy(), row1[0].copy(), row1[1].copy(), row0[1].copy()][::sd])
+mesh_obj('HW verges', bm, ['grass'], smooth=True)
 bm = bmesh.new()
 for a, b in zip(_rp, _rp[1:]):
     t_ = (b - a).normalized(); nn = Vector((-t_.y, t_.x, 0)) * (RIVER_W + 2)
     f = bm.faces.new([bm.verts.new((a - nn).to_tuple()), bm.verts.new((b - nn).to_tuple()), bm.verts.new((b + nn).to_tuple()), bm.verts.new((a + nn).to_tuple())]); f.material_index = 0
 for v in bm.verts: v.co.z = WATER_Z
+rim = [LAKE_C + Vector((math.cos(a), math.sin(a), 0)) * (LAKE_R + 9 * math.sin(3 * a + 1) + 5 * math.sin(7 * a) + 2) for a in (2 * math.pi * q / 72 for q in range(72))]
+f = bm.faces.new([bm.verts.new((p.x, p.y, WATER_Z)) for p in rim]); f.material_index = 0
 mesh_obj('HW water', bm, ['water'])
 log('ground', len(GX_), 'x', len(GY_), 'collision quads', len(ground_col))
 
