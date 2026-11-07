@@ -144,7 +144,7 @@ export function roundRating({ expPos, grid, finish, fastest, clean, duel, underd
   add(exempt ? `Started ${dq} above expected` : dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
   if (exempt) add('Skipped qualifying on merit', R.duel);     // the skip needs a podium with the teammate not ahead: doing well must not cost the qualifying credit of the next round
   if (finish === 1 && !dnf && !dnq) add('Won the race', R.win);
-  if (dnq) add('Did not qualify', R.dnq);
+  if (dnq) add('Did not qualify', expPos > T.series.gridSize ? R.dnqOutside : R.dnq);   // expected outside the grid, a missed cut is half expected: the qualifying place judges it
   if (fastest) add('Fastest lap of the field', R.fastest);
   if (clean && !dnf) add('Clean race', R.clean);
   if (duel) add(duel.result === 'won' ? 'Beat your teammate' : duel.result === 'lost' ? 'Lost to your teammate' : null, (duel.result === 'won' ? 1 : duel.result === 'lost' ? -1 : 0) * (duel.big ? R.duelBig : R.duel));

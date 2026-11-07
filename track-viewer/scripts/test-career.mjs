@@ -19,6 +19,8 @@ try {
   assert.equal(R.roundRating({ expPos: 1, grid: 1, finish: 8, clean: false, duel: { result: 'level' } }).rr, 3.6, 'P8 in the fastest car is bad');
   assert.ok(R.roundRating({ expPos: 8, grid: 8, finish: 8, dnf: true }).rr < 5, 'a retirement costs');
   assert.ok(!R.roundRating({ expPos: 12, grid: 12, finish: 8, dnf: true }).lines.some((l) => /above expected/.test(l[0])), 'a retirement earns no credit for places');
+  { const dnq = (expPos) => R.roundRating({ expPos, grid: 10, finish: 10, dnq: true }).lines.find((l) => l[0] === 'Did not qualify')[1];   // a missed cut costs in full only a driver expected on the grid
+    assert.equal(dnq(6), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize + 1), R.TUNING.rating.dnqOutside); assert.ok(R.TUNING.rating.dnqOutside > R.TUNING.rating.dnq); }
   { const won = { expPos: 5, grid: 2, finish: 1, fastest: true, clean: false, duel: { result: 'level', skipped: true } }, skipped = R.roundRating({ ...won, exempt: true }), label = (r) => r.lines.map((l) => l[0]);
     assert.equal(skipped.rr, 8.8, 'a win from a skip earned by the last result: not punished for it'); assert.ok(label(skipped).includes('Won the race') && label(skipped).includes('Skipped qualifying on merit') && label(skipped).includes('Started 3 above expected'));
     assert.ok(!label(R.roundRating({ ...won, exempt: true, grid: 7 })).some((l) => /Started|below/.test(l)), 'a worse earned slot costs nothing');
