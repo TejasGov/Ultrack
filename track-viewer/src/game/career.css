@@ -637,7 +637,7 @@
 .cr-cols .r-bolt { color: var(--d-events); }
 .lhead.cr-cols { flex: none; height: calc(30 * var(--u)); color: var(--c-ink-2); }
 .lrow.cr-cols { flex: 1 1 0; min-height: 0; font-size: var(--fs-body); }
-.lrow.cr-cols .c-name { display: flex; align-items: baseline; gap: var(--sp-2); min-width: 0; }
+.lrow.cr-cols .c-name { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2); row-gap: 0; min-width: 0; }   /* a long name puts the series chip under it rather than lose its letters */
 .lrow.cr-cols .c-name b { font-size: var(--fs-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lrow.cr-cols .c-name small { font-size: var(--fs-micro); letter-spacing: 0.04em; text-transform: none; color: var(--c-ink-3); white-space: nowrap; }
 .lrow.cr-cols .r-carname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c-ink-2); }
@@ -693,10 +693,11 @@
   .cx-strip { grid-template-columns: repeat(var(--weeks), calc(64 * var(--u))); overflow-x: auto; scrollbar-width: none; }
   .cx-calrow { --cols: calc(48 * var(--u)) minmax(0, 1fr) auto; }
   .cx-calrow > :nth-child(2), .cx-calrow > :nth-child(4) { display: none; }   /* the kind tag and the conditions: the colour edge and the name say it */
+  .cx-calrow .c-name small { white-space: normal; }   /* a cup's seeding rule and its circuit take two lines rather than lose the circuit */
   .cx-modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* five tiles in a row do not fit a phone */
   .cr-hero { flex-wrap: wrap; gap: var(--sp-3); }
   .cr-pos { flex: 1 1 100%; }
   .cr-deltas { flex-wrap: wrap; gap: var(--sp-3); margin-left: 0; }
-  .cx-teamrow .c-name, .lrow.cr-cols .c-name { flex-wrap: wrap; row-gap: 0; }   /* the series chip goes under the name: beside it, a name kept one letter */
+  .cx-teamrow .c-name { flex-wrap: wrap; row-gap: 0; }   /* the series chip goes under the name: beside it, a name kept one letter */
   .cx-teamrow .c-name > b, .lrow.cr-cols .c-name > b { flex: 1 1 100%; min-width: 0; }
 }

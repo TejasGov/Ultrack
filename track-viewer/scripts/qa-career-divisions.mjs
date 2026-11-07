@@ -30,6 +30,8 @@ const audit = (divided) => page.evaluate((divided) => {
   // a Career Level gate ("Level 8 of 16") is no field size; "/ 8" is wrong only as the Teams' count
   const old = [...s.innerText.matchAll(/.{0,24}((?<!Level \d+ )\bof 16\b|\/ 16\b|\b16 (drivers|cars)|of 12\b|TEAMS'\s+P\d\s*\/ 8\b|[Cc]hampionship).{0,24}/gi)].map((m) => m[0].replace(/\s+/g, ' '));
   if (divided) for (const x of old) bad.add('old copy: ' + x);
+  if (s.querySelector('.cx-top') && !s.querySelector('.cx-me')?.children.length) bad.add('the status bar is empty');   // a round report once lost its statusBar call
+  if (s.dataset.sec === 'report' && !s.querySelector('.cx-bg')?.getAttribute('src')) bad.add('the report has no track backdrop');
   return [...bad].slice(0, 14);
 }, divided);
 async function shot(name, divided = true) {

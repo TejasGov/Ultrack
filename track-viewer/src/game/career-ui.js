@@ -190,7 +190,7 @@ export function CareerReportScreen(game) {
       const save = game.career, fastest = Math.min(...Object.values(rep.best ?? {}).filter(Number.isFinite));
       // with two series (entries carry it): the player's series names the Tour round and the ranking; a cup shows each driver's series and the ranking points it paid
       const D = DIV[rep.entries.find((e) => e.you)?.div], cup = rep.entries.some((e) => e.rpts !== undefined), O = rep.other && DIV[rep.other.div];
-      F.sec('report'); F.title(`Round ${rep.round}: ${rep.name}`, `${D && !cup ? `${D.short} · ` : ''}${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`);   // the series in the subtitle: in the title it pushed the status bar statusBar(F.me, save); F.backdrop('tracks', rep.track);
+      F.sec('report'); F.title(`Round ${rep.round}: ${rep.name}`, `${D && !cup ? `${D.short} · ` : ''}${trackOf(rep.track).name} · ${rep.laps} ${rep.laps === 1 ? 'lap' : 'laps'}`); statusBar(F.me, save); F.backdrop('tracks', rep.track);   // the series in the subtitle: in the title it pushed the status bar
       const verdict = rep.dnq ? (rep.open ? (rep.kind === 'masters' ? 'Missed the Masters' : 'Missed the Final') : 'Did not qualify') : rep.dnf ? 'Retired' : rep.finish === 1 ? 'Victory' : `P${rep.finish}`;
       const name = (e) => C.personOf(save, e.code)?.name ?? e.code, lead = O && C.standings(save, rep.other.div).drivers[0];
       const elsewhere = O ? `${O.short}, same day: ${name(rep.other.entries[0])} won. Top of the ${O.short}: ${lead.name}.` : null;
