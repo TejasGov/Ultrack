@@ -56,7 +56,9 @@ try {
     await page.waitForFunction(() => window.game.screenName === 'careerReport', null, { timeout: 600000, polling: 1000 });
     log('lcq race', JSON.stringify(report.lcqRace)); await page.waitForTimeout(500); await shot('report-lcq');
     report.lcqOutcome = await page.evaluate(() => { const s = window.game.career; return { stage: s.season.current.open?.stage, phase: s.clock.phase, results: s.season.results.length, lcq: s.season.current.open?.lcq?.finish }; }); log('lcq outcome', JSON.stringify(report.lcqOutcome));
-    await go('.cx-go'); await page.waitForFunction(() => window.game.screenName === 'careerHub'); await page.waitForTimeout(400);
+    await go('.cx-go');
+    if (report.lcqOutcome.stage !== 'final') { await page.waitForTimeout(400); await shot('report-lcq-out-final'); await go('.cx-go'); }   // knocked out: the Last Chance table leads on to the Final's result first (c24a9ba)
+    await page.waitForFunction(() => window.game.screenName === 'careerHub'); await page.waitForTimeout(400);
     if (report.lcqOutcome.stage === 'final') {
       await shot('open-home-final'); await go('.cx-go:has-text("Start the Final")'); await page.waitForSelector('.race-loading', { timeout: 20000 }); report.loadingFinal = await page.evaluate(() => document.querySelector('.race-loading').innerText.replace(/\n+/g, ' | ')); await shot('loading-final', [[1280, 720]]);
       await page.waitForFunction(() => window.game?.session?.mode === 'race' && window.game.session.field.rig && !window.game.raceLoading.active, null, { timeout: 300000 });
