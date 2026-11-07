@@ -37,7 +37,6 @@ VIEWS = {
     'braking-for-the-bridge': (at(3050, 1.3), tw - Vector((0, 0, 8))),
     'onto-the-bridge': (at(3160, 1.3), at(3260, 2.0)),
     'bridge-from-the-bank': (at(3255, -3.4, 55), at(3255, -2.6)),
-    'bridge-downstream': (at(3255, -3.0, -60), at(3255, -2.6)),
     'climb-out': (at(3330, 1.3), at(3430, 3.0)),
     'grandstand': (at(3300, 1.3, -3), at(3360, 4.0, 14)),
     'village-air': (at(2900, 120, -150), at(2950, 0.0)),
