@@ -120,6 +120,14 @@ export const TRACKS = {
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  morro: {     // tracks/morro/build_morro.py: Morro Noturno, the career's night street circuit through a hillside neighbourhood over a bay; night only, and always wet in the career (calendar.json wetOnly)
+    id: 'morro', name: 'Morro Noturno', stem: 'morro', dir: '/assets/morro/', look: 'night', times: ['night'], fog: 0.5, sun: [-0.55, -0.77], tag: null,
+    looks: { night: { env: 0.09 } },     // as Venice after dark: little sky light, the lamps' pools (venue/morro.js) light the streets
+    wet: { wet: ['MN | asphalt', 'MN | line white', 'MN | kerb red', 'MN | kerb white', 'MN | pavement'], puddles: ['MN | asphalt'] },
+    voidWalls: true,
+    venue: () => import('./venue/morro.js'),
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
   wold: {     // tracks/wold/build_wold.py: Hartwell Wold, a country road circuit in the English Cotswolds: the wold's top, the escarpment, a river village and its bridge, the park
     id: 'wold', name: 'Hartwell Wold', stem: 'wold', dir: '/assets/wold/', look: 'day', times: ['day', 'dusk'], fog: 0.45, sun: [-0.55, -0.77], tag: null,
     looks: { day: { env: 1.3 }, dusk: { exposure: 0.54, env: 1.05 } },     // more sky light, as Llano and Venice: the high street sits between two rows of houses and would go black
