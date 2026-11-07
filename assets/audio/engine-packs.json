@@ -1227,6 +1227,32 @@
    "match": "Flat-plane V8 supercar",
    "quality": "category-pack",
    "preview": "engines/v3/mp1x-source.ogg"
+  },
+  "zr1": {
+   "name": "Chevrolet Corvette ZR1 supercharged V8",
+   "redline": 6500,
+   "pitch": 1.0,
+   "pack": "cross-v8",
+   "turbo": false,
+   "cars": [
+    "zr1"
+   ],
+   "match": "Cross-plane V8",
+   "quality": "category-pack",
+   "preview": "engines/v3/blackbird-source.ogg"
+  },
+  "stingray": {
+   "name": "Chevrolet Corvette Stingray V8",
+   "redline": 6600,
+   "pitch": 1.0,
+   "pack": "cross-v8",
+   "turbo": false,
+   "cars": [
+    "stingray"
+   ],
+   "match": "Cross-plane V8",
+   "quality": "category-pack",
+   "preview": "engines/v3/blackbird-source.ogg"
   }
  }
 }
