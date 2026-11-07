@@ -1,0 +1,91 @@
+{
+ "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "Chevrolet Corvette ZR1",
+ "source": {
+  "title": "2019 Chevrolet Corvette ZR1",
+  "author": "Ddiaz Design (ddiaz-design)",
+  "authorUrl": "https://sketchfab.com/ddiaz-design",
+  "url": "https://sketchfab.com/3d-models/2019-chevrolet-corvette-zr1-92b1b185b0d44847b0d099a787f8ed12",
+  "license": "CC BY 4.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "modelId": "92b1b185b0d44847b0d099a787f8ed12",
+  "replacement": false,
+  "nonCommercialOnly": false,
+  "additionalCredits": "CSR2 rip (the page says \"Based on a CSR2 3d model\"). Fine for this local fan project, replace before any public release."
+ },
+ "wheels": {
+  "front": {
+   "radius": 0.3291,
+   "width": 0.3014,
+   "x": -1.3796,
+   "track": 1.6479
+  },
+  "rear": {
+   "radius": 0.3444,
+   "width": 0.3681,
+   "x": 1.3302,
+   "track": 1.6275
+  }
+ },
+ "size": {
+  "length": 4.643,
+  "width": 2.152,
+  "height": 1.096
+ },
+ "lights": {
+  "front": [
+   [
+    -1.854,
+    0.642,
+    0.689
+   ],
+   [
+    -1.854,
+    0.642,
+    -0.689
+   ]
+  ],
+  "rear": [
+   [
+    2.088,
+    0.799,
+    0.512
+   ],
+   [
+    2.088,
+    0.799,
+    -0.512
+   ]
+  ]
+ },
+ "glass": {
+  "side": [
+   [
+    -1.645,
+    0.706,
+    0.646
+   ],
+   [
+    -1.645,
+    1.129,
+    0.646
+   ],
+   [
+    1.644,
+    1.129,
+    0.646
+   ],
+   [
+    1.644,
+    0.706,
+    0.646
+   ]
+  ]
+ },
+ "exhaust": [],
+ "triangles": {
+  "body0": 91585,
+  "body1": 26235,
+  "wheel": 6940
+ }
+}

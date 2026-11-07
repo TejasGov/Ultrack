@@ -1,0 +1,59 @@
+{
+  "car": "stingray",
+  "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
+  "suspension": {
+    "pitch": 0.5,
+    "roll": 0.85,
+    "freq": 1.6,
+    "ride": 0.035
+  },
+  "qa": {
+    "waive": [
+      {
+        "view": "left",
+        "at": [
+          0.86,
+          0.56
+        ],
+        "why": "daylight under the rear spoiler, which stands off the deck lid on short posts: open on the real car (traced: trace-left-0.png)"
+      },
+      {
+        "view": "right",
+        "at": [
+          0.13,
+          0.56
+        ],
+        "why": "daylight under the rear spoiler, which stands off the deck lid on short posts: open on the real car (traced: trace-right-1.png)"
+      },
+      {
+        "view": "front-left",
+        "at": [
+          0.69,
+          0.68
+        ],
+        "why": "daylight under the rear spoiler, which stands off the deck lid on short posts: open on the real car (traced: trace-front-left-2.png)"
+      },
+      {
+        "view": "front-right",
+        "at": [
+          0.31,
+          0.68
+        ],
+        "why": "daylight under the rear spoiler, which stands off the deck lid on short posts: open on the real car (traced: trace-front-right-3.png)"
+      },
+      {
+        "view": "low-left",
+        "at": [
+          0.84,
+          0.58
+        ],
+        "why": "daylight under the rear spoiler, which stands off the deck lid on short posts: open on the real car (traced: trace-low-left-4.png)"
+      }
+    ]
+  },
+  "aero": [],
+  "log": [
+    "2026-11-07: new complete model (Sketchfab, see assets/cars/stingray/source.json); first QA run",
+    "run 1: 8 pass, 2 warn, 1 fail. The 5 see-through gaps traced to the open space under the rear spoiler -> waived. Rear arch top gap 1.1 cm (under 1.2) -> ride 0.035. Front poke 21 cm is the ray over the arch meeting the fender where it rolls in toward the low bonnet (the tyres sit inside the body in every view)"
+  ]
+}
