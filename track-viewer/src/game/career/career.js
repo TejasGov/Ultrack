@@ -16,7 +16,7 @@ import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './s
 import { post, unread, markRead } from './inbox.js';
 import { note } from './ledger.js';
 import { poseWeek, settleChoices, settleCallout, answerChoice, choiceOf, openChoices } from './choices.js';
-import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, unreadStories, readStory, storyImage, latestBytes } from './media.js';
+import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, coverSwap, coverChampions, coverGiantKill, divText, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
   offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours, holdsSeat, fallbackOffer, patienceMax, rivalSigns,
@@ -235,7 +235,7 @@ function startSeason(save, available, displaced = null) {
   save.pending = null; save.clock.round = 0; save.clock.week = 0;
   save.garage.package = (save.garage.package ?? 0) + (me.trust >= T.trust.package ? (me.status === 'number1' ? 2 : 1) : 0);   // the team's free level at the season start (5.4), on top of any not yet spent
   prepareRound(save);
-  post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${divs ? DIV[save.season.div].name : TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${save.garage.package ? `You have ${save.garage.package === 1 ? 'a free upgrade level' : `${save.garage.package} free upgrade levels`}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
+  post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${divs ? DIV[save.season.div].name : TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${divs ? `${divText('start', save.season.div, { team: teamName(me.team) })} ` : ''}${save.garage.package ? `You have ${save.garage.package === 1 ? 'a free upgrade level' : `${save.garage.package} free upgrade levels`}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
   if (displaced) post(save, 'team', `${personOf(save, displaced)?.name ?? displaced} lost the seat to you`, 'A free agent now, and not one to forget it.');
   if (displaced) coverDisplaced(save, displaced, me.team);
   upkeep(save);
@@ -389,12 +389,24 @@ function marketRumours(save) {
 }
 /** what a race week's message adds: how the player gets to the grid */
 export function weekNote(save, R) {
-  const { open: o, exempt: ex } = save.season.current;
-  if (!o) return `Practice is open. ${ex ? `After ${ex.why} you skip qualifying and start P${ex.slot}.` : `All ${FIELD} drivers qualify, and the fastest ${T.series.gridSize} race.`}`;
+  const { open: o, exempt: ex } = save.season.current, d = save.season.div, G = T.series.gridSize, n = d ? carsIn(save, d).length : FIELD, who = d ? `${DIV[d].short} ` : '';
+  if (!o) return `Practice is open. ${ex ? `After ${ex.why} you skip qualifying and start P${ex.slot}.` : n <= G ? `All ${n} ${who}cars race: qualifying sets the grid.` : `All ${n} ${who}drivers qualify, and the fastest ${G} race.`}`;
+  if (d) {                                                   // two series: each series' own table seeds the cups
+    const at = `Ranked ${o.rank} in the ${DIV[d].short}`, rule = cupRule(o.kind);
+    if (o.kind === 'masters') return o.seeded ? `${at}: you are in. ${rule} Practice is open.` : `${at}. ${rule} It runs without you.`;
+    if (o.stage === 'final' && !o.seeded && o.lcq) return `Through the Last Chance in P${o.lcq.finish}: you start the Final. Practice is open.`;
+    return o.seeded ? `${at}: straight into the Final. ${rule} Practice is open.`
+      : `${at}. ${rule} One flying lap at ${qualiName(R)}: the fastest ${G} of ${FIELD - o.seeds.length} race the Last Chance there (at least ${DIV.challenger.lcqMin} from the Challenger), and its top ${T.open.lcqThrough} reach the Final. Practice opens at the Final.`;
+  }
   if (o.kind === 'masters') return o.seeded ? `Ranked ${o.rank}: you are in, as one of the top ${o.seeds.length} of the Ultrack Ranking. Practice is open.` : `Ranked ${o.rank}: only the top ${o.seeds.length} of the Ultrack Ranking race the Masters. It runs without you.`;
   if (o.stage === 'final' && !o.seeded && o.lcq) return `Through the Last Chance in P${o.lcq.finish}: you start the Final. Practice is open.`;
   return o.seeded ? `Ranked ${o.rank}: straight into the Final. Practice is open.`
     : `Ranked ${o.rank}: one flying lap at ${qualiName(R)}. The fastest ${T.series.gridSize} race the Last Chance Qualifier there, and its top ${T.open.lcqThrough} reach the Final. Practice opens at the Final.`;
+}
+/** who a cup seeds with two series, in a line: an Open's straight-to-the-Final places, the Masters' field */
+export function cupRule(kind) {
+  const q = kind === 'masters' ? 'masters' : 'openSeeds', e = DIV.elite[q], c = DIV.challenger[q];
+  return kind === 'masters' ? `Top ${e} Elite and top ${c} Challenger race the Masters.` : e === c ? `Top ${e} of each series go straight to the Final.` : `Top ${e} Elite and top ${c} Challenger go straight to the Final.`;
 }
 /** the player's race length (tuning.json series.lengths): every round not yet raced takes it; points and XP do not depend on it */
 export function setRaceLength(save, length) {
@@ -596,11 +608,12 @@ export function finishRace(save, result) {
   if (cur.open) recordOpen(save, R, entries[0], report);
   save.season.results.push(report);
   const press0 = save.mediaN ?? 0;
-  coverRound(save, report); if (cur.open) coverOpen(save, report);
+  coverRound(save, report); if (cur.open) coverOpen(save, report); if (cupless) coverGiantKill(save, report);
   report.life = settleLife(save, report, press0, fix.bill, gross, rivals.lines.length > 0);
   const wk = currentWeek(save); wk.result = { finish, rr: rating.rr, dnf, dnq };
   post(save, 'race', `Round ${R.round}: ${dnq ? `did not qualify, P${grid}` : `${dnf ? 'retired' : `P${finish}`} from P${grid}`}, rating ${rating.rr.toFixed(1)}`, `+${xp.xp} XP, +${earned.toLocaleString('en')} U, reputation ${rep.rep >= 0 ? '+' : ''}${rep.rep}, trust ${trust >= 0 ? '+' : ''}${trust}.`);
   if (report.levelUp) post(save, 'news', `Career Level ${report.levelUp}`, 'Better upgrades and more teams open up as your level rises.', { tab: 'garage' });
+  if (other) seriesNews(save, other);
   save.clock.round++;
   const n = save.season.calendar.length;
   if (save.clock.round === Math.ceil(n / 2) && save.clock.round < n) {
@@ -617,6 +630,16 @@ export function finishRace(save, result) {
  * The mood after a race week (life.js): fan support and happiness move, a driver on top of the world or at the end of his tether makes the papers, and an unhappy one may lose a
  * sponsor (seeded). It reads what happened and moves no lap time, no rival and no car.
  */
+/** the inbox after a Tour round of two series: the other series' result, and once the last Tour round is run, who goes up and down (the cups score no series points) */
+function seriesNews(save, other) {
+  const name = (e) => personOf(save, e.code)?.name ?? e.code, lead = standings(save, other.div).drivers[0], ctx = { other: DIV[other.div].short, gp: currentRound(save).name, winner: name(other.entries[0]), leader: lead.you ? 'You' : lead.name };
+  post(save, 'news', divText('meanwhile', 'title', ctx), divText('meanwhile', 'body', ctx));
+  const rest = save.season.calendar.slice(save.clock.round + 1);
+  if (rest.some((r) => (r.kind ?? 'tour') === 'tour')) return;
+  const n = rest.length, words = ['No', 'One', 'Two', 'Three', 'Four'], left = n ? `${words[n] ?? n} cup ${n === 1 ? 'night' : 'nights'} left.` : '';
+  const c = { up: teamName(standings(save, 'challenger').teams[0].team), down: teamName(standings(save, 'elite').teams.at(-1).team), left };
+  post(save, 'news', divText('decided', 'title', c), divText('decided', 'body', c), { tab: 'standings' });
+}
 function settleLife(save, report, press0, bill, gross, feud) {
   const me = save.contract, news = (save.media ?? []).filter((m) => m.id > press0), before = mood(save).id, R = currentRound(save);
   const good = news.filter((m) => ['win', 'podium'].includes(m.you)).length, bad = news.filter((m) => ['down', 'dnq', 'fired'].includes(m.you) || m.scene === 'fan-hate').length;
@@ -697,9 +720,10 @@ export function standings(save, d = save.season?.div ?? 'all') {
 function endSeason(save) {
   const st = standings(save), me = save.contract, rs = save.season.results, S = save.sponsors, div = save.season.div, W = save.world.teams;
   const teamPos = st.teams.findIndex((t) => t.team === me.team) + 1, cupPos = st.cup.findIndex((t) => t.team === me.team) + 1, drvPos = st.drivers.findIndex((d) => d.you) + 1;
-  let rep = 0, coins = 0, swap = null, yourTeam = null, order = null;
+  let rep = 0, coins = 0, swap = null, yourTeam = null, order = null, champs = [];
   if (div) {                                                 // two series (divisions-spec 5, 6): the Challenger's Teams' champion goes up, the Elite's last team comes down; drivers move only by contract
-    const E = standings(save, 'elite').teams, Ch = standings(save, 'challenger').teams;
+    const SE = standings(save, 'elite'), SC = standings(save, 'challenger'), E = SE.teams, Ch = SC.teams;
+    champs = [['elite', SE], ['challenger', SC]].filter(([, x]) => x.drivers[0]).map(([d, x]) => ({ div: d, row: x.drivers[0] }));
     swap = { up: Ch[0].team, down: E.at(-1).team }; W[swap.up].div = 'elite'; W[swap.down].div = 'challenger';
     yourTeam = me.team === swap.up ? 'up' : me.team === swap.down ? 'down' : null;
     if (div === 'elite') { if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; } if (teamPos === 1) rep += T.rep.teams; }
@@ -729,6 +753,7 @@ function endSeason(save) {
   save.clock.phase = 'review';
   if (!me.next) openWindow(save);
   if (dropped) coverFired(save, me.team); else coverPrincipal(save, me.team);
+  if (swap) { coverChampions(save, champs); coverSwap(save, swap); const c = { up: teamName(swap.up), down: teamName(swap.down) }; post(save, 'news', divText('review', 'title', c), divText('review', 'body', c)); }
   post(save, dropped ? 'warn' : 'race', `Season ${save.clock.season} is over: P${drvPos} in the Drivers'`, dropped ? `${teamName(me.team)} has let you go.` : 'The review and the market are waiting.');
 }
 

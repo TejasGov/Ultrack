@@ -380,5 +380,17 @@
     },
     "sack": ["{principal}: \"The results were not good enough. We need more from that car.\"", "{principal}: \"It is a hard call, and the right one. We move on.\""],
     "bitter": ["{principal}: \"After everything we gave {rival}? Some drivers forget who made them.\"", "{principal}: \"They paid the fee. Let them find out what they bought.\""]
+  },
+  "divisions": {
+    "note": "The two series (media.js coverSwap, coverChampions, coverGiantKill; career.js inbox lines). {elite} and {challenger} are the series' names from tuning.json divisions.",
+    "up": { "title": "{up} go up to the {elite}", "body": "Top of the {challenger} Teams' table, {up} race in the {elite} next season. {down} finish last in the Elite and go down." },
+    "youUp": { "title": "You took {team} up", "body": "{team} top the {challenger} Teams' table and race in the {elite} next season, on the same cars. {down} go the other way." },
+    "youDown": { "title": "{team} go down. Your contract stands.", "body": "Last in the {elite} Teams' table, {team} race in the {challenger} next season. {up} take their place. Any team that signs you buys you out." },
+    "champion": { "title": "{who} wins the {series}", "body": "{pts} points for {team}, with {wins}." },
+    "giantKill": { "title": "{who} beats the Elite at the {gp}", "you": "{who} puts the {challenger} on the podium", "body": "P{place} at the {gp} from the {challenger}, ahead of {beat} Elite drivers." },
+    "start": { "challenger": "Top the {challenger} Teams' table and {team} go up.", "elite": "Finish above the last team in the {elite} Teams' table and {team} stay up." },
+    "meanwhile": { "title": "Meanwhile in the {other}", "body": "{winner} won at the {gp}. {leader} lead the {other}." },
+    "decided": { "title": "The tables are settled", "body": "{up} go up from the {challenger}, and {down} go down from the {elite}. {left} The cups score no series points." },
+    "review": { "title": "{up} are promoted", "body": "{up} race in the {elite} next season. {down} go down to the {challenger}." }
   }
 }

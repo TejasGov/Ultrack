@@ -258,7 +258,27 @@ try {
     const { save } = play(M, 4330, 1.0, 6); assert.equal(save.history.length, 6);
     for (const r of save.history) assert.ok(r.swap && r.swap.up !== r.swap.down, 'one up, one down');
     assert.equal(R.TEAM_IDS.filter((t) => save.world.teams[t].div === 'elite').length, 5); assert.equal(R.TEAM_IDS.filter((t) => save.world.teams[t].div === 'challenger').length, 4);
-    for (let i = 1; i < save.history.length; i++) { const [a, b] = [save.history[i - 1], save.history[i]]; assert.ok(b.teamOrder.slice(0, 5).includes(a.swap.up) && b.teamOrder.slice(5).includes(a.swap.down), 'the promoted team raced the Elite the season after'); } }
+    for (let i = 1; i < save.history.length; i++) { const [a, b] = [save.history[i - 1], save.history[i]]; assert.ok(b.teamOrder.slice(0, 5).includes(a.swap.up) && b.teamOrder.slice(5).includes(a.swap.down), 'the promoted team raced the Elite the season after'); }
+    // the press and the inbox of the two series (spec 11): the player's own swap story, both champions, the review line
+    const told = (s, re) => (s.media ?? []).filter((m) => re.test(m.title)), mail = (s, re) => s.inbox.filter((m) => re.test(m.title));
+    assert.equal(told(up, /^You took Mojave up$/).length, 1); assert.equal(told(up, /wins the (Elite|Challenger) Series$/).length, 2, 'one story per champion');
+    assert.equal(told(up, /^A\. Driver wins the Challenger Series$/).length, 1, 'the player is the Challenger champion'); assert.equal(mail(up, /are promoted$/).length, 1);
+    assert.equal(told(dn, /^Mojave go down\. Your contract stands\.$/).length, 1); }
+  // ---- the inbox through a season of two series, the copy (16.22) and the giant-kill story
+  { const s = signed(4340), notes = [], bad = /(of|\/) 16\b|\b16 (drivers|cars)|of 12\b|\/ 8\b|sixteen/;
+    assert.ok(/Challenger Series, \d+ rounds.*Top the Challenger Series Teams' table and Mojave go up/.test(s.inbox.find((m) => /^Season 1 with/.test(m.title)).body), 'the season start names the target');
+    const seen = new Set(), mails = [], keep = () => { for (const m of s.inbox) if (!seen.has(m.id)) { seen.add(m.id); mails.push(m); } };   // the inbox keeps only the newest
+    while (s.clock.phase !== 'review') { if (s.clock.phase === 'paddock') notes.push(C.weekNote(s, C.currentRound(s))); round(s, C.currentRound(s).kind === 'tour' ? 4 : 1); keep(); }
+    const tours = s.season.calendar.filter((r) => (r.kind ?? 'tour') === 'tour').length;
+    assert.equal(mails.filter((m) => /^Meanwhile in the Elite$/.test(m.title)).length, tours, 'the other series after every Tour round');
+    assert.equal(mails.filter((m) => m.title === 'The tables are settled').length, 1, 'once, after the last Tour round');
+    assert.ok(notes.some((n) => /All 8 Challenger cars race: qualifying sets the grid/.test(n)) && notes.some((n) => /Top 2 of each series go straight to the Final/.test(n)) && notes.some((n) => /Top 5 Elite and top 3 Challenger race the Masters/.test(n)));
+    for (const t of [...notes, ...mails.flatMap((m) => [m.title, m.body]), ...s.media.flatMap((m) => [m.title, m.body])]) assert.ok(!bad.test(t), 'no old field size in a season of two series: ' + t);
+    const rv = s.pending.review; assert.equal(rv.driverCount, 8); assert.equal(rv.teamCount, 4); assert.equal(rv.rankOf, 8);
+    assert.ok(s.media.some((m) => /puts the Challenger Series on the podium$/.test(m.title)), 'a Challenger driver on a cup podium makes the papers'); }
+  // ---- determinism (16.23): three careers of six seasons, run twice, give the same saves and the same swaps
+  for (const seed of [4350, 4351, 4352]) { const a = play(M, seed, [0.975, 1.0, 1.02][seed % 3], 6).save, b = play(M, seed, [0.975, 1.0, 1.02][seed % 3], 6).save;
+    assert.equal(JSON.stringify(a), JSON.stringify(b)); assert.deepEqual(a.history.map((h) => h.swap), b.history.map((h) => h.swap)); assert.ok(a.history.every((h) => h.swap)); }
 
   // ---- the top eight: teammates can both race, and a missed cut is a round of its own
   { const d = signed(150, 'mojave', 'legacy'), me = d.contract.car, mate = C.teammateCar(d); C.finishQuali(d, 1, 1.001); const q = d.season.current.quali; assert.deepEqual(q.grid.slice(0, 2), [me, mate], 'both cars of a team race'); assert.equal(C.raceSetup(d).drivers[mate].code, d.world.seats[mate]); assert.ok(C.raceSetup(d).pace[mate] > 0, 'the teammate races at his pace');
