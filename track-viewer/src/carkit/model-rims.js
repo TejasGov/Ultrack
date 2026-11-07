@@ -10,4 +10,6 @@ const RIMS={
   'ford-gt':['rimpaint'],
   jaguarxkjss:['tyre','crbnfibre'],
 };
+/** whether the car's rims take a paint colour: a model's own wheel material is kept unless it is listed here (the CC850 shares one with its tyres and discs) */
+export const paintsRims = (key) => key in RIMS;
 export function isModelRim(key,name='') {return RIMS[key]?.includes(name.replace(/^[^|]*\|/,''))??false;}
