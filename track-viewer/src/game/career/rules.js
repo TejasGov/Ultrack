@@ -136,7 +136,7 @@ export function duelOf(mine, mate) {
 export const RR_LABELS = [[9, 'Masterclass'], [8, 'Outstanding'], [7, 'Strong'], [6, 'Solid'], [5, 'Poor'], [0, 'Bad']];
 export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
 /** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
-export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt }) {
+export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie }) {
   const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); };
   // places are of the whole field, and two of them weigh what one did when the table was 8: the rating constants are unchanged. No race, no finish to judge
   const dp = dnq ? 0 : dnf ? Math.min(0, expPos - finish) : expPos - finish, dq = expPos - grid, pos = clamp(dp / 2, -R.posClamp, R.posClamp), q = exempt ? clamp(dq / 2, 0, R.qualiClamp) : clamp(dq / 2, -R.qualiClamp, R.qualiClamp);   // a slot earned by the last result never counts against
@@ -144,7 +144,7 @@ export function roundRating({ expPos, grid, finish, fastest, clean, duel, underd
   add(exempt ? `Started ${dq} above expected` : dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
   if (exempt) add('Skipped qualifying on merit', R.duel);     // the skip needs a podium with the teammate not ahead: doing well must not cost the qualifying credit of the next round
   if (finish === 1 && !dnf && !dnq) add('Won the race', R.win);
-  if (dnq) add('Did not qualify', expPos > T.series.gridSize ? R.dnqOutside : R.dnq);   // expected outside the grid, a missed cut is half expected: the qualifying place judges it
+  if (dnq) add('Did not qualify', rookie && expPos > T.series.gridSize ? R.dnqOutside : R.dnq);   // a Rookie expected outside the grid (behind six Legend and six Maestro cars) half expects to miss the cut: the qualifying place judges it
   if (fastest) add('Fastest lap of the field', R.fastest);
   if (clean && !dnf) add('Clean race', R.clean);
   if (duel) add(duel.result === 'won' ? 'Beat your teammate' : duel.result === 'lost' ? 'Lost to your teammate' : null, (duel.result === 'won' ? 1 : duel.result === 'lost' ? -1 : 0) * (duel.big ? R.duelBig : R.duel));

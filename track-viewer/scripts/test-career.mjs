@@ -19,8 +19,9 @@ try {
   assert.equal(R.roundRating({ expPos: 1, grid: 1, finish: 8, clean: false, duel: { result: 'level' } }).rr, 3.6, 'P8 in the fastest car is bad');
   assert.ok(R.roundRating({ expPos: 8, grid: 8, finish: 8, dnf: true }).rr < 5, 'a retirement costs');
   assert.ok(!R.roundRating({ expPos: 12, grid: 12, finish: 8, dnf: true }).lines.some((l) => /above expected/.test(l[0])), 'a retirement earns no credit for places');
-  { const dnq = (expPos) => R.roundRating({ expPos, grid: 10, finish: 10, dnq: true }).lines.find((l) => l[0] === 'Did not qualify')[1];   // a missed cut costs in full only a driver expected on the grid
-    assert.equal(dnq(6), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize + 1), R.TUNING.rating.dnqOutside); assert.ok(R.TUNING.rating.dnqOutside > R.TUNING.rating.dnq); }
+  { const dnq = (expPos, rookie) => R.roundRating({ expPos, grid: 10, finish: 10, dnq: true, rookie }).lines.find((l) => l[0] === 'Did not qualify')[1];   // a missed cut costs in full unless a Rookie expected outside the grid misses it
+    assert.equal(dnq(6), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize + 1), R.TUNING.rating.dnq, 'only a Rookie is let off');
+    assert.equal(dnq(R.TUNING.series.gridSize + 1, true), R.TUNING.rating.dnqOutside); assert.equal(dnq(6, true), R.TUNING.rating.dnq); assert.ok(R.TUNING.rating.dnqOutside > R.TUNING.rating.dnq); }
   { const won = { expPos: 5, grid: 2, finish: 1, fastest: true, clean: false, duel: { result: 'level', skipped: true } }, skipped = R.roundRating({ ...won, exempt: true }), label = (r) => r.lines.map((l) => l[0]);
     assert.equal(skipped.rr, 8.8, 'a win from a skip earned by the last result: not punished for it'); assert.ok(label(skipped).includes('Won the race') && label(skipped).includes('Skipped qualifying on merit') && label(skipped).includes('Started 3 above expected'));
     assert.ok(!label(R.roundRating({ ...won, exempt: true, grid: 7 })).some((l) => /Started|below/.test(l)), 'a worse earned slot costs nothing');
@@ -918,9 +919,9 @@ try {
       const p = signed(3013); C.finishQuali(p, 1); const mt = C.teammateCar(p), mc = p.world.seats[mt], gp = p.season.current.quali.grid; p.season.current.quali.grid = [mt, p.contract.car, ...gp.filter((k) => k !== mt && k !== p.contract.car)].slice(0, gp.length);
       C.finishRace(p, { order: p.season.current.quali.grid, best: {}, crashes: 0, spins: 0, orders: { kind: 'toMate', obeyed: false } }); assert.equal(L.latest(p, { kinds: ['orders_ignored'] }).who, mc);
       toReview(p, 3); const st = p.media.find((m) => /on team orders$/.test(m.title)); assert.ok(st && st.principal === p.contract.team && st.body.includes(C.personOf(p, mc).name), 'the principal quotes it at the season end'); }
-    { const s = signed(3014); s.career.rep = 700; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 20;    // stoking a rumour: that team keener this season, and only this season
+    { const s = signed(3014); s.career.rep = 800; s.career.rr = [8, 8, 8, 8, 8, 8]; s.career.cl = 20;    // stoking a rumour: that team keener this season, and only this season
       const team = R.TEAM_IDS.find((t) => { const i = O.interestFor(s, t); return i !== null && i < 0.85; }), i0 = O.interestFor(s, team), ch = X.pose(s, 'rumour', { ...ctxOf(s), team });
-      X.answerChoice(s, ch.id, 1); s.career.rep = 700; assert.ok(Math.abs(O.interestFor(s, team) - i0 - 0.1) < 1e-9, 'the reputation it also paid aside'); assert.equal(X.leanOf(s, R.TEAM_IDS.find((t) => t !== team)), 0); s.season.choices = {}; assert.equal(O.interestFor(s, team), i0); }
+      X.answerChoice(s, ch.id, 1); s.career.rep = 800; assert.ok(Math.abs(O.interestFor(s, team) - i0 - 0.1) < 1e-9, 'the reputation it also paid aside'); assert.equal(X.leanOf(s, R.TEAM_IDS.find((t) => t !== team)), 0); s.season.choices = {}; assert.equal(O.interestFor(s, team), i0); }
     { const s = signed(3015); s.schema = 9; delete s.season.choices; C.migrate(s); assert.equal(s.schema, C.SCHEMA); assert.deepEqual(s.season.choices, {}, 'a schema-9 save gets no scenes'); }
     const { createHash } = await import('node:crypto'), run = (seed) => { const { save } = play(M, seed, 0.995, 3); return [JSON.stringify(save.career.ledger), createHash('sha1').update(save.media.map((m) => m.title).join('|')).digest('hex')]; };
     assert.deepEqual(run(3100), run(3100), 'the same seed and answers: the same ledger and stories');
@@ -1068,6 +1069,16 @@ try {
       C.migrate(s); assert.equal(s.schema, C.SCHEMA); sound(s, 'at the review'); assert.equal(C.windowInfo(s).day, 0, 'the window is untouched');
       C.acceptOffer(s, s.pending.offers[0].id, avail); sound(s, 'after the market'); assert.ok(s.world.teams.norrsken.expPos <= 4, 'missing from last season\'s table, the team holds its place: ' + s.world.teams.norrsken.expPos);
       round(s, 4); assert.equal(s.season.results[0].entries.length, R.FIELD); }
+    { const s = signed(4104); while (s.season.results.length < s.season.calendar.length - 1) round(s, 4);   // migrated before the last round: a part-season table neither sets the expectation nor sours loyalty
+      eight(s); const me = s.contract, cur = s.season.current; cur.expPos = R.expOf(s.world.teams[me.team].expPos, me.seat); const stale = cur.expPos, ranked = C.rankingOf(s);
+      const twin = (seat) => s.world.seats[ranked[R.expOf(3, seat) - 1].key], pts = (c) => s.ranking.days.reduce((a, d) => a + (d[c] ?? 0), 0), twins = ['A', 'B'].map(twin);
+      C.migrate(s); sound(s, 'before the last round'); assert.equal(s.world.teams.norrsken.joined, 1);
+      assert.equal(cur.expPos, R.expOf(s.world.teams[me.team].expPos, me.seat), 'the round in progress takes the new expected place'); assert.equal(cur.expPos, stale + 2, 'two cars more ahead of a Rookie');
+      assert.deepEqual(CODES.map(pts), twins.map(pts), 'each takes the race-day points of the driver ranked where they are expected'); assert.ok(pts('HAG') > 0);
+      const L0 = { ...s.world.loyalty }; toReview(s, 4); C.acceptOffer(s, s.pending.offers[0].id, avail); sound(s, 'the season after');
+      assert.ok(s.world.teams.norrsken.expPos <= 3, 'a part season does not drop the team: ' + s.world.teams.norrsken.expPos); assert.ok(Object.values(s.world.teams).every((t) => !('joined' in t)), 'the mark goes after one season');
+      for (const [k, c] of NEW.map((k, i) => [k, CODES[i]])) if (s.world.seats[k] === c) assert.ok(s.world.loyalty[c] >= Math.min(100, L0[c] + R.TUNING.market.loyaltyGrow) - R.TUNING.market.loyaltyBeaten, `${c} loses no loyalty for a part season`); }
+    { const s = eight(signed(4105)); C.migrate(s); assert.ok(!('joined' in s.world.teams.norrsken), 'joined before a round is raced: a full season to judge'); }
     { const s = eight(signed(4103, 'liberty')), Wd = s.world;   // an old save already used the codes: an academy driver HAG, the player KOS
       Wd.academy.HAG = { name: 'Greta Haddad', nation: 'SWE' }; Wd.ratings.HAG = 74; Wd.ages.HAG = 21; Wd.loyalty.HAG = 60; Wd.contracts.HAG = 2; Wd.free.push('HAG'); s.career.heat.HAG = 45; s.career.rivalry = { HAG: { cause: 'pass', since: [1, 1], w: 1, l: 0 } };
       s.player.code = 'KOS';

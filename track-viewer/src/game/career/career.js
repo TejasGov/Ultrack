@@ -131,21 +131,29 @@ export function migrate(save) {
 /**
  * Teams in teams.json that a save's world lacks (Norrsken, schema 12) join it as a new career would roll them: the drivers' ratings, ages, contracts,
  * loyalty, ranking seed and seats. The team takes its expected place (every team from there down drops one) and the best development of its tier, so a
- * late joiner is not a lap down. A code the old save already gave someone (the player, an academy driver) is renamed first.
+ * late joiner is not a lap down. A code the old save already gave someone (the player, an academy driver) is renamed first. Each new driver takes the race-day
+ * points of the driver ranked where they are expected, so a mature ranking (its seed faded out) does not put them last. Joined mid-season, the team is marked
+ * `joined`: its part-season table place neither sets next season's expectation nor sours its drivers' loyalty. The round in progress gets the new expected place.
  */
 function addTeams(save) {
-  const W = save.world, fresh = newWorld(save.seed), seed = newRanking(fresh.ratings).seed;
+  const W = save.world, fresh = newWorld(save.seed), seed = newRanking(fresh.ratings).seed, ranked = save.ranking ? rankingOf(save) : [];
   for (const id of TEAM_IDS.filter((t) => !W.teams[t])) {
     const pos = Math.min(TIERS.teams[id].expPos, Object.keys(W.teams).length + 1), peers = Object.keys(W.teams).filter((t) => TIERS.teams[t].tier === TIERS.teams[id].tier);
     for (const t of Object.values(W.teams)) if (t.expPos >= pos) t.expPos++;
-    W.teams[id] = { ...fresh.teams[id], expPos: pos, dev: fresh.teams[id].dev.map((d, i) => Math.max(d, ...peers.map((t) => W.teams[t].dev[i] ?? 0))) };
+    W.teams[id] = { ...fresh.teams[id], expPos: pos, dev: fresh.teams[id].dev.map((d, i) => Math.max(d, ...peers.map((t) => W.teams[t].dev[i] ?? 0))), ...(save.season?.results?.length ? { joined: save.clock.season } : {}) };
     for (const key of ['A', 'B'].map((x) => seatCar(id, x))) {
       const code = CAR[key].driver.code;
       if (save.player.code === code) { save.player.code = codeOf(save.player.name); for (const r of save.season?.results ?? []) for (const e of r.entries) if (e.you) e.code = save.player.code; }
       if (code in W.ratings) { let n = 0; while (`A${String(n).padStart(2, '0')}` in W.ratings) n++; recode(save, code, `A${String(n).padStart(2, '0')}`); }
       W.seats[key] = code; W.ratings[code] = fresh.ratings[code]; W.ages[code] = fresh.ages[code]; (W.contracts ??= {})[code] = fresh.contracts[code]; (W.loyalty ??= {})[code] = fresh.loyalty[code];
-      if (save.ranking) save.ranking.seed[code] = seed[code];
+      if (save.ranking) { save.ranking.seed[code] = seed[code]; const twin = W.seats[ranked[expOf(pos, CAR[key].seat) - 1]?.key];   // by car: a code renamed above is read as it is now
+        if (twin) for (const d of save.ranking.days) if (twin in d) d[code] = d[twin]; }
     }
+  }
+  const cur = save.season?.current, me = save.contract, R = save.season?.calendar?.[save.clock.round];
+  if (cur && me && R && cur.round === R.round) {               // prepareRound ran in the old world: every team below the new one is a place lower now
+    cur.expPos = expOf(W.teams[me.team].expPos, me.seat);
+    if (!cur.quali) cur.objectives = objectivesFor(rng(save.seed, 'obj', save.clock.season, save.clock.round), cur.expPos, me.easier, !!cur.exempt || !!cur.open, cur.open && !cur.open.seeded ? cur.open.to : null);
   }
 }
 /** a driver code renamed everywhere in a save, as a map key or a value: codes are the only three-capital strings a save holds besides nations, which are skipped */
@@ -505,7 +513,7 @@ export function finishRace(save, result) {
   const x = { expPos: cur.expPos, grid, finish, fastest, clean, duel, dnf, dnq };
   const objectives = cur.objectives.map((o) => objectiveFrom(o, grid)).map((o) => ({ ...o, met: objectiveMet(o, x) }));
   const mandatory = objectives[0].met, optional = objectives.slice(1).filter((o) => o.met).length;
-  const rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog });
+  const rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog, rookie: TIERS.tiers[tier].rank === 1 });
   const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry from a higher tier that was expected ahead
   const giantKills = dnf || dnq ? 0 : order.slice(finish).filter((k) => tierOf(CAR[k].team).rank > myRank && expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat) < myExp).length;
   const rivals = heatAfter(save, raced, hero, dnf, { contacts: result.contacts ?? {}, passes: result.passes ?? {}, duel: duel.skipped || dnq ? null : cur.quali.mate.code });   // the qualifying duel heats the teammate, only in a round the player raced
@@ -671,9 +679,10 @@ function nextSeasonWorld(save, before, moved) {
   coverMoves(save, before, W.retired.slice(gone), ev);
   if (h) h.market = { sacked: ev.sacked.length, poached: ev.poached.length };
   if (h?.teamOrder) {
-    const v = Object.fromEntries(TEAM_IDS.map((id) => [id, 0.5 * W.teams[id].expPos + 0.5 * (h.teamOrder.indexOf(id) + 1 || W.teams[id].expPos)]));   // a team that joined after the table (addTeams) holds its place
+    const v = Object.fromEntries(TEAM_IDS.map((id) => [id, 0.5 * W.teams[id].expPos + 0.5 * ((W.teams[id].joined !== h.season && h.teamOrder.indexOf(id) + 1) || W.teams[id].expPos)]));   // a team that joined during the season or after the table (addTeams) holds its place
     [...TEAM_IDS].sort((a, b) => v[a] - v[b] || W.teams[a].expPos - W.teams[b].expPos).forEach((id, i) => { W.teams[id].expPos = i + 1; });
   }
+  for (const id of TEAM_IDS) delete W.teams[id].joined;
   save.clock.season++; save.clock.week = 0;
   for (const code of W.retired.slice(gone)) post(save, 'news', `${personOf(save, code)?.name ?? code} has retired`, 'A seat has opened in the market.');
 }
