@@ -129,7 +129,9 @@ try {
       check('titles a career', mean(L.map((l) => l.titles)), 1.7, 2.5);
       // a Legend title opens Number One; with the cups out of the series tables (D1) the strong driver takes fewer (base 2.27 a career), and Number One sits on the floor: it waits on D1
       openCheck('Number One (D1: the cups score no series points)', any((l) => l.numberOne !== null), 0.55, 0.65, pct); const ow = mean(L.map((l) => l.openWins)); check('Open wins a career, at least', ow, 5.5, Infinity); openCheck('Open wins a career (D1, D8: the Elite top 2 seeded into every Final)', ow, 5.5, 8.5); }
-    if (label === 'average') { const fl = any((l) => l.tier.at(-1) === 'legend'); check('final tier Legend, at most', fl, 0, 0.22, pct); openCheck('final tier Legend (D6)', fl, 0.14, 0.22, pct); }   // 14 % on base f33630d; a third Legend team adds a third more Legend seats
+    if (label === 'average') { const fl = any((l) => l.tier.at(-1) === 'legend'); check('final tier Legend, at most', fl, 0, 0.22, pct); openCheck('final tier Legend (D6)', fl, 0.14, 0.22, pct);
+      // a review finding (the tenth team): an average driver who held a Maestro Elite seat drops back to a Rookie B seat more often (base 4b70646: 22 % / 13 % on seeds 1000 / 3000)
+      const fr = any((l) => l.tier.at(-1) === 'rookie'); check('final tier Rookie, at most', fr, 0, 0.4, pct); openCheck('final tier Rookie (D8, D11: a Maestro Elite seat back to a Rookie one)', fr, 0, 0.25, pct); }   // 14 % on base f33630d; a third Legend team adds a third more Legend seats
     // no pick within a tier may be the quicker way up (a review finding: staying in the Challenger once reached Legend three times as often as taking the Elite): the same careers
     // with the base commit's pick (tier, A seat, pay) and with one that stays in the Challenger, held to the targets' upper ends. The second waits on the user (docs/career-mode.md, D6: no
     // tune measured holds it, see divisions-spec 24)
@@ -164,7 +166,9 @@ try {
       const upWith = (l, x) => { for (let k = x.s - 1; k >= 1; k--) { const r = l.rounds.find((y) => y.s === k); if (r?.team !== x.team) return false; if (r.div === 'challenger') return true; } return false; }, mine = (f) => L.flatMap((l) => l.rounds.filter((x) => x.kind === 'tour' && x.div === 'elite' && f(upWith(l, x))));
       const signedEl = mine((u) => !u), withTeam = mine((u) => u), miss = (l) => l.filter((x) => x.dnq).length / Math.max(1, l.length);
       console.log(`  info  Elite Tour rounds: ${el.length} (${pct(el.length / Math.max(1, tour.length))} of their Tour rounds), ${withTeam.length} of them with a team that went up (cuts missed ${pct(miss(withTeam))}; D4)`);
-      check(`Elite Tour cuts missed in a seat they signed for (${signedEl.length} rounds)`, miss(signedEl), 0, 0.4, pct); }
+      check(`Elite Tour cuts missed in a seat they signed for (${signedEl.length} rounds)`, miss(signedEl), 0, 0.4, pct);
+      // the grace ends after season 1, and a Challenger of ten cuts two (base 4b70646: 0 %, eight cars, no cut); watched so it cannot drift unseen. Waits on D4 / D7
+      const ch2 = tour.filter((x) => x.div === 'challenger' && x.s >= 2); check(`Challenger Tour cuts missed from season 2, at most (${ch2.length} rounds)`, miss(ch2), 0, 0.35, pct); openCheck('Challenger Tour cuts missed from season 2 (D4, D7: a Rookie team almost never goes up)', miss(ch2), 0, 0.1, pct); }
     // the Elite's midfield at the cups (a review finding): an average driver in a Maestro Elite seat, against a Maestro season on the base (missed 33 % of all rounds, 42 % of the
     // Masters, sat out 21 %: a missed Tour cut, no Last Chance at an Open, outside the Masters). The cups' places for the Challenger come out of this seat's share: D8
     if (label === 'average') { const me = L.flatMap((l) => l.rounds.filter((x) => x.tier === 'maestro' && x.div === 'elite')), by = (k) => me.filter((x) => x.kind === k);

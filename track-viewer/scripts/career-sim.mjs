@@ -80,7 +80,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       const rd = C.currentRound(save), car = save.contract.car, u = { ...save.garage.upgrades[car] };
       const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, [u.engine, u.tyres, u.brakes, u.aero]) / skill * (1 + noise(0.008));
       if (rand() < 0.1) { const h = [Math.round(50 + rand() * 130)]; C.logHits(save, h); log.hits++; }   // a crash in qualifying
-      C.finishQuali(save, lapNow()); if (!save.season.current.quali.grid.includes(car)) C.finishQuali(save, lapNow());   // a missed cut uses the one retry
+      C.finishQuali(save, lapNow()); { const q = save.season.current.quali; if (!q.grid.includes(car) || q.grace) C.finishQuali(save, lapNow()); }   // a missed cut uses the one retry; so does a grace start, chasing a real top-8 slot
     } else if (save.clock.phase === 'race') {
       const q = save.season.current.quali, cur = save.season.current, o = cur.open, car = save.contract.car, lcq = o?.stage === 'lcq', V = o && !lcq ? C.currentRound(save) : C.qualiVenue(save);   // the laps in q.laps are the qualifying venue's, so the model stays on that scale unless it is a Final
       // a model, not a measurement: an AI car's pace is its par lap over its pace; a Tour round uses the qualifying laps, an Open's Final (whose seeds flew none) the model for every car
