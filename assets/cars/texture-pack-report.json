@@ -254,15 +254,15 @@
   {
     "key": "stingray",
     "lod": 0,
-    "originalBytes": 6533104,
-    "compressedBytes": 2728228,
+    "originalBytes": 6799224,
+    "compressedBytes": 2765800,
     "textures": 31
   },
   {
     "key": "stingray",
     "lod": 1,
-    "originalBytes": 2156152,
-    "compressedBytes": 1486656,
+    "originalBytes": 2061848,
+    "compressedBytes": 1451224,
     "textures": 27
   }
 ]

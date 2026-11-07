@@ -1,6 +1,6 @@
 {
   "car": "stingray",
-  "date": "2026-11-07T17:38:41.620Z",
+  "date": "2026-11-07T19:40:54.551Z",
   "tuning": {
     "car": "stingray",
     "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
@@ -201,7 +201,7 @@
       "detail": {
         "samples": 536,
         "floating": 0.019,
-        "buried": 0.127,
+        "buried": 0.131,
         "overOpening": 0.013,
         "floatingAt": [
           [
@@ -320,45 +320,45 @@
       "id": "lamps",
       "title": "Tail lamps: red but unlit off the brake, bright and blooming on it",
       "status": "pass",
-      "value": "area 114 cm2; dusk b0: 41.8, dusk b1: 135.8, night b0: 35.4, night b1: 169.2",
+      "value": "area 101 cm2; dusk b0: 42.5, dusk b1: 133, night b0: 34.4, night b1: 164.8",
       "expect": "off: lum < 125, red; on: ≥ 90 and ≥ off + 40 (saturated red has low luminance; glossy lenses mirror the sky when off)",
       "fix": "carkit/lamps.js (levels are shared; area-normalised); tuning.lamps only for a real exception",
       "detail": [
         {
           "look": "dusk",
           "brake": 0,
-          "area": 0.0114,
-          "px": 1182,
-          "lum": 41.8,
-          "redOverGreen": 4.63,
-          "peak": 108
+          "area": 0.0101,
+          "px": 994,
+          "lum": 42.5,
+          "redOverGreen": 4.48,
+          "peak": 92
         },
         {
           "look": "dusk",
           "brake": 1,
-          "area": 0.0114,
-          "px": 1182,
-          "lum": 135.8,
-          "redOverGreen": 2.2,
-          "peak": 159
+          "area": 0.0101,
+          "px": 994,
+          "lum": 133,
+          "redOverGreen": 2.19,
+          "peak": 153
         },
         {
           "look": "night",
           "brake": 0,
-          "area": 0.0114,
-          "px": 1182,
-          "lum": 35.4,
-          "redOverGreen": 36.58,
-          "peak": 99
+          "area": 0.0101,
+          "px": 994,
+          "lum": 34.4,
+          "redOverGreen": 40.47,
+          "peak": 56
         },
         {
           "look": "night",
           "brake": 1,
-          "area": 0.0114,
-          "px": 1182,
-          "lum": 169.2,
-          "redOverGreen": 1.6,
-          "peak": 189
+          "area": 0.0101,
+          "px": 994,
+          "lum": 164.8,
+          "redOverGreen": 1.61,
+          "peak": 187
         }
       ]
     },
@@ -407,7 +407,7 @@
       "id": "fx",
       "title": "Exhaust smoke, pops, nitro flames and drift smoke all show",
       "status": "pass",
-      "value": "idle smoke 32, pop fire 14, nitro fire 55, drift smoke 410",
+      "value": "idle smoke 31, pop fire 16, nitro fire 52, drift smoke 414",
       "expect": "all > 0 (drift > 20)",
       "fix": "exhaust.json points; carkit/fx.js rates"
     }
@@ -416,10 +416,10 @@
     "pitch": 1.0651089190024718,
     "roll": 1.9657665604507406,
     "aero": 0,
-    "smokeIdle": 32,
-    "fireLift": 14,
-    "fireNitro": 55,
-    "smokeDrift": 410,
+    "smokeIdle": 31,
+    "fireLift": 16,
+    "fireNitro": 52,
+    "smokeDrift": 414,
     "clearBrake": 0.021
   }
 }

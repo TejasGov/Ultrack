@@ -1,6 +1,6 @@
 # Car QA: stingray
 
-2026-11-07T17:38:41.620Z
+2026-11-07T19:40:54.551Z
 
 9 pass, 2 warn, 0 fail, 1 review, 1 info
 
@@ -12,12 +12,12 @@
 | PASS | Glass sits in the openings, not on top of the paint or under it | floating 2%, buried 13%, over openings 1% | floating ≤ 5%, buried ≤ 30% | tuning.glass { push } (m, along the pane normal) |
 | PASS | Exhaust and nitro points sit on the rear surface with a clear exit | 4 points, 0 off the body or blocked, asymmetry 0 m | on the surface (−4..+8 cm), unblocked, mirror-symmetric | assets/cars/exhaust.json tips [y, z] (and up for top exits); ?debug=exhaust shows them |
 | PASS | Side mirrors: real-style housings, both sides, symmetric, on short arms | the model's own, asymmetry 0 m, housing gap -0.059 / -0.059 m | tuned style, asymmetry ≤ 2 cm, gap 1.5-32 cm | tuning.mirrors { style: blade|gt|bullet, scale, offset, housing } |
-| PASS | Tail lamps: red but unlit off the brake, bright and blooming on it | area 114 cm2; dusk b0: 41.8, dusk b1: 135.8, night b0: 35.4, night b1: 169.2 | off: lum < 125, red; on: ≥ 90 and ≥ off + 40 (saturated red has low luminance; glossy lenses mirror the sky when off) | carkit/lamps.js (levels are shared; area-normalised); tuning.lamps only for a real exception |
+| PASS | Tail lamps: red but unlit off the brake, bright and blooming on it | area 101 cm2; dusk b0: 42.5, dusk b1: 133, night b0: 34.4, night b1: 164.8 | off: lum < 125, red; on: ≥ 90 and ≥ off + 40 (saturated red has low luminance; glossy lenses mirror the sky when off) | carkit/lamps.js (levels are shared; area-normalised); tuning.lamps only for a real exception |
 | REVIEW | Premium look against the reference (judged by eye: look.png, reference.png) | - | as good as the Endurance garage frames | finishes.json (paint), tuning.mirrors, lamps; geometry limits need a better source model |
 | PASS | Body dips under braking (1 g) | 1.07° | 0.8-3.2° | tuning.suspension { pitch, freq, damping } |
 | PASS | Body rolls in a corner | 1.97° | 0.6-3.5° | tuning.suspension { roll } |
 | PASS | Tyres stay clear of the arches with the nose down | 0.021 m | ≥ 0 | tuning.suspension { pitch } lower, or { ride } higher |
 | INFO | Active aero (none set for this car) | - | only for cars that have it | tuning.aero |
-| PASS | Exhaust smoke, pops, nitro flames and drift smoke all show | idle smoke 32, pop fire 14, nitro fire 55, drift smoke 410 | all > 0 (drift > 20) | exhaust.json points; carkit/fx.js rates |
+| PASS | Exhaust smoke, pops, nitro flames and drift smoke all show | idle smoke 31, pop fire 16, nitro fire 52, drift smoke 414 | all > 0 (drift > 20) | exhaust.json points; carkit/fx.js rates |
 
 Sheets: look.png, reference.png, masks.png, lamps.png, drive.png (this folder).

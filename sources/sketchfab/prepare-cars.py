@@ -490,13 +490,17 @@ def stingray():
         if mn.startswith(('Interior', 'SeatBelt', 'Textured', 'Engine')): put(o, 'INT:' + mn, 'keep'); continue
         if mn.startswith('Window'): csr2_glass(o, -1.6, 1.9); continue
         if mn.startswith('LightA'):
-            t = split(o, lambda f, uvl: at(f).y > 1.0 and red(face_rgb(em, f, uvl)))
+            # whole lit elements (islands a quarter red or more), not single faces: face by face the lamps lit as specks. The thin strip across the
+            # tail's centre stays the model's own, or the game's generic lamp puts a third halo over the plate
+            bm = bmesh.new(); bm.from_mesh(o.data); uvl = bm.loops.layers.uv.active; lit = set()
+            for fs in islands(bm):
+                c = sum((at(f) for f in fs), Vector()) / len(fs)
+                if c.y > 1.0 and abs(c.x) > 0.3 and sum(red(face_rgb(em, f, uvl)) for f in fs) >= 0.25 * len(fs): lit.update(f.index for f in fs)
+            bm.free()
+            t = split(o, lambda f, uvl: f.index in lit)
             if t: put(t, 'taillamps', 'tail')
             if t is o: continue
-            h = split(o, lambda f, uvl: at(f).y < -1.0 and lum(face_rgb(em, f, uvl)) > 0.45 and not red(face_rgb(em, f, uvl)))
-            if h: put(h, 'headlamps', 'head')
-            if h is not o: put(o, 'lamps', 'keep')
-            continue
+            put(o, 'lamps', 'keep'); continue                                       # the headlamps keep the lamp map, as on the ZR1 (the game's head material has none: black slits); the covers give the beam points
         if mn.startswith('Coloured'):                                               # the glossy dark trim: the mirror glass is its rear-facing faces in the heads
             g = split(o, mirror)
             if g: put(g, 'mirrorglass', 'mirror')

@@ -36,6 +36,9 @@
   "budget": {
     "body0": 100000,
     "body1": 25000,
-    "wheel": 8000
+    "wheel": 8000,
+    "whole": [
+      "paint"
+    ]
   }
 }

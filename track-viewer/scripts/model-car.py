@@ -230,11 +230,11 @@ def decimate(objs, budget, weight=lambda o: 1):
     if total <= budget: return
     r = budget / total
     for o in objs:
-        if tris(o) < 400: continue
+        if tris(o) < 400 or r * weight(o) >= 1: continue
         mod = o.modifiers.new('dec', 'DECIMATE'); mod.ratio = max(0.02, min(1, r * weight(o)))
         bpy.context.view_layer.objects.active = o; bpy.ops.object.modifier_apply(modifier='dec')
-heavy = cfg.get('interior', [])
-decimate(body, B.get('body0', 130000), lambda o: 0.5 if has(o, heavy) else 1.15)
+heavy, whole = cfg.get('interior', []), B.get('whole', [])   # budget.whole: parts lod0 keeps as modelled (a decimated paint shell shows creases)
+decimate(body, B.get('body0', 130000), lambda o: 1e9 if has(o, whole) else 0.5 if has(o, heavy) else 1.15)
 for k in parts: decimate(parts[k]['spin'] + parts[k]['caliper'], B.get('wheel', 10000))
 
 # join per material inside each group (fewer draws), parent wheels to hub empties
