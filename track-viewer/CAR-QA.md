@@ -218,6 +218,23 @@ Two Sketchfab models by Ddiaz Design (the author of the GT4, the Nissan Z and th
 - **Engine sound:** both play the McLaren 720S recording (a twin-turbo flat-plane V8, `sharedWith: mp1x`; the `flat-v8` pack in `engine-packs.json`), redline 8,500 rpm. `verify_recorded_engines.py` asserts the bank's keys equal the team cars, so it fails until the team step adds them to `teams.json`.
 - **Before the team exists:** `assemble` reads the team's colours (`TEAM_OF`) and the career rules need a tier entry, so the QA, garage and race checks ran against an uncommitted test team. The menu stills (`make-ui-stills.mjs cars|side|thumbs`, `ONLY=jesko,cc850`) are painted in the team colour, so they are made in the team step.
 
+### Corvette ZR1 and Corvette Stingray (2026-11-07)
+
+Two Sketchfab models by Ddiaz Design (the Koenigseggs' author), both CC BY 4.0, picked by the user for the 10th team, a Maestro team (the team is a separate step, as with the Koenigseggs).
+
+| Key | Model | Triangles (source / body lod0 / lod1 / wheel) | Length used | Rip verdict |
+|---|---|---|---|---|
+| `zr1` | 2019 Chevrolet Corvette ZR1 (C7, ZTK high wing), "Corvette ZR1" | 160k / 92k / 26k / 6.9k | 4.643 m (scaled to the real 2.710 m wheelbase; 285/30 ZR19 and 335/25 ZR20 tyres then match within 2 %) | Certain: "Based on a CSR2 3d model"; one mesh per material like the CC850, wheels as ~630 loose `polySurface` pieces |
+| `stingray` | 2020 Chevrolet Corvette C8 Stingray, "Corvette Stingray" | 252k / 86k / 26k / 8.1k | 4.611 m (scaled to the real 2.723 m wheelbase; the published length is 4.630 m) | Certain: "Model from CSR2"; its wheels come from another Sketchfab model the page links (https://skfb.ly/ooPvp, credited in `additionalCredits`), one tyre size front and rear |
+
+- **Prepare** (`prepare-cars.py -- zr1|stingray`, the CC850's CSR2 rules). Both: the inner window faces (`WindowInside`) go; the windows split into headlamp covers (`headkeep`), tail covers and glass. ZR1: every `polySurface` child is a wheel piece (the `Wheel1A` tyre, the carbon spokes, nuts, the calipers and their badge decals); the carbon spokes get their own `rimpaint` material, so the finish's rim colour reaches them and not the body carbon (`model-rims.js`); the tail lamps are the `red_glass` lenses above 0.6 m (the bumper reflectors below stay); the mirror glass is the rear-facing faces of the `Coloured` part inside the two heads. Stingray: the emissive lamp overlay repeats the lamp mesh (dropped) and its emissive map picks the tail lamps (red, including the centre high-mounted strip) and headlamps; the wheel groups are the linked wheel model's (`Tire_*` are tyres); the mirror glass is the rear-facing faces of the glossy `Coloured` trim in the heads.
+- **Tuning:** ZR1 ride 0.03 m, Stingray 0.035 (rear arch top gap 1.1 cm at 0.03), pitch 0.5. The see-through gaps are the daylight under the ZR1's ZTK wing and under the Stingray's spoiler, which stands off the deck lid on short posts: traced and waived. Both end 9 pass, 2 warn: the advisory glass count, and the front poke reading (ZR1 9 cm, Stingray 22 cm), the ray at 1.15 R meeting the fender where it rolls in over the arch; the tyres sit inside the body in every view.
+- **Plate:** the Stingray's `ManufacturerPlate` renders as a dark blank in the game, as on the CC850.
+- **Handling:** no balance needed. AI solo laps on Marina (`physics-harness.mjs --tests lap --assist ai --weather dry`) at bop 1: ZR1 116.3 s against the Maestro A cars' 116.1-116.4 s (av12, porsche1, aston-martin-valk at their own balance), Stingray 117.7 s against the Maestro B cars' 116.4-119.5 s (huracan, mp1x, bentley-gt). Both pass `physics-turning.mjs`.
+- **Engine sound:** both play the Mustang GT V8 recording (the Blackbird's, the existing American cross-plane V8; `sharedWith: blackbird`, the `cross-v8` pack), redlines 6,500 rpm (LT5) and 6,600 rpm (LT2).
+- **Display names** are "Corvette ZR1" and "Corvette Stingray" (`source.json` `name`): "Chevrolet Corvette ..." was cut off in the garage title.
+- **Before the team exists:** as with the Koenigseggs, the QA, garage and quick races (the player in each car, then the AI in each) ran against an uncommitted stand-in team; the stills and `startup-budget.json` (which counts team cars) come with the team step.
+
 ## The AV-12 Meshy shell, the first worked example (`tuning/av12.json` → `log`)
 
 | Run | Found | Fix |
