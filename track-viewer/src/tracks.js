@@ -120,6 +120,14 @@ export const TRACKS = {
     voidWalls: true,
     has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
   },
+  morro: {     // tracks/morro/build_morro.py: Morro Noturno, the career's night street circuit through a hillside neighbourhood over a bay; night only, and always wet in the career (calendar.json wetOnly)
+    id: 'morro', name: 'Morro Noturno', stem: 'morro', dir: '/assets/morro/', look: 'night', times: ['night'], fog: 0.5, sun: [-0.55, -0.77], tag: null,
+    looks: { night: { env: 0.09 } },     // as Venice after dark: little sky light, the lamps' pools (venue/morro.js) light the streets
+    wet: { wet: ['MN | asphalt', 'MN | line white', 'MN | kerb red', 'MN | kerb white', 'MN | pavement'], puddles: ['MN | asphalt'] },
+    voidWalls: true,
+    venue: () => import('./venue/morro.js'),
+    has: { pit: false, vip: false, hoardings: false, people: false, yachts: false, buildings: false, teamDress: false },
+  },
 };
 // A deploy's file versions (deploy-build.mjs): a changed file gets a new URL. The bucket sends no Cache-Control, so a browser may reuse an old copy for hours after an upload.
 const REV = typeof __ASSET_REV__ === 'undefined' ? {} : __ASSET_REV__;

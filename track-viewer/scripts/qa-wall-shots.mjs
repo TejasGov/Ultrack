@@ -13,7 +13,7 @@ const browser = await chromium.launch({ executablePath: ['C:/Program Files/Googl
 const ctx = await browser.newContext({ viewport: { width: 960, height: 540 } });
 await ctx.addInitScript(([t, c]) => { try { localStorage.setItem('ultrack.v1', JSON.stringify({ car: c, settings: { track: t, look: 'day', weather: 'dry' } })); } catch { /* none */ } }, [track, car]);
 const page = await ctx.newPage();
-await page.goto('http://127.0.0.1:5180');
+await page.goto(process.env.QA_URL ?? 'http://127.0.0.1:5180');   // QA_URL: another session's Vite
 await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
 await page.keyboard.press('Enter');
 await page.click('.bento-tile[data-id=free]');

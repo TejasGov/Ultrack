@@ -74,7 +74,9 @@ function patch(m, kind, uniforms, patched, k = 0) {
   patched.push({ m, prev, prevKey });
 }
 
-export async function create({ root, lights }) {
+/** opts, for another track's lamps (venue/morro.js): ground, its { material name: gain } for road and paving; wall, a RegExp on the materials that take the pools as walls */
+export async function create({ root, lights }, opts = {}) {
+  const GR = opts.ground ?? GROUND, WL = opts.wall ?? WALL;
   const lamps = lights?.streetLamps ?? [], wash = lights?.wash ?? [];
   if (!lamps.length) return { setLook() {}, dispose() {} };
   const map = buildMap(lamps, wash), patched = [];
@@ -82,11 +84,11 @@ export async function create({ root, lights }) {
   root.traverse((o) => {
     if (!o.isMesh) return;
     for (const m of [].concat(o.material ?? [])) {
-      const kind = o.name === 'water' || o.userData.surface === 'water' ? 'water' : GROUND[m.name] ? 'ground' : WALL.test(m.name) ? 'wall' : null;
-      if (kind) patch(m, kind, uniforms, patched, GROUND[m.name] ?? 0);
+      const kind = o.name === 'water' || o.userData.surface === 'water' ? 'water' : GR[m.name] ? 'ground' : WL.test(m.name) ? 'wall' : null;
+      if (kind) patch(m, kind, uniforms, patched, GR[m.name] ?? 0);
     }
   });
-  console.info(`venice night: ${lamps.length} lamps, ${wash.length} floods, map ${map.w} x ${map.h}, ${patched.length} materials`);
+  console.info(`${opts.label ?? 'venice'} night: ${lamps.length} lamps, ${wash.length} floods, map ${map.w} x ${map.h}, ${patched.length} materials`);
   return {
     setLook(look, params) { uniforms.uVeLamp.value.copy(WARM).multiplyScalar((look.lights ?? 0) * (params?.venueLights ?? 1)); },
     dispose() {
