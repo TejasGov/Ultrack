@@ -71,6 +71,9 @@ const NUMBER = {
   hayate: ['roundel', 's', 'a', 'p'],    // white plate, vermilion ring, violet digits
   norrsken: ['roundel', 'p', 's', 'a'],  // graphite plate, aurora-green ring, ice digits
 };
+/** a car whose bodywork takes the shared decal places badly: the bonnet logo's place (share of the length from the nose) and width (share of the car's), and
+ * whether the title sponsor goes on the rear deck. The CC850's bonnet vent and creases cut the logo; its louvred engine cover split the deck sponsor into two fins */
+const FIT = { cc850: { bonnet: [0.12, 0.4], deck: false } };
 const role = (c, r) => ({ p: c.primary, s: c.secondary, a: c.accent })[r];
 /** lettering on the team's own paint: colors.ink where the accent is too pale for it (Toro's yellow), else the accent */
 const ink = (c) => c.ink ?? c.accent;
@@ -294,10 +297,11 @@ export async function makeLivery({ team, car, profile, box, k = 256 }) {
     TOPS[team.id]?.(top, P, L, c, team);
     const roofX = (Math.min(...profile.glass.side.map((p) => p[0])) + Math.max(...profile.glass.side.map((p) => p[0]))) / 2;
     numberPlate(top, team, car.number, ...P(roofX, 0), 0.2, up);
-    drawTeamLogo(top.g,team,...P(L.x0+len*.17,0),wid*.5*k,.25*k,{rot:Math.PI/2});
+    const [bx, bw] = FIT[car.key]?.bonnet ?? [0.17, 0.5];
+    drawTeamLogo(top.g,team,...P(L.x0+len*bx,0),wid*bw*k,.25*k,{rot:Math.PI/2});
     const deck = L.x1 - Math.max(0.3, (L.x1 - L.x0) * 0.07);
     drawTeamLogo(top.g,team,...P(deck,0),wid*.65*k,.3*k,{rot:up});
-    sticker(top, team.sponsor, ...P((roofX + deck) / 2 + 0.15, 0), 0.5, 0.12, up);
+    if (FIT[car.key]?.deck !== false) sticker(top, team.sponsor, ...P((roofX + deck) / 2 + 0.15, 0), 0.5, 0.12, up);
   }
 
   // rear: seen from behind, +Z on the left of the canvas
