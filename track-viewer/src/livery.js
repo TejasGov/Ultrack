@@ -75,7 +75,7 @@ const NUMBER = {
 /** a car whose bodywork takes the shared decal places badly: the bonnet logo's place (share of the length from the nose) and width (share of the car's),
  * whether the title sponsor goes on the rear deck, and the flanks' title sponsor moved forward (m) and scaled. The CC850's bonnet vent and creases cut the logo,
  * its louvred engine cover split the deck sponsor into two fins, and its side intake cut the flank sponsor */
-const FIT = { cc850: { bonnet: [0.12, 0.4], deck: false, flank: [0.58, 0.62] } };
+const FIT = { cc850: { bonnet: [0.12, 0.4], deck: false, flank: [0.58, 0.62] }, zr1: { bonnet: [0.065, 0.3] }, stingray: { flank: [0.6, 0.62] } };   // the ZR1's carbon hood vent hides the shared bonnet place; the Stingray's side intake cut the flank sponsor
 const role = (c, r) => ({ p: c.primary, s: c.secondary, a: c.accent })[r];
 /** lettering on the team's own paint: colors.ink where the accent is too pale for it (Toro's yellow), else the accent */
 const ink = (c) => c.ink ?? c.accent;
@@ -204,7 +204,7 @@ const FLANK = {
   },
   // the trout's red band: a rose lens from nose to tail at the door line, edged in black, and black speckles over the rear quarter
   steelhead(s, P, L, c) {
-    const { x0, x1, xr, wy } = L, g = s.g, yc = 0.24 + (wy - 0.24) * 0.55, a = x0 + 0.08, b = x1 - 0.04;
+    const { x0, x1, xr, wy } = L, g = s.g, yc = 0.24 + (wy - 0.24) * 0.36, a = x0 + 0.08, b = x1 - 0.04;
     const edge = (sign) => { const pts = []; for (let i = 0; i <= 40; i++) { const t = i / 40, x = a + (b - a) * t, w = Math.sin(Math.PI * Math.min(1, t * 1.25)) ** 0.7; pts.push(P(x, yc + 0.02 * Math.sin(Math.PI * t) + sign * 0.05 * w)); } return pts; };
     const top = edge(1), bottom = edge(-1).reverse();
     g.beginPath(); [...top, ...bottom].forEach(([x, y], i) => (i ? g.lineTo : g.moveTo).call(g, x, y)); g.closePath();
