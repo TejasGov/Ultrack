@@ -42,6 +42,7 @@ const VIEWS = {
   qingshan: { look: 'day', cam: [1470, 3.2, -1], tgt: [1590, 9, -4] },      // down the top straight: forest left, lake and wind farm right, the red roof ahead
   pilbara: { look: 'dusk', cam: [205, 5, 4], tgt: [222, 2, 0] },       // into the switchback, the benches beyond
   terminal: { look: 'dusk', cam: [650, 3.5, 2], tgt: [40, 12, 2] },    // down the quay under the cranes, from far enough back that the grid sits small in the distance
+  wold: { look: 'day', cam: [1048, 3.2, 1], tgt: [1100, 4, 0] },         // down the high street: honey-stone cottages both sides, bunting, the church tower ahead
 };
 // the menu's other tiles: a view of a circuit, its own picture, not the Race tile's; 800 px, they show small and faded
 const TILES = {
