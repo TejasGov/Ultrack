@@ -6,24 +6,24 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
-  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor,
+  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, teamsIn, carsIn, expIn, lcqGrid, seedsOf, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor, playerRating,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
-import { YOU, newWorld, contractFor, loyaltyFor, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
+import { YOU, newWorld, splitOf, contractFor, loyaltyFor, personOf, driverAt, sessionDriver, takeSeat, marketMoves, heatAfter, nemesisAmong, heatUp, rivalsOf } from './world.js';
 import { hire, hireInfo, discount, tierNow, STAFF, STAFF_LIST, ROLES } from './staff.js';
 import { post, unread, markRead } from './inbox.js';
 import { note } from './ledger.js';
 import { poseWeek, settleChoices, settleCallout, answerChoice, choiceOf, openChoices } from './choices.js';
-import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, unreadStories, readStory, storyImage, latestBytes } from './media.js';
+import { coverLife, coverRound, coverOpen, coverMoves, coverDisplaced, coverSigning, coverHotSeat, coverFired, coverOrders, coverRumour, coverPrincipal, coverSwap, coverChampions, coverGiantKill, divText, unreadStories, readStory, storyImage, latestBytes } from './media.js';
 import {
-  offer, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
+  offer, offGrid, findOffer, mateOf, releaseCut, leverageOf, canNegotiate, leversOf, openingAsk, pushOf, patienceOf, negotiate, walkAway, midSeason, signMid, teamOutlook, approach, seasonOffers,
   sponsorSlots, sponsorOffers, signSponsor, sponsorRound, sponsorCredit, sponsorSkipped, sponsorUpset, sponsorWalks, demandTransfer, rumours, holdsSeat, fallbackOffer, patienceMax, rivalSigns,
 } from './offers.js';
 import { openWindow, windowInfo, windowWarnings, windowDay, TACTICS, tacticInfo, useTactic } from './transfers.js';
 
-export const SCHEMA = 12;
+export const SCHEMA = 13;
 export { rankingOf, playerRank };
 export { hire as hireStaff, hireInfo as staffInfo, discount as staffDiscount, tierNow as staffTier, STAFF, STAFF_LIST, ROLES as STAFF_ROLES };
 export { unreadStories, readStory, storyImage, latestBytes };
@@ -56,7 +56,7 @@ export function newCareer({ name = 'A. Driver', nation = 'IND', number = 99, see
     contract: null, wallet: { coins: T.money.startWallet },
     garage: { upgrades: {}, paid: {}, package: 0 }, staff: { crew: null, engineer: null }, life: newLife(),
     world, ranking: newRanking(world.ratings), hall: [], season: null, pending: null, history: [], inbox: [], inboxN: 0, sponsors: { deals: [], offers: [] },
-    stats: { starts: 0, wins: 0, podiums: 0, poles: 0, fastest: 0, cups: 0, titles: 0, ...openStats() },
+    stats: { starts: 0, wins: 0, podiums: 0, poles: 0, fastest: 0, cups: 0, titles: 0, promotions: 0, relegations: 0, ...openStats() },
   };
 }
 /** the Open records in save.stats: wins at each Open (career), Masters wins, the season the Triple Crown was first completed (0: not yet), Grand Slams (all three Opens in one season) */
@@ -123,6 +123,15 @@ export function migrate(save) {
     save.schema = 11;
   }
   if (save.schema === 11) { addTeams(save); save.schema = 12; }   // before Norrsken (2026-11-07): the new team joins the world
+  if (save.schema === 12) {                                   // before the two series (2026-11-07): each team's by today's expected place. A season under way has no season.divs, so it finishes as one field; the split starts next season
+    const split = splitOf((t) => save.world.teams[t].expPos);
+    for (const id of TEAM_IDS) save.world.teams[id].div = split[id];
+    save.stats.promotions ??= 0; save.stats.relegations ??= 0;
+    for (const o of [...(save.pending?.offers ?? []), ...(save.season?.mid ?? [])]) if (o.team in split) o.div ??= split[o.team];
+    const mine = save.contract && DIV[split[save.contract.team]];
+    if (save.season && mine) post(save, 'news', 'Two series from next season', `The Tour splits into the Elite and Challenger Series. ${teamName(save.contract.team)} start in the ${mine.name}.`);
+    save.schema = 13;
+  }
   for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
   for (const d of save.sponsors?.deals ?? []) d.mood = Math.min(d.mood, SPONSORS.startMood + 3);   // drift days raised goodwill with no cap: over it, the next gold would read as goodwill down
   return save;
@@ -220,11 +229,12 @@ export function acceptOffer(save, id, available) {
 // ---------------------------------------------------------------------------------------------- seasons and weeks
 function startSeason(save, available, displaced = null) {
   const me = save.contract, tier = TIERS.teams[me.team].tier, world = TIERS.tiers[tier].world, calendar = buildCalendar(save.seed, save.clock.season, world, available, save.rules.raceLength);
-  save.season = { tier, world, calendar, weeks: buildWeeks(calendar, TIERS.teams[me.team].side ?? 'test'), results: [], current: null, mid: [], asked: {}, choices: {} };
+  const divs = TEAM_IDS.every((t) => DIV.order.includes(save.world.teams[t].div)) ? Object.fromEntries(TEAM_IDS.map((t) => [t, save.world.teams[t].div])) : null;   // this season's series; a world without them (fewer teams) races one field
+  save.season = { tier, world, calendar, weeks: buildWeeks(calendar, TIERS.teams[me.team].side ?? 'test'), results: [], current: null, mid: [], asked: {}, choices: {}, ...(divs ? { divs, div: divs[me.team] } : {}) };
   save.pending = null; save.clock.round = 0; save.clock.week = 0;
   save.garage.package = (save.garage.package ?? 0) + (me.trust >= T.trust.package ? (me.status === 'number1' ? 2 : 1) : 0);   // the team's free level at the season start (5.4), on top of any not yet spent
   prepareRound(save);
-  post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${save.garage.package ? `You have ${save.garage.package === 1 ? 'a free upgrade level' : `${save.garage.package} free upgrade levels`}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
+  post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${divs ? DIV[save.season.div].name : TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${divs ? `${divText('start', save.season.div, { team: teamName(me.team) })} ` : ''}${save.garage.package ? `You have ${save.garage.package === 1 ? 'a free upgrade level' : `${save.garage.package} free upgrade levels`}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
   if (displaced) post(save, 'team', `${personOf(save, displaced)?.name ?? displaced} lost the seat to you`, 'A free agent now, and not one to forget it.');
   if (displaced) coverDisplaced(save, displaced, me.team);
   upkeep(save);
@@ -232,9 +242,13 @@ function startSeason(save, available, displaced = null) {
 }
 /** the next round's expected place and objectives; the race week shows them */
 function prepareRound(save) {
-  const { season, round } = save.clock, R = save.season.calendar[round], me = save.contract;
-  const expPos = expOf(save.world.teams[me.team].expPos, me.seat), open = isSpecial(R) ? openEntry(save, R) : null, exempt = open ? null : qualiExemption(save.season.results?.at(-1), teammateCar(save));   // a ranking decides who skips an Open, not the last podium
-  save.season.current = { round: R.round, expPos, exempt, objectives: objectivesFor(rng(save.seed, 'obj', season, round), expPos, me.easier, !!exempt || !!open, open && !open.seeded ? open.to : null), quali: null, ...(open ? { open } : {}) };
+  const { season, round } = save.clock, R = save.season.calendar[round], me = save.contract, S = save.season, tour = S.div && !isSpecial(R);
+  // expected among the cars the player races: their series at a Tour round, the eight seeds at a divided Masters, the whole field at an Open and in a season from before the split
+  const open = isSpecial(R) ? openEntry(save, R) : null, among = S.div && open?.kind === 'masters' ? open.seeds : null;
+  const expPos = tour ? expIn(save, me.team, me.seat) : expAt(save, me.car, among), field = tour ? carsIn(save, S.div).length : among ? among.length : FIELD;
+  const exempt = open ? null : qualiExemption(S.results?.at(-1), teammateCar(save));   // a ranking decides who skips an Open, not the last podium
+  const reachLcq = !!open && open.kind === 'open' && !open.seeded && S.div === 'challenger';   // an unseeded Challenger driver aims for the Last Chance first
+  S.current = { round: R.round, expPos, field, exempt, objectives: objectivesFor(rng(save.seed, 'obj', season, round), expPos, me.easier, !!exempt || !!open, open && !open.seeded ? open.to : null, field, T.series.gridSize, reachLcq), quali: null, ...(open ? { open } : {}) };
   save.clock.phase = 'paddock';
 }
 // ---------------------------------------------------------------------------------------------- the Opens and the Masters
@@ -242,10 +256,15 @@ function prepareRound(save) {
 // (the round's qualifying), the fastest 8 race the Last Chance Qualifier there, and its top 4 reach the Final on the Open's own circuit. The Final grid is the four seeds in
 // ranking order, then the four Last Chance finishers in the order they finished: a season of results buys the front rows. The Masters is the Final alone, for the top 8 of the ranking.
 // cur.open = { kind, name, rank, seeds: [cars], seeded, stage: 'quali' | 'lcq' | 'final', to, lcq? }. Races the player is not in are computed from seeded laps, as a Tour qualifying is.
+// With two series (divisions-spec 8) the seeds are each series' best by its own table, interleaved Elite first: an Open's top 2 of each, the Masters' top 5 Elite and top 3
+// Challenger (seedsOf); the Last Chance holds at least two Challenger cars (lcqOf). cur.open then carries the player's series, their table rank and its cut.
 function openEntry(save, R) {
-  const rk = rankingOf(save), mine = rk.find((x) => x.you), masters = R.kind === 'masters', n = masters ? T.series.gridSize : T.open.direct;
-  return { kind: R.kind, name: R.name, rank: mine.rank, seeds: rk.slice(0, n).map((x) => x.key), seeded: mine.rank <= n, stage: masters ? 'final' : 'quali', to: masters ? `the ${R.name}` : `the ${R.name} Final` };
+  const rk = rankingOf(save), mine = rk.find((x) => x.you), masters = R.kind === 'masters', n = masters ? T.series.gridSize : T.open.direct, d = save.season.div, keys = (x) => rankingOf(save, x).map((y) => y.key);
+  const seeds = d ? seedsOf(R.kind, keys('elite'), keys('challenger')) : rk.slice(0, n).map((x) => x.key);
+  return { kind: R.kind, name: R.name, rank: mine.rank, seeds, seeded: seeds.includes(save.contract.car), ...(d ? { div: d, cut: DIV[d][masters ? 'masters' : 'openSeeds'] } : {}), stage: masters ? 'final' : 'quali', to: masters ? `the ${R.name}` : `the ${R.name} Final` };
 }
+/** a car's expected place by the whole field's order, or among `keys` (a divided Masters' seeds) its place in that race */
+const expAt = (save, key, keys) => { const g = (k) => expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat); return keys ? 1 + keys.filter((k) => g(k) < g(key)).length : g(key); };
 /** a race of computed cars, in the order they finish: each one's seeded lap at pace, `tag` telling this race's noise from the qualifying's */
 function simRace(save, keys, tag, V) {
   const best = lapsAt(save, V, keys, save.clock.round + tag);
@@ -272,10 +291,10 @@ function closeLcq(save, order, best) {
 /** the week of an Open for a player who flies no lap: the Masters' top 8 are set at once, and a seed's Last Chance is run without him */
 function openWeek(save) {
   const cur = save.season.current, o = cur.open;
-  if (o.kind === 'masters') return setFinal(save, o.seeds, rankingOf(save).map((x) => x.key).filter((k) => !o.seeds.includes(k)));
+  if (o.kind === 'masters') return setFinal(save, o.seeds, rankingOf(save, 'all').map((x) => x.key).filter((k) => !o.seeds.includes(k)));
   if (!o.seeded) return;
   const V = qualiVenue(save), field = Object.keys(save.world.seats).filter((k) => save.world.seats[k] && !o.seeds.includes(k)), laps = lapsAt(save, V, field);
-  const order = field.sort((a, b) => laps[a] - laps[b]), grid = order.slice(0, T.series.gridSize), sim = simRace(save, grid, 'l', V);
+  const order = field.sort((a, b) => laps[a] - laps[b]), grid = lcqOf(save, order), sim = simRace(save, grid, 'l', V);
   cur.quali = { ...noLaps(save), laps, order, grid };
   closeLcq(save, sim.order, sim.best);
 }
@@ -354,7 +373,7 @@ function enterWeek(save) {
   save.life.sinceOff++;                                    // the grind counts weeks since the last time off
   if (w.kind === 'race') {
     const R = S.calendar[w.round], cur = S.current; if (cur.open) openWeek(save); else if (cur.exempt) finishQuali(save, null);
-    post(save, 'race', `Race week: ${R.name}`, `Round ${R.round} of ${S.calendar.length}${pointsMult(R) > 1 ? `, points ×${pointsMult(R)}` : ''}. Expected P${cur.expPos} of ${FIELD}. ${weekNote(save, R)}`, { tab: 'home' });
+    post(save, 'race', `Race week: ${R.name}`, `Round ${R.round} of ${S.calendar.length}${pointsMult(R, !!S.divs) > 1 ? `, points ×${pointsMult(R)}` : ''}.${cur.open?.kind === 'masters' ? '' : ` Expected P${cur.expPos} of ${cur.field ?? FIELD}.`} ${weekNote(save, R)}`, { tab: 'home' });
   } else if (w.kind === 'market') {
     post(save, 'deal', 'The market is open', save.clock.season === 1 ? 'Sponsors can still talk. Teams will not: your first season is probation, and they come to you at the season end.' : 'For this one week teams can talk to you, and you can knock on their doors. Anything you sign starts next season.', { tab: 'deals' });
     sponsorOffers(save, save.clock.week + 2);   // the open week after the next round: late enough to answer, early enough to hit a target
@@ -372,12 +391,24 @@ function marketRumours(save) {
 }
 /** what a race week's message adds: how the player gets to the grid */
 export function weekNote(save, R) {
-  const { open: o, exempt: ex } = save.season.current;
-  if (!o) return `Practice is open. ${ex ? `After ${ex.why} you skip qualifying and start P${ex.slot}.` : `All ${FIELD} drivers qualify, and the fastest ${T.series.gridSize} race.`}`;
+  const { open: o, exempt: ex } = save.season.current, d = save.season.div, G = T.series.gridSize, n = d ? carsIn(save, d).length : FIELD, who = d ? `${DIV[d].short} ` : '';
+  if (!o) return `Practice is open. ${ex ? `After ${ex.why} you skip qualifying and start P${ex.slot}.` : n <= G ? `All ${n} ${who}cars race: qualifying sets the grid.` : `All ${n} ${who}drivers qualify, and the fastest ${G} race.`}`;
+  if (d) {                                                   // two series: each series' own table seeds the cups
+    const at = `Ranked ${o.rank} in the ${DIV[d].short}`, rule = cupRule(o.kind);
+    if (o.kind === 'masters') return o.seeded ? `${at}: you are in. ${rule} Practice is open.` : `${at}. ${rule} It runs without you.`;
+    if (o.stage === 'final' && !o.seeded && o.lcq) return `Through the Last Chance in P${o.lcq.finish}: you start the Final. Practice is open.`;
+    return o.seeded ? `${at}: straight into the Final. ${rule} Practice is open.`
+      : `${at}. ${rule} One flying lap at ${qualiName(R)}: the fastest ${G} of ${FIELD - o.seeds.length} race the Last Chance there (at least ${DIV.challenger.lcqMin} from the Challenger), and its top ${T.open.lcqThrough} reach the Final. Practice opens at the Final.`;
+  }
   if (o.kind === 'masters') return o.seeded ? `Ranked ${o.rank}: you are in, as one of the top ${o.seeds.length} of the Ultrack Ranking. Practice is open.` : `Ranked ${o.rank}: only the top ${o.seeds.length} of the Ultrack Ranking race the Masters. It runs without you.`;
   if (o.stage === 'final' && !o.seeded && o.lcq) return `Through the Last Chance in P${o.lcq.finish}: you start the Final. Practice is open.`;
   return o.seeded ? `Ranked ${o.rank}: straight into the Final. Practice is open.`
     : `Ranked ${o.rank}: one flying lap at ${qualiName(R)}. The fastest ${T.series.gridSize} race the Last Chance Qualifier there, and its top ${T.open.lcqThrough} reach the Final. Practice opens at the Final.`;
+}
+/** who a cup seeds with two series, in a line: an Open's straight-to-the-Final places, the Masters' field */
+export function cupRule(kind) {
+  const q = kind === 'masters' ? 'masters' : 'openSeeds', e = DIV.elite[q], c = DIV.challenger[q];
+  return kind === 'masters' ? `Top ${e} Elite and top ${c} Challenger race the Masters.` : e === c ? `Top ${e} of each series go straight to the Final.` : `Top ${e} Elite and top ${c} Challenger go straight to the Final.`;
 }
 /** the player's race length (tuning.json series.lengths): every round not yet raced takes it; points and XP do not depend on it */
 export function setRaceLength(save, length) {
@@ -407,6 +438,18 @@ export const qualiVenue = (save) => { const R = currentRound(save), look = R.loo
 /** the qualifying venue's name for messages (a round from before the rotation qualifies at CAL.qualifying) */
 const qualiName = (R) => trackOf(R?.qualiTrack ?? CAL.qualifying).name;
 export const qualiPlace = (q, key) => (q.order ?? q.grid).indexOf(key) + 1;
+/** where a car starts: its slot on the grid, else its qualifying place (an Open's Last Chance keeps places for the Challenger, so the two can differ) */
+export const gridSlot = (q, key) => (q.grid.includes(key) ? q.grid.indexOf(key) + 1 : qualiPlace(q, key));
+/**
+ * The lap that races: the grid's last, but an Elite driver at an Open must beat the slowest Elite lap on it, since the Challenger's places there are not theirs to take.
+ * squeezed: the player set a lap inside the top 8 and the Challenger's places pushed them out
+ */
+export function lapToRace(save, q) {
+  const car = save.contract.car, mine = divOf(save, CAR[car].team), own = q.grid.filter((k) => divOf(save, CAR[k].team) === mine), G = T.series.gridSize;
+  const squeeze = q.grid.length - own.length <= DIV.challenger.lcqMin;   // the slowest Elite lap is the target only while the quota holds the Challenger's places; with more on pace, the grid's last car
+  const key = save.season.current?.open && mine === 'elite' && own.length && squeeze ? own.at(-1) : q.grid.at(-1);
+  return { lap: q.laps[key], squeezed: !q.grid.includes(car) && qualiPlace(q, car) <= G && q.grid.length === G };
+}
 /** the round's objectives as they stand: once the grid is set, none asks for places that are not there to gain */
 export const roundObjectives = (save) => { const cur = save.season.current; return cur.quali ? cur.objectives.map((o) => objectiveFrom(o, qualiPlace(cur.quali, save.contract.car))) : cur.objectives; };
 /** retries left this round (the screens enforce it): none for a driver who skips qualifying */
@@ -427,14 +470,17 @@ export function finishQuali(save, best, mateRun = null) {
   const mateLap = Number.isFinite(mateRun) ? Math.min(mateRun, heldMate ?? Infinity) : heldMate ?? aiLap({ ...base, key: mate, rating: ratingOf(save, mate), dev: devOf(save, mate) });
   const laps = { [hero]: !ex && Number.isFinite(best) ? best : null }, seeds = cur.open?.seeds ?? [];      // an Open's seeds fly no lap: the others race for the Last Chance's places
   for (const key of Object.keys(save.world.seats)) if (key !== hero && save.world.seats[key] && !seeds.includes(key)) laps[key] = key === mate ? mateLap : aiLap({ ...base, key, rating: ratingOf(save, key), dev: devOf(save, key) });
-  const order = Object.keys(laps).sort((a, b) => (laps[a] ?? Infinity) - (laps[b] ?? Infinity)), pole = order[0];
+  const mine = save.season.div && !cur.open ? new Set(carsIn(save, save.season.div)) : null;   // a Tour round of two series: the player's series makes its grid, and the other's laps stay for its own race (otherRace)
+  const order = Object.keys(laps).filter((k) => !mine || mine.has(k)).sort((a, b) => (laps[a] ?? Infinity) - (laps[b] ?? Infinity)), pole = order[0];
   if (ex) { order.pop(); order.splice(ex.slot - 1, 0, hero); }     // no lap, so he sorted last: into the slot he earned. The pole stays the fastest lap
-  const grid = order.slice(0, T.series.gridSize);
+  const grid = lcqOf(save, order);
   cur.quali = { laps, order, grid, pole, exempt: ex ?? null, tries: (cur.quali?.tries ?? 0) + 1, mate: { car: mate, lap: mateLap, code: save.world.seats[mate] }, duel: ex || cur.open ? { result: 'level', big: false, margin: null, skipped: true } : duelOf(laps[hero], mateLap) };
-  if (cur.open) cur.open.stage = 'lcq';
+  if (cur.open) Object.assign(cur.open, { stage: 'lcq', lcqIn: grid.includes(hero) });
   save.clock.phase = 'race';
   return save;
 }
+/** the grid from a qualifying order: the fastest eight; at an Open of two series, with at least lcqMin Challenger cars in the Last Chance */
+const lcqOf = (save, order) => (save.season.div && save.season.current.open ? lcqGrid(order, (k) => divOf(save, CAR[k].team) === 'challenger', DIV.challenger.lcqMin) : order.slice(0, T.series.gridSize));
 
 /**
  * What game.startSession needs for the feature race: hero, racers in grid order, AI pace per car, upgrade levels, who drives each car, and
@@ -459,8 +505,8 @@ function fieldOf(save, racers) {
 }
 /** a Sponsor Challenge's field (4.2): the teammate and the seated cars expected closest to the player, five in all, at the challenge pace; the grid best expected first, the teammate P5 and the player last */
 export function challengeSetup(save) {
-  const X = T.side.challenge, hero = save.contract.car, mate = teammateCar(save), exp = (k) => expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat), mine = exp(hero);
-  const near = Object.keys(save.world.seats).filter((k) => k !== hero && k !== mate && save.world.seats[k]).sort((a, b) => Math.abs(exp(a) - mine) - Math.abs(exp(b) - mine) || exp(a) - exp(b));
+  const X = T.side.challenge, hero = save.contract.car, mate = teammateCar(save), exp = (k) => expIn(save, CAR[k].team, CAR[k].seat), mine = exp(hero);   // the player's series only
+  const near = carsIn(save, save.season.div ?? 'all').filter((k) => k !== hero && k !== mate).sort((a, b) => Math.abs(exp(a) - mine) - Math.abs(exp(b) - mine) || exp(a) - exp(b));
   const withMate = !!save.world.seats[mate], others = near.slice(0, X.field - (withMate ? 1 : 0)).sort((a, b) => exp(a) - exp(b)), racers = [...others, ...(withMate ? [mate] : []), hero];
   return { racers, gridOrder: racers, mate: withMate ? mate : null, pace: Object.fromEntries(racers.filter((k) => k !== hero).map((k) => [k, aiPace(save, k, ['challenge']) * X.pace])), ...fieldOf(save, racers) };
 }
@@ -501,10 +547,11 @@ export function finishSide(save, value) {
  * The classification is everyone: the race, then those who missed the cut in qualifying order, the player among them if he did.
  */
 export function finishRace(save, result) {
-  const R = currentRound(save), cur = save.season.current, me = save.contract, hero = me.car, tier = save.season.tier, seats = save.world.seats, kind = R.kind ?? 'tour', E = T.events[kind];
+  const R = currentRound(save), S0 = save.season, cur = S0.current, me = save.contract, hero = me.car, tier = S0.tier, seats = save.world.seats, kind = R.kind ?? 'tour', E = T.events[kind];
   if (cur.open && cur.open.stage !== 'final') return absentFinal(save);   // an Open whose Final was never reached (a reload mid-weekend): it runs without him
-  if (!cur.quali) finishQuali(save, null);                  // never qualified (a reload mid-weekend): no lap, so no race
+  if (!cur.quali) { finishQuali(save, null); cur.quali.grid = cur.quali.grid.filter((k) => k !== hero); return finishDnq(save); }   // never qualified (a reload mid-weekend): no lap, so no race, even where everyone races (the Challenger)
   settleChoices(save);                                       // the race week ends: a scene still open takes its default before the race is scored
+  const divided = !!S0.divs, tourDiv = divided && kind === 'tour', other = tourDiv ? otherRace(save) : null, chTour = tourDiv && S0.div === 'challenger', rw = chTour ? DIV.challenger.reward : 1;
   const dnq = !cur.quali.grid.includes(hero), at = result.order.indexOf(hero), raced = result.order.filter((k) => k !== hero);
   if (!dnq) raced.splice(result.dnf || at < 0 ? raced.length : at, 0, hero);   // a retirement is classified last of those who raced
   const order = [...raced, ...(cur.quali.order ?? cur.quali.grid).filter((k) => !raced.includes(k))];
@@ -512,34 +559,42 @@ export function finishRace(save, result) {
   const fastLap = Math.min(...Object.values(result.best).filter(Number.isFinite)), fastestKey = Object.keys(result.best).find((k) => result.best[k] === fastLap);
   const dnf = !!result.dnf, fastest = fastestKey === hero && !dnf, clean = !dnq && (result.spins ?? 0) === 0 && (result.crashes ?? 0) <= 1, duel = cur.quali.duel;
   // points (4.4): per entry, the finale x1.5, pole +2, fastest lap +1; a retirement scores no place and no fastest lap, a reserve driver nothing in rounds 1-2 (6.7)
-  const P = T.series, mult = pointsMult(R), bench = me.reserve && R.round <= 2;
+  // with two series an Open or the Masters scores no series points, only the ranking's (rpts); every entry carries its series and its expected place at race time
+  const P = T.series, mult = pointsMult(R, divided), bench = me.reserve && R.round <= 2, cupless = divided && isSpecial(R);
   const entries = order.map((key, i) => ({ key, team: CAR[key].team, code: key === hero ? save.player.code : seats[key], you: key === hero, dnq: i >= raced.length,
-    pts: i >= raced.length ? 0 : key === hero && bench ? 0 : (key === hero && dnf ? 0 : (P.points[i] ?? 0) * mult + (fastestKey === key ? P.fastestLap : 0)) + (poleKey === key ? P.pole : 0) }));
-  const x = { expPos: cur.expPos, grid, finish, fastest, clean, duel, dnf, dnq };
+    pts: cupless || i >= raced.length ? 0 : key === hero && bench ? 0 : (key === hero && dnf ? 0 : (P.points[i] ?? 0) * mult + (fastestKey === key ? P.fastestLap : 0)) + (poleKey === key ? P.pole : 0),
+    div: divOf(save, CAR[key].team), exp: tourDiv ? expIn(save, CAR[key].team, CAR[key].seat) : expAt(save, key, divided && kind === 'masters' ? cur.open.seeds : null),
+    ...(cupless ? { rpts: i >= raced.length || (key === hero && dnf) ? 0 : rankPoints(i, kind) } : {}) }));
+  const x = { expPos: cur.expPos, grid, finish, fastest, clean, duel, dnf, dnq, lcqIn: !!cur.open?.lcqIn };
   const objectives = cur.objectives.map((o) => objectiveFrom(o, grid)).map((o) => ({ ...o, met: objectiveMet(o, x) }));
   const mandatory = objectives[0].met, optional = objectives.slice(1).filter((o) => o.met).length;
-  const rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog, rookie: TIERS.tiers[tier].rank === 1 });
-  const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry from a higher tier that was expected ahead
-  const giantKills = dnf || dnq ? 0 : order.slice(finish).filter((k) => tierOf(CAR[k].team).rank > myRank && expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat) < myExp).length;
+  // a Challenger driver's round keeps `rate` of what it earns above the base, a cup's too (its seeds start a Final far above their expected place): a good round from the weaker
+  // series rates below the same from the Elite, so the climb to the tiers above runs at the Elite's pace
+  const field = divided ? cur.field : DIV.legacyField, rating = roundRating({ ...x, exempt: !!cur.quali.exempt, underdog: me.underdog, rookie: TIERS.tiers[tier].rank === 1, field, ...(S0.div === 'challenger' ? { share: DIV.challenger.rate, shareLine: `${DIV.challenger.short} field` } : {}) });
+  const myExp = cur.expPos, myRank = TIERS.tiers[tier].rank;   // giant-killing: beating an entry expected ahead from a higher tier, or (at an Open or the Masters) from the Elite while racing in the Challenger
+  const giantKills = dnf || dnq ? 0 : entries.slice(finish).filter((e) => (tierOf(e.team).rank > myRank || (e.div === 'elite' && S0.div === 'challenger')) && e.exp < myExp).length;
   const rivals = heatAfter(save, raced, hero, dnf, { contacts: result.contacts ?? {}, passes: result.passes ?? {}, duel: duel.skipped || dnq ? null : cur.quali.mate.code });   // the qualifying duel heats the teammate, only in a round the player raced
-  const xp = xpFor({ ...x, ...judged, pole, mandatory, optional, tier, pro: result.pro, underdog: me.underdog });
+  const xp = xpFor({ ...x, ...judged, pole, mandatory, optional, tier, pro: result.pro, underdog: me.underdog, field, reward: rw });
   if (rivals.xp) { xp.lines.push(['Nemesis beaten', rivals.xp]); xp.xp += rivals.xp; }
   const call = settleCallout(save, order, hero, dnf);        // an accepted callout (choices.js) pays once
   if (call?.xp) { xp.lines.push(['Callout won', call.xp]); xp.xp += call.xp; }
   const happyXp = Math.round(xp.xp * (xpMult(save) - 1)); if (happyXp > 0) { xp.lines.push([mood(save).name, happyXp]); xp.xp += happyXp; }   // life.js: a driver on top of the world learns a little faster
   const rep = repFor({ rr: rating.rr, tier, finish, pole, fastest, giantKills, dnf });
-  if (E.rep !== 1) { rep.lines = rep.lines.map(([l, v]) => [l, v > 0 ? Math.round(v * E.rep) : v]); rep.rep = rep.lines.reduce((a, l) => a + l[1], 0); }   // an Open or the Masters pays reputation, never costs more of it
+  const repF = E.rep * (chTour ? DIV.challenger.rep : 1);   // an Open or the Masters pays reputation, never costs more of it; a Challenger round pays its share, as its ranking points do
+  if (repF !== 1) { rep.lines = rep.lines.map(([l, v]) => [l, v > 0 ? Math.round(v * repF) : v]); rep.rep = rep.lines.reduce((a, l) => a + l[1], 0); }
   rep.lines.push(...rivals.lines); rep.rep += rivals.rep;
   if (call) { rep.lines.push([`Callout ${call.won ? 'won' : 'lost'}: ${call.name}`, call.rep]); rep.rep += call.rep; }
   const happyRep = Math.round(rep.rep * (repMult(save) - 1)); if (happyRep > 0) { rep.lines.push([mood(save).name, happyRep]); rep.rep += happyRep; }   // a happy driver is talked about more; a bad round costs the same in any mood
   const ord = result.orders?.kind === 'toMate' && typeof result.orders.obeyed === 'boolean' && !dnq ? result.orders : null, ordTrust = ord ? (ord.obeyed ? T.trust.orders.obeyed : -T.trust.orders.ignored) : 0;
-  const rawTrust = trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open }), trust = (rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust) + ordTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
+  // a Rookie in the Challenger loses no more trust a round than a missed cut cost before the split: in a series of 8 a slow driver in a Rookie car finishes below its place every round
+  const floor = chTour && TIERS.tiers[tier].rank === 1 ? trustFor({ rr: T.rating.base + T.rating.dnq, optional: 0, neutral: true }) : -Infinity;
+  const rawTrust = Math.max(floor, trustFor({ rr: rating.rr, mandatory, optional, duel, neutral: dnq && !!cur.open })), trust = (rawTrust > 0 ? Math.floor(rawTrust * trustMult(save)) : rawTrust) + ordTrust;   // the mood scales trust gains: half speed when frustrated, faster on top of the world
   // money (5.5): salary, the race prize x the tier's multiplier, objective and contract bonuses, sponsors
   const Tr = TIERS.tiers[tier], coins = [['Salary', me.salary]];
-  for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: raced.length, laps: R.laps, finished: !dnf && !dnq, retired: dnf || dnq, fastest }).lines) coins.push([label, round5(v * Tr.prize * E.prize)]);
+  for (const [label, v] of rewardFor({ mode: 'race', pos: finish, cars: raced.length, laps: R.laps, finished: !dnf && !dnq, retired: dnf || dnq, fastest }).lines) coins.push([label, round5(v * Tr.prize * E.prize * rw)]);
   if (mandatory) coins.push(['Round objective', Tr.objective[0]]);
   if (optional) coins.push(['Bonus objectives', optional * Tr.objective[1]]);
-  if (!dnf && finish === 1) coins.push(['Win bonus', Tr.bonus.win * E.prize]); else if (!dnf && finish <= 3) coins.push(['Podium bonus', Tr.bonus.podium * E.prize]);
+  if (!dnf && finish === 1) coins.push(['Win bonus', round5(Tr.bonus.win * E.prize * rw)]); else if (!dnf && finish <= 3) coins.push(['Podium bonus', round5(Tr.bonus.podium * E.prize * rw)]);   // to 5 U as the prize lines: the Challenger's share left half coins
   coins.push(...sponsorRound(save, x, targetMet));
   // repairs (Part 2): every hard hit of the weekend's qualifying, Last Chance and race, less the crew's share, never more than 40 % of what the round paid and never below an empty wallet
   const gross = coins.reduce((s, l) => s + Math.max(0, l[1]), 0), fix = repairBill([...(cur.hits ?? []), ...(result.hits ?? [])], hero, discount(save, 'crew'), gross);   // the bill is under 40 % of the pay, so the wallet cannot go below what it held
@@ -559,22 +614,25 @@ export function finishRace(save, result) {
   }
   const S = save.stats; if (!dnq) S.starts++; if (!dnf && finish === 1) S.wins++; if (!dnf && finish <= 3) S.podiums++; if (pole) S.poles++; if (fastest) S.fastest++;
   const rankBefore = playerRank(save), day = {};              // the Ultrack Ranking: points by place for those who raced, a retirement scoring none
-  entries.forEach((e, i) => { if (!e.dnq && !(e.you && dnf)) day[seats[e.key]] = rankPoints(i, kind); });
+  const f = (d) => (tourDiv ? DIV[d].rank : 1);               // a Tour round of two series: each series' places at its share (an Elite win 25, a Challenger win 15); the cups pay everyone alike
+  entries.forEach((e, i) => { if (!e.dnq && !(e.you && dnf)) day[seats[e.key]] = rankPoints(i, kind, f(e.div)); });
+  other?.entries.forEach((e, i) => { if (!e.dnq) day[e.code] = rankPoints(i, kind, f(e.div)); });   // the same day in the other series
   addDay(save, day);
-  const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, expPos: cur.expPos, dnf, dnq, pole, fastest, clean,
+  const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, expPos: cur.expPos, ...(divided ? { field: cur.field } : {}), dnf, dnq, pole, fastest, clean,
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
     entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines, orders: ord && { obeyed: ord.obeyed, trust: ordTrust },
     nemesis: rivals.nemesis && { code: rivals.nemesis.code, name: personOf(save, rivals.nemesis.code)?.name ?? rivals.nemesis.code, beat: rivals.nemesis.beat },
-    rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null, lcqAt: qualiName(R) } } : {}) };
+    rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(other ? { other } : {}), ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null, lcqAt: qualiName(R) } } : {}) };
   if (cur.open) recordOpen(save, R, entries[0], report);
   save.season.results.push(report);
   const press0 = save.mediaN ?? 0;
-  coverRound(save, report); if (cur.open) coverOpen(save, report);
+  coverRound(save, report); if (cur.open) coverOpen(save, report); if (cupless) coverGiantKill(save, report);
   report.life = settleLife(save, report, press0, fix.bill, gross, rivals.lines.length > 0);
   const wk = currentWeek(save); wk.result = { finish, rr: rating.rr, dnf, dnq };
   post(save, 'race', `Round ${R.round}: ${dnq ? `did not qualify, P${grid}` : `${dnf ? 'retired' : `P${finish}`} from P${grid}`}, rating ${rating.rr.toFixed(1)}`, `+${xp.xp} XP, +${earned.toLocaleString('en')} U, reputation ${rep.rep >= 0 ? '+' : ''}${rep.rep}, trust ${trust >= 0 ? '+' : ''}${trust}.`);
   if (report.levelUp) post(save, 'news', `Career Level ${report.levelUp}`, 'Better upgrades and more teams open up as your level rises.', { tab: 'garage' });
+  if (other) seriesNews(save, other);
   save.clock.round++;
   const n = save.season.calendar.length;
   if (save.clock.round === Math.ceil(n / 2) && save.clock.round < n) {
@@ -591,11 +649,21 @@ export function finishRace(save, result) {
  * The mood after a race week (life.js): fan support and happiness move, a driver on top of the world or at the end of his tether makes the papers, and an unhappy one may lose a
  * sponsor (seeded). It reads what happened and moves no lap time, no rival and no car.
  */
+/** the inbox after a Tour round of two series: the other series' result, and once the last Tour round is run, who goes up and down (the cups score no series points) */
+function seriesNews(save, other) {
+  const name = (e) => personOf(save, e.code)?.name ?? e.code, lead = standings(save, other.div).drivers[0], ctx = { other: DIV[other.div].short, gp: currentRound(save).name, winner: name(other.entries[0]), leader: lead.you ? 'You' : lead.name };
+  post(save, 'news', divText('meanwhile', 'title', ctx), divText('meanwhile', 'body', ctx));
+  const rest = save.season.calendar.slice(save.clock.round + 1);
+  if (rest.some((r) => (r.kind ?? 'tour') === 'tour')) return;
+  const n = rest.length, words = ['No', 'One', 'Two', 'Three', 'Four'], left = n ? `${words[n] ?? n} cup ${n === 1 ? 'night' : 'nights'} left.` : '';
+  const c = { up: teamName(standings(save, 'challenger').teams[0].team), down: teamName(standings(save, 'elite').teams.at(-1).team), left };
+  post(save, 'news', divText('decided', 'title', c), divText('decided', 'body', c), { tab: 'standings' });
+}
 function settleLife(save, report, press0, bill, gross, feud) {
   const me = save.contract, news = (save.media ?? []).filter((m) => m.id > press0), before = mood(save).id, R = currentRound(save);
   const good = news.filter((m) => ['win', 'podium'].includes(m.you)).length, bad = news.filter((m) => ['down', 'dnq', 'fired'].includes(m.you) || m.scene === 'fan-hate').length;
   const out = settleRound(save, { rr: report.rr, finish: report.finish, dnf: report.dnf, dnq: report.dnq, open: !!report.open, clean: report.clean, duel: report.duel, feud,
-    home: isHome(save, R.track) && !report.dnq, press: { good, bad }, bill, gross, trust: me.trust, tier: save.season.tier, form: formOf(save.career.rr), expTeam: save.world.teams[me.team].expPos });
+    home: isHome(save, R.track) && !report.dnq, press: { good, bad }, bill, gross, trust: me.trust, tier: save.season.tier, form: formOf(save.career.rr), expTeam: save.world.teams[me.team].expPos, div: save.season.div });
   const now = mood(save).id, r = rng(save.seed, 'life', save.clock.season, R.round, 'round');
   if (now === 'unhappy') {
     if (before !== 'unhappy') post(save, 'warn', 'You are unhappy', 'Your results and your life are weighing on you. Time off, a good result or a treat will lift it, and you can ask for a transfer in the Life tab.', { tab: 'life' });
@@ -614,6 +682,17 @@ function upkeep(save) {
   }
 }
 
+/**
+ * The other series' race at a Tour round (divisions-spec 4): its cars by the qualifying laps finishQuali drew for every seated car, the fastest eight racing
+ * on seeded laps at the round's circuit (noise key 'o'), the rest classified behind in lap order. Points as the player's race: the places, pole +2, fastest lap +1
+ */
+function otherRace(save) {
+  const S = save.season, R = currentRound(save), q = S.current.quali, P = T.series, d = DIV.order.find((x) => x !== S.div), seats = save.world.seats;
+  const keys = carsIn(save, d).sort((a, b) => (q.laps[a] ?? Infinity) - (q.laps[b] ?? Infinity)), grid = keys.slice(0, P.gridSize), sim = simRace(save, grid, 'o', R);
+  const fast = grid.reduce((a, k) => (sim.best[k] < sim.best[a] ? k : a), grid[0]);
+  return { div: d, entries: [...sim.order, ...keys.slice(P.gridSize)].map((key, i) => ({ key, team: CAR[key].team, code: seats[key], you: false, dnq: i >= grid.length,
+    pts: (i < grid.length ? P.points[i] + (key === fast ? P.fastestLap : 0) : 0) + (key === keys[0] ? P.pole : 0), div: d, exp: expIn(save, CAR[key].team, CAR[key].seat) })) };
+}
 /** the player missed the cut and sits the round out: the eight race without him, in qualifying order with seeded shuffling */
 export function finishDnq(save) {
   if (save.season.current.open) return absentFinal(save);
@@ -626,7 +705,7 @@ export function finishDnq(save) {
 function recordOpen(save, R, win, report) {
   report.honours = [];
   const S = save.stats, you = win.you, d = you ? save.player : personOf(save, win.code), id = R.kind === 'masters' ? 'masters' : R.track;
-  save.hall.push({ season: save.clock.season, id, name: R.name, code: you ? YOU : win.code, who: you ? save.player.name : d?.name ?? win.code, nation: d?.nation, team: win.team, you });
+  save.hall.push({ season: save.clock.season, id, name: R.name, code: you ? YOU : win.code, who: you ? save.player.name : d?.name ?? win.code, nation: d?.nation, team: win.team, you, ...(save.season.divs ? { div: win.div } : {}) });
   save.hall = save.hall.slice(-60);
   if (!you) return;
   if (id === 'masters') { S.masters++; return; }
@@ -637,42 +716,68 @@ function recordOpen(save, R, win, report) {
 }
 
 // ---------------------------------------------------------------------------------------------- standings
-/** the Drivers', Teams' and tier Cup tables from the rounds raced (4.4), sorted, with the player's rows flagged */
-export function standings(save) {
-  const D = {}, Tm = {};
-  for (const r of save.season?.results ?? []) for (const e of r.entries) {
-    const d = (D[e.you ? YOU : e.code] ??= { code: e.code, you: e.you, team: e.team, name: e.you ? save.player.name : personOf(save, e.code)?.name ?? e.code, pts: 0, wins: 0 });
-    d.pts += e.pts; d.team = e.team; if (r.entries[0] === e) d.wins++;
-    const t = (Tm[e.team] ??= { team: e.team, pts: 0, wins: 0, you: save.contract?.team === e.team }); t.pts += e.pts; if (r.entries[0] === e) t.wins++;
+/**
+ * The Drivers', Teams' and tier Cup tables from the rounds raced (4.4), sorted, with the player's rows flagged. With two series, series `d`'s tables
+ * (the player's by default): its Tour rounds, the player's race or the computed other one (report.other), each counting its own wins; the Opens and the
+ * Masters score none (D1). Ties go to wins, then the expected place, then the id. A season from before the split ('all') has one table of everyone
+ */
+export function standings(save, d = save.season?.div ?? 'all') {
+  const D = {}, Tm = {}, divided = d !== 'all';
+  const lists = (r) => (!divided ? [r.entries] : (r.kind ?? 'tour') !== 'tour' ? [] : [r.entries, r.other?.entries ?? []].filter((l) => l[0]?.div === d));
+  for (const r of save.season?.results ?? []) for (const l of lists(r)) for (const e of l) {
+    const x = (D[e.you ? YOU : e.code] ??= { code: e.code, you: e.you, team: e.team, name: e.you ? save.player.name : personOf(save, e.code)?.name ?? e.code, pts: 0, wins: 0 });
+    x.pts += e.pts; x.team = e.team; if (l[0] === e) x.wins++;
+    const t = (Tm[e.team] ??= { team: e.team, pts: 0, wins: 0, you: save.contract?.team === e.team }); t.pts += e.pts; if (l[0] === e) t.wins++;
   }
-  for (const id of TEAM_IDS) Tm[id] ??= { team: id, pts: 0, wins: 0, you: save.contract?.team === id };
-  const sort = (l) => l.sort((a, b) => b.pts - a.pts || b.wins - a.wins || (save.world.teams[a.team].expPos - save.world.teams[b.team].expPos));
+  for (const id of teamsIn(save, d)) Tm[id] ??= { team: id, pts: 0, wins: 0, you: save.contract?.team === id };
+  const sort = (l) => l.sort((a, b) => b.pts - a.pts || b.wins - a.wins || (save.world.teams[a.team].expPos - save.world.teams[b.team].expPos) || (a.team < b.team ? -1 : a.team > b.team ? 1 : 0));
   const teams = sort(Object.values(Tm)), tier = save.season?.tier;
-  return { drivers: sort(Object.values(D)), teams, cup: teams.filter((t) => TIERS.teams[t.team].tier === tier) };
+  return { ...(divided ? { div: d } : {}), drivers: sort(Object.values(D)), teams, cup: teams.filter((t) => TIERS.teams[t.team].tier === tier) };   // cup: the tier's teams, the old Cup (a season from before the split awards it)
 }
 
 // ---------------------------------------------------------------------------------------------- the season end
 function endSeason(save) {
-  const st = standings(save), me = save.contract, rs = save.season.results, S = save.sponsors;
+  const st = standings(save), me = save.contract, rs = save.season.results, S = save.sponsors, div = save.season.div, W = save.world.teams;
   const teamPos = st.teams.findIndex((t) => t.team === me.team) + 1, cupPos = st.cup.findIndex((t) => t.team === me.team) + 1, drvPos = st.drivers.findIndex((d) => d.you) + 1;
-  let rep = 0, coins = 0;
-  if (cupPos === 1) { rep += T.rep.cup; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }
-  if (teamPos === 1) rep += T.rep.teams;
-  if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; }
+  let rep = 0, coins = 0, swap = null, yourTeam = null, order = null, champs = [], titleRep = 0;
+  if (div) {                                                 // two series (divisions-spec 5, 6): the Challenger's Teams' champion goes up, the Elite's last team comes down; drivers move only by contract
+    const SE = standings(save, 'elite'), SC = standings(save, 'challenger'), E = SE.teams, Ch = SC.teams;
+    champs = [['elite', SE], ['challenger', SC]].filter(([, x]) => x.drivers[0]).map(([d, x]) => ({ div: d, row: x.drivers[0] }));
+    swap = { up: Ch[0].team, down: E.at(-1).team }; W[swap.up].div = 'elite'; W[swap.down].div = 'challenger';
+    if (me.next && me.next.team === swap.up && offGrid(save, me.next.team, me.next.seat)) {   // a mid-season deal with a team that has just gone up, to a seat this driver would not qualify: its release clause lets them out
+      const t = teamName(me.next.team), back = Math.min(me.next.paid ?? 0, Math.max(0, save.wallet.coins)); me.trust = clamp(me.trust + (me.next.trustCost ?? T.trust.signedAway), 0, 100); save.wallet.coins -= back; delete me.next;
+      post(save, 'deal', `${t} let you out of your deal`, `${t} go up to the ${DIV.elite.name}, where their seat would miss the top ${T.series.gridSize} too often for a driver rated ${playerRating(save)}. ${back ? `Your cut of the release clause goes back: ${Math.round(back).toLocaleString('en')} U. ` : ''}${me.seasonsLeft > 1 ? `Your contract with ${teamName(me.team)} stands.` : 'The market is open to you.'}`);
+    }
+    yourTeam = me.team === swap.up ? 'up' : me.team === swap.down ? 'down' : null;
+    if (div === 'elite') { if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; } if (teamPos === 1) rep += T.rep.teams; }
+    else if (drvPos === 1) { rep += T.rep.challenger; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }   // the Challenger title pays what the old tier Cup did
+    titleRep = rep;
+    if (yourTeam === 'up') { rep += T.rep.cup; save.stats.promotions = (save.stats.promotions ?? 0) + 1; }
+    if (yourTeam === 'down') save.stats.relegations = (save.stats.relegations ?? 0) + 1;   // no penalty: the Round Ratings already judged the year
+    order = [...E, ...Ch].map((t) => t.team);   // next season's expected places blend this table (nextSeasonWorld)
+  } else {
+    if (cupPos === 1) { rep += T.rep.cup; coins += TIERS.tiers[save.season.tier].bonus.cup; save.stats.cups++; }
+    if (teamPos === 1) rep += T.rep.teams;
+    if (drvPos === 1) { rep += T.rep.drivers; save.stats.titles++; }
+  }
   // the seat review at the finale (6.7): under 15, or under 25 with a warning not recovered, the team lets you go; a Legend driver rated like one the team would re-sign stays (holdsSeat)
   const dropped = !me.next && (me.trust < T.trust.dropAny || (me.trust < T.trust.drop && !!me.warning)) && !holdsSeat(save);
   if (dropped) { rep += T.rep.dropped; me.dropped = true; }
   save.career.rep = clamp(save.career.rep + rep, 0, 1000); save.wallet.coins += coins;
   const avgRR = mean(rs.map((r) => r.rr));
   save.history.push({ season: save.clock.season, team: me.team, seat: me.seat, car: me.car, tier: save.season.tier, drivers: drvPos, teams: teamPos, cup: cupPos,
-    points: st.drivers[drvPos - 1]?.pts ?? 0, rank: playerRank(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: st.teams.map((t) => t.team), dropped });
+    points: st.drivers[drvPos - 1]?.pts ?? 0, rank: playerRank(save), opens: [...(save.season.openWins ?? [])], avgRR: Math.round(avgRR * 10) / 10, duel: { ...me.duel }, teamOrder: order ?? st.teams.map((t) => t.team), dropped,
+    ...(swap ? { div, teamCount: st.teams.length, swap } : {}) });
   for (const d of S.deals) if (!d.met) post(save, 'sponsor', `${d.name}: target missed`, `You did not ${targetText(d.target)}. No bonus this year.`);
   for (const o of save.season.mid.splice(0)) { post(save, 'deal', `${teamName(o.team)}'s offer lapsed`, 'You did not answer before the season ended.'); }
   S.deals = []; S.offers = []; save.season.asked = {};       // a sponsor signs for one season; each window's doors open again
-  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save), rankOf: rankingOf(save).length }, offers: seasonOffers(save, { cup: cupPos === 1, title: drvPos === 1, dropped }) };
+  save.pending = { review: { drivers: drvPos, driverCount: st.drivers.length, teams: teamPos, cup: cupPos, rep, coins, avgRR, dropped, trust: me.trust, rank: playerRank(save), rankOf: rankingOf(save).length,
+    ...(swap ? { div, teamCount: st.teams.length, swap: { ...swap }, yourTeam, nextDiv: W[me.team].div, titleRep, promoRep: yourTeam === 'up' ? T.rep.cup : 0 } : {}) },
+  offers: seasonOffers(save, swap ? { cup: teamPos === 1, title: drvPos === 1, dropped } : { cup: cupPos === 1, title: drvPos === 1, dropped }) };   // with two series: the player's series' Teams' and Drivers' titles; the offers see next season's series
   save.clock.phase = 'review';
   if (!me.next) openWindow(save);
   if (dropped) coverFired(save, me.team); else coverPrincipal(save, me.team);
+  if (swap) { coverChampions(save, champs); coverSwap(save, swap); const c = { up: teamName(swap.up), down: teamName(swap.down) }; post(save, 'news', divText('review', 'title', c), divText('review', 'body', c)); }
   post(save, dropped ? 'warn' : 'race', `Season ${save.clock.season} is over: P${drvPos} in the Drivers'`, dropped ? `${teamName(me.team)} has let you go.` : 'The review and the market are waiting.');
 }
 

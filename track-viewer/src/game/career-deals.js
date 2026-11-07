@@ -4,9 +4,9 @@ import { h, fill, css, seg, stat, still, teamLogo, teamMark, getNav, prompt, fad
 import { carName } from './carinfo.js';
 import { icon } from './icons.js';
 import * as C from './career/career.js';
-import { TUNING, TIERS, CAR, STATUS_LABEL, TEAM_IDS, loreOf, targetText, expOf } from './career/rules.js';
+import { TUNING, TIERS, CAR, STATUS_LABEL, TEAM_IDS, DIV, loreOf, targetText, expIn, teamsIn, nextDivOf } from './career/rules.js';
 import MEDIA from '../../../assets/career/media.json';
-import { frame, statusBar, coins, money, rich, teamName, persist, available, prompts, CHOOSE, blockHead, brandMark } from './career-shell.js';
+import { frame, statusBar, coins, money, rich, teamName, persist, available, prompts, CHOOSE, blockHead, brandMark, divChip } from './career-shell.js';
 
 const round5 = (v) => Math.round(v / 5) * 5, round50 = (v) => Math.round(v / 50) * 50;
 const seasons = (n) => `${n} ${n === 1 ? 'season' : 'seasons'}`;
@@ -17,7 +17,7 @@ export function offerRow(save, o, open) {
   const title = o.sponsor ? `${o.name}: personal sponsor` : `${teamName(o.team)}: ${carName(o.car)}`;
   const line = o.sponsor ? `${money(o.retainer)} a round, ${money(o.bonus)} if you ${targetText(o.target)}` : `${TIERS.tiers[o.tier].name}, ${o.seat} seat, ${STATUS_LABEL[o.status]}. ${money(o.salary)} a round${o.signing ? `, ${money(o.signing)} to sign` : ''}, ${seasons(o.keep ? save.contract.seasonsLeft - 1 : o.seasons)}`;
   const tag = o.agreed ? h('span.cx-tag.ok', {}, icon('check'), 'Agreed: sign it') : o.signed ? h('span.cx-tag.ok', {}, icon('check'), 'Signed') : o.counter ? h('span.cx-tag.warn', {}, icon('warning'), 'They countered') : h('span.cx-tag.warn', {}, icon('chevron-right'), C.canNegotiate(o) ? 'Your move' : 'Take it or leave it');
-  const chips = [answerBy(save, o) && h('span.cx-chip' + (answerBy(save, o) === 'Answer today' ? '.hot' : ''), {}, icon('calendar'), answerBy(save, o)), o.rival && h('span.cx-chip.rival', {}, icon('people'), `Rival: ${surname(save, o.rival)}`)].filter(Boolean);
+  const chips = [!o.sponsor && divChip(o.div ?? nextDivOf(save, o.team)), answerBy(save, o) && h('span.cx-chip' + (answerBy(save, o) === 'Answer today' ? '.hot' : ''), {}, icon('calendar'), answerBy(save, o)), o.rival && h('span.cx-chip.rival', {}, icon('people'), `Rival: ${surname(save, o.rival)}`)].filter(Boolean);
   return css(h('button.cx-offer', { 'data-nav': '', onclick: open }, left, h('span', {}, h('strong', {}, title), h('small', {}, rich(line)), o.why ? h('small', {}, rich(o.why)) : null, chips.length ? h('span.cx-chips', {}, chips) : null),
     h('span.act', {}, tag, o.expires !== undefined ? h('small', {}, `Until week ${o.expires + 1}`) : null)), { '--team': o.sponsor ? 'transparent' : teamMark(loreOf(o.team)) });
 }
@@ -36,13 +36,14 @@ export function rivalLine(save, o) {
 }
 /** the teams, closest first: how near the player is to each bar and the real reason; in a market week Enter knocks on the door */
 export function teamRows(save, game, rebuild) {
-  return TEAM_IDS.filter((t) => t !== save.contract.team).map((t) => C.teamOutlook(save, t)).sort((a, b) => TIERS.tiers[a.tier].rank - TIERS.tiers[b.tier].rank || b.progress - a.progress).map((v) => css(
+  const elite = (t) => (nextDivOf(save, t) === 'elite' ? 0 : 1);   // next season's Elite first, then by tier
+  return TEAM_IDS.filter((t) => t !== save.contract.team).map((t) => C.teamOutlook(save, t)).sort((a, b) => elite(a.team) - elite(b.team) || TIERS.tiers[a.tier].rank - TIERS.tiers[b.tier].rank || b.progress - a.progress).map((v) => css(
     h('div.lrow.cx-teamrow', { 'data-nav': '', 'data-team': v.team, tabIndex: 0, role: 'button', 'aria-label': `Approach ${teamName(v.team)}`, onclick: () => {
       if (!v.canAsk) return game.setBusy(`${teamName(v.team)}: ${v.blocked}.`, { kind: 'error', ms: 4000 });
       const r = C.approach(save, v.team); persist(game); game.setBusy(r.result === 'offer' ? `${teamName(v.team)} will talk. Their offer is on the table.` : `${teamName(v.team)}: ${r.why}`, r.result === 'offer' ? {} : { kind: 'error', ms: 4000 }); rebuild();
       const at = getNav().items().findIndex((e) => e.dataset.team === v.team); if (at >= 0) getNav().reset(at);   // a new offer row moved everything down
-    } }, h('i.cx-tbar'), h('span.c-name', {}, h('b', {}, teamName(v.team)), h('small', {}, TIERS.tiers[v.tier].name)), css(h('span.cx-gauge', {}, h('i')), { '--p': v.progress }),
-      h('small.why', {}, v.why), h('span.cx-tag' + (v.canAsk ? '.talk' : ''), {}, v.canAsk ? 'Approach' : v.blocked)), { '--team': teamMark(loreOf(v.team)) }));
+    } }, h('i.cx-tbar'), h('span.c-name', {}, h('b', {}, teamName(v.team)), h('small', {}, divChip(nextDivOf(save, v.team)), ' ', TIERS.tiers[v.tier].name)), css(h('span.cx-gauge', {}, h('i')), { '--p': v.progress }),
+      h('small.why', {}, v.step ? `${v.step} · ${v.why}` : v.why), h('span.cx-tag' + (v.canAsk ? '.talk' : ''), {}, v.canAsk ? 'Approach' : v.blocked)), { '--team': teamMark(loreOf(v.team)) }));
 }
 
 /** one term of a deal: the label, their standing number, your ask as a segmented control (Left/Right steps it) */
@@ -63,9 +64,9 @@ export function CareerDealScreen(game) {
   function party(save, o) {
     if (o.sponsor) return h('div.cx-b.cx-party', {}, blockHead(null, 'Personal sponsor', 'One season'), h('div.cx-partylogo', {}, brandMark(o.brand)), h('strong.cx-title', {}, o.name),
       h('div.cx-kv.two', {}, stat('Their target', targetText(o.target)), stat('Sponsor days', C.challengeOf(o).name)), h('p.cx-if', {}, C.challengeOf(o).objectives.join(' · ')), h('p.cx-note', {}, o.why));
-    const inc = o.rating && C.driverAt(save, o.car), mate = C.mateOf(save, o), exp = expOf(save.world.teams[o.team].expPos, o.seat), lore = loreOf(o.team), old = save.contract, cut = old && o.team !== old.team && !o.signed && !o.reserve && !old.dropped && old.seasonsLeft > 1;
+    const inc = o.rating && C.driverAt(save, o.car), mate = C.mateOf(save, o), d = nextDivOf(save, o.team), exp = expIn(save, o.team, o.seat, nextDivOf), lore = loreOf(o.team), old = save.contract, cut = old && o.team !== old.team && !o.signed && !o.reserve && !old.dropped && old.seasonsLeft > 1;
     return css(h('div.cx-b.cx-party', {}, blockHead(null, `${TIERS.tiers[o.tier].name} · ${o.seat} seat`, '#' + CAR[o.car].number), h('img.car', { src: still('cars', o.car), alt: '', decoding: 'async' }), teamLogo(lore), h('strong.cx-title', {}, carName(o.car)),
-      h('div.cx-kv.two', {}, stat('Teammate', `${mate.name} · ${mate.rating}`), stat('Expected', 'P' + exp), stat('Upgrade cap', 'Level ' + TIERS.tiers[o.tier].cap), stat('They want', TIERS.teams[o.team].wants),
+      h('div.cx-kv.two', {}, stat('Teammate', `${mate.name} · ${mate.rating}`), stat(DIV[d] ? `Expected in the ${DIV[d].short}` : 'Expected', `P${exp} of ${2 * teamsIn(save, d, nextDivOf).length}`), stat('Upgrade cap', 'Level ' + TIERS.tiers[o.tier].cap), stat('They want', TIERS.teams[o.team].wants),
         ...(o.rating ? [stat('Your market rating', String(o.rating)), stat('In the seat now', inc ? `${inc.name} · ${inc.rating}` : 'Nobody')] : [])),
       h('p.cx-if.cx-principal', {}, h('b', {}, lore.principal), ` · ${MEDIA.window.read[TIERS.teams[o.team].style]}`), clock(save, o),
       h('p.cx-note', {}, rich(o.why ?? o.pitch)), o.cool ? h('p.cx-if', {}, o.cool) : null, cut ? h('p.cx-if', {}, rich(`Leaving ${teamName(old.team)} early pays you ${money(C.releaseCutOf(old))} of the release clause.`)) : null, o.difficulty ? h('p.cx-if', {}, `Difficulty: ${o.difficulty}`) : null), { '--team': teamMark(lore) });

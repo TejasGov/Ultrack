@@ -1,7 +1,7 @@
 // The paddock press (docs/career-mode.md 13): stories written from what really happened in a career, a save goes in and comes out changed, like the rest of career/.
 // A story is plain data in save.media; its picture is worked out when it is drawn (storyImage), so new art reaches old stories and a missing image only falls back.
 import MEDIA from '../../../../assets/career/media.json';
-import { TUNING as T, CAR, FIELD, loreOf } from './rules.js';
+import { TUNING as T, CAR, FIELD, DIV, loreOf } from './rules.js';
 import { rng } from './rng.js';
 import { YOU, personOf, rivalsOf } from './world.js';
 import { latest } from './ledger.js';
@@ -39,8 +39,9 @@ export function coverRound(save, report) {
   else story(save, 'win', pick(r, [`${nameOf(winner.code)} takes the ${gp}`, `${surname(winner.code)} wins the ${gp}`]), `${loreOf(winner.team).name} on the top step, ${nameOf(E[1].code)} second. ${quote(winner.code, 'win', r)}`, { driver: winner.code, mood: 'win', track });
 
   // the player, unless the lead already was
-  if (report.dnq && report.open) story(save, 'down', `${me.name} misses the ${report.kind === 'masters' ? gp : `${gp} Final`}`, report.kind === 'masters' ? `Outside the top ${T.series.gridSize} of the Ultrack Ranking, ${me.name} watched the Masters from the grandstand.` : `The Final went ahead without ${me.name}, who finished the weekend P${report.grid} of ${FIELD}. The ranking will remember it.`, { track, you: 'dnq' });
-  else if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });
+  if (report.dnq && report.open) story(save, 'down', `${me.name} misses the ${report.kind === 'masters' ? gp : `${gp} Final`}`, report.kind === 'masters' ? (DIV[save.season?.div] ? `Ranked ${report.open.rank} in the ${DIV[save.season.div].short}, outside its top ${DIV[save.season.div].masters}, ${me.name} watched the Masters from the grandstand.` : `Outside the top ${T.series.gridSize} of the Ultrack Ranking, ${me.name} watched the Masters from the grandstand.`) : `The Final went ahead without ${me.name}, who finished the weekend P${report.grid} of ${report.field ?? FIELD}. The ranking will remember it.`, { track, you: 'dnq' });
+  else if (report.dnq && (report.field ?? FIELD) <= T.series.gridSize) story(save, 'down', `${me.name} sits out the ${gp}`, `No qualifying lap, so no race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });   // everyone races a field of 8: only a round with no lap leaves the player out
+  else if (report.dnq) story(save, 'down', `${me.name} misses the cut at the ${gp}`, `P${report.grid} of ${report.field ?? FIELD} in qualifying, and only the top ${T.series.gridSize} race. The grandstands never saw ${me.name} on Sunday.`, { track, you: 'dnq' });
   else if (report.dnf) story(save, 'down', `Retirement for ${me.name}`, `Out of the ${gp} after starting P${report.grid}. No points, and a long walk back to the garage.`, { track, you: 'down' });
   else if (!winner.you && report.finish <= 3) story(save, 'podium', `Podium for ${me.name}`, `P${report.finish} from P${report.grid} at the ${gp}, in a car expected ${report.expPos > report.finish ? `no higher than P${report.expPos}` : `to be up here`}.`, { track, you: 'podium' });
   else if (!winner.you && report.expPos - report.finish >= 4) story(save, 'podium', `${me.name} punches above the car`, `P${report.finish} when the paddock expected P${report.expPos}. People are starting to ask who ${me.name} is.`, { track, you: 'podium' });
@@ -82,6 +83,32 @@ export function coverOpen(save, report) {
   if (report.honours.includes('triple')) story(save, 'win', `${me} completes the Triple Crown`, 'Japan, India and Venice: all three Opens won in one career. Nobody in the paddock is calling it luck.', { track, you: 'win' });
   if (report.honours.includes('slam')) story(save, 'win', `${me} takes the Grand Slam`, 'All three Opens in a single season. The record books have been opened to a new page.', { track, you: 'win' });
 }
+
+// ---------------------------------------------------------------------------------------------- the two series (docs/10x/divisions-spec.md 11)
+const D = MEDIA.divisions, fillD = (t, ctx) => t.replace(/\{(\w+)\}/g, (_, k) => ({ elite: DIV.elite.name, challenger: DIV.challenger.name, ...ctx })[k] ?? '');
+/** the season's swap (endSeason): the public story, or the player's own when it is their team that moves */
+export function coverSwap(save, swap) {
+  const c = save.contract, stays = c && !c.dropped && !c.next, mine = stays ? c.team : null, t = (id) => loreOf(id).name, ctx = { up: t(swap.up), down: t(swap.down), team: mine && t(mine) };   // let go or signed elsewhere: the public story, not "your contract stands"
+  if (mine === swap.up) story(save, 'league', fillD(D.youUp.title, ctx), fillD(D.youUp.body, ctx), { you: 'win', principal: mine });
+  else if (mine === swap.down && c.seasonsLeft > 1) story(save, 'league', fillD(D.youDown.title, ctx), fillD(D.youDown.body, ctx), { principal: mine });
+  else story(save, 'league', fillD(D.up.title, ctx), fillD(D.up.body, ctx), { principal: swap.up });
+}
+/** each series' Drivers' champion (endSeason): champs = [{ div, row }] with row a standings driver row */
+export function coverChampions(save, champs) {
+  for (const { div, row } of champs) {
+    const you = row.you, ctx = { who: you ? save.player.name : row.name, series: DIV[div].name, pts: Math.round(row.pts * 10) / 10, team: loreOf(row.team).name, wins: row.wins === 1 ? '1 win' : row.wins ? `${row.wins} wins` : 'no wins' };
+    story(save, 'league', fillD(D.champion.title, ctx), fillD(D.champion.body, ctx), you ? { you: 'win' } : { driver: row.code, mood: 'win' });
+  }
+}
+/** a Challenger driver on the podium of an Open or the Masters (finishRace): the player's story if they are one, else the best placed */
+export function coverGiantKill(save, report) {
+  const E = report.entries, i = [0, 1, 2].filter((k) => E[k] && !E[k].dnq && E[k].div === 'challenger').sort((a, b) => E[b].you - E[a].you || a - b)[0];
+  if (i === undefined || (E[i].you && report.dnf)) return;
+  const e = E[i], ctx = { who: e.you ? save.player.name : personOf(save, e.code)?.name ?? e.code, gp: report.name, place: i + 1, beat: E.slice(i + 1).filter((x) => !x.dnq && x.div === 'elite').length };
+  story(save, 'league', fillD(e.you ? D.giantKill.you : D.giantKill.title, ctx), fillD(D.giantKill.body, ctx), e.you ? { you: 'podium', track: report.track } : { driver: e.code, mood: 'win', track: report.track });
+}
+/** a line of media.json's divisions group, filled: divText('meanwhile', 'title', ctx) */
+export const divText = (key, sub, ctx) => fillD(D[key][sub], ctx);
 
 /** the fans and the gossip columns, one post a round at most, from what really happened: a rare rumour, else anger at a bad day, love for a good one, a war between rival stands, or a leak about whoever underperformed */
 function coverSocial(save, report, r) {

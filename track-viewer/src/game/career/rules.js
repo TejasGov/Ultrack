@@ -27,8 +27,38 @@ export const seatCar = (team, seat) => TIERS.teams[team][seat];
 export const otherSeat = (seat) => (seat === 'A' ? 'B' : 'A');
 /** the drivers in the world: two seats a team; all of them qualify, the fastest T.series.gridSize race */
 export const FIELD = Object.keys(CAR).length;
-/** expected place of a driver among the FIELD: the teams in their expected order, A seat then B (6.1) */
-export const expOf = (expPos, seat) => clamp((expPos - 1) * 2 + (seat === 'B' ? 2 : 1), 1, FIELD);
+/** expected place of a driver among n cars (the FIELD unless a series is meant): the teams in their expected order, A seat then B (6.1) */
+export const expOf = (expPos, seat, n = FIELD) => clamp((expPos - 1) * 2 + (seat === 'B' ? 2 : 1), 1, n);
+
+// ---------------------------------------------------------------------------------------------- the two series (docs/10x/divisions-spec.md)
+// A team's series is saved state (world.teams[id].div, next season's) and moves by promotion and relegation; season.divs is its snapshot for the season
+// under way. A season without divs is from before the split and runs as one field: every helper below then reads 'all'.
+export const DIV = T.divisions;
+export const eliteSize = (n = TEAM_IDS.length) => Math.min(DIV.eliteTeams, n - DIV.minTeams);
+export const divsOn = (n = TEAM_IDS.length) => n >= 2 * DIV.minTeams;
+/** the series of a team this season ('all' in a season from before the split); outside a season, the world's */
+export const divOf = (save, team) => (save.season ? save.season.divs?.[team] ?? 'all' : save.world.teams[team].div ?? 'all');
+export const nextDivOf = (save, team) => save.world.teams[team].div ?? 'all';
+export const teamsIn = (save, d, dv = divOf) => TEAM_IDS.filter((t) => d === 'all' || dv(save, t) === d);
+export const carsIn = (save, d, dv = divOf) => Object.keys(save.world.seats).filter((k) => save.world.seats[k] && (d === 'all' || dv(save, CAR[k].team) === d));
+/** a team's place among its series' teams by global expPos: a count, so expPos need not be contiguous inside a series */
+export const posIn = (save, team, dv = divOf) => { const d = dv(save, team), e = save.world.teams; return 1 + teamsIn(save, d, dv).filter((t) => e[t].expPos < e[team].expPos).length; };
+export const expIn = (save, team, seat, dv = divOf) => expOf(posIn(save, team, dv), seat, 2 * teamsIn(save, dv(save, team), dv).length);
+/** a1 b1 a2 b2 ... until one list runs out, then the rest of the other, cut at n */
+export const interleave = (a, b, n = Infinity) => Array.from({ length: Math.max(a.length, b.length) }, (_, i) => [a[i], b[i]]).flat().filter((x) => x !== undefined).slice(0, n);
+/** the first G of `order` holding at least `min` cars that pass isCh: short of them, the fastest such laps take the slowest others' places; the grid stays in lap order */
+export function lcqGrid(order, isCh, min, G = T.series.gridSize) {
+  const grid = order.slice(0, G), add = order.slice(G).filter(isCh).slice(0, Math.max(0, min - grid.filter(isCh).length));
+  for (const k of add) grid.splice(grid.findLastIndex((x) => !isCh(x)), 1);
+  return order.filter((k) => grid.includes(k) || add.includes(k));
+}
+/** an Open's or the Masters' seeds from the two series' rankings (car keys, best first): Opens openSeeds of each, the Masters masters of each, interleaved Elite first; a series short of its quota leaves its places to the other's next-ranked */
+export function seedsOf(kind, E, C) {
+  const q = kind === 'masters' ? 'masters' : 'openSeeds', qe = DIV.elite[q], qc = DIV.challenger[q], ne = Math.min(qe, E.length), nc = Math.min(qc, C.length);
+  return interleave(E.slice(0, ne + qc - nc), C.slice(0, nc + qe - ne), qe + qc);
+}
+/** a seated driver may not move from an Elite team to a Challenger team (next season's series); free agents go anywhere */
+export const upDiv = (save, from, to) => !(nextDivOf(save, from) === 'elite' && nextDivOf(save, to) === 'challenger');
 
 // ---------------------------------------------------------------------------------------------- levels
 export const xpForLevel = (L) => Math.round(T.xp.curve[0] * (L - 1) ** T.xp.curve[1]);
@@ -102,8 +132,8 @@ export function buildCalendar(seed, season, world, available, length = 'sprint')
   });
 }
 
-/** the points multiplier of a round: its event kind's, or the old finale's x1.5 for a season from before the Tour */
-export const pointsMult = (R) => (R.kind ? T.events[R.kind].pts : R.finale ? T.series.finaleMult : 1);
+/** the points multiplier of a round: its event kind's, or the old finale's x1.5 for a season from before the Tour. With two series (`divided`) the Opens and the Masters score no series points */
+export const pointsMult = (R, divided = false) => (divided && isSpecial(R) ? 0 : R.kind ? T.events[R.kind].pts : R.finale ? T.series.finaleMult : 1);
 
 // ---------------------------------------------------------------------------------------------- weeks (section 13)
 /**
@@ -138,10 +168,10 @@ export function duelOf(mine, mate) {
 export const RR_LABELS = [[9, 'Masterclass'], [8, 'Outstanding'], [7, 'Strong'], [6, 'Solid'], [5, 'Poor'], [0, 'Bad']];
 export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
 /** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
-export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie }) {
-  const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); };
-  // places are of the whole field, and two of them weigh what one did when the table was 8: the rating constants are unchanged. No race, no finish to judge
-  const dp = dnq ? 0 : dnf ? Math.min(0, expPos - finish) : expPos - finish, dq = expPos - grid, pos = clamp(dp / 2, -R.posClamp, R.posClamp), q = exempt ? clamp(dq / 2, 0, R.qualiClamp) : clamp(dq / 2, -R.qualiClamp, R.qualiClamp);   // a slot earned by the last result never counts against
+export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie, field = DIV.legacyField, share = 1, shareLine = null }) {
+  const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); }, k = field / T.series.gridSize;
+  // places are of the race's field, and k of them weigh what one did when the table was 8 (16 cars: two): the rating constants are unchanged. No race, no finish to judge
+  const dp = dnq ? 0 : dnf ? Math.min(0, expPos - finish) : expPos - finish, dq = expPos - grid, pos = clamp(dp / k, -R.posClamp, R.posClamp), q = exempt ? clamp(dq / k, 0, R.qualiClamp) : clamp(dq / k, -R.qualiClamp, R.qualiClamp);   // a slot earned by the last result never counts against
   add(dp >= 0 ? `Finished ${dp} ${dp === 1 ? 'place' : 'places'} above expected` : `Finished ${-dp} ${dp === -1 ? 'place' : 'places'} below expected`, R.pos * pos);
   add(exempt ? `Started ${dq} above expected` : dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
   if (exempt) add('Skipped qualifying on merit', R.duel);     // the skip needs a podium with the teammate not ahead: doing well must not cost the qualifying credit of the next round
@@ -152,16 +182,17 @@ export function roundRating({ expPos, grid, finish, fastest, clean, duel, underd
   if (duel) add(duel.result === 'won' ? 'Beat your teammate' : duel.result === 'lost' ? 'Lost to your teammate' : null, (duel.result === 'won' ? 1 : duel.result === 'lost' ? -1 : 0) * (duel.big ? R.duelBig : R.duel));
   if (underdog && pos >= 0 && !dnf) add('Underdog seat', R.underdog);
   if (dnf) add('Retired', R.dnf);
+  if (share < 1) add(shareLine, -(1 - share) * lines.reduce((s, l) => s + Math.max(0, l[1]), 0));   // a series that keeps a share of the credit (the Challenger): the gains shrink, the losses stay
   const raw = R.base + lines.reduce((s, l) => s + l[1], 0), soft = raw > R.softAt ? R.softAt + (raw - R.softAt) * R.softRate : raw;   // the top of the scale is hard to reach: a P4 from the slowest car is not a perfect 10
   return { rr: Math.round(clamp(soft, R.min, R.max) * 10) / 10, lines };
 }
 /** XP for a round (5.2) before nothing: the tier, assist and underdog multipliers are applied here */
-export function xpFor({ finish, expPos, grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog }) {
+export function xpFor({ finish, expPos, grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog, field = DIV.legacyField, reward = 1 }) {
   const X = T.xp, lines = [], add = (label, v) => { if (v > 0) lines.push([label, v]); };
-  add(`Finished P${finish}`, dnf ? 0 : X.place[finish - 1] ?? 0);
+  add(`Finished P${finish}`, dnf ? 0 : (X.place[finish - 1] ?? 0) * reward);
   add('Above expected', dnf ? 0 : Math.min(X.overExpMax, Math.max(0, expPos - finish) * X.perPlaceOverExp));
   add('Pole position', pole ? X.pole : 0);
-  add('Qualified above expected', Math.min(T.rating.qualiClamp, Math.max(0, expPos - grid) / 2) * X.qualiPerPlace);
+  add('Qualified above expected', Math.min(T.rating.qualiClamp, Math.max(0, expPos - grid) / (field / T.series.gridSize)) * X.qualiPerPlace);
   add('Teammate duel', duel?.result === 'won' ? X.duel : 0);
   add('Fastest lap', fastest ? X.fastest : 0);
   add('Clean race', clean && !dnf ? X.clean : 0);
@@ -199,12 +230,16 @@ export const OBJECTIVES = {
 export const objectiveText = (o) => OBJECTIVES[o.kind](o);
 /** an objective as it stands from this grid slot: places that are not there to gain (P2 asked for two, or pole for any) become holding the slot */
 export const objectiveFrom = (o, grid) => (o.kind === 'gain' && grid - 1 < o.n ? { ...o, kind: 'hold' } : o);
-/** the round's objectives (6.4): one mandatory from the expected finish, two optional from a seeded pool */
-export function objectivesFor(r, expPos, easier = false, exempt = false, reach = null) {
-  const G = T.series.gridSize, main = reach ? { kind: 'reach', to: reach } : expPos > G && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, FIELD) : Math.min(expPos, FIELD - 1) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, G) : Math.min(expPos, G - 1) };   // expected outside the grid: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
+/**
+ * The round's objectives (6.4): one mandatory from the expected finish among N cars (G race), two optional from a seeded pool. reachLcq: an unseeded Challenger
+ * driver at an Open must reach the Last Chance Qualifier, and reaching the Final (`reach`) is one of the optional two
+ */
+export function objectivesFor(r, expPos, easier = false, exempt = false, reach = null, N = FIELD, G = T.series.gridSize, reachLcq = false) {
+  const main = reachLcq ? { kind: 'reach', stage: 'lcq', to: 'the Last Chance Qualifier' } : reach ? { kind: 'reach', to: reach } : expPos > G && !exempt ? { kind: 'quali', n: easier ? Math.min(expPos + 1, N) : Math.min(expPos, N - 1) } : { kind: 'finish', n: easier ? Math.min(expPos + 1, G) : Math.min(expPos, G - 1) };   // expected outside the grid: the target is the qualifying place. Last expected asks for one better; a Raw or reserve driver gets one place easier, down to just making it (3.1, 6.7)
   const pool = [{ kind: 'duel' }, { kind: 'clean' }, { kind: 'gain', n: 2 }, { kind: 'fastest' }, { kind: 'quali', n: Math.max(1, expPos - 2) }];
-  if (expPos <= 6) pool.push({ kind: 'podium' });
-  return [{ ...main, mandatory: true }, ...shuffle(r, exempt ? pool.filter((o) => o.kind !== 'duel' && o.kind !== 'quali') : pool).slice(0, 2)];
+  if (expPos <= Math.floor((N * 3) / 8)) pool.push({ kind: 'podium' });   // 6 of 16 or 18, 3 of 8 or 10
+  const picked = shuffle(r, exempt ? pool.filter((o) => o.kind !== 'duel' && o.kind !== 'quali') : pool).slice(0, 2);
+  return [{ ...main, mandatory: true }, ...(reachLcq ? [{ kind: 'reach', to: reach }, picked[0]] : picked)];
 }
 /** why the player skips the next round's qualifying and where he starts, or null: a podium, with his teammate not ahead of him. Further such rules go here */
 export function qualiExemption(rep, mate) {
@@ -214,7 +249,7 @@ export function qualiExemption(rep, mate) {
 }
 export function objectiveMet(o, x) {
   return ({ finish: () => !x.dnf && x.finish <= o.n, duel: () => x.duel?.result === 'won', clean: () => !x.dnf && x.clean, gain: () => !x.dnf && x.grid - x.finish >= o.n, hold: () => !x.dnf && x.finish <= x.grid,
-    fastest: () => !!x.fastest, podium: () => !x.dnf && x.finish <= 3, quali: () => x.grid <= o.n, reach: () => !x.dnq })[o.kind]();
+    fastest: () => !!x.fastest, podium: () => !x.dnf && x.finish <= 3, quali: () => x.grid <= o.n, reach: () => (o.stage === 'lcq' ? !!x.lcqIn : !x.dnq) })[o.kind]();
 }
 
 // ---------------------------------------------------------------------------------------------- offers
@@ -239,10 +274,10 @@ export function playerRating(save) {
   const r = duels.length ? avg(duels.map((d) => W.ratings[d.mateCode] - (d.mine - d.mate) / d.mate / T.pace.perRating)) : W.ratings[mate] ?? avg(Object.values(W.ratings));
   return Math.round(clamp(r, 60, 99));
 }
-/** a driver's form this season for the market, -1 to 1: places finished above the expected, a quarter point each, over the rounds raced ('YOU' is the player) */
+/** a driver's form this season for the market, -1 to 1: places finished above the expected (stamped on the entry; an entry from before the split is of the whole field), a quarter point each, over the rounds raced, the other series' races included ('YOU' is the player) */
 export function seasonForm(save, code) {
   const d = [];
-  for (const r of save.season?.results ?? []) r.entries.forEach((e, i) => { if (!e.dnq && (code === 'YOU' ? e.you : e.code === code && !e.you)) d.push((expOf(save.world.teams[e.team].expPos, CAR[e.key].seat) - (i + 1)) / 4); });
+  for (const r of save.season?.results ?? []) for (const l of [r.entries, r.other?.entries ?? []]) l.forEach((e, i) => { if (!e.dnq && (code === 'YOU' ? e.you : e.code === code && !e.you)) d.push(((e.exp ?? expOf(save.world.teams[e.team].expPos, CAR[e.key].seat)) - (i + 1)) / 4); });
   return clamp(avg(d), -1, 1);
 }
 /** the seeded roll (6.5): window 'W1' (mid-season poaching, halved) or 'W2' (the season-end market) */
