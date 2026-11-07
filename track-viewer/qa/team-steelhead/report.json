@@ -14,7 +14,7 @@
    "hero": "zr1",
    "kmh": 123,
    "pos": 4,
-   "kmhLater": 162
+   "kmhLater": 158
   },
   "stingray": {
    "cars": [
@@ -28,9 +28,9 @@
     "jesko"
    ],
    "hero": "stingray",
-   "kmh": 121,
+   "kmh": 120,
    "pos": 4,
-   "kmhLater": 181
+   "kmhLater": 183
   }
  },
  "career": {
@@ -50,6 +50,14 @@
    "stingray"
   ],
   "note": "Practice is open. All 10 Challenger drivers qualify, and the fastest 8 race. A first season's grace: set a lap and you race, from the back of the grid at worst.",
+  "nolap": {
+   "waits": true,
+   "tiles": [
+    "Next upImprove your lapP10: no lap. One retry: set a lap and you race (a first season's grace)",
+    "LockedRaceNo lap: set one to race"
+   ],
+   "next": "No lapNo valid lap: a first season's grace needs one, then you start from the back of the grid at worst. One retry left."
+  },
   "lap": 45.65273066863069,
   "quali": {
    "grace": {

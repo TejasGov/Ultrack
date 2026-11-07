@@ -168,8 +168,8 @@ function addTeams(save) {
   const cur = save.season?.current, me = save.contract, R = save.season?.calendar?.[save.clock.round];
   if (save.season?.divs) return added;                         // a divided season races on without them: its expected places, objectives and sponsor targets stand
   if (cur && me && R && cur.round === R.round) {               // prepareRound ran in the old world: every team below the new one is a place lower now
-    cur.expPos = expOf(W.teams[me.team].expPos, me.seat);
-    const fresh = objectivesFor(rng(save.seed, 'obj', save.clock.season, save.clock.round), cur.expPos, me.easier, !!cur.exempt || !!cur.open, cur.open && !cur.open.seeded ? cur.open.to : null);
+    cur.expPos = expOf(W.teams[me.team].expPos, me.seat); cur.field = fieldSize(save);   // one field: it grew with the team
+    const fresh = objectivesFor(rng(save.seed, 'obj', save.clock.season, save.clock.round), cur.expPos, me.easier, !!cur.exempt || !!cur.open, cur.open && !cur.open.seeded ? cur.open.to : null, cur.field, T.series.gridSize);
     cur.objectives = cur.quali ? [fresh[0], ...cur.objectives.slice(1)] : fresh;   // after qualifying the player has seen the others: only the mandatory one follows the new place
   }
   if (me && save.season && save.clock.phase !== 'review') {    // a sponsor's place target set in the old world is a place too harsh below the new team
@@ -493,6 +493,8 @@ export function finishQuali(save, best, mateRun = null) {
  * but qualified outside the grid races from its last slot, and the slowest AI car on it sits out. Not at an Open, its Last Chance or the Masters (a ranking decides those)
  */
 export const graceOn = (save, R = null) => save.clock.season <= (DIV.challenger.grace ?? 0) && save.season.div === 'challenger' && (R ? !isSpecial(R) : !save.season.current.open);   // R: a round other than the one under way (the calendar)
+/** off the grid only for want of a valid lap: under the grace any lap races, so the hub asks for a lap, not for the cut */
+export const graceWaits = (save, q) => graceOn(save) && !q.exempt && !q.grid.includes(save.contract.car);
 /** the grid from a qualifying order: the fastest eight; at an Open of two series, with at least lcqMin Challenger cars in the Last Chance */
 const lcqOf = (save, order) => (save.season.div && save.season.current.open ? lcqGrid(order, (k) => divOf(save, CAR[k].team) === 'challenger', DIV.challenger.lcqMin) : order.slice(0, T.series.gridSize));
 

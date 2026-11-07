@@ -13,8 +13,9 @@ export const TEAM_OF = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map(
 export const ENTRY = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, c])));
 export { carName };
 export const teamLogo=team=>h('img.team-logo',{crossOrigin:'anonymous',src:teamLogoUrl(team),alt:team.name,width:200,height:50,decoding:'async'});
-/** a team's colour for marks on dark panels: the primary, or the secondary when the primary is too dark to read */
+/** a team's colour for marks on dark panels: its own `mark` (Steelhead's steel bar read like Hayate's white), the primary, or the secondary when the primary is too dark to read */
 export function teamMark(t) {
+  if (t.mark) return t.mark;
   const c = parseInt(t.colors.primary.slice(1), 16), l = 0.2126 * (c >> 16) + 0.7152 * ((c >> 8) & 255) + 0.0722 * (c & 255);
   return l < 45 ? t.colors.secondary : t.colors.primary;
 }

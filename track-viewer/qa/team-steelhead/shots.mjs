@@ -29,9 +29,9 @@ try {
   await page.goto(base); await page.waitForFunction(() => window.game?.loaded, null, { timeout: 180000 });
   await page.keyboard.press('Enter'); await page.waitForSelector('.bento-tile[data-id=race]', { state: 'visible' }); await page.waitForTimeout(4000); await shot('menu-zr1');
   await page.evaluate(() => window.game.show('garage')); await page.waitForTimeout(6000); await shot('garage-zr1');
-  for (const [i, name] of [[1, 'specs'], [2, 'paint']]) { await page.click(`.ga-tabs button >> nth=${i}`); await page.waitForTimeout(1500); await shot('garage-zr1-' + name); }
+  for (const [i, name] of [[1, 'specs'], [3, 'paint']]) { await page.click(`.ga-tabs button >> nth=${i}`); await page.waitForTimeout(1500); await shot('garage-zr1-' + name); }
   await page.click('.ga-tabs button >> nth=0'); await page.click('button.lrow.car[data-key=stingray]'); await page.waitForTimeout(6000); await shot('garage-stingray');
-  await page.click('.ga-tabs button >> nth=1'); await page.waitForTimeout(1500); await shot('garage-stingray-specs'); await page.click('.ga-tabs button >> nth=0');
+  await page.click('.ga-tabs button >> nth=1'); await page.waitForTimeout(1500); await shot('garage-stingray-specs'); await page.click('.ga-tabs button >> nth=3'); await page.waitForTimeout(1500); await shot('garage-stingray-paint'); await page.click('.ga-tabs button >> nth=0');
   // a quick race in each car: it and one car from each of the seven teams nearest Steelhead's place (Aurum and Saetta sit out), the AI driving it
   report.quickRace = {};
   for (const car of ['zr1', 'stingray']) {
@@ -51,6 +51,12 @@ try {
   await page.waitForSelector('.screen.career-hub.on'); await both('career-home');
   for (const t of ['Standings', 'Calendar']) { await page.click(`.stabs button:has-text("${t}")`); await page.waitForTimeout(400); await both('career-' + t.toLowerCase()); }
   await page.click('.stabs button:has-text("Home")');
+  // no valid lap under the grace: the hub asks for a lap, not for the cut (a copy of the career, put back after)
+  await run(`g.qaKeep = structuredClone(g.career); g.qaSession = g.careerSession; g.careerSession = (kind, spec, done) => done({ best: null, mateLap: null, hits: [] });`);
+  await page.click('.screen.on .cx-mode.k-race[data-ic=time-trial]'); await page.waitForTimeout(400); await shot('career-nolap-toast'); await page.waitForTimeout(4500); await both('career-home-nolap');
+  report.career.nolap = await run(`const q = g.career.season.current.quali, r = { waits: C.graceWaits(g.career, q), tiles: [...document.querySelectorAll('.screen.on .cx-mode.k-race')].map((e) => e.textContent), next: document.querySelector('.screen.on .cx-next')?.textContent };
+    g.careerSession = g.qaSession; delete g.qaSession; g.career = g.qaKeep; delete g.qaKeep; S.saveCareer(g.career, 0); g.show('careerHub', 'home'); return r;`);
+  await page.waitForTimeout(800);
   // qualifying through the hub's own tile, the session replaced by a lap just slower than every Challenger car: P10, the grace
   report.career.lap = await run(`const t = structuredClone(g.career); C.finishQuali(t, null); const q = t.season.current.quali, me = t.contract.car, ch = q.order.filter((k) => k !== me);
     const lap = q.laps[ch.at(-1)] + 0.35; g.qaSession = g.careerSession; g.careerSession = (kind, spec, done) => done({ best: lap, mateLap: null, hits: [] }); return lap;`);
