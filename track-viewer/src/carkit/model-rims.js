@@ -6,6 +6,7 @@ const RIMS={
   bmw1:['wheel'],
   'nissan-z':['mm_wheel'],
   supra:['material_13'],
+  jesko:['CARBON'],
   'ford-gt':['rimpaint'],
   jaguarxkjss:['tyre','crbnfibre'],
 };

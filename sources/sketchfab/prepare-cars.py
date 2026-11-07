@@ -1,5 +1,5 @@
 # Prepares the four 2026-10-21 Sketchfab cars for scripts/model-car.py (track-viewer): game-rip structure -> role-tagged parts.
-#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4|nissanz|supra|fordgt>
+#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4|nissanz|supra|fordgt|jesko|cc850>
 # Reads <folder>/model.glb, writes <folder>/prepared.glb with
 #   - every mesh un-parented, in world space (the pipeline measures and scales it itself),
 #   - object names the pipeline's wheel patterns find ("Tyre_", "Spin_" = rim + disc, "Caliper_", "INT:" = cabin),
@@ -13,7 +13,7 @@ from mathutils import Vector, Matrix
 
 key = sys.argv[sys.argv.index('--') + 1]
 HERE = os.path.dirname(os.path.abspath(__file__))
-FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4', 'nissanz': 'Nnissan-z-gt4', 'supra': 'Tsupra-gt', 'fordgt': 'Ffordgt-mk2'}[key]
+FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4', 'nissanz': 'Nnissan-z-gt4', 'supra': 'Tsupra-gt', 'fordgt': 'Ffordgt-mk2', 'jesko': 'Kjesko', 'cc850': 'Kcc850'}[key]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=os.path.join(HERE, FOLDER, 'model.glb'))
 
@@ -325,6 +325,104 @@ def fordgt():
             if g is o: continue
         put(o, base + '_' + mn, 'keep')
 if key == 'fordgt': fordgt()
+
+# ================= the Koenigsegg Jesko (Real Racing 3 rip, same family as the GT4: "jesko:LOD_A_<PART>_mm_<kind>"; file units 1/100 m, nose -Y, left +X) =================
+def jesko():
+    EXT, WIN = 'jeskoVehicle_Exterior_mm_ext1', 'jeskoVehicle_Exterior_mm_windows1'
+    for o in list(bpy.context.scene.objects):
+        if o.type != 'MESH': continue
+        raw = PART[o.name]
+        m = re.search(r'LOD_A_(.+?)_mm_([A-Za-z0-9]+)', raw)
+        part = m.group(1) if m else raw
+        mat = o.material_slots[0].material if o.material_slots else None
+        mn = mat.name if mat else ''
+        base = raw.split(':')[-1].replace('LOD_A_', '') + '_' + mn.replace('jeskoVehicle_Exterior_mm_', '')
+        # BONNETCAM_* repeat the nose and hood for RR3's bonnet camera (z-fight); LOD_B_ is a low copy of the tail;
+        # the cabin's black inner glass would blind every window; the inner mirror glass doubles the outer one
+        if 'BONNETCAM' in raw or 'LOD_B_' in raw or part.startswith(('INT_GLASS', 'INT_MIRROR_GLASS')) or (part == 'INT_BODY' and mn == 'Glass_Blask'):
+            bpy.data.objects.remove(o); continue
+        if part == 'TYRE': put(o, 'Tyre_' + base, 'keep'); continue
+        if part in ('WHEEL', 'ROTOR'): put(o, 'Spin_' + base, 'keep'); continue
+        if part.startswith('BRAKE_CALIPER'): put(o, 'Caliper_' + base, 'caliper'); continue
+        if part.startswith('MIRROR_GLASS'): put(o, base, 'mirror'); continue
+        if part.startswith('MIRROR'): put(o, base, 'mirrorPaint' if mn == EXT else 'mirrorHousing'); continue
+        if part.startswith('INT_') or part == 'INTERIOR': put(o, 'INT:' + base, 'keep'); continue
+        if part.startswith('GLASS'): put(o, base, 'glass' if mn == WIN else 'keep'); continue     # Glass_Blask: the black roof and engine-cover panes
+        if part.startswith('HEADLIGHT_LENS'): put(o, base, 'headkeep' if mn == WIN else 'keep'); continue
+        if part.startswith('BRAKES_'): put(o, base, 'tail'); continue
+        if part == 'EXHAUST': put(o, 'EXHAUST_' + base, 'keep'); continue
+        if mn == EXT:                    # white atlas: white and its baked shading take the team paint; lime accents, badges and carbon stay
+            arr = pixels(image_of(mat))      # (a median-distance test kept shaded white as white patches on the haunches and tail)
+            g = split(o, lambda f, uvl: (lambda c: float(c.max() - c.min()) > 0.08 or lum(c) < 0.5)(face_rgb(arr, f, uvl)))
+            if g is o: put(o, base + '_livery', 'keep')
+            else:
+                put(o, base, 'paint')
+                if g: put(g, base + '_livery', 'keep')
+            continue
+        put(o, base, 'keep')
+if key == 'jesko': jesko()
+
+# ================= the Koenigsegg CC850 (CSR2-based: one mesh per material under Body_lodA, wheels as ~340 loose pieces a corner; file units 1/100 m, nose -Y, left +X) =================
+def emission_of(m):
+    n = next((n for n in m.node_tree.nodes if n.type == 'BSDF_PRINCIPLED'), None)
+    nd = n.inputs['Emission Color'].links[0].from_node if n and n.inputs['Emission Color'].links else None
+    return nd.image if nd and nd.type == 'TEX_IMAGE' else None
+
+def cc850():
+    P = 'Koenigsegg_CC850_2023'
+    at = lambda f: f.calc_center_median() * 100                                    # metres
+    ext = {}                                                                        # per corner (left, rear): the wheel pieces' extent
+    for o in bpy.context.scene.objects:
+        if o.type != 'MESH' or 'Wheel1A' not in o.material_slots[0].material.name: continue
+        for v in o.data.vertices:
+            p = v.co * 100; a = ext.setdefault((p.x > 0, p.y > 0), [Vector((1e9,) * 3), Vector((-1e9,) * 3)])
+            for i in range(3): a[0][i] = min(a[0][i], p[i]); a[1][i] = max(a[1][i], p[i])
+    hubs = {k: ((a[0] + a[1]) / 2, (a[1].z - a[0].z) / 2) for k, a in ext.items()}
+    def radial(f):                                                                  # distance from the axle over the tyre radius
+        p = at(f); c, r = hubs[(p.x > 0, p.y > 0)]
+        return math.hypot(p.y - c.y, p.z - c.z) / r
+    em = pixels(emission_of(bpy.data.materials[P + 'LightEmissiveA_Material']))   # the lamp mesh's lit elements (the overlay has the same UVs)
+    red = lambda c: c[0] > 0.35 and c[0] > 1.8 * c[1] and c[0] > 1.8 * c[2]
+    for o in list(bpy.context.scene.objects):
+        if o.type != 'MESH': continue
+        mat = o.material_slots[0].material if o.material_slots else None
+        mn = (mat.name if mat else '').replace(P, '').strip('_')
+        # the emissive overlay repeats the lamp mesh (z-fight); the windows' inner faces double the tint
+        if mn.startswith('LightEmissive') or PART[o.name].startswith('WindowInside'): bpy.data.objects.remove(o); continue
+        if 'Wheel1A' in mn:
+            t = split(o, lambda f, uvl: radial(f) > 0.74)                           # the rim ends inside 0.74 R: beyond it is tyre
+            if t: put(t, 'Tyre_' + o.name, 'keep')
+            if t is not o: put(o, 'Spin_' + o.name, 'keep')
+            continue
+        if 'Calliper' in mn: put(o, 'Caliper_' + o.name, 'caliper'); continue
+        if mn.startswith('Paint'): put(o, 'paint', 'paint'); continue
+        if mn.startswith(('Interior', 'SeatBelt', 'Textured', 'Carbon1Details')): put(o, 'INT:' + mn, 'keep'); continue
+        if mn == 'Window_Material':
+            h = split(o, lambda f, uvl: at(f).y < -1.6)                              # headlamp covers
+            if h: put(h, 'headcover', 'headkeep')
+            if h is o: continue
+            t = split(o, lambda f, uvl: at(f).y > 1.9)                               # tail lamp covers
+            if t: put(t, 'tailcover', 'keep')
+            if t is o: continue
+            lo = split(o, lambda f, uvl: at(f).z < 0.65)     # a flat pane inside the sills (0.3 m up): it dragged the side-glass outline, and the livery placed from it, down to the sills
+            if lo: put(lo, 'lowglass', 'keep')
+            if lo is not o: put(o, 'glass', 'glass')
+            continue
+        if mn.startswith('LightA'):
+            t = split(o, lambda f, uvl: at(f).y > 1.0 and red(face_rgb(em, f, uvl)))
+            if t: put(t, 'taillamps', 'tail')
+            if t is o: continue
+            h = split(o, lambda f, uvl: at(f).y < -1.0 and lum(face_rgb(em, f, uvl)) > 0.45 and not red(face_rgb(em, f, uvl)))
+            if h: put(h, 'headlamps', 'head')
+            if h is not o: put(o, 'lamps', 'keep')
+            continue
+        if mn.startswith('Carbon1'):                                                # the mirror glass: rear-facing faces of the two carbon heads
+            g = split(o, lambda f, uvl: 0.95 < abs(at(f).x) < 1.13 and -0.45 < at(f).y < -0.2 and 0.78 < at(f).z < 0.97 and f.normal.y > 0.85)
+            if g: put(g, 'mirrorglass', 'mirror')
+        put(o, mn or o.name, 'keep')
+    for n, o in out.items():
+        if not n.startswith(('Tyre_', 'Spin_', 'Caliper_')): print('CC', n, tris(o))
+if key == 'cc850': cc850()
 
 # ================= export =================
 def export():
