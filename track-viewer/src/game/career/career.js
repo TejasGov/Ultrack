@@ -496,7 +496,7 @@ export const graceOn = (save, R = null) => (save.clock.season <= (DIV.challenger
 /** why the grace applies, in the one wording every text uses: the first season's, else the Rookie seat's */
 export const graceWhy = (save, cap = true) => { const w = save.clock.season <= (DIV.challenger.grace ?? 0) ? "a first season's grace" : "a Rookie team's grace"; return cap ? w[0].toUpperCase() + w.slice(1) : w; };
 /** off the grid only for want of a valid lap: under the grace any lap races, so the hub asks for a lap, not for the cut */
-export const graceWaits = (save, q) => graceOn(save) && !q.exempt && !q.grid.includes(save.contract.car);
+export const graceWaits = (save, q) => graceOn(save) && !q.exempt && !q.grid.includes(save.contract.car) && !Number.isFinite(q.laps[save.contract.car]);   // a stale quali that has a lap is a plain miss
 /** the grid from a qualifying order: the fastest eight; at an Open of two series, with at least lcqMin Challenger cars in the Last Chance */
 const lcqOf = (save, order) => (save.season.div && save.season.current.open ? lcqGrid(order, (k) => divOf(save, CAR[k].team) === 'challenger', DIV.challenger.lcqMin) : order.slice(0, T.series.gridSize));
 
