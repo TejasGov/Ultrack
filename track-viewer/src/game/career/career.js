@@ -479,8 +479,8 @@ function fieldOf(save, racers) {
 }
 /** a Sponsor Challenge's field (4.2): the teammate and the seated cars expected closest to the player, five in all, at the challenge pace; the grid best expected first, the teammate P5 and the player last */
 export function challengeSetup(save) {
-  const X = T.side.challenge, hero = save.contract.car, mate = teammateCar(save), exp = (k) => expOf(save.world.teams[CAR[k].team].expPos, CAR[k].seat), mine = exp(hero);
-  const near = Object.keys(save.world.seats).filter((k) => k !== hero && k !== mate && save.world.seats[k]).sort((a, b) => Math.abs(exp(a) - mine) - Math.abs(exp(b) - mine) || exp(a) - exp(b));
+  const X = T.side.challenge, hero = save.contract.car, mate = teammateCar(save), exp = (k) => expIn(save, CAR[k].team, CAR[k].seat), mine = exp(hero);   // the player's series only
+  const near = carsIn(save, save.season.div ?? 'all').filter((k) => k !== hero && k !== mate).sort((a, b) => Math.abs(exp(a) - mine) - Math.abs(exp(b) - mine) || exp(a) - exp(b));
   const withMate = !!save.world.seats[mate], others = near.slice(0, X.field - (withMate ? 1 : 0)).sort((a, b) => exp(a) - exp(b)), racers = [...others, ...(withMate ? [mate] : []), hero];
   return { racers, gridOrder: racers, mate: withMate ? mate : null, pace: Object.fromEntries(racers.filter((k) => k !== hero).map((k) => [k, aiPace(save, k, ['challenge']) * X.pace])), ...fieldOf(save, racers) };
 }
@@ -621,7 +621,7 @@ function settleLife(save, report, press0, bill, gross, feud) {
   const me = save.contract, news = (save.media ?? []).filter((m) => m.id > press0), before = mood(save).id, R = currentRound(save);
   const good = news.filter((m) => ['win', 'podium'].includes(m.you)).length, bad = news.filter((m) => ['down', 'dnq', 'fired'].includes(m.you) || m.scene === 'fan-hate').length;
   const out = settleRound(save, { rr: report.rr, finish: report.finish, dnf: report.dnf, dnq: report.dnq, open: !!report.open, clean: report.clean, duel: report.duel, feud,
-    home: isHome(save, R.track) && !report.dnq, press: { good, bad }, bill, gross, trust: me.trust, tier: save.season.tier, form: formOf(save.career.rr), expTeam: save.world.teams[me.team].expPos });
+    home: isHome(save, R.track) && !report.dnq, press: { good, bad }, bill, gross, trust: me.trust, tier: save.season.tier, form: formOf(save.career.rr), expTeam: save.world.teams[me.team].expPos, div: save.season.div });
   const now = mood(save).id, r = rng(save.seed, 'life', save.clock.season, R.round, 'round');
   if (now === 'unhappy') {
     if (before !== 'unhappy') post(save, 'warn', 'You are unhappy', 'Your results and your life are weighing on you. Time off, a good result or a treat will lift it, and you can ask for a transfer in the Life tab.', { tab: 'life' });

@@ -59,7 +59,7 @@ export function settleRound(save, x) {
   add(L.fans >= 50 ? 'Fans behind you' : 'Few fans behind you', (L.fans - 50) * P.perFan);
   add(x.trust >= 50 ? 'Your team trusts you' : 'Low team trust', (x.trust - 50) * P.perTrust);
   add('A good seat', P.seat[x.tier] ?? 0);
-  if (x.form >= 2 && x.expTeam >= 6) add('A seat below your form', P.belowForm);
+  if (x.form >= 2 && (x.div ? x.div === 'challenger' : x.expTeam >= 6)) add('A seat below your form', P.belowForm);   // with two series: any Challenger seat
   if (x.home) add('A home crowd', P.home);
   const press = clamp(x.press.good, 0, P.pressMax / P.press) * P.press - clamp(x.press.bad, 0, P.pressMax / P.press) * P.press; add(press >= 0 ? 'Friendly press' : 'Bad press', press);
   if (x.bill && x.bill >= x.gross * P.bigRepair) add('A big repair bill', P.repairHit);

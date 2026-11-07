@@ -1,7 +1,7 @@
 // The world around the player (docs/career-mode.md 6.6, 6.8): who drives which car, the free agents, the academy, rival heat, and
 // the cheap AI market between seasons. Pure, like the rest of career/: a save goes in and comes out changed.
 // world.seats maps each car key to a driver code; the player's car holds 'YOU', a seat the market has to fill holds null.
-import { TUNING as T, TIERS, DRIVERS, CAR, TEAM_IDS, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating, eliteSize, divsOn } from './rules.js';
+import { TUNING as T, TIERS, DRIVERS, CAR, TEAM_IDS, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating, eliteSize, divsOn, divOf, upDiv } from './rules.js';
 import { rng } from './rng.js';
 
 export const YOU = 'YOU';
@@ -71,7 +71,7 @@ export const marketScore = (save, code) => (code === YOU ? playerRating(save) : 
  */
 export function shortlistOf(save, key, seated = true, left = 1) {
   const W = save.world, pos = W.teams[CAR[key].team].expPos;
-  return [...W.free, ...(seated ? Object.entries(W.seats).filter(([k, c]) => c && c !== YOU && W.contracts[c] === left && W.teams[CAR[k].team].expPos > pos).map(([, c]) => c) : [])];
+  return [...W.free, ...(seated ? Object.entries(W.seats).filter(([k, c]) => c && c !== YOU && W.contracts[c] === left && W.teams[CAR[k].team].expPos > pos && upDiv(save, CAR[k].team, CAR[key].team)).map(([, c]) => c) : [])];   // never from the Elite down to the Challenger
 }
 /**
  * who a team could poach for this seat (6.8): drivers under contract at a team 1-3 places better (market.poachGap) whose loyalty is under
@@ -82,7 +82,7 @@ export function poachable(save, key, keep = null, fresh = new Set()) {
   return Object.entries(W.seats).filter(([k, c]) => {
     const t = CAR[k].team, gap = pos - W.teams[t].expPos;
     if (!c || c === YOU || c === keep || fresh.has(c) || t === here || gap < M.poachGap[0] || gap > M.poachGap[1] || (W.loyalty?.[c] ?? 100) >= M.poachLoyalty) return false;
-    if (rank < tierOf(t).rank) return false;                   // a status gain is no step up when it costs a tier
+    if (rank < tierOf(t).rank || !upDiv(save, t, here)) return false;   // a status gain is no step up when it costs a tier or a series
     return (CAR[k].seat === 'B' && CAR[key].seat === 'A') || rank > tierOf(t).rank || (rank === tierOf(t).rank && z > (TIERS.carZ[k] ?? 0));
   }).map(([, c]) => c);
 }
@@ -101,7 +101,7 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
   const fresh = new Set(), moved = (code) => { L[code] = M.loyaltyMove; sign(code); fresh.add(code); }, out = { sacked: [], poached: [] };
   // this season's points by driver and the team each scored them for, and the Teams' table: an under-performer is one their teammate outscored
   const pts = {}, team = {}, h = save.history?.at(-1), table = h?.season === season ? h.teamOrder ?? [] : [];
-  for (const r of save.season?.results ?? []) for (const e of r.entries) { const c = e.you ? YOU : e.code; pts[c] = (pts[c] ?? 0) + e.pts; team[c] = e.team; }
+  for (const r of save.season?.results ?? []) for (const e of [...r.entries, ...(r.other?.entries ?? [])]) { const c = e.you ? YOU : e.code; pts[c] = (pts[c] ?? 0) + e.pts; team[c] = e.team; }   // the other series' races too
   const below = (t) => (table.length && W.teams[t].joined !== season ? table.indexOf(t) + 1 - W.teams[t].expPos : 0),   // a team that joined mid-season (addTeams) is not judged on part of one
     beaten = (code, t) => Object.keys(team).some((c) => c !== code && team[c] === t && pts[c] > (pts[code] ?? 0));
   for (const [key, code] of Object.entries(W.seats)) {                // loyalty grows with each season at a team, and sours with a bad year or a teammate who outscored them
@@ -195,20 +195,23 @@ function callUp(save) {
  */
 export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {} }) {
   const R = T.rivals, K = save.career, H = K.heat, RV = (K.rivalry ??= {}), me = raced.indexOf(hero), myRank = tierOf(save.contract.team).rank, onGrid = {}, lines = [];
+  // with two series: beating an Elite driver from the Challenger pays as a higher tier does, and at a Tour round a rival in the other series, whom the player cannot meet, cools as if sat out
+  const S = save.season, at = Object.fromEntries(Object.entries(save.world.seats).map(([k, c]) => [c, k])), tour = !!S?.div && (S.calendar[save.clock.round]?.kind ?? 'tour') === 'tour';
+  const above = (key) => tierOf(CAR[key].team).rank > myRank || (S?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite'), apart = (code) => tour && !!at[code] && divOf(save, CAR[at[code]].team) !== S.div;
   const nemesis = nemesisOf(save, raced), since = [save.clock.season, save.clock.round + 1], h2h = me >= 0 && !dnf;
   let rep = 0, xp = 0;
   raced.forEach((key, i) => { if (key !== hero) onGrid[save.world.seats[key]] = { i, key }; });
   for (const code of new Set([...Object.keys(H), ...Object.keys(onGrid), ...(ev.duel ? [ev.duel] : [])])) {
     const g = onGrid[code], was = H[code] ?? 0, beat = h2h && g && g.i > me;
     if (beat && was >= R.rival) {
-      const nem = code === nemesis?.code, v = Math.round(R.rep * (tierOf(CAR[g.key].team).rank > myRank ? R.higherTier : 1) * (nem ? R.feudRep : 1));
+      const nem = code === nemesis?.code, v = Math.round(R.rep * (above(g.key) ? R.higherTier : 1) * (nem ? R.feudRep : 1));
       rep += v; if (nem) xp += R.feudXp;
       lines.push([`${nem ? 'Nemesis' : 'Rival'} beaten: ${personOf(save, code).name}`, v]);
     }
     const hits = (g && ev.contacts?.[g.key]) || 0, contact = (Array.isArray(hits) ? hits : Array(Math.max(0, hits | 0)).fill(0)).reduce((a, kmh) => a + (kmh > 30 ? R.contactHard : R.contact), 0);
     // the duel alone stops at duelMax, short of a rival: a teammate becomes one only by racing you close, touching or passing you
     const pass = g ? Math.min(ev.passes?.[g.key] ?? 0, 2) * R.pass : 0, duel = code === ev.duel ? clamp(R.duelMax - was, 0, R.duel) : 0, near = g && me >= 0 && Math.abs(g.i - me) <= R.near;
-    H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : duel ? 0 : -(me < 0 ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // contacts and passes add to the cooling, as the spec has it; a duel that adds heat skips it; a round you sat out cools slowly (you never met)
+    H[code] = clamp(was + (near ? R.close + (beat ? R.beat : 0) : duel ? 0 : -(me < 0 || apart(code) ? R.sitOut : R.decay)) + contact + pass + duel, 0, 100);   // contacts and passes add to the cooling, as the spec has it; a duel that adds heat skips it; a round you sat out cools slowly (you never met)
     if (!H[code]) { delete H[code]; delete RV[code]; continue; }   // the save keeps only live rivalries
     if (!RV[code] && (contact || pass || duel || H[code] >= R.rival)) RV[code] = { cause: contact ? 'contact' : pass ? 'pass' : duel ? 'teammate' : 'grid', since, w: 0, l: 0 };   // a contact, a pass or a duel starts the record; racing close only once it is a rivalry
     if (RV[code] && g && h2h) RV[code][g.i > me ? 'w' : 'l']++;
