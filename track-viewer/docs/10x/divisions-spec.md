@@ -666,3 +666,43 @@ These go in `career-sim.mjs` and `career-metrics.mjs`: 100 careers × 6 seasons 
 - **D5. A Rookie wallet re-baseline, only if `challenger.reward` at 0.7 still cannot hold the Rookie wallet inside 1.1×.** The choice is then a richer start (re-baseline) or a stingier Challenger.
 
 Not built in v1: a playoff, a third series, mid-season moves, relegation clauses, loyalty or poaching rules tied to promotion, a "Stay and bring us back" offer, promotion or relegation mood lines, and a cap bonus for a promoted team.
+
+---
+
+## 21. Build notes: steps 1-5 and the migration (2026-11-07, branch career/divisions)
+
+Built: the helpers and data (step 1), qualifying per series and `otherRace` (2), the tables, titles and the swap (3), the ranking split and the Open and Masters entry (4), offers, market, rivals, life, choices and the Sponsor Challenge (5), and the schema 12 -> 13 migration (8, built early so every commit loads old saves). Not yet built: media and inbox (6), the UI (7), the copy and determinism tests (22, 23), the sim columns (9).
+
+### Where the code differs from the spec, and why
+
+1. **The old field is 18, not 16.** The spec was written before Norrsken. Today's `objectivesFor` clamps to `FIELD` (18), so its `N` defaults to `FIELD`, and the regression test is byte-identical for every expected place 1-18 at N = 18 (at N = 16 places 16-18 would change). `DIV.legacyField` (16) stays, but only as the default field of `roundRating` and `xpFor`, whose divisor of 2 it encodes. A season from before the split sets `cur.field = FIELD` for objectives and copy and rates with `legacyField`.
+2. **`seedsOf(kind, E, C)`** is a pure helper in `rules.js` (not in the spec's list): the Open's 2 + 2 and the Masters' 5 + 3, with a short table's places filled from the other series. `openEntry` calls it; test 15's "table of 2" is a direct test of it.
+3. **`standings` keeps `cup`** (the tier's teams of the table) in a divided season, and the history row and review keep `cup` (that place). Nothing awards it; it keeps today's Home and review screens from crashing until step 7 removes the block.
+4. **`pointsMult(R, divided)`** takes the flag as a second argument. The UI still calls it with one, so it shows "points ×1.5" on cup rounds until step 7.
+5. **`teamOutlook` gains `step`** ("A step up: Elite Series", or null) for the label, rather than replacing `why`.
+6. **`heatAfter`'s `sitOut` cooling** applies to rivals seated in the other series at a Tour round; a free agent cools as before (`decay`).
+7. **`startSeason` throws** if a series has fewer than 8 seated cars (the spec's assert); the market fills every seat, so it cannot happen in play.
+8. **The migration also stamps `div` on mid-season offers** (`season.mid`), not only `pending.offers`, and posts its news line only when the player's team has a series.
+9. **Copy:** only the race week's "Expected P n of {field}" is done; `weekNote`, `coverRound` and the rest are step 6.
+
+### The cut problem, re-measured (100 careers x 6 seasons, `scripts/career-sim.mjs` stub, base 1479590 -> this build)
+
+| | Base | Now |
+|---|---|---|
+| Weak stub, Tour rounds missed the cut | 100 % (0 raced of 6000 rounds, all kinds) | 11 %; 0 % in season 1 (3280 of 6000 rounds raced, all kinds) |
+| Average stub, missed the cut, all rounds | 41 % | 13 % (Tour rounds 7 %) |
+| Average stub, season 1 Tour rounds missed | 94 % | 0 % |
+| Season-1 average Tour finish (weak / average / strong) | P15.1 / P11.5 / P7.3 | P5.5 / P3.0 / P1.6 (of 8) |
+| ≥ 1 podium in season 1 (weak / average / strong) | 0 / 0 / 15 % | 42 / 99 / 100 % |
+| ≥ 1 win in season 1, average | 0 % | 53 % |
+| Player's team promoted within 3 seasons (weak / average / strong) | - | 25 / 45 / 85 % |
+| A Legend team relegated, of season ends | - | 1 % |
+
+### `career-metrics.mjs 100 6` after step 5: 7 FAIL (it exits 1)
+
+The sim and metrics columns of §17 are step 9 and not built, so these are today's old targets on the new format:
+- weak: raced rounds with a nemesis 13 % (20-70 %; OPEN before, now gating because the weak stub races), sackings 0.27 a season (0.30-1.50).
+- average: the nemesis is the teammate 58 % (≤ 45 %), Legend offer 40 % (19-32 %), final tier Legend 36 % (14-22 %).
+- strong: rival REP lines 1.01 a race (≤ 1.00), Number One 52 % (55-65 %).
+
+The average stub is stronger in the Challenger than §17 wants (P3.0 against P3.5-5.5, wins 53 % against 20-40 %, promotion 45 % against 15-35 %), and it climbs to Legend faster. `challenger.reward` moves money and place XP, not reputation or ratings, so it cannot pull these back; they need the step 9 calibration or the user's call. The average Round Rating is 6.61 (base 6.52), inside the ±0.3 watch. The weak stub is dropped more often (1.91 a career, base 0.76): it now races, finishes below its expected place in the Challenger and misses its round objective, where before it sat out with the Rookie missed-cut allowance.
