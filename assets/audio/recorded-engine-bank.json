@@ -697,6 +697,94 @@
       "pops": [],
       "shifts": [],
       "sharedWith": "jaguarxkjss"
+    },
+    "jesko": {
+      "name": "Koenigsegg Jesko twin-turbo V8 (the McLaren 720S V8 recording)",
+      "redline": 8500,
+      "cars": [
+        "jesko"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/mp1x-idle.ogg",
+          "rpm": 1000
+        },
+        "low": {
+          "file": "engines/recorded/mp1x-low.ogg",
+          "rpm": 2200
+        },
+        "mid": {
+          "file": "engines/recorded/mp1x-mid.ogg",
+          "rpm": 4200
+        },
+        "high": {
+          "file": "engines/recorded/mp1x-high.ogg",
+          "rpm": 6600
+        },
+        "decel": {
+          "file": "engines/recorded/mp1x-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a twin-turbo flat-plane V8 (no Koenigsegg 5.0 L recording yet); the Koenigsegg V8 revs to 8,500 rpm",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/mp1x-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "mp1x"
+    },
+    "cc850": {
+      "name": "Koenigsegg CC850 twin-turbo V8 (the McLaren 720S V8 recording)",
+      "redline": 8500,
+      "cars": [
+        "cc850"
+      ],
+      "loops": {
+        "idle": {
+          "file": "engines/recorded/mp1x-idle.ogg",
+          "rpm": 1000
+        },
+        "low": {
+          "file": "engines/recorded/mp1x-low.ogg",
+          "rpm": 2200
+        },
+        "mid": {
+          "file": "engines/recorded/mp1x-mid.ogg",
+          "rpm": 4200
+        },
+        "high": {
+          "file": "engines/recorded/mp1x-high.ogg",
+          "rpm": 6600
+        },
+        "decel": {
+          "file": "engines/recorded/mp1x-decel.ogg",
+          "rpm": 2800
+        }
+      },
+      "source": {
+        "author": "FiExhaust",
+        "title": "McLaren 720S Sound Test (Idle, Flybys) w/ Valvetronic Catless Fi EXHAUST X Utmost Downforce Garage",
+        "url": "https://www.youtube.com/watch?v=WKjvGg0hSAA",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "sourceSha256": "adbb2013cb730c6ba24c0796f0e19defc541c43890ef51a279e2d4c466ac5c95",
+        "changes": "Trimmed, high/low-pass filtered, level matched, seam crossfaded and encoded to Opus. Runtime pitch and load follow driving."
+      },
+      "match": "closest real recording: a twin-turbo flat-plane V8 (no Koenigsegg 5.0 L recording yet); the Koenigsegg V8 revs to 8,500 rpm",
+      "quality": "recording-derived-preview",
+      "preview": "engines/recorded/mp1x-source.ogg",
+      "pops": [],
+      "shifts": [],
+      "sharedWith": "mp1x"
     }
   }
 }
