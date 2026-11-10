@@ -46,7 +46,7 @@ function run(key, tier, wx, kmh, script, secs, { onStep, pad = false, open = fal
     const k = script(s.t, v, s);
     s.steer = open ? (k.steer ?? 0) : pad ? (k.steer ?? 0) * PC.steerScale(v.speed) : PC.keyboardSteer(s.steer, k.steer ?? 0, STEP, v.speed, (s.hold ??= { t: 0, dir: 0 }));
     s.brake = pad || open ? (k.brake ?? 0) : PC.keyboardBrake(s.brake, k.brake ?? 0, STEP);
-    Object.assign(v.controls, { throttle: k.throttle ?? 0, brake: s.brake, steer: s.steer, handbrake: k.handbrake ?? 0, nitro: 0 });
+    Object.assign(v.controls, { throttle: k.throttle ?? 0, brake: s.brake, steer: s.steer, handbrake: k.handbrake ?? 0, nitro: 0, player: !open });   // keys are the player's: the player's yaw fade (arcade.js)
     v.step(STEP, TIER[tier]); world.world.step();
     const r = v.rb.angvel().y; s.yaw += r * STEP;
     const lv = v.rb.linvel(); let course = Math.atan2(-lv.z, lv.x); if (s.course !== undefined) course = s.course + Math.atan2(Math.sin(course - s.course), Math.cos(course - s.course)); s.course = course;   // direction of travel, unwrapped

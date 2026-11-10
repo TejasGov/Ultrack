@@ -113,7 +113,7 @@ export class Vehicle {
   capture() { const t = this.rb.translation(), r = this.rb.rotation(); this.cur.pos.set(t.x, t.y, t.z); this.cur.quat.set(r.x, r.y, r.z, r.w); }
 
   /** max front-wheel angle (rad) at this speed: full lock when parking, a few degrees at 300 km/h */
-  steerLock(v) { return steeringLock(v,this.wheelbase,this.arcG*yawFade(v),this.spec.downforce,this.spec.mass,this.spec.arcade??{}); }
+  steerLock(v, player = false) { return steeringLock(v,this.wheelbase,this.arcG*yawFade(v,player),this.spec.downforce,this.spec.mass,this.spec.arcade??{}); }
 
   step(h, assist = { counter: 0.35, stability: 1, tcs: 0.6 }) {
     const { rb, spec, controls: ctl, state: st } = this, world = this.pw.world, wet = road.wet;
@@ -153,7 +153,7 @@ export class Vehicle {
     // ---- steering: speed-sensitive lock, smoothed, plus countersteer toward the direction of travel
     // countersteer only once the car is really sliding (spin gate: Sport 13°+): otherwise it unwinds the steering in every corner
     const slide = Math.sign(st.beta) * Math.abs(st.beta) * Math.max(gate, st.drift);
-    const lock = backing ? Math.min(this.steerLock(speed), reverseLock(speed, this.wheelbase)) : this.steerLock(speed), counter = -slide * (assist.counter + 0.45 * st.drift + Math.min(0.5, 1.5 * assist.counter) * THREE.MathUtils.smoothstep(Math.abs(st.beta), 0.6, 0.9));   // past ~40° a tier with countersteer help goes to full opposite lock
+    const lock = backing ? Math.min(this.steerLock(speed, ctl.player), reverseLock(speed, this.wheelbase)) : this.steerLock(speed, ctl.player), counter = -slide * (assist.counter + 0.45 * st.drift + Math.min(0.5, 1.5 * assist.counter) * THREE.MathUtils.smoothstep(Math.abs(st.beta), 0.6, 0.9));   // past ~40° a tier with countersteer help goes to full opposite lock
     st.steerInput = ctl.steer * lock;                         // what the driver asked for, without the assist
     // once the car is really sliding it takes back part of the driver's steering (a wheel held over through a spin is how a spin
     // happens): at most 12% of it (Casual .12, Sport .08, Pro .02); the damping torque below does the rest, the game never steers against the held lock
@@ -364,7 +364,7 @@ export class Vehicle {
       const d = st.drift, m = spec.mass, hb = Math.min(1, ctl.handbrake), vh = lin.clone().addScaledVector(up, -lin.dot(up)).normalize(), left = up.clone().cross(vh);
       const tyreAcc = tyreF.clone().divideScalar(m), tLat = tyreAcc.dot(right);
       // A. the steering asks for a yaw rate (the wheel angle's kinematic rate, capped at what aMax can turn); catch: with the wheel free the heading comes back to the path
-      let yawT = arcadeYaw(Math.max(vF, 0.1), ctl.steer * this.steerLock(speed), this.wheelbase, aMax * yawFade(speed)) - Math.sign(st.beta) * Math.min(Math.abs(st.beta), 0.7) * T.catchYaw * (1 - Math.min(1, Math.abs(ctl.steer) * 2));
+      let yawT = arcadeYaw(Math.max(vF, 0.1), ctl.steer * this.steerLock(speed, ctl.player), this.wheelbase, aMax * yawFade(speed, ctl.player)) - Math.sign(st.beta) * Math.min(Math.abs(st.beta), 0.7) * T.catchYaw * (1 - Math.min(1, Math.abs(ctl.steer) * 2));
       // C. drift: the velocity keeps rotating at a set rate (course rate) and the heading is held at the target angle
       let course = 0;
       if (d > 0.05 && st.driftDir) {

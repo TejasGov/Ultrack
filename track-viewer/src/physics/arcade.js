@@ -38,7 +38,9 @@ export const arcadeAccel=(tier,carGrip,wetF,surface,downforce,mass,speed)=>
 export const aeroGain=(stockDownforce,downforce,mass,speed)=>downforce===stockDownforce?1:(1+.6*downforce*speed*speed/(mass*9.81))/(1+.6*stockDownforce*speed*speed/(mass*9.81));
 // the share of the turn rate kept at speed: all of it to 110 km/h, .9 at 135, .8 at 160, .74 at 240 (a straight-line twitch is not a turn); smooth, no step
 const sm=(x,a,b)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
-export const yawFade=speed=>1-.2*sm(speed,30.6,44.4)-.06*sm(speed,44.4,66.7);
+// The player's car keeps 14% more of it from 170 km/h (the user's call, 2026-11-10: 10-15% more turn at speed), fading in from 140 km/h so a tap on a
+// straight at 135 is the same nudge. The AI keeps the plain fade, so its corner speeds and the par laps do not move (cars.js plans with yawFade(speed))
+export const yawFade=(speed,player=false)=>(1-.2*sm(speed,30.6,44.4)-.06*sm(speed,44.4,66.7))*(player?1+.14*sm(speed,38.9,47.2):1);
 // time constant (s) of the yaw controller: .025 to 110 km/h, .06 from 150 km/h
 export const yawTau=speed=>.025+.035*sm(speed,30.6,41.7);
 // yaw rate (rad/s) the steering asks for: the kinematic rate of the wheel angle, never more than the grip can turn

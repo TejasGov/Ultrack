@@ -3,7 +3,8 @@ export const PAD_DEADZONE = 0.18;
 // Speed-sensitive input (Assetto Corsa's "steering speed" and speed sensitivity): the wheel winds in more slowly and reaches
 // less of the lock at speed; the return to centre stays fast, and parking-lot agility is untouched. speed in m/s.
 const smooth=(x,a,b)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
-export const steerScale=speed=>1-.12*smooth(speed,25,70);           // 1 below 90 km/h, .88 of the lock from 250 km/h (the lock itself already follows the grip: arcade.js steeringLock)
+// A crawl trim (the user's call, 2026-11-10: very low speed turned too eagerly): .8 of the lock below 14 km/h, all of it from 36 km/h (40-100 km/h is pinned).
+export const steerScale=speed=>1-.12*smooth(speed,25,70)-.2*(1-smooth(speed,4,10));           // .8 below 14 km/h, 1 from 36 to 90 km/h, .88 of the lock from 250 km/h (the lock itself already follows the grip: arcade.js steeringLock)
 // hold: { t, dir } kept by the caller (PlayerInput): how long this direction has been held. Above 100 km/h the ramp starts slow (a tap on a
 // straight is a small nudge) and the rate climbs once the key stays down (a corner still turns decisively); without it the fast rate applies.
 export function keyboardSteer(current,want,dt,speed=0,hold){
