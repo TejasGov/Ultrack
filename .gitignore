@@ -21,6 +21,7 @@ car-lab/verification/
 sources/**/*.glb
 sources/**/*.blend
 sources/driver-media/
+sources/music/
 /La_furari.glb
 /mercedes_amg_one.glb
 

@@ -11,7 +11,7 @@ export const DEFAULT_SETTINGS = {
   // driving
   assists: 'rookie', units: 'kmh', laps: 3, opponents: true, hardMode: false,
   // audio (0..1)
-  master: 0.85, engine: 0.8, effects: 0.8, commentary: 0.9, crowd: 0.5, commentaryOn: true,
+  master: 0.85, engine: 0.8, effects: 0.8, commentary: 0.9, crowd: 0.5, music: 0.5, commentaryOn: true,
 };
 
 const fresh = () => ({ settings: { ...DEFAULT_SETTINGS }, car: 'av12', paint: {}, best: {}, drift: {}, coins: START_COINS, upgrades: {} });

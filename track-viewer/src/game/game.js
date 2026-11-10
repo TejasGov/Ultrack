@@ -382,6 +382,7 @@ export class Game {
     this.nav.pad(dt);
     if (this.screenName === 'title' && navigator.getGamepads?.().some((g) => g?.buttons.some((b) => b.pressed))) this.screens.title.onKey();
     const s = this.session, F = this.field;
+    this.audio.music?.update(!s ? 'menu' : this.screenName === 'results' ? 'results' : 'race', this.screenName === 'pause');
     if (!s) { if (this.state === 'menu' && this.ctx.params.mode === 'orbit') this.ctx.controls.update(); return; }
     // start button on the pad pauses
     const pad = navigator.getGamepads?.().find((g) => g?.connected);

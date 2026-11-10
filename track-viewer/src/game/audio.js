@@ -1,5 +1,5 @@
 // Game audio on the Web Audio API (assets/audio/README.md says how each sound is meant to be used):
-// - buses: master -> engine, effects, commentary, crowd (volumes from the settings)
+// - buses: master -> engine, effects, commentary, crowd, music (volumes from the settings; music.js streams the background tracks)
 // - real recorded engines in five category packs (engine-packs.json): idle plus on- and off-throttle loops at tracked rpm, close enough together that the
 //   crossfade barely bends pitch; real shift, pop and start samples. A race fetches one pack and the shared file (opponents, tyres, crash, nitro, turbo).
 //   rpm comes from a display gearbox (the physics has no gears; HUD shows the same gear)
@@ -9,6 +9,7 @@
 //   (Enzo, then Alastair answering), minimum gaps by priority and an airtime cap, no repeats until a category is used up
 import { createPA, RoadAudio, TrafficAudio } from './audio-effects.js';
 import { EV } from './ev.js';
+import { Music } from './music.js';
 const A = '/assets/audio/';
 const BANKS = { old: 'recorded-engine-bank.json', car: 'engine-bank.json' };
 
@@ -31,9 +32,10 @@ export class GameAudio {
     const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -10; comp.ratio.value = 4;   // keeps a crash and a shout from clipping
     this.master.disconnect(); this.master.connect(comp); comp.connect(ctx.destination);
     this.bus = {};
-    for (const b of ['engine', 'effects', 'commentary', 'crowd']) { this.bus[b] = ctx.createGain(); this.bus[b].connect(this.master); }
+    for (const b of ['engine', 'effects', 'commentary', 'crowd', 'music']) { this.bus[b] = ctx.createGain(); this.bus[b].connect(this.master); }
     const pa=createPA(ctx,this.master);this.bus.commentary.disconnect();this.bus.commentary.connect(pa.input);this.pa=pa;
     this.duck = ctx.createGain(); this.duck.connect(this.bus.crowd);    // the crowd dips under the commentators
+    this.music = new Music(ctx, this.bus.music);
     this.initializing=this.loadBank();await this.initializing;
   }
 
@@ -61,7 +63,7 @@ export class GameAudio {
     if (!this.ctx) return;
     const t = this.ctx.currentTime, set = (g, v) => g.gain.setTargetAtTime(v, t, 0.05);
     set(this.master, s.master); set(this.bus.engine, s.engine); set(this.bus.effects, s.effects);
-    set(this.bus.commentary, s.commentaryOn ? s.commentary : 0); set(this.bus.crowd, s.crowd);
+    set(this.bus.commentary, s.commentaryOn ? s.commentary : 0); set(this.bus.crowd, s.crowd); set(this.bus.music, s.music ?? 0.5);
   }
 
   buffer(path) {

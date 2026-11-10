@@ -2,6 +2,7 @@
 // DOM. Every screen works with the mouse, the keyboard (arrows, Enter, Esc) and a gamepad (d-pad, A, B), through Nav.
 import TEAMS from '../../../assets/teams/teams.json';
 import ENGINE_CREDITS from '../../../assets/audio/recordings/credits.json';
+import MUSIC_CREDITS from '../../../assets/audio/music/credits.json';
 import {teamLogoUrl} from '../team-logos.js';
 import { carName, ROSTER } from './carinfo.js';
 import { MODES } from './session.js';
@@ -329,6 +330,7 @@ export function CreditsScreen(game) {
       item('Additional Lamborghini exterior credit', links(link('Lambo_SC04', 'https://sketchfab.com/Lambo_SC04'), licence('CC BY-NC')), h('p', {}, 'Aventador SVJ Black-Ghost. Interior and combined model: blackcube4.'))],
     'Every car is adapted for Ultrack: scale, orientation, wheel separation, materials and runtime LODs.'),
     group('Audio', [...ENGINE_CREDITS.map((c) => item(c.name + ' recording', links(link(c.title, c.url)), h('p', {}, 'Recorded by ', c.author), links(link(c.license, c.licenseUrl)), h('p.cr-dim', {}, c.changes))),
+      ...MUSIC_CREDITS.map((c) => item('Music: ' + c.title, h('p', {}, c.attribution), links(link(c.author, c.authorUrl), link(c.license, c.licenseUrl)))),
       item('Voices and effects', h('p', {}, 'Commentary voices and crash effects: ElevenLabs.'), h('p', {}, 'EV motor, wind and tyre layers: procedural Web Audio.'))]),
     group('Artwork', [item('Environment HDRIs', h('p', {}, 'Poly Haven (CC0).')),
       item('Airbus A320 Airliner', h('p', {}, 'Created by ', link('Kyaie', 'https://sketchfab.com/Kyaie')), links(link('Original model', 'https://sketchfab.com/3d-models/airbus-a320-airliner-757aa190f27a407291187328d7125903'), licence('CC BY')),
@@ -470,6 +472,7 @@ export function SettingsScreen(game) {
         row('Commentary', slider(S.commentary, {}, set('commentary'))),
         row('Commentators', toggle(S.commentaryOn, set('commentaryOn')), 'Enzo Moretti, Alastair Finch and Kavya Iyer'),
         row('Crowd', slider(S.crowd, {}, set('crowd'))),
+        row('Music', slider(S.music, {}, set('music'))),
       ],
       controls: () => [
         h('div.lhead.ctl-cols', {}, h('span', {}, 'Action'), h('span', {}, icon('keyboard'), 'Keyboard'), h('span', {}, icon('gamepad'), 'Pad')),
