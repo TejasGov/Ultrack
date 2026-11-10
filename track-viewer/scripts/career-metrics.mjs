@@ -99,8 +99,10 @@ try {
       const cutRate = (k) => (A.cuts[k] ? A.cuts[k][1] / A.cuts[k][0] : NaN);
       // open from Norrsken until the two series (a field of 18 for 8 grid slots): each series qualifies on its own now, so they gate again
       check('missed cuts, Rookie Tour rounds', cutRate('rookie tour'), 0, 0.75, pct); check('missed cuts, Maestro Tour rounds', cutRate('maestro tour'), 0, 0.15, pct);
-      // smaller fields with the place divisor of the field (rules.js roundRating) must not inflate ratings: the average Round Rating on base 1479590 is 6.52
-      check('average Round Rating (base 6.52, within 0.3)', mean(A.logs.map((l) => mean(l.rr))), 6.22, 6.82); }
+      // smaller fields with the place divisor of the field (rules.js roundRating) must not inflate ratings. The anchor is on the honest rating (bbeb62d): 6.30 / 6.27 on seeds
+      // 1000 / 3000. The old 6.52 (base 1479590) was measured on the inflated rating (the finish against the expected place over 10 cars when 8 race, a merit start credited
+      // twice): the same rounds scored both ways rate 0.32-0.35 lower on the honest rating, 0.4 at the Maestro reviews (docs/career-mode.md 6.1, the offer gates re-calibrated)
+      check('average Round Rating (honest scale 6.30, within 0.3)', mean(A.logs.map((l) => mean(l.rr))), 6.0, 6.6); }
     if (label === 'weak') check('challenges at silver or better', atLeast(2), 0, 0.45, pct);
     check(`sponsor goodwill never above startMood + 3 = ${cap} (highest seen)`, A.moodMax, 0, cap, (x) => String(x));
     // WP4: the contract market
@@ -139,7 +141,10 @@ try {
     // tune measured holds it, see divisions-spec 24)
     if (label !== 'weak') for (const pk of ['base', 'challenger']) {
       const P = Array.from({ length: N }, (_, i) => play(M, S0 + i, skill, S, 'sprint', { pick: PICKS[pk] }).log), anyP = (f) => P.filter(f).length / N, gate = pk === 'challenger' ? openCheck : check, tierGate = label === 'average' ? openCheck : gate, by = pk === 'base' ? "the base commit's pick" : 'a pick that stays in the Challenger';
-      if (label === 'average') { gate(`Legend offer, any, ${by}${pk === 'challenger' ? ' (D6)' : ''}`, anyP((l) => l.legendOffer !== null), 0, 0.32, pct); tierGate(`final tier Legend, ${by} (D6)`, anyP((l) => l.tier.at(-1) === 'legend'), 0, 0.22, pct); }   // the base pick too since the tenth team: a fourth Maestro team in the Challenger means more Maestro A seats that the cups seed (23-24 %)
+      // the base pick's cap was 32 %, measured on the inflated rating (the expected place over 10 cars when 8 race, a merit start credited twice). That rating lifted the
+      // back-of-grid Maestro Elite seats most (0.75-0.9 at the Legend gates, against about 0.2 at the Maestro gates), so with the Legend gates rebased the base pick
+      // gets Legend about twice as often as the Elite pick instead of 1.5 times: 38 %
+      if (label === 'average') { gate(`Legend offer, any, ${by}${pk === 'challenger' ? ' (D6)' : ''}`, anyP((l) => l.legendOffer !== null), 0, pk === 'base' ? 0.38 : 0.32, pct); tierGate(`final tier Legend, ${by} (D6)`, anyP((l) => l.tier.at(-1) === 'legend'), 0, 0.22, pct); }   // the base pick too since the tenth team: a fourth Maestro team in the Challenger means more Maestro A seats that the cups seed (23-24 %)
       else gate(`Number One, ${by}`, anyP((l) => l.numberOne !== null), 0, 0.65, pct);
     }
     // the two series (docs/10x/divisions-spec.md 17): a new driver starts in the Challenger and races every round of their first season
