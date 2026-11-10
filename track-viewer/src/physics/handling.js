@@ -16,6 +16,12 @@ const UP = SPECS.upgrades.categories, LEVELS = SPECS.upgrades.levels;
 // balance of performance set at runtime (npm run laps / balance()) wins over handling.json's bop
 export const BOP = {};        // key -> { power, grip } multipliers
 
+// the career driver's mood (career/life.js drivePower): a power multiplier on the player's car in a career race or qualifying only. game.js sets it through
+// applyUpgrades at every session start and clears it at every end, so the garage, a quick race and free drive see the plain car. A car not listed: 1
+const POWER = {};
+/** set the mood's power multipliers, { key: multiplier }; every car left out goes back to 1 */
+export function setPower(map = {}) { for (const k of Object.keys(POWER)) delete POWER[k]; Object.assign(POWER, map); }
+
 // owned upgrade levels per car (0 = stock). AI cars never get any. handling() reads them every call, so after a change
 // call vehicle.retune(handling(key)) on a car that already exists
 const OWNED = {};
@@ -53,7 +59,7 @@ export function handling(key) {
   const base = mass * (27.78 / t100) * 27.78 * 0.7;                          // W
   const roll = 0.0006 * (mass * 9.81 + 0.6 * H.downforce * top * top) * top * top;   // W the tyres' rolling drag takes at top speed (vehicle.js): the aero drag gets the rest
   return {
-    key, mass, power: base * H.bop * at(UP.engine.powerMul, u.engine, 1), top, t100, dragK: (base - roll) / top ** 3,   // drag from the unbalanced power: bop and engine upgrades move top speed too
+    key, mass, power: base * H.bop * at(UP.engine.powerMul, u.engine, 1) * (POWER[key] ?? 1), top, t100, dragK: (base - roll) / top ** 3,   // drag from the unbalanced power: bop and engine upgrades move top speed too
     grip: (1.16 + (H.grip - 1.16) * 0.45) * (H.bopGrip ?? 1) * at(UP.tyres.gripMul, u.tyres, 1) * arcade.gripScale,
     wetRetention: at(UP.tyres.wetRetentionPlus, u.tyres, 0),
     brakeK: H.brakeK * at(UP.brakes.brakeMul, u.brakes, 1),

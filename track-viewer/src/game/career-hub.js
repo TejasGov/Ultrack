@@ -73,7 +73,7 @@ export function CareerHubScreen(game) {
   function startRace(save) {
     const X = C.raceSetup(save), lcq = save.season.current.open?.stage === 'lcq';
     game.careerSession('race', { track: X.track, look: X.look, weather: X.weather, laps: X.laps, car: X.hero, home: 'careerHub',
-      session: { racers: X.racers, gridOrder: X.gridOrder, pace: X.pace, levels: X.levels, drivers: X.drivers, label: X.label, field: X.field, ai: X.ai, orders: X.orders, nemesis: X.nemesis, mateKey: X.mateKey } }, (d) => {
+      session: { racers: X.racers, gridOrder: X.gridOrder, pace: X.pace, levels: X.levels, power: X.power, drivers: X.drivers, label: X.label, field: X.field, ai: X.ai, orders: X.orders, nemesis: X.nemesis, mateKey: X.mateKey } }, (d) => {
       const result = { order: d.order, best: d.bests, dnf: d.dnf, crashes: d.crashes, hits: d.hits, spins: d.spins, pro: d.pro, contacts: d.contacts, passes: d.passes, orders: d.orders };
       const report = lcq ? C.finishLcq(save, result) : C.finishRace(save, result);      // the Last Chance Qualifier is its own short report; the Final is the round's
       persist(game); game.show('careerReport', report);
@@ -376,6 +376,8 @@ export function CareerHubScreen(game) {
   }
   function life(save) {
     const L = save.life, band = C.moodOf(save), w = C.currentWeek(save), upkeep = C.upkeepOf(save), tier = TIERS.tiers[save.season.tier];
+    const dp = C.drivePower(L.happy) - 1, dl = Math.abs(1 - C.driveLap(L.happy)) * 100, D = C.LIFE.drive.dead;   // the mood on track (life.js drivePower): what the physics gets, said as it is
+    const drive = dp === 0 ? `On track: no effect between ${50 - D} and ${50 + D}.` : `${dp > 0 ? 'Happy: a little more pace' : 'Low: a little less pace'}, ${dp > 0 ? '+' : '−'}${Math.abs(dp * 100).toFixed(1)} % engine power (about ${dl.toFixed(2)} % a lap) in career races and qualifying.`;
     const meter = css(h('div.cl-meter', {}, LIFE_BANDS.map((b) => h('i.b-' + b.id + (b.id === band.id ? '.on' : ''))), h('em')), { '--p': L.happy / 100 });
     const why = L.why.length ? L.why.map(([label, v]) => h('span', {}, label, h('b.tnum', {}, delta(v, 1)))) : [h('p.cx-note', {}, 'It moves after your first race.')];
     const demand = h('button.btn.btn-secondary.cl-demand', { 'data-nav': '', onclick: () => {
@@ -385,6 +387,7 @@ export function CareerHubScreen(game) {
       toast('You asked for a transfer: the offers are in your Deals tab until you advance the week.'); go('deals'); } }, icon('contract'), hiring === 'demand' ? 'Press again to ask' : 'Demand a transfer');
     const left = h('div.cx-b.cl-mood', {}, blockHead('energy', 'How life is going', band.name),
       h('div.cl-big', {}, h('b.tnum', {}, String(Math.round(L.happy))), h('span', {}, 'Happiness'), h('small', {}, band.does)), meter,
+      h('p.cx-note.cl-drive', {}, icon('energy'), drive),
       h('div.cl-big.fans', {}, h('b.tnum', {}, String(Math.round(L.fans))), h('span', {}, 'Fan support'), h('small', {}, C.fansName(L.fans))), css(h('div.bar4.cl-fans', {}, h('i')), { '--p': L.fans / 100 }),
       h('div.cx-bh', {}, h('span', {}, 'Why it moved'), h('span', {}, 'Last race week')), scroller('cx-list.cl-why', h('div.cr-lines', {}, why)),
       h('p.cx-note', {}, icon('info'), L.sinceOff > 8 ? `${L.sinceOff} weeks without time off: it is wearing you down.` : `${L.sinceOff} ${L.sinceOff === 1 ? 'week' : 'weeks'} since time off.`, upkeep ? ` Upkeep next season: ${money(upkeep)}${save.wallet.coins < upkeep ? ', more than your wallet: something would be sold' : ''}.` : ''),

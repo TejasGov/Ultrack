@@ -905,8 +905,19 @@ try {
     // bands, and what each does
     assert.deepEqual([100, 80, 79.9, 60, 59, 40, 39, 20, 19, 0].map((h) => Lf.bandOf(h).id), ['top', 'top', 'content', 'content', 'neutral', 'neutral', 'frustrated', 'frustrated', 'unhappy', 'unhappy']);
     const n = signed(1100); assert.equal(n.life.happy, 50); assert.equal(Lf.mood(n).id, 'neutral'); assert.ok(n.life.fans >= 20 && n.life.fans <= 50);
-    // it never reaches the car or a rival: the same career at the two extremes qualifies and races identically
+    // on track (lifestyle.json drive): the player's engine power only, exactly 1 around 50, monotonic, within ±drive.power; the lap model the sim uses follows it
+    { const D = Lf.LIFE.drive, p = (h) => Lf.drivePower(h);
+      for (let h = 50 - D.dead; h <= 50 + D.dead; h++) assert.equal(p(h), 1, `no effect at ${h}`);
+      for (let h = 1; h <= 100; h++) assert.ok(p(h) >= p(h - 1), 'monotonic');
+      assert.ok(p(0) >= 1 - D.power - 1e-12 && p(100) <= 1 + D.power + 1e-12 && p(100) > 1 && p(0) < 1, 'bounded'); assert.ok(Math.abs(p(100) - 1 - D.power) < 1e-12 && Math.abs(p(0) - 1 + D.power) < 1e-12, 'the extremes reach the bound');
+      assert.ok(p(60) - 1 < 0.002 && 1 - p(40) < 0.002, 'very gradual past the dead zone'); assert.equal(Lf.driveLap(50), 1); assert.ok(Lf.driveLap(100) < 1 && Lf.driveLap(100) > 0.995 && Lf.driveLap(0) < 1.005, 'at most about half a percent of a lap');
+      const H = await server.ssrLoadModule('/src/physics/handling.js'), plain = H.handling('ford-gt').power;
+      H.setPower({ 'ford-gt': p(100) }); assert.ok(Math.abs(H.handling('ford-gt').power / plain - p(100)) < 1e-12); assert.equal(H.handling('ford-gt').grip, (H.setPower({}), H.handling('ford-gt').grip), 'power, never grip');
+      H.setPower({ 'ford-gt': p(0) }); H.setPower({}); assert.equal(H.handling('ford-gt').power, plain, 'cleared: the plain car');
+      H.setPower({ 'ford-gt': p(50) }); assert.equal(H.handling('ford-gt').power, plain, 'at 50 the car is untouched'); H.setPower({}); }
+    // it never reaches a rival: the same career at the two extremes qualifies and races identically, only the player's own power differs
     { const lo = signed(1101), hi = signed(1101); lo.life.happy = 3; hi.life.happy = 97; C.finishQuali(lo, 60); C.finishQuali(hi, 60);
+      const me = lo.contract.car; assert.deepEqual(Object.keys(C.raceSetup(lo).power), [me]); assert.ok(C.raceSetup(lo).power[me] < 1 && C.raceSetup(hi).power[me] > 1 && C.qualiSetup(hi).power[me] > 1, 'race and qualifying carry the mood');
       assert.equal(JSON.stringify(lo.season.current.quali.laps), JSON.stringify(hi.season.current.quali.laps), 'rival laps do not know the mood'); assert.equal(JSON.stringify(C.raceSetup(lo).pace), JSON.stringify(C.raceSetup(hi).pace), 'nor does the race pace'); assert.equal(JSON.stringify(C.raceSetup(lo).levels(lo.contract.car)), JSON.stringify(C.raceSetup(hi).levels(hi.contract.car)), 'nor the car'); }
     // luxuries: any time, a lift now, a repeat counts for less, the most you can own, no money no deal
     { const s = signed(1102); s.wallet.coins = 100000; const w0 = s.wallet.coins, a = C.buyLife(s, 'apartment'); assert.ok(a.ok); assert.equal(s.wallet.coins, w0 - 5000); assert.equal(s.life.happy, 59); assert.equal(C.ownedN(s, 'apartment'), 1);
