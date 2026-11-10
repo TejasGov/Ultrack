@@ -583,7 +583,8 @@ export function finishRace(save, result) {
     pts: cupless || i >= raced.length ? 0 : key === hero && bench ? 0 : (key === hero && dnf ? 0 : (P.points[i] ?? 0) * mult + (fastestKey === key ? P.fastestLap : 0)) + (poleKey === key ? P.pole : 0),
     div: divOf(save, CAR[key].team), exp: tourDiv ? expIn(save, CAR[key].team, CAR[key].seat) : expAt(save, key, divided && kind === 'masters' ? cur.open.seeds : null),
     ...(cupless ? { rpts: i >= raced.length || (key === hero && dnf) ? 0 : rankPoints(i, kind) } : {}) }));
-  const x = { expPos: cur.expPos, grid, start, finish, fastest, clean, duel, dnf, dnq, lcqIn: !!cur.open?.lcqIn };   // grid: where they qualified (the rating, a qualifying objective); start: where they started (places gained)
+  const expRace = 1 + entries.filter((e) => !e.dnq && !e.you && e.exp < cur.expPos).length;   // the expected place among those who started: a finish is judged against the cars it raced
+  const x = { expPos: cur.expPos, expRace, grid, start, finish, fastest, clean, duel, dnf, dnq, lcqIn: !!cur.open?.lcqIn };   // grid: where they qualified (the rating, a qualifying objective); start: where they started (places gained)
   const objectives = cur.objectives.map((o) => objectiveFrom(o, start)).map((o) => ({ ...o, met: objectiveMet(o, x) }));
   const mandatory = objectives[0].met, optional = objectives.slice(1).filter((o) => o.met).length;
   // a Challenger driver's round keeps `rate` of what it earns above the base, a cup's too (its seeds start a Final far above their expected place): a good round from the weaker
@@ -636,7 +637,7 @@ export function finishRace(save, result) {
   entries.forEach((e, i) => { if (!e.dnq && !(e.you && dnf)) day[seats[e.key]] = rankPoints(i, kind, f(e.div)); });
   other?.entries.forEach((e, i) => { if (!e.dnq) day[e.code] = rankPoints(i, kind, f(e.div)); });   // the same day in the other series
   addDay(save, day);
-  const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, ...(grace ? { grace: { start, out: grace.out, code: seats[grace.out] } } : {}), expPos: cur.expPos, ...(divided ? { field: cur.field } : {}), dnf, dnq, pole, fastest, clean,
+  const report = { round: R.round, track: R.track, name: R.name, kind, finale: R.finale, laps: R.laps, finish, grid, ...(grace ? { grace: { start, out: grace.out, code: seats[grace.out] } } : {}), expPos: cur.expPos, expRace, starters: raced.length, ...(divided ? { field: cur.field } : {}), dnf, dnq, pole, fastest, clean,
     rr: rating.rr, rrLines: rating.lines, xp: xp.xp, xpLines: xp.lines, rep: rep.rep, repLines: rep.lines, trust, coins: earned, coinLines: coins, repairs: fix,
     objectives, duel: { ...duel, mine: cur.quali.laps[hero], mate: cur.quali.mate.lap, mateCar: cur.quali.mate.car, mateCode: cur.quali.mate.code },
     entries, best: result.best, levelUp: save.career.cl > clBefore ? save.career.cl : null, rivals: rivals.lines, orders: ord && { obeyed: ord.obeyed, trust: ordTrust },

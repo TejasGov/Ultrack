@@ -13,19 +13,40 @@ try {
   const da = [a(), a(), a()]; assert.deepEqual(da, [b(), b(), b()]); assert.notDeepEqual(da, [c(), c(), c()]);
   assert.ok(da.every((x) => x >= 0 && x < 1));
 
-  // ---- the Round Rating's worked example (6.1): expected P8 of the field, qualifies P6, finishes P4, clean, wins the duel = 8.4
-  const ex = R.roundRating({ expPos: 8, grid: 6, finish: 4, fastest: false, clean: true, duel: { result: 'won', big: false } });
-  assert.equal(ex.rr, 8.4); assert.equal(R.rrLabel(ex.rr), 'Outstanding');
-  assert.equal(R.roundRating({ expPos: 1, grid: 1, finish: 8, clean: false, duel: { result: 'level' } }).rr, 3.6, 'P8 in the fastest car is bad');
+  // ---- the Round Rating's worked example (6.1): expected P8 of 8, qualifies P7, finishes P6, clean, wins the duel = 6 + 1.4 + 0.4 + 0.15 + 0.3 + 0.4, softened above 8.5: 8.6
+  const ex = R.roundRating({ expPos: 8, grid: 7, finish: 6, fastest: false, clean: true, duel: { result: 'won', big: false }, field: 8 });
+  assert.equal(ex.rr, 8.6); assert.equal(R.rrLabel(ex.rr), 'Outstanding');
+  assert.equal(R.roundRating({ expPos: 1, grid: 1, finish: 8, clean: false, duel: { result: 'level' } }).rr, 2.0, 'P8 in the fastest car is bad');
   assert.ok(R.roundRating({ expPos: 8, grid: 8, finish: 8, dnf: true }).rr < 5, 'a retirement costs');
   assert.ok(!R.roundRating({ expPos: 12, grid: 12, finish: 8, dnf: true }).lines.some((l) => /above expected/.test(l[0])), 'a retirement earns no credit for places');
   { const dnq = (expPos, rookie) => R.roundRating({ expPos, grid: 10, finish: 10, dnq: true, rookie }).lines.find((l) => l[0] === 'Did not qualify')[1];   // a missed cut costs in full unless a Rookie expected outside the grid misses it
     assert.equal(dnq(6), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize), R.TUNING.rating.dnq); assert.equal(dnq(R.TUNING.series.gridSize + 1), R.TUNING.rating.dnq, 'only a Rookie is let off');
     assert.equal(dnq(R.TUNING.series.gridSize + 1, true), R.TUNING.rating.dnqOutside); assert.equal(dnq(6, true), R.TUNING.rating.dnq); assert.ok(R.TUNING.rating.dnqOutside > R.TUNING.rating.dnq); }
   { const won = { expPos: 5, grid: 2, finish: 1, fastest: true, clean: false, duel: { result: 'level', skipped: true } }, skipped = R.roundRating({ ...won, exempt: true }), label = (r) => r.lines.map((l) => l[0]);
-    assert.equal(skipped.rr, 8.8, 'a win from a skip earned by the last result: not punished for it'); assert.ok(label(skipped).includes('Won the race') && label(skipped).includes('Skipped qualifying on merit') && label(skipped).includes('Started 3 above expected'));
+    assert.equal(skipped.rr, 9.4, 'a win from a skip earned by the last result: not punished for it'); assert.ok(label(skipped).includes('Won the race') && label(skipped).includes('Skipped qualifying on merit'));
+    assert.ok(!label(skipped).some((l) => /Started|Qualified/.test(l)), 'the earned slot is credited once, by the skip line, not again as a qualifying place');
     assert.ok(!label(R.roundRating({ ...won, exempt: true, grid: 7 })).some((l) => /Started|below/.test(l)), 'a worse earned slot costs nothing');
     assert.ok(label(R.roundRating({ expPos: 3, grid: 3, finish: 1 })).includes('Won the race')); assert.ok(!label(R.roundRating({ expPos: 3, grid: 3, finish: 2 })).includes('Won the race')); assert.ok(!label(R.roundRating({ expPos: 3, grid: 3, finish: 1, dnf: true })).includes('Won the race'), 'a retirement wins nothing'); }
+  // ---- the rating's hand cases (fields of 10 with 8 starting, the Challenger's share, grace and earned starts): the finish is judged among the starters, the start slot judges the race
+  { const ch = { share: R.TUNING.divisions.challenger.rate, shareLine: 'Challenger field' }, rr = (x) => R.roundRating(x).rr;
+    const cases = [
+      [{ expPos: 10, expRace: 8, grid: 1, start: 1, finish: 8, exempt: true, underdog: true, field: 10, ...ch }, 5.5, 'pole earned by the last podium, then last of the 8: not Outstanding (was 8.3)'],
+      [{ expPos: 8, expRace: 8, grid: 1, start: 1, finish: 8, field: 10 }, 6.6, 'a pole lap, then back to the expected place'],
+      [{ expPos: 8, expRace: 8, grid: 8, start: 8, finish: 1, field: 10 }, 9.8, 'a win from the back'],
+      [{ expPos: 1, expRace: 1, grid: 1, start: 1, finish: 1, fastest: true, clean: true, field: 10 }, 7.2, 'the fastest car doing its job'],
+      [{ expPos: 10, expRace: 8, grid: 8, start: 8, finish: 1, field: 10, ...ch }, 9.4, 'a Challenger win from the back'],
+      [{ expPos: 10, expRace: 8, grid: 10, start: 8, finish: 8, field: 10, ...ch }, 6.0, 'a grace start held: exactly as expected (was 6.8)'],
+      [{ expPos: 10, expRace: 8, grid: 10, start: 8, finish: 5, field: 10, ...ch }, 7.9, 'a grace start, three places made'],
+      [{ expPos: 4, expRace: 4, grid: 4, start: 4, finish: 8, dnf: true, field: 10 }, 2.0, 'a retirement'],
+      [{ expPos: 6, grid: 9, finish: 9, dnq: true, field: 10 }, 4.0, 'a missed cut'],
+      [{ expPos: 6, expRace: 6, grid: 3, start: 3, finish: 6, exempt: true, field: 10 }, 6.0, 'an earned P3 given back'],
+      [{ expPos: 4, expRace: 4, grid: 4, start: 4, finish: 4, field: 8 }, 6.0, 'a typical round sits on the base'],
+      [{ expPos: 1, expRace: 1, grid: 1, start: 1, finish: 8, field: 8 }, 2.0, 'pole to last in the fastest car'],
+    ];
+    for (const [x, want, why] of cases) assert.equal(rr(x), want, why);
+    for (const expRace of [1, 4, 8]) for (const start of [1, 4, 8]) for (const exempt of [false, true]) assert.ok(rr({ expPos: 10, expRace, grid: start, start, finish: 8, exempt, underdog: true, field: 10, ...ch }) < 8, 'last of the starters never reads Outstanding');
+    assert.ok(R.roundRating(cases[0][0]).lines.every(([l]) => !/above expected|Started/.test(l)), 'the report never calls last of the starters above expected');
+    assert.deepEqual(R.roundRating({ expPos: 8, grid: 8, finish: 8, field: 8 }), R.roundRating({ expPos: 8, expRace: 8, grid: 8, start: 8, finish: 8, field: 8 }), 'an 8-car race needs neither'); }
   // ---- two series (docs/10x/divisions-spec.md 16.1, 16.2, 16.6, 16.7): the split by expected place, places counted inside a series, objectives and the rating's divisor
   { const w = C.newCareer({ seed: 5, now: 'x' }), ids = (d) => R.TEAM_IDS.filter((t) => w.world.teams[t].div === d);
     assert.deepEqual(ids('elite'), ['aurum', 'saetta', 'norrsken', 'toro', 'sarab']); assert.deepEqual(ids('challenger'), ['corvid', 'steelhead', 'hayate', 'mojave', 'liberty']);
@@ -61,7 +82,8 @@ try {
     { const up = { expPos: 6, grid: 4, finish: 1, fastest: true, clean: true, field: 8 }, full = R.roundRating(up), part = R.roundRating({ ...up, share: 0.75, shareLine: 'Challenger field' }), gain = full.lines.reduce((a, l) => a + l[1], 0);
       assert.deepEqual(part.lines.at(-1), ['Challenger field', Math.round(-0.25 * gain * 100) / 100]); assert.ok(part.rr < full.rr);
       const down = { expPos: 2, grid: 6, finish: 7, field: 8 }; assert.equal(R.roundRating({ ...down, share: 0.75, shareLine: 'x' }).rr, R.roundRating(down).rr, 'a poor round costs the same'); }
-    for (const [field, k] of [[8, 1], [10, 1.25], [16, 2], [18, 2.25]]) { const l = R.roundRating({ expPos: 6, grid: 6, finish: 4, field }).lines.find((x) => /above expected/.test(x[0]))[1]; assert.equal(l, Math.round(R.TUNING.rating.pos * (2 / k) * 100) / 100, `field ${field}: two places over ${k}`);
+    for (const [field, k] of [[8, 1], [10, 1.25], [16, 2], [18, 2.25]]) { const l = R.roundRating({ expPos: 6, grid: 6, finish: 4, field }).lines.find((x) => /^Finished/.test(x[0]))[1]; assert.equal(l, Math.round(R.TUNING.rating.pos * 2 * 100) / 100, `field ${field}: the finish is of the starters, two places are two`);
+      assert.equal(R.roundRating({ expPos: 6, grid: 2, finish: 6, field }).lines.find((x) => /^Qualified/.test(x[0]))[1], Math.round(R.TUNING.rating.quali * Math.min(R.TUNING.rating.qualiClamp, 4 / k) * 100) / 100, `field ${field}: four qualifying places over ${k}`);
       assert.equal(R.xpFor({ expPos: 6, grid: 2, finish: 6, tier: 'rookie', optional: 0, field }).lines.find((x) => x[0] === 'Qualified above expected')[1], Math.min(R.TUNING.rating.qualiClamp, 4 / k) * R.TUNING.xp.qualiPerPlace); }
     assert.equal(R.xpFor({ expPos: 6, grid: 6, finish: 2, tier: 'rookie', optional: 0, reward: 0.5 }).lines[0][1], R.TUNING.xp.place[1] * 0.5, 'the Challenger reward scales the place XP'); }
   // ---- pace and levels

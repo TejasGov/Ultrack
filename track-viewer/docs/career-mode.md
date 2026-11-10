@@ -419,7 +419,7 @@ Each new track must supply what `track.json` already has (centreline, `lapLength
 The player's speed is his hands. The career therefore does **not** give him a fake "pace" stat. What it tracks about him is *what he did*:
 
 - **Career Level (CL)**, 1-25, from XP. It is the existing `playerLevel` and it gates things.
-- **Round Rating (RR)**, 1-10 per round, and its rolling average (the *form rating*). It is a number about results versus the car. A win adds +0.5, and a qualifying skip earned by a podium scores its grid slot and a teammate-duel win's +0.4 instead of nothing (changed 2026-11-04 at the user's call).
+- **Round Rating (RR)**, 1-10 per round, and its rolling average (the *form rating*). It is a number about results versus the car. A win adds +0.5, and a qualifying skip earned by a podium scores a teammate-duel win's +0.4 (`rating.skip`) instead of nothing (changed 2026-11-04 at the user's call); since 2026-11-10 the earned slot is not credited again as a qualifying place, the finish is judged among those who started, and places gained or lost from the start slot count (6.1).
 - **Driving style**, derived from play (6 and 7): aggressor, technician or showman.
 - Optional **perks** (Phase 3): small, bounded bonuses that touch levers the physics already has.
 
@@ -512,10 +512,11 @@ Sinks, and why: upgrades (the point), exit fees, optional "development fund" gif
 Every round ends with a **Round Rating (RR)**, 2.0 to 10.0, in the spirit of a match rating: it measures the result against the car, not against the podium.
 
 - `expPos` of the player's entry = the team's `expPos` (2.2) + seat step (B seat +1, A seat 0), clamped 1 to 8.
-- `posDelta` = `expPos` - finishing place, clamped to +/-5. `qualiDelta` = `expPos` - grid place, clamped to +/-4.
+- `posDelta` = `expRace` - finishing place, clamped to +/-5, where `expRace` is the expected place among the cars that started (a series of 10 starts 8: the cut and a grace's sit-out are left out, so last of those who raced is never above expected). `qualiDelta` = `expPos` - qualifying place over k = field / 8, clamped to +/-4; none when the slot was earned by the last result (exempt: the skip's +0.4 is its credit). `craftDelta` = start slot - finishing place (a grace start counts from P8), clamped to +/-7; none for a retirement, which has its own line.
+- Re-tuned 2026-11-10 after the 10-car series (`career-metrics` on seeds 1000 / 3000): `quali` 0.3 -> 0.4, `craft` 0.15, the rest unchanged. The fix removed credit that had come from places nobody raced (an average driver's rounds rate about 0.4 lower), so the average Round Rating is 6.31 / 6.27 (base 6.48 / 6.42) and the Legend offers of an average driver fell (an OPEN target, D6).
 
 ```
-RR = 6.0 + 0.70 x posDelta + 0.30 x qualiDelta
+RR = 6.0 + 0.70 x posDelta + 0.40 x qualiDelta + 0.15 x craftDelta
          + 0.4 fastest lap of the field      + 0.3 clean race (0 spins, at most 1 crash event)
          + 0.4 teammate duel won (-0.4 lost; +/-0.6 if the margin is over 0.3%)
          + 0.3 per rival beaten (heat >= 40) + 0.3 Underdog seat (Liberty #66) when posDelta >= 0
@@ -531,7 +532,7 @@ RR = 6.0 + 0.70 x posDelta + 0.30 x qualiDelta
 | 5.0-5.9 | Poor |
 | under 5.0 | Bad |
 
-Worked example: the Mojave B seat, expected P8. Qualifies P7 (+1 x 0.3), finishes P6 (+2 x 0.7), clean, wins the duel: 6.0 + 1.4 + 0.3 + 0.3 + 0.4 = **8.4, Outstanding**, for sixth place. The same finish in the Aurum Destrier (expected P1) would be 6.0 - 3.5 = Poor.
+Worked example: the Mojave B seat, expected P8 of 8. Qualifies P7 (+1 x 0.4), finishes P6 (+2 x 0.7, and +1 x 0.15 from the grid slot), clean, wins the duel: 6.0 + 1.4 + 0.4 + 0.15 + 0.3 + 0.4 = 8.65, softened above 8.5 to **8.6, Outstanding**, for sixth place. The same finish in the Aurum Destrier (expected P1) would be 6.0 - 3.5 = Poor.
 
 `expPos` moves once a season: `expPos' = round(0.5 x expPos + 0.5 x final Teams' position)`, ties by tier and then by last season. Sarab, "rising", is expected to drift up if it keeps finishing ahead of Toro.
 

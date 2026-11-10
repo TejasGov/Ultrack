@@ -171,14 +171,24 @@ export function duelOf(mine, mate) {
 // ---------------------------------------------------------------------------------------------- the round rating, XP, REP, trust
 export const RR_LABELS = [[9, 'Masterclass'], [8, 'Outstanding'], [7, 'Strong'], [6, 'Solid'], [5, 'Poor'], [0, 'Bad']];
 export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
-/** Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] } */
-export function roundRating({ expPos, grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie, field = DIV.legacyField, share = 1, shareLine = null }) {
-  const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); }, k = field / T.series.gridSize;
-  // places are of the race's field, and k of them weigh what one did when the table was 8 (16 cars: two): the rating constants are unchanged. No race, no finish to judge
-  const dp = dnq ? 0 : dnf ? Math.min(0, expPos - finish) : expPos - finish, dq = expPos - grid, pos = clamp(dp / k, -R.posClamp, R.posClamp), q = exempt ? clamp(dq / k, 0, R.qualiClamp) : clamp(dq / k, -R.qualiClamp, R.qualiClamp);   // a slot earned by the last result never counts against
-  add(dp >= 0 ? `Finished ${dp} ${dp === 1 ? 'place' : 'places'} above expected` : `Finished ${-dp} ${dp === -1 ? 'place' : 'places'} below expected`, R.pos * pos);
-  add(exempt ? `Started ${dq} above expected` : dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * q);
-  if (exempt) add('Skipped qualifying on merit', R.duel);     // the skip needs a podium with the teammate not ahead: doing well must not cost the qualifying credit of the next round
+/**
+ * Round Rating (6.1): the result against the car. Returns { rr, lines: [[label, delta]] }. Three judgements, each of its own session:
+ * - the qualifying: `grid` (the qualifying place, of the `field` that set laps) against `expPos` (of the same field), k = field / 8 places to one;
+ *   a slot earned by the last result (`exempt`) is not judged again: the skip's own line is its credit
+ * - the finish: `finish` against `expRace`, the expected place among those who started (the cut and a grace's sit-out left out), so last of
+ *   those who raced is never above expected; one place one place
+ * - the race craft: places gained or lost from `start` (the grid slot, a grace start's P8), at `craft` a place: small, so it adds to the finish and
+ *   never outweighs it (a place gained in the race weighs 0.85 with the finish's 0.7, a place gained in qualifying 1.1); P1 -> P8 costs 1.05.
+ *   A retirement has its own line instead
+ */
+export function roundRating({ expPos, expRace = Math.min(expPos, T.series.gridSize), grid, start = grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie, field = DIV.legacyField, share = 1, shareLine = null }) {
+  const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); }, k = field / T.series.gridSize, n = (v) => `${v} ${v === 1 ? 'place' : 'places'}`;
+  const dp = dnq ? 0 : dnf ? Math.min(0, expRace - finish) : expRace - finish, dq = expPos - grid, dc = dnq || dnf ? 0 : start - finish, pos = clamp(dp, -R.posClamp, R.posClamp);
+  const of = expRace === expPos ? '' : ` (P${expRace} of the starters)`;
+  add(dp >= 0 ? `Finished ${n(dp)} above expected${of}` : `Finished ${n(-dp)} below expected${of}`, R.pos * pos);
+  if (!exempt) add(dq >= 0 ? `Qualified ${dq} above expected` : `Qualified ${-dq} below expected`, R.quali * clamp(dq / k, -R.qualiClamp, R.qualiClamp));
+  add(dc >= 0 ? `Gained ${n(dc)} from P${start}` : `Lost ${n(-dc)} from P${start}`, R.craft * clamp(dc, -R.craftClamp, R.craftClamp));
+  if (exempt) add('Skipped qualifying on merit', R.skip);    // the skip needs a podium with the teammate not ahead: doing well must not cost the qualifying credit of the next round
   if (finish === 1 && !dnf && !dnq) add('Won the race', R.win);
   if (dnq) add('Did not qualify', rookie && expPos > T.series.gridSize ? R.dnqOutside : R.dnq);   // a Rookie expected outside the grid (behind six Legend and six Maestro cars) half expects to miss the cut: the qualifying place judges it
   if (fastest) add('Fastest lap of the field', R.fastest);
@@ -191,10 +201,10 @@ export function roundRating({ expPos, grid, finish, fastest, clean, duel, underd
   return { rr: Math.round(clamp(soft, R.min, R.max) * 10) / 10, lines };
 }
 /** XP for a round (5.2) before nothing: the tier, assist and underdog multipliers are applied here */
-export function xpFor({ finish, expPos, grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog, field = DIV.legacyField, reward = 1 }) {
+export function xpFor({ finish, expPos, expRace = Math.min(expPos, T.series.gridSize), grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog, field = DIV.legacyField, reward = 1 }) {
   const X = T.xp, lines = [], add = (label, v) => { if (v > 0) lines.push([label, v]); };
   add(`Finished P${finish}`, dnf ? 0 : (X.place[finish - 1] ?? 0) * reward);
-  add('Above expected', dnf ? 0 : Math.min(X.overExpMax, Math.max(0, expPos - finish) * X.perPlaceOverExp));
+  add('Above expected', dnf ? 0 : Math.min(X.overExpMax, Math.max(0, expRace - finish) * X.perPlaceOverExp));   // of those who started, as the rating
   add('Pole position', pole ? X.pole : 0);
   add('Qualified above expected', Math.min(T.rating.qualiClamp, Math.max(0, expPos - grid) / (field / T.series.gridSize)) * X.qualiPerPlace);
   add('Teammate duel', duel?.result === 'won' ? X.duel : 0);
