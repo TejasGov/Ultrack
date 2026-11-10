@@ -78,13 +78,13 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       }
       if (log.staffSeason !== save.clock.season) { log.staffSeason = save.clock.season; hireStaff(); }   // once a season, as a player would at its start
       const rd = C.currentRound(save), car = save.contract.car, u = { ...save.garage.upgrades[car] };
-      const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, [u.engine, u.tyres, u.brakes, u.aero]) / skill * (1 + noise(0.008));
+      const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, [u.engine, u.tyres, u.brakes, u.aero]) / skill * C.driveLap(save.life.happy) * (1 + noise(0.008));   // the mood's engine power (life.js drivePower), as the physics gets it
       if (rand() < 0.1) { const h = [Math.round(50 + rand() * 130)]; C.logHits(save, h); log.hits++; }   // a crash in qualifying
       C.finishQuali(save, lapNow()); { const q = save.season.current.quali; if (!q.grid.includes(car) || q.grace) C.finishQuali(save, lapNow()); }   // a missed cut uses the one retry; so does a grace start, chasing a real top-8 slot
     } else if (save.clock.phase === 'race') {
       const q = save.season.current.quali, cur = save.season.current, o = cur.open, car = save.contract.car, lcq = o?.stage === 'lcq', V = o && !lcq ? C.currentRound(save) : C.qualiVenue(save);   // the laps in q.laps are the qualifying venue's, so the model stays on that scale unless it is a Final
       // a model, not a measurement: an AI car's pace is its par lap over its pace; a Tour round uses the qualifying laps, an Open's Final (whose seeds flew none) the model for every car
-      const model = (k) => { const u = save.garage.upgrades[k], dev = k === car ? [u.engine, u.tyres, u.brakes, u.aero] : save.world.teams[R.CAR[k].team].dev; return R.parLap(V.track, k, V.weather, dev) / (k === car ? skill : R.paceOf(save.world.ratings[save.world.seats[k]])); };
+      const model = (k) => { const u = save.garage.upgrades[k], dev = k === car ? [u.engine, u.tyres, u.brakes, u.aero] : save.world.teams[R.CAR[k].team].dev; return R.parLap(V.track, k, V.weather, dev) / (k === car ? skill / C.driveLap(save.life.happy) : R.paceOf(save.world.ratings[save.world.seats[k]])); };
       const t = Object.fromEntries(q.grid.map((k) => [k, (o && !lcq ? model(k) : q.laps[k] ?? (k === car ? model(k) : 999)) * (1 + noise(0.012 * Math.sqrt((lcq ? C.currentRound(save).lcqLaps : C.currentRound(save).laps) / 5)))]));   // fewer laps, fewer places change from the grid
       const order = Object.keys(t).sort((a, b) => t[a] - t[b]), lap = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, v * 0.99]));
       const missed = !q.grid.includes(save.contract.car);

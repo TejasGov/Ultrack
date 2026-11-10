@@ -1,7 +1,8 @@
 {
   "version": 1,
-  "note": "Happiness, fan support and the Shop (track-viewer/docs/career-mode.md, Part 3). Happiness and fan support are meters 0-100 about the driver's life: they move sponsor pay, XP, trust gains, offers and the press, and never the car or a rival's pace. 'round' is what one race week adds to happiness, then it drifts back to 50 by 'drift' of the gap. Item ids are the names of the Shop images at /assets/ui/shop/<id>.webp. Starting values, tuned with scripts/career-sim.mjs.",
+  "note": "Happiness, fan support and the Shop (track-viewer/docs/career-mode.md, Part 3). Happiness and fan support are meters 0-100 about the driver's life: they move sponsor pay, XP, trust gains, offers and the press, and never a rival's pace. 'drive' is the one thing a mood does on track: the player's engine power in career races and qualifying (life.js drivePower), exactly nothing within 'dead' of 50, then a smoothstep to 1 ± 'power' at 0 and 100; 'lap' is the share of lap time one unit of power buys, measured with solo AI laps, which career-sim's player lap uses. 'round' is what one race week adds to happiness, then it drifts back to 50 by 'drift' of the gap. Item ids are the names of the Shop images at /assets/ui/shop/<id>.webp. Starting values, tuned with scripts/career-sim.mjs.",
   "happy": { "start": 50, "drift": 0.16 },
+  "drive": { "dead": 15, "power": 0.03, "lap": 0.12 },
   "bands": [
     { "min": 80, "id": "top", "name": "On top of the world", "pay": 1.10, "xp": 1.05, "trust": 1.3, "rep": 1.25, "offers": 1.25, "leverage": 1, "does": "Sponsors +10 %, XP +5 %, trust +30 %, reputation +25 %, more offers, stronger in contract talks" },
     { "min": 60, "id": "content", "name": "Content", "pay": 1.04, "xp": 1, "trust": 1, "rep": 1.1, "offers": 1.1, "leverage": 0.5, "does": "Sponsors +4 %, reputation +10 %, a few more offers, a little stronger in contract talks" },

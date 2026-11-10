@@ -10,13 +10,13 @@
                 "salary": { "B": 800, "A": 1200, "N": 1800 }, "sponsor": 4.5, "objective": [240, 120], "bonus": { "podium": 300, "win": 600, "cup": 2400 } }
   },
   "teams": {
-    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 825, "rr": 7.9, "cl": 16 }, "wants": "titles", "want": "cups", "side": "sponsor", "style": "bidder" },
-    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 775, "rr": 7.8, "cl": 15 }, "wants": "wins and poles", "want": "poles", "side": "test", "style": "hardball" },
-    "norrsken": { "tier": "legend", "expPos": 3, "A": "jesko",             "B": "cc850",      "gate": { "rep": 725, "rr": 7.65, "cl": 14 }, "wants": "clean, exact racing", "want": "clean", "side": "test", "style": "warm" },
-    "toro":    { "tier": "maestro", "expPos": 4, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.6, "cl": 7 }, "wants": "overtakes and giant-killing", "want": "gained", "side": "sponsor", "style": "hardball" },
-    "sarab":   { "tier": "maestro", "expPos": 5, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "loyalty", "want": "seasonsHere", "side": "test", "style": "warm" },
-    "corvid":  { "tier": "maestro", "expPos": 6, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "clean races", "want": "clean", "side": "test", "style": "frugal" },
-    "steelhead": { "tier": "maestro", "expPos": 7, "A": "zr1",               "B": "stingray",   "gate": { "rep": 200, "rr": 6.5, "cl": 6 }, "wants": "fast laps and front rows", "want": "poles", "side": "sponsor", "style": "bidder" },
+    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 825, "rr": 7.15, "cl": 16 }, "wants": "titles", "want": "cups", "side": "sponsor", "style": "bidder" },
+    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 775, "rr": 7.05, "cl": 15 }, "wants": "wins and poles", "want": "poles", "side": "test", "style": "hardball" },
+    "norrsken": { "tier": "legend", "expPos": 3, "A": "jesko",             "B": "cc850",      "gate": { "rep": 725, "rr": 6.9, "cl": 14 }, "wants": "clean, exact racing", "want": "clean", "side": "test", "style": "warm" },
+    "toro":    { "tier": "maestro", "expPos": 4, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.4, "cl": 7 }, "wants": "overtakes and giant-killing", "want": "gained", "side": "sponsor", "style": "hardball" },
+    "sarab":   { "tier": "maestro", "expPos": 5, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "loyalty", "want": "seasonsHere", "side": "test", "style": "warm" },
+    "corvid":  { "tier": "maestro", "expPos": 6, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "clean races", "want": "clean", "side": "test", "style": "frugal" },
+    "steelhead": { "tier": "maestro", "expPos": 7, "A": "zr1",               "B": "stingray",   "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "fast laps and front rows", "want": "poles", "side": "sponsor", "style": "bidder" },
     "hayate":  { "tier": "rookie",  "expPos": 8, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "want": "duel", "side": "sponsor", "style": "bidder" },
     "mojave":  { "tier": "rookie",  "expPos": 9, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "want": "rrTrend", "side": "test", "style": "frugal" },
     "liberty": { "tier": "rookie",  "expPos": 10, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "want": "fromBehind", "side": "sponsor", "style": "warm" }

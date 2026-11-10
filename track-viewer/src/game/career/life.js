@@ -1,6 +1,7 @@
 // Happiness, fan support and the Shop's things (docs/career-mode.md, Part 3). Pure, like the rest of career/: a save goes in and comes out changed.
 // save.life = { happy, fans, owned: { id: count }, sinceOff, ads: { id: count this season }, demanded: season, why: [[label, delta]] }.
-// Nothing here reaches paceOf, aiLap or the physics: a mood moves pay, XP, trust gains, offers and the press, never a lap time.
+// Nothing here reaches paceOf, aiLap or a rival: a mood moves pay, XP, trust gains, offers and the press, and (drivePower) a little of the player's own engine power
+// in a career race or qualifying, exactly nothing between 35 and 65 (lifestyle.json drive.dead).
 import LIFE from '../../../../assets/career/lifestyle.json';
 import { TUNING as T, TIERS, clamp } from './rules.js';
 
@@ -21,6 +22,13 @@ export const xpMult = (save) => mood(save).xp;
 export const trustMult = (save) => mood(save).trust;
 export const repMult = (save) => mood(save).rep;
 export const offerScale = (save) => mood(save).offers;
+/** the mood on track (lifestyle.json drive): the player's engine power in career races and qualifying, exactly 1 within `dead` of 50, then a smoothstep to 1 ± `power` at 0 and 100 */
+export function drivePower(happy) {
+  const D = LIFE.drive, t = clamp((Math.abs(happy - 50) - D.dead) / (50 - D.dead), 0, 1);
+  return t > 0 ? 1 + Math.sign(happy - 50) * D.power * t * t * (3 - 2 * t) : 1;
+}
+/** the lap time that power buys (career-sim's lap model, the Life page): `lap` of lap time per unit of power, measured with scripts/measure-upgrades.mjs-style solo laps */
+export const driveLap = (happy) => 1 - LIFE.drive.lap * (drivePower(happy) - 1);
 export const leverageBonus = (save) => mood(save).leverage;
 /** may the player demand a transfer: unhappy, once a season */
 export const canDemand = (save) => mood(save).id === 'unhappy' && save.life.demanded !== save.clock.season;

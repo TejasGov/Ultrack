@@ -45,8 +45,9 @@ const NOMINAL = { engine: 0.06, tyres: 0.04, brakes: 0.08 };
 export const physicsHasUpgrades = typeof PHYSICS.setUpgrades === 'function';
 const ZERO = Object.fromEntries(CATS.map(([c]) => [c, 0]));    // every category: setUpgrades keeps a level it is not told about
 
-/** tell the physics which upgrade levels each car wears: the player's cars as saved, everything else (AI) at level 0 */
-export function applyUpgrades(levelsOf, onlyKey) {
+/** tell the physics which upgrade levels each car wears: the player's cars as saved, everything else (AI) at level 0; `power`: a career session's mood multipliers ({ key: x }), cleared by any call without them */
+export function applyUpgrades(levelsOf, onlyKey, power = {}) {
+  PHYSICS.setPower?.(power);
   if (!physicsHasUpgrades) return;
   for (const k of ROSTER) PHYSICS.setUpgrades(k, onlyKey === undefined || k === onlyKey ? levelsOf(k) : ZERO);
 }
