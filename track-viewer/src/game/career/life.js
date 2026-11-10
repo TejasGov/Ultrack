@@ -1,7 +1,7 @@
 // Happiness, fan support and the Shop's things (docs/career-mode.md, Part 3). Pure, like the rest of career/: a save goes in and comes out changed.
 // save.life = { happy, fans, owned: { id: count }, sinceOff, ads: { id: count this season }, demanded: season, why: [[label, delta]] }.
 // Nothing here reaches paceOf, aiLap or a rival: a mood moves pay, XP, trust gains, offers and the press, and (drivePower) a little of the player's own engine power
-// in a career race or qualifying, exactly nothing between 40 and 60.
+// in a career race or qualifying, exactly nothing between 35 and 65 (lifestyle.json drive.dead).
 import LIFE from '../../../../assets/career/lifestyle.json';
 import { TUNING as T, TIERS, clamp } from './rules.js';
 

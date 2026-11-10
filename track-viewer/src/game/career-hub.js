@@ -377,7 +377,7 @@ export function CareerHubScreen(game) {
   function life(save) {
     const L = save.life, band = C.moodOf(save), w = C.currentWeek(save), upkeep = C.upkeepOf(save), tier = TIERS.tiers[save.season.tier];
     const dp = C.drivePower(L.happy) - 1, dl = Math.abs(1 - C.driveLap(L.happy)) * 100, D = C.LIFE.drive.dead;   // the mood on track (life.js drivePower): what the physics gets, said as it is
-    const drive = dp === 0 ? `On track: no effect between ${50 - D} and ${50 + D}.` : `${dp > 0 ? 'Happy: a little more pace' : 'Low: a little less pace'}, ${dp > 0 ? '+' : '−'}${Math.abs(dp * 100).toFixed(1)} % engine power (about ${dl.toFixed(2)} % a lap) in career races and qualifying.`;
+    const drive = dp === 0 ? `On track: no effect between ${50 - D} and ${50 + D}.` : Math.abs(dp) < 0.0005 ? 'On track: next to nothing yet, under 0.05 % engine power.' : `${dp > 0 ? 'Happy: a little more pace' : 'Low: a little less pace'}, ${dp > 0 ? '+' : '−'}${Math.abs(dp * 100).toFixed(1)} % engine power (about ${dl.toFixed(2)} % a lap) in career races and qualifying.`;
     const meter = css(h('div.cl-meter', {}, LIFE_BANDS.map((b) => h('i.b-' + b.id + (b.id === band.id ? '.on' : ''))), h('em')), { '--p': L.happy / 100 });
     const why = L.why.length ? L.why.map(([label, v]) => h('span', {}, label, h('b.tnum', {}, delta(v, 1)))) : [h('p.cx-note', {}, 'It moves after your first race.')];
     const demand = h('button.btn.btn-secondary.cl-demand', { 'data-nav': '', onclick: () => {

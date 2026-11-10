@@ -180,8 +180,11 @@ export const rrLabel = (rr) => RR_LABELS.find(([min]) => rr >= min)[1];
  * - the race craft: places gained or lost from `start` (the grid slot, a grace start's P8), at `craft` a place: small, so it adds to the finish and
  *   never outweighs it (a place gained in the race weighs 0.85 with the finish's 0.7, a place gained in qualifying 1.1); P1 -> P8 costs 1.05.
  *   A retirement has its own line instead
+ * - last of the `starters` (raced, not retired) rates at most `lastCap`, with its own line: bonus lines (a good lap, a clean race, the duel) never
+ *   make a last place read Strong or better
+ * `expRace` defaults to `expPos` (no starter adjustment); finishRace always passes it
  */
-export function roundRating({ expPos, expRace = Math.min(expPos, T.series.gridSize), grid, start = grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie, field = DIV.legacyField, share = 1, shareLine = null }) {
+export function roundRating({ expPos, expRace = expPos, starters = T.series.gridSize, grid, start = grid, finish, fastest, clean, duel, underdog, dnf, dnq, exempt, rookie, field = DIV.legacyField, share = 1, shareLine = null }) {
   const R = T.rating, lines = [], add = (label, v) => { if (v) lines.push([label, Math.round(v * 100) / 100]); }, k = field / T.series.gridSize, n = (v) => `${v} ${v === 1 ? 'place' : 'places'}`;
   const dp = dnq ? 0 : dnf ? Math.min(0, expRace - finish) : expRace - finish, dq = expPos - grid, dc = dnq || dnf ? 0 : start - finish, pos = clamp(dp, -R.posClamp, R.posClamp);
   const of = expRace === expPos ? '' : ` (P${expRace} of the starters)`;
@@ -197,11 +200,13 @@ export function roundRating({ expPos, expRace = Math.min(expPos, T.series.gridSi
   if (underdog && pos >= 0 && !dnf) add('Underdog seat', R.underdog);
   if (dnf) add('Retired', R.dnf);
   if (share < 1) add(shareLine, -(1 - share) * lines.reduce((s, l) => s + Math.max(0, l[1]), 0));   // a series that keeps a share of the credit (the Challenger): the gains shrink, the losses stay
-  const raw = R.base + lines.reduce((s, l) => s + l[1], 0), soft = raw > R.softAt ? R.softAt + (raw - R.softAt) * R.softRate : raw;   // the top of the scale is hard to reach: a P4 from the slowest car is not a perfect 10
+  const sum = () => R.base + lines.reduce((s, l) => s + l[1], 0);
+  if (!dnf && !dnq && finish === starters && sum() > R.lastCap) add(`Last of the ${starters} who started`, R.lastCap - sum());   // below softAt, so the lines still add up to the rating
+  const raw = sum(), soft = raw > R.softAt ? R.softAt + (raw - R.softAt) * R.softRate : raw;   // the top of the scale is hard to reach: a P4 from the slowest car is not a perfect 10
   return { rr: Math.round(clamp(soft, R.min, R.max) * 10) / 10, lines };
 }
 /** XP for a round (5.2) before nothing: the tier, assist and underdog multipliers are applied here */
-export function xpFor({ finish, expPos, expRace = Math.min(expPos, T.series.gridSize), grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog, field = DIV.legacyField, reward = 1 }) {
+export function xpFor({ finish, expPos, expRace = expPos, grid, pole, duel, fastest, clean, dnf, mandatory, optional, tier, pro, underdog, field = DIV.legacyField, reward = 1 }) {
   const X = T.xp, lines = [], add = (label, v) => { if (v > 0) lines.push([label, v]); };
   add(`Finished P${finish}`, dnf ? 0 : (X.place[finish - 1] ?? 0) * reward);
   add('Above expected', dnf ? 0 : Math.min(X.overExpMax, Math.max(0, expRace - finish) * X.perPlaceOverExp));   // of those who started, as the rating

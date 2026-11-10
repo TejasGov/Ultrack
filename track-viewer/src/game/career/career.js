@@ -584,7 +584,7 @@ export function finishRace(save, result) {
     div: divOf(save, CAR[key].team), exp: tourDiv ? expIn(save, CAR[key].team, CAR[key].seat) : expAt(save, key, divided && kind === 'masters' ? cur.open.seeds : null),
     ...(cupless ? { rpts: i >= raced.length || (key === hero && dnf) ? 0 : rankPoints(i, kind) } : {}) }));
   const expRace = 1 + entries.filter((e) => !e.dnq && !e.you && e.exp < cur.expPos).length;   // the expected place among those who started: a finish is judged against the cars it raced
-  const x = { expPos: cur.expPos, expRace, grid, start, finish, fastest, clean, duel, dnf, dnq, lcqIn: !!cur.open?.lcqIn };   // grid: where they qualified (the rating, a qualifying objective); start: where they started (places gained)
+  const x = { expPos: cur.expPos, expRace, starters: raced.length, grid, start, finish, fastest, clean, duel, dnf, dnq, lcqIn: !!cur.open?.lcqIn };   // grid: where they qualified (the rating, a qualifying objective); start: where they started (places gained)
   const objectives = cur.objectives.map((o) => objectiveFrom(o, start)).map((o) => ({ ...o, met: objectiveMet(o, x) }));
   const mandatory = objectives[0].met, optional = objectives.slice(1).filter((o) => o.met).length;
   // a Challenger driver's round keeps `rate` of what it earns above the base, a cup's too (its seeds start a Final far above their expected place): a good round from the weaker

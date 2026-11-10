@@ -44,7 +44,12 @@ try {
       [{ expPos: 1, expRace: 1, grid: 1, start: 1, finish: 8, field: 8 }, 2.0, 'pole to last in the fastest car'],
     ];
     for (const [x, want, why] of cases) assert.equal(rr(x), want, why);
-    for (const expRace of [1, 4, 8]) for (const start of [1, 4, 8]) for (const exempt of [false, true]) assert.ok(rr({ expPos: 10, expRace, grid: start, start, finish: 8, exempt, underdog: true, field: 10, ...ch }) < 8, 'last of the starters never reads Outstanding');
+    for (const expRace of [1, 4, 8]) for (const start of [1, 4, 8]) for (const exempt of [false, true]) for (const clean of [false, true]) for (const result of ['won', 'lost']) for (const field of [8, 10]) for (const share of [{}, ch])
+      assert.ok(rr({ expPos: field === 8 ? expRace : 10, expRace, grid: start, start, finish: 8, exempt, clean, fastest: clean, duel: { result, big: true }, underdog: true, field, ...share }) <= R.TUNING.rating.lastCap, 'last of the starters never reads Strong or better');
+    { const r = R.roundRating({ expPos: 8, expRace: 8, grid: 4, start: 4, finish: 8, clean: true, underdog: true, duel: { result: 'won', big: true }, field: 8 });   // a review's case: was 8.2 Outstanding
+      assert.equal(r.rr, R.TUNING.rating.lastCap); assert.equal(Math.round((R.TUNING.rating.base + r.lines.reduce((a, l) => a + l[1], 0)) * 10) / 10, r.rr, 'the cap is a line: the lines add up');
+      assert.ok(R.roundRating({ expPos: 8, expRace: 7, starters: 7, grid: 4, start: 4, finish: 7, clean: true, underdog: true, duel: { result: 'won', big: true }, field: 8 }).lines.some(([l]) => l === 'Last of the 7 who started'), 'the starters come from the race'); }
+    assert.equal(R.roundRating({ expPos: 12, grid: 10, finish: 8, field: 16 }).lines.find(([l]) => /^Finished/.test(l))[0], 'Finished 4 places above expected', 'without expRace the finish is against expPos');
     assert.ok(R.roundRating(cases[0][0]).lines.every(([l]) => !/above expected|Started/.test(l)), 'the report never calls last of the starters above expected');
     assert.deepEqual(R.roundRating({ expPos: 8, grid: 8, finish: 8, field: 8 }), R.roundRating({ expPos: 8, expRace: 8, grid: 8, start: 8, finish: 8, field: 8 }), 'an 8-car race needs neither'); }
   // ---- two series (docs/10x/divisions-spec.md 16.1, 16.2, 16.6, 16.7): the split by expected place, places counted inside a series, objectives and the rating's divisor
@@ -910,7 +915,7 @@ try {
       for (let h = 50 - D.dead; h <= 50 + D.dead; h++) assert.equal(p(h), 1, `no effect at ${h}`);
       for (let h = 1; h <= 100; h++) assert.ok(p(h) >= p(h - 1), 'monotonic');
       assert.ok(p(0) >= 1 - D.power - 1e-12 && p(100) <= 1 + D.power + 1e-12 && p(100) > 1 && p(0) < 1, 'bounded'); assert.ok(Math.abs(p(100) - 1 - D.power) < 1e-12 && Math.abs(p(0) - 1 + D.power) < 1e-12, 'the extremes reach the bound');
-      assert.ok(p(60) - 1 < 0.002 && 1 - p(40) < 0.002, 'very gradual past the dead zone'); assert.equal(Lf.driveLap(50), 1); assert.ok(Lf.driveLap(100) < 1 && Lf.driveLap(100) > 0.995 && Lf.driveLap(0) < 1.005, 'at most about half a percent of a lap');
+      assert.ok(p(70) - 1 > 0 && p(70) - 1 < 0.004 && 1 - p(30) > 0 && 1 - p(30) < 0.004, 'very gradual past the dead zone'); assert.equal(Lf.driveLap(50), 1); assert.ok(Lf.driveLap(100) < 1 && Lf.driveLap(100) > 0.995 && Lf.driveLap(0) < 1.005, 'at most about half a percent of a lap');
       const H = await server.ssrLoadModule('/src/physics/handling.js'), plain = H.handling('ford-gt').power;
       H.setPower({ 'ford-gt': p(100) }); assert.ok(Math.abs(H.handling('ford-gt').power / plain - p(100)) < 1e-12); assert.equal(H.handling('ford-gt').grip, (H.setPower({}), H.handling('ford-gt').grip), 'power, never grip');
       H.setPower({ 'ford-gt': p(0) }); H.setPower({}); assert.equal(H.handling('ford-gt').power, plain, 'cleared: the plain car');
