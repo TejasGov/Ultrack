@@ -2,7 +2,7 @@
 // DOM. Every screen works with the mouse, the keyboard (arrows, Enter, Esc) and a gamepad (d-pad, A, B), through Nav.
 import TEAMS from '../../../assets/teams/teams.json';
 import ENGINE_CREDITS from '../../../assets/audio/recordings/credits.json';
-import { STATIONS } from './music.js';
+import { STATIONS, tracksOf } from './music.js';
 import MUSIC_CREDITS from '../../../assets/audio/music/credits.json';
 import {teamLogoUrl} from '../team-logos.js';
 import { carName, ROSTER } from './carinfo.js';
@@ -225,7 +225,8 @@ export function MenuScreen(game) {
   const el = screen('home', h('div.sscrim'),
     h('header.shead', {}, h('i.logo'), h('div.home-heading', {}, h('span.hh-item', {}, icon('track'), trackName), h('span.hh-item.hh-coins', { 'aria-label': 'U-coins' }, icon('coin'), coins))),
     h('div.sbody', {}, grid),
-    h('div.sfoot', {}, prompt(['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'), prompt('Enter', 'a', 'Go')));
+    h('div.sfoot', {}, prompt(['arrow-left', 'arrow-up', 'arrow-down', 'arrow-right'], 'dpad', 'Select'), prompt('Enter', 'a', 'Go'), h('div.sp'),
+      h('button.btn.btn-ghost.home-radio', { 'data-nav': '', onclick: () => game.show('radio', 'menu') }, icon('music'), 'Radio', prompt('T'))));   // after the grid: the tiles keep their Nav indexes
   let shown = null;   // the circuit on the Race tile: the still and facts change only when it does (no reload flash)
   return {
     el, nav: true, grid: true,
@@ -431,7 +432,7 @@ const CONTROLS = [
   ['Accelerate', 'Brakes while reversing', ['W', 'arrow-up'], [['rt', 'RT']]], ['Brake', 'Reverses once stopped', ['S', 'arrow-down'], [['lt', 'LT']]],
   ['Steer', null, ['A', 'D', 'arrow-left', 'arrow-right'], [['ls', 'Left stick']]], ['Handbrake', 'Starts a drift', ['Space'], [['a', 'A']]],
   ['Nitro', null, ['Shift'], [['x', 'X']]], ['Reset to track', null, ['R'], [['y', 'Y']]], ['Camera', null, ['C'], [['rb', 'RB']]],
-  ['Map overview', null, ['M'], []], ['Radio', 'Soundtrack, Classical, Off', ['N'], []], ['Pause', null, ['Esc'], [['menu', 'Menu']]],
+  ['Map overview', null, ['M'], []], ['Radio', 'Soundtrack, Classical, Off', ['N'], []], ['Radio menu', 'Every track: pick one to play', ['T'], []], ['Pause', null, ['Esc'], [['menu', 'Menu']]],
 ];
 /** settings: Picture, Driving, Sound and Controls in one panel anchored to the top, so a tab switch never moves it; the tab row is
  *  a Nav stop (Left/Right, Q/E, LB/RB switch tabs), every row below one more. From pause, a full scrim covers the race */
@@ -475,6 +476,7 @@ export function SettingsScreen(game) {
         row('Crowd', slider(S.crowd, {}, set('crowd'))),
         row('Music', slider(S.music, {}, set('music'))),
         row('Radio', seg(STATIONS, S.radio, set('radio')), 'Soundtrack, a shuffled Classical station, or Off. Press N anywhere to switch.'),
+        row('Track list', Object.assign(h('span.btn.btn-secondary', {}, icon('music'), 'Open radio', prompt('T')), { step: () => game.show('radio', 'settings') }), 'Every song on both stations: pick one to play it now.'),
       ],
       controls: () => [
         h('div.lhead.ctl-cols', {}, h('span', {}, 'Action'), h('span', {}, icon('keyboard'), 'Keyboard'), h('span', {}, icon('gamepad'), 'Pad')),
@@ -493,6 +495,55 @@ export function SettingsScreen(game) {
     onKeyTab(d) { tab = TABS[(TABS.findIndex(([id]) => id === tab) + d + TABS.length) % TABS.length][0]; build(); nav.reset(0); },
     onSel(e) { if (e && e === [...body.querySelectorAll('[data-nav]')].at(-1)) { body.scrollTop = body.scrollHeight; fadeMore(body); } },   // the last row scrolls the body to its end, so the fade mask lets go
     back() { game.show(from); },
+    get from() { return from; },   // the Radio screen returns here with it
+  };
+  return api;
+}
+
+// ---------------------------------------------------------------------------------------------- radio
+const PLAYS_IN = { menu: 'Menu', race: 'Race', results: 'Results' };
+const mmss = (t) => (Number.isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}` : '–:––');
+/** the radio: the station, what plays now (prev / next, elapsed / length) and the station's every track from credits.json, so a new
+ *  song shows up by itself; Enter or a click plays one now (game.pickTrack). Opened from the menu, pause or settings (or T), Back
+ *  returns there; it never resumes a race */
+export function RadioScreen(game) {
+  let from = 'menu', fromArg, rows = new Map(), nowId;
+  const music = () => game.audio.music, station = () => store.settings.radio;
+  const artist = (t) => [t.author, t.performer].filter(Boolean).join(' · ');
+  const body = h('div.lscroll.rd-list', { onscroll: (e) => fadeMore(e.currentTarget) }), stationRow = h('div.rd-station');
+  const title = h('strong'), by = h('small'), time = h('span.tnum.rd-time'), bar = h('div.bar4', {}, h('i'));
+  const step = (d) => { const L = tracksOf(station()), k = L.findIndex((t) => t.id === music()?.now?.id); if (L.length) game.pickTrack(L[((k < 0 ? (d > 0 ? -1 : 0) : k) + d + L.length) % L.length]); api.tick(); };
+  const skip = (ic, label, d) => h('button.btn.btn-secondary.rd-skip', { 'data-nav': '', 'aria-label': label, onclick: () => step(d) }, icon(ic));
+  const now = h('div.rd-now', {}, h('div.rd-np', {}, h('span.kick', {}, 'Now playing'), title, by), skip('chevron-left', 'Previous track', -1), skip('chevron-right', 'Next track', 1),
+    h('div.rd-prog', {}, bar, time));
+  const credit = h('p.rd-note', {}, icon('info'), h('span', {}, 'Composers, performers and licences for every track are on the Credits screen.'));
+  const el = screen('radio', h('div.sscrim'), header('Radio', 'Every song on both stations'), h('div.panel.pnl.rd-panel', {}, stationRow, now, body, credit),
+    h('div.sfoot', {}, prompt(['arrow-up', 'arrow-down'], 'dpad', 'Select'), prompt(['arrow-left', 'arrow-right'], 'ls', 'Station'), prompt('Enter', 'a', 'Play'), h('div.sp'), backButton(() => api.back())));
+  function build() {
+    const S = station(), L = tracksOf(S);
+    fill(stationRow, row('Station', seg(STATIONS, S, (v) => { store.set('radio', v); game.updateMusic(); api.refresh(); })));
+    now.hidden = S === 'off';
+    rows = new Map(L.map((t) => [t.id, h('button.lrow.rd-row', { 'data-nav': '', 'aria-label': t.title, onclick: () => { game.pickTrack(t); api.tick(); } },
+      icon('music', { cls: 'rd-ic' }), h('span.c-name', {}, h('b', {}, t.title), h('small', { title: artist(t) }, artist(t))),
+      t.context in PLAYS_IN ? h('span.tag', { title: 'Plays here by default' }, PLAYS_IN[t.context]) : null)]));
+    fill(body, S === 'off' ? h('p.rd-off', {}, 'The radio is off. Pick Soundtrack or Classical above.') : [...rows.values()]);
+    nowId = undefined; api.tick(); fadeMore(body);
+  }
+  const api = {
+    el, nav: true,
+    onShow(f) { from = f ?? 'menu'; fromArg = from === 'settings' ? game.screens.settings.from : undefined; build(); nav.reset(Math.max(0, nav.items().indexOf(rows.get(music()?.now?.id)))); },
+    /** per frame while shown (game.update): the progress bar and time, and the row of what plays now */
+    tick() {
+      const m = music(), t = m?.now, e = m?.cur.el, d = e?.duration;
+      if ((t?.id ?? null) !== nowId) {
+        nowId = t?.id ?? null; title.textContent = t?.title ?? '—'; by.textContent = t ? artist(t) : '';
+        for (const [id, r] of rows) { r.classList.toggle('me', id === nowId); if (id === nowId) r.setAttribute('aria-current', 'true'); else r.removeAttribute('aria-current'); }
+      }
+      time.textContent = t && e ? `${mmss(e.currentTime)} / ${mmss(d)}` : '';
+      bar.style.setProperty('--p', t && d > 0 ? Math.min(1, e.currentTime / d) : 0);
+    },
+    refresh() { const i = nav.i; build(); nav.reset(Math.min(i, nav.items().length - 1)); },   // a station change (here, or N) rebuilds the list
+    back() { game.show(from, fromArg); },
   };
   return api;
 }
@@ -544,6 +595,7 @@ export function PauseScreen(game) {
           practice: ['End practice', 'End practice?', 'Back to the career. Nothing is at stake.'],
           quali: ['End qualifying', 'End qualifying?', 'Your best valid lap so far counts, and this uses up a try. With none, you miss the cut.'],
         }[game.careerRun.kind]) : null,
+        opt('music', 'Radio', () => game.show('radio', 'pause')),
         opt('settings', 'Settings', () => game.show('settings', 'pause')),
         career ? (mode === 'race' ? opt('quit', 'Retire', () => ask(...(game.careerRun.kind === 'sponsor' ? ['Retire from the challenge?', 'You meet no objective and get no medal.'] : ['Retire from the race?', 'You are classified last and the round counts as a retirement.']), 'quit', 'Retire', () => game.careerDone(true))) : null)
           : opt('quit', 'Quit to menu', () => ask('Quit to menu?', 'This session ends and you go back to the main menu.', 'quit', 'Quit', () => game.quit())));

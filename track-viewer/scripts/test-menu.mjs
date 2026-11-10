@@ -25,10 +25,10 @@ try{
  const UI=await server.ssrLoadModule('/src/game/ui.js'),routes=[],busy=[],game={audio:{play(){}},show:(...args)=>routes.push(args),setBusy:(msg)=>busy.push(msg),screens:{careerStart:{open:()=>routes.push(['career'])}}};
  const nav=new UI.Nav(game);UI.setNav(nav);const menu=UI.MenuScreen(game);game.screen=menu;menu.onShow();
  const buttons=menu.el.querySelectorAll('[data-nav]');
- assert.equal(buttons.length,9);assert.ok(menu.el.textContent.includes('YOUR CAR'));
+ assert.equal(buttons.length,10);assert.ok(menu.el.textContent.includes('YOUR CAR'));   // nine tiles and the footer's Radio
  for(const b of buttons){if(b.dataset.id)assert.match(b.children[0].src??b.children[0].attrs?.src??'',/\/assets\/ui\/stills\/(tracks|tiles)\//,`tile ${b.dataset.id} has its still`);}
  for(const b of buttons)b.click();
- assert.ok(routes.some(([name,id])=>name==='setup'&&id==='race'));assert.ok(routes.some(([name])=>name==='garage'));assert.ok(routes.some(([name])=>name==='credits'));assert.ok(routes.some(([name])=>name==='records'));
+ assert.ok(routes.some(([name,id])=>name==='setup'&&id==='race'));assert.ok(routes.some(([name])=>name==='garage'));assert.ok(routes.some(([name])=>name==='credits'));assert.ok(routes.some(([name])=>name==='records'));assert.ok(routes.some(([name,from])=>name==='radio'&&from==='menu'),'the footer Radio opens the radio');
  assert.ok(routes.some(([name])=>name==='career')&&!busy.some(m=>/Career Mode/.test(m)),'the Career Mode tile opens the career');
  buttons.forEach((b,i)=>b.rect={x:(i%3)*110,y:Math.floor(i/3)*110,width:100,height:100});
  nav.reset(0);nav.moveSpatial(1,0);assert.equal(nav.i,1);nav.moveSpatial(0,1);assert.equal(nav.i,4);

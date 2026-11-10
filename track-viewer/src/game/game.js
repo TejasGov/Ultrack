@@ -7,12 +7,12 @@ import './ui.css';
 import TEAMS from '../../../assets/teams/teams.json';
 import { store, ASSISTS, WEATHER, BLUR, fmtTime } from './store.js';
 import { GameAudio, Gearbox } from './audio.js';
-import { STATIONS } from './music.js';
+import { STATIONS, stationOf } from './music.js';
 import { EV } from './ev.js';
 import { Session, MODES } from './session.js';
 import { InputDebug } from './input-debug.js';
 import { Hud } from './hud.js';
-import { Nav, setNav, h, CreditsScreen, RecordsScreen, TitleScreen, MenuScreen, SetupScreen, GarageScreen, SettingsScreen, PauseScreen, ResultsScreen, carName } from './ui.js';
+import { Nav, setNav, h, CreditsScreen, RecordsScreen, TitleScreen, MenuScreen, SetupScreen, GarageScreen, SettingsScreen, PauseScreen, ResultsScreen, RadioScreen, carName } from './ui.js';
 import { PhysicsWorld } from '../physics/world.js';
 import { handling } from '../physics/handling.js';
 import { setWeather } from '../physics/weather.js';
@@ -40,7 +40,7 @@ export class Game {
     this.nav = new Nav(this); setNav(this.nav);
     this.screens = {
       credits: CreditsScreen(this), records: RecordsScreen(this), title: TitleScreen(this), menu: MenuScreen(this), setup: SetupScreen(this), garage: GarageScreen(this),
-      settings: SettingsScreen(this), pause: PauseScreen(this), results: ResultsScreen(this),
+      settings: SettingsScreen(this), pause: PauseScreen(this), results: ResultsScreen(this), radio: RadioScreen(this),
       careerStart: CareerStartScreen(this), careerHub: CareerHubScreen(this), careerDeal: CareerDealScreen(this), careerReport: CareerReportScreen(this),
     };
     for (const s of Object.values(this.screens)) this.root.append(s.el);
@@ -163,7 +163,7 @@ export class Game {
     if (this.screen.nav) this.nav.reset(name === 'menu' ? this.menuIdx ?? 0 : 0);
     this.screen.onShow?.(arg);                   // a screen may set its own starting item (the garage: your car)
     if (name === 'garage') this.cameraFor('garage');
-    else if (['menu', 'setup', 'title', 'credits', 'records', 'careerStart', 'careerHub', 'careerDeal', 'careerReport'].includes(name) || (name === 'settings' && arg !== 'pause')) { if (this.state !== 'menu') { this.state = 'menu'; } this.cameraFor('menu'); if (prev === this.screens.garage) this.lineup(); }
+    else if (['menu', 'setup', 'title', 'credits', 'records', 'careerStart', 'careerHub', 'careerDeal', 'careerReport'].includes(name) || (name === 'settings' && arg !== 'pause') || (name === 'radio' && !this.session)) { if (this.state !== 'menu') { this.state = 'menu'; } this.cameraFor('menu'); if (prev === this.screens.garage) this.lineup(); }
   }
 
   hideScreens() {
@@ -179,7 +179,9 @@ export class Game {
       if (e.code === 'Escape') { if (!e.repeat) this.pause(); e.preventDefault(); }
       if (e.code === 'KeyC' && !e.repeat) this.cycleCamera();   // one view per press: key repeat would flicker through all five
     }
-    if (e.code === 'KeyN' && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey && !e.target?.closest?.('input, textarea, select, [contenteditable]')) this.cycleRadio();   // M is the race minimap
+    const plain = !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey && !e.target?.closest?.('input, textarea, select, [contenteditable]');
+    if (e.code === 'KeyN' && plain) this.cycleRadio();   // M is the race minimap
+    if (e.code === 'KeyT' && plain) this.openRadio();
     if (['settings', 'garage', 'careerHub'].includes(this.screenName) && (e.code === 'KeyQ' || e.code === 'KeyE')) this.screens[this.screenName].onKeyTab(e.code === 'KeyQ' ? -1 : 1);
   }
 
@@ -195,6 +197,14 @@ export class Game {
     this.setBusy(`Radio: ${label}${piece && id !== 'off' ? ' · ' + piece : ''}`, { ms: 3000 });
     this.screen?.refresh?.();
   }
+  /** T: the Radio screen from the menu, pause or settings; mid-race it pauses first; on the Radio screen T closes it */
+  openRadio() {
+    if (this.screenName === 'radio') return this.screen.back();
+    if (this.session && !this.screen) this.pause();
+    if (['menu', 'pause', 'settings'].includes(this.screenName) && !this.screen.modal) this.show('radio', this.screenName);
+  }
+  /** a track from the Radio screen plays now, on its own station */
+  pickTrack(track) { const was = store.settings.radio; store.set('radio', stationOf(track)); this.audio.music?.pick(track); if (was !== store.settings.radio) this.screen?.refresh?.(); }
 
   // ---------------------------------------------------------------------------------------------- cameras
   cameraFor(kind) {
@@ -397,7 +407,7 @@ export class Game {
     this.nav.pad(dt);
     if (this.screenName === 'title' && navigator.getGamepads?.().some((g) => g?.buttons.some((b) => b.pressed))) this.screens.title.onKey();
     const s = this.session, F = this.field;
-    this.updateMusic();
+    this.updateMusic(); this.screen?.tick?.();   // the Radio screen's progress
     if (!s) { if (this.state === 'menu' && this.ctx.params.mode === 'orbit') this.ctx.controls.update(); return; }
     // start button on the pad pauses
     const pad = navigator.getGamepads?.().find((g) => g?.connected);
