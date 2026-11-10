@@ -2,6 +2,7 @@
 // DOM. Every screen works with the mouse, the keyboard (arrows, Enter, Esc) and a gamepad (d-pad, A, B), through Nav.
 import TEAMS from '../../../assets/teams/teams.json';
 import ENGINE_CREDITS from '../../../assets/audio/recordings/credits.json';
+import { STATIONS } from './music.js';
 import MUSIC_CREDITS from '../../../assets/audio/music/credits.json';
 import {teamLogoUrl} from '../team-logos.js';
 import { carName, ROSTER } from './carinfo.js';
@@ -430,7 +431,7 @@ const CONTROLS = [
   ['Accelerate', 'Brakes while reversing', ['W', 'arrow-up'], [['rt', 'RT']]], ['Brake', 'Reverses once stopped', ['S', 'arrow-down'], [['lt', 'LT']]],
   ['Steer', null, ['A', 'D', 'arrow-left', 'arrow-right'], [['ls', 'Left stick']]], ['Handbrake', 'Starts a drift', ['Space'], [['a', 'A']]],
   ['Nitro', null, ['Shift'], [['x', 'X']]], ['Reset to track', null, ['R'], [['y', 'Y']]], ['Camera', null, ['C'], [['rb', 'RB']]],
-  ['Map overview', null, ['M'], []], ['Pause', null, ['Esc'], [['menu', 'Menu']]],
+  ['Map overview', null, ['M'], []], ['Radio', 'Soundtrack, Classical, Off', ['N'], []], ['Pause', null, ['Esc'], [['menu', 'Menu']]],
 ];
 /** settings: Picture, Driving, Sound and Controls in one panel anchored to the top, so a tab switch never moves it; the tab row is
  *  a Nav stop (Left/Right, Q/E, LB/RB switch tabs), every row below one more. From pause, a full scrim covers the race */
@@ -473,6 +474,7 @@ export function SettingsScreen(game) {
         row('Commentators', toggle(S.commentaryOn, set('commentaryOn')), 'Enzo Moretti, Alastair Finch and Kavya Iyer'),
         row('Crowd', slider(S.crowd, {}, set('crowd'))),
         row('Music', slider(S.music, {}, set('music'))),
+        row('Radio', seg(STATIONS, S.radio, set('radio')), 'Soundtrack, a shuffled Classical station, or Off. Press N anywhere to switch.'),
       ],
       controls: () => [
         h('div.lhead.ctl-cols', {}, h('span', {}, 'Action'), h('span', {}, icon('keyboard'), 'Keyboard'), h('span', {}, icon('gamepad'), 'Pad')),
@@ -487,6 +489,7 @@ export function SettingsScreen(game) {
   const api = {
     el, nav: true,
     onShow(f) { from = f ?? 'menu'; el.classList.toggle('over-race', from === 'pause'); build(); nav.reset(0); },
+    refresh() { if (tab === 'audio') { const i = nav.i; build(); nav.reset(i); } },   // N changed the radio under an open Sound tab
     onKeyTab(d) { tab = TABS[(TABS.findIndex(([id]) => id === tab) + d + TABS.length) % TABS.length][0]; build(); nav.reset(0); },
     onSel(e) { if (e && e === [...body.querySelectorAll('[data-nav]')].at(-1)) { body.scrollTop = body.scrollHeight; fadeMore(body); } },   // the last row scrolls the body to its end, so the fade mask lets go
     back() { game.show(from); },

@@ -7,6 +7,7 @@ import './ui.css';
 import TEAMS from '../../../assets/teams/teams.json';
 import { store, ASSISTS, WEATHER, BLUR, fmtTime } from './store.js';
 import { GameAudio, Gearbox } from './audio.js';
+import { STATIONS } from './music.js';
 import { EV } from './ev.js';
 import { Session, MODES } from './session.js';
 import { InputDebug } from './input-debug.js';
@@ -178,7 +179,21 @@ export class Game {
       if (e.code === 'Escape') { if (!e.repeat) this.pause(); e.preventDefault(); }
       if (e.code === 'KeyC' && !e.repeat) this.cycleCamera();   // one view per press: key repeat would flicker through all five
     }
+    if (e.code === 'KeyN' && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey && !e.target?.closest?.('input, textarea, select, [contenteditable]')) this.cycleRadio();   // M is the race minimap
     if (['settings', 'garage', 'careerHub'].includes(this.screenName) && (e.code === 'KeyQ' || e.code === 'KeyE')) this.screens[this.screenName].onKeyTab(e.code === 'KeyQ' ? -1 : 1);
+  }
+
+  // ---------------------------------------------------------------------------------------------- radio
+  updateMusic() {   // a career round's report is its results screen
+    this.audio.music?.update(['results', 'careerReport'].includes(this.screenName) ? 'results' : !this.session ? 'menu' : 'race', this.screenName === 'pause', store.settings.radio);
+  }
+  /** N: Soundtrack -> Classical -> Off; the change starts now so the toast can name the piece */
+  cycleRadio() {
+    const i = STATIONS.findIndex(([id]) => id === store.settings.radio), [id, label] = STATIONS[(i + 1) % STATIONS.length];
+    store.set('radio', id); this.updateMusic();
+    const piece = this.audio.music?.now?.title;
+    this.setBusy(`Radio: ${label}${piece && id !== 'off' ? ' · ' + piece : ''}`, { ms: 3000 });
+    this.screen?.refresh?.();
   }
 
   // ---------------------------------------------------------------------------------------------- cameras
@@ -382,7 +397,7 @@ export class Game {
     this.nav.pad(dt);
     if (this.screenName === 'title' && navigator.getGamepads?.().some((g) => g?.buttons.some((b) => b.pressed))) this.screens.title.onKey();
     const s = this.session, F = this.field;
-    this.audio.music?.update(['results', 'careerReport'].includes(this.screenName) ? 'results' : !s ? 'menu' : 'race', this.screenName === 'pause');   // a career round's report is its results screen
+    this.updateMusic();
     if (!s) { if (this.state === 'menu' && this.ctx.params.mode === 'orbit') this.ctx.controls.update(); return; }
     // start button on the pad pauses
     const pad = navigator.getGamepads?.().find((g) => g?.connected);
