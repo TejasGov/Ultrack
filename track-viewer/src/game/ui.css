@@ -393,6 +393,29 @@ kbd .icon { font-size: var(--icon-s); }
 .pause:has(> .m-layer) > .sfoot { visibility: hidden; }   /* its "Esc Resume" is wrong while the modal is up: Esc cancels */
 @keyframes m-fade { from { opacity: 0; } }
 @keyframes m-rise { from { opacity: 0; transform: translateY(var(--slide)); } }
+/* ---------------------------------------------------------------- radio: the settings panel's frame, stretched to the footer so a station switch never resizes it */
+.row > .btn { justify-self: start; }   /* Settings -> Sound's Open radio: a button, not a full-width bar */
+.rd-panel { width: calc(720 * var(--u)); bottom: calc(var(--sp-5) + 56 * var(--u) + var(--sp-3)); gap: var(--sp-3); }
+.rd-station { flex: none; margin: 0 calc(-1 * var(--sp-3)); }
+.rd-station .row { border-bottom: 0; }
+.rd-now { flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--sp-3) var(--sp-2); padding: var(--sp-4); border-radius: var(--r-2); background: var(--c-fill-1); }
+.rd-now[hidden] { display: none; }
+.rd-np { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+.rd-np strong { font-size: var(--fs-value); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(.rd-np, .rd-row) small { font-size: var(--fs-body); letter-spacing: 0; text-transform: none; color: var(--c-ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rd-skip { width: calc(48 * var(--u)); padding: 0; }
+.rd-prog { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-4); }
+.rd-time { min-width: calc(96 * var(--u)); text-align: right; font-size: var(--fs-label); color: var(--c-ink-2); }
+.rd-list { flex: 1 1 auto; margin: 0 calc(-1 * var(--sp-3)); }
+.rd-row { --cols: var(--icon-m) minmax(0, 1fr) auto; width: 100%; padding-block: var(--sp-2); }
+.rd-row:last-child { border-bottom: 0; }
+.rd-row .c-name { flex-direction: column; align-items: flex-start; gap: 2px; }
+.rd-row .c-name b { max-width: 100%; }
+.rd-ic { font-size: var(--icon-m); color: var(--c-ink-4); }
+.rd-row.me :is(.rd-ic, b) { color: var(--c-accent); }   /* what plays now: "yours" is the accent */
+.rd-off { margin: var(--sp-4) var(--sp-3); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }
+.rd-note { flex: none; display: flex; gap: var(--sp-3); margin: 0; padding: var(--sp-3) var(--sp-4); border-radius: var(--r-2); background: var(--c-fill-1); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink-2); }
+.rd-note .icon { flex: none; margin-top: 2px; font-size: var(--icon-m); }
 /* the camera label never shows over a screen (pause, settings from pause, results); the HUD is a .screen too, and it shows over that */
 #ui:has(> .screen.on:not(.hud)) > #cam-label { visibility: hidden; }
 /* ---------------------------------------------------------------- garage: the list left, the car and team over a scrim, the detail panel right (tabs, a body that scrolls, the action bar) */
