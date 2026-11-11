@@ -6,7 +6,7 @@ import { rewardFor, costOf, CATS, MAX_LEVEL } from '../economy.js';
 import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
-  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, racing, fieldSize, teamsIn, carsIn, expIn, lcqGrid, seedsOf, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, parLap, aeroOf, repairBill,
+  TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, racing, fieldSize, teamsIn, carsIn, expIn, lcqGrid, seedsOf, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, teamForm, parLap, aeroOf, repairBill,
   buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor, playerRating,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, drivePower, driveLap, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
@@ -23,7 +23,7 @@ import {
 } from './offers.js';
 import { openWindow, windowInfo, windowWarnings, windowDay, TACTICS, tacticInfo, useTactic } from './transfers.js';
 
-export const SCHEMA = 14;
+export const SCHEMA = 15;
 export { rankingOf, playerRank };
 export { hire as hireStaff, hireInfo as staffInfo, discount as staffDiscount, tierNow as staffTier, STAFF, STAFF_LIST, ROLES as STAFF_ROLES };
 export { unreadStories, readStory, storyImage, latestBytes };
@@ -137,6 +137,11 @@ export function migrate(save) {
     for (const id of addTeams(save)) save.world.teams[id].div = 'challenger';
     save.schema = 14;
   }
+  if (save.schema === 14) {                                   // before random team development (2026-11-11): dev was [engine, tyres, brakes], Aero implied and no Nitro. A season under way spends its later windows
+    for (const id of TEAM_IDS) { const t = save.world.teams[id]; if (t.dev.length < 5) t.dev = [...t.dev.slice(0, 3), aeroOf(t.dev), 0]; t.dev = t.dev.map((v, i) => clamp(v, tierOf(id).dev[i], devCap(id))); }
+    save.world.devLog = []; save.world.devAt = [save.clock.season, save.season ? DEV_ROUNDS(save.season.calendar.length).filter((r) => r <= save.clock.round).length + 1 : 0];
+    save.schema = 15;
+  }
   for (const o of save.pending?.offers ?? []) if (o.counter === true) delete o.counter;     // saved while a flag on the team's counter-offer shared the field for their last terms
   for (const d of save.sponsors?.deals ?? []) d.mood = Math.min(d.mood, SPONSORS.startMood + 3);   // drift days raised goodwill with no cap: over it, the next gold would read as goodwill down
   return save;
@@ -240,6 +245,7 @@ function startSeason(save, available, displaced = null) {
   const divs = TEAM_IDS.every((t) => DIV.order.includes(save.world.teams[t].div)) ? Object.fromEntries(TEAM_IDS.map((t) => [t, save.world.teams[t].div])) : null;   // this season's series; a world without them (fewer teams) races one field
   save.season = { tier, world, calendar, weeks: buildWeeks(calendar, TIERS.teams[me.team].side ?? 'test'), results: [], current: null, mid: [], asked: {}, choices: {}, ...(divs ? { divs, div: divs[me.team] } : {}) };
   save.pending = null; save.clock.round = 0; save.clock.week = 0;
+  devWindow(save, 0);                                         // the winter: rule changes, then each team's first updates, by this season's expected places
   save.garage.package = (save.garage.package ?? 0) + (me.trust >= T.trust.package ? (me.status === 'number1' ? 2 : 1) : 0);   // the team's free level at the season start (5.4), on top of any not yet spent
   prepareRound(save);
   post(save, 'team', `Season ${save.clock.season} with ${teamName(me.team)}`, `${divs ? DIV[save.season.div].name : TIERS.tiers[tier].cup}, ${calendar.length} rounds, ${save.season.weeks.length} weeks. ${divs ? `${divText('start', save.season.div, { team: teamName(me.team) })} ` : ''}${save.garage.package ? `You have ${save.garage.package === 1 ? 'a free upgrade level' : `${save.garage.package} free upgrade levels`}: spend ${save.garage.package === 1 ? 'it' : 'them'} in the Garage.` : ''}`.trim(), save.garage.package ? { tab: 'garage' } : null);
@@ -431,8 +437,8 @@ const devOf = (save, key) => save.world.teams[CAR[key].team].dev;
 const myLevels = (save) => ({ ...stock(), ...save.garage.upgrades[save.contract.car] });
 export const teammateCar = (save) => seatCar(save.contract.team, otherSeat(save.contract.seat));
 
-/** a rival's pace this round: his rating, with seeded jitter */
-const aiPace = (save, key, tag = []) => paceOf(ratingOf(save, key), save.rules.difficulty) * (1 + T.pace.jitter * gauss(rng(save.seed, 'pace', save.clock.season, save.clock.round, key, ...tag)));
+/** a rival's pace this round: his rating and his team's form this weekend (rules.js teamForm, as his qualifying lap has it), with seeded jitter */
+const aiPace = (save, key, tag = []) => paceOf(ratingOf(save, key), save.rules.difficulty) * teamForm(save.seed, save.clock.season, save.clock.round, CAR[key].team) * (1 + T.pace.jitter * gauss(rng(save.seed, 'pace', save.clock.season, save.clock.round, key, ...tag)));
 
 /** who drives in qualifying: the player and, on track with him, the teammate at his race pace (an empty seat: the player alone) */
 export function qualiSetup(save) {
@@ -514,7 +520,7 @@ export function raceSetup(save) {
 }
 /** what every career race on track shares: the nemesis among the racers, each AI car's profile (6.6, driver.js), who drives each car and its upgrade levels */
 function fieldOf(save, racers) {
-  const hero = save.contract.car, lv = (dev) => ({ engine: dev[0], tyres: dev[1], brakes: dev[2], aero: aeroOf(dev), nitro: 0 });   // a rival has no Nitro bought (Hard mode fires the stock tank); every category is named, because setUpgrades keeps a level it is not told about
+  const hero = save.contract.car, lv = levelsOfDev;   // every category is named, because setUpgrades keeps a level it is not told about
   const nemesis = nemesisAmong(save, racers), mateKey = teammateCar(save), W = save.world, H = save.career.heat ?? {};
   const ai = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => { const code = W.seats[key];
     return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: composureOf(W.ratings[code], W.ages[code]),
@@ -660,6 +666,8 @@ export function finishRace(save, result) {
     if (report.midSeason.warning) post(save, 'warn', 'Seat review', `Team trust is ${me.trust}. Meet the round objective in the next ${T.trust.recover} rounds, or a low trust at the finale costs you the seat.`);
   }
   save.clock.week++;
+  const win = DEV_ROUNDS(n).indexOf(save.clock.round);
+  if (win >= 0 && save.clock.round < n) devWindow(save, win + 1);   // the teams bring updates a third and two thirds of the way in, before the next round is prepared
   if (save.clock.round < n) { prepareRound(save); enterWeek(save); } else endSeason(save);
   return report;
 }
@@ -802,8 +810,7 @@ function endSeason(save) {
 
 /** between seasons (6.8, 2.3): AI development, the driver market, expected finishes from the Teams' table. before: the seats before the player signed; moved: the driver they displaced and the seat they left */
 function nextSeasonWorld(save, before, moved) {
-  const W = save.world, h = save.history.at(-1), cat = (save.clock.season - 1) % 3, order = [1, 0, 2][cat], gone = W.retired.length;   // tyres, engine, brakes in turn
-  for (const id of TEAM_IDS) { const t = W.teams[id], cap = tierOf(id).cap; t.dev[order] = Math.min(cap, t.dev[order] + 1); }
+  const W = save.world, h = save.history.at(-1), gone = W.retired.length;
   const ev = marketMoves(save, moved);
   coverMoves(save, before, W.retired.slice(gone), ev);
   if (h) h.market = { sacked: ev.sacked.length, poached: ev.poached.length };
@@ -814,6 +821,60 @@ function nextSeasonWorld(save, before, moved) {
   for (const id of TEAM_IDS) delete W.teams[id].joined;
   save.clock.season++; save.clock.week = 0;
   for (const code of W.retired.slice(gone)) post(save, 'news', `${personOf(save, code)?.name ?? code} has retired`, 'A seat has opened in the market.');
+}
+
+// ---------------------------------------------------------------------------------------------- team development
+// Each AI team's car carries dev = [engine, tyres, brakes, aero, nitro], 0-3, which the race physics wears (fieldOf -> setUpgrades) and the lap model reads (parLap).
+// A season has three windows: the winter (window 0, as it starts, from season 2: the rule changes first, each level above the tier's floor lost with p = dev.decay of the tier) and after the rounds
+// a third and two thirds of the way in. A team spends a budget of points over them (its tier's, + its wealth by expected place in its tier, + a seeded roll); a point
+// picks a category (its focus weighted), and lands with dev.hit by the level it aims at, or is spent for nothing. Brakes are never picked: an AI driver brakes the same
+// at any Brakes level (measured, 2026-11-11). Levels stay between the tier's floor and its cap + aiCapPlus (an AI team may run a level the player's seat cannot buy).
+// Every roll is seeded by the season, the window and the team, so a reload replays it. world.devAt is the next window due; world.devLog the updates, this season and last.
+const D = T.dev, DEV_ROUNDS = (n) => [Math.floor(n / 3), Math.floor((2 * n) / 3)];
+const devCap = (id) => Math.min(MAX_LEVEL, tierOf(id).cap + D.aiCapPlus);
+/** a dev array as the physics' levels; a three-long one (an old save) wears the Aero it implies and no Nitro */
+export const levelsOfDev = (dev) => Object.fromEntries(CATS.map(([c], i) => [c, dev[i] ?? (i === 3 ? aeroOf(dev) : 0)]));
+/** a team's development points this season (the same at every window, so each window spends its share of it) */
+function devBudget(save, id) {
+  const W = save.world.teams, tier = TIERS.teams[id].tier, peers = TEAM_IDS.filter((t) => W[t] && TIERS.teams[t].tier === tier).sort((a, b) => W[a].expPos - W[b].expPos), at = peers.indexOf(id);
+  let x = rng(save.seed, 'dev-budget', save.clock.season, id)(), k = 0; while (k < D.rollP.length - 1 && (x -= D.rollP[k]) >= 0) k++;
+  return Math.max(1, D.budget[tier] + D.wealth[at === 0 ? 0 : at === peers.length - 1 ? 2 : 1] + D.roll[k]);
+}
+/** one development window (0 the winter, 1 and 2 mid-season): each team spends its share of the season's budget, the inbox lists the updates. A window already spent is skipped */
+export function devWindow(save, w) {
+  const W = save.world, s = save.clock.season, at = W.devAt ?? [0, 0];
+  if (at[0] > s || (at[0] === s && at[1] > w) || (w === 0 && s === 1)) return [];   // season 1 starts on the tiers' cars (its gates, the first offers, were set on them)
+  W.devAt = [s, w + 1]; W.devLog = (W.devLog ?? []).filter((x) => x.s >= s - 1);
+  const cum = (k) => D.split.slice(0, k).reduce((a, b) => a + b, 0), out = [];
+  for (const id of TEAM_IDS.filter((t) => W.teams[t])) {
+    const t = W.teams[id], floor = tierOf(id).dev, cap = devCap(id), r = rng(save.seed, 'dev', s, w, id), B = devBudget(save, id);
+    if (w === 0) t.dev.forEach((v, i) => { if (v > floor[i] && r() < D.decay[TIERS.teams[id].tier]) { t.dev[i]--; out.push({ s, w, team: id, cat: CATS[i][0], to: t.dev[i], lost: true }); } });
+    for (let n = Math.round(cum(w + 1) * B) - Math.round(cum(w) * B); n > 0; n--) {
+      const opts = CATS.map((_, i) => i).filter((i) => D.pick[i] && t.dev[i] < cap), wt = opts.map((i) => D.pick[i] * (CATS[i][0] === TIERS.teams[id].focus ? D.focusW : 1));
+      if (!opts.length) break;
+      let x = r() * wt.reduce((a, b) => a + b, 0), j = 0; while (j < opts.length - 1 && (x -= wt[j]) >= 0) j++;
+      const i = opts[j]; if (r() >= D.hit[t.dev[i]]) continue;   // dev.hit[level now]: the chance to reach the next one; a miss is spent
+      t.dev[i]++; out.push({ s, w, team: id, cat: CATS[i][0], to: t.dev[i] });
+    }
+  }
+  W.devLog.push(...out);
+  if (save.contract) devNews(save, w, out);
+  return out;
+}
+const catName = (c) => CATS.find(([k]) => k === c)[1];
+/** the window's updates in the inbox (read: it is the paddock's news), and an unread line from the team when a rival in the player's series passes his car in a category */
+function devNews(save, w, out) {
+  const by = Object.groupBy(out.filter((x) => !x.lost), (x) => x.team), lost = [...new Set(out.filter((x) => x.lost).map((x) => teamName(x.team)))], n = Object.keys(by).length;
+  const lines = Object.entries(by).map(([id, l]) => `${teamName(id)}: ${l.map((x) => `${catName(x.cat)} ${x.to}`).join(', ')}.`);
+  if (n || lost.length) post(save, 'news', `${w === 0 ? 'Winter development' : 'Mid-season updates'}: ${n} ${n === 1 ? 'team brings' : 'teams bring'} new parts`, [...lines, ...(lost.length ? [`The rule changes cost ${lost.join(', ')} some of their edge.`] : [])].join(' '), { tab: 'standings' });
+  const me = save.contract, mine = myLevels(save), dv = (t) => (w === 0 ? null : save.season?.divs?.[t]) ?? save.world.teams[t].div ?? 'all';   // the winter runs before the new season: next season's series
+  const ahead = out.filter((x) => !x.lost && x.team !== me.team && dv(x.team) === dv(me.team) && x.to === mine[x.cat] + 1);   // just passed the player's car
+  if (ahead.length) post(save, 'team', ahead.length === 1 ? `${teamName(ahead[0].team)} now have better ${catName(ahead[0].cat).toLowerCase()} than you` : `Rivals now have ${ahead.length} parts better than yours`, ahead.map((x) => `${teamName(x.team)}: ${catName(x.cat)} ${x.to}, yours ${mine[x.cat]}.`).join(' '), { tab: 'garage' });
+}
+/** a team's car as the Standings and Deals show it: its levels (the player's own car for his team) and its latest update, this season or last */
+export function teamCar(save, team) {
+  const own = save.contract?.team === team, last = (save.world.devLog ?? []).findLast((x) => x.team === team && !x.lost);
+  return { levels: own ? myLevels(save) : levelsOfDev(save.world.teams[team].dev), own, last: last ? { ...last, name: catName(last.cat) } : null };
 }
 
 // ---------------------------------------------------------------------------------------------- XP, upgrades

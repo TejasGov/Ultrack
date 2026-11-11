@@ -1,25 +1,25 @@
 {
   "version": 1,
-  "note": "Career tiers, seats and team data (track-viewer/docs/career-mode.md sections 2, 3, 5.5, 6.5). want: the season stat its wants text is judged by in interestOf (offers.js wantOf; norms in tuning.json offers.wantNorm). style: the principal's negotiating style (tuning.json window.styles: patience, the lever they give most on, how they answer each tactic; docs/career-mode.md 6.10). side: the team's favourite side event (4.2: sponsor = the Sponsor Challenge, a short race; test = Time Trial). Starting values, not measurements.",
+  "note": "Career tiers, seats and team data (track-viewer/docs/career-mode.md sections 2, 3, 5.5, 6.5). want: the season stat its wants text is judged by in interestOf (offers.js wantOf; norms in tuning.json offers.wantNorm). style: the principal's negotiating style (tuning.json window.styles: patience, the lever they give most on, how they answer each tactic; docs/career-mode.md 6.10). side: the team's favourite side event (4.2: sponsor = the Sponsor Challenge, a short race; test = Time Trial). dev: a tier's starting car levels [engine, tyres, brakes, aero, nitro], the floor its teams never fall below (career.js devWindow). focus: the category a team's development favours (tuning.json dev.focusW). Starting values, not measurements.",
   "tiers": {
-    "rookie": { "rank": 1, "name": "Rookies", "cup": "Rookie Cup", "world": 1, "cap": 1, "dev": [0, 0, 0], "xp": 1.0, "rep": 1.0, "prize": 0.4,
+    "rookie": { "rank": 1, "name": "Rookies", "cup": "Rookie Cup", "world": 1, "cap": 1, "dev": [0, 0, 0, 0, 0], "xp": 1.0, "rep": 1.0, "prize": 0.4,
                 "salary": { "B": 300, "A": 400 }, "sponsor": 1.0, "objective": [60, 30], "bonus": { "podium": 75, "win": 150, "cup": 600 } },
-    "maestro": { "rank": 2, "name": "Maestros", "cup": "Maestro Cup", "world": 2, "cap": 2, "dev": [1, 1, 1], "xp": 1.3, "rep": 0.8, "prize": 0.6,
+    "maestro": { "rank": 2, "name": "Maestros", "cup": "Maestro Cup", "world": 2, "cap": 2, "dev": [1, 1, 1, 1, 0], "xp": 1.3, "rep": 0.8, "prize": 0.6,
                  "salary": { "B": 450, "A": 650 }, "sponsor": 2.2, "objective": [120, 60], "bonus": { "podium": 150, "win": 300, "cup": 1200 } },
-    "legend": { "rank": 3, "name": "Legends", "cup": "Legend Cup", "world": 3, "cap": 3, "dev": [2, 2, 2], "xp": 1.6, "rep": 0.6, "prize": 1.0,
+    "legend": { "rank": 3, "name": "Legends", "cup": "Legend Cup", "world": 3, "cap": 3, "dev": [2, 2, 2, 2, 0], "xp": 1.6, "rep": 0.6, "prize": 1.0,
                 "salary": { "B": 800, "A": 1200, "N": 1800 }, "sponsor": 4.5, "objective": [240, 120], "bonus": { "podium": 300, "win": 600, "cup": 2400 } }
   },
   "teams": {
-    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 825, "rr": 7.15, "cl": 16 }, "wants": "titles", "want": "cups", "side": "sponsor", "style": "bidder" },
-    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 775, "rr": 7.05, "cl": 15 }, "wants": "wins and poles", "want": "poles", "side": "test", "style": "hardball" },
-    "norrsken": { "tier": "legend", "expPos": 3, "A": "jesko",             "B": "cc850",      "gate": { "rep": 725, "rr": 6.9, "cl": 14 }, "wants": "clean, exact racing", "want": "clean", "side": "test", "style": "warm" },
-    "toro":    { "tier": "maestro", "expPos": 4, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.4, "cl": 7 }, "wants": "overtakes and giant-killing", "want": "gained", "side": "sponsor", "style": "hardball" },
-    "sarab":   { "tier": "maestro", "expPos": 5, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "loyalty", "want": "seasonsHere", "side": "test", "style": "warm" },
-    "corvid":  { "tier": "maestro", "expPos": 6, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "clean races", "want": "clean", "side": "test", "style": "frugal" },
-    "steelhead": { "tier": "maestro", "expPos": 7, "A": "zr1",               "B": "stingray",   "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "fast laps and front rows", "want": "poles", "side": "sponsor", "style": "bidder" },
-    "hayate":  { "tier": "rookie",  "expPos": 8, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "want": "duel", "side": "sponsor", "style": "bidder" },
-    "mojave":  { "tier": "rookie",  "expPos": 9, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "want": "rrTrend", "side": "test", "style": "frugal" },
-    "liberty": { "tier": "rookie",  "expPos": 10, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "want": "fromBehind", "side": "sponsor", "style": "warm" }
+    "aurum":   { "tier": "legend",  "expPos": 1, "A": "destrier",          "B": "buggati",    "gate": { "rep": 825, "rr": 7.15, "cl": 16 }, "wants": "titles", "want": "cups", "side": "sponsor", "style": "bidder", "focus": "engine" },
+    "saetta":  { "tier": "legend",  "expPos": 2, "A": "laferrari",         "B": "furari-488", "gate": { "rep": 775, "rr": 7.05, "cl": 15 }, "wants": "wins and poles", "want": "poles", "side": "test", "style": "hardball", "focus": "engine" },
+    "norrsken": { "tier": "legend", "expPos": 3, "A": "jesko",             "B": "cc850",      "gate": { "rep": 725, "rr": 6.9, "cl": 14 }, "wants": "clean, exact racing", "want": "clean", "side": "test", "style": "warm", "focus": "aero" },
+    "toro":    { "tier": "maestro", "expPos": 4, "A": "av12",              "B": "huracan",    "gate": { "rep": 230, "rr": 6.4, "cl": 7 }, "wants": "overtakes and giant-killing", "want": "gained", "side": "sponsor", "style": "hardball", "focus": "aero" },
+    "sarab":   { "tier": "maestro", "expPos": 5, "A": "porsche1",          "B": "mp1x",       "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "loyalty", "want": "seasonsHere", "side": "test", "style": "warm", "focus": "tyres" },
+    "corvid":  { "tier": "maestro", "expPos": 6, "A": "aston-martin-valk", "B": "bentley-gt", "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "clean races", "want": "clean", "side": "test", "style": "frugal", "focus": "tyres" },
+    "steelhead": { "tier": "maestro", "expPos": 7, "A": "zr1",               "B": "stingray",   "gate": { "rep": 200, "rr": 6.3, "cl": 6 }, "wants": "fast laps and front rows", "want": "poles", "side": "sponsor", "style": "bidder", "focus": "engine" },
+    "hayate":  { "tier": "rookie",  "expPos": 8, "A": "supra",             "B": "nissan-z",   "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "qualifying precision", "want": "duel", "side": "sponsor", "style": "bidder", "focus": "tyres" },
+    "mojave":  { "tier": "rookie",  "expPos": 9, "A": "jaguarxkjss",       "B": "bmw1",       "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "improvement", "want": "rrTrend", "side": "test", "style": "frugal", "focus": "engine" },
+    "liberty": { "tier": "rookie",  "expPos": 10, "A": "blackbird",         "B": "ford-gt",    "gate": { "rep": 0, "rr": 0, "cl": 1 }, "wants": "grit", "want": "fromBehind", "side": "sponsor", "style": "warm", "focus": "nitro" }
   },
   "carZ": {
     "destrier": 0.69, "buggati": 0.66, "laferrari": 0.50, "furari-488": 0.24, "av12": 0.19, "huracan": 0.09, "porsche1": 0.37, "mp1x": 0.18,
