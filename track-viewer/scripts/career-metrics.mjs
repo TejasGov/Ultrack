@@ -139,6 +139,16 @@ try {
     console.log(`  info  win rate by season, all rounds: ${Array.from({ length: S }, (_, k) => `S${k + 1} ${pct(rate(() => true, k + 1, k + 1).w)}`).join(', ')}; Tour rounds: ${Array.from({ length: S }, (_, k) => `S${k + 1} ${pct(rate((x) => x.kind === 'tour', k + 1, k + 1).w)}`).join(', ')}`);
     if (label === 'strong' && S >= 6) { check('Tour win rate in seasons 4-6, at most (base with Nitro modelled 90 %)', rate((x) => x.kind === 'tour', 4, 6).w, 0, 0.6, pct); check('podium rate in seasons 5-6, every round, at most (base 97 %)', rate(() => true, 5, 6).p, 0, 0.94, pct); }
     if (label === 'average' && S >= 6) check('Tour win rate in seasons 3-6 (base with Nitro modelled 15 %)', rate((x) => x.kind === 'tour', 3, 6).w, 0.03, 0.15, pct);
+    // the design asked 30-42 % for the strong driver in seasons 4-6. Every tuning tried (budgets, decay, form, wealth; 2026-11-11) moved it with 'titles a career': 45 % gave 1.38 titles,
+    // 48-49 % 1.50-1.60, 35 % 1.13, so the titles floor of 1.7 holds it near 50 %. It waits on the user
+    if (label === 'strong' && S >= 6) openCheck('Tour win rate in seasons 4-6 (design target; the titles floor holds it near 50 %)', rate((x) => x.kind === 'tour', 4, 6).w, 0.3, 0.42, pct);
+    // who wins (the user's "some randomness to top contenders"): a season's distinct winners of the Tour rounds in the player's series (the player one of them), and the Teams' champion
+    // against the team expected first. The base with the player's Nitro counted: strong 2.04 / 2.01 winners a season, the average driver's champion the favourite in 71 % / 68 %
+    const winners = L.flatMap((g) => Object.values(Object.groupBy(g.rounds.filter((x) => x.kind === 'tour' && x.win), (x) => x.s)).map((l) => new Set(l.map((x) => x.win)).size));
+    const ends = L.flatMap((g) => g.seasons.filter((x) => x.champ)), favShare = ends.filter((x) => x.champ === x.fav).length / Math.max(1, ends.length);
+    console.log(`  info  Tour winners a season (player's series): mean ${mean(winners).toFixed(2)}, median ${median(winners)}; Teams' champion = the favourite ${pct(favShare)}, among the AI teams ${pct(ends.filter((x) => x.aiChamp === x.aiFav).length / Math.max(1, ends.length))} (${ends.length} seasons)`);
+    if (label === 'strong') { check('Tour winners a season, mean, at least (base with Nitro modelled 2.04)', mean(winners), 2.2, Infinity); openCheck('Tour winners a season, median (design target)', median(winners), 3, Infinity, (x) => String(x)); }
+    if (label === 'average') { check("Teams' champion the team expected first, at most (base with Nitro modelled 71 %)", favShare, 0, 0.66, pct); openCheck("Teams' champion the team expected first (design target)", favShare, 0, 0.6, pct); }
     if (label === 'average') { const fl = any((l) => l.tier.at(-1) === 'legend'); check('final tier Legend, at most', fl, 0, 0.22, pct); openCheck('final tier Legend (D6)', fl, 0.14, 0.22, pct);
       // a review finding (the tenth team): an average driver who held a Maestro Elite seat drops back to a Rookie B seat more often (base 4b70646: 22 % / 13 % on seeds 1000 / 3000)
       const fr = any((l) => l.tier.at(-1) === 'rookie'); check('final tier Rookie, at most', fr, 0, 0.4, pct); openCheck('final tier Rookie (D8, D11: a Maestro Elite seat back to a Rookie one)', fr, 0, 0.25, pct); }   // 14 % on base f33630d; a third Legend team adds a third more Legend seats
@@ -207,6 +217,9 @@ try {
   const differ = (k) => tierSeasons.filter((v) => Math.max(...v) - Math.min(...v) >= k).length / Math.max(1, tierSeasons.length);
   check(`tiers whose teams are on different cars, seasons 3+ (${tierSeasons.length} tier-seasons; base 0 %)`, differ(1), 0.5, 1, pct);
   check('tiers whose teams differ by two levels or more, seasons 3+ (base 0 %)', differ(2), 0.25, 1, pct);
+  // the top AI team is not always the favourite: the best AI team of the player's series' Teams' table the AI team expected first (base with Nitro modelled 73 % pooled, 75 % before the review's retune)
+  const tops = ALL.logs.flatMap((l) => l.seasons.filter((x) => x.aiChamp));
+  check(`the best AI team the AI favourite, of seasons (${tops.length}), at most`, tops.filter((x) => x.aiChamp === x.aiFav).length / Math.max(1, tops.length), 0, 0.72, pct);
   // D4, measured on purpose: the average driver in the B seat of a promoted Rookie team for its first Elite season (Liberty or Hayate forced up, Sarab down)
   for (const team of ['liberty', 'hayate']) {
     const F = Array.from({ length: N }, (_, i) => play(M, 7000 + i, 0.995, 1, 'sprint', { first: team, before: (s) => { s.world.teams[team].div = 'elite'; s.world.teams.sarab.div = 'challenger'; } }).log);

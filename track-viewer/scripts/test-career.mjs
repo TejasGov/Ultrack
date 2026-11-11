@@ -907,7 +907,7 @@ try {
     const a = signed(5301), b = signed(5301), n = a.season.calendar.length, at = [];
     while (a.clock.phase !== 'review') { const before = devs(a); round(a, 4); round(b, 4); if (devs(a) !== before) at.push(a.clock.round); }
     assert.equal(devs(a), devs(b), 'seeded: the same career develops the same cars'); assert.ok(at.every((r) => [Math.floor(n / 3), Math.floor((2 * n) / 3)].includes(r)), `updates only after rounds ${Math.floor(n / 3)} and ${Math.floor((2 * n) / 3)} (seen ${at})`);
-    { const was = devs(a); assert.deepEqual(C.devWindow(a, 0), [], 'a window already spent is skipped'); assert.deepEqual(C.devWindow(a, 2), []); assert.equal(devs(a), was); }
+    { const was = devs(a); assert.ok(at.length && at.every((r) => r === Math.floor((2 * n) / 3)), 'season 1 develops only after two thirds of it'); assert.deepEqual(C.devWindow(a, 0), [], 'a window already spent is skipped'); assert.deepEqual(C.devWindow(a, 2), []); assert.equal(devs(a), was); }
     assert.ok(R.TEAM_IDS.every((t) => JSON.stringify(signed(5301).world.teams[t].dev) === JSON.stringify(floor(t))), 'season 1 starts on the tier cars');
     assert.ok(a.inbox.some((m) => /^Mid-season updates/.test(m.title) && m.read && m.action?.tab === 'standings'), 'the updates are the paddock\'s news');
     // many seasons: inside the bounds, Brakes at the floor, and teams of one tier on different cars
@@ -920,7 +920,7 @@ try {
     assert.ok(spread / n2 > 0.4, `teams of a tier differ by two levels or more: ${spread} of ${n2} tier-seasons`);
     // the car on screen, and a rival passing the player's car is the team's news
     const c = signed(5302); c.world.teams.liberty.dev = [0, 0, 0, 0, 0]; assert.deepEqual(C.teamCar(c, c.contract.team).own, true); assert.deepEqual(C.teamCar(c, 'liberty').levels, { engine: 0, tyres: 0, brakes: 0, aero: 0, nitro: 0 });
-    c.world.devAt = [1, 1]; let posted = false; for (let seed = 1; seed < 40 && !posted; seed++) { c.seed = seed; c.world.devAt = [1, 1]; const n0 = c.inbox.length, out = C.devWindow(c, 1); posted = c.inbox.slice(0, c.inbox.length - n0).some((m) => m.kind === 'team' && /better .* than you|better than yours/.test(m.title)) && out.length > 0; }
+    c.clock.season = 2; let posted = false; for (let seed = 1; seed < 40 && !posted; seed++) { c.seed = seed; c.world.devAt = [2, 1];   /* season 2: season 1 runs only its last window */ const n0 = c.inbox.length, out = C.devWindow(c, 1); posted = c.inbox.slice(0, c.inbox.length - n0).some((m) => m.kind === 'team' && /better .* than you|better than yours/.test(m.title)) && out.length > 0; }
     assert.ok(posted, 'a rival in the series passing the player\'s car leaves an unread line from the team');
     // schema 14 -> 15: [engine, tyres, brakes] become five levels (Aero implied, no Nitro), a season under way keeps the windows it has passed
     const o = signed(5303); round(o, 4); round(o, 4); round(o, 4); o.schema = 14; delete o.world.devLog; delete o.world.devAt; for (const t of R.TEAM_IDS) o.world.teams[t].dev = floor(t).slice(0, 3);

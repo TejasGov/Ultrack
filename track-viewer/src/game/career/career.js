@@ -160,7 +160,7 @@ function addTeams(save) {
   for (const id of added) {
     const pos = Math.min(TIERS.teams[id].expPos, Object.keys(W.teams).length + 1), peers = Object.keys(W.teams).filter((t) => TIERS.teams[t].tier === TIERS.teams[id].tier);
     for (const t of Object.values(W.teams)) if (t.expPos >= pos) t.expPos++;
-    W.teams[id] = { ...fresh.teams[id], expPos: pos, dev: fresh.teams[id].dev.map((d, i) => Math.max(d, ...peers.map((t) => W.teams[t].dev[i] ?? 0))), ...(save.season?.results?.length || save.season?.divs ? { joined: save.clock.season } : {}) };   // a divided season races on without it, from its first round too
+    W.teams[id] = { ...fresh.teams[id], expPos: pos, dev: fresh.teams[id].dev.map((d, i) => Math.max(d, ...peers.map((t) => W.teams[t].dev[i] ?? (i === 3 ? aeroOf(W.teams[t].dev) : 0)))), ...(save.season?.results?.length || save.season?.divs ? { joined: save.clock.season } : {}) };   // a divided season races on without it, from its first round too
     for (const key of ['A', 'B'].map((x) => seatCar(id, x))) {
       const code = CAR[key].driver.code;
       if (save.player.code === code) { save.player.code = codeOf(save.player.name); for (const r of save.season?.results ?? []) for (const e of r.entries) if (e.you) e.code = save.player.code; }
@@ -826,7 +826,8 @@ function nextSeasonWorld(save, before, moved) {
 // ---------------------------------------------------------------------------------------------- team development
 // Each AI team's car carries dev = [engine, tyres, brakes, aero, nitro], 0-3, which the race physics wears (fieldOf -> setUpgrades) and the lap model reads (parLap).
 // A season has three windows: the winter (window 0, as it starts, from season 2: the rule changes first, each level above the tier's floor lost with p = dev.decay of the tier) and after the rounds
-// a third and two thirds of the way in. A team spends a budget of points over them (its tier's, + its wealth by expected place in its tier, + a seeded roll); a point
+// a third and two thirds of the way in (season 1: only the last). A team spends a budget of points over them (its tier's, + dev.wealth by expected place in its tier, 0 since the
+// review: a bonus to the favourite kept the favourite on top in 80 % of seasons, + a seeded roll of -2 / 0 / +2); a point
 // picks a category (its focus weighted), and lands with dev.hit by the level it aims at, or is spent for nothing. Brakes are never picked: an AI driver brakes the same
 // at any Brakes level (measured, 2026-11-11). Levels stay between the tier's floor and its cap + aiCapPlus (an AI team may run a level the player's seat cannot buy).
 // Every roll is seeded by the season, the window and the team, so a reload replays it. world.devAt is the next window due; world.devLog the updates, this season and last.
@@ -843,7 +844,7 @@ function devBudget(save, id) {
 /** one development window (0 the winter, 1 and 2 mid-season): each team spends its share of the season's budget, the inbox lists the updates. A window already spent is skipped */
 export function devWindow(save, w) {
   const W = save.world, s = save.clock.season, at = W.devAt ?? [0, 0];
-  if (at[0] > s || (at[0] === s && at[1] > w) || (w === 0 && s === 1)) return [];   // season 1 starts on the tiers' cars (its gates, the first offers, were set on them)
+  if (at[0] > s || (at[0] === s && at[1] > w) || (w < 2 && s === 1)) return [];   // season 1 starts on the tiers' cars and develops only after two thirds of it (its gates, the first offers, were set on them; with the window at a third too the average driver's Maestro offer fell to 84-89 %)
   W.devAt = [s, w + 1]; W.devLog = (W.devLog ?? []).filter((x) => x.s >= s - 1);
   const cum = (k) => D.split.slice(0, k).reduce((a, b) => a + b, 0), out = [];
   for (const id of TEAM_IDS.filter((t) => W.teams[t])) {

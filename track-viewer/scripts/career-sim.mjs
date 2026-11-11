@@ -17,6 +17,9 @@ export const PICKS = { elite: pickBy((o) => o.div === 'elite'), base: pickBy(() 
 const best = PICKS.elite;
 /** the player's upgrade levels as parLap reads them, all five (Nitro included: the AI teams develop theirs too) */
 const lv = (u) => CATS.map(([c]) => u[c] ?? 0);
+/** the Teams' table of the player's series at a season end: its champion, the team expected first (expPos), and the same two among the AI teams alone */
+const teamsTable = (order, mine, W) => { const fav = (l) => [...l].sort((a, b) => W.teams[a].expPos - W.teams[b].expPos)[0], ai = order.filter((t) => t !== mine);
+  return { champ: order[0], fav: fav(order), aiChamp: ai[0], aiFav: fav(ai) }; };
 
 /** one career for `seasons` seasons; skill is the player's pace (1.00 = an AI of rating ~88) */
 export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', { life = false, passAll = false, pick = best, first = null, before = null } = {}) {
@@ -99,6 +102,7 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (o?.kind === 'masters') { if (!rep.dnq) log.masters++; else log.absent++; }
       // the two series: every round with its series, and at a cup how many Challenger drivers raced its Final
       log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, dnf: !!rep.dnf, lcq: !!rep.lcq, tier: save.season.tier, seat: save.contract.seat, team: save.contract.team,
+        win: rep.entries?.[0] ? (rep.entries[0].you ? 'YOU' : rep.entries[0].team) : null,   // the winner of the round the player raced or missed: his team's other car counts as that team
         ch: rep.kind === 'open' || rep.kind === 'masters' ? rep.entries.filter((e) => !e.dnq && e.div === 'challenger').length : null });
       log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);
       if (rep.midSeason?.warning) log.warnings++;
@@ -114,7 +118,8 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       log.seasons.push({ s: season, div: save.season.div ?? 'all', tier: save.season.tier, dropped: !!save.pending.review.dropped, swap: h.swap ?? null, yourTeam: save.pending.review.yourTeam ?? null,
         sizes: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, R.TEAM_IDS.filter((t) => W.teams[t].div === d).length])),
         rating: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, seated(d).reduce((a, b) => a + b, 0) / Math.max(1, seated(d).length)])),
-        dev: Object.fromEntries(R.TEAM_IDS.map((t) => [t, [...W.teams[t].dev]])) });   // the cars at the season end (career.js devWindow)
+        dev: Object.fromEntries(R.TEAM_IDS.map((t) => [t, [...W.teams[t].dev]])),   // the cars at the season end (career.js devWindow)
+        ...teamsTable(C.standings(save).teams.map((t) => t.team), save.contract.team, W) });
       if (save.pending.review.dropped) log.drops++;
       if (offers.some((o) => o.tier === 'maestro') && log.maestroOffer === null) log.maestroOffer = season;
       if (offers.some((o) => o.tier === 'legend') && log.legendOffer === null) log.legendOffer = season;
