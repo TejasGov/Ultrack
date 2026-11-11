@@ -133,6 +133,12 @@ try {
       check('titles a career', mean(L.map((l) => l.titles)), 1.7, 2.5);
       // a Legend title opens Number One; with the cups out of the series tables (D1) the strong driver takes fewer (base 2.27 a career), and Number One sits on the floor: it waits on D1
       openCheck('Number One (D1: the cups score no series points)', any((l) => l.numberOne !== null), 0.55, 0.65, pct); const ow = mean(L.map((l) => l.openWins)); check('Open wins a career, at least', ow, 5.5, Infinity); openCheck('Open wins a career (D1, D8: the Elite top 2 seeded into every Final)', ow, 5.5, 8.5); }
+    // the late career (the user's report, 2026-11-11: "after a point it becomes too easy to start winning races, especially after car upgrades"). The base, with the player's Nitro in the
+    // lap model and none on the AI cars (as the race had it), gave the strong driver 90 % of the Tour rounds in seasons 4-6 and 97 % podiums in 5-6, the average driver 15 % in 3-6
+    const won = (x) => !x.dnq && !x.dnf && x.finish === 1, rate = (f, lo, hi) => { const l = L.flatMap((g) => g.rounds.filter((x) => x.s >= lo && x.s <= hi && f(x))); return { n: l.length, w: l.filter(won).length / Math.max(1, l.length), p: l.filter((x) => !x.dnq && !x.dnf && x.finish <= 3).length / Math.max(1, l.length) }; };
+    console.log(`  info  win rate by season, all rounds: ${Array.from({ length: S }, (_, k) => `S${k + 1} ${pct(rate(() => true, k + 1, k + 1).w)}`).join(', ')}; Tour rounds: ${Array.from({ length: S }, (_, k) => `S${k + 1} ${pct(rate((x) => x.kind === 'tour', k + 1, k + 1).w)}`).join(', ')}`);
+    if (label === 'strong' && S >= 6) { check('Tour win rate in seasons 4-6, at most (base with Nitro modelled 90 %)', rate((x) => x.kind === 'tour', 4, 6).w, 0, 0.6, pct); check('podium rate in seasons 5-6, every round, at most (base 97 %)', rate(() => true, 5, 6).p, 0, 0.94, pct); }
+    if (label === 'average' && S >= 6) check('Tour win rate in seasons 3-6 (base with Nitro modelled 15 %)', rate((x) => x.kind === 'tour', 3, 6).w, 0.03, 0.15, pct);
     if (label === 'average') { const fl = any((l) => l.tier.at(-1) === 'legend'); check('final tier Legend, at most', fl, 0, 0.22, pct); openCheck('final tier Legend (D6)', fl, 0.14, 0.22, pct);
       // a review finding (the tenth team): an average driver who held a Maestro Elite seat drops back to a Rookie B seat more often (base 4b70646: 22 % / 13 % on seeds 1000 / 3000)
       const fr = any((l) => l.tier.at(-1) === 'rookie'); check('final tier Rookie, at most', fr, 0, 0.4, pct); openCheck('final tier Rookie (D8, D11: a Maestro Elite seat back to a Rookie one)', fr, 0, 0.25, pct); }   // 14 % on base f33630d; a third Legend team adds a third more Legend seats
@@ -196,6 +202,11 @@ try {
   check(`Masters with 8 seeds, at least 3 of them Challenger (${M8.length})`, M8.filter((x) => x.seeds === 8 && x.chSeeds >= Math.min(3, x.chSeated)).length / Math.max(1, M8.length), 1, 1, pct);
   check(`Opens with 4 seeds and a Last Chance of 8 holding at least 2 Challenger cars (${O4.length})`, O4.filter((x) => x.seeds === 4 && x.lcq === 8 && x.chLcq >= 2).length / Math.max(1, O4.length), 1, 1, pct);
   check('a Legend team relegated, of season ends', ends.filter((x) => R.TIERS.teams[x.swap.down].tier === 'legend').length / Math.max(1, ends.length), 0, 0.05, pct);
+  // team development (career.js devWindow): teams of one tier on different cars from season 3, where the base gave every team of a tier the same levels
+  const tierSeasons = ALL.logs.flatMap((l) => l.seasons.filter((x) => x.s >= 3 && x.dev).flatMap((x) => Object.values(Object.groupBy(R.TEAM_IDS, (t) => R.TIERS.teams[t].tier)).map((ts) => ts.map((t) => x.dev[t].reduce((a, b) => a + b, 0)))));
+  const differ = (k) => tierSeasons.filter((v) => Math.max(...v) - Math.min(...v) >= k).length / Math.max(1, tierSeasons.length);
+  check(`tiers whose teams are on different cars, seasons 3+ (${tierSeasons.length} tier-seasons; base 0 %)`, differ(1), 0.5, 1, pct);
+  check('tiers whose teams differ by two levels or more, seasons 3+ (base 0 %)', differ(2), 0.25, 1, pct);
   // D4, measured on purpose: the average driver in the B seat of a promoted Rookie team for its first Elite season (Liberty or Hayate forced up, Sarab down)
   for (const team of ['liberty', 'hayate']) {
     const F = Array.from({ length: N }, (_, i) => play(M, 7000 + i, 0.995, 1, 'sprint', { first: team, before: (s) => { s.world.teams[team].div = 'elite'; s.world.teams.sarab.div = 'challenger'; } }).log);
