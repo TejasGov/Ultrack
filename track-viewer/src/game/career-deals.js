@@ -6,7 +6,7 @@ import { icon } from './icons.js';
 import * as C from './career/career.js';
 import { TUNING, TIERS, CAR, STATUS_LABEL, TEAM_IDS, DIV, loreOf, targetText, expIn, teamsIn, nextDivOf } from './career/rules.js';
 import MEDIA from '../../../assets/career/media.json';
-import { frame, statusBar, coins, money, rich, teamName, persist, available, prompts, CHOOSE, blockHead, brandMark, divChip } from './career-shell.js';
+import { frame, statusBar, coins, money, rich, teamName, persist, available, prompts, CHOOSE, blockHead, brandMark, divChip, carPips } from './career-shell.js';
 
 const round5 = (v) => Math.round(v / 5) * 5, round50 = (v) => Math.round(v / 50) * 50;
 const seasons = (n) => `${n} ${n === 1 ? 'season' : 'seasons'}`;
@@ -42,7 +42,7 @@ export function teamRows(save, game, rebuild) {
       if (!v.canAsk) return game.setBusy(`${teamName(v.team)}: ${v.blocked}.`, { kind: 'error', ms: 4000 });
       const r = C.approach(save, v.team); persist(game); game.setBusy(r.result === 'offer' ? `${teamName(v.team)} will talk. Their offer is on the table.` : `${teamName(v.team)}: ${r.why}`, r.result === 'offer' ? {} : { kind: 'error', ms: 4000 }); rebuild();
       const at = getNav().items().findIndex((e) => e.dataset.team === v.team); if (at >= 0) getNav().reset(at);   // a new offer row moved everything down
-    } }, h('i.cx-tbar'), h('span.c-name', {}, h('b', {}, teamName(v.team)), h('small', {}, divChip(nextDivOf(save, v.team)), ' ', TIERS.tiers[v.tier].name)), css(h('span.cx-gauge', {}, h('i')), { '--p': v.progress }),
+    } }, h('i.cx-tbar'), h('span.c-name', {}, h('b', {}, teamName(v.team)), h('small', {}, divChip(nextDivOf(save, v.team)), ' ', TIERS.tiers[v.tier].name), carPips(C.teamCar(save, v.team))), css(h('span.cx-gauge', {}, h('i')), { '--p': v.progress }),
       h('small.why', {}, v.step ? `${v.step} · ${v.why}` : v.why), h('span.cx-tag' + (v.canAsk ? '.talk' : ''), {}, v.canAsk ? 'Approach' : v.blocked)), { '--team': teamMark(loreOf(v.team)) }));
 }
 

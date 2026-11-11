@@ -87,6 +87,11 @@ export const tierCup = (save) => TIERS.tiers[save.season.tier].cup;
 /** the header's second line: the player's series with two of them, else the tier Cup of a season from before the split */
 export const seriesLine = (save) => `${save.season?.div ? DIV[save.season.div].name : tierCup(save)} · ${worldName(save)}`;
 /** a series as a chip: its name on its colour, so it never rests on colour alone; nothing for a season from before the split */
+/** a team's car on one line: Engine Tyres Brakes Aero Nitro, each with its level 0-3 (C.teamCar), and its latest update; the Standings' and the Deals' team rows */
+export function carPips(car) {
+  return h('span.cx-car', { title: CATS.map(([c, l]) => `${l} ${car.levels[c]}`).join(', ') + (car.own ? ' (your car)' : '') }, CATS.map(([c, l]) => h(`span.pip.l${car.levels[c]}`, {}, `${l[0]}${car.levels[c]}`)),
+    car.last && !car.own ? h('span.new', {}, `+${car.last.name} ${car.last.to}`) : null);
+}
 export const divChip = (d) => (DIV[d] && d !== 'order' ? h(`span.cx-div.d-${d}`, {}, DIV[d].short) : null);
 /** a sponsor's logo on its own colour; the brand's name if the file is not there */
 export function brandMark(id) {
