@@ -169,7 +169,11 @@ export class Vehicle {
     const want = THREE.MathUtils.clamp(THREE.MathUtils.lerp(steerNormal, steerDrift, st.drift), -0.6, 0.6);
     st.steer += (want - st.steer) * (1 - Math.exp(-(spec.arcade?.steeringResponse ?? 35) * h));   // the rack tracks the already-smoothed input (driving.json 14-20 would be a second lag)
     // ---- nitro: drains while held, refills slowly and fast while drifting
-    st.nitroOn = ctl.nitro > 0.5 && st.nitroTank > 0.02 && pedals.drive > 0.3;
+    // a burst needs a tenth of a tank to light and burns down to empty; run dry with the key held and it stays out until the key is let go
+    // (without the latch a held key relit it every few frames on the trickle refill: thousands of camera kicks, flames and bursts a minute)
+    const wantNitro = ctl.nitro > 0.5; if (!wantNitro) st.nitroDry = false;
+    st.nitroOn = wantNitro && !st.nitroDry && pedals.drive > 0.3 && st.nitroTank > (st.nitroOn ? 0.02 : 0.1);
+    if (wantNitro && st.nitroTank <= 0.02) st.nitroDry = true;
     st.nitroTank = THREE.MathUtils.clamp(st.nitroTank + h * (st.nitroOn ? -0.22 / (spec.nitroTank ?? 1) : (0.015 + 0.25 * st.drift * Math.min(1, speed / 30)) * (spec.nitroRefill ?? 1)), 0, 1);
     const power = spec.power * (st.nitroOn ? 1.45 : 1);
     const reverse = pedals.drive < 0;
@@ -409,7 +413,7 @@ export class Vehicle {
 
   resetControls() {
     Object.assign(this.controls,{throttle:0,brake:0,steer:0,handbrake:0,nitro:0,reset:false,hold:false});
-    Object.assign(this.state,{hit:0,vPrev:null,tcsActive:0,absActive:0,escActive:0,shift:0,shiftSlow:0,hbT:0,steer:0,steerInput:0,drive:0,driveDirection:0,driveInput:0,serviceBrake:0,reverse:false,stopTime:0,drift:0,driftHold:0,driftDir:0,prevBrake:0,beta:0,betaPrev:0,yawErr:0,target:0,upsideDown:0,nitroOn:false});
+    Object.assign(this.state,{hit:0,vPrev:null,tcsActive:0,absActive:0,escActive:0,shift:0,shiftSlow:0,hbT:0,steer:0,steerInput:0,drive:0,driveDirection:0,driveInput:0,serviceBrake:0,reverse:false,stopTime:0,drift:0,driftHold:0,driftDir:0,prevBrake:0,beta:0,betaPrev:0,yawErr:0,target:0,upsideDown:0,nitroOn:false,nitroDry:false});
   }
 
   /** put the car back on the track: position, heading, standing still */

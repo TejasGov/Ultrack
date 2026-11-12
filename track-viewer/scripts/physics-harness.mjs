@@ -212,6 +212,14 @@ if (tests.includes('upgrades')) {                                   // the upgra
     H.setUpgrades(k, { engine: 0, tyres: 0, brakes: 0 });
   }
 }
+if (tests.includes('nitro')) {                                     // a key held past an empty tank: one burst, then out until it is let go
+  const v = mk('av12', [-11000, 0, 0]); settle(v); let lit = 0, was = false;
+  for (let t = 0; t < 40; t += STEP) { Object.assign(v.controls, { throttle: 1, brake: 0, steer: -v.rb.rotation().y * 2, nitro: 1 }); step(v, ASSIST.rookie); if (v.state.nitroOn && !was) lit++; was = v.state.nitroOn; }
+  if (lit !== 1) throw new Error(`nitro relit ${lit} times on one held key`);
+  v.controls.nitro = 0; step(v, ASSIST.rookie); for (let t = 0; t < 8; t += STEP) step(v, ASSIST.rookie);   // let go, refill past a tenth
+  v.controls.nitro = 1; step(v, ASSIST.rookie); if (!v.state.nitroOn) throw new Error('nitro did not relight after the key was let go');
+  drop(v); console.log('nitro: one burst per press, relights after a release');
+}
 if (tests.includes('table')) {
   const SP = JSON.parse(readFileSync(join(repo, 'assets/cars/specs.json'), 'utf8')).cars; W.setWeather(WET.dry);
   console.log('car                 | 0-100 sim/real | top km/h sim/real | 100-0 m sim/real');
