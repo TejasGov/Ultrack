@@ -85,7 +85,9 @@ export class Nitro {
     if (c._noz) return c._noz;
     const list = (c.nitro ?? []).slice().sort((a, b) => a.position.z - b.position.z);
     const mk = (a, off = 0) => ({ a, off, side: Math.sign(off || a.position.z) || 1, rib: -1, wMax: 0.7 });
-    const out = list.length >= 2 ? [mk(list[0]), mk(list[list.length - 1])] : list.length ? [mk(list[0], -0.14), mk(list[0], 0.14)] : [];
+    // stacked pipes (the Destrier's two pairs, one above the other): the top pipe on each side, never the top of one and the bottom of the other, which lit one side from below its pipe
+    const edge = (z) => list.filter((n) => Math.abs(n.position.z - z) < 0.02).sort((p, q) => q.position.y - p.position.y)[0];
+    const out = list.length >= 2 ? [mk(edge(list[0].position.z)), mk(edge(list[list.length - 1].position.z))] : list.length ? [mk(list[0], -0.14), mk(list[0], 0.14)] : [];
     if (out.length === 2) { const sp = Math.abs(out[0].a.position.z + out[0].off - out[1].a.position.z - out[1].off); out[0].wMax = out[1].wMax = clamp(0.6 + 0.5 * sp, 0.68, 1.05); }
     return (c._noz = out);
   }
