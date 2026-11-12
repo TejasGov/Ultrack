@@ -139,7 +139,7 @@ try {
   assert.ok(R.buildCalendar(5, 1, 1, { ...avail, india: [] }).every((r) => r.look), 'an empty `times` list offers every look');
 
   // ---- race lengths: chosen in minutes, laps per circuit, the default is the short one, nobody is forced into 8 laps
-  assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('drylake', l)), [3, 5, 8]); assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('marina', l)), [2, 2, 3]);
+  assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('drylake', l)), [3, 6, 8]);   // par 41.4 s since the racing line, race lengths x.95 (was 45.3: 3, 5, 8) assert.deepEqual(['sprint', 'standard', 'full'].map((l) => R.lapsFor('marina', l)), [2, 2, 3]);
   assert.ok(R.buildCalendar(5, 1, 1, avail).every((r) => r.laps === R.lapsFor(r.track, 'sprint') && r.laps <= 3 && (!r.lcqLaps || r.lcqLaps === 3)), 'Sprint by default');
   { const base = R.paceOf(80); R.setHardMode(true); assert.ok(Math.abs(R.paceOf(80) / base - R.TUNING.pace.hardMode) < 1e-9, 'Hard mode lifts rival pace'); assert.equal(R.hardPaceFor(false), 1); R.setHardMode(false); assert.equal(R.paceOf(80), base, 'and off puts it back'); }
   assert.equal(R.TUNING.series.qualiValidLaps, 1, 'one valid lap qualifies');

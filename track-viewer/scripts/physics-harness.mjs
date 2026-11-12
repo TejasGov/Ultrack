@@ -2,6 +2,7 @@
 // handling work is judged by. Lap tests read the collision mesh from public/assets (npm run sync), no dev server needed.
 //   node scripts/physics-harness.mjs --tests pad,brake,accel,top,lap --cars av12,porsche1 --weather dry,damp,rain --assist rookie,pro
 //   node scripts/physics-harness.mjs --tests table            sim vs real: 0-100, top speed, 100-0 for every car
+//   --track india              lap tests on another circuit (public/assets/<id>, after npm run sync); Marina by default
 //   node scripts/physics-harness.mjs --tests upgrades         self-check of the upgrade API
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -14,7 +15,8 @@ const arg = (n, d) => { const i = process.argv.indexOf('--' + n); return i < 0 ?
 const vite = await createServer({ root, logLevel: 'error', server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom', optimizeDeps: { noDiscovery: true }, ssr: { noExternal: [] } });
 const load = (p) => vite.ssrLoadModule('/src/physics/' + p);
 const THREE = await vite.ssrLoadModule('three');
-const [{ Vehicle }, H, { PhysicsWorld, STEP }, { AIDriver }, W, { yawFade: YF }] = await Promise.all([load('vehicle.js'), load('handling.js'), load('world.js'), load('driver.js'), load('weather.js'), load('arcade.js')]);
+const [{ Vehicle }, H, { PhysicsWorld, STEP }, { AIDriver }, W, { yawFade: YF }, RL] = await Promise.all([load('vehicle.js'), load('handling.js'), load('world.js'), load('driver.js'), load('weather.js'), load('arcade.js'), load('racing-line.js')]);
+const AI_PLAN = { aLat: 32, aBrk: 16, vmax: 78 };                 // = src/cars.js AI_PLAN (cars.js pulls in the renderer, so it is not imported here)
 
 const ASSIST = { rookie: { counter: 0.45, stability: 1.25, tcs: 0.8 }, pro: { counter: 0.1, stability: 0.35, tcs: 0 }, ai: { counter: 0.6, stability: 1.4, tcs: 1 } };
 if (arg('absSteer')) for (const a of Object.values(ASSIST)) a.absSteer = +arg('absSteer');   // override the ABS steering reserve (0 = the old brake that ignores steering)
@@ -89,24 +91,19 @@ export function accel(key, assist = ASSIST.rookie, secs = 400) {
 let FIELD;
 async function field() {
   if (FIELD) return FIELD;
-  const track = JSON.parse(readFileSync(join(repo, 'tracks/marina/out/track.json'), 'utf8')), c = track.centerline, n = c.length, rl = track.racingLine, pts = [];
+  const id = arg('track', 'marina'), track = RL.withRacingLine(JSON.parse(readFileSync(id === 'marina' ? join(repo, 'tracks/marina/out/track.json') : join(root, 'public/assets', id, 'track.json'), 'utf8')));
+  const c = track.centerline, n = c.length, rl = track.racingLine, pts = [];
   for (let i = 0; i < n; i++) {
     const a = c[(i - 1 + n) % n], b = c[(i + 1) % n], dx = b[0] - a[0], dz = b[2] - a[2], len = Math.hypot(dx, dz) || 1;
     pts.push(new THREE.Vector3(c[i][0], c[i][1], c[i][2]).addScaledVector(new THREE.Vector3(dz / len, 0, -dx / len), rl[i]));
   }
   const curve = new THREE.CatmullRomCurve3(pts, true, 'centripetal'); curve.arcLengthDivisions = 4000; const length = curve.getLength();
-  const N = 1200, k = new Float32Array(N), vv = new Float32Array(N), p = [], A_LAT = 27.5, A_BRK = 16, VMAX = 78, up = new THREE.Vector3(0, 1, 0), t = new THREE.Vector3();
+  const N = 1200, p = [], up = new THREE.Vector3(0, 1, 0), t = new THREE.Vector3();
   for (let i = 0; i < N; i++) p.push(curve.getPointAt(i / N));
-  for (let i = 0; i < N; i++) {                                   // = Field.setTrack in src/cars.js
-    const a = p[(i - 4 + N) % N], b = p[i], d = p[(i + 4) % N], ab = a.distanceTo(b), bc = b.distanceTo(d), ac = a.distanceTo(d);
-    const cross = Math.abs((b.x - a.x) * (d.z - a.z) - (b.z - a.z) * (d.x - a.x));
-    k[i] = 2 * cross / Math.max(1e-6, ab * bc * ac); { let s = Math.sqrt(A_LAT / Math.max(k[i], 1e-4)); for (let n = 0; n < 3; n++) s = Math.sqrt(A_LAT * YF(s) / Math.max(k[i], 1e-4)); vv[i] = Math.min(VMAX, s); }
-  }
-  const ds = length / N;
-  for (let pass = 0; pass < 2; pass++) for (let i = 2 * N - 1; i >= 0; i--) { const a = i % N, b = (i + 1) % N; vv[a] = Math.min(vv[a], Math.sqrt(vv[b] ** 2 + 2 * A_BRK * ds)); }
+  const vv = RL.speedProfile(p, length, YF, AI_PLAN);              // = Field.setTrack in src/cars.js
   const linePts = [], lineLeft = [];
   for (let i = 0; i < N; i++) { linePts.push(curve.getPointAt(i / N)); curve.getTangentAt(i / N, t); t.y = 0; t.normalize(); lineLeft.push(new THREE.Vector3().crossVectors(up, t)); }
-  const res = readFileSync(join(root, 'public/assets/marina_collision.glb'));
+  const res = readFileSync(id === 'marina' ? join(root, 'public/assets/marina_collision.glb') : join(root, 'public/assets', id, id + '_collision.glb'));
   const pw = await PhysicsWorld.create('data:model/gltf-binary;base64,' + Buffer.from(res).toString('base64'));
   const SP = JSON.parse(readFileSync(join(repo, 'assets/cars/specs.json'), 'utf8')).cars;
   return FIELD = { pw, linePts, lineLeft, N, vt: vv, all: Object.keys(SP).map((key) => ({ key, profile: profileOf(key) })) };

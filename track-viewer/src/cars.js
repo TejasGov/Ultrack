@@ -41,6 +41,9 @@ import { setLamps, fitLamps } from './carkit/lamps.js';
 import { Vehicle } from './physics/vehicle.js';
 import { handling } from './physics/handling.js';
 import { yawFade } from './physics/arcade.js';
+import { speedProfile } from './physics/racing-line.js';
+// the AI's speed plan: lateral and braking (m/s2) and the top (m/s); the driver scales it by pace, grip and wetness (driver.js)
+export const AI_PLAN = { aLat: 32, aBrk: 16, vmax: 78 };   // aLat 32 (was 27.5): measured clean on all 13 circuits with the racing line and the slope terms (racing-line.js), 4 cars, dry/damp/rain, pace to 1.035; 36 spins at India
 import { PlayerInput, AIDriver } from './physics/driver.js';
 import { addInterior, bPillars } from './carkit/interior.js';
 // per-car fixes from the car QA pipeline (assets/cars/tuning/<key>.json; see CAR-QA.md)
@@ -522,18 +525,9 @@ export class Field {
   /** Track path from main.js (racing line curve) + per-sample target speeds for braking. */
   setTrack(curve, length) {
     this.curve = curve; this.length = length;
-    const N = 1200, k = new Float32Array(N), v = new Float32Array(N), p = [], A_LAT = 27.5, A_BRK = 16, VMAX = 78;   // 0.9x the Rookie arcade limits (3.1 g lateral, 1.8 g braking); the driver scales the speeds by grip and wetness
+    const N = 1200, p = [];
     for (let i = 0; i < N; i++) p.push(curve.getPointAt(i / N));
-    for (let i = 0; i < N; i++) {
-      const a = p[(i - 4 + N) % N], b = p[i], c = p[(i + 4) % N];
-      const ab = a.distanceTo(b), bc = b.distanceTo(c), ac = a.distanceTo(c);
-      const cross = Math.abs((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x));
-      k[i] = 2 * cross / Math.max(1e-6, ab * bc * ac);
-      let s = Math.sqrt(A_LAT / Math.max(k[i], 1e-4)); for (let n = 0; n < 3; n++) s = Math.sqrt(A_LAT * yawFade(s) / Math.max(k[i], 1e-4));   // the layer turns less above 120 km/h: plan with what it gives
-      v[i] = Math.min(VMAX, s);
-    }
-    const ds = length / N;
-    for (let pass = 0; pass < 2; pass++) for (let i = 2 * N - 1; i >= 0; i--) { const a = i % N, b = (i + 1) % N; v[a] = Math.min(v[a], Math.sqrt(v[b] ** 2 + 2 * A_BRK * ds)); }
+    const v = speedProfile(p, length, yawFade, AI_PLAN);
     this.vt = v; this.N = N;
   }
 

@@ -28,6 +28,7 @@ import { dressTeams } from './teamdress.js';
 import { Trails } from './trails.js';
 import { CarFx } from './carkit/fx.js';
 import { PhysicsWorld } from './physics/world.js';
+import { withRacingLine } from './physics/racing-line.js';
 import { Game } from './game/game.js';
 import { store } from './game/store.js';
 import { trackOf, trackUrl, optionalJson } from './tracks.js';
@@ -544,7 +545,7 @@ async function load() {
   else await ensureVenue();
 }
 
-const fetchTrack = () => fetch(U('track')).then((r) => { if (!r.ok) throw Error('Track metadata failed'); return r.json(); });
+const fetchTrack = () => fetch(U('track')).then((r) => { if (!r.ok) throw Error('Track metadata failed'); return r.json(); }).then(withRacingLine);   // the AI's line on the 12 tracks that ship none
 const NO_LIGHTS = { floodlights: [], standLamps: [], streetLamps: [] };   // a track without lights.json is lit by the sky alone
 
 // the dev venue profile (?venue=whole|sectors on Marina) loads its own GLB, so nothing is fetched early for it
