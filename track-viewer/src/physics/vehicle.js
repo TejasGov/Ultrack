@@ -143,6 +143,7 @@ export class Vehicle {
     st.driftHold = sideways && st.drift > 0.3 ? Math.max(st.driftHold, 0.25) : st.driftHold - h;
     // an impact (a wall, a kerb strike, a landing): the velocity jumps by more than any tyre force could in one step, or the yaw does. For .6 s after it no drift can start
     st.hit = Math.max(0, (st.hit ?? 0) - h); if (st.vPrev && (lin.distanceTo(st.vPrev) > 1 || Math.abs(ang.dot(up) - st.yawPrev) > 1.2)) st.hit = 0.6;
+    if (st.vPrev) st.jolt = Math.max(st.jolt ?? 0, Math.hypot(lin.x - st.vPrev.x, lin.z - st.vPrev.z));   // the biggest one-step change of ground velocity (m/s) since the session read it (session.js CRASH_JOLT): a crash, never the brakes or a handbrake turn
     (st.vPrev ??= v3()).copy(lin); st.yawPrev = ang.dot(up);
     // a big slide under power is a drift too, when the driver is steering and the car has not just hit something
     if (ctl.throttle > 0.5 && Math.abs(st.beta) > arcadeTier(assist.stability).enter && speed > 12 && Math.abs(ctl.steer) > 0.3 && st.hit <= 0) st.driftHold = Math.max(st.driftHold, 0.25);

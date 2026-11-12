@@ -7,7 +7,8 @@
 // - one-shots: race cues, pops, nitro, crashes, crowd, fireworks; the crowd ambience loop
 // - commentary: Enzo, Alastair and Kavya lines picked by category and situation, never two at once, speakers alternating
 //   (Enzo, then Alastair answering), minimum gaps by priority and an airtime cap, no repeats until a category is used up
-import { createPA, RoadAudio, TrafficAudio } from './audio-effects.js';
+import { createPA, RoadAudio, TrafficAudio, brakeSquealSlip } from './audio-effects.js';
+export { brakeSquealSlip };
 import { EV } from './ev.js';
 import { Music } from './music.js';
 const A = '/assets/audio/';
@@ -55,7 +56,7 @@ export class GameAudio {
     if (this.initializing) await this.initializing;
     if (!this.ready) return;
     const prof = this.engineBank?.profiles?.[key];
-    const files = [...(prof?.on ? [prof.idle, ...prof.on, ...prof.off] : Object.values(prof?.loops ?? {})), prof?.start, prof?.rev, this.engineBank?.common, 'race/lights-on.ogg', 'race/lights-out.ogg', 'race/horn-start.ogg'];
+    const files = [...(prof?.on ? [prof.idle, ...prof.on, ...prof.off] : Object.values(prof?.loops ?? {})), prof?.start, prof?.rev, this.engineBank?.common, 'crash/hard-1.ogg', 'crash/hard-2.ogg', 'crash/hard-3.ogg', 'race/lights-on.ogg', 'race/lights-out.ogg', 'race/horn-start.ogg'];
     await Promise.all(files.filter(Boolean).map((f) => this.buffer(f.file ?? f)));
   }
 
@@ -232,7 +233,7 @@ export class GameAudio {
   crash(kmh) {
     const clip = (prefix, n) => { const f = this.pick('crash/' + prefix, n); return this.engineBank?.crash?.[f.slice(6, -4)] ?? f; };   // in the shared file, so it never waits on the network mid-race
     if (kmh < 40) this.play(clip('soft-', 3), { gain: 0.4 + kmh / 80 });
-    else { this.play(clip('hard-', 3), { gain: Math.min(1, 0.5 + kmh / 200) }); this.play(clip('glass-tinkle-', 2), { gain: 0.5, delay: 0.2 }); }
+    else this.play(this.pick('crash/hard-', 3), { gain: Math.min(1, 0.5 + kmh / 200) });   // the ElevenLabs hits (crash/CREDITS.md, the user's pick over the bank's): their own glass settles at the end, so no tinkle on top
   }
 
   stopAll() { this.engineOff(); this.nitro(false); this.commentary?.stop(); }

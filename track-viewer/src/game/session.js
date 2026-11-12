@@ -7,6 +7,8 @@ import TEAMS from '../../../assets/teams/teams.json';
 const DRIVER = Object.fromEntries(TEAMS.teams.flatMap((t) => t.cars.map((c) => [c.key, { ...c.driver, number: c.number, team: t }])));
 const ON_TRACK = new Set(['asphalt', 'pit', 'kerb', 'sausage kerb', 'run-off', 'paved']);
 
+/** a one-step jump of the ground velocity (m/s) that is a crash. Measured: full braking with every upgrade peaks at .48 and a handbrake turn at .21; kerbs and crests on clean laps reach 2 (Morro, India); a 9-degree wall scrape is 6-10 and a hit 19-43 */
+export const CRASH_JOLT = 3;
 export const MODES = {
   race: { label: 'Race', desc: 'Eight cars, one per team. Lights out and away we go.', laps: true, rivals: true, start: 'lights', tags: ['race'] },
   trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Leave the track and the lap does not count.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true },
@@ -107,8 +109,9 @@ export class Session {
       this.wrong = hv.speed > 4 && fwd.dot(tan) < -0.3 ? this.wrong + dt : 0;
       if (s.offT > 0.8 && !this.offSaid) { this.offSaid = true; this.emit('offTrack'); }
       if (s.offT === 0) this.offSaid = false;
-      const decel = -hv.aBody.x, kmh = hv.speed * 3.6;
-      if ((decel > 24 || Math.abs(hv.aBody.z) > 34) && this.t - (this.crashT ?? -9) > 2) { this.crashT = this.t; this.emit('crash', { kmh: Math.max(kmh, (this.lastKmh ?? kmh)) }); const v0 = this.lastVel ?? hv.rb?.linvel(); if (v0) this.hit = { t: this.t, v0, peak: 0 }; }
+      const kmh = hv.speed * 3.6;
+      const jolt = hv.state.jolt ?? 0; hv.state.jolt = 0;   // a crash is an impact (vehicle.js: the ground velocity jumping in one step), not hard braking or a handbrake turn, which read as 2-8 g in the body frame
+      if (jolt > CRASH_JOLT && this.t - (this.crashT ?? -9) > 2) { this.crashT = this.t; this.emit('crash', { kmh: Math.max(kmh, (this.lastKmh ?? kmh)) }); const v0 = this.lastVel ?? hv.rb?.linvel(); if (v0) this.hit = { t: this.t, v0, peak: 0 }; }
       // how hard the hit really was, for the repair bill: the most velocity it took away in the 0.4 s after the first spike (a rub along the barrier deflects the car and takes little, a wall head-on takes it all)
       const vel = hv.rb?.linvel();   // (a test's stand-in car has no body)
       if (vel && this.hit) { const w = this.hit; w.peak = Math.max(w.peak, Math.hypot(vel.x - w.v0.x, vel.z - w.v0.z) * 3.6); if (this.t - w.t >= 0.4) { this.hit = null; this.emit('impact', { kmh: Math.round(w.peak) }); this.contactAt(hv.cur.pos, Math.round(w.peak)); } }
