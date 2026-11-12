@@ -13,6 +13,7 @@ import { CATS, MAX_LEVEL, costOf, classOf } from './economy.js';
 import { carName, factsOf, rangeOf, hasSpecs, upgradedFacts, handlingWith, applyUpgrades, physicsHasUpgrades, ROSTER } from './carinfo.js';
 import { h, css, fill, seg, slider, toggle, row, getNav, teamMark, teamLogo, TEAM_OF, ENTRY, still, empty, prompt, backButton, fadeMore } from './ui.js';
 import { icon } from './icons.js';
+import { traitInfo } from './career/rules.js';
 import { paintsRims } from '../carkit/model-rims.js';
 import { hasModel } from '../cars.js';
 
@@ -101,6 +102,7 @@ export function GarageScreen(game) {
       h('h3.kick.ga-sec', {}, icon('helmet'), h('span', {}, 'Driver')),
       h('p.ga-who', {}, h('b', {}, d.name), h('small', {}, d.nation), d.age ? h('small', {}, `${d.age} yrs`) : null, h('small', {}, `#${e.number}`)),
       h('p.ga-bio', {}, d.personality ?? d.bio ?? ''),
+      traitInfo(d.code) ? h('p.ga-bio', {}, h('b', {}, `Racing style: ${traitInfo(d.code).label}. `), traitInfo(d.code).line) : null,
       h('h3.kick.ga-sec', {}, h('span', {}, 'Team'), h('span.ga-sub', {}, th.status)),
       h('p.ga-who', {}, h('b', {}, t.name), h('small', {}, t.home)), h('p.ga-bio', {}, `“${t.line}”`), h('p.ga-bio', {}, th.story)];
   }

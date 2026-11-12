@@ -63,7 +63,7 @@ export class PlayerInput {
  * A rival's nitro (Hard mode only): it fires in bursts from half a tank, well under its target speed (m/s) with the wheel straight, so never into a braking zone;
  * a corner, a car to follow or a low tank ends the burst. The target speed still caps the car, so a slower driver gains less.
  */
-export const aiNitro = (on, short, wheel, speed, tank) => (on ? short > 3 && wheel < 0.25 && tank > 0.1 : short > 8 && wheel < 0.12 && speed > 20 && tank > 0.5);
+export const aiNitro = (on, short, wheel, speed, tank, from = 0.5) => (on ? short > 3 && wheel < 0.25 && tank > 0.1 : short > 8 && wheel < 0.12 && speed > 20 && tank > from);   // from: a nitro-happy driver lights it at a fifth
 
 /** mulberry32: a small seeded generator in [0, 1) (the career's rng.js has the same; this module imports no career code) */
 const mulberry32 = (a) => () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -135,7 +135,7 @@ export class AIDriver {
     if (blk) { if (!this.passSide || (this.passCar !== blk.car && Math.sign(blk.lat - myLat) === this.passSide)) { this.passCar = blk.car; this.passSide = myLat >= blk.lat ? 1 : -1; const w = this.lane + this.passSide * 3; if (w > hi || w < lo) this.passSide = -this.passSide; } }
     else if (!near) this.passSide = 0;                                // hold the passing lane until the car is 6 m behind
     let laneWant = this.passSide ? this.lane + this.passSide * 3 : this.lane;   // passSide is unset until a first car is near
-    const clamp = THREE.MathUtils.clamp, prev = this.laneNow ?? this.lane, press = P && blk?.car === F.hero && (P.role === 'rival' || P.role === 'nemesis');
+    const clamp = THREE.MathUtils.clamp, prev = this.laneNow ?? this.lane, press = P && blk?.car === F.hero && (P.role === 'rival' || P.role === 'nemesis' || P.trait === 'rough');   // a rough driver presses like a rival
     // D. team orders: on the final lap the teammate lets a player within gap seconds through, lifting and stepping aside, once
     const O = K && K.orders;
     if (P && F.orders === 'toYou' && this.car.key === F.mateKey && F.finalLap && !this.yielded && behind < O.gap) {
@@ -148,7 +148,7 @@ export class AIDriver {
     // behind[0] is a car length and a margin, so a player whose nose overlaps the rear wheel is never chopped (squeezing a car alongside is a crash).
     // A straight: no braking zone ahead, and the line bends under 3 degrees to the pursuit target (at the limit in a long corner vmin alone reads as one)
     const D = K && K.defend, behindIn = D && pl && pl.gap <= -D.behind[0] && pl.gap >= -D.behind[1];
-    if (P && P.role === 'nemesis' && D.on) {
+    if (P && (P.role === 'nemesis' || P.trait === 'blocker') && D.on) {   // a driver who never yields defends like the nemesis
       if (vmin < speed * 0.95 || Math.abs(lat(line[j], this.i)) > 0.05 * look) { this.defT = 0; this.defUsed = false; }
       else if (!this.defUsed && !(this.yieldT > 0) && behindIn && Math.abs(pl.lat - myLat) < D.lat) { this.defUsed = true; this.defT = D.holdS * 120; (F.aiEvents ??= []).push({ type: 'defend', key: this.car.key }); }
       if (!behindIn) this.defT = 0;
@@ -176,6 +176,8 @@ export class AIDriver {
     // speed: the profile a little ahead (braking points), scaled by grip
     let vt = vmin * this.pace * Math.sqrt(v.spec.grip / 1.15 * wetGrip() * aeroGain(v.spec.downforceStock, v.spec.downforce, v.spec.mass, vmin * this.pace)) * (1 - 0.04 * road.wet);   // a wet road lowers every corner speed with the grip, and a little more for the braking margin
     if (blk && blk.gap > (press ? K.follow : 1.5) && blk.gap < 12) vt = Math.min(vt, blk.speed * (blk.gap < 6 ? (press ? K.followMul : 0.9) : 1));   // follow, then pass once the lane is clear; B: a rival presses the player closer
+    const happyPace = P && P.trait === 'nitro' && K.traits?.nitro?.pace;
+    if (happyPace) vt *= happyPace;   // nitro-happy: a touch slower through the corners, so the bursts on the straights leave the lap where the rating puts it
     if (this.liftT > 0) { this.liftT--; vt *= M.lift; }
     if (this.yieldT > 0) { vt *= O.lift; if (--this.yieldT === 0) F.orders = null; }   // the order is carried out
     const e = vt - speed;
@@ -191,9 +193,9 @@ export class AIDriver {
     this.nitroRest = Math.max(0, (this.nitroRest ?? 0) - 1);
     // B: the nemesis chasing the player 10-50 m up the road fires the stock tank too, one burst a lap, in any mode; a rival whose team developed Nitro (a tank above stock: handling.js) fires it in any mode
     const chase = !!(P && P.role === 'nemesis' && K.nitro.on && pl && pl.gap >= K.nitro.from && pl.gap <= K.nitro.to && (this.nitroOn || this.nitroLap !== (this.lap ?? 0)));
-    const nitro = (this.field.hardPace > 1 || chase || v.spec.nitroTank > 1) && !this.car.hero && road.wet < 0.5 && (this.nitroOn || (!blk && !this.nitroRest)) && aiNitro(this.nitroOn, e, Math.abs(want), speed, v.state.nitroTank);
+    const happy = P && P.trait === 'nitro' && K.traits?.nitro, nitro = (this.field.hardPace > 1 || chase || v.spec.nitroTank > 1 || happy) && !this.car.hero && road.wet < 0.5 && (this.nitroOn || (!blk && !this.nitroRest)) && aiNitro(this.nitroOn, e, Math.abs(want), speed, v.state.nitroTank, happy ? happy.from : 0.5);
     if (nitro && !this.nitroOn && chase) this.nitroLap = this.lap ?? 0;
-    if (this.nitroOn && !nitro) this.nitroRest = 360;
+    if (this.nitroOn && !nitro) this.nitroRest = happy ? happy.rest * 120 : 360;
     this.nitroOn = nitro;
     return { throttle: THREE.MathUtils.clamp(0.25 + e * 0.35, 0, 1), brake: THREE.MathUtils.clamp(-e * 0.18 - 0.05, 0, 1), steer, handbrake: 0, nitro: this.nitroOn ? 1 : 0 };
   }
