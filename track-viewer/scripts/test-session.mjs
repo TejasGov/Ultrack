@@ -3,6 +3,7 @@
 // a finish, a pass and a hard hit name the other car (the career's rivals), and best laps / drift records are kept per circuit (old car-only keys become marina's).
 import assert from 'node:assert/strict';
 import { createServer } from 'vite';
+import { brakeSquealSlip } from '../src/game/audio-effects.js';
 const server = await createServer({ root: new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom' });
 try {
   // an old save (records keyed by car alone), read through a stub localStorage
@@ -73,5 +74,8 @@ try {
   assert.equal(store.bestOf('av12'), 100); assert.equal(store.driftOf('av12'), 5000);
   assert.equal(store.bestLap('av12', 110), false, 'slower than marina best'); assert.equal(store.bestLap('av12', 90), true);
   store.set('track', 'tokyo'); assert.equal(store.bestOf('av12'), 120, 'tokyo kept its own record');
-  console.log('test-session: ok');
+  // the tyre squeal under braking (audio.js: silent under .1 of slip, full at .32): hard braking at speed and a pulled handbrake squeal, a light touch or a crawl does not
+assert.ok(brakeSquealSlip({ brake: 1, handbrake: 0 }, 30) > 0.22 && brakeSquealSlip({ brake: 0.3, handbrake: 0 }, 30) === 0 && brakeSquealSlip({ brake: 1, handbrake: 0 }, 5) === 0);
+assert.ok(brakeSquealSlip({ brake: 0, handbrake: 1 }, 15) > 0.2 && brakeSquealSlip({ brake: 0, handbrake: 1 }, 2) === 0);
+console.log('test-session: ok');
 } finally { await server.close(); }

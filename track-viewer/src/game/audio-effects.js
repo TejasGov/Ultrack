@@ -123,3 +123,6 @@ export class TrafficAudio {
   }
   report() { return this.voices.map(v=>v.car?v.car.key:null); }
 }
+
+/** the slip the tyre squeal hears from the brakes (audio.js: it starts at .1 and is full at .32): hard braking from 30 km/h, louder with the pedal and the speed, and a pulled handbrake while moving */
+export const brakeSquealSlip = (c, speed) => Math.max(c.brake > 0.4 && speed > 8 ? 0.1 + 0.15 * Math.min(1, (c.brake - 0.4) / 0.6) * Math.min(1, (speed - 8) / 20) : 0, c.handbrake > 0.5 && speed > 5 ? 0.24 : 0);

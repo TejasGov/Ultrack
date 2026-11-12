@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import './ui.css';
 import TEAMS from '../../../assets/teams/teams.json';
 import { store, ASSISTS, WEATHER, BLUR, fmtTime } from './store.js';
-import { GameAudio, Gearbox } from './audio.js';
+import { GameAudio, Gearbox, brakeSquealSlip } from './audio.js';
 import { STATIONS, stationOf } from './music.js';
 import { EV } from './ev.js';
 import { Session, MODES } from './session.js';
@@ -421,7 +421,7 @@ export class Game {
     const thr = s.state === 'grid' ? (F.playerThrottle ?? 0) : Math.abs(v.state.driveInput ?? v.controls.throttle);
     const shift = this.gearbox.update(dt, v.speed, thr, v.state.reverse ?? v.vForward < -0.5);
     if (shift === 'up' && thr > 0.8) this.audio.shift();
-    this.audio.engineUpdate(this.gearbox.rpm, thr, 1, v.speed, v.latSlip);
+    this.audio.engineUpdate(this.gearbox.rpm, thr, 1, v.speed, Math.max(Math.abs(v.latSlip ?? 0), brakeSquealSlip(v.controls, v.speed)));   // the tyres squeal under hard braking and a pulled handbrake too, not only sliding sideways (smoke and skid marks stay on the real slip)
     this.audio.traffic?.update(F.cars, F.hero, dt);
     this.audio.nitro(v.state.nitroOn);
     if (v.state.nitroOn && !this.nitroWas) this.say('nitro_used', { cooldown: 40, priority: 1 });
