@@ -347,7 +347,14 @@ try {
     for (const d of R.DIV.order) assert.ok(R.carsIn(a, d).length >= R.TUNING.series.gridSize, `the ${d} keeps a full grid`); }   // the market fills every seat (startSeason does not check it)
 
   // ---- the top eight: teammates can both race, and a missed cut is a round of its own
-  { const d = signed(150, 'mojave', 'legacy'), me = d.contract.car, mate = C.teammateCar(d); C.finishQuali(d, 1, 1.001); const q = d.season.current.quali; assert.deepEqual(q.grid.slice(0, 2), [me, mate], 'both cars of a team race'); assert.equal(C.raceSetup(d).drivers[mate].code, d.world.seats[mate]); assert.ok(C.raceSetup(d).pace[mate] > 0, 'the teammate races at his pace');
+  { const d = signed(150, 'mojave', 'legacy'), me = d.contract.car, mate = C.teammateCar(d); C.finishQuali(d, 1, 1.001); const q = d.season.current.quali; assert.deepEqual(q.grid.slice(0, 2), [me, mate], 'both cars of a team race'); assert.equal(C.raceSetup(d).drivers[mate].code, d.world.seats[mate]);
+    // a racing style rides with the driver (drivers.json traits): seat Barreto in another car and that car fires its nitro early
+    { const st = C.raceSetup(d), k = Object.keys(st.ai).find((x) => d.world.seats[x] !== 'BAR'), was = Object.keys(d.world.seats).find((x) => d.world.seats[x] === 'BAR');
+      if (was) d.world.seats[was] = d.world.seats[k]; d.world.seats[k] = 'BAR';
+      assert.equal(C.raceSetup(d).ai[k].trait, 'nitro', 'the trait follows the driver, not the car or the team');
+      assert.ok(Object.values(C.raceSetup(d).ai).every((p) => p.composure >= 0 && p.composure <= 0.98));
+      assert.equal(R.quickProfile('laferrari').trait, 'nitro'); assert.equal(R.quickProfile('supra'), null, 'an untraited driver races a quick race as before');
+      assert.equal(R.quickProfile('laferrari').composure, 0.98); assert.ok(R.quickProfile('huracan').composure < 0.98, 'only a hothead slips in a quick race'); } assert.ok(C.raceSetup(d).pace[mate] > 0, 'the teammate races at his pace');
     const r = C.finishRace(d, { order: q.grid, best: {} }); assert.equal(r.entries.length, R.FIELD); assert.equal(r.entries.filter((e) => !e.dnq).length, 8); assert.ok(r.entries.slice(8).every((e) => e.pts === 0 && e.dnq)); assert.equal(C.standings(d).drivers.length, R.FIELD, 'the table has everyone'); assert.equal(C.standings(d).teams.length, 10); assert.ok(C.standings(d).teams.find((t) => t.team === d.contract.team).pts >= 25 + 18 + 2, 'both cars score for the team');
     const o = signed(151, 'mojave', 'elite'), started = o.stats.starts, wk = o.clock.week; C.finishQuali(o, 999); const place = C.qualiPlace(o.season.current.quali, o.contract.car); const dq = C.finishDnq(o);
     assert.equal(dq.dnq, true); assert.equal(dq.finish, place); assert.equal(dq.grid, place); assert.equal(dq.entries.find((e) => e.you).pts, 0); assert.equal(dq.entries.filter((e) => !e.dnq).length, 8); assert.ok(dq.entries.slice(0, 8).every((e) => !e.you)); assert.ok(dq.entries[0].pts >= 25); assert.equal(o.stats.starts, started, 'no start'); assert.ok(o.clock.week > wk, 'the season moves on'); assert.ok(!dq.coinLines.some(([l]) => /Finished/.test(l)), 'no place money'); assert.ok(dq.rr < 8);

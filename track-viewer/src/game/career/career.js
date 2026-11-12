@@ -7,7 +7,7 @@ import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, racing, fieldSize, teamsIn, carsIn, expIn, lcqGrid, seedsOf, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, teamForm, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, ordersFor, playerRating,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, traitOf, traitComposure, ordersFor, playerRating,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, drivePower, driveLap, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
@@ -523,7 +523,7 @@ function fieldOf(save, racers) {
   const hero = save.contract.car, lv = levelsOfDev;   // every category is named, because setUpgrades keeps a level it is not told about
   const nemesis = nemesisAmong(save, racers), mateKey = teammateCar(save), W = save.world, H = save.career.heat ?? {};
   const ai = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => { const code = W.seats[key];
-    return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: composureOf(W.ratings[code], W.ages[code]),
+    return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: traitComposure(composureOf(W.ratings[code], W.ages[code]), traitOf(code)), trait: traitOf(code),
       seed: Math.floor(rng(save.seed, 'ai-profile', save.clock.season, save.clock.round, key)() * 2 ** 32), k: structuredClone(T.rivals.track) }]; }));
   return { nemesis, ai, mateKey, drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
 }

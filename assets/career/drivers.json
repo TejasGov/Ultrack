@@ -111,5 +111,14 @@
     "first": ["Amara", "Bastien", "Chiara", "Dmitri", "Elif", "Felipe", "Greta", "Hana", "Ivo", "Jana", "Kofi", "Lena", "Marco", "Nadia", "Oskar", "Priya", "Rafael", "Sana", "Tomas", "Una", "Viktor", "Wen", "Yara", "Zoltan", "Ines", "Luca", "Mei", "Noah", "Selin", "Arjun"],
     "last": ["Abara", "Bertrand", "Castillo", "Dragan", "Eriksen", "Ferreira", "Galli", "Hoffmann", "Ito", "Jovanovic", "Kowalski", "Larsen", "Moreau", "Nakamura", "Okoro", "Petrov", "Quaresma", "Rinaldi", "Sato", "Torres", "Ulloa", "Vasquez", "Wolff", "Yilmaz", "Zielinski", "Brennan", "Delacroix", "Haddad", "Mensah", "Varga"],
     "nations": ["BRA", "ESP", "FRA", "GER", "GBR", "IND", "ITA", "JPN", "MEX", "NED", "SWE", "USA"]
+  },
+  "traitsNote": "A racing style per driver, by code: it rides with the driver to any team. Built-in moves near the player (src/physics/driver.js, tuning.json rivals.track.traits), the same in every race mode; pace, ratings and car levels are untouched.",
+  "traits": { "BAR": "nitro", "VAL": "blocker", "MAD": "rough", "CAL": "calm", "ORT": "hothead" },
+  "traitInfo": {
+    "nitro": { "label": "Nitro-happy", "line": "Fires the nitro the moment the tank has a fifth in it, and never lets it sit." },
+    "blocker": { "label": "Never yields", "line": "With you close behind on a straight, moves onto your line to keep you there. Once a straight, never into a car alongside." },
+    "rough": { "label": "Rough", "line": "Sits right on your bumper and swings out to pass the moment there is room." },
+    "calm": { "label": "Ice-cool", "line": "Pressure barely registers: almost never runs wide or lifts with you behind." },
+    "hothead": { "label": "Hothead", "line": "Cracks under pressure: more likely to run wide or lift with you right behind." }
   }
 }

@@ -132,4 +132,22 @@ const json = (x) => JSON.stringify(x);
   const plain = run(field(), undefined, 1200, { script: (c) => c.hero }), roles = ['nemesis', 'rival', 'mate'];
   for (const role of roles) assert.equal(json(run(field(), (c) => ({ ...structuredClone(P), role }), 1200, { script: (c) => c.hero, F0: { orders: 'toYou', mateKey: 'a', finalLap: true } }).out), json(plain.out), `a ${role} with no player near drives as before`);
 }
+// 8. driver traits (drivers.json traits): the same moves, from the driver's style instead of the career's role
+{
+  const track = { halfWidth: Array(N).fill(4), racingLine: Array(N).fill(0) };
+  const defends = (o, gap) => { const n = car('n', 20, 0, 35), h = car('hero', 20 - gap, 3, 35, true);
+    return run([n, h], (c) => (c.hero ? null : prof(null, o)), 600, { track, script: (c) => c.hero && ((c.s = n.s - gap), (c.sp = n.sp), true) }).F.aiEvents.filter((e) => e.type === 'defend').length; };
+  assert.equal(defends({ trait: 'blocker' }, 8), 1, 'a driver who never yields defends like the nemesis, once a straight');
+  assert.equal(defends({ trait: 'blocker' }, 4), 0, 'and never into a car partly alongside');
+  assert.equal(defends({ trait: 'rough' }, 8), 0, 'other styles do not defend');
+  // rough: with the player 5 m ahead on its line it swings out to pass faster than a plain driver
+  const swing = (o) => { const r = car('r', 20, 0, 40), h = car('hero', 25, 0, 38, true);
+    run([r, h], (c) => (c.hero ? null : prof(null, o)), 20, { track, script: (c) => c.hero && ((c.s = r.s + 5), (c.sp = 38), true) }); return Math.abs(r.ai.laneNow); };
+  { const a = swing({ trait: 'rough' }), b = swing({}); assert.ok(b > 0.1 && a > 1.25 * b, `a rough driver moves out to pass faster (${a.toFixed(2)} m vs ${b.toFixed(2)} m)`); }
+  // nitro-happy: a fifth of a tank on a clear straight, well under its target speed, lights it; a plain driver in normal mode never fires
+  const fires = (o, tank) => { const c = car('x', 50, 0, 30); c.vehicle.state.nitroTank = tank; const r = run([c], () => prof(null, o), 30); return r.out.some((u) => u.nitro); };
+  assert.ok(fires({ trait: 'nitro' }, 0.25), 'a nitro-happy driver fires at a fifth of a tank');
+  assert.ok(!fires({ trait: 'nitro' }, 0.15), 'not under it');
+  assert.ok(!fires({}, 1), 'a plain driver in normal mode keeps the stock tank');
+}
 console.log('ai rivalry: all checks passed');
