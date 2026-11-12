@@ -113,12 +113,20 @@
     "nations": ["BRA", "ESP", "FRA", "GER", "GBR", "IND", "ITA", "JPN", "MEX", "NED", "SWE", "USA"]
   },
   "traitsNote": "A racing style per driver, by code: it rides with the driver to any team. Built-in moves near the player (src/physics/driver.js, tuning.json rivals.track.traits), the same in every race mode; pace, ratings and car levels are untouched.",
-  "traits": { "BAR": "nitro", "VAL": "blocker", "MAD": "rough", "CAL": "calm", "ORT": "hothead" },
+  "traits": { "BAR": "nitro", "TOL": "nitro", "VAL": "blocker", "HOL": "blocker", "MAD": "rough", "QAS": "rough", "CAL": "calm", "KUR": "calm", "HAG": "calm", "ORT": "hothead", "QUI": "hothead", "VAR": "hothead",
+    "BEA": "gentleman", "WHI": "racecraft", "MIZ": "showboat", "LIN": "rain", "LAV": "rain", "KOS": "rain", "KAR": "home", "ASH": "consistent" },
+  "homes": { "KAR": "shajawa" },
   "traitInfo": {
     "nitro": { "label": "Nitro-happy", "line": "Fires the nitro the moment the tank has a fifth in it, and never lets it sit." },
     "blocker": { "label": "Never yields", "line": "With you close behind on a straight, moves onto your line to keep you there. Once a straight, never into a car alongside." },
     "rough": { "label": "Rough", "line": "Sits right on your bumper and swings out to pass the moment there is room." },
     "calm": { "label": "Ice-cool", "line": "Pressure barely registers: almost never runs wide or lifts with you behind." },
-    "hothead": { "label": "Hothead", "line": "Cracks under pressure: more likely to run wide or lift with you right behind." }
+    "hothead": { "label": "Hothead", "line": "Cracks under pressure: more likely to run wide or lift with you right behind." },
+    "gentleman": { "label": "Gentleman", "line": "Side by side, leaves you a car's width rather than squeezing. Clean, never soft." },
+    "racecraft": { "label": "Racecraft", "line": "Never blocks on a straight: covers the inside into the braking zone instead, once a corner." },
+    "showboat": { "label": "Showboat", "line": "Swings wide and sweeping through the slow corners when nobody is close, and makes the time back elsewhere." },
+    "rain": { "label": "Rain specialist", "line": "Comes alive on a wet track and gives a little away in the dry." },
+    "home": { "label": "Home hero", "line": "At the home race, presses hard and gives nothing away. Elsewhere, races clean." },
+    "consistent": { "label": "Metronome", "line": "Never makes a mistake, and never sits on your bumper either." }
   }
 }

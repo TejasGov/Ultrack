@@ -7,7 +7,7 @@ import { rng, gauss } from './rng.js';
 import { trackOf } from '../../tracks.js';
 import {
   TUNING as T, TIERS, CAL, DRIVERS, TEAM_IDS, CAR, FIELD, DIV, divOf, racing, fieldSize, teamsIn, carsIn, expIn, lcqGrid, seedsOf, clamp, tierOf, seatCar, otherSeat, expOf, levelOf, formOf, paceOf, teamForm, parLap, aeroOf, repairBill,
-  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, traitOf, traitComposure, ordersFor, playerRating,
+  buildCalendar, buildWeeks, lapsFor, aiLap, duelOf, roundRating, xpFor, repFor, trustFor, objectivesFor, objectiveFrom, objectiveMet, qualiExemption, targetFor, targetMet, targetText, sideMedal, challengeMet, challengeText, loreOf, isSpecial, pointsMult, SPONSORS, composureOf, traitOf, traitComposure, atHome, ordersFor, playerRating,
 } from './rules.js';
 import { LIFE, ITEMS, TYPES, itemOf, newLife, mood, bandOf, drivePower, driveLap, fansName, payMult, xpMult, trustMult, repMult, canDemand, isHome, ownedN, boostOf, glowOf, upkeepOf, lift, settleRound, payUpkeep, adPay } from './life.js';
 import { newRanking, rankPoints, addDay, rankingOf, playerRank } from './ranking.js';
@@ -514,16 +514,16 @@ const lcqOf = (save, order) => (save.season.div && save.season.current.open ? lc
 export function raceSetup(save) {
   const R = currentRound(save), cur = save.season.current, hero = save.contract.car, stage = cur.open?.stage, lcq = stage === 'lcq', V = lcq ? qualiVenue(save) : R;   // the Last Chance is raced at the round's qualifying venue
   const racers = cur.quali?.grid ?? [hero], pace = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => [key, aiPace(save, key, lcq ? ['lcq'] : [])]));
-  const { nemesis, ai, mateKey, drivers, levels } = fieldOf(save, racers);
+  const { nemesis, ai, mateKey, drivers, levels } = fieldOf(save, racers, V.track);
   return { hero, racers, gridOrder: cur.quali?.grid ?? null, pace, nemesis, ai, orders: cur.open ? null : ordersFor(save), mateKey, laps: lcq ? R.lcqLaps : R.laps, track: V.track, look: V.look, weather: V.weather,
     label: lcq ? 'Last Chance Qualifier' : cur.open ? (cur.open.kind === 'masters' ? R.name : `${R.name} Final`) : null, field: lcq ? `Eight cars. ${T.open.lcqThrough} places in the Final.` : cur.open ? 'Eight cars. One trophy.' : null, drivers, levels, power: { [hero]: drivePower(save.life.happy) } };
 }
 /** what every career race on track shares: the nemesis among the racers, each AI car's profile (6.6, driver.js), who drives each car and its upgrade levels */
-function fieldOf(save, racers) {
+function fieldOf(save, racers, track = currentRound(save).track) {
   const hero = save.contract.car, lv = levelsOfDev;   // every category is named, because setUpgrades keeps a level it is not told about
   const nemesis = nemesisAmong(save, racers), mateKey = teammateCar(save), W = save.world, H = save.career.heat ?? {};
   const ai = Object.fromEntries(racers.filter((k) => k !== hero).map((key) => { const code = W.seats[key];
-    return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: traitComposure(composureOf(W.ratings[code], W.ages[code]), traitOf(code)), trait: traitOf(code),
+    return [key, { role: code === nemesis?.code ? 'nemesis' : (H[code] ?? 0) >= T.rivals.rival ? 'rival' : key === mateKey ? 'mate' : null, composure: traitComposure(composureOf(W.ratings[code], W.ages[code]), traitOf(code)), trait: traitOf(code), atHome: atHome(code, track),
       seed: Math.floor(rng(save.seed, 'ai-profile', save.clock.season, save.clock.round, key)() * 2 ** 32), k: structuredClone(T.rivals.track) }]; }));
   return { nemesis, ai, mateKey, drivers: Object.fromEntries(racers.map((k) => [k, sessionDriver(save, k)])), levels: (key) => (key === hero ? myLevels(save) : lv(devOf(save, key))) };
 }

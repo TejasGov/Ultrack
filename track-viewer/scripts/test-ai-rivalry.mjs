@@ -150,4 +150,31 @@ const json = (x) => JSON.stringify(x);
   assert.ok(!fires({ trait: 'nitro' }, 0.15), 'not under it');
   assert.ok(!fires({}, 1), 'a plain driver in normal mode keeps the stock tank');
 }
+// 9. the other styles
+{
+  const track = { halfWidth: Array(N).fill(4), racingLine: Array(N).fill(0) };
+  // gentleman: the player alongside (2 m back, 2.5 m to the left) gets room: the lane moves away from the player
+  { const g = car('g', 20, 0, 35), h = car('hero', 18, 2.5, 35, true);
+    run([g, h], (c) => (c.hero ? null : prof(null, { trait: 'gentleman' })), 120, { track, script: (c) => c.hero && ((c.s = g.s - 2), (c.sp = g.sp), true) });
+    assert.ok(g.ai.laneNow < -0.3, `a gentleman moves over for a car alongside (${g.ai.laneNow.toFixed(2)} m)`);
+    const p = car('p', 20, 0, 35), h2 = car('hero', 18, 2.5, 35, true);
+    run([p, h2], (c) => (c.hero ? null : prof(null)), 120, { track, script: (c) => c.hero && ((c.s = p.s - 2), (c.sp = p.sp), true) });
+    assert.ok(g.ai.laneNow < p.ai.laneNow - 0.3, 'more than a plain driver does'); }
+  // racecraft: no defend on the straight, one into the braking zone at the end of it (s 600)
+  { const rc = (s0) => { const n = car('n', s0, 0, 60), h = car('hero', s0 - 8, 1.5, 60, true);
+      return run([n, h], (c) => (c.hero ? null : prof(null, { trait: 'racecraft' })), 240, { track, script: (c) => c.hero && ((c.s = n.s - 8), (c.sp = n.sp), true) }).F.aiEvents.filter((e) => e.type === 'defend').length; };
+    assert.equal(rc(100), 0, 'racecraft never blocks on a straight');
+    assert.equal(rc(520), 1, 'it covers the inside into the braking zone, once'); }
+  // showboat: alone through the slow half circle it holds a wider lane than a plain driver
+  { const sb = (o) => { const c = car('s', 560, 0, 20); run([c], () => prof(null, o), 600, { track }); return Math.abs(c.ai.laneNow); };
+    assert.ok(sb({ trait: 'showboat' }) > sb({}) + 0.5, 'a showboat swings wide through a slow corner'); }
+  // consistent never presses, even as a rival; a home hero presses and defends only at home
+  { const lane = (o) => { const r = car('r', 20, 0, 40), h = car('hero', 25, 0, 38, true);
+      run([r, h], (c) => (c.hero ? null : prof(o.role ?? null, o)), 20, { track, script: (c) => c.hero && ((c.s = r.s + 5), (c.sp = 38), true) }); return Math.abs(r.ai.laneNow); };
+    assert.ok(lane({ role: 'rival', trait: 'consistent' }) < lane({ role: 'rival' }), 'a metronome rival does not press');
+    assert.ok(lane({ trait: 'home', atHome: true }) > lane({ trait: 'home' }), 'a home hero presses at home only');
+    const d = (o) => { const n = car('n', 20, 0, 35), h = car('hero', 12, 3, 35, true);
+      return run([n, h], (c) => (c.hero ? null : prof(null, o)), 600, { track, script: (c) => c.hero && ((c.s = n.s - 8), (c.sp = n.sp), true) }).F.aiEvents.filter((e) => e.type === 'defend').length; };
+    assert.equal(d({ trait: 'home', atHome: true }), 1); assert.equal(d({ trait: 'home' }), 0, 'and defends at home only'); }
+}
 console.log('ai rivalry: all checks passed');
