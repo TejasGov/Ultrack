@@ -7,7 +7,7 @@ import DRIVERS from '../../../../assets/career/drivers.json';
 import SPONSORS from '../../../../assets/career/sponsors.json';
 import TEAMS from '../../../../assets/teams/teams.json';
 import SPECS from '../../../../assets/cars/specs.json';
-import { classOf } from '../economy.js';
+import { classOf, CATS } from '../economy.js';
 import { rng, gauss, shuffle } from './rng.js';
 
 export { TUNING, TIERS, CAL, DRIVERS, SPONSORS };
@@ -76,11 +76,13 @@ export const hardPaceFor = (on) => (on ? T.pace.hardMode : 1);
 export const setHardMode = (on) => { hardPace = hardPaceFor(on); };
 /** AI pace from a driver rating (2.3): 94 -> 1.011, 76 -> 0.974 */
 export const paceOf = (rating, difficulty = 'normal') => clamp(T.pace.base + (rating - 60) * T.pace.perRating, T.pace.min, T.pace.max) * (T.pace.difficulty[difficulty] ?? 1) * hardPace;
-/** the Aero level a rival's car wears: his team's development levels [engine, tyres, brakes] averaged (a team's `dev` stays three long) */
+/** the Aero level a three-long `dev` (engine, tyres, brakes: a save from before schema 15, an old caller) implies: the three averaged */
 export const aeroOf = (dev) => Math.round(avg(dev.slice(0, 3)));
-/** an AI flying lap at pace 1.00 in this car, these conditions and these upgrade levels [engine, tyres, brakes, aero]; a three-long dev (a team's) wears the Aero its levels imply, none at all is stock */
+/** what upgrade levels [engine, tyres, brakes, aero, nitro] take off a lap, as a share (tuning.json pace.perLevel, fitted to AI laps in the physics); a three-long dev wears the Aero it implies and no Nitro */
+export const levelGain = (dev = []) => { const d = dev.length >= 4 ? dev : [...dev, aeroOf(dev)]; return CATS.reduce((s, [c], i) => s + T.pace.perLevel[c] * (d[i] ?? 0), 0); };
+/** an AI flying lap at pace 1.00 in this car, these conditions and these upgrade levels (levelGain); none at all is stock */
 export const parLap = (track, car, weather = 'dry', dev = [0, 0, 0]) =>
-  CAL.tracks[track].parLap * (1 - T.pace.carZ * (TIERS.carZ[car] ?? 0)) * (T.pace.wet[weather] ?? 1) * (1 - T.pace.perDevLevel * avg(dev.slice(0, 3)) - T.pace.perAeroLevel * (dev[3] ?? aeroOf(dev)));
+  CAL.tracks[track].parLap * (1 - T.pace.carZ * (TIERS.carZ[car] ?? 0)) * (T.pace.wet[weather] ?? 1) * (1 - levelGain(dev));
 /** race laps from the length the player picked, in minutes (tuning.json series.lengths): laps differ per circuit, the time does not, down to the 2-lap minimum */
 export const lapsFor = (track, length = 'sprint') => clamp(Math.round((T.series.lengths[length] * 60) / CAL.tracks[track].parLap), T.series.lapsMin, T.series.lapsMax);
 
@@ -159,8 +161,10 @@ export function buildWeeks(calendar, theme = 'test') {
 /** a computed qualifying lap for an entry (4.3): par / pace, with seeded noise */
 export function aiLap({ seed, season, round, key, rating, track, weather, dev, difficulty }) {
   const r = rng(seed, 'ai', season, round, key);
-  return (parLap(track, key, weather, dev) / paceOf(rating, difficulty)) * (1 + T.quali.noiseSigma * gauss(r));
+  return (parLap(track, key, weather, dev) / (paceOf(rating, difficulty) * teamForm(seed, season, round, CAR[key].team))) * (1 + T.quali.noiseSigma * gauss(r));
 }
+/** a team's form for a weekend, both its cars, qualifying and race alike (a Last Chance's and a Final's laps share their round's): a seeded pace factor around 1, sigma pace.form */
+export const teamForm = (seed, season, round, team) => 1 + T.pace.form * gauss(rng(seed, 'form', season, Number.parseInt(round), team));
 /** the teammate duel on the clock (6.3): won / lost / level by the margin, `big` beyond 0.3 % */
 export function duelOf(mine, mate) {
   if (!Number.isFinite(mine)) return { result: 'lost', big: true, margin: null };

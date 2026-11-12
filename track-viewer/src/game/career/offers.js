@@ -2,8 +2,9 @@
 // personal sponsors. Pure, like the rest of career/: a save goes in and comes out changed; every roll is seeded and stored in the offer.
 import MEDIA from '../../../../assets/career/media.json';
 import { rng, shuffle } from './rng.js';
+import { CATS } from '../economy.js';
 import {
-  TUNING as T, TIERS, CAL, SPONSORS, TEAM_IDS, CAR, DIV, nextDivOf, expIn, carsIn, parLap, paceOf, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating, styleOf,
+  TUNING as T, TIERS, CAL, SPONSORS, TEAM_IDS, CAR, DIV, nextDivOf, expIn, carsIn, parLap, levelGain, paceOf, clamp, tierOf, seatCar, otherSeat, formOf, interestTerms, interestOf, offerRoll, statusChoices, demandOf, nearestTerms, STATUS_LABEL, loreOf, targetFor, targetText, playerRating, styleOf,
 } from './rules.js';
 import { YOU, driverAt, personOf, marketScore, shortlistOf, poachable } from './world.js';
 import { note, remembers } from './ledger.js';
@@ -36,7 +37,11 @@ export const stepUp = (save, team) => !!save.contract && rankOf(team) === rankOf
  */
 export function offGrid(save, team, seat) {
   if (save.season?.div !== 'challenger' || rankOf(team) < rankOf(save.contract.team) || nextDivOf(save, team) !== 'elite' || nextDivOf(save, save.contract.team) === 'elite') return false;   // their own team going up takes them to the Elite anyway
-  const W = save.world, car = seatCar(team, seat), lap = (k, r) => parLap(CAL.shootout.track, k, 'dry', W.teams[CAR[k].team].dev) / paceOf(r, save.rules.difficulty), mine = lap(car, playerRating(save));
+  const W = save.world, car = seatCar(team, seat), lap = (k, r, cap = 3) => parLap(CAL.shootout.track, k, 'dry', W.teams[CAR[k].team].dev.map((v) => Math.min(v, cap))) / paceOf(r, save.rules.difficulty);
+  // his pace: the market rating less the edge his own car had over his teammate's in the duels it comes from (a duel won in the better car is no driver's margin), in the seat's car at its
+  // team's levels as far as his Career Level lets him buy them
+  const me = save.contract, u = save.garage.upgrades[me.car] ?? {}, edge = Math.max(0, levelGain(CATS.map(([c]) => u[c] ?? 0)) - levelGain(W.teams[me.team].dev));
+  const mine = lap(car, playerRating(save) - edge / T.pace.perRating, T.upgrades.clGate.filter((g) => save.career.cl >= g).length);
   // two places of margin: the model has no qualifying noise, and a seat it puts 7th or 8th missed about 7 Tour cuts in 10 (review round 3)
   return carsIn(save, 'elite', nextDivOf).filter((k) => k !== car && W.seats[k] !== YOU && lap(k, W.ratings[W.seats[k]]) < mine).length >= T.series.gridSize - 2;
 }

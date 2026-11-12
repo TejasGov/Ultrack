@@ -189,9 +189,9 @@ export class AIDriver {
     if (Math.abs(want) > 1.15 && speed > 12 && Math.abs(myLat - this.laneNow) > 1.5) return { throttle: 0, brake: THREE.MathUtils.clamp((Math.abs(want) - 1) * 0.6, 0, 0.5), steer, handbrake: 0, nitro: 0 };
     // a burst starts only with the lane ahead clear and 3 s after the last one (read runs at 120 Hz): the fastest car, catching traffic, fired 16 stubs a race
     this.nitroRest = Math.max(0, (this.nitroRest ?? 0) - 1);
-    // B: the nemesis chasing the player 10-50 m up the road fires the stock tank too, one burst a lap, in any mode
+    // B: the nemesis chasing the player 10-50 m up the road fires the stock tank too, one burst a lap, in any mode; a rival whose team developed Nitro (a tank above stock: handling.js) fires it in any mode
     const chase = !!(P && P.role === 'nemesis' && K.nitro.on && pl && pl.gap >= K.nitro.from && pl.gap <= K.nitro.to && (this.nitroOn || this.nitroLap !== (this.lap ?? 0)));
-    const nitro = (this.field.hardPace > 1 || chase) && !this.car.hero && road.wet < 0.5 && (this.nitroOn || (!blk && !this.nitroRest)) && aiNitro(this.nitroOn, e, Math.abs(want), speed, v.state.nitroTank);
+    const nitro = (this.field.hardPace > 1 || chase || v.spec.nitroTank > 1) && !this.car.hero && road.wet < 0.5 && (this.nitroOn || (!blk && !this.nitroRest)) && aiNitro(this.nitroOn, e, Math.abs(want), speed, v.state.nitroTank);
     if (nitro && !this.nitroOn && chase) this.nitroLap = this.lap ?? 0;
     if (this.nitroOn && !nitro) this.nitroRest = 360;
     this.nitroOn = nitro;

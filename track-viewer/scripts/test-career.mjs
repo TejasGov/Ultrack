@@ -717,7 +717,7 @@ try {
     { const s = toReview(signed(4509), 4), W0 = s.world.teams; s.contract.seat = 'A'; s.contract.next = null; s.career.rep = 500; s.career.cl = 12; s.career.rr = [6, 6, 6, 6, 6, 6];
       W0.mojave.div = 'challenger'; W0.hayate.div = 'challenger'; W0.liberty.div = 'elite'; W0.liberty.expPos = 3.5; assert.ok(6 < R.TUNING.offers.sameTierRR);
       for (const k of Object.keys(s.world.seats)) if (s.world.seats[k] !== 'YOU') s.world.ratings[s.world.seats[k]] = R.carsIn(s, 'elite', R.nextDivOf).includes(k) && R.CAR[k].team !== 'liberty' ? 60 : 99;
-      for (const r of s.season.results) r.duel = null;   // a slow Elite and a fast driver (no duel left: rated as the field): the seat makes its grid (offGrid)
+      for (const t of R.TEAM_IDS) W0[t].dev = [0, 0, 0, 0, 0]; for (const r of s.season.results) r.duel = null;   // stock cars (a season of seeded development otherwise), a slow Elite and a fast driver (no duel left: rated as the field): the seat makes its grid (offGrid)
       const up = C.approach(s, 'liberty'); assert.ok(['offer', 'no'].includes(up.result), up.why); assert.ok(!/takes an average rating/.test(up.why), 'no A-seat rating bar for a step up: ' + up.why);
       const same = C.approach(s, 'hayate'); assert.equal(same.result, 'closed'); assert.equal(same.why, 'No step up'); }
     // the review's second round: what a Challenger round keeps (rep, coins), a cup pays whole, the duel's heat by field, a Rookie's trust floor, and an Elite driver beaten from the Challenger
@@ -860,7 +860,10 @@ try {
     assert.equal(R.repairBill([250], 'bmw1', 0, 0).bill, 0, 'a round that paid nothing bills nothing');
     // stock par laps do not move, and a dev of 0 means no Aero; the Aero a team wears follows its development levels
     const base = R.CAL.tracks.india.parLap * (1 - R.TUNING.pace.carZ * R.TIERS.carZ.bmw1); assert.equal(R.parLap('india', 'bmw1'), base); assert.equal(R.parLap('india', 'bmw1', 'dry', [0, 0, 0]), base); assert.equal(R.parLap('india', 'bmw1', 'dry', [0, 0, 0, 0]), base);
-    assert.ok(Math.abs(R.parLap('india', 'bmw1', 'dry', [1, 1, 1]) / base - (1 - 0.01 - R.TUNING.pace.perAeroLevel)) < 1e-12, 'a team at dev 1 wears Aero 1'); assert.ok(R.parLap('india', 'bmw1', 'dry', [1, 1, 1, 3]) < R.parLap('india', 'bmw1', 'dry', [1, 1, 1, 0]), 'bought Aero speeds the player');
+    const PL = R.TUNING.pace.perLevel, one = PL.engine + PL.tyres + PL.brakes + PL.aero;
+    assert.ok(Math.abs(R.parLap('india', 'bmw1', 'dry', [1, 1, 1]) / base - (1 - one)) < 1e-12, 'a three-long dev (an old save) wears Aero 1 at level 1');
+    assert.ok(Math.abs(R.parLap('india', 'bmw1', 'dry', [1, 1, 1, 1, 2]) / base - (1 - one - 2 * PL.nitro)) < 1e-12, 'all five categories count, Nitro included');
+    assert.ok(one * 3 > 0.055 && one * 3 < 0.07, 'all at 3 is worth what an AI lap gains in the physics (5.3-6.7 %, 2026-11-11)'); assert.ok(R.parLap('india', 'bmw1', 'dry', [1, 1, 1, 3]) < R.parLap('india', 'bmw1', 'dry', [1, 1, 1, 0]), 'bought Aero speeds the player');
     assert.equal(R.aeroOf([2, 2, 1]), 2); assert.equal(R.aeroOf([0, 0, 0]), 0);
     const E = await server.ssrLoadModule('/src/game/economy.js'); assert.deepEqual(E.levelsOf({ upgrades: { x: { engine: 2 } } }, 'x'), { engine: 2, tyres: 0, brakes: 0, aero: 0, nitro: 0 }, 'a category an old save lacks reads 0'); assert.equal(E.CATS.length, 5);
     assert.deepEqual(E.migrate({ upgrades: { x: { engine: 1, tyres: 9 } } }).upgrades.x, { engine: 1, tyres: 3, brakes: 0, aero: 0, nitro: 0 }); assert.equal([1, 2, 3].reduce((n, l) => n + E.costOf(600, l), 0) * E.CATS.length, 30000, 'maxing a mid-class car costs about 30,000');
@@ -893,8 +896,36 @@ try {
     // an old save: staff appear, upgrade entries gain the new categories as 0, a season under way is untouched
     const o = signed(932); o.schema = 5; delete o.staff; o.garage.upgrades = { bmw1: { engine: 1, tyres: 0, brakes: 0 } }; C.migrate(o); assert.equal(o.schema, C.SCHEMA); assert.deepEqual(o.staff, { crew: null, engineer: null }); assert.deepEqual(o.garage.upgrades.bmw1, { engine: 1, tyres: 0, brakes: 0, aero: 0, nitro: 0 }); assert.equal(C.staffDiscount(o, 'crew'), 0);
     const o2 = signed(933); o2.garage.upgrades = { 'bmw1': { engine: 1 } }; assert.equal(C.upgradeInfo(o2, 'aero', 503).level, 0, 'a missing category reads 0 even before migration'); assert.equal(C.raceSetup(o2).levels('bmw1').aero, 0);
-    // rivals wear Aero with their development; they have no Nitro bought
-    const w = signed(934); C.finishQuali(w, 1); const lv = C.raceSetup(w).levels, rival = w.season.current.quali.grid.find((k) => k !== w.contract.car), dev = w.world.teams[R.CAR[rival].team].dev; assert.equal(lv(rival).aero, R.aeroOf(dev)); assert.equal(lv(rival).nitro, 0, 'rivals have no Nitro bought'); assert.deepEqual(Object.keys(lv(rival)).sort(), ['aero', 'brakes', 'engine', 'nitro', 'tyres'], 'every category is named, so a level left over from free play cannot leak to a rival'); }
+    // rivals wear their team's development, all five categories of it
+    const w = signed(934); C.finishQuali(w, 1); const lv = C.raceSetup(w).levels, rival = w.season.current.quali.grid.find((k) => k !== w.contract.car), dev = w.world.teams[R.CAR[rival].team].dev; w.world.teams[R.CAR[rival].team].dev = [1, 2, 0, 3, 2];
+    assert.deepEqual(lv(rival), { engine: 1, tyres: 2, brakes: 0, aero: 3, nitro: 2 }, 'a rival races its team car'); w.world.teams[R.CAR[rival].team].dev = dev; assert.deepEqual(Object.keys(lv(rival)).sort(), ['aero', 'brakes', 'engine', 'nitro', 'tyres'], 'every category is named, so a level left over from free play cannot leak to a rival'); }
+
+  // ---- team development (2026-11-11): seeded, per team, three windows a season, between the tier's floor and its cap + 1, Brakes never developed
+  { const D = R.TUNING.dev, floor = (t) => R.tierOf(t).dev, capAI = (t) => Math.min(3, R.tierOf(t).cap + D.aiCapPlus), devs = (s) => JSON.stringify(R.TEAM_IDS.map((t) => s.world.teams[t].dev));
+    const s0 = C.newCareer({ seed: 77, now: 'x' }); for (const t of R.TEAM_IDS) assert.deepEqual(s0.world.teams[t].dev, floor(t), 'a new world starts on the tiers\' cars');
+    // a season: the windows after rounds n/3 and 2n/3 (not before the first, not after the last), each once; the same seed replays the same updates
+    const a = signed(5301), b = signed(5301), n = a.season.calendar.length, at = [];
+    while (a.clock.phase !== 'review') { const before = devs(a); round(a, 4); round(b, 4); if (devs(a) !== before) at.push(a.clock.round); }
+    assert.equal(devs(a), devs(b), 'seeded: the same career develops the same cars'); assert.ok(at.every((r) => [Math.floor(n / 3), Math.floor((2 * n) / 3)].includes(r)), `updates only after rounds ${Math.floor(n / 3)} and ${Math.floor((2 * n) / 3)} (seen ${at})`);
+    { const was = devs(a); assert.ok(at.length && at.every((r) => r === Math.floor((2 * n) / 3)), 'season 1 develops only after two thirds of it'); assert.deepEqual(C.devWindow(a, 0), [], 'a window already spent is skipped'); assert.deepEqual(C.devWindow(a, 2), []); assert.equal(devs(a), was); }
+    assert.ok(R.TEAM_IDS.every((t) => JSON.stringify(signed(5301).world.teams[t].dev) === JSON.stringify(floor(t))), 'season 1 starts on the tier cars');
+    assert.ok(a.inbox.some((m) => /^Mid-season updates/.test(m.title) && m.read && m.action?.tab === 'standings'), 'the updates are the paddock\'s news');
+    // many seasons: inside the bounds, Brakes at the floor, and teams of one tier on different cars
+    let spread = 0, n2 = 0;
+    for (let seed = 5400; seed < 5420; seed++) { const s = signed(seed);
+      for (let k = 0; k < 6; k++) { s.clock.season++; C.devWindow(s, 0); C.devWindow(s, 1); C.devWindow(s, 2);
+        for (const t of R.TEAM_IDS) { const d = s.world.teams[t].dev; assert.equal(d.length, 5); d.forEach((v, i) => assert.ok(v >= floor(t)[i] && v <= capAI(t), `${t} ${i} at ${v}`)); assert.equal(d[2], floor(t)[2], 'Brakes are never developed'); }
+        const tot = (t) => s.world.teams[t].dev.reduce((x, y) => x + y, 0);
+        for (const l of Object.values(Object.groupBy(R.TEAM_IDS, (t) => R.TIERS.teams[t].tier))) { n2++; if (Math.max(...l.map(tot)) - Math.min(...l.map(tot)) >= 2) spread++; } } }
+    assert.ok(spread / n2 > 0.4, `teams of a tier differ by two levels or more: ${spread} of ${n2} tier-seasons`);
+    // the car on screen, and a rival passing the player's car is the team's news
+    const c = signed(5302); c.world.teams.liberty.dev = [0, 0, 0, 0, 0]; assert.deepEqual(C.teamCar(c, c.contract.team).own, true); assert.deepEqual(C.teamCar(c, 'liberty').levels, { engine: 0, tyres: 0, brakes: 0, aero: 0, nitro: 0 });
+    c.clock.season = 2; let posted = false; for (let seed = 1; seed < 40 && !posted; seed++) { c.seed = seed; c.world.devAt = [2, 1];   /* season 2: season 1 runs only its last window */ const n0 = c.inbox.length, out = C.devWindow(c, 1); posted = c.inbox.slice(0, c.inbox.length - n0).some((m) => m.kind === 'team' && /better .* than you|better than yours/.test(m.title)) && out.length > 0; }
+    assert.ok(posted, 'a rival in the series passing the player\'s car leaves an unread line from the team');
+    // schema 14 -> 15: [engine, tyres, brakes] become five levels (Aero implied, no Nitro), a season under way keeps the windows it has passed
+    const o = signed(5303); round(o, 4); round(o, 4); round(o, 4); o.schema = 14; delete o.world.devLog; delete o.world.devAt; for (const t of R.TEAM_IDS) o.world.teams[t].dev = floor(t).slice(0, 3);
+    o.world.teams.toro.dev = [2, 2, 1]; C.migrate(o); assert.equal(o.schema, C.SCHEMA); assert.deepEqual(o.world.teams.toro.dev, [2, 2, 1, 2, 0]); assert.deepEqual(o.world.teams.liberty.dev, [0, 0, 0, 0, 0]);
+    assert.deepEqual(o.world.devAt, [1, 2], 'past the first third: the next window is the second'); assert.deepEqual(o.world.devLog, []); }
 
   // ---- happiness, fan support and the Shop (Part 3)
   {
@@ -1397,7 +1428,7 @@ try {
   { const twelve = (s) => { strip(s, 'steelhead'); for (const t of Object.values(s.world.teams)) delete t.div; delete s.stats.promotions; delete s.stats.relegations;   // as schema 12 wrote it: no Steelhead yet
       for (const r of s.season?.results ?? []) for (const e of r.entries) { delete e.div; delete e.exp; } for (const o of s.pending?.offers ?? []) delete o.div; s.schema = 12; return s; };
     { const s = twelve(signed(4201, 'mojave', 'legacy')); round(s, 4); twelve(s); const exp0 = s.season.current.expPos;
-      C.migrate(s); assert.equal(s.schema, C.SCHEMA); assert.equal(C.SCHEMA, 14); assert.equal(s.season.divs, undefined, 'the season under way keeps one field'); assert.equal(s.season.current.expPos, exp0 + 2, 'Steelhead joins that field ahead of Mojave'); assert.equal(s.season.current.field, R.FIELD, 'of a field two cars larger');
+      C.migrate(s); assert.equal(s.schema, C.SCHEMA); assert.equal(s.season.divs, undefined, 'the season under way keeps one field'); assert.equal(s.season.current.expPos, exp0 + 2, 'Steelhead joins that field ahead of Mojave'); assert.equal(s.season.current.field, R.FIELD, 'of a field two cars larger');
       assert.equal(s.world.teams.steelhead.div, 'challenger', 'and starts next season in the Challenger'); assert.equal(s.world.teams.steelhead.joined, 1);
       assert.deepEqual(R.TEAM_IDS.filter((t) => s.world.teams[t].div === 'elite'), R.TEAM_IDS.filter((t) => s.world.teams[t].expPos <= 5), 'next season: the five best expected in the Elite');
       assert.equal(s.stats.promotions, 0); assert.equal(s.stats.relegations, 0); assert.ok(s.inbox.some((m) => m.title === 'Two series from next season' && /start in the Challenger Series/.test(m.body)));
@@ -1481,7 +1512,7 @@ try {
       if (s.season.div === 'challenger') assert.equal(round(s, 4).entries.length, 10); };
     { const s = signed(4120); round(s, 4); thirteen(s); s.player.code = 'TOL'; const cur = s.season.current, exp0 = cur.expPos, obj0 = JSON.stringify(cur.objectives), divs0 = { ...s.season.divs }, ranked = C.rankingOf(s, 'all');
       const twin = (seat) => s.world.seats[ranked[R.expOf(7, seat) - 1].key], pts = (c) => s.ranking.days.reduce((a, d) => a + (d[c] ?? 0), 0), twins = ['A', 'B'].map(twin);
-      C.migrate(s); assert.equal(s.schema, 14); sound(s, 'mid-season'); const T = s.world.teams.steelhead;
+      C.migrate(s); assert.equal(s.schema, C.SCHEMA); sound(s, 'mid-season'); const T = s.world.teams.steelhead;
       assert.deepEqual(NEW.map((k) => s.world.seats[k]), CODES); assert.equal(T.div, 'challenger'); assert.equal(T.expPos, 7); assert.equal(T.joined, 1); assert.deepEqual(T.dev, s.world.teams.corvid.dev.map((d, i) => Math.max(d, s.world.teams.toro.dev[i], s.world.teams.sarab.dev[i])), 'its tier\'s best development');
       assert.equal(s.world.ratings.TOL, 84); assert.equal(s.world.ratings.LAV, 82); assert.equal(s.world.ages.LAV, 25); assert.equal(s.world.contracts.TOL, W.contractFor(s.seed, 'TOL')); assert.equal(s.world.loyalty.LAV, W.loyaltyFor(s.seed, 'LAV')); assert.equal(s.ranking.seed.TOL, C.newCareer({ seed: 1, now: 'x' }).ranking.seed.TOL);
       assert.deepEqual(CODES.map(pts), twins.map(pts), 'each takes the race-day points of the driver ranked where they are expected in the whole field'); assert.ok(twins.every(Boolean));
@@ -1492,7 +1523,7 @@ try {
       playOn(s, 'mid-season'); }
     { const s = signed(4121); round(s, 4); C.advanceWeek(s); while (C.currentWeek(s).kind !== 'race') C.advanceWeek(s); C.finishQuali(s, 999); thirteen(s); const q0 = JSON.stringify(s.season.current.quali);
       C.migrate(s); sound(s, 'after qualifying'); assert.equal(JSON.stringify(s.season.current.quali), q0, 'the grid as qualified'); playOn(s, 'after qualifying'); }
-    { const s = signed(4122); while (C.currentWeek(s).kind !== 'market') { if (C.currentWeek(s).kind === 'race') round(s, 4); else C.advanceWeek(s); } thirteen(s); const tg = JSON.stringify(s.sponsors.offers.map((o) => o.target));
+    { const s = signed(4131); while (C.currentWeek(s).kind !== 'market') { if (C.currentWeek(s).kind === 'race') round(s, 4); else C.advanceWeek(s); } thirteen(s); const tg = JSON.stringify(s.sponsors.offers.map((o) => o.target));
       C.migrate(s); sound(s, 'in the market week'); assert.equal(JSON.stringify(s.sponsors.offers.map((o) => o.target)), tg, 'sponsor targets stand'); C.advanceWeek(s); playOn(s, 'in the market week'); }
     { const s = thirteen(toReview(signed(4123), 4)), ids = s.pending.offers.map((o) => o.id), day = C.windowInfo(s).day;
       C.migrate(s); sound(s, 'at the review'); assert.deepEqual(s.pending.offers.map((o) => o.id), ids, 'the offers stand'); assert.equal(C.windowInfo(s).day, day); assert.equal(s.world.teams.steelhead.div, 'challenger');

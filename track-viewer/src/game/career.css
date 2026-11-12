@@ -417,6 +417,15 @@
 .cx-div { flex: none; display: inline-flex; align-items: center; padding: 0 var(--sp-1); border-radius: var(--r-1); font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.7; white-space: nowrap; color: #0b0d12; }
 .cx-div.d-elite { background: var(--d-elite); }
 .cx-div.d-challenger { background: var(--d-challenger); }
+/* a team's car (career-shell.js carPips): five letters with their levels, the higher the brighter, then its latest update; one line under the team's name */
+.cx-car { display: flex; align-items: center; gap: 2px; min-width: 0; overflow: hidden; font-size: var(--fs-micro); letter-spacing: 0.04em; line-height: 1.4; white-space: nowrap; color: var(--c-ink-3); text-transform: none; }
+.cx-car .pip { flex: none; padding: 0 2px; border-radius: var(--r-1); box-shadow: inset 0 0 0 1px var(--c-line-2); }
+.cx-car .pip.l2 { color: var(--c-ink-2); }
+.cx-car .pip.l3 { color: var(--c-ink-1); background: color-mix(in srgb, var(--c-accent) 22%, transparent); box-shadow: none; }
+.cx-car .new { flex: none; margin-left: var(--sp-1); color: var(--c-accent); }
+.cx-teamrow .c-name { flex-wrap: wrap; row-gap: 0; }
+.cx-st .cx-car .new { display: none; }   /* the Teams' table is narrow: the latest update is in the row's title, the Deals' rows and the inbox */
+.cx-teamrow .cx-car { flex-basis: 100%; }
 .cx-move { margin-left: var(--sp-2); font-size: var(--fs-micro); font-weight: 700; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--d-open); white-space: nowrap; }
 .cx-switch { flex: none; margin-bottom: var(--sp-2); border-radius: var(--r-2); }
 .cx-switch .seg > button { height: calc(28 * var(--u)); }

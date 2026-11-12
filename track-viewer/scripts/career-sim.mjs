@@ -15,6 +15,11 @@ const pickBy = (div) => (offers, R) => [...offers].sort((a, b) => R.TIERS.tiers[
 /** the other picks career-metrics plays, so no series is the quicker way up: the base commit's (tier, A seat, pay) and one that stays in the Challenger within a tier */
 export const PICKS = { elite: pickBy((o) => o.div === 'elite'), base: pickBy(() => 0), challenger: pickBy((o) => o.div === 'challenger') };
 const best = PICKS.elite;
+/** the player's upgrade levels as parLap reads them, all five (Nitro included: the AI teams develop theirs too) */
+const lv = (u) => CATS.map(([c]) => u[c] ?? 0);
+/** the Teams' table of the player's series at a season end: its champion, the team expected first (expPos), and the same two among the AI teams alone */
+const teamsTable = (order, mine, W) => { const fav = (l) => [...l].sort((a, b) => W.teams[a].expPos - W.teams[b].expPos)[0], ai = order.filter((t) => t !== mine);
+  return { champ: order[0], fav: fav(order), aiChamp: ai[0], aiFav: fav(ai) }; };
 
 /** one career for `seasons` seasons; skill is the player's pace (1.00 = an AI of rating ~88) */
 export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', { life = false, passAll = false, pick = best, first = null, before = null } = {}) {
@@ -78,13 +83,13 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       }
       if (log.staffSeason !== save.clock.season) { log.staffSeason = save.clock.season; hireStaff(); }   // once a season, as a player would at its start
       const rd = C.currentRound(save), car = save.contract.car, u = { ...save.garage.upgrades[car] };
-      const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, [u.engine, u.tyres, u.brakes, u.aero]) / skill * C.driveLap(save.life.happy) * (1 + noise(0.008));   // the mood's engine power (life.js drivePower), as the physics gets it
+      const V = C.qualiVenue(save), lapNow = () => R.parLap(V.track, car, V.weather, lv(u)) / skill * C.driveLap(save.life.happy) * (1 + noise(0.008));   // the mood's engine power (life.js drivePower), as the physics gets it
       if (rand() < 0.1) { const h = [Math.round(50 + rand() * 130)]; C.logHits(save, h); log.hits++; }   // a crash in qualifying
       C.finishQuali(save, lapNow()); { const q = save.season.current.quali; if (!q.grid.includes(car) || q.grace) C.finishQuali(save, lapNow()); }   // a missed cut uses the one retry; so does a grace start, chasing a real top-8 slot
     } else if (save.clock.phase === 'race') {
       const q = save.season.current.quali, cur = save.season.current, o = cur.open, car = save.contract.car, lcq = o?.stage === 'lcq', V = o && !lcq ? C.currentRound(save) : C.qualiVenue(save);   // the laps in q.laps are the qualifying venue's, so the model stays on that scale unless it is a Final
       // a model, not a measurement: an AI car's pace is its par lap over its pace; a Tour round uses the qualifying laps, an Open's Final (whose seeds flew none) the model for every car
-      const model = (k) => { const u = save.garage.upgrades[k], dev = k === car ? [u.engine, u.tyres, u.brakes, u.aero] : save.world.teams[R.CAR[k].team].dev; return R.parLap(V.track, k, V.weather, dev) / (k === car ? skill / C.driveLap(save.life.happy) : R.paceOf(save.world.ratings[save.world.seats[k]])); };
+      const model = (k) => { const u = save.garage.upgrades[k], dev = k === car ? lv(u) : save.world.teams[R.CAR[k].team].dev; return R.parLap(V.track, k, V.weather, dev) / (k === car ? skill / C.driveLap(save.life.happy) : R.paceOf(save.world.ratings[save.world.seats[k]])); };
       const t = Object.fromEntries(q.grid.map((k) => [k, (o && !lcq ? model(k) : q.laps[k] ?? (k === car ? model(k) : 999)) * (1 + noise(0.012 * Math.sqrt((lcq ? C.currentRound(save).lcqLaps : C.currentRound(save).laps) / 5)))]));   // fewer laps, fewer places change from the grid
       const order = Object.keys(t).sort((a, b) => t[a] - t[b]), lap = Object.fromEntries(Object.entries(t).map(([k, v]) => [k, v * 0.99]));
       const missed = !q.grid.includes(save.contract.car);
@@ -96,7 +101,8 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       if (o?.kind === 'open') { log.opens++; if (!rep.dnq) log.finals++; if (!rep.dnq && !rep.dnf && rep.finish === 1) log.openWins++; }
       if (o?.kind === 'masters') { if (!rep.dnq) log.masters++; else log.absent++; }
       // the two series: every round with its series, and at a cup how many Challenger drivers raced its Final
-      log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, lcq: !!rep.lcq, tier: save.season.tier, seat: save.contract.seat, team: save.contract.team,
+      log.rounds.push({ s: save.clock.season, div: save.season.div ?? 'all', kind: rep.kind ?? 'tour', finish: rep.finish, dnq: !!rep.dnq, dnf: !!rep.dnf, lcq: !!rep.lcq, tier: save.season.tier, seat: save.contract.seat, team: save.contract.team,
+        win: rep.entries?.[0] ? (rep.entries[0].you ? 'YOU' : rep.entries[0].team) : null,   // the winner of the round the player raced or missed: his team's other car counts as that team
         ch: rep.kind === 'open' || rep.kind === 'masters' ? rep.entries.filter((e) => !e.dnq && e.div === 'challenger').length : null });
       log.rr.push(rep.rr); log.finish.push(rep.finish); log.exempt = (log.exempt ?? 0) + (q.exempt ? 1 : 0); log.dnq = (log.dnq ?? 0) + (missed ? 1 : 0);
       if (rep.midSeason?.warning) log.warnings++;
@@ -111,7 +117,9 @@ export function play({ C, R }, seed, skill, seasons = 3, raceLength = 'sprint', 
       const seated = (d) => Object.entries(W.seats).filter(([k, c]) => c && c !== 'YOU' && D?.[R.CAR[k].team] === d).map(([, c]) => W.ratings[c]);
       log.seasons.push({ s: season, div: save.season.div ?? 'all', tier: save.season.tier, dropped: !!save.pending.review.dropped, swap: h.swap ?? null, yourTeam: save.pending.review.yourTeam ?? null,
         sizes: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, R.TEAM_IDS.filter((t) => W.teams[t].div === d).length])),
-        rating: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, seated(d).reduce((a, b) => a + b, 0) / Math.max(1, seated(d).length)])) });
+        rating: D && Object.fromEntries(['elite', 'challenger'].map((d) => [d, seated(d).reduce((a, b) => a + b, 0) / Math.max(1, seated(d).length)])),
+        dev: Object.fromEntries(R.TEAM_IDS.map((t) => [t, [...W.teams[t].dev]])),   // the cars at the season end (career.js devWindow)
+        ...teamsTable(C.standings(save).teams.map((t) => t.team), save.contract.team, W) });
       if (save.pending.review.dropped) log.drops++;
       if (offers.some((o) => o.tier === 'maestro') && log.maestroOffer === null) log.maestroOffer = season;
       if (offers.some((o) => o.tier === 'legend') && log.legendOffer === null) log.legendOffer = season;

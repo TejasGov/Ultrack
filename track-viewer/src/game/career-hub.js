@@ -9,7 +9,7 @@ import { trackOf } from '../tracks.js';
 import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
 import { TUNING, TIERS, CAR, CAL, SPONSORS, FIELD, DIV, carsIn, fieldSize, loreOf, objectiveText, xpForLevel, formOf, STATUS_LABEL, rrLabel, targetText, isSpecial, pointsMult } from './career/rules.js';
-import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, ROUND_EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, seriesLine, tierCup, brandMark, cs, delta, rich, kindOf, kindIcon, STORY_KICK, storyPic, storySource, mediaBytes } from './career-shell.js';
+import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, ROUND_EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, seriesLine, tierCup, brandMark, carPips, cs, delta, rich, kindOf, kindIcon, STORY_KICK, storyPic, storySource, mediaBytes } from './career-shell.js';
 import { offerRow, teamRows } from './career-deals.js';
 
 const LIFE_BANDS = [...C.LIFE.bands].reverse();
@@ -301,7 +301,7 @@ export function CareerHubScreen(game) {
     // with two series: the Promotion line under the Challenger's first, the Relegation line over the Elite's last
     const on = save.season.results.length > 0, cutAt = (i) => on && (view === 'challenger' ? i === 0 : view === 'elite' && i === n - 2);   // no marks on a table of noughts
     const table = (title, right, rows, name, mine, teams = false, foot = null, top = null) => h('div.cx-b', {}, blockHead('trophy', title, right), top, h('div.lhead.cx-st', {}, h('span', {}, 'Pos'), h('span'), h('span', {}, name), h('span.val', {}, 'Wins'), h('span.val', {}, 'Pts')),
-      scroller('cx-list', rows.length ? rows.map((x, i) => css(h(`div.lrow.cx-st${mine(x) ? '.me' : ''}${teams && cutAt(i) ? '.cut' : ''}`, { 'data-nav': '', tabIndex: 0 }, h('b.tnum', {}, i + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, name === 'Driver' ? x.name : teamName(x.team)), name === 'Driver' ? h('small', {}, teamName(x.team)) : teams ? moveMark(view, i, n, on) : null),
+      scroller('cx-list', rows.length ? rows.map((x, i) => css(h(`div.lrow.cx-st${mine(x) ? '.me' : ''}${teams && cutAt(i) ? '.cut' : ''}`, { 'data-nav': '', tabIndex: 0 }, h('b.tnum', {}, i + 1), h('i.tbar'), h('span.c-name', {}, h('b', {}, name === 'Driver' ? x.name : teamName(x.team), name !== 'Driver' && teams ? moveMark(view, i, n, on) : null), name === 'Driver' ? h('small', {}, teamName(x.team)) : carPips(C.teamCar(save, x.team))),
         h('span.val.tnum', {}, x.wins), h('span.val.tnum', {}, String(Math.round(x.pts * 10) / 10))), { '--team': teamMark(loreOf(x.team)) })) : h('p.cx-note', {}, 'No rounds raced yet.')), foot);
     const rs = save.season.results, avg = rs.length ? rs.reduce((a, r) => a + r.rr, 0) / rs.length : null, d = save.contract.duel, best = Math.min(...rs.filter((r) => !r.dnf && !r.dnq).map((r) => r.finish));   // a missed cut is classified below the grid, so it is no best finish
     const you = h('div.cx-b', {}, blockHead('helmet', 'Your season'), h('div.cx-kv', {}, stat('Rounds', `${rs.length} of ${save.season.calendar.length}`), stat('Avg rating', avg ? avg.toFixed(1) : empty()), stat('Duel', `${d.won}-${d.lost}`), stat('Best', Number.isFinite(best) ? 'P' + best : rs.some((r) => r.dnf && !r.dnq) ? 'DNF' : empty())));
