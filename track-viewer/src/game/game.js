@@ -330,7 +330,7 @@ export class Game {
     this.hideScreens();
     applyUpgrades(career?.levels ?? ((k)=>store.levels(k)),career?undefined:store.data.car,career?.power);   // a career sets every car: AI teams carry their development levels; its race and qualifying the player's mood (career/life.js drivePower)
     this.earned=null;
-    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;F.aiFor=career?.ai?(k)=>career.ai[k]:(k)=>quickProfile(k,(k.length*7919)>>>0);F.orders=career?.orders??null;F.nemesisKey=career?.nemesis?.key??null;F.mateKey=career?.mateKey??null;F.runUp=career?.runUp??0;F.hardPace=hardPaceFor(store.settings.hardMode);   // read by grid() in configure and by enablePhysics
+    F.gridOrder=career?.gridOrder??null;F.paceFor=career?.pace?(k)=>career.pace[k]:null;F.aiFor=career?.ai?(k)=>career.ai[k]:(k)=>quickProfile(k,(k.length*7919)>>>0,this.ctx.trackId());F.orders=career?.orders??null;F.nemesisKey=career?.nemesis?.key??null;F.mateKey=career?.mateKey??null;F.runUp=career?.runUp??0;F.hardPace=hardPaceFor(store.settings.hardMode);   // read by grid() in configure and by enablePhysics
     F.configure({ hero: store.data.car, racers });
     this.cameraFor('chase');
     // Prepare shader variants/textures behind the intro, before the race clock and controls start.

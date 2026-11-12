@@ -353,8 +353,8 @@ try {
       if (was) d.world.seats[was] = d.world.seats[k]; d.world.seats[k] = 'BAR';
       assert.equal(C.raceSetup(d).ai[k].trait, 'nitro', 'the trait follows the driver, not the car or the team');
       assert.ok(Object.values(C.raceSetup(d).ai).every((p) => p.composure >= 0 && p.composure <= 0.98));
-      assert.equal(R.quickProfile('laferrari').trait, 'nitro'); assert.equal(R.quickProfile('supra'), null, 'an untraited driver races a quick race as before');
-      assert.equal(R.quickProfile('laferrari').composure, 0.98); assert.ok(R.quickProfile('huracan').composure < 0.98, 'only a hothead slips in a quick race'); } assert.ok(C.raceSetup(d).pace[mate] > 0, 'the teammate races at his pace');
+      assert.equal(R.quickProfile('laferrari').trait, 'nitro'); assert.equal(R.quickProfile('supra').composure, 0.98, 'a quick race: no mistakes but a hothead\'s');
+      assert.equal(R.quickProfile('laferrari').composure, 0.98); assert.equal(Object.keys(R.DRIVERS.traits).length, 20, 'every driver has a style'); assert.ok(Object.values(R.DRIVERS.traits).every((t) => R.DRIVERS.traitInfo[t]), 'each style has its card'); assert.ok(R.quickProfile('mp1x', 1, 'shajawa').atHome && !R.quickProfile('mp1x', 1, 'india').atHome, 'Kareem is at home at Shajawa only'); assert.ok(R.quickProfile('huracan').composure < 0.98, 'only a hothead slips in a quick race'); } assert.ok(C.raceSetup(d).pace[mate] > 0, 'the teammate races at his pace');
     const r = C.finishRace(d, { order: q.grid, best: {} }); assert.equal(r.entries.length, R.FIELD); assert.equal(r.entries.filter((e) => !e.dnq).length, 8); assert.ok(r.entries.slice(8).every((e) => e.pts === 0 && e.dnq)); assert.equal(C.standings(d).drivers.length, R.FIELD, 'the table has everyone'); assert.equal(C.standings(d).teams.length, 10); assert.ok(C.standings(d).teams.find((t) => t.team === d.contract.team).pts >= 25 + 18 + 2, 'both cars score for the team');
     const o = signed(151, 'mojave', 'elite'), started = o.stats.starts, wk = o.clock.week; C.finishQuali(o, 999); const place = C.qualiPlace(o.season.current.quali, o.contract.car); const dq = C.finishDnq(o);
     assert.equal(dq.dnq, true); assert.equal(dq.finish, place); assert.equal(dq.grid, place); assert.equal(dq.entries.find((e) => e.you).pts, 0); assert.equal(dq.entries.filter((e) => !e.dnq).length, 8); assert.ok(dq.entries.slice(0, 8).every((e) => !e.you)); assert.ok(dq.entries[0].pts >= 25); assert.equal(o.stats.starts, started, 'no start'); assert.ok(o.clock.week > wk, 'the season moves on'); assert.ok(!dq.coinLines.some(([l]) => /Finished/.test(l)), 'no place money'); assert.ok(dq.rr < 8);
@@ -1228,7 +1228,7 @@ try {
     assert.deepEqual([X.ai[others[0]].role, X.ai[others[1]].role, X.ai[mate].role, X.ai[others[2]].role], ['nemesis', 'rival', 'mate', null]);
     assert.equal(X.nemesis.key, others[0]); assert.equal(X.mateKey, mate); assert.equal(X.orders, R.ordersFor(s));
     assert.equal(JSON.stringify(X.ai), JSON.stringify(X2.ai), 'the same round, the same profiles'); assert.ok(new Set(Object.values(X.ai).map((p) => p.seed)).size === g.length - 1, 'a seed per car');
-    assert.ok(Object.values(X.ai).every((p) => Number.isInteger(p.seed) && p.composure >= 0.2 && p.composure <= 0.95));
+    assert.ok(Object.values(X.ai).every((p) => Number.isInteger(p.seed) && p.composure >= 0 && p.composure <= 0.98))   // composureOf 0.2-0.95, shifted by a racing style (traitComposure);
     X.ai[mate].k.defend.on = false; assert.equal(R.TUNING.rivals.track.defend.on, true, 'the knobs are a copy');
     s.career.heat[s.world.seats[mate]] = 90; assert.equal(C.raceSetup(s).ai[mate].role, 'nemesis', 'a teammate who is the nemesis races as one');
     // obeying 'let them by' earns trust; ignoring it costs trust, heats the teammate and makes the papers. 'toYou' and no order change nothing

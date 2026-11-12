@@ -371,10 +371,12 @@ export const composureOf = (rating, age) => clamp(0.35 + (rating - 70) * 0.02 + 
 /** a driver's racing style (drivers.json traits, by code: it follows the driver to any seat) and its card text { label, line }; null for most */
 export const traitOf = (code) => DRIVERS.traits?.[code] ?? null;
 export const traitInfo = (code) => DRIVERS.traitInfo?.[traitOf(code)] ?? null;
+/** a home hero (traits 'home') racing the home track (drivers.json homes) */
+export const atHome = (code, track) => traitOf(code) === 'home' && !!track && DRIVERS.homes?.[code] === track;
 /** a trait's shift of the mistake roll's composure (calm +, hothead -), kept to 0..0.98 */
 export const traitComposure = (c, trait) => clamp(c + (T.rivals.track.traits?.[trait]?.composure ?? 0), 0, 0.98);
 /** outside the career (a quick race), only a traited driver gets a profile: no role, no mistakes but a hothead's, the trait's moves (driver.js) */
-export const quickProfile = (key, seed = 1) => { const trait = traitOf(CAR[key]?.driver.code); return trait ? { role: null, composure: traitComposure(1, trait), seed, k: structuredClone(T.rivals.track), trait } : null; };
+export const quickProfile = (key, seed = 1, track = null) => { const code = CAR[key]?.driver.code, trait = traitOf(code); return trait ? { role: null, composure: traitComposure(1, trait), seed, k: structuredClone(T.rivals.track), trait, atHome: atHome(code, track) } : null; };
 /** this race's team orders: 'toYou' (the teammate lets the player by on the last lap), 'toMate' (the player is asked to let them by) or null */
 export function ordersFor(save) {
   const me = save.contract, O = T.trust.orders; if (!me) return null;
