@@ -26,7 +26,7 @@ cards reuse these assets. Sponsor artwork is separate from the team identities.
 | **Liberty** | LIB | English: freedom; the cracked bell of Philadelphia | Philadelphia, PA | Harlan Whitfield | V6 / V8 (Ford GT Mk II and Blackbird) |
 | **Sarab** | SRB | Arabic: a mirage (the home team) | Corniche Marina | Rashid Al-Mansouri | V8 / flat-six |
 | **Hayate** | HYT | Japanese: 疾風, a sudden gale | Oyama, Shizuoka | Tatsuo Hamamoto | twin-turbo V6 (Nissan Z GT4) / turbo four (Supra Super GT) |
-| **Norrsken** | NRS | Swedish: the northern lights | Ängelholm, Sweden | Henrik Wallgren | twin-turbo V8 (Koenigsegg Jesko and CC850; the recorded McLaren 720S V8 for now) |
+| **Norrsken** | NRS | Swedish: the northern lights | Ängelholm, Sweden | Henrik Wallgren | twin-turbo V8 (Koenigsegg Jesko and CC850; the recorded McLaren 650S GT3 V8 for now) |
 | **Steelhead** | STH | English: the Great Lakes trout that runs upriver; and Detroit steel | Detroit, Michigan | Dolores Kowalczyk | supercharged V8 / V8 (Corvette ZR1 and Stingray; the recorded Mustang GT V8 for now) |
 
 Each team pairs cars of one character, usually with one engine sound, so the team reads and sounds like a unit. Ten teams, one title sponsor each (Hayate's is Sony, whose boards also line the Marina; Norrsken's is Samsung, already on the Cheongsan Park boards; Steelhead's is LG, also a Cheongsan Park board; see ../sponsors/README.md).
@@ -72,7 +72,7 @@ Kowalczyk is a bidder: three rounds of patience, gives most on salary. The team 
 | # | Driver | Code | Nation | Team | Car | In one line |
 |---|---|---|---|---|---|---|
 | 1 | Remy Valois | VAL | MON | Aurum | Bugatti Divo | reigning champion |
-| 3 | Zayn Kareem | KAR | UAE | Sarab | McLaren 720S | home hero |
+| 3 | Zayn Kareem | KAR | UAE | Sarab | McLaren 650S GT3 | home hero |
 | 4 | Theo Ashcombe | ASH | GBR | Corvid | Valkyrie | third-generation racer |
 | 6 | Grace Tolliver | TOL | USA | Steelhead | Corvette ZR1 | the drag-strip kid |
 | 7 | Matteo Varrone | VAR | ITA | Toro | AV–12 | Toro's prodigal son |

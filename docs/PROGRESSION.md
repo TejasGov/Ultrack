@@ -7,7 +7,7 @@ All 14 cars remain available. `assets/teams/progression.json` owns the rank ladd
 | D · Club | 1 | ST–6, Veloce Aero |
 | C · Sport | 5 | Continental GT |
 | B · Pro | 10 | 911–T |
-| A · Elite | 15 | Furari 488-R, McLaren 720S, AV–12, Blackbird-X |
+| A · Elite | 15 | Furari 488-R, McLaren 650S GT3, AV–12, Blackbird-X |
 | S · Hyper | 20 | Mercedes-AMG One, Divo-X |
 | S+ · Apex | 25 | Valkyrie, Destrier-X |
 

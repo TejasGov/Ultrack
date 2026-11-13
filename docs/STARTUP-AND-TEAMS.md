@@ -35,7 +35,7 @@ the active venue. This change does not add or prefetch two nonexistent maps.
 | Mojave | Bentley Continental GT, BMW |
 | Aurum | Bugatti Divo, Bugatti Destrier |
 | Liberty — royal blue, red, white; royal-blue lights | Ford GT Mk II, Hennessey Blackbird |
-| Sarab | McLaren 720S, Porsche |
+| Sarab | McLaren 650S GT3, Porsche |
 
 Drivers move with their cars: Maddox (#66) drives the Ford GT Mk II for Liberty, Lindqvist (#8) the Bentley for
 Mojave, and Varrone (#7) went with the AV-12 when it moved from Saetta to Toro. The two new cars bring two new drivers: Armand Beaulieu (#16, Bugatti Destrier, Aurum) and Wade Hollis

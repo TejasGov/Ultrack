@@ -1,5 +1,5 @@
 # Prepares the four 2026-10-21 Sketchfab cars for scripts/model-car.py (track-viewer): game-rip structure -> role-tagged parts.
-#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4|nissanz|supra|fordgt|jesko|cc850|zr1|stingray>
+#   blender -b -t 6 --python sources/sketchfab/prepare-cars.py -- <laferrari|huracan|valkyrie|p918|gt4|nissanz|supra|fordgt|jesko|cc850|zr1|stingray|mclaren650>
 # Reads <folder>/model.glb, writes <folder>/prepared.glb with
 #   - every mesh un-parented, in world space (the pipeline measures and scales it itself),
 #   - object names the pipeline's wheel patterns find ("Tyre_", "Spin_" = rim + disc, "Caliper_", "INT:" = cabin),
@@ -13,7 +13,7 @@ from mathutils import Vector, Matrix
 
 key = sys.argv[sys.argv.index('--') + 1]
 HERE = os.path.dirname(os.path.abspath(__file__))
-FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4', 'nissanz': 'Nnissan-z-gt4', 'supra': 'Tsupra-gt', 'fordgt': 'Ffordgt-mk2', 'jesko': 'Kjesko', 'cc850': 'Kcc850', 'zr1': 'Czr1', 'stingray': 'Cstingray'}[key]
+FOLDER = {'laferrari': 'Flaferrari', 'huracan': 'Lhuracan-sto', 'valkyrie': 'Avalkyrie', 'p918': 'P918-spyder', 'gt4': 'Mamg-gt4', 'nissanz': 'Nnissan-z-gt4', 'supra': 'Tsupra-gt', 'fordgt': 'Ffordgt-mk2', 'jesko': 'Kjesko', 'cc850': 'Kcc850', 'zr1': 'Czr1', 'stingray': 'Cstingray', 'mclaren650': 'M650s-gt3'}[key]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=os.path.join(HERE, FOLDER, 'model.glb'))
 
@@ -509,6 +509,26 @@ def stingray():
     for n, o in out.items():
         if not n.startswith(('Tyre_', 'Spin_', 'Caliper_')): print('C8', n, tris(o))
 if key == 'stingray': stingray()
+
+# ================= the McLaren 650S GT3 (Tyler_Dave, CC BY; one mesh per material covering the whole car, metres, nose -Y, Z up) =================
+def mclaren650():
+    mirror = lambda p: abs(p.x) > 0.88 and -0.66 < p.y < -0.36 and p.z > 0.74       # the door mirror housings inside Carpaint
+    ROLE = {'MIRROR': 'mirror', 'Glass_Windows': 'glass', 'Glass_Wind_noTrasp': 'glass', 'Rear_Light': 'tail', 'Rear_Light_BIS': 'tail', 'Front_Light': 'headkeep'}
+    for o in list(bpy.context.scene.objects):
+        if o.type != 'MESH': continue
+        mn = o.material_slots[0].material.name.split('.')[0] if o.material_slots and o.material_slots[0].material else ''
+        if mn == 'DAMAGE_GLASS': bpy.data.objects.remove(o); continue                 # the crash-damage overlay
+        if mn == 'Tyre': put(o, 'Tyre_all', 'keep'); continue                           # loose wheels: model-car.py splits the four corners
+        if mn in ('Rim', 'Brake_Disk'): put(o, 'Spin_' + mn, 'keep'); continue
+        if mn == 'Brake_Caliper': put(o, 'Caliper_all', 'caliper'); continue
+        if mn == 'Carpaint':
+            g = split(o, lambda f, uvl: mirror(f.calc_center_median()))
+            if g: put(g, 'mirrorcap', 'mirrorPaint')
+            if g is not o: put(o, 'body_paint', 'paint')
+            continue
+        if mn.startswith('INT_'): put(o, 'INT:' + mn, 'glass' if mn == 'INT_Glass_Windows' else 'keep'); continue
+        put(o, mn, ROLE.get(mn, 'keep'))                                                # Glass_Clear: the lamp covers, kept clear
+if key == 'mclaren650': mclaren650()
 
 # ================= export =================
 def export():

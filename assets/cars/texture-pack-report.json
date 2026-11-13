@@ -28,20 +28,6 @@
     "textures": 31
   },
   {
-    "key": "mp1x",
-    "lod": 0,
-    "originalBytes": 690456,
-    "compressedBytes": 378184,
-    "textures": 5
-  },
-  {
-    "key": "mp1x",
-    "lod": 1,
-    "originalBytes": 655380,
-    "compressedBytes": 357368,
-    "textures": 5
-  },
-  {
     "key": "jaguarxkjss",
     "lod": 0,
     "originalBytes": 2349848,
@@ -264,5 +250,19 @@
     "originalBytes": 2061848,
     "compressedBytes": 1451224,
     "textures": 27
+  },
+  {
+    "key": "mp1x",
+    "lod": 0,
+    "originalBytes": 5317528,
+    "compressedBytes": 2703892,
+    "textures": 50
+  },
+  {
+    "key": "mp1x",
+    "lod": 1,
+    "originalBytes": 2250116,
+    "compressedBytes": 1578956,
+    "textures": 43
   }
 ]

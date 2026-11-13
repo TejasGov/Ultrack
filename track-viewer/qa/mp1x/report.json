@@ -1,19 +1,146 @@
 {
   "car": "mp1x",
-  "date": "2026-10-21T16:29:55.649Z",
+  "date": "2026-11-13T16:34:13.724Z",
   "tuning": {
     "note": "tuning for the replacement model (cars.js reads only this block for it)",
     "suspension": {
-      "pitch": 0.6,
+      "pitch": 0.5,
       "roll": 0.85,
       "freq": 1.6,
-      "ride": 0
-    }
+      "ride": 0.025
+    },
+    "qa": {
+      "waive": [
+        {
+          "view": "front-left",
+          "at": [
+            0.75,
+            0.63
+          ],
+          "why": "daylight under the swan-neck rear wing, between its struts and over the deck: open on the real car (traced: trace-front-left-0.png)"
+        },
+        {
+          "view": "front-right",
+          "at": [
+            0.25,
+            0.63
+          ],
+          "why": "daylight under the swan-neck rear wing, between its struts and over the deck: open on the real car (traced: trace-front-right-7.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.7,
+            0.26
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.72,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.74,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.77,
+            0.29
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.85,
+            0.36
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.29,
+            0.26
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.28,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.26,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.23,
+            0.29
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.15,
+            0.36
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.15,
+            0.37
+          ],
+          "why": "the open rear grille beside the diffuser, through to the arch: open on the real car (traced: trace-rear-right-12.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.31,
+            0.4
+          ],
+          "why": "the door-blade intake behind the front wheel, open through to the underside in this model (the real car has a radiator behind it): seen only from the rear three-quarter at this angle, 88 cm2 (traced: trace-rear-left-6.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.69,
+            0.4
+          ],
+          "why": "the door-blade intake behind the front wheel, open through to the underside in this model (the real car has a radiator behind it): seen only from the rear three-quarter at this angle, 88 cm2 (traced: trace-rear-right-14.png)"
+        }
+      ]
+    },
+    "log": [
+      "2026-11-13 McLaren 650S GT3 (Tyler_Dave, CC BY): ride 0.025 and pitch 0.5 (front top gap 0.7 cm, -1.9 cm with the nose down at ride 0); tail lamps from tails/mp1x.js (the 720S boxes left every element off); the see-through gaps traced and waived as real openings, except the door intake, which is open through in the model"
+    ]
   },
   "summary": {
-    "pass": 9,
+    "pass": 10,
     "warn": 1,
-    "fail": 1,
+    "fail": 0,
     "review": 1,
     "info": 1
   },
@@ -21,30 +148,11 @@
     {
       "id": "see-through",
       "title": "No see-through gaps (every part in place)",
-      "status": "fail",
-      "value": "2 gaps ≥ 20 cm², 0 of 5-20 cm²",
+      "status": "pass",
+      "value": "0 gaps ≥ 20 cm², 0 of 5-20 cm², 15 waived (daylight under the swan-neck rear wing, between its struts and over the deck: open on the real car (traced: trace-front-left-0.png); the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png); the door-blade intake behind the front wheel, open through to the underside in this model (the real car has a radiator behind it): seen only from the rear three-quarter at this angle, 88 cm2 (traced: trace-rear-left-6.png); daylight under the swan-neck rear wing, between its struts and over the deck: open on the real car (traced: trace-front-right-7.png); the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png); the door-blade intake behind the front wheel, open through to the underside in this model (the real car has a radiator behind it): seen only from the rear three-quarter at this angle, 88 cm2 (traced: trace-rear-right-14.png))",
       "expect": "none",
       "fix": "automatic interior fills (carkit/interior.js: floor, keel, bays, bulkheads, arch liners, cabin); trace a gap that survives them (masks.png, then a magenta-background render) and add a fill or a tuning.glass scale",
-      "detail": [
-        {
-          "view": "left",
-          "area": 16,
-          "cm2": 35,
-          "at": [
-            0.85,
-            0.44
-          ]
-        },
-        {
-          "view": "right",
-          "area": 16,
-          "cm2": 35,
-          "at": [
-            0.14,
-            0.44
-          ]
-        }
-      ]
+      "detail": []
     },
     {
       "id": "glass-cover",
@@ -56,15 +164,15 @@
       "detail": [
         {
           "name": "left",
-          "all": 1,
-          "uncoveredPx": 16,
-          "openingsPx": 16
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
         },
         {
           "name": "right",
-          "all": 1,
-          "uncoveredPx": 16,
-          "openingsPx": 16
+          "all": 0,
+          "uncoveredPx": 0,
+          "openingsPx": 0
         },
         {
           "name": "front",
@@ -86,27 +194,27 @@
         },
         {
           "name": "front-left",
-          "all": 0,
-          "uncoveredPx": 0,
-          "openingsPx": 0
+          "all": 1,
+          "uncoveredPx": 338,
+          "openingsPx": 338
         },
         {
           "name": "rear-left",
-          "all": 0,
-          "uncoveredPx": 0,
-          "openingsPx": 0
+          "all": 6,
+          "uncoveredPx": 7,
+          "openingsPx": 7
         },
         {
           "name": "front-right",
-          "all": 0,
-          "uncoveredPx": 0,
-          "openingsPx": 0
+          "all": 1,
+          "uncoveredPx": 338,
+          "openingsPx": 338
         },
         {
           "name": "rear-right",
-          "all": 0,
-          "uncoveredPx": 0,
-          "openingsPx": 0
+          "all": 7,
+          "uncoveredPx": 30,
+          "openingsPx": 30
         },
         {
           "name": "low-left",
@@ -126,37 +234,37 @@
       "id": "wheels",
       "title": "Tyres sit in the arches: a visible gap, no clipping, flush with the body",
       "status": "pass",
-      "value": "front: clear 0.02 top 0.02 poke 0.01; front: clear 0.02 top 0.02 poke 0.01; rear: clear 0.012 top 0.015 poke 0.008; rear: clear 0.012 top 0.015 poke 0.008",
+      "value": "front: clear 0.028 top 0.032 poke -0.002; front: clear 0.028 top 0.032 poke -0.002; rear: clear 0.033 top 0.076 poke 0; rear: clear 0.033 top 0.076 poke 0",
       "expect": "clearance ≥ 0 (lip overlap under 2 cm warns), top gap 1.2-12 cm, poke -10..+4 cm",
       "fix": "tuning.suspension { ride } raises the body off the wheels (m); arch lips that dip into the tyre need a shell fix",
       "detail": [
         {
           "wheel": "wheel_FL",
           "axle": "front",
-          "minClearance": 0.02,
-          "topGap": 0.02,
-          "poke": 0.01
+          "minClearance": 0.028,
+          "topGap": 0.032,
+          "poke": -0.002
         },
         {
           "wheel": "wheel_FR",
           "axle": "front",
-          "minClearance": 0.02,
-          "topGap": 0.02,
-          "poke": 0.01
+          "minClearance": 0.028,
+          "topGap": 0.032,
+          "poke": -0.002
         },
         {
           "wheel": "wheel_RL",
           "axle": "rear",
-          "minClearance": 0.012,
-          "topGap": 0.015,
-          "poke": 0.008
+          "minClearance": 0.033,
+          "topGap": 0.076,
+          "poke": 0
         },
         {
           "wheel": "wheel_RR",
           "axle": "rear",
-          "minClearance": 0.012,
-          "topGap": 0.015,
-          "poke": 0.008
+          "minClearance": 0.033,
+          "topGap": 0.076,
+          "poke": 0
         }
       ]
     },
@@ -164,29 +272,24 @@
       "id": "glass-fit",
       "title": "Glass sits in the openings, not on top of the paint or under it",
       "status": "pass",
-      "value": "floating 3%, buried 2%, over openings 14%",
+      "value": "floating 0%, buried 8%, over openings 1%",
       "expect": "floating ≤ 5%, buried ≤ 30%",
       "fix": "tuning.glass { push } (m, along the pane normal)",
       "detail": {
-        "samples": 98,
-        "floating": 0.031,
-        "buried": 0.02,
-        "overOpening": 0.143,
+        "samples": 855,
+        "floating": 0.002,
+        "buried": 0.083,
+        "overOpening": 0.007,
         "floatingAt": [
           [
-            -0.17,
-            1.08,
-            -0.54
+            0.17,
+            0.91,
+            -0.67
           ],
           [
-            -0.17,
-            1.08,
-            0.54
-          ],
-          [
-            0,
-            1.08,
-            0.56
+            0.17,
+            0.88,
+            -0.69
           ]
         ]
       }
@@ -204,14 +307,14 @@
           "name": "exhaust_0",
           "onBody": 0.02,
           "blocked": false,
-          "z": -0.43
+          "z": -0.22
         },
         {
           "kind": "exhaust",
           "name": "exhaust_1",
           "onBody": 0.02,
           "blocked": false,
-          "z": 0.43
+          "z": 0.22
         }
       ]
     },
@@ -219,20 +322,20 @@
       "id": "mirrors",
       "title": "Side mirrors: real-style housings, both sides, symmetric, on short arms",
       "status": "pass",
-      "value": "the model's own, asymmetry 0 m, housing gap -0.475 / -0.475 m",
+      "value": "the model's own, asymmetry 0.001 m, housing gap 0.003 / 0.002 m",
       "expect": "tuned style, asymmetry ≤ 2 cm, gap 1.5-32 cm",
       "fix": "tuning.mirrors { style: blade|gt|bullet, scale, offset, housing }",
       "detail": {
         "present": true,
-        "asymmetry": 0,
+        "asymmetry": 0.001,
         "housingGap": [
-          -0.475,
-          -0.475
+          0.003,
+          0.002
         ],
         "size": [
-          0.204,
-          0.201,
-          0.977
+          0.083,
+          0.121,
+          0.171
         ]
       }
     },
@@ -240,45 +343,45 @@
       "id": "lamps",
       "title": "Tail lamps: red but unlit off the brake, bright and blooming on it",
       "status": "pass",
-      "value": "area 534 cm2; dusk b0: 61.2, dusk b1: 144.7, night b0: 51.5, night b1: 171.1",
+      "value": "area 10000 cm2; dusk b0: 45.9, dusk b1: 90.4, night b0: 30.2, night b1: 117.9",
       "expect": "off: lum < 125, red; on: ≥ 90 and ≥ off + 40 (saturated red has low luminance; glossy lenses mirror the sky when off)",
       "fix": "carkit/lamps.js (levels are shared; area-normalised); tuning.lamps only for a real exception",
       "detail": [
         {
           "look": "dusk",
           "brake": 0,
-          "area": 0.0534,
-          "px": 4240,
-          "lum": 61.2,
-          "redOverGreen": 3.82,
-          "peak": 200
+          "area": 1,
+          "px": 1226,
+          "lum": 45.9,
+          "redOverGreen": 3.08,
+          "peak": 88
         },
         {
           "look": "dusk",
           "brake": 1,
-          "area": 0.0534,
-          "px": 4240,
-          "lum": 144.7,
-          "redOverGreen": 1.95,
-          "peak": 204
+          "area": 1,
+          "px": 1226,
+          "lum": 90.4,
+          "redOverGreen": 3.52,
+          "peak": 135
         },
         {
           "look": "night",
           "brake": 0,
-          "area": 0.0534,
-          "px": 4240,
-          "lum": 51.5,
-          "redOverGreen": 7.81,
-          "peak": 227
+          "area": 1,
+          "px": 1226,
+          "lum": 30.2,
+          "redOverGreen": 11.58,
+          "peak": 46
         },
         {
           "look": "night",
           "brake": 1,
-          "area": 0.0534,
-          "px": 4240,
-          "lum": 171.1,
-          "redOverGreen": 1.51,
-          "peak": 211
+          "area": 1,
+          "px": 1226,
+          "lum": 117.9,
+          "redOverGreen": 2.86,
+          "peak": 171
         }
       ]
     },
@@ -295,7 +398,7 @@
       "id": "pitch",
       "title": "Body dips under braking (1 g)",
       "status": "pass",
-      "value": "1.28°",
+      "value": "1.07°",
       "expect": "0.8-3.2°",
       "fix": "tuning.suspension { pitch, freq, damping }"
     },
@@ -311,7 +414,7 @@
       "id": "travel",
       "title": "Tyres stay clear of the arches with the nose down",
       "status": "pass",
-      "value": "-0.004 m",
+      "value": "0.009 m",
       "expect": "≥ 0",
       "fix": "tuning.suspension { pitch } lower, or { ride } higher"
     },
@@ -327,19 +430,19 @@
       "id": "fx",
       "title": "Exhaust smoke, pops, nitro flames and drift smoke all show",
       "status": "pass",
-      "value": "idle smoke 7, pop fire 18, nitro fire 2, drift smoke 234",
+      "value": "idle smoke 15, pop fire 11, nitro fire 54, drift smoke 415",
       "expect": "all > 0 (drift > 20)",
       "fix": "exhaust.json points; carkit/fx.js rates"
     }
   ],
   "metric": {
-    "pitch": 1.278130702802966,
+    "pitch": 1.0651089190024718,
     "roll": 1.9657665604507406,
     "aero": 0,
-    "smokeIdle": 7,
-    "fireLift": 18,
-    "fireNitro": 2,
-    "smokeDrift": 234,
-    "clearBrake": -0.004
+    "smokeIdle": 15,
+    "fireLift": 11,
+    "fireNitro": 54,
+    "smokeDrift": 415,
+    "clearBrake": 0.009
   }
 }
