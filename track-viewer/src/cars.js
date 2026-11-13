@@ -63,6 +63,11 @@ export const hasModel = (key) => key in MODELS;
 /** "<role>|<name>" materials from model-car.py: the game's own material for a role, the model's for "keep" */
 const roleMaterial = completeCarMaterial;
 
+/** A model's own tyre material made rubber: dielectric and matte. Seven imports carried 0.14-0.71 metalness on their tyres (the Valkyrie's
+ *  0.5 rendered near white), so the tyre mirrored the sky and read as part of the rim. Its texture stays. */
+const TYRE_MAT = /tyre|tire|tread/i;
+const rubber = (mat) => { if (mat?.name?.startsWith('keep|') && TYRE_MAT.test(mat.name)) { mat.metalness = 0; mat.roughness = Math.max(mat.roughness, 0.85); } return mat; };
+
 /** Wheels of a model: wheel_XX hub nodes with `_spin` and `_caliper` groups, shaped like car-lab's createWheelSet */
 function modelWheels(scene, profile, m, key) {
   const root = new THREE.Group(), wheels = []; root.name = 'wheels';
@@ -71,7 +76,7 @@ function modelWheels(scene, profile, m, key) {
     const pivot = new THREE.Group(); pivot.name = `wheel_${k}`; pivot.position.copy(node.position);
     const spin = node.getObjectByName(`wheel_${k}_spin`), cal = node.getObjectByName(`wheel_${k}_caliper`);
     spin.name = `${pivot.name}_spin`; cal.name = `${pivot.name}_calipers`;
-    for (const g of [spin, cal]) { g.position.set(0, 0, 0); g.traverse((o) => { if (o.isMesh) {const map=src=>isModelRim(key,src.name)?m.rim:roleMaterial(src,m);o.material=Array.isArray(o.material)?o.material.map(map):map(o.material);} }); pivot.add(g); }
+    for (const g of [spin, cal]) { g.position.set(0, 0, 0); g.traverse((o) => { if (o.isMesh) {const map=src=>isModelRim(key,src.name)?m.rim:rubber(roleMaterial(src,m));o.material=Array.isArray(o.material)?o.material.map(map):map(o.material);} }); pivot.add(g); }
     root.add(pivot); wheels.push({ pivot, spin, axle, side: k[1], spec: profile.wheels[axle] });
   }
   return { root, wheels };
@@ -113,7 +118,7 @@ function mergeByMaterial(group, castShadow = false) {
     if (!o.isMesh || o === group) return;
     const g = o.geometry.clone();
     for (const k of Object.keys(g.attributes)) {
-      if (k !== 'position' && k !== 'normal' && k !== 'uv') { g.deleteAttribute(k); continue; }
+      if (k !== 'position' && k !== 'normal' && k !== 'uv' && k !== 'color') { g.deleteAttribute(k); continue; }
       // packed models store quantized (normalized int, interleaved) attributes: bake to plain floats so the matrix
       // and the merge see metres and real UVs, and mixed sources merge
       const a = g.attributes[k];
@@ -133,6 +138,13 @@ function mergeByMaterial(group, castShadow = false) {
   for (const o of drop) o.parent.remove(o);
   for (const [mat, b] of buckets) {
     if (!b.geos.every((g) => g.attributes.uv)) b.geos.forEach((g) => g.deleteAttribute('uv'));   // textured models keep their UVs
+    // vertex colours too (the CC850's wheel material multiplies by them): without the attribute a vertexColors material reads
+    // black, which drew its whole wheel as a black disc. Where a bucket cannot keep them all, the material stops asking for them
+    const cs = b.geos[0].attributes.color?.itemSize;
+    if (!cs || !b.geos.every((g) => g.attributes.color?.itemSize === cs)) {
+      b.geos.forEach((g) => g.deleteAttribute('color'));
+      if (mat.vertexColors) { mat.vertexColors = false; mat.needsUpdate = true; }
+    }
     const merged = mergeGeometries(b.geos);
     if (!merged) continue;
     const mesh = new THREE.Mesh(merged, mat);
@@ -156,7 +168,8 @@ const LINEUP = (typeof location !== 'undefined' && new URLSearchParams(location.
 const DEFAULT_LINEUP = TEAMS.teams.map(t=>t.cars[LINEUP].key).filter(k=>KEYS.includes(k));
 
 const WHEEL_OMEGA = 24;    // rad/s: the wheel's visual suspension spring (critically damped, ~40 ms)
-const SPIN_STEP = 0.3;     // rad: the most a wheel's visual spin may turn in one frame (see drivePhysics)
+const WHEEL_SHOW = 0.35;   // share of the suspension travel drawn between wheel and body (the car group takes the rest; see drivePhysics)
+const SPIN_STEP = 0.3;    // rad: the most a wheel's visual spin may turn in one frame (see drivePhysics)
 /**
  * The footprint under a car: one transparent quad with a soft body shadow, a darker core under the floor and a tight dark
  * patch at each tyre (the contact line is what makes a car look set down rather than hovering). Sized from the car's own
@@ -613,6 +626,7 @@ export class Field {
       c.hero=c===next;delete c.vehicle;delete c.ai;c.root.visible=true;c.root.quaternion.identity();
       c.speed=c.brake=c.steer=c.throttle=0;c.chassis?.reset();
       for(const w of c.wheels){w.pivot.rotation.y=0;w.spin.rotation.z=0;if(w.baseY!==undefined)w.pivot.position.y=w.baseY;}   // the last session's wheel angle does not carry over
+      c.car.position.y=0;c.car.rotation.x=c.car.rotation.z=0;   // nor the suspension plane (drivePhysics)
       if(c.shadow){c.shadow.rotation.set(0,0,0);c.shadow.position.y=0.025;c.shadow.material.opacity=0.85;}   // flat again (groundShadow tilts it while driving)
     }
     this.hero = next;
@@ -668,7 +682,7 @@ export class Field {
       c.yaw = v.yaw; c.speed = v.speed; c.brake = THREE.MathUtils.clamp(v.state.serviceBrake ?? v.controls.brake, 0, 1);
       c.reverse = !!v.state.reverse;
       c.curvature = -v.aBody.z / Math.max(v.speed * v.speed, 1);
-      const vc = c.vc ??= [0.065, 0.065, 0.065, 0.065];
+      const vc = c.vc ??= [0.065, 0.065, 0.065, 0.065], fit = [];
       for (const w of c.wheels) {
         const i = v.wheels.findIndex((q) => (q.front === (w.axle === 'front')) && (q.side < 0) === (w.pivot.position.z > 0)), pw = v.wheels[i];
         if (!pw) continue;
@@ -680,11 +694,23 @@ export class Field {
         if (w.vehicle !== v) { w.vehicle = v; w.vy = w.tgt = pw.comp; w.vv = w.air = 0; }
         wheelStep(w, pw.contact, pw.comp, WHEEL_OMEGA, dt);
         vc[i] = w.vy;
-        w.pivot.position.y = w.baseY + (w.vy - 0.065);                     // the wheel follows its suspension
+        const d = w.vy - 0.065;
+        w.pivot.position.y = w.baseY + WHEEL_SHOW * d;                     // the wheel shows a share of its suspension travel...
+        fit.push([w.pivot.position.x, w.pivot.position.z, (1 - WHEEL_SHOW) * d]);
         if (w.axle === 'front') w.pivot.rotation.y = v.state.steer;
         // beyond ~0.3 rad a frame a spoked rim aliases (wagon wheel, strobing): the visual spin saturates there, sign kept
         const step = pw.omegaR / w.spec.radius * dt;
         w.spin.rotation.z += SPIN_STEP * Math.tanh(step / SPIN_STEP);
+      }
+      // ...and the car (body and wheels) takes the rest as a plane (heave, pitch, roll) through the four wheels, so the tyres stay on the
+      // road while body and wheels move a third as much against it: the arcade suspension travels 10-15 cm and pogos ~5 cm at 3 Hz
+      // over kerbs (measured, Tokyo T1 at 110 km/h), which read as wheels bobbing in their arches. Visual only: physics is untouched.
+      if (fit.length === 4) {
+        const n = 4, mx = fit.reduce((s, p) => s + p[0], 0) / n, mz = fit.reduce((s, p) => s + p[1], 0) / n, mr = fit.reduce((s, p) => s + p[2], 0) / n;
+        let sxx = 0, sxr = 0, szz = 0, szr = 0;
+        for (const [x, z, r] of fit) { sxx += (x - mx) ** 2; sxr += (x - mx) * (r - mr); szz += (z - mz) ** 2; szr += (z - mz) * (r - mr); }
+        const a = sxx > 1e-6 ? sxr / sxx : 0, b = szz > 1e-6 ? szr / szz : 0;
+        c.car.position.y = mr - a * mx - b * mz; c.car.rotation.x = b; c.car.rotation.z = a;   // car-local plane y = heave + a x + b z (rotation.y is PI)
       }
       if (c.shadow) groundShadow(c);
       const slip = Math.max(THREE.MathUtils.smoothstep(v.latSlip, 0.1, 0.32), v.spinSlip);

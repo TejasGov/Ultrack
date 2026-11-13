@@ -1,8 +1,8 @@
 // Wheel-only material selectors; never recolor a shared body/carbon material globally.
+// Not the mp1x: its 'rims' material is a blended texture whose alpha cuts the spokes, and opaque rim paint drew a solid black disc.
 const RIMS={
   av12:['Carbon','Hubcap'],
   'furari-488':['M_Rim_Main_SetPT_Max.002'],
-  mp1x:['rims'],
   bmw1:['wheel'],
   'nissan-z':['mm_wheel'],
   supra:['material_13'],
