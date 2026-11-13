@@ -38,6 +38,7 @@ import { FINISH_RAIN, FINISH_FLOW, FINISH_SPARK, applyRainGlass } from './finish
 import { wetUniforms, wetify, wetCars } from './wet-road.js';
 import { makeRain } from './wet-rain.js';
 import { TIERS, detectTier, GpuTimer, Culler, DynamicResolution } from './perf.js';
+import { Trailer } from './trailer.js';
 
 const SUN_GLARE = 0.7;     // the user's call, 2026-11-02: the sun's flare, haze, road glint and (by day and dusk, when the sun is what blooms) bloom, on every track, at 70 % of each look's value
 const DEV_QUERY = new URLSearchParams(location.search);
@@ -132,6 +133,8 @@ const MIRROR_DRY = 0.2;
 const TEX = DEV_QUERY.get('tex') === 'webp' ? 'webp' : 'ktx2';
 // the game (src/game: menus, garage, HUD, sessions) runs by default; ?dev=1 is the bare viewer with its tuning panel
 const DEV = DEV_QUERY.get('dev') === '1';
+// ?trailer=1: the trailer camera (src/trailer.js, scripts/trailer-record.mjs); off, nothing changes
+const trailer = DEV_QUERY.get('trailer') === '1' ? (window.trailer = new Trailer()) : null;
 let game = null, benchmarking=false;
 const inputDebug=DEV?new InputDebug(document.body):null;
 
@@ -1134,7 +1137,7 @@ function placeOnPath() {
 // along the direction of travel, kept near the middle of the frame.
 const blur = { amount: 0, c: new THREE.Vector2(0.5, 0.5), p: new THREE.Vector3() };
 function updateSpeedBlur(dt, pathSpeed) {
-  const fu = finalPass.uniforms, h = params.mode === 'chase' ? field?.hero : null;
+  const fu = finalPass.uniforms, h = params.mode === 'chase' && !trailer?.rig ? field?.hero : null;   // trailer rigs: no chase-camera speed blur, nitro lines or tint
   const kmh = (h ? h.speed : params.mode === 'flythrough' ? pathSpeed : 0) * 3.6;
   // nitro package level: the player's nitro ramp (carkit/fx.js heroNitro, already smooth), scaled like the blur (off with motion blur off)
   const nitro = h ? Math.min(1, field?.fx?.heroNitro ?? 0) : 0, nScale = Math.min(1, params.speedBlur) * (params.reduceMotion ? 0.4 : 1) * (game?.blurScale ?? 1);
@@ -1169,12 +1172,13 @@ function tick(now) {
   if (now < due - 0.5) return;   // the cap keeps the GPU (and the room) cooler
   const tickStart = performance.now();
   const wallDt = Math.max(0, (now - last) / 1000);
-  const dt = Math.min(0.05, wallDt);
+  if (trailer?.busy) { last = now; return; }   // trailer: the last frame is still on its way to disk
+  const dt = trailer ? trailer.step(Math.min(0.05, wallDt)) : Math.min(0.05, wallDt);
   last = now;
   // the cap keeps its own schedule (now + interval threw the remainder away: 144 Hz ran 48 fps, 75 Hz 37.5), never more than one
   // interval ahead (a 60.5 Hz screen still runs every frame) nor in the past (a stall is not repaid with a burst of frames)
   due = Math.min(Math.max(due + 1000 / params.fpsCap, now), now + 1000 / params.fpsCap);
-  const t = clock.getElapsedTime();
+  const t = trailer ? trailer.t : clock.getElapsedTime();   // trailer: game time, so rain and lights keep step in slow motion
   const speed = params.paused ? 0 : params.speedKmh / 3.6;
   game?.update(dt, fps);inputDebug?.update(dt,field);
   // Poster playback needs no hidden world renders; menus use only the small showroom.
@@ -1195,7 +1199,7 @@ function tick(now) {
 
   if (params.mode === 'chase' && field?.hero) {
     if (!params.paused) field.drive(dt, params.pace);
-    field.chase(camera, dt, { reduceMotion: params.reduceMotion });
+    if (trailer?.rig) trailer.place(camera, field); else field.chase(camera, dt, { reduceMotion: params.reduceMotion });
   } else if (params.mode === 'orbit') {
     controls.update();
   } else if ((params.mode === 'flythrough' || params.mode === 'chase') && curve) {   // chase falls back until the cars load
@@ -1247,6 +1251,7 @@ function tick(now) {
   gpuTimer.begin();
   composer.render();
   gpuTimer.end();
+  trailer?.after(renderer.domElement);
   if (params.dynamicRes) {
     dynres.budgetMs = 1000 / params.fpsCap;
     dynres.sample(gpuTimer.ms, wallDt, performance.now() - tickStart);

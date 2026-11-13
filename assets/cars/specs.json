@@ -109,14 +109,14 @@
       "estimated": false
     },
     "mp1x": {
-      "model": "McLaren 720S",
-      "lengthM": 4.544,
-      "widthM": 1.93,
-      "heightM": 1.196,
-      "wheelbaseM": 2.67,
+      "model": "McLaren 650S GT3",
+      "lengthM": 4.633,
+      "widthM": 2.05,
+      "heightM": 1.15,
+      "wheelbaseM": 2.677,
       "massKg": 1419,
       "powertrain": "ICE",
-      "engine": "4.0 L V8 twin-turbo, mid-mounted",
+      "engine": "3.8 L V8 twin-turbo, mid-mounted",
       "powerHp": 710,
       "torqueNm": 770,
       "drive": "RWD",
@@ -125,10 +125,10 @@
       "brake100To0M": 30,
       "brakeBasis": "estimated from the maker's 100-0 claim (about 30 m) and road tests",
       "sources": [
-        "https://en.wikipedia.org/wiki/McLaren_720S",
-        "https://cars.mclaren.com/en/super-series/720s"
+        "https://en.wikipedia.org/wiki/McLaren_650S#650S_GT3",
+        "https://sketchfab.com/3d-models/2015-mclaren-650s-gt3-e3e3452c86d74f6aa74a1ba60cfdf19b"
       ],
-      "notes": "width 1.930 m without mirrors (2.161 m with)",
+      "notes": "since 2026-11-13 the McLaren 650S GT3 model: length, width, height and wheelbase are measured on it (GT3 wide body with splitter and wing; height without the roof antenna). Power, torque, mass, top speed, 0-100 and braking keep the 720S figures this key always had, so the Sarab team's pace does not change (a real GT3 runs about 500 hp under balance of performance)",
       "estimated": false,
       "estimatedFields": [
         "brake100To0M"

@@ -1,114 +1,149 @@
 {
   "car": "mp1x",
   "note": "Per-car fixes found by the car QA pipeline (track-viewer/CAR-QA.md). Applied by track-viewer/src/cars.js at assembly, so the sandbox and the race show the same car.",
-  "mirrors": {
-    "style": "blade",
-    "housing": "carbon"
-  },
   "suspension": {
     "pitch": 0.45,
     "roll": 0.85,
     "freq": 1.6,
     "ride": 0.034
   },
-  "aero": [
-    {
-      "name": "wing",
-      "min": [
-        1.78,
-        0.86,
-        -1.2
-      ],
-      "max": [
-        2.35,
-        1.08,
-        1.2
-      ],
-      "hinge": [
-        1.82,
-        0.95
-      ],
-      "mode": "airbrake",
-      "deg": 25,
-      "rise": 0.05,
-      "vOn": 18
-    }
-  ],
   "log": [
-    "run 1 (all cars): mirrors -> blade/carbon (P1: carbon pod on a stalk); ride 0.014 m from the measured arch gaps (front top gap >= 3 cm for the brake dive); pitch 0.6",
-    "run 2: front arch lip -2.4 cm, -3.3 cm under braking -> ride 0.034",
-    "run 4: see-through traced to real openings (the waist channel between cabin and front fenders, open only exactly end-on) -> waived in qa.waive",
-    "run 4: front tyres 2.5 cm into the arch under braking -> pitch 0.45",
-    "run 5: tail scan: wing band 0.88-1.02 m clear of the deck (0.78) from x 1.8 -> airbrake 25 deg, rises 5 cm (P1 DRS/airbrake)",
-    "run 5: with the wing cut out, the rays read the deck under it (the rear bay had been reaching up to the wing) and the daylight under the wing shows -> waived"
+    "2026-11-13: the McLaren 650S GT3 model (Tyler_Dave, CC BY) replaces the 720S under this key; the 720S active airbrake (aero) and its QA waivers go: the GT3 wing is fixed"
   ],
-  "qa": {
-    "waive": [
-      {
-        "view": "front",
-        "at": [
-          0.38,
-          0.57
-        ],
-        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
-      },
-      {
-        "view": "front",
-        "at": [
-          0.62,
-          0.57
-        ],
-        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
-      },
-      {
-        "view": "rear",
-        "at": [
-          0.62,
-          0.57
-        ],
-        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
-      },
-      {
-        "view": "rear",
-        "at": [
-          0.38,
-          0.57
-        ],
-        "why": "the waist channel between cabin and front fenders, open only exactly end-on (traced: trace-front-0.png)"
-      },
-      {
-        "view": "front-left",
-        "at": [
-          0.74,
-          0.65
-        ],
-        "why": "daylight under the rear wing (traced: trace-front-left-0.png)"
-      },
-      {
-        "view": "front-right",
-        "at": [
-          0.26,
-          0.65
-        ],
-        "why": "daylight under the rear wing (traced: trace-front-left-0.png)"
-      },
-      {
-        "view": "low-left",
-        "at": [
-          0.84,
-          0.56
-        ],
-        "why": "daylight under the rear wing (traced: trace-front-left-0.png)"
-      }
-    ]
-  },
   "replacement": {
     "note": "tuning for the replacement model (cars.js reads only this block for it)",
     "suspension": {
-      "pitch": 0.6,
+      "pitch": 0.5,
       "roll": 0.85,
       "freq": 1.6,
-      "ride": 0
-    }
+      "ride": 0.025
+    },
+    "qa": {
+      "waive": [
+        {
+          "view": "front-left",
+          "at": [
+            0.75,
+            0.63
+          ],
+          "why": "daylight under the swan-neck rear wing, between its struts and over the deck: open on the real car (traced: trace-front-left-0.png)"
+        },
+        {
+          "view": "front-right",
+          "at": [
+            0.25,
+            0.63
+          ],
+          "why": "daylight under the swan-neck rear wing, between its struts and over the deck: open on the real car (traced: trace-front-right-7.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.7,
+            0.26
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.72,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.74,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.77,
+            0.29
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.85,
+            0.36
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-left-1..5.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.29,
+            0.26
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.28,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.26,
+            0.27
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.23,
+            0.29
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.15,
+            0.36
+          ],
+          "why": "the open diffuser channels: from behind and above, the road under the car shows between the strakes; open on the real car (traced: trace-rear-right-8..13.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.15,
+            0.37
+          ],
+          "why": "the open rear grille beside the diffuser, through to the arch: open on the real car (traced: trace-rear-right-12.png)"
+        },
+        {
+          "view": "rear-left",
+          "at": [
+            0.31,
+            0.4
+          ],
+          "why": "the door-blade intake behind the front wheel, open through to the underside in this model (the real car has a radiator behind it): seen only from the rear three-quarter at this angle, 88 cm2 (traced: trace-rear-left-6.png)"
+        },
+        {
+          "view": "rear-right",
+          "at": [
+            0.69,
+            0.4
+          ],
+          "why": "the door-blade intake behind the front wheel, open through to the underside in this model (the real car has a radiator behind it): seen only from the rear three-quarter at this angle, 88 cm2 (traced: trace-rear-right-14.png)"
+        }
+      ]
+    },
+    "log": [
+      "2026-11-13 McLaren 650S GT3 (Tyler_Dave, CC BY): ride 0.025 and pitch 0.5 (front top gap 0.7 cm, -1.9 cm with the nose down at ride 0); tail lamps from tails/mp1x.js (the 720S boxes left every element off); the see-through gaps traced and waived as real openings, except the door intake, which is open through in the model"
+    ]
   }
 }

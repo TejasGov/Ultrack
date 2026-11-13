@@ -64,7 +64,7 @@ Phase B of `research/cinematic-racing.md`. The race cars drive on the track's co
 | furari-488 (488 Pista) | 3.04 / 2.85 | 294 / 340 | 35.6 / 30 |
 | aston-martin-valk (Valkyrie) | 2.87 / 2.6 | 292 / 354 | 32.3 / 29 |
 | jaguarxkjss (AMG ONE) | 2.87 / 2.9 | 299 / 352 | 36.1 / 31 |
-| mp1x (720S) | 3.10 / 2.9 | 293 / 341 | 35.5 / 30 |
+| mp1x (650S GT3; the 720S figures) | 3.10 / 2.9 | 293 / 341 | 35.5 / 30 |
 | mustang (Mustang GT) | 3.64 / 4.5 | 260 / 249 | 39.0 / 37 |
 | bmw1 (i8) | 3.26 / 4.4 | 260 / 250 | 38.2 / 35 |
 | buggati (Divo) | 2.80 / 2.4 | 319 / 380 | 36.4 / 32 |

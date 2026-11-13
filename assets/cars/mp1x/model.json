@@ -1,90 +1,101 @@
 {
  "note": "Written by track-viewer/scripts/model-car.py from source.json; do not edit by hand.",
+ "name": "McLaren 650S GT3",
  "source": {
-  "title": "2017 McLaren 720S",
-  "author": "_shobh19",
-  "authorUrl": "https://sketchfab.com/s0h1o9b",
-  "url": "https://sketchfab.com/3d-models/2017-mclaren-720s-f7bece69400f4640a4a3be746b44998b",
-  "license": "CC Attribution",
+  "title": "2015 McLaren 650S GT3",
+  "author": "Tyler_Dave",
+  "authorUrl": "https://sketchfab.com/Tyler_Dave",
+  "url": "https://sketchfab.com/3d-models/2015-mclaren-650s-gt3-e3e3452c86d74f6aa74a1ba60cfdf19b",
+  "license": "CC BY 4.0",
   "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
-  "modelId": "f7bece69400f4640a4a3be746b44998b",
+  "modelId": "e3e3452c86d74f6aa74a1ba60cfdf19b",
   "replacement": true,
   "nonCommercialOnly": false,
-  "additionalCredits": ""
+  "additionalCredits": "Replaces the McLaren 720S. The page does not name an original source; its material set (Carpaint, Tyre, Rim, Italian INT_ names) looks like a racing-game asset."
  },
  "wheels": {
   "front": {
-   "radius": 0.3287,
-   "width": 0.2848,
-   "x": -1.21,
-   "track": 1.6473
+   "radius": 0.347,
+   "width": 0.3281,
+   "x": -1.1585,
+   "track": 1.7026
   },
   "rear": {
-   "radius": 0.3363,
-   "width": 0.2914,
-   "x": 1.4547,
-   "track": 1.6446
+   "radius": 0.3514,
+   "width": 0.354,
+   "x": 1.5186,
+   "track": 1.6811
   }
  },
  "size": {
-  "length": 4.543,
-  "width": 2.149,
-  "height": 1.098
+  "length": 4.633,
+  "width": 2.082,
+  "height": 1.499
  },
  "lights": {
   "front": [
    [
-    -1.744,
-    0.558,
-    0.76
+    -1.66,
+    0.568,
+    0.754
    ],
    [
-    -1.744,
-    0.558,
-    -0.76
+    -1.66,
+    0.568,
+    -0.754
    ]
   ],
   "rear": [
    [
-    1.906,
-    0.669,
-    0.554
+    2.203,
+    0.67,
+    0.169
    ],
    [
-    1.915,
-    0.668,
-    -0.515
+    2.203,
+    0.67,
+    -0.169
+   ],
+   [
+    2.121,
+    0.743,
+    0.601
+   ],
+   [
+    2.121,
+    0.743,
+    -0.601
    ]
   ]
  },
  "glass": {
   "side": [
    [
-    -1.112,
-    0.79,
-    0.518
+    -1.172,
+    0.683,
+    0.596
    ],
    [
-    -1.112,
-    1.164,
-    0.518
+    -1.172,
+    1.068,
+    0.596
    ],
    [
-    1.159,
-    1.164,
-    0.518
+    1.639,
+    1.068,
+    0.596
    ],
    [
-    1.159,
-    0.79,
-    0.518
+    1.639,
+    0.683,
+    0.596
    ]
   ]
  },
  "exhaust": [],
  "triangles": {
-  "body0": 6317,
-  "body1": 6317,
-  "wheel": 150
+  "body0": 86173,
+  "body1": 25061,
+  "wheel": 7272
  }
 }
