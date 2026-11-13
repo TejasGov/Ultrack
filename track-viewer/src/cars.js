@@ -669,6 +669,7 @@ export class Field {
         if (player) this.playerThrottle = ctl.throttle;              // engine sound revs on the grid too
         if (this.hold) { ctl = { throttle: 0, brake: 1, steer: 0, handbrake: 0, nitro: 0, reset: false, hold: true }; if (c.ai) c.ai.stuck = 0; }   // on the grid until the lights go out (not 'stuck')
         if (ctl.reset) {this.respawn(c);ctl={throttle:0,brake:0,steer:0,handbrake:0,nitro:0,reset:false};}
+        if (c.hero && this.ctlOver && !this.hold) ctl = { ...ctl, ...this.ctlOver };   // trailer shots: nitro or handbrake on cue over the AI
         Object.assign(v.controls, { hold: false }, ctl);
         v.step(h, player ? this.assists : { counter: 0.6, stability: 1.4, tcs: 1 });
         if (v.state.upsideDown > 1.5 || v.cur.pos.y < (this.fallY ?? -30)) this.respawn(c);
@@ -700,7 +701,7 @@ export class Field {
         if (w.axle === 'front') w.pivot.rotation.y = v.state.steer;
         // beyond ~0.3 rad a frame a spoked rim aliases (wagon wheel, strobing): the visual spin saturates there, sign kept
         const step = pw.omegaR / w.spec.radius * dt;
-        w.spin.rotation.z += SPIN_STEP * Math.tanh(step / SPIN_STEP);
+        w.spin.rotation.z += this.trueSpin ? step : SPIN_STEP * Math.tanh(step / SPIN_STEP);   // trueSpin: the trailer recorder, whose motion blur smears the spokes
       }
       // ...and the car (body and wheels) takes the rest as a plane (heave, pitch, roll) through the four wheels, so the tyres stay on the
       // road while body and wheels move a third as much against it: the arcade suspension travels 10-15 cm and pogos ~5 cm at 3 Hz
@@ -813,7 +814,8 @@ export class Field {
       // side mirrors); only cars within SHADOW_M cast into the sun's shadow map. Every car is drawn again in the
       // mirror, shadow and capture passes, so its draw calls count several times over.
       // A 2-3 m margin keeps the current state, so a car holding a gap at a threshold does not blink between looks.
-      const d = c.root.position.distanceTo(camera.position), near = (on, thr, m) => on ? thr + m : thr - m, b = c.band ?? 0;
+      const d = this.forceDetail ? 0 : c.root.position.distanceTo(camera.position), near =   // forceDetail: the trailer recorder (no stand-in wheels, chosen a frame late, in a plate)
+        (on, thr, m) => on ? thr + m : thr - m, b = c.band ?? 0;
       const band = d < near(b === 0, DETAIL_M, 2) ? 0 : d < near(b < 2, FAR_M, 3) ? 1 : 2;
       if (band !== c.band) {
         c.band = band;
