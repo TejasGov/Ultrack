@@ -8,6 +8,7 @@ import { loadCareer, play } from './career-sim.mjs';
 const server = await createServer({ root: new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom', logLevel: 'error' });
 try {
   const M = await loadCareer(server), { C, R } = M, G = await server.ssrLoadModule('/src/game/career/rng.js');
+  const LV = { ...R.TUNING.living }; Object.assign(R.TUNING.living, { promoteWins: 99 });   // the older checks expect a B seat to last the season: the mid-season promotion has its own block (the living world)
   // ---- rng: same keys, same draws; another stream or key, different
   const a = G.rng(7, 'cal', 1), b = G.rng(7, 'cal', 1), c = G.rng(7, 'offer', 1);
   const da = [a(), a(), a()]; assert.deepEqual(da, [b(), b(), b()]); assert.notDeepEqual(da, [c(), c(), c()]);
@@ -1537,6 +1538,31 @@ try {
       C.acceptOffer(s, s.pending.offers[0].id, avail); sound(s, 'the season after'); assert.equal(s.season.divs.steelhead, 'challenger'); assert.equal(R.carsIn(s, 'challenger').length + R.carsIn(s, 'elite').length, R.FIELD); round(s, 4); }
     { const s = thirteen(signed(4125)); C.migrate(s); assert.equal(s.world.teams.steelhead.joined, 1, 'before the first round too: a season it does not race is not judged'); assert.equal(R.racing(s, 'steelhead'), false); playOn(s, 'before the first round'); }
     { const s = signed(4124); round(s, 4); const before = JSON.stringify(s); C.migrate(s); assert.equal(JSON.stringify(s), before, 'a schema-14 save is unchanged by migrate'); } }
+
+  // ---- the living world (tuning.json living): results move seats, caps, development and tiers
+  Object.assign(R.TUNING.living, LV);
+  { const s = signed(5101), me = s.contract, A = R.seatCar('mojave', 'A'), B = me.car, mate = s.world.seats[A]; me.trust = 90;
+    s.garage.upgrades[B] = { ...s.garage.upgrades[B], engine: 1 }; s.garage.paid[B] = 500; const pkg = s.garage.package;
+    round(s, 1); round(s, 1); assert.equal(me.seat, 'B', 'two wins are not a promotion');
+    const r2 = round(s, 1); assert.equal(r2.promoted, A, 'three wins in a row: the A car'); assert.equal(me.seat, 'A'); assert.equal(me.car, A); assert.equal(s.world.seats[A], 'YOU'); assert.equal(s.world.seats[B], mate, 'the A driver drops to the second car');
+    assert.equal(s.garage.upgrades[A].engine, 1, 'the parts moved across'); assert.equal(s.garage.paid[A], 500); assert.equal(s.garage.upgrades[B].engine, 0); assert.ok(me.salary >= R.TIERS.tiers.rookie.salary.A);
+    assert.equal(s.garage.package, pkg + 2, 'back-to-back wins: a free upgrade level, and another for the third'); assert.equal(!!s.world.teams.mojave.hot, LV.streakHot, 'a streak lifts the cap only with streakHot'); s.world.teams.mojave.hot = true; assert.equal(R.capOf('mojave', s), R.TIERS.tiers.rookie.cap + LV.hotCap, 'a hot team: one level over the cap'); s.world.teams.mojave.hot = false;
+    assert.ok(!s.world.teams.mojave.earned, 'your own streak pays a free level, not team development');
+    round(s, 1); assert.equal(s.garage.package, pkg + 3, 'the streak goes on: another level'); round(s, 6); assert.equal(s.garage.package, pkg + 3, 'a streak ends'); }
+  { const s = signed(5102); s.contract.trust = 30; round(s, 1); round(s, 1); assert.equal(s.contract.seat, 'B', 'no promotion without the trust'); }
+  { const s = signed(5103); s.contract.trust = 90; round(s, 1); round(s, 1); round(s, 2); assert.equal(s.contract.seat, 'B', 'a streak broken by a P2 is no promotion'); }
+  { const s = signed(5104), W = s.world.teams, order = ['aurum', 'saetta', 'norrsken', 'toro', 'hayate', 'sarab', 'corvid', 'steelhead', 'mojave', 'liberty'];
+    order.forEach((t, i) => { W[t].expPos = i + 1; });
+    assert.deepEqual(C.livingTiers(s), [], 'one season above its class is not enough'); assert.equal(R.tierKey('hayate', s), 'rookie'); assert.equal(W.hayate.out, 1); assert.equal(W.steelhead.out, 1);
+    const m = C.livingTiers(s); assert.deepEqual(m, [{ up: 'hayate', down: 'steelhead', to: 'maestro', from: 'rookie' }], 'two seasons: the two swap');
+    assert.equal(R.tierKey('hayate', s), 'maestro'); assert.equal(R.tierKey('steelhead', s), 'rookie'); assert.equal(R.TIERS.teams.hayate.tier, 'rookie', 'the designed tier stands');
+    assert.ok(W.hayate.dev.every((v, i) => v >= R.TIERS.tiers.maestro.dev[i]), 'the car is rebuilt to the class floor'); assert.ok(W.steelhead.dev.every((v) => v <= R.capOf('steelhead', s)), 'and down to the cap');
+    assert.equal(R.capOf('hayate', s), R.TIERS.tiers.maestro.cap + (W.hayate.hot ? LV.hotCap : 0)); assert.deepEqual(R.gateOf('hayate', s), R.TIERS.teams.sarab.gate, 'the bar of the new tier');
+    assert.deepEqual(['legend', 'maestro', 'rookie'].map((k) => R.TEAM_IDS.filter((t) => R.tierKey(t, s) === k).length), [3, 4, 3], 'the bands keep their size');
+    order.forEach((t, i) => { W[t].expPos = i + 1; }); assert.deepEqual(C.livingTiers(s), [], 'a team that has just moved does not move again'); }
+  { const a = signed(5105), b = signed(5105); a.clock.season = b.clock.season = 2; a.world.devAt = b.world.devAt = [2, 1]; a.world.teams.toro.earned = 3.5;
+    C.devWindow(a, 1); C.devWindow(b, 1); const sum = (x) => x.world.teams.toro.dev.reduce((p, v) => p + v, 0);
+    assert.equal(a.world.teams.toro.earned, 0.5, 'whole points spent, the half kept'); assert.ok(sum(a) >= sum(b), 'results buy development'); }
 
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays
   assert.equal(JSON.stringify(play(M, 11, 1.0, 9).save), JSON.stringify(play(M, 11, 1.0, 9).save), 'nine seasons replay identically');

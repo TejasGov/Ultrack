@@ -15,7 +15,7 @@ export const EFFECTS = { trust: 5, rep: 15, xp: 100, heat: 20, interest: 0.15, n
 const SCENES = Object.fromEntries(CH.scenes.map((s) => [s.id, s]));
 const kindOf = (e) => Object.keys(e).find((k) => k in EFFECTS);
 /** a driver in this car is a bigger name than the player: a higher tier, or the Elite to the player's Challenger */
-const above = (save, key) => tierOf(CAR[key].team).rank > tierOf(save.contract.team).rank || (save.season?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite');
+const above = (save, key) => tierOf(CAR[key].team, save).rank > tierOf(save.contract.team, save).rank || (save.season?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite');
 
 /** when a scene can arrive, from the save as it stands on entering a week: its context, or null */
 export const TRIGGERS = {

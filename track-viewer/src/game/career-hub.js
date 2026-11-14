@@ -8,7 +8,7 @@ import { icon } from './icons.js';
 import { trackOf } from '../tracks.js';
 import { saveCareer } from './career/save.js';
 import * as C from './career/career.js';
-import { TUNING, TIERS, CAR, CAL, SPONSORS, FIELD, DIV, carsIn, fieldSize, loreOf, objectiveText, xpForLevel, formOf, STATUS_LABEL, rrLabel, targetText, isSpecial, pointsMult } from './career/rules.js';
+import { TUNING, TIERS, CAR, tierOf, capOf, CAL, SPONSORS, FIELD, DIV, carsIn, fieldSize, loreOf, objectiveText, xpForLevel, formOf, STATUS_LABEL, rrLabel, targetText, isSpecial, pointsMult } from './career/rules.js';
 import { frame, statusBar, strip, coins, money, signed, teamName, persist, playerDriver, LOOK, WX_ICON, MEDAL, EVENT, ROUND_EVENT, prompts, SELECT, CHOOSE, blockHead, weekTitle, seriesLine, tierCup, brandMark, carPips, cs, delta, rich, kindOf, kindIcon, STORY_KICK, storyPic, storySource, mediaBytes } from './career-shell.js';
 import { offerRow, teamRows } from './career-deals.js';
 
@@ -319,7 +319,7 @@ export function CareerHubScreen(game) {
 
   // ---------------------------------------------------------------------------------------------- Garage
   function garage(save) {
-    const car = save.contract.car, hp = factsOf(car).powerHp, tier = TIERS.tiers[TIERS.teams[save.contract.team].tier], free = save.garage.package ?? 0;
+    const car = save.contract.car, hp = factsOf(car).powerHp, tier = { ...tierOf(save.contract.team, save), cap: capOf(save.contract.team, save) }, free = save.garage.package ?? 0;
     const why = { cap: `${tier.name} seats are capped at level ${tier.cap}`, maxed: 'Fully upgraded', level: (u) => `Needs Career Level ${u.gate}`, coins: (u) => `Needs ${money(u.cost)}` };
     const DOES = { engine: 'More power on the straights', tyres: 'More grip through the corners', brakes: 'Later braking, shorter stops', aero: 'More grip through the fast corners', nitro: 'A bigger tank that refills faster' };
     return [h('div.cx-stack', {}, css(h('div.cx-b.cx-gcar', {}, blockHead(null, `${teamName(save.contract.team)} · ${save.contract.seat} seat`, '#' + (save.player.number)), h('img', { src: still('cars', car), alt: '', decoding: 'async' }), h('strong.cx-title', {}, carName(car)),

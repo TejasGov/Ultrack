@@ -86,7 +86,7 @@ function ownTeamAnswers(save, r) {
   const w = save.pending.window, me = save.contract, talks = Object.keys(save.season?.talked ?? {}).filter((t) => save.season.talked[t] && t !== me?.team);
   if (w.reacted || !talks.length || !me || save.pending.review?.dropped) return;
   w.reacted = true;
-  const lore = loreOf(me.team), ctx = { principal: lore.principal, team: lore.name, other: teamName(talks[0]) }, tier = tierOf(me.team);
+  const lore = loreOf(me.team), ctx = { principal: lore.principal, team: lore.name, other: teamName(talks[0]) }, tier = tierOf(me.team, save);
   if (me.trust < T.trust.renew) { const q = fill(pick(r, MEDIA.window.go), ctx); news(save, q); post(save, 'team', `${lore.name} will not fight for you`, q); return; }
   const mine = save.pending.offers.find((o) => o.team === me.team && o.seat === 'A' && canNegotiate(o) && !o.id.endsWith('-renew')) ?? null;
   if (mine) mine.salary = round5(mine.salary * (1 + T.window.counterStep));
