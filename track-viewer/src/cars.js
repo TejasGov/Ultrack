@@ -32,6 +32,7 @@ import FINISHES_CARS from '../../assets/cars/finishes.json';
 import { applyFinish, setFinish } from './finish.js';
 import { ChaseRig, spring, bodyBox } from './camera.js';
 import { wheelStep } from './wheelDroop.js';
+import { bakeSpinBlur, spinBlur } from './carkit/spin-blur.js';
 import { RAPIER } from './physics/world.js';
 import { buildMirrors } from './carkit/mirrors.js';
 import { Chassis } from './carkit/chassis.js';
@@ -151,6 +152,46 @@ function mergeByMaterial(group, castShadow = false) {
     mesh.castShadow = castShadow; mesh.receiveShadow = true; mesh.renderOrder = b.order;
     group.add(mesh);
   }
+}
+
+/**
+ * A wheel spins about its own axle, centred on the hub. The spin group turns about its local z, but some imports sit the wheel off that axis or lean
+ * it (the AV-12's tyre ~19 mm below the hub and leaning ~2 deg, the Porsche's 13 mm, the Huracan's 7 mm), so the tyre orbited the hub and the rim
+ * rocked side to side as it rolled. The tyre (the spin group's widest mesh, every vertex) gives the truth: its centre is the middle of its bounding
+ * box across the axle, and its lean the side-to-side shift of the tread from top to bottom and from front to back (a leaning tyre's top moves one way
+ * and its bottom the other; a principal-axis fit misread fat tyres by up to 16 deg; the lean stays only when re-measured true). The merged meshes (spin-local geometry, mergeByMaterial) turn and
+ * move so that axle is the spin axis through the hub; the offset along the axle (the track) stays. Returns what it corrected.
+ */
+export function wheelTruth(meshes) {
+  let tyre = null, size = 0;
+  for (const o of meshes) { const b = new THREE.Box3().setFromBufferAttribute(o.geometry.attributes.position), s = Math.max(b.max.x - b.min.x, b.max.y - b.min.y); if (s > size) { size = s; tyre = o; } }
+  if (!tyre) return null;
+  const p = tyre.geometry.attributes.position, b = new THREE.Box3().setFromBufferAttribute(p), c = b.getCenter(new THREE.Vector3()), R = size / 2;
+  const sec = { top: [0, 0, 0], bot: [0, 0, 0], front: [0, 0, 0], back: [0, 0, 0] };   // [sum z, sum along, count] per tread sector
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i) - c.x, y = p.getY(i) - c.y, z = p.getZ(i) - c.z, k = y > 0.7 * R ? 'top' : y < -0.7 * R ? 'bot' : x > 0.7 * R ? 'front' : x < -0.7 * R ? 'back' : null;
+    if (k) { const s2 = sec[k]; s2[0] += z; s2[1] += k === 'top' || k === 'bot' ? y : x; s2[2]++; }
+  }
+  if (Object.values(sec).some((s2) => s2[2] < 4)) return null;
+  const m = (k, i) => sec[k][i] / sec[k][2], sy = (m('top', 0) - m('bot', 0)) / (m('top', 1) - m('bot', 1)), sx = (m('front', 0) - m('back', 0)) / (m('front', 1) - m('back', 1));
+  const axle = new THREE.Vector3(-sx, -sy, 1).normalize();
+  return { c, axle, offMm: Math.hypot(c.x, c.y) * 1000, tiltDeg: THREE.MathUtils.radToDeg(Math.acos(axle.z)) };
+}
+function trueAxle(spin) {
+  const meshes = spin.children.filter((o) => o.isMesh), t = wheelTruth(meshes);
+  if (!t || (t.offMm < 2 && t.tiltDeg < 0.5)) return null;                  // already true (every car-lab wheel, most models)
+  const M = new THREE.Matrix4().makeTranslation(0, 0, t.c.z).multiply(new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(t.axle, new THREE.Vector3(0, 0, 1))))
+    .multiply(new THREE.Matrix4().makeTranslation(-t.c.x, -t.c.y, -t.c.z));
+  for (const o of meshes) o.geometry.applyMatrix4(M);              // each spin group's geometry is its own (merged per group)
+  // the lean is kept only when a fresh measurement confirms it (under 0.5 deg after): on some tyres the sector means are skewed by uneven detail
+  // (sidewall lettering), the turn then made them lean more (the Blackbird 1.2 -> 2.8 deg), and only the centre is moved
+  const after = wheelTruth(meshes);
+  if (after && after.tiltDeg > 0.5) {
+    const C = new THREE.Matrix4().makeTranslation(-t.c.x, -t.c.y, 0);
+    for (const o of meshes) o.geometry.applyMatrix4(new THREE.Matrix4().copy(M).invert()).applyMatrix4(C);
+    return { ...t, tiltDeg: 0, kept: 'centre' };
+  }
+  return t;
 }
 
 const DETAIL_M = 22;      // full car-lab wheels within this distance, stand-ins beyond
@@ -378,6 +419,7 @@ function finishCar({ key, profile, tuning, finish, team, root, car, body, aero, 
   for (const w of wheelSet.wheels) {
     mergeByMaterial(w.spin, false);
     shedBodywork(w.spin, w.spec.radius, lod.levels[0].object);     // body parts a model's wheel node holds would spin round the hub
+    if (!(typeof location !== 'undefined' && /[?&]notrue=1/.test(location.search))) trueAxle(w.spin);   // ?notrue=1: the import's own axle (QA comparisons)
     w.spin.children.forEach((o) => detail.push(o));
     const cal = w.pivot.getObjectByName(`${w.pivot.name}_calipers`);
     if (cal) { mergeByMaterial(cal); detail.push(cal); }
@@ -702,6 +744,7 @@ export class Field {
         // beyond ~0.3 rad a frame a spoked rim aliases (wagon wheel, strobing): the visual spin saturates there, sign kept
         const step = pw.omegaR / w.spec.radius * dt;
         w.spin.rotation.z += this.trueSpin ? step : SPIN_STEP * Math.tanh(step / SPIN_STEP);   // trueSpin: the trailer recorder, whose motion blur smears the spokes
+        spinBlur(w, step, (c.band ?? 0) === 0, this.trueSpin);   // a fast wheel shows its blurred rim (carkit/spin-blur.js)
       }
       // ...and the car (body and wheels) takes the rest as a plane (heave, pitch, roll) through the four wheels, so the tyres stay on the
       // road while body and wheels move a third as much against it: the arcade suspension travels 10-15 cm and pogos ~5 cm at 3 Hz
@@ -809,6 +852,9 @@ export class Field {
 
   /** Per frame: lamps by look and braking, reflections for the player car. */
   update(t, camera, renderer, look, hideForCapture = [], boostForCapture = []) {
+    // blurred rims, baked once per car the first time it is near enough for full wheels; one car a frame (36 small renders a wheel)
+    const nb = renderer && this.cars.find((c) => c.band === 0 && !c.blurBaked);
+    if (nb) { nb.blurBaked = true; bakeSpinBlur(renderer, nb, this.scene.environment); }
     for (const c of this.cars) {
       // detail by distance: full wheels within DETAIL_M, spinning stand-ins to FAR_M, one static proxy beyond (and no
       // side mirrors); only cars within SHADOW_M cast into the sun's shadow map. Every car is drawn again in the
@@ -819,7 +865,7 @@ export class Field {
       const band = d < near(b === 0, DETAIL_M, 2) ? 0 : d < near(b < 2, FAR_M, 3) ? 1 : 2;
       if (band !== c.band) {
         c.band = band;
-        c.detail.forEach((o) => { o.visible = band === 0; });
+        c.detail.forEach((o) => { o.visible = band === 0; }); c.wheels.forEach((w) => { w.rimsShown = undefined; });   // spin-blur re-applies its rim swap
         c.simple.forEach((o) => { o.visible = band === 1; });
         c.wheelRoot.visible = band < 2; c.proxy.visible = band === 2; c.sideMirrors.visible = band < 2;
       }
