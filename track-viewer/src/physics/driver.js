@@ -187,7 +187,8 @@ export class AIDriver {
     const want = steerRad / v.steerLock(speed), steer = THREE.MathUtils.clamp(want, -1, 1) || 0;     // standing dead straight: 0 / 0, and one NaN ends the car
     // speed: the profile a little ahead (braking points), scaled by grip
     let vt = vmin * this.pace * Math.sqrt(v.spec.grip / 1.15 * wetGrip() * aeroGain(v.spec.downforceStock, v.spec.downforce, v.spec.mass, vmin * this.pace)) * (1 - 0.04 * road.wet);   // a wet road lowers every corner speed with the grip, and a little more for the braking margin
-    if (blk && blk.gap > (press ? K.follow : 1.5) && blk.gap < 12) vt = Math.min(vt, blk.speed * (blk.gap < 6 ? (press ? K.followMul : 0.9) : 1));   // follow, then pass once the lane is clear; B: a rival presses the player closer
+    if (blk && this.bold) { if (blk.gap > 0 && blk.gap < 4) vt = Math.min(vt, blk.speed); }   // bold (scripts/race-sim.mjs's player stand-in): moves out and goes past as a person does, holding station only when about to touch
+    else if (blk && blk.gap > (press ? K.follow : 1.5) && blk.gap < 12) vt = Math.min(vt, blk.speed * (blk.gap < 6 ? (press ? K.followMul : 0.9) : 1));   // follow, then pass once the lane is clear; B: a rival presses the player closer
     if (TK) vt *= traitPace(tr, TK, road.wet);   // nitro-happy and showboat trims, a rain specialist's wet and dry: the lap stays where the rating puts it (measured)
     if (this.liftT > 0) { this.liftT--; vt *= M.lift; }
     if (this.yieldT > 0) { vt *= O.lift; if (--this.yieldT === 0) F.orders = null; }   // the order is carried out
@@ -204,7 +205,7 @@ export class AIDriver {
     this.nitroRest = Math.max(0, (this.nitroRest ?? 0) - 1);
     // B: the nemesis chasing the player 10-50 m up the road fires the stock tank too, one burst a lap, in any mode; a rival whose team developed Nitro (a tank above stock: handling.js) fires it in any mode
     const chase = !!(P && P.role === 'nemesis' && K.nitro.on && pl && pl.gap >= K.nitro.from && pl.gap <= K.nitro.to && (this.nitroOn || this.nitroLap !== (this.lap ?? 0)));
-    const happy = tr === 'nitro' && TK, nitro = (this.field.hardPace > 1 || chase || v.spec.nitroTank > 1 || happy) && !this.car.hero && road.wet < 0.5 && (this.nitroOn || (!blk && !this.nitroRest)) && aiNitro(this.nitroOn, e, Math.abs(want), speed, v.state.nitroTank, happy ? happy.from : 0.5);
+    const happy = tr === 'nitro' && TK, nitro = (this.field.hardPace > 1 || this.field.rivalNitro || chase || v.spec.nitroTank > 1 || happy) && !this.car.hero && road.wet < 0.5 && (this.nitroOn || (!blk && !this.nitroRest)) && aiNitro(this.nitroOn, e, Math.abs(want), speed, v.state.nitroTank, happy ? happy.from : 0.5);
     if (nitro && !this.nitroOn && chase) this.nitroLap = this.lap ?? 0;
     if (this.nitroOn && !nitro) this.nitroRest = happy ? happy.rest * 120 : 360;
     this.nitroOn = nitro;
