@@ -135,9 +135,13 @@ export class AIDriver {
     // the side is picked once per pass: flipping it mid-pass swerved the car across the one it was passing. A side kept for another
     // car that points at this one is picked again: from the grid it steered a follower into the car it touched, and the two crawled
     // locked together for 20 s (India V5.6)
-    if (blk) { if (!this.passSide || (this.passCar !== blk.car && Math.sign(blk.lat - myLat) === this.passSide)) { this.passCar = blk.car; this.passSide = myLat >= blk.lat ? 1 : -1; const w = this.lane + this.passSide * 3; if (w > hi || w < lo) this.passSide = -this.passSide; } }
+    // the side is also picked again while still behind (4 m+) when the asphalt beside the car ahead on this side is under 2.6 m and the other side
+    // has more: the car ahead may have moved over to that edge itself, and a lane clamped at the edge stayed in its wake, so the follower held its speed
+    // for the rest of the race and every car behind queued too (Tokyo: a train of four 17 s off the leaders; measured in scripts/race-sim.mjs SLOW=4)
+    const roomOn = (s) => (blk ? (s > 0 ? hi - blk.lat : blk.lat - lo) : 0), boxed = (s) => roomOn(s) < 2.6 && roomOn(-s) > roomOn(s);
+    if (blk) { if (!this.passSide || (this.passCar !== blk.car && Math.sign(blk.lat - myLat) === this.passSide) || (blk.gap > 4 && boxed(this.passSide))) { this.passCar = blk.car; this.passSide = roomOn(1) >= roomOn(-1) ? 1 : -1; } }   // the side with more asphalt beside the car ahead (it may itself sit off the line)
     else if (!near) this.passSide = 0;                                // hold the passing lane until the car is 6 m behind
-    let laneWant = this.passSide ? this.lane + this.passSide * 3 : this.lane;   // passSide is unset until a first car is near
+    let laneWant = blk && this.passSide ? blk.lat + this.passSide * 2.9 : this.passSide ? this.lane + this.passSide * 3 : this.lane;   // passing: 2.9 m beside the car ahead (laneNow is clamped to the asphalt)   // passSide is unset until a first car is near
     const clamp = THREE.MathUtils.clamp, prev = this.laneNow ?? this.lane, press = P && blk?.car === F.hero && (P.role === 'rival' || P.role === 'nemesis' || tr === 'rough' || home) && tr !== 'consistent';   // a rough driver presses like a rival; a consistent one never does
     // D. team orders: on the final lap the teammate lets a player within gap seconds through, lifting and stepping aside, once
     const O = K && K.orders;
@@ -188,6 +192,7 @@ export class AIDriver {
     // speed: the profile a little ahead (braking points), scaled by grip
     let vt = vmin * this.pace * Math.sqrt(v.spec.grip / 1.15 * wetGrip() * aeroGain(v.spec.downforceStock, v.spec.downforce, v.spec.mass, vmin * this.pace)) * (1 - 0.04 * road.wet);   // a wet road lowers every corner speed with the grip, and a little more for the braking margin
     if (blk && this.bold) { if (blk.gap > 0 && blk.gap < 4) vt = Math.min(vt, blk.speed); }   // bold (scripts/race-sim.mjs's player stand-in): moves out and goes past as a person does, holding station only when about to touch
+    else if (blk && this.passSide && roomOn(this.passSide) >= 2.6 && Math.abs(myLat - blk.lat) > 1.5 && vt > blk.speed * 1.03) { if (blk.gap > 0 && blk.gap < 3) vt = Math.min(vt, blk.speed); }   // quicker, with room beside it: stays on its tail and goes by, instead of dropping back and queuing
     else if (blk && blk.gap > (press ? K.follow : 1.5) && blk.gap < 12) vt = Math.min(vt, blk.speed * (blk.gap < 6 ? (press ? K.followMul : 0.9) : 1));   // follow, then pass once the lane is clear; B: a rival presses the player closer
     if (TK) vt *= traitPace(tr, TK, road.wet);   // nitro-happy and showboat trims, a rain specialist's wet and dry: the lap stays where the rating puts it (measured)
     if (this.liftT > 0) { this.liftT--; vt *= M.lift; }

@@ -64,7 +64,7 @@ async function race(T, seed) {
     const hero = k === 0, row = hero ? keys.length - 1 : k - 1, s = slots[row % slots.length];
     const spec = H.handling(key); if (hero) spec.nitroTank = 1.0001;      // the AI's nitro logic skips a hero and stock tanks outside Hard: a hair over stock lets the stand-in use its nitro
     const v = new Vehicle(pw, spec, profileOf(key), { pos: new THREE.Vector3(...s.pos), yaw: (s.headingYawRad ?? Math.PI / 2) - Math.PI / 2 });
-    const pace = hero ? SKILL * (1 + (r() * 2 - 1) * SPREAD) : D.rivalPace(cfg, k) * (1 + (r() * 2 - 1) * 0.003);
+    const pace = hero ? SKILL * (1 + (r() * 2 - 1) * SPREAD) : +process.env.SLOW === k ? 0.85 : D.rivalPace(cfg, k) * (1 + (r() * 2 - 1) * 0.003);   // SLOW=k: rival k crawls (a spun or damaged car), to test passing
     const car = { key, hero: false, isPlayer: hero, vehicle: v };
     car.ai = new AIDriver(F, car, pace, hero ? null : R.quickProfile(key, (key.length * 7919) >>> 0, T.id));
     car.ai.lane = hero ? 0 : (k % 2 ? -1 : 1) * 0.6; car.ai.bold = hero;
@@ -91,6 +91,7 @@ async function race(T, seed) {
       if (c.prog >= c.need) { c.done = t; finished.push(c); }
     }
     if (finished.includes(F.hero) && finished.length >= 2) break;
+    if (process.env.WATCH && s % 240 === 0) { const c = F.cars.find((x) => x.key === process.env.WATCH), sl = F.cars.find((x) => x.ai.pace === 0.85); if (c && sl) { const d = c.vehicle.cur.pos.distanceTo(sl.vehicle.cur.pos); if (d < 40) console.log(`  t ${t.toFixed(0)} i ${c.ai.i} dist ${d.toFixed(1)} laneNow ${c.ai.laneNow?.toFixed(2)} passSide ${c.ai.passSide} v ${(c.vehicle.speed*3.6).toFixed(0)} slow v ${(sl.vehicle.speed*3.6).toFixed(0)} slowLane ${sl.ai.laneNow?.toFixed(2)}`); } }   // WATCH=key: that car's pass attempts on the SLOW car
     if (process.env.TRACE && s % 1200 === 0) { const h = F.hero, ahead = F.cars.filter((c) => c !== h && c.prog > h.prog).length; console.log(`  t ${t.toFixed(0)} P${ahead + 1} ${(h.vehicle.speed * 3.6).toFixed(0)} km/h lane ${h.ai.laneNow?.toFixed(1)} passSide ${h.ai.passSide} nitro ${h.vehicle.state.nitroTank.toFixed(2)} gapToLeader ${Math.max(...F.cars.map((c) => c.prog)) - h.prog}`); }   // the hero's place is settled once it and everyone ahead are home
   }
   const order = [...F.cars].sort((a, b) => (a.done ?? Infinity) - (b.done ?? Infinity) || b.prog - a.prog);
