@@ -39,6 +39,7 @@ import { wetUniforms, wetify, wetCars } from './wet-road.js';
 import { makeRain } from './wet-rain.js';
 import { TIERS, detectTier, GpuTimer, Culler, DynamicResolution } from './perf.js';
 import { Trailer } from './trailer.js';
+import { bakeSpinBlur } from './carkit/spin-blur.js';
 
 const SUN_GLARE = 0.7;     // the user's call, 2026-11-02: the sun's flare, haze, road glint and (by day and dusk, when the sun is what blooms) bloom, on every track, at 70 % of each look's value
 const DEV_QUERY = new URLSearchParams(location.search);
@@ -866,6 +867,7 @@ function warmRace(keys,stop=()=>false){
     // the first capture builds the PMREM filters and gives the hero its envMap (the capture's PMREM has its own size): then the hero's variants with it
     if(!stop()&&!game?.session){await field.prepareReflection(renderer,hiddenForCapture(),stop);await heroEnvPrograms(stop,warmInflight);}   // mid-session it has run at Start, and it hides the hero across frames
     await firstUse(renderer,{isCancelled:stop});
+    for(const k of keys){const c=field.all.find(c=>c.key===k);if(stop())break;if(c&&!c.blurBaked){c.blurBaked=true;bakeSpinBlur(renderer,c,scene.environment);await new Promise(r=>setTimeout(r,0));}}   // blurred rims (carkit/spin-blur.js) behind the loading screen, not mid-race
     console.info('Race shaders warmed:',Math.round(performance.now()-started),'ms,',renderer.info.programs.length,'programs');
   })().finally(()=>{if(stop()&&warming?.done===done)warming=null;});   // a cancelled warm-up may be retried
   warming={id,done};return done;

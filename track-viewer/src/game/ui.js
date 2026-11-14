@@ -7,6 +7,7 @@ import MUSIC_CREDITS from '../../../assets/audio/music/credits.json';
 import {teamLogoUrl} from '../team-logos.js';
 import { carName, ROSTER } from './carinfo.js';
 import { MODES } from './session.js';
+import { DIFFICULTY } from './difficulty.js';
 import { store, ASSISTS, WEATHER, fmtTime } from './store.js';
 import { trackOf, availableTracks, optionalJson, trackUrl, revUrl } from '../tracks.js';
 import { icon } from './icons.js';
@@ -393,11 +394,12 @@ export function SetupScreen(game) {
     const L = nav.items(), k = L.indexOf(cur); nav.reset(Math.max(0, k >= 0 ? k : L.findIndex((e) => e.getAttribute('aria-label') === was)));
   }
   function build() {
-    const M = MODES[mode], S = store.settings, note = h('span', {}, sentence(ASSISTS[S.assists].note));
+    const M = MODES[mode], S = store.settings, note = h('span', {}, sentence(ASSISTS[S.assists].note)), dnote = h('span', {}, DIFFICULTY[S.difficulty]?.desc ?? '');
     fill(htitle, icon(MODE_ICON[mode]), M.label); sub.textContent = M.desc;
     fill(rows,
       tracks.length > 1 ? row('Circuit', seg(tracks.map((t) => [t.id, circuitCard(t)]), trackOf(S.track).id, (v) => { game.selectTrack(v).then(() => { if (game.screen?.el === el) rebuild(); }); }, 'cards')) : null,
       M.laps ? row('Laps', seg(lapChoices, S.laps, (v) => store.set('laps', v))) : null,
+      M.rivals ? row('Difficulty', seg(Object.entries(DIFFICULTY).map(([k, d]) => [k, d.label]), S.difficulty, (v) => { store.set('difficulty', v); dnote.textContent = DIFFICULTY[v].desc; }), dnote) : null,
       row('Time of day', seg(looks(), S.look, (v) => { store.set('look', v); game.applySettings(); })),
       row('Weather', seg(weathers(), S.weather, (v) => { store.set('weather', v); game.applySettings(); })),
       row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { store.set('assists', v); note.textContent = sentence(ASSISTS[v].note); }), note),
@@ -465,7 +467,7 @@ export function SettingsScreen(game) {
         row('Assists', seg(Object.entries(ASSISTS).map(([k, a]) => [k, a.label]), S.assists, (v) => { set('assists')(v); note.textContent = sentence(ASSISTS[v].note); }), note),
         row('Speed in', seg([['kmh', 'km/h'], ['mph', 'mph']], S.units, set('units'))),
         row('Race laps', seg(lapChoices, S.laps, set('laps'))),
-        row('Hard mode', toggle(S.hardMode, set('hardMode')), 'Rivals drive a little quicker and use nitro on the straights, in every race and in your career. Starts with the next session.'),
+        row('Hard mode', toggle(S.hardMode, set('hardMode')), 'Career rivals drive a little quicker and use nitro on the straights. Other races use the Difficulty in their setup. Starts with the next session.'),
       ]; },
       audio: () => [
         row('Master', slider(S.master, {}, set('master'))),
