@@ -668,7 +668,7 @@ export class Field {
       c.hero=c===next;delete c.vehicle;delete c.ai;c.root.visible=true;c.root.quaternion.identity();
       c.speed=c.brake=c.steer=c.throttle=0;c.chassis?.reset();
       for(const w of c.wheels){w.pivot.rotation.y=0;w.spin.rotation.z=0;if(w.baseY!==undefined)w.pivot.position.y=w.baseY;}   // the last session's wheel angle does not carry over
-      c.car.position.y=0;c.car.rotation.x=c.car.rotation.z=0;   // nor the suspension plane (drivePhysics)
+      if(c.car){c.car.position.y=0;c.car.rotation.x=c.car.rotation.z=0;}   // nor the suspension plane (drivePhysics)
       if(c.shadow){c.shadow.rotation.set(0,0,0);c.shadow.position.y=0.025;c.shadow.material.opacity=0.85;}   // flat again (groundShadow tilts it while driving)
     }
     this.hero = next;
