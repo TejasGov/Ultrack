@@ -18,7 +18,13 @@ const avg = (l) => (l.length ? l.reduce((s, v) => s + v, 0) / l.length : 0);
 // ---------------------------------------------------------------------------------------------- teams, seats, drivers
 export const TEAM_IDS = Object.keys(TIERS.teams);
 export const teamInfo = (id) => TIERS.teams[id];
-export const tierOf = (id) => TIERS.tiers[TIERS.teams[id].tier];
+/** a team's tier: living (world.teams[id].tier, moved by results at the season end: career.js livingTiers) when a save is given, else the designed one */
+export const tierKey = (id, save) => save?.world?.teams?.[id]?.tier ?? TIERS.teams[id].tier;
+export const tierOf = (id, save) => TIERS.tiers[tierKey(id, save)];
+/** a team's upgrade cap: its tier's, + living.hotCap while it is hot (beat its expected place by living.hotGap last season, or won back to back this one) */
+export const capOf = (id, save) => tierOf(id, save).cap + (save?.world?.teams?.[id]?.hot ? T.living.hotCap : 0);
+/** a team's bar for the player: its own, or, once it has moved tier, the lowest bar of the teams designed in its new tier */
+export const gateOf = (id, save) => { const k = tierKey(id, save); return k === TIERS.teams[id].tier ? TIERS.teams[id].gate : Object.values(TIERS.teams).filter((t) => t.tier === k).map((t) => t.gate).sort((a, b) => a.rep - b.rep)[0]; };
 const LORE = Object.fromEntries(TEAMS.teams.map((t) => [t.id, t]));
 export const loreOf = (id) => LORE[id];
 /** car key -> { team, driver (teams.json), seat 'A' | 'B' } */
@@ -280,8 +286,8 @@ export function objectiveMet(o, x) {
  * A team's interest in the player (6.5) as its named terms: reputation and round rating over its bar, form, its own want (offers.js wantOf) and the
  * coolness of a refusal it remembers (both worked out by the caller, as fractions of interest); null below its bar
  */
-export function interestTerms(team, { rep, rrs, cl, form }, { extraRep = 0, want = 0, cool = 0, lean = 0 } = {}) {
-  const g = TIERS.teams[team].gate, a = avg(rrs.slice(-6));
+export function interestTerms(team, { rep, rrs, cl, form }, { extraRep = 0, want = 0, cool = 0, lean = 0, gate = null } = {}) {
+  const g = gate ?? TIERS.teams[team].gate, a = avg(rrs.slice(-6));
   if (rep < g.rep + extraRep || a < g.rr || cl < g.cl) return null;
   return { rep: (0.5 * (rep - g.rep)) / Math.max(g.rep, 100), rating: 0.15 * (a - g.rr), form: 0.05 * form, want, cool: -cool, lean };   // lean: a rumour the player stoked (choices.js), this season
 }

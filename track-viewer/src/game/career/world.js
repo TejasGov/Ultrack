@@ -1,7 +1,7 @@
 // The world around the player (docs/career-mode.md 6.6, 6.8): who drives which car, the free agents, the academy, rival heat, and
 // the cheap AI market between seasons. Pure, like the rest of career/: a save goes in and comes out changed.
 // world.seats maps each car key to a driver code; the player's car holds 'YOU', a seat the market has to fill holds null.
-import { TUNING as T, TIERS, DRIVERS, CAR, TEAM_IDS, clamp, loreOf, tierOf, seatCar, otherSeat, seasonForm, playerRating, eliteSize, divsOn, divOf, upDiv, DIV } from './rules.js';
+import { TUNING as T, TIERS, DRIVERS, CAR, TEAM_IDS, clamp, loreOf, tierOf, tierKey, seatCar, otherSeat, seasonForm, playerRating, eliteSize, divsOn, divOf, upDiv, DIV } from './rules.js';
 import { rng } from './rng.js';
 
 export const YOU = 'YOU';
@@ -78,12 +78,12 @@ export function shortlistOf(save, key, seated = true, left = 1) {
  * market.poachLoyalty, when the move is a step up and never down a tier: their B seat for this A seat, a higher tier, or the same tier in a better car. Never `keep`, nor anyone who signed in this market (`fresh`)
  */
 export function poachable(save, key, keep = null, fresh = new Set()) {
-  const W = save.world, M = T.market, here = CAR[key].team, pos = W.teams[here].expPos, rank = tierOf(here).rank, z = TIERS.carZ[key] ?? 0;
+  const W = save.world, M = T.market, here = CAR[key].team, pos = W.teams[here].expPos, rank = tierOf(here, save).rank, z = TIERS.carZ[key] ?? 0;
   return Object.entries(W.seats).filter(([k, c]) => {
     const t = CAR[k].team, gap = pos - W.teams[t].expPos;
     if (!c || c === YOU || c === keep || fresh.has(c) || t === here || gap < M.poachGap[0] || gap > M.poachGap[1] || (W.loyalty?.[c] ?? 100) >= M.poachLoyalty) return false;
-    if (rank < tierOf(t).rank || !upDiv(save, t, here)) return false;   // a status gain is no step up when it costs a tier or a series
-    return (CAR[k].seat === 'B' && CAR[key].seat === 'A') || rank > tierOf(t).rank || (rank === tierOf(t).rank && z > (TIERS.carZ[k] ?? 0));
+    if (rank < tierOf(t, save).rank || !upDiv(save, t, here)) return false;   // a status gain is no step up when it costs a tier or a series
+    return (CAR[k].seat === 'B' && CAR[key].seat === 'A') || rank > tierOf(t, save).rank || (rank === tierOf(t, save).rank && z > (TIERS.carZ[k] ?? 0));
   }).map(([, c]) => c);
 }
 
@@ -118,9 +118,9 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
   for (const [key, code] of Object.entries(W.seats)) if (code && code !== YOU && retire(code)) { W.seats[key] = null; W.retired.push(code); delete K[code]; }
   W.free = W.free.filter((code) => !(retire(code) && W.retired.push(code)));
   const seated = () => Object.entries(W.seats).filter(([, c]) => c && c !== YOU), free = (key) => { W.free.push(W.seats[key]); delete K[W.seats[key]]; W.seats[key] = null; };
-  const tierAvg = {}; for (const [k, c] of seated()) (tierAvg[TIERS.teams[CAR[k].team].tier] ??= []).push(W.ratings[c]);
+  const tierAvg = {}; for (const [k, c] of seated()) (tierAvg[tierKey(CAR[k].team, save)] ??= []).push(W.ratings[c]);
   for (const t in tierAvg) tierAvg[t] = tierAvg[t].reduce((a, b) => a + b, 0) / tierAvg[t].length;
-  const avgAt = (key) => tierAvg[TIERS.teams[CAR[key].team].tier];
+  const avgAt = (key) => tierAvg[tierKey(CAR[key].team, save)];
   for (const [key, code] of seated()) {
     if ((K[code] = (K[code] ?? 1) - 1) > 0) continue;
     if (W.ratings[code] >= avgAt(key) - M.renewGap && rng(save.seed, 'market', 'renew', season, code)() < M.renew) sign(code); else free(key);
@@ -131,9 +131,9 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
   }
   // lower teams fire (6.8): a team 2+ places under its expected place in the Teams' table, or in the bottom half of its tier, may sack its lower scorer when
   // they are rated well under the tier or scored under sackShare of the teammate's points; the further under, the likelier (sackChance by tier: the top tier does not). Never the player
-  const ranked = (t) => { const ids = table.filter((x) => TIERS.teams[x].tier === TIERS.teams[t].tier); return ids.indexOf(t) >= ids.length / 2; };
+  const ranked = (t) => { const ids = table.filter((x) => tierKey(x, save) === tierKey(t, save)); return ids.indexOf(t) >= ids.length / 2; };
   for (const t of Object.keys(TIERS.teams).sort((a, b) => W.teams[a].expPos - W.teams[b].expPos)) {
-    const chance = M.sackChance[tierOf(t).rank - 1];
+    const chance = M.sackChance[tierOf(t, save).rank - 1];
     if (!table.length || !chance || out.sacked.length >= M.maxSacks || !(below(t) >= 2 || ranked(t))) continue;
     const [a, b] = ['A', 'B'].map((s) => seatCar(t, s)), ca = W.seats[a], cb = W.seats[b]; if (!ca || !cb) continue;
     const p = (c) => pts[c] ?? 0, [key, mate] = p(ca) < p(cb) || (p(ca) === p(cb) && (W.ratings[ca] ?? 0) < (W.ratings[cb] ?? 0)) ? [a, b] : [b, a], code = W.seats[key];
@@ -155,7 +155,7 @@ export function marketMoves(save, { displaced = null, vacated = null } = {}) {
   while (open.length) {
     const key = open.shift(), skip = key === vacated && open.length ? displaced : null;
     // the best first: each candidate's own seeded roll, weighted by how little they are attached to their team (poachScale by the hiring team's tier: lower teams poach, the top tier does not), decides whether they walk; the release fee is paid
-    const ps = M.poachScale[tierOf(CAR[key].team).rank - 1], pr = rng(save.seed, 'market', 'poach', season, key);
+    const ps = M.poachScale[tierOf(CAR[key].team, save).rank - 1], pr = rng(save.seed, 'market', 'poach', season, key);
     const pc = ps && out.poached.length < M.maxPoach ? poachable(save, key, keep, fresh).sort((a, b) => score[b] - score[a] || (a < b ? -1 : 1)).find((c) => pr() < Math.min(1, ps * (M.poachLoyalty - L[c]) / M.poachLoyalty)) : null;
     if (pc) {
       const from = Object.keys(W.seats).find((k) => W.seats[k] === pc);
@@ -196,10 +196,10 @@ function callUp(save) {
  * with whether they were beaten.
  */
 export function heatAfter(save, raced, hero, dnf, ev = { contacts: {}, passes: {} }) {
-  const R = T.rivals, K = save.career, H = K.heat, RV = (K.rivalry ??= {}), me = raced.indexOf(hero), myRank = tierOf(save.contract.team).rank, onGrid = {}, lines = [];
+  const R = T.rivals, K = save.career, H = K.heat, RV = (K.rivalry ??= {}), me = raced.indexOf(hero), myRank = tierOf(save.contract.team, save).rank, onGrid = {}, lines = [];
   // with two series: beating an Elite driver from the Challenger pays as a higher tier does, and at a Tour round a rival in the other series, whom the player cannot meet, cools as if sat out
   const S = save.season, at = Object.fromEntries(Object.entries(save.world.seats).map(([k, c]) => [c, k])), tour = !!S?.div && (S.calendar[save.clock.round]?.kind ?? 'tour') === 'tour';
-  const above = (key) => tierOf(CAR[key].team).rank > myRank || (S?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite'), apart = (code) => tour && !!at[code] && divOf(save, CAR[at[code]].team) !== S.div;
+  const above = (key) => tierOf(CAR[key].team, save).rank > myRank || (S?.div === 'challenger' && divOf(save, CAR[key].team) === 'elite'), apart = (code) => tour && !!at[code] && divOf(save, CAR[at[code]].team) !== S.div;
   // the duel's heat by the field: in a series of 8 or 10 the teammate is the car nearest the player in most rounds already, so the duel and racing near the teammate add, and the duel stops at, what they did in a field of 16 per car
   const duelF = tour && S.current?.field ? S.current.field / DIV.legacyField : 1;
   const nemesis = nemesisOf(save, raced), since = [save.clock.season, save.clock.round + 1], h2h = me >= 0 && !dnf;
