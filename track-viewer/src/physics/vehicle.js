@@ -44,6 +44,7 @@ const absKeepRear = (a) => a.absSteerRear ?? 0.85 + 0.15 * (a.tcs ?? 0.6);
 // rear planted and the car pointing where it is steered). Casual 1, Sport .2, Pro 0 (fixed bias: rotation is the driver's job)
 const biasShift = (a) => a.brakeBias ?? Math.max(0, ((a.tcs ?? 0.6) - 0.5) * 2);
 const REVERSING_BELOW = 14.4;                                   // m/s: backing up on purpose; faster backwards is a spin and keeps its assists
+export const PLAYER_GRIP = 1.08;                               // the player's tyres grip 8 % more than the AI's (the user's call, 2026-11-16: corners too slow); the AI and the par laps do not move
 const WALL_OFF_SPEED = 3, WALL_OFF_ACCEL = 14;   // m/s, m/s2: leaving a barrier with the wheel turned away
 const MAX_SPIN = 7, BALL_SKIN = 0.004, BALL_WIN = 0.01, GROUND_COS = Math.SQRT1_2, AXLE = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);   // wheel-cast cylinder radius = tyre - skin; steepest ground normal 45 deg
 const v3 = () => new THREE.Vector3();
@@ -117,6 +118,7 @@ export class Vehicle {
 
   step(h, assist = { counter: 0.35, stability: 1, tcs: 0.6 }) {
     const { rb, spec, controls: ctl, state: st } = this, world = this.pw.world, wet = road.wet;
+    const grip = spec.grip * (ctl.player ? PLAYER_GRIP : 1);
     this.prev.pos.copy(this.cur.pos); this.prev.quat.copy(this.cur.quat);
     const q = toQ(rb.rotation()), pos = toV(rb.translation()), lin = toV(rb.linvel()), ang = toV(rb.angvel());
     if (ang.length() > MAX_SPIN) { ang.setLength(MAX_SPIN); rb.setAngvel(ang, true); }   // a wall hit can not spin a car past what a real crash does (7 rad/s ~ 400 deg/s)
@@ -256,7 +258,7 @@ export class Vehicle {
       const r = p.clone().sub(comW), vp = lin.clone().add(v3().crossVectors(ang, r));
       const vl = vp.dot(f), vs = vp.dot(s);
       // wet road: less peak grip everywhere (wetGrip); kerbs, cobbles and turf slicker still (surface.wet, at full rain)
-      let mu = spec.grip * w.surface.mu * Math.min(1, wetGrip(wet) + (spec.wetRetention ?? 0) * wet) * (w.surface.wet ?? 1) ** wet;
+      let mu = grip * w.surface.mu * Math.min(1, wetGrip(wet) + (spec.wetRetention ?? 0) * wet) * (w.surface.wet ?? 1) ** wet;
       if(!w.front)mu*=1+((tune.rearGripScale??1)-1)*(1-st.drift);
       // rear grip fades in a drift / on the handbrake, and comes back past ~40° so the angle stays catchable (25-45°)
       if (!w.front) mu *= 1 - (0.24 * st.drift + 0.45 * ctl.handbrake) * (1 - THREE.MathUtils.smoothstep(Math.abs(st.beta), 0.6 + 0.7 * hbHold, 0.95 + 0.7 * hbHold));
@@ -321,8 +323,8 @@ export class Vehicle {
     // drifting, so the old yaw damping, catch torque and slide recovery stand down by the same amount
     const arc = backing || pedals.drive < 0 || onGround < 3 ? 0 : THREE.MathUtils.smoothstep(vF, 1.5, 6), T = arcadeTier(assist.stability);
     const wetF = Math.min(1, wetGrip(wet) + (spec.wetRetention ?? 0) * wet), surf = surfaceGrip / Math.max(1, onGround);
-    this.arcG = arcadeAccel(T, spec.grip, wetF, surf, 0, spec.mass, 0) / G;
-    const aMax = arcadeAccel(T, spec.grip, wetF, surf, spec.downforce, spec.mass, speed) * (1 - 0.25 * pedals.brake);   // lateral m/s2 on offer; braking leaves most of it
+    this.arcG = arcadeAccel(T, grip, wetF, surf, 0, spec.mass, 0) / G;
+    const aMax = arcadeAccel(T, grip, wetF, surf, spec.downforce, spec.mass, speed) * (1 - 0.25 * pedals.brake);   // lateral m/s2 on offer; braking leaves most of it
     this.dbg.arc = arc;
     // stability assist: damp the yaw rate beyond what the steering asks for (kinematic v·tanδ/L), never the turn itself;
     // keeps a mistimed lift or a kerb strike from snapping the car round (off in drift mode)
