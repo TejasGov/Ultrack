@@ -191,7 +191,7 @@ if (only.includes('arcade')) {
     const tp = tapRun(k, t, wx), h = holdRun(k, t, wx), b = brakeRun(k, t, wx), d = driftRun(k, t, wx);
     console.log(row(k, t, wx, '| ') + `tap b${f(tp.beta)}° | hold yaw${f(h.yaw, 0)} dev${f(h.dev * 100, 0)}% ${f(h.g, 2)}g b${f(h.beta)}° rel${f(h.decay, 2)}${h.flip ? ' FLIP' : ''}${h.spun ? ' SPIN' : ''} | brake ${f(b.t120, 2)}s ${f(b.g, 2)}g | drift b${f(d.betaMin, 0)}-${f(d.betaMax, 0)}° yaw${f(d.yaw, 0)} loss${f(d.loss * 100, 0)}% end${f(d.end)}°${d.spun ? ' SPIN' : ''}`);
     if (A) {
-      const dry = wx === 'dry', gLo = dry ? lim(t, 2.7, 2.4) : 2.0, gHi = dry ? lim(t, 3.5, 3.2) : 2.9;
+      const dry = wx === 'dry', gLo = dry ? lim(t, 2.7, 2.4) : 2.0, gHi = dry ? lim(t, 3.8, 3.5) : 2.9;   // + the player's 8 % grip (vehicle.js PLAYER_GRIP, 2026-11-16)
       check(tp.beta <= lim(t, 1.5, 3), `${k}/${t}/${wx}: a 250 ms tap leaves ${f(tp.beta)}° of slip`);
       check(h.g >= gLo && h.g <= gHi, `${k}/${t}/${wx}: holding D corners at ${f(h.g, 2)} g (${gLo}-${gHi})`);
       check(h.dev <= 0.1, `${k}/${t}/${wx}: held-D yaw varies ${f(h.dev * 100, 0)}%`); check(h.beta <= lim(t, 2.5, 4.5), `${k}/${t}/${wx}: held-D slip ${f(h.beta)}°`);
@@ -202,10 +202,10 @@ if (only.includes('arcade')) {
       [[120, 0.2], [135, 0.36], [160, 0.45], [200, 0.5]].forEach(([kmh, cap]) => { const ti = turnIn(k, t, 'dry', kmh, false); check(ti.t90 <= cap, `${k}/${t}: held key reaches 90% yaw in ${f(ti.t90, 2)} s at ${kmh} km/h (max ${cap})`); });
       const hs = [110, 120, 127, 135, 150].map((kmh) => tapRun(k, t, 'dry', kmh).head); hs.forEach((h, i) => { if (i) check(h <= hs[i - 1] + 0.2 && h >= 0.45 * hs[i - 1], `${k}/${t}: tap heading cliff ${hs.map((x) => f(x, 1)).join('/')} at 110/120/127/135/150 km/h`); });
     }
-    if (A && wx === 'dry') { const base = { rookie: [155, 108, 73, 66, 55], pro: [149, 98, 66, 60, 50] }[t]; if (k === 'av12') [40, 60, 90, 100, 120].forEach((kmh, i) => { const y = D(steady(k, t, 'dry', kmh, { secs: 4 }).yaw); check(Math.abs(y / base[i] - 1) <= (kmh === 120 ? 0.05 : 0.03), `${k}/${t}: rotation at ${kmh} km/h is ${f(y, 0)} deg/s, expected ${base[i]} (40-100 must not change, 120 only by a mild fade)`); }); }
+    if (A && wx === 'dry') { const base = { rookie: [155, 117, 79, 71, 58], pro: [149, 106, 72, 65, 53] }[t]; if (k === 'av12') [40, 60, 90, 100, 120].forEach((kmh, i) => { const y = D(steady(k, t, 'dry', kmh, { secs: 4 }).yaw); check(Math.abs(y / base[i] - 1) <= (kmh === 120 ? 0.05 : 0.03), `${k}/${t}: rotation at ${kmh} km/h is ${f(y, 0)} deg/s, expected ${base[i]} (pinned since PLAYER_GRIP 1.08, 2026-11-16)`); }); }
     const t135 = tapRun(k, t, wx, 135), t180 = tapRun(k, t, wx, 180);   // Endurance e1: a 250 ms tap on the straight is a small nudge: 4 deg at 135 km/h and 2 at 180 (Rookie; was 11 and 5 before the steering eased from 100 km/h)
     console.log(`   tap 250 ms: 135 km/h heading ${f(t135.head)}° slip ${f(t135.beta)}° | 180 km/h heading ${f(t180.head)}° slip ${f(t180.beta)}°`);
-    if (A) { check(t135.head <= 4.6 && t135.head >= 2.5 && t135.beta <= 1.5, `${k}/${t}/${wx}: tap at 135 turns ${f(t135.head)}° (slip ${f(t135.beta)}°)`); check(t180.head <= 3 && t180.head >= 1.2 && t180.head <= 0.7 * t135.head && t180.beta <= 1.5, `${k}/${t}/${wx}: tap at 180 turns ${f(t180.head)}° (slip ${f(t180.beta)}°)`); }
+    if (A) { check(t135.head <= 5.0 && t135.head >= 2.5 && t135.beta <= 1.5, `${k}/${t}/${wx}: tap at 135 turns ${f(t135.head)}° (slip ${f(t135.beta)}°)`); check(t180.head <= 3.3 && t180.head >= 1.2 && t180.head <= 0.7 * t135.head && t180.beta <= 1.5, `${k}/${t}/${wx}: tap at 180 turns ${f(t180.head)}° (slip ${f(t180.beta)}°)`); }
     const hf = holdRun(k, t, wx, 240), tf = tapRun(k, t, wx, 240);   // 240 km/h: no weave, no spin, still turns
     console.log(`   240 km/h: hold yaw ${f(hf.yaw, 0)}°/s dev ${f(hf.dev * 100, 0)}% slip ${f(hf.beta)}° rel ${f(hf.decay, 2)} | tap slip ${f(tf.beta)}°`);
     if (A) { check(hf.dev <= 0.1 && !hf.spun && !hf.flip && hf.beta <= 3 && tf.beta <= 3 && hf.decay <= 0.3, `${k}/${t}/${wx}: 240 km/h weaves or slides (dev ${f(hf.dev * 100, 0)}%, slip ${f(hf.beta)}/${f(tf.beta)}°, release ${f(hf.decay, 2)})`); check(hf.yaw >= (wx === 'dry' ? 14 : 11), `${k}/${t}/${wx}: numb at 240 km/h (${f(hf.yaw, 0)} deg/s)`); }

@@ -11,8 +11,8 @@ const ON_TRACK = new Set(['asphalt', 'pit', 'kerb', 'sausage kerb', 'run-off', '
 export const CRASH_JOLT = 3;
 export const MODES = {
   race: { label: 'Race', desc: 'Eight cars, one per team. Lights out and away we go.', laps: true, rivals: true, start: 'lights', tags: ['race'] },
-  trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Leave the track and the lap does not count.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true },
-  quali: { label: 'Qualifying', desc: 'One valid flying lap sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], limits: true, validLaps: 1 },   // the career's (game.js careerWeekend)
+  trial: { label: 'Time Trial', desc: 'An empty circuit and the clock. Every lap counts, off the track too.', laps: false, rivals: false, start: 'count', tags: ['free'] },
+  quali: { label: 'Qualifying', desc: 'One flying lap sets your grid slot.', laps: false, rivals: false, start: 'count', tags: ['free'], validLaps: 1 },   // the career's (game.js careerWeekend)
   drift: { label: 'Drift Attack', desc: 'Ninety seconds. Chain drifts for the multiplier; touch the grass and the chain is gone.', laps: false, rivals: false, start: 'count', tags: ['free'], seconds: 90 },
   free: { label: 'Free Drive', desc: 'No clock, no rivals. The whole circuit, at the hour you choose.', laps: false, rivals: false, start: 'none', tags: ['free'] },
 };
@@ -91,7 +91,7 @@ export class Session {
           else if (this.M.laps && c === hero && s.cross === this.laps) { F.finalLap = true; this.emit('finalLap'); }
         }
       } else if (prev < N * 0.1 && s.idx > N * 0.9 && s.cross > 0) { s.cross--; s.recross = true; }   // backwards over the line
-      // track limits (time trial): the lap is void after a second with all four wheels off
+      // track limits (a mode's limits: true voids the lap after a second with all four wheels off): no mode sets it since players lost qualifying to it
       const surf = c.vehicle.wheels.filter((w) => w.contact).map((w) => w.surface?.name);
       const off = surf.length > 0 && surf.every((n) => !ON_TRACK.has(n));
       s.offT = off ? s.offT + dt : 0;
