@@ -216,7 +216,7 @@ export function CareerReportScreen(game) {
           rep.rivals?.length ? h('p.cx-note', {}, icon('people'), rep.rivals.map(([l]) => l).join('. ') + '.') : null,
           rep.nemesis && !(rep.nemesis.beat && !rep.dnq) ? h('p.cx-note', {}, icon('warning'), `Your nemesis, ${rep.nemesis.name}, ${rep.dnq ? 'raced without you' : 'finished ahead of you'}.`) : null,   // beaten, the "Nemesis beaten" line above says it
           rep.orders ? h('p.cx-note', {}, icon('people'), `Team orders: you ${rep.orders.obeyed ? 'let' : 'did not let'} ${mate} by. Trust ${signed(rep.orders.trust)}.`) : null,
-          rep.midSeason?.warning ? h('p.cx-note.warn', {}, icon('warning'), 'Seat review: ', rich(`trust ${save.contract.trust}`), `. Meet the round objective in the next ${TUNING.trust.recover} rounds.`) : null,
+          rep.midSeason?.warning ? h('p.cx-note.warn', {}, icon('warning'), 'Seat review: ', rich(`trust ${save.contract.trust}`), `. Meet the round objective in the next ${TUNING.trust.recover} rounds${save.contract.seat === 'A' ? ', or you lose the A car' : ''}.`) : null,
           rep.midSeason?.w1 ? h('p.cx-note', {}, icon('star'), `${teamName(rep.midSeason.w1)} want to talk. Their offer is in your inbox, until the market closes.`) : null),
         save.clock.phase === 'review' ? null : mediaBytes(save, C.latestBytes(save), (id) => game.show('careerHub', { story: id })));   // the season review has no hub to open them in; they wait for next season
       const next = h('button.btn.btn-primary.cx-go', { 'data-nav': '', onclick: () => api.back() }, icon('chevron-right'), 'Continue');

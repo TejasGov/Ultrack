@@ -710,7 +710,7 @@ try {
       const l = Of.seasonOffers(s, { cup: false, title: false, dropped: false }).filter((o) => o.team === 'liberty'); if (l.length) { n++; assert.equal(l[0].div, promote ? 'elite' : 'challenger', 'the offer carries next season\'s series'); } } return n; };
     assert.equal(offered(false), 0, 'a same-tier Challenger team wants a strong year for a B-seat driver'); assert.ok(offered(true) > 0, 'a promoted one of the same tier does not');
     { const s = signed(4502); s.clock.phase = 'review'; s.contract.seat = 'A'; s.world.teams.liberty.div = 'elite'; s.world.teams.sarab.div = 'challenger';
-      assert.equal(Of.stepUp(s, 'liberty'), false, 'last of the Elite (its A seat expected P9 of 10): no step up'); assert.equal(Of.teamOutlook(s, 'liberty').blocked, 'No step up');
+      assert.equal(Of.stepUp(s, 'liberty'), false, 'last of the Elite (its A seat expected P9 of 10): no step up'); assert.equal(Of.teamOutlook(s, 'liberty').step, null);
       s.world.teams.liberty.expPos = 3.5; assert.equal(R.expIn(s, 'liberty', 'A', R.nextDivOf), 7);
       // and for this driver in it (offGrid): their market rating in the seat's car against next season's Elite cars and drivers
       const rate = (v) => { for (const k of R.carsIn(s, 'elite', R.nextDivOf)) if (CAR0[k].team !== 'liberty') s.world.ratings[s.world.seats[k]] = v; };
@@ -720,14 +720,14 @@ try {
       assert.equal(Of.offGrid(s, 'hayate', 'A'), false, 'a Challenger seat is never off the Elite grid'); assert.equal(Of.outsideOffer(s, 'liberty', 0.9), null, 'no seat of it is offered');
       rate(60); assert.equal(Of.offGrid(s, 'liberty', 'A'), false);
       assert.equal(Of.stepUp(s, 'liberty'), true); assert.equal(Of.stepUp(s, 'hayate'), false); assert.equal(Of.teamOutlook(s, 'liberty').step, 'A step up: Elite Series'); assert.notEqual(Of.teamOutlook(s, 'liberty').blocked, 'No step up');
-      assert.equal(Of.teamOutlook(s, 'hayate').blocked, 'No step up', 'a same-tier Challenger team from an A seat'); assert.equal(Of.teamOutlook(s, 'hayate').step, null); }
+      assert.notEqual(Of.teamOutlook(s, 'hayate').blocked, 'No step up', 'a same-tier team can be asked from an A seat'); assert.equal(Of.teamOutlook(s, 'hayate').step, null); }
     // approach() follows the same rule: a step up skips the A seat's rating bar; a same-tier Challenger team does not
     { const s = toReview(signed(4509), 4), W0 = s.world.teams; s.contract.seat = 'A'; s.contract.next = null; s.career.rep = 500; s.career.cl = 12; s.career.rr = [6, 6, 6, 6, 6, 6];
       W0.mojave.div = 'challenger'; W0.hayate.div = 'challenger'; W0.liberty.div = 'elite'; W0.liberty.expPos = 3.5; assert.ok(6 < R.TUNING.offers.sameTierRR);
       for (const k of Object.keys(s.world.seats)) if (s.world.seats[k] !== 'YOU') s.world.ratings[s.world.seats[k]] = R.carsIn(s, 'elite', R.nextDivOf).includes(k) && R.CAR[k].team !== 'liberty' ? 60 : 99;
       for (const t of R.TEAM_IDS) W0[t].dev = [0, 0, 0, 0, 0]; for (const r of s.season.results) r.duel = null;   // stock cars (a season of seeded development otherwise), a slow Elite and a fast driver (no duel left: rated as the field): the seat makes its grid (offGrid)
       const up = C.approach(s, 'liberty'); assert.ok(['offer', 'no'].includes(up.result), up.why); assert.ok(!/takes an average rating/.test(up.why), 'no A-seat rating bar for a step up: ' + up.why);
-      const same = C.approach(s, 'hayate'); assert.equal(same.result, 'closed'); assert.equal(same.why, 'No step up'); }
+      const same = C.approach(s, 'hayate'); assert.notEqual(same.why, 'No step up'); if (same.offer) assert.equal(same.offer.seat, 'B', 'sideways without a strong year: their B seat'); }
     // the review's second round: what a Challenger round keeps (rep, coins), a cup pays whole, the duel's heat by field, a Rookie's trust floor, and an Elite driver beaten from the Challenger
     { const ch = R.TUNING.divisions.challenger, P = R.TUNING.rep, E = R.TUNING.events, r5 = (v) => Math.round(v / 5) * 5, line = (l, k) => l.find((x) => x[0] === k)?.[1];
       const a = signed(4611), w = round(a, 1), Tr = R.TIERS.tiers[a.season.tier]; assert.equal(a.season.div, 'challenger');
@@ -1563,6 +1563,17 @@ try {
   { const a = signed(5105), b = signed(5105); a.clock.season = b.clock.season = 2; a.world.devAt = b.world.devAt = [2, 1]; a.world.teams.toro.earned = 3.5;
     C.devWindow(a, 1); C.devWindow(b, 1); const sum = (x) => x.world.teams.toro.dev.reduce((p, v) => p + v, 0);
     assert.equal(a.world.teams.toro.earned, 0.5, 'whole points spent, the half kept'); assert.ok(sum(a) >= sum(b), 'results buy development'); }
+
+  // a bad year: lose the A car mid-season, ask teams of your tier or below, and the tier below calls at the review
+  { const s = signed(5106), me = s.contract, A = R.seatCar('mojave', 'A'), B = me.car; me.trust = 90; round(s, 1); round(s, 1); round(s, 1); assert.equal(me.seat, 'A');
+    me.trust = 20; me.warning = { left: 0, met: 0 }; const r = round(s, 8); assert.equal(r.demoted, B, 'the review window ran out under the warning line: the B car'); assert.equal(me.seat, 'B'); assert.equal(s.world.seats[B], 'YOU');
+    assert.equal(s.garage.upgrades[A].engine ?? 0, 0); assert.equal(round(s, 8).demoted ?? null, null, 'once a season'); }
+  { const s = signed(5107); s.contract.trust = 90; s.contract.warning = { left: 0, met: 0 }; assert.equal(round(s, 8).demoted ?? null, null, 'a B seat has no A car to lose'); }
+  { const Of = await server.ssrLoadModule('/src/game/career/offers.js'); let downs = 0, ok = 0;
+    for (let seed = 5110; seed < 5130; seed++) { const s = signed(seed); s.world.teams.mojave.tier = 'maestro'; toReview(s, 8); s.contract.next = null;
+      const v = Of.teamOutlook(s, 'hayate'); if (v.canAsk) ok++; assert.ok(!['A step down', 'No step up'].includes(v.blocked), v.blocked);
+      s.contract.trust = 30; downs += Of.seasonOffers(s, { cup: false, title: false, dropped: false }).filter((o) => o.id.endsWith('-down') && R.tierKey(o.team, s) === 'rookie').length; }
+    assert.ok(ok > 0, 'a team a tier down can be asked'); assert.ok(downs > 0, 'a bad year: offers from the tier below'); }
 
   // ---- nine seasons, no dead end: every review has an offer, the wallet holds, every car has one driver, the save stays small, it replays
   assert.equal(JSON.stringify(play(M, 11, 1.0, 9).save), JSON.stringify(play(M, 11, 1.0, 9).save), 'nine seasons replay identically');
