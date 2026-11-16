@@ -651,7 +651,7 @@ export function finishRace(save, result) {
     rank: { before: rankBefore, after: playerRank(save), pts: day[YOU] ?? 0 }, ...(other ? { other } : {}), ...(cur.open ? { open: { name: cur.open.name, to: cur.open.to, seeded: cur.open.seeded, rank: cur.open.rank, lcq: cur.open.lcq?.finish ?? null, lcqAt: qualiName(R) } } : {}) };
   if (cur.open) recordOpen(save, R, entries[0], report);
   save.season.results.push(report);
-  feedTeams(save, report); report.promoted = promoteMid(save);
+  feedTeams(save, report); report.promoted = promoteMid(save); report.demoted = report.promoted ? null : demoteMid(save);
   const press0 = save.mediaN ?? 0;
   coverRound(save, report); if (cur.open) coverOpen(save, report); if (cupless) coverGiantKill(save, report);
   report.life = settleLife(save, report, press0, fix.bill, gross, rivals.lines.length > 0);
@@ -664,7 +664,7 @@ export function finishRace(save, result) {
   if (save.clock.round === Math.ceil(n / 2) && save.clock.round < n) {
     report.midSeason = midSeason(save);
     if (report.midSeason.warning) coverHotSeat(save, me.team);
-    if (report.midSeason.warning) post(save, 'warn', 'Seat review', `Team trust is ${me.trust}. Meet the round objective in the next ${T.trust.recover} rounds, or a low trust at the finale costs you the seat.`);
+    if (report.midSeason.warning) post(save, 'warn', 'Seat review', `Team trust is ${me.trust}. Meet the round objective in the next ${T.trust.recover} rounds, or ${me.seat === 'A' ? 'you lose the A car straight away, and ' : ''}a low trust at the finale costs you the seat.`);
   }
   save.clock.week++;
   const win = DEV_ROUNDS(n).indexOf(save.clock.round);
@@ -887,6 +887,18 @@ function promoteMid(save) {
   Object.assign(me, { upMid: save.clock.season, seat: 'A', car: A, status: me.status === 'junior' ? 'lead' : me.status, salary: Math.max(me.salary, tierOf(me.team, save).salary.A), underdog: false });
   post(save, 'deal', 'Promoted to the A seat', `Your results made the call: you drive the ${teamName(me.team)} A car from the next round, on A-seat pay. ${mate && mate !== YOU ? `${personOf(save, mate)?.name ?? mate} moves to the second car. ` : ''}Your upgrades moved across with you.`, { tab: 'garage' });
   return A;
+}
+
+/** an A-seat driver who let the seat review's recovery window run out with trust still under the warning line loses the A car from the next round: the teammate moves up, the parts stay with the car, the pay stays as signed */
+function demoteMid(save) {
+  const me = save.contract, w = me.warning;
+  if (me.seat !== 'A' || me.next || !w || w.left > 0 || me.trust >= T.trust.warn || me.downMid === save.clock.season) return null;
+  const B = seatCar(me.team, 'B'), A = me.car, G = save.garage, mate = save.world.seats[B];
+  G.upgrades[B] = { ...stock(), ...G.upgrades[A] }; G.paid[B] = G.paid[A] ?? 0; G.upgrades[A] = stock(); G.paid[A] = 0;   // your bought parts follow you, as on a promotion
+  takeSeat(save, B, A); save.stats.seatDowns = (save.stats.seatDowns ?? 0) + 1;
+  Object.assign(me, { downMid: save.clock.season, seat: 'B', car: B, status: 'junior' });
+  post(save, 'warn', 'Dropped to the B seat', `Team trust is ${me.trust} and the seat review was not met: from the next round you drive the second ${teamName(me.team)} car. ${mate && mate !== YOU ? `${personOf(save, mate)?.name ?? mate} takes the A car. ` : ''}Your upgrades moved across with you. Win trust back, or the team lets you go at the finale.`, { tab: 'garage' });
+  return B;
 }
 
 // ---------------------------------------------------------------------------------------------- team development
